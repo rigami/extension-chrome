@@ -1,0 +1,196 @@
+body{
+	background-color: #fff;
+    font-family: "Roboto", sans-serif;
+    user-select: none;
+    cursor: default;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+body.hide{
+	background-color: #000;
+}
+:not(body).hide{
+    opacity: 0;
+    transition: 0.3s ease;
+}
+.wraper{
+    max-width: 900px;
+    width: 80%;
+    padding: 50px;
+    transition: opacity 0.3s ease;
+}
+body.hide .wraper{
+	opacity: 0;
+}
+h1{
+    font-size: 35px;
+    font-weight: 600;
+    color: #1b1b1b;
+}
+h2{
+    font-size: 18px;
+    font-weight: 400;
+    color: #525252;
+}
+.line{
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #dadada;
+    display: inline-block;
+    width: 100%;
+}
+.load_wraper{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+}
+
+.load_spinner{
+	width: 50px;
+    height: 50px;
+    border: 3px solid transparent;
+    border-bottom-color: #dadada;
+    border-right-color: #dadada;
+    border-radius: 50%;
+    animation: spinner 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
+h3{
+	display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    margin-left: 10px;
+    color: #484848;
+    font-weight: 400;
+    text-align: left;
+}
+.load{
+	transition: opacity 0.3s ease;
+}
+.finish_load .load{
+	opacity: 0;
+}
+.finish_load button{
+	opacity: 1;
+	cursor: pointer;
+}
+@keyframes spinner{
+	0%{
+		transform: rotate(0deg);
+	}
+	100%{
+		transform: rotate(360deg);
+	}
+}
+p,
+h2{
+    font-size: 16px;
+    font-weight: 400;
+    color: #4e4e4e;
+    line-height: 24px;
+    position: relative;
+}
+p{    
+    background-image: url(../image/ic_check_black_24dp_1x.png);
+    background-repeat: no-repeat;
+    background-position: 24px 0px;
+    padding-left: 72px;
+    padding-right: 12px;
+}
+.problem{
+    background-image: url(../image/baseline_close_black_36dp.png);
+    background-size: 24px;
+}
+.update-list{
+    padding: 12px 0px;
+    border-radius: 3px;
+    margin-top: 25px;
+}
+.btn{
+    border: none;
+    outline: none;
+    padding: 6px 27px;
+    border-radius: 3px;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin: 0px;
+    background-color: #9c27b0;
+    color: #fff;
+    transition: color 0.3s ease,
+                background-color 0.3s ease;
+}
+.btn:hover{
+    background-color: #752084;
+}
+.btn:active{
+    background-color: #e79af5;
+}
+.footer{
+    margin-top: 25px;
+    display: flex;
+    flex-direction: row-reverse;
+    position: relative;
+    overflow: hidden;
+    min-height: 4px;
+}
+#save-note{
+    background-image: url(../image/ic_error_white_24dp_1x.png);
+    background-repeat: no-repeat;
+    background-position: 24px 50%;
+    padding: 15px 15px 15px 72px;
+    border-radius: 3px;
+    background-color: #720086;
+    margin-top: 25px;
+}
+#save-note h2{
+    color: #fff;
+}
+#save-note.hide{
+    display: none;
+}
+
+.loader{
+    left: 0;
+    height: 4px;
+    width: 100%;
+    position: absolute;
+    background-color: #9c27b0;
+    bottom: 0;
+    animation: loader 1.5s cubic-bezier(0.42, 0, 0.35, 1) infinite;
+    transition: opacity 0.2s ease;
+}
+.finish_load .loader{
+    opacity: 0;
+}
+@keyframes loader{
+    0%{
+        width: 40px;
+        margin-left: -40px;
+    }
+    30%{
+        width: 60%;
+    }
+    100%{
+        width: 40px;
+        margin-left: 100%;
+    }
+}
+#load_info{
+    color: #9c27b0;
+    font-weight: 700;
+    font-size: 20px;
+    margin: 0;
+    transition: 0.3s ease;
+}
+.finish_load #load_info{
+    opacity: 0;
+}

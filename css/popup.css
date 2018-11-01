@@ -1,0 +1,154 @@
+body{
+	width: 600px;
+	height: 350px;
+	font-size: 0;
+	background-color: #fff !important;
+	margin: 0px 1px !important;
+}
+h1 {
+    font-size: 20px;
+    color: #4a4a4a;
+    margin: 0;
+    padding: 10px 25px;
+}
+h2{
+    font-size: 13px;
+    color: #4a4a4a;
+    font-weight: 400;
+}
+.mark_create_help{
+    font-size: 17px;
+    color: #fff;
+    margin: 0;
+    padding: 12px;
+    padding-bottom: 0;
+}
+.list_result{
+    width: 100%;
+    top: 100%;
+    position: absolute;
+    right: -1px;
+    background-color: #f3f3f3;
+    z-index: 10;
+    overflow-x: hidden;
+    margin-top: 8px;
+    transition: max-height 0.2s ease,
+    visibility 0.2s;
+    box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.2);
+}
+.list_result li{
+    font-size: 15px;
+    list-style: none;
+    padding: 5px 15px; 
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.2s ease;
+}
+.list_result li:hover{
+    background-color: #d2d2d2;
+}
+.list_result li .search_result_list_name,
+.list_result li .search_result_list_url{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.list_result li .search_result_list_name{
+    font-size: 15px;
+}
+.list_result li .search_result_list_url{
+    font-size: 12px;
+    color: #52849cc2;
+}
+.site_panel_add_content{
+    background-color: #fff;
+}
+.site_panel_add_content .collum:first-child{
+    display: inline-block;
+    vertical-align: top;
+    width: 270px;
+    height: 100vh;
+	background-color: #000;
+    position: relative;
+    overflow: hidden;
+    border-radius: 3px 0px 0px 3px;
+}
+.site_panel_add_content .collum .preview{
+	height: 141px;
+    width: 250px;
+    background-color: #252f33;
+    margin: 10px;
+    margin-right: 0px;
+    font-size: 15px;
+    text-align: center;
+    color: #888888;
+    position: relative;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.42);
+}
+.site_panel_add_content .collum.preview:before{
+    opacity: 0;
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #252f33;
+    z-index: 0;
+    transition: opacity 0.3s ease;
+}
+.site_panel_add_content .collum.preview.load:before{
+    opacity: 1;
+}
+.site_panel_add_content .collum:last-child{
+	display: inline-block;
+    vertical-align: top;
+    width: 310px;
+    padding: 10px;
+}
+.site_panel_add_content .collum:first-child{
+    width: 240px;
+}
+.site_panel_add_content .collum:last-child{
+    width: 340px;
+}
+.site_panel_add_content .collum .preview{
+    width: 220px;
+    height: 120px;
+    transition: 0.3s ease;
+}
+.preview_blur{
+	width: 100%;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 0;
+    filter: blur(8px);
+    overflow: hidden;
+    opacity: 0.8;
+    transform: scale(1.1);
+    background-size: cover;
+    background-color: #485e68;
+    background-position: 50%;
+}
+.preview_list {
+    z-index: 10;
+    position: relative;
+    max-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: opacity 0.3s ease;
+}
+.site_panel_add_content .DOE_infoWraper{
+    padding-left: 0px !important;
+}
+.site_panel_add_content .DOE_swithcer{
+    padding: 4px 10px !important;
+}

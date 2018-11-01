@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ClockTab</title>		
+		<link id="css" rel="stylesheet" type="text/css" href="css/font.css">
+		<link id="css" rel="stylesheet" type="text/css" href="css/mainPage.css">
+		<link id="css" rel="stylesheet" type="text/css" href="css/UI.css">
+		<meta charset="utf-8">
+		<script src="js/UIv2.js"></script>
+		<script src="js/clock.js"></script>
+		<script src="js/SettingsConstructor.js"></script>
+		<script src="js/touch.js"></script>
+		<style id="style_count_mark" type="text/css">:root{--count-mark:3; --count-preview:3;}</style>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	</head>
+	<body>
+		<div id="bodyWraper" class="hide">
+			<div id="backgroundWraper"></div>
+			<div id="blind" class="hide"></div>
+			<div id="interfaceWraper">
+				<div class="interface_menu_block">
+					<button id="menu" class="global_menu_button" title="Меню"></button>
+					<!--<div class="menu-buttons-separator"></div>-->
+					<button id="change_bg" class="global_menu_button" title="Сменить фон"></button>
+					<!--<button id="new_note" class="global_menu_button" title="Новая заметка"></button>-->
+					<!--<button id="fullscreen" class="global_menu_button" title="Включить/выключить полноэкранный режим"></button>-->		
+				</div>	
+			</div>			
+			<div id="marks_block" class="full_wraper">
+				<div id="site_panel_wrap" style="z-index: 100;">
+					<div id="site_panel" class="hide"></div>
+				</div>
+				<div id="marks_search_wraper" style="z-index: 100;" class="all_sites hide">
+				</div>			
+			</div>
+			<div id="watch_wraper" class="full_wraper">
+				<div id="clock-block" style="padding: 40px;"></div>
+			</div>
+			<div id="settings_zone" class="hide zeroWidth"></div>
+			<div class="tapeWraper">
+				<div id="tape"></div>
+			</div>
+			<script src="js/initialization.js"></script>	
+		</div>
+	</body>
+</html>
