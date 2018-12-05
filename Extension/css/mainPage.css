@@ -2208,7 +2208,7 @@ body:not(.theme-new) .light .remove_mark,
 .theme-new .mark_full_grab .icon,
 .theme-new .grab_mark .icon,
 .theme-new .grab_icon{
-    box-shadow: 0 0 0 1px #c2c2c2;
+    /*box-shadow: 0 0 0 1px #c2c2c2;*/
 }
 .theme-new .mark_full,
 .theme-new .mark_full_grab,

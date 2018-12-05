@@ -35,7 +35,7 @@ updateStack = [
 	function(callback){
 	//TO VER.3
 		Window.DB.changeFile("/settings/settings.json", function(file){
-			if(file.notes.length != 0) document.getElementById("save-note").classList.remove("hide");
+			if(file.notes && file.notes.length != 0) document.getElementById("save-note").classList.remove("hide");
 			if(JSON.parse(localStorage.getItem("version")) >= 3){
 				callback();
 				return;
@@ -116,7 +116,7 @@ document.getElementById("start_work").onclick = function(){
 
 document.getElementById("download_notes").onclick = function(){
 	Window.DB.changeFile("/settings/settings.json", function(file){
-		if(file.notes.length != 0) downloadNotes(file.notes);
+		if(file.notes && file.notes.length != 0) downloadNotes(file.notes);
 	});
 }
 
