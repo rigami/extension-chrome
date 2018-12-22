@@ -17,20 +17,20 @@ if(!bgPage.Window.DB){
 	}, 1000);
 }
 Window.dataOfTab = {
-	body: document.getElementById("bodyWraper"),
-	sitePanel: null,
-	sitePanelIsLooked: false,
-	markGrabIsActive: true,
-	menuIsOpen: false,
-	headStyle: document.getElementById("style_count_mark"),
-	countMark: Math.floor((document.body.clientWidth-25)/240),
-	widthPreviewContent: 0,
-	namespace: bgPage.Window.DB.get(),
-	updateVarStyles: function(){
-		let c = (this.widthPreviewContent) ? Math.floor((this.widthPreviewContent.clientWidth-25)/260) : 2;
-		this.headStyle.innerHTML = ":root{--count-mark: "+this.countMark+";\
-										  --count-preview: "+((c > 5)? 5 : c)+";";
-	}
+	body: 					document.getElementById("bodyWraper"),
+	sitePanel: 				null,
+	sitePanelIsLooked: 		false,
+	markGrabIsActive: 		true,
+	menuIsOpen: 			false,
+	headStyle: 				document.getElementById("style_count_mark"),
+	countMark: 				Math.floor((document.body.clientWidth-25)/240),
+	widthPreviewContent: 	0,
+	namespace: 				bgPage.Window.DB.get(),
+	updateVarStyles: 		function(){
+								let c = (this.widthPreviewContent) ? Math.floor((this.widthPreviewContent.clientWidth-25)/260) : 2;
+								this.headStyle.innerHTML = ":root{--count-mark: "+this.countMark+";\
+																  --count-preview: "+((c > 5)? 5 : c)+";";
+							}
 }
 Window.dataOfTab.updateVarStyles();
 /*

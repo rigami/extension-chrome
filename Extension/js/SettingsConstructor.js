@@ -2721,7 +2721,7 @@ function drawSitePanel(fastOpen){
 		bgPage.Window.DB.changeFile("/settings/sitesList.json", function(file){
 			site_wrap.clearContent();		
 			favGroup = UI.createElem({
-				style: ["width: 648px;", "margin: auto;", "font-size: 0;", "margin-bottom: 20px;"]
+				style: ["padding-top: 20px;", "width: 648px;", "margin: auto;", "font-size: 0;", "margin-bottom: 20px;"]
 			});
 			site_wrap.appendChild(favGroup);
 			favGroup.appendChild([
@@ -3576,7 +3576,7 @@ function GrabAndPush(markData, grabMark, clickEvent, callback, favPanel){
 	if(groupList[0].querySelectorAll(".mark:not(.ghost_small_mark), .mark_full:not(.ghost_mark)").length >= 9){
 		groupList[0].appendChild(UI.createElem({
 			class: "favorites_is_full",
-			content: "В этой группе больше нет места"
+			content: "В избранном больше нет места"
 		}).element);
 		groupList[0] = null;
 	}
