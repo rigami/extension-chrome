@@ -65,7 +65,7 @@ function saveBackgroundFileInSystem(file, callback){
 	});
 }
 if(localStorage.getItem("first_contact")){
-	Window.DB.sendRequest("http://danilkinkinstudio.h1n.ru/projects/clockTab/news.php", {},
+	Window.DB.sendRequest("http://danilkinkin.com/projects/clockTab/news.php", {},
 	function(result){
 		if(result && !!JSON.parse(result) && JSON.parse(result).advId != localStorage.getItem("blocked_advertising_id")) localStorage.setItem("advertising_post", result);
 	});

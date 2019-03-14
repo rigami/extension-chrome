@@ -35,7 +35,7 @@ console.log("cat: I will ask you a riddle");
 console.log("cat: Tell me if you want");
 
 function my_answer(answr){
-	Window.DB.sendRequest("http://danilkinkinstudio.h1n.ru/projects/clockTab/game.php", {
+	Window.DB.sendRequest("http://danilkinkin.com/projects/clockTab/game.php", {
 		my_answer: answr.toLowerCase().replace(/ /g, "")
 	},
 	function(result){

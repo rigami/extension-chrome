@@ -1073,7 +1073,7 @@ function openMenu(){
 						tag: "a",
 						class: "href",
 						attr: [
-							{tag: "href", value: "http://danilkinkinstudio.h1n.ru"},
+							{tag: "href", value: "http://danilkinkin.com"},
 							{tag: "target", value: "_blank"}
 						],
 						content: "Другие проекты Danilkinkin"
@@ -1082,7 +1082,7 @@ function openMenu(){
 						tag: "a",
 						class: "href",
 						attr: [
-							{tag: "href", value: "http://danilkinkinstudio.h1n.ru/projects/clockTab/donate"},
+							{tag: "href", value: "http://danilkinkin.com/projects/clockTab/donate"},
 							{tag: "target", value: "_blank"}
 						],
 						content: "Поддержать проект"
@@ -1091,7 +1091,7 @@ function openMenu(){
 						tag: "a",
 						class: "href",
 						attr: [
-							{tag: "href", value: "http://danilkinkinstudio.h1n.ru/projects/clockTab"},
+							{tag: "href", value: "http://danilkinkin.com/projects/clockTab"},
 							{tag: "target", value: "_blank"}
 						],
 						content: "О расширении"
@@ -1109,7 +1109,7 @@ function openMenu(){
 						tag: "a",
 						class: "href",
 						attr: [
-							{tag: "href", value: "http://danilkinkinstudio.h1n.ru/projects/clockTab/politics"},
+							{tag: "href", value: "http://danilkinkin.com/projects/clockTab/politics"},
 							{tag: "target", value: "_blank"}
 						],
 						content: "Политика конфидициальности"
@@ -1665,7 +1665,7 @@ function BGManagerConstructor(openPage){
 		var searchTags = "";
 		console.log(pre_cont.element)
 		pre_cont.appendChild(spinner);
-		bgPage.Window.DB.sendRequest("http://danilkinkinstudio.h1n.ru/backgrounds/getTagList.php", {},
+		bgPage.Window.DB.sendRequest("http://danilkinkin.com/backgrounds/getTagList.php", {},
 		function(result){
 			spinner.remove();
 			//console.log(JSON.parse(result))
@@ -1726,7 +1726,7 @@ function BGManagerConstructor(openPage){
 				searchTags = "%";
 			previewWraper.clearContent();
 			previewWraper.appendChild(spinner);
-			bgPage.Window.DB.sendRequest("http://danilkinkinstudio.h1n.ru/backgrounds/getBGList.php", {
+			bgPage.Window.DB.sendRequest("http://danilkinkin.com/backgrounds/getBGList.php", {
 				searchTag: searchTags,
 				sortByPopular: sortBy
 			}, function(result){
@@ -1780,7 +1780,7 @@ function BGManagerConstructor(openPage){
 														preview.addClass("download");
 														dwnButton.element.onclick = null;
 														dwnButton.setAttribute("title", "Фон добавлен");
-														bgPage.Window.DB.sendRequest("http://danilkinkinstudio.h1n.ru/backgrounds/incDownloadBG.php", {
+														bgPage.Window.DB.sendRequest("http://danilkinkin.com/backgrounds/incDownloadBG.php", {
 															nameBG: elemInCatalog.name
 														},function(res){
 															//console.log(res)
@@ -1821,7 +1821,7 @@ function BGManagerConstructor(openPage){
 										preview.addClass("download");
 										dwnButton.element.onclick = null;
 										dwnButton.setAttribute("title", "Фон добавлен");
-										bgPage.Window.DB.sendRequest("http://danilkinkinstudio.h1n.ru/backgrounds/incDownloadBG.php", {
+										bgPage.Window.DB.sendRequest("http://danilkinkin.com/backgrounds/incDownloadBG.php", {
 											nameBG: elemInCatalog.name
 										},function(res){
 											//console.log(res)

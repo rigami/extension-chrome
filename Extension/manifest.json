@@ -3,8 +3,8 @@
 
 	"name": "ClockTab - Новая вкладка",
 	"short_name": "ClockTab",
-	"version": "1.6.27",
-	"homepage_url": "http://danilkinkinstudio.h1n.ru/projects/clockTab/",
+	"version": "1.6.28",
+	"homepage_url": "http://danilkinkin.com/projects/clockTab/",
 	"minimum_chrome_version": "48",
 	"offline_enabled": true,
 	
@@ -25,7 +25,7 @@
 		"storage",
 		"unlimitedStorage",
 		"*://*/*",
-		"http://danilkinkinstudio.h1n.ru/"
+		"http://danilkinkin.com/"
 	],
 	"chrome_url_overrides": {
       "newtab": "main.html"

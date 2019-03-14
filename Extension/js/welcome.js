@@ -189,9 +189,9 @@ function loadBG(){
 	var offline = false;
 	document.getElementById("load_info").innerHTML = "Инициализация";
 
-	Window.DB.sendRequest("http://danilkinkinstudio.h1n.ru/backgrounds/full/0000.jpg", {}, function(full){
+	Window.DB.sendRequest("http://danilkinkin.com/backgrounds/full/0000.jpg", {}, function(full){
 		if(full.size == 0) offline = true;
-		Window.DB.sendRequest("http://danilkinkinstudio.h1n.ru/backgrounds/preview/0000.jpg", {}, function(preview){
+		Window.DB.sendRequest("http://danilkinkin.com/backgrounds/preview/0000.jpg", {}, function(preview){
 			document.getElementById("load_info").innerHTML = "Финальная подготовка";
 			if(offline){
 				Window.DB.changeFile("/settings/settings.json", function(file, saveFile){
@@ -206,7 +206,7 @@ function loadBG(){
 				saveBackgroundFileInSystem({
 					file: new File([full], "0000.jpg", {type: "image/"}),
 					preview: new File([preview], "0000.jpg"),
-					urlFile: "http://danilkinkinstudio.h1n.ru/backgrounds/0000.jpg",
+					urlFile: "http://danilkinkin.com/backgrounds/0000.jpg",
 					isPixelArt: false,
 					isLocal: false
 				}, finStage);
