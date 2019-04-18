@@ -140,6 +140,7 @@ function Button(params, ico, label, title){
 	var dom_label = label? new UI("span").text(label) : null;
 
 	var dom_loader = null;
+	this.active = false;
 
 	this.setLabel = function(newLabel){
 		if(!label){
@@ -179,8 +180,16 @@ function Button(params, ico, label, title){
 		return this;
 	}.bind(this);
 
+	this.onclick = function(f){
+		this.enabled();
+		this.addEvent("onclick", f);
+
+		return this;
+	}.bind(this);
+
 	this.element = new UI("button", params)
 					.addClass("button")
+					.addClass("disabled")
 					.append(ico? new UI("svgSprite", {svgSprite: ico}) : null)
 					.append(dom_label)
 					.addEvent("onmouseenter", function(){
