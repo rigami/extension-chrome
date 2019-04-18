@@ -1,0 +1,37 @@
+{
+	"manifest_version": 2,
+
+	"name": "ClockTab - Новая вкладка",
+	"short_name": "ClockTab",
+	"version": "1.9.9",
+	"homepage_url": "http://danilkinkin.com/projects/clockTab/",
+	"minimum_chrome_version": "48",
+	"offline_enabled": true,
+	
+	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+	"description":"Простая и красивая новая вкладка для chrome",
+	"icons":{
+		"16":"app_res/img/16x16.png",
+		"32":"app_res/img/32x32.png",
+		"64":"app_res/img/64x64.png",
+		"128":"app_res/img/128x128.png"
+	},
+	"browser_action":{
+		"default_title":"Добавить закладку в ClockTab",
+		"default_popup": "popup.html"
+	},
+	"permissions":[
+		"activeTab",
+		"storage",
+		"unlimitedStorage",
+		"*://*/*",
+		"http://danilkinkin.com/"
+	],
+	"chrome_url_overrides": {
+      "newtab": "app.html"
+  	},
+	"background": {
+		"scripts": ["app_res/js/background.js"],
+    	"persistent": false
+	}
+}
