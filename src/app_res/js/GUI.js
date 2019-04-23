@@ -1,6 +1,4 @@
-window.GUI = new GUI();
-
-function GUI(){
+window.GUI = new function(){
 	this.__proto__ = window.UIMethods;
 
 	this.active 	= true;
@@ -134,7 +132,7 @@ function GUI(){
 	}
 }
 
-function Button(params, ico, label, title){
+function Button(params, label, title, ico){
 	this.__proto__ = window.GUI;
 
 	var dom_label = label? new UI("span").text(label) : null;
@@ -407,4 +405,16 @@ function DropDown(params, options, select){
 		this.isOpen = false;
 		this.removeClass("drop-down-open");
 	}
+}
+
+function Swicher(params, options, select){
+
+}
+
+function MultiCheckBox(params, options, select){
+
+}
+
+function Slider(params, options, select){
+
 }

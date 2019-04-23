@@ -1,129 +1,139 @@
-(() => {
-	window.UIMethods = new UIMethods();
-	function UIMethods() {
-		this.class = function(cls){
-			if(cls) this.element.className = cls;
-			return this;
-		}
-		this.addClass = function(cls){
-			if(cls) this.element.classList.add(cls);
-			return this;
-		}
-		this.removeClass = function(cls){
-			if(cls) this.element.classList.remove(cls);
-			return this;
-		}
-		//Style
-		this.addStyle = function(styleKey, styleValue){
-			this.element.style[styleKey] = styleValue;
-			return this;
-		}
-		this.removeStyle = function(styleKey){
-			this.element.style[styleKey] = "";
-			return this;
-		}
-		//Attribute
-		this.addAttribute = function(attrKey, attrValue){
-			this.element.setAttribute(attrKey, attrValue)
-			return this;
-		}
-		this.removeAttribute = function(attr){
-			this.element.removeAttribute(attr);
-			return this;
-		}
-		//Events
-		this.addEvent = function(eventKey, eventValue){
-			this.element[eventKey] = eventValue;
-			return this;
-		}
-		this.addEventR = function(eventKey, eventValue){
-			this.element[eventKey] = function(e){
-				eventValue(e, this);
-			}.bind(this);
-			return this;
-		}
-		this.removeEvent = function(eventKey){
-			delete this.element[eventKey];
-			return this;
-		}
-		//Content
-		this.clearContent = function(){
-			this.element.innerHTML = "";
-			return this;
-		}
-		this.text = function(text){
-			this.element.textContent += text;
-			return this;
-		}
-		this.innerHTML = function(html){
-			this.element.innerHTML += html;
-			return this;
-		}
-		this.append = function(newElement){
-			if(newElement) this.element.appendChild(newElement.getHTML());
-			return this;
-		}
-		this.appendBefore = function(newElement, referenceElement){
-			if(newElement) this.element.insertBefore(newElement.getHTML(), referenceElement? referenceElement.getHTML() : this.element.firstChild);
-			return this;
-		}
-		this.remove = function(removeElement){
-			removeElement.destroy();
-			return this;
-		}
-		this.destroy = function(){
-			this.element.remove();
-			return this;
-		}
-		this.getHTML = function(){
-			return this.element;
-		}
-		this.click = function(){
-			this.element.click();
-			return this;
-		}
-		this.focus = function(){
-			this.element.focus();
-			return this;
-		}
+class UI{
+	constructor(tag){
+		this._dom = document.createElement(tag || "div");
 	}
-})()
 
-function UI(type, param){
-	this.__proto__ = window.UIMethods;
-	this.element = null;
-	if(type != "svgSprite")
-		this.element = document.createElement(type);
-	else{
-		this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		this.element.className = "texxt";
-		let svgUse = document.createElementNS("http://www.w3.org/2000/svg", "use");
-		svgUse.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", param.svgSprite);
-		this.element.append(svgUse);
+	get html(){
+		return this._dom;
 	}
-	if(param){
-		if(param.class) this.element.className = param.class;
 
-		if(param.attr){
-			if(param.attr.forEach)
-				for(i=0; i<param.attr.length; i++)
-					this.element.setAttribute(param.attr[i].key, param.attr[i].value);
-			else
-				this.element.setAttribute(param.attr.key, param.attr.value);
-		}
-		
-		if(param.style){
-			if(param.style.forEach)
-				for(i=0; i<param.style.length; i++)
-					this.element.style[param.style[i].key] = param.style[i].value;
-			else
-				this.element.style[param.style.key] = param.style.value;
-		}
+	get destroy(){
+		this._dom.remove();
+		return null;
+	}
 
-		if(param.content){
-			if(!param.contentHTML) this.element.textContent = param.content;
-			else this.element.innerHTML = param.content;
-		}
+	class(cls){
+		if(cls) this._dom.className = cls;
+		let _dom = this._dom;
+		return new class UIClass extends UI{
+			constructor(tag){
+				super();
+				this._dom = _dom;
+			}
+			add(cls){
+				this._dom.classList.add(cls);
+				return this;
+			}
+			remove(cls){
+				this._dom.classList.remove(cls);
+				return this;
+			}
+		};
+	}
+
+	style(stl){
+		if(stl) this._dom.style = stl;
+		return new class UIStyle extends UI{
+			constructor(tag){
+				super();
+				this._dom = _dom;
+			}
+			add(key, value){
+				this._dom.style[key] = value;
+				return this;
+			}
+			remove(key){
+				this._dom.style[key] = "";
+				return this;
+			}
+		};
+	}
+
+	attribute(attr){
+		return new class UIAttribute extends UI{
+			constructor(tag){
+				super();
+				this._dom = _dom;
+			}
+			add(key, value){
+				return this;
+			}
+			remove(key){
+				return this;
+			}
+		};
+	}
+
+	event(action, callback){
+		return new class UIEvent extends UI{
+			constructor(tag){
+				super();
+				this._dom = _dom;
+			}
+			add(action, callback){
+				return this;
+			}
+			remove(action){
+				return this;
+			}
+			call(action, callback){
+				if(callback){
+					callback(()=>this._dom[action]());
+				}else{
+					this._dom[action]()
+				}								
+				return this;
+			}
+		};
+	}
+
+	listener(action, callback){
+		return new class UIEvent extends UI{
+			constructor(tag){
+				super();
+				this._dom = _dom;
+			}
+			add(action, callback){
+				return this;
+			}
+			remove(action, callback){
+				return this;
+			}
+		};
+	}
+
+	append(UIElement){
+		return new class UIEvent extends UI{
+			constructor(tag){
+				super();
+				this._dom = _dom;
+			}
+			before(UIElement, AnchorElement){
+				return this;
+			}
+		};
+	}
+
+	content(UIorText){
+		return new class UIContent extends UI{
+			constructor(tag){
+				super();
+				this._dom = _dom;
+			}
+			text(cls){
+				return this;
+			}
+			clear(cls){
+				return this;
+			}
+		};
+	}
+
+	static replace(UIa, UIb){
+		return this;
+	}
+
+	static create(){
+		return new UI(...arguments);
 	}
 }
-
