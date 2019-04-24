@@ -16,7 +16,7 @@ class UI{
 		if(cls) this._dom.className = cls;
 		let _dom = this._dom;
 		return new class UIClass extends UI{
-			constructor(tag){
+			constructor(){
 				super();
 				this._dom = _dom;
 			}
@@ -33,8 +33,9 @@ class UI{
 
 	style(stl){
 		if(stl) this._dom.style = stl;
+		let _dom = this._dom;
 		return new class UIStyle extends UI{
-			constructor(tag){
+			constructor(){
 				super();
 				this._dom = _dom;
 			}
@@ -49,36 +50,47 @@ class UI{
 		};
 	}
 
-	attribute(attr){
+	attribute(key, value){
+		if(key) this._dom.setAttribute(key, value || "");
+		let _dom = this._dom;
 		return new class UIAttribute extends UI{
-			constructor(tag){
+			constructor(){
 				super();
 				this._dom = _dom;
 			}
 			add(key, value){
+				if(key) this._dom.setAttribute(key, value || "");
 				return this;
 			}
 			remove(key){
+				if(key) this._dom.removeAttribute(key);
 				return this;
 			}
 		};
 	}
 
 	event(action, callback){
+		if(action){
+			if(callback) this._dom[action] = callback;
+			else this._dom[action]();
+		}
+		let _dom = this._dom;
 		return new class UIEvent extends UI{
-			constructor(tag){
+			constructor(){
 				super();
 				this._dom = _dom;
 			}
 			add(action, callback){
+				this._dom[action] = callback;
 				return this;
 			}
 			remove(action){
+				this._dom[action] = null;
 				return this;
 			}
-			call(action, callback){
-				if(callback){
-					callback(()=>this._dom[action]());
+			call(action, result){
+				if(result){
+					result(()=>this._dom[action]());
 				}else{
 					this._dom[action]()
 				}								
@@ -87,9 +99,11 @@ class UI{
 		};
 	}
 
+	//TODO
 	listener(action, callback){
+		let _dom = this._dom;
 		return new class UIEvent extends UI{
-			constructor(tag){
+			constructor(){
 				super();
 				this._dom = _dom;
 			}
@@ -102,21 +116,33 @@ class UI{
 		};
 	}
 
-	append(UIElement){
-		return new class UIEvent extends UI{
-			constructor(tag){
+	append(content){
+		if(content){
+			if(typeof content == "object") this._dom.appendChild(content.html || content);
+			else this._dom.innerHTML += content;
+		}		
+		let _dom = this._dom;
+		return new class UIAppend extends UI{
+			constructor(){
 				super();
 				this._dom = _dom;
 			}
-			before(UIElement, AnchorElement){
+			before(content){
+				if(typeof content == "object") this._dom.insertBefore(content.html || content, this._dom.html.firstChild())
+				else this._dom.innerHTML = content + this._dom.innerHTML;
+				return this;
+			}
+			text(str){
+				this._dom.textContent += str;
 				return this;
 			}
 		};
 	}
 
 	content(UIorText){
+		let _dom = this._dom;
 		return new class UIContent extends UI{
-			constructor(tag){
+			constructor(){
 				super();
 				this._dom = _dom;
 			}
