@@ -134,8 +134,9 @@ class UI{
 				this._dom = _dom;
 			}
 			before(content){
-				if(typeof content == "object") this._dom.insertBefore(content.html || content, this._dom.html.firstChild())
-				else this._dom.innerHTML = content + this._dom.innerHTML;
+				//TODO
+				/*if(typeof content == "object") this._dom.insertBefore(content.html || content, this._dom.html.firstChild())
+				else this._dom.innerHTML = content + this._dom.innerHTML;*/
 
 				return this;
 			}
@@ -147,7 +148,9 @@ class UI{
 		};
 	}
 
-	content(UIorText){
+	content(){
+		//TODO
+
 		let _dom = this._dom;
 
 		return new class UIContent extends UI{
@@ -155,16 +158,22 @@ class UI{
 				super();
 				this._dom = _dom;
 			}
-			text(cls){
+			text(str){
+				this._dom.textContent = str;
+
 				return this;
 			}
-			clear(cls){
+			clear(){
+				this._dom.innerHTML = "";
+
 				return this;
 			}
 		};
 	}
 
 	static replace(UIa, UIb){
+		//TODO
+		
 		return this;
 	}
 
