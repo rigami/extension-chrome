@@ -1,6 +1,7 @@
 class UI{
 	constructor(tag){
 		this._dom = document.createElement(tag || "div");
+		this._customEvents = {};
 	}
 
 	get html(){
@@ -9,12 +10,14 @@ class UI{
 
 	get destroy(){
 		this._dom.remove();
+
 		return null;
 	}
 
-	class(cls){
-		if(cls) this._dom.className = cls;
+	class(clsName){
+		if(clsName) this._dom.className = clsName;
 		let _dom = this._dom;
+
 		return new class UIClass extends UI{
 			constructor(){
 				super();
@@ -22,10 +25,12 @@ class UI{
 			}
 			add(cls){
 				this._dom.classList.add(cls);
+
 				return this;
 			}
 			remove(cls){
 				this._dom.classList.remove(cls);
+
 				return this;
 			}
 		};
@@ -34,17 +39,21 @@ class UI{
 	style(stl){
 		if(stl) this._dom.style = stl;
 		let _dom = this._dom;
+
 		return new class UIStyle extends UI{
 			constructor(){
 				super();
 				this._dom = _dom;
 			}
 			add(key, value){
-				this._dom.style[key] = value;
+				if(key && value) this._dom.style[key] = value;
+				else console.error("UI: Invalid arguments for add style method. Method should be called as 'add(name, value)'");
+
 				return this;
 			}
 			remove(key){
-				this._dom.style[key] = "";
+				if(key) this._dom.style[key] = "";
+
 				return this;
 			}
 		};
@@ -53,6 +62,7 @@ class UI{
 	attribute(key, value){
 		if(key) this._dom.setAttribute(key, value || "");
 		let _dom = this._dom;
+
 		return new class UIAttribute extends UI{
 			constructor(){
 				super();
@@ -60,10 +70,12 @@ class UI{
 			}
 			add(key, value){
 				if(key) this._dom.setAttribute(key, value || "");
+
 				return this;
 			}
 			remove(key){
 				if(key) this._dom.removeAttribute(key);
+
 				return this;
 			}
 		};
@@ -71,46 +83,39 @@ class UI{
 
 	event(action, callback){
 		if(action){
-			if(callback) this._dom[action] = callback;
-			else this._dom[action]();
+			if(!callback)console.error("UI: Not find callback function for event. Method 'event' should be called as 'event(actionName, callbackAction)'");
+			else this._dom["on"+action] = callback;
 		}
 		let _dom = this._dom;
-		return new class UIEvent extends UI{
-			constructor(){
-				super();
-				this._dom = _dom;
-			}
-			add(action, callback){
-				this._dom[action] = callback;
-				return this;
-			}
-			remove(action){
-				this._dom[action] = null;
-				return this;
-			}
-			call(action, result){
-				if(result){
-					result(()=>this._dom[action]());
-				}else{
-					this._dom[action]()
-				}								
-				return this;
-			}
-		};
-	}
 
-	//TODO
-	listener(action, callback){
-		let _dom = this._dom;
 		return new class UIEvent extends UI{
 			constructor(){
 				super();
 				this._dom = _dom;
 			}
 			add(action, callback){
+				if(!this._customEvents[action]) this._customEvents[action] = new CustomEvent(action, arguments[3] || {});
+				this._dom.addEventListener(action, callback, arguments[2] || false);
+
 				return this;
 			}
 			remove(action, callback){
+				if(action){
+					if(callback) this._dom.removeEventListener(action, callback, arguments[2] || false);
+					else this._dom["on"+action] = null;
+				}else console.error("UI: Not find action name. Method 'remove' should be called as 'remove(actionName[, callbackAction])'");
+
+				return this;
+			}
+			call(action, result){
+				if(action){
+					if(this._customEvents[action]) this._dom.dispatchEvent(this._customEvents[action]);
+					else{
+						if(result) result(()=>this._dom[action]());					
+						else this._dom[action]();
+					}	
+				}else console.error("UI: Not find action name. Method 'call' should be called as 'call(actionName[, callbackActionResult])'");							
+
 				return this;
 			}
 		};
@@ -122,6 +127,7 @@ class UI{
 			else this._dom.innerHTML += content;
 		}		
 		let _dom = this._dom;
+
 		return new class UIAppend extends UI{
 			constructor(){
 				super();
@@ -130,10 +136,12 @@ class UI{
 			before(content){
 				if(typeof content == "object") this._dom.insertBefore(content.html || content, this._dom.html.firstChild())
 				else this._dom.innerHTML = content + this._dom.innerHTML;
+
 				return this;
 			}
 			text(str){
 				this._dom.textContent += str;
+
 				return this;
 			}
 		};
@@ -141,6 +149,7 @@ class UI{
 
 	content(UIorText){
 		let _dom = this._dom;
+
 		return new class UIContent extends UI{
 			constructor(){
 				super();
