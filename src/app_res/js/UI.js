@@ -1,3 +1,8 @@
+/**
+ * Light UI library
+ * @author Danilkinkin <hello@danilkinkin.com>
+ */
+
 class UI{
 	constructor(tag){
 		this._dom = document.createElement(tag || "div");
@@ -173,7 +178,7 @@ class UI{
 
 	static replace(UIa, UIb){
 		//TODO
-		
+
 		return this;
 	}
 
