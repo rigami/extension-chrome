@@ -37,6 +37,9 @@ class UI{
 
 				return this;
 			}
+			has(cls){
+				return this._dom.classList.contains(cls);
+			}
 			remove(cls){
 				this._dom.classList.remove(cls);
 

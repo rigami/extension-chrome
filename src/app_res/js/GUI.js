@@ -30,8 +30,7 @@ class GUI extends UI{
 	}
 
 	disable(){
-		this._enabled = false;
-		console.log(this._dom)
+		this._enabled = false;		
 		this.class().add("gui-disabled");
 
 		return this;
@@ -103,9 +102,16 @@ class Checkbox extends GUI{
 
 		this._checked = false;
 
-		if(callback) this.event("click", callback);  
-
 		this.class().add("gui-checkbox");
+
+		this.append(UI.create().class("gui-checkbox-handler-container").append(UI.create().class("gui-checkbox-handler")));		
+		this.event("click", function(){
+			this._checked = !this._checked;
+			if(this._checked) this.class().add("gui-checked");
+			else this.class().remove("gui-checked");
+			
+			if(callback) callback(...arguments);
+		}.bind(this))
 	}
 
 	get checked(){
@@ -127,6 +133,19 @@ class Checkbox extends GUI{
 class Slider extends GUI{
 	constructor(){
 		super();
+
+		this._value = 0;
+	}
+
+	get value(){
+		return this._value;
+	}
+
+	getValue(callback){
+		if(callback) callback(this._value);
+		else console.error("GUI: Invalid arguments for 'getValue' method. Method should be called as 'getValue(callback)'");
+
+		return this;
 	}
 
 	static create(){

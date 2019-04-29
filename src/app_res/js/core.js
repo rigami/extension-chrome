@@ -5,54 +5,45 @@ function Core(){
 		console.log("Page success initialization")
 	}
 
-	let btnCounter = new function(){
-		this.count = 0;
-		this.message =  UI.create("h2").content("Button");
-		this.inc = ()=>{
-			this.count+=1;
-			this.message.content("Button. Pressed "+this.count+" times");
+	var elements = {
+		button: Button.create("Switch style", null, (e, btn)=>{
+			if(!btn.class().has("gui-second-style")) btn.class().add("gui-second-style");
+			else btn.class().remove("gui-second-style");
+		}),
+		checkbox: Checkbox.create((e, btn)=>{console.log("Checkbox value: ", btn.checked)}),
+		slider: Slider.create()
+	}
 
-			return this.message;
-		}
-	};
-
-	var testBtn = Button.create("Switch style", null, (e, btn)=>{
-		btnCounter.inc();
-		if(btnCounter.count % 2) btn.class().add("gui-second-style");
-		else btn.class().remove("gui-second-style");
-	});
+	let sliderValue = UI.create("span").content("0");
 
 	this.page
 		.append(
 			UI.create("h1").content("Test GUI")
 		)
 		.append(
-			UI.create()
-				.append(btnCounter.message)
-				.append(testBtn)
-		)
-		.append(
-			UI.create("h2").content("Action button")
-		)
-		.append(
-			Button.create("Disabled button", null, (e, btn)=>{
-				if(testBtn.enabled){
-					testBtn.disable();
-					btn.content("Enabled button");
-				}else{
-					testBtn.enable();
-					btn.content("Disabled button");	
+			Button.create("Disabled GUI", null, (e, btn)=>{
+				if(elements.button.enabled){
+					for(var key in elements) elements[key].disable();
+					btn.content("Enabled GUI");
+				}else{					
+					for(var key in elements) elements[key].enable();
+					btn.content("Disabled GUI");	
 				}
 			})
 		)
 		.append(
-			UI.create("h1").content("Test GUI")
+			UI.create()
+				.append(UI.create("h2").content("Button"))
+				.append(elements.button)
 		)
 		.append(
 			UI.create()
 				.append(UI.create("h2").content("Checkbox"))
-				.append(
-					Checkbox.create(()=>{console.log("Checkbox value: ", this.checked)})
-				)
+				.append(elements.checkbox)
+		)
+		.append(
+			UI.create()
+				.append(UI.create("h2").append("Slider (value: ").append(sliderValue).append("%)"))
+				.append(elements.slider)
 		)
 }

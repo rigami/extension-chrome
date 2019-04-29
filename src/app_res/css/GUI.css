@@ -1,9 +1,13 @@
 :root{
 	--main-bg-color: #2675F0;
+    --main-bg-color-light: #CFE1FC;
 	--second-bg-color: #545454;
+    --second-bg-color-light: #E5E5E5;
 
 	--main-bg-color-hover: #5e99f4;
+    --main-bg-color-light-hover: #dfebfd;
 	--second-bg-color-hover: #868686;
+    --second-bg-color-light-hover: #efefef;
 
 	--light-text-color: #fff;
 
@@ -36,4 +40,54 @@
 .gui-button.gui-disabled{
 	opacity: .5;
 	cursor: default;
+}
+
+.gui-checkbox{
+    outline: none;
+    border: none;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    min-height: 18px;
+}
+.gui-checkbox-handler-container{
+    height: 10px;
+    width: 34px;
+    border-radius: 5px;
+    position: relative;
+    background-color: var(--second-bg-color-light); 
+}
+.gui-checkbox-handler{
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    position: absolute;
+    top: -4px;
+    left: 0;
+    background-color: var(--second-bg-color); 
+    transition: .3s ease;
+}
+.gui-checkbox.gui-checked .gui-checkbox-handler-container{
+    background-color: var(--main-bg-color-light);    
+}
+.gui-checkbox.gui-checked .gui-checkbox-handler{
+    left: 16px;
+    background-color: var(--main-bg-color);
+}
+.gui-checkbox:not(.gui-disabled):hover .gui-checkbox-handler-container{
+    background-color: var(--second-bg-color-light-hover);
+}
+.gui-checkbox:not(.gui-disabled):hover .gui-checkbox-handler{
+    background-color: var(--second-bg-color-hover);    
+}
+.gui-checkbox.gui-checked:not(.gui-disabled):hover .gui-checkbox-handler-container{
+    background-color: var(--main-bg-color-light-hover);
+}
+.gui-checkbox.gui-checked:not(.gui-disabled):hover .gui-checkbox-handler{
+    background-color: var(--main-bg-color-hover)    
+}
+.gui-checkbox.gui-disabled{
+    opacity: .5;
+    cursor: default;
 }
