@@ -4,8 +4,12 @@
  */
 
 class UI{
-	constructor(tag){
-		this._dom = document.createElement(tag || "div");
+	constructor(element){
+		if(typeof element == "object"){
+			this._dom = element;
+		}else{
+			this._dom = document.createElement(element || "div");
+		}		
 		this._customEvents = {};
 	}
 
@@ -89,7 +93,7 @@ class UI{
 	event(action, callback){
 		if(action){
 			if(!callback)console.error("UI: Not find callback function for event. Method 'event' should be called as 'event(actionName, callbackAction)'");
-			else this._dom["on"+action] = callback;
+			else this._dom["on"+action] = (e)=>{callback(e, this)};
 		}
 		let _dom = this._dom;
 
@@ -100,7 +104,7 @@ class UI{
 			}
 			add(action, callback){
 				if(!this._customEvents[action]) this._customEvents[action] = new CustomEvent(action, arguments[3] || {});
-				this._dom.addEventListener(action, callback, arguments[2] || false);
+				this._dom.addEventListener(action, (e)=>{callback(e, this)}, arguments[2] || false);
 
 				return this;
 			}
@@ -153,8 +157,16 @@ class UI{
 		};
 	}
 
-	content(){
-		//TODO
+	insert(parentNode){
+		if(parentNode){
+			if(typeof parentNode == "object") (parentNode.html || parentNode).appendChild(this._dom);
+		}
+
+		return this;
+	}
+
+	content(content){
+		if(content) this._dom.innerHTML = content;
 
 		let _dom = this._dom;
 

@@ -5,19 +5,10 @@
  */
 
 class GUI extends UI{
-	constructor(hintText, ){
-		this._hintText = hintText;
+	constructor(){
+		super(...arguments);
+		this._hintText = "";
 		this._enabled = true;
-	}
-
-	set hint(newHintText){
-		this._hintText = newHintText;
-	}
-
-	setHint(newHintText){
-		this._hintText = newHintText;
-
-		return this;
 	}
 
 	get enabled(){
@@ -33,26 +24,103 @@ class GUI extends UI{
 
 	enable(){
 		this._enabled = true;
+		this.class().remove("gui-disabled");
 
 		return this;
 	}
 
 	disable(){
 		this._enabled = false;
+		console.log(this._dom)
+		this.class().add("gui-disabled");
 
 		return this;
+	}
+
+	event(action, callback){
+		if(action){
+			if(!callback)console.error("UI: Not find callback function for event. Method 'event' should be called as 'event(actionName, callbackAction)'");
+			else this._dom["on"+action] = (e)=>{
+				if(this._enabled) callback(e, this);
+			};
+		}
+		let _dom = this._dom;
+
+		return new class UIEvent extends UI{
+			constructor(){
+				super();
+				this._dom = _dom;
+			}
+			add(action, callback){
+				if(!this._customEvents[action]) this._customEvents[action] = new CustomEvent(action, arguments[3] || {});
+				this._dom.addEventListener(action, (e)=>{
+					if(this._enabled) callback(e, this);
+				}, arguments[2] || false);
+
+				return this;
+			}
+			remove(action, callback){
+				if(action){
+					if(callback) this._dom.removeEventListener(action, callback, arguments[2] || false);
+					else this._dom["on"+action] = null;
+				}else console.error("UI: Not find action name. Method 'remove' should be called as 'remove(actionName[, callbackAction])'");
+
+				return this;
+			}
+			call(action, result){
+				if(action){
+					if(this._customEvents[action]) this._dom.dispatchEvent(this._customEvents[action]);
+					else{
+						if(result) result(()=>this._dom[action]());					
+						else this._dom[action]();
+					}	
+				}else console.error("UI: Not find action name. Method 'call' should be called as 'call(actionName[, callbackActionResult])'");							
+
+				return this;
+			}
+		};
 	}
 }
 
 class Button extends GUI{
-	constructor(){
-		super();
+	constructor(label, icon, callback){
+		super("button");
+		//if(icon) this._dom.append(UI.create("svgSprite", ico));
+		if(label) this.append().text(label);
+		if(callback) this.event("click", callback);
+
+		this.class().add("gui-button");
+	}
+
+	static create(){
+		return new Button(...arguments);
 	}
 }
 
 class Checkbox extends GUI{
-	constructor(){
-		super();
+	constructor(callback){
+		super("button");
+
+		this._checked = false;
+
+		if(callback) this.event("click", callback);  
+
+		this.class().add("gui-checkbox");
+	}
+
+	get checked(){
+		return this._checked;
+	}
+
+	isChecked(callback){
+		if(callback) callback(this._checked);
+		else console.error("GUI: Invalid arguments for 'isChecked' method. Method should be called as 'isChecked(callback)'");
+
+		return this;
+	}
+
+	static create(){
+		return new Checkbox(...arguments);
 	}
 }
 
@@ -60,11 +128,19 @@ class Slider extends GUI{
 	constructor(){
 		super();
 	}
+
+	static create(){
+		return new Slider(...arguments);
+	}
 }
 
 class Input extends GUI{
 	constructor(){
 		super();
+	}
+
+	static create(){
+		return new Input(...arguments);
 	}
 }
 
@@ -72,10 +148,18 @@ class Dropdown extends GUI{
 	constructor(){
 		super();
 	}
+
+	static create(){
+		return new Dropdown(...arguments);
+	}
 }
 
 class MultiCheckbox extends Dropdown{
 	constructor(){
 		super();
+	}
+
+	static create(){
+		return new MultiCheckbox(...arguments);
 	}
 }

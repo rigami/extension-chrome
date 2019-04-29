@@ -1,194 +1,39 @@
-.gui-helper{
-    position: absolute;
-    background-color: #323232;
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 4px;
-    font-size: 13px;
-    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.31);
-    z-index: 100000;
-    pointer-events: none;
-    white-space: nowrap;
-    transition: opacity .2s ease;
-}
-.hide-hepler{
-    opacity: 0;
-}
+:root{
+	--main-bg-color: #2675F0;
+	--second-bg-color: #545454;
 
-.button{
+	--main-bg-color-hover: #5e99f4;
+	--second-bg-color-hover: #868686;
+
+	--light-text-color: #fff;
+
+	--normal-font-size: 15px;
+}
+.gui-button{
 	outline: none;
     border: none;
     background: none;
-    padding: 10px 20px;
     font: inherit;
-    font-weight: bold;
-    color: #1a73e8;
-    font-size: 13px;
-    cursor: pointer;
-	display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    position: relative;
-    margin: 0;
-    transition: 0.3s ease;
-}
-.button:hover,
-.button.select{
-	background-color: rgba(26, 115, 232, 0.3);
-}
-
-.button-outline.button:focus{
-    box-shadow: 0 0 0 3px #3f51b570;
-}
-.button.disabled{
-    opacity: 0.5;
-    cursor: default;
-}
-.button svg{
-	width: 25px;
-	height: 25px;
-	fill: #1a73e8;
-}
-
-.input{
-    position: relative;
-}
-.input input{
-    outline: none;
-    border: 1px solid #c7c7c7;
-    border-radius: 6px;
-    padding: 12px 24px;
-    font-family: inherit;
+    padding: 12px 30px;
+    border-radius: 4px;
+    background-color: var(--main-bg-color);
+    color: var(--light-text-color);
+    font-size: var(--normal-font-size);
     font-weight: 600;
-    font-size: 16px;
-    color: #333;
-    height: 46px;
-    box-sizing: border-box;
-    transition: .3s ease;
-}
-.input input:focus{
-    border: 1px solid #8b8b8b;
-    color: #000;
-}
-.input label{
-    position: absolute;
-    left: 8px;
-    top: 13px;
-    padding: 1px 10px;
-    display: flex;
-    align-items: center;
-    color: #808080;
-    line-height: 18px;
-    background-color: #fff;
-    user-select: none;
-    cursor: text;
-    transition: .15s ease;
-    border-radius: 10px;
-}
-.input.select label{
-    transform: scale(0.8) translate3d(-8px,-30px,0);
-}
-.input.error input{
-    border-color: #f93131;
-}
-.input.error label{
-    color: #f93131;
-}
-
-.drop-down{
-    width: 180px;
-    position: relative;
     cursor: pointer;
-    height: 36px;
-    padding-left: 25px;
-    padding-right: 25px;
-    box-sizing: border-box;
-    display: flex;
-    outline: none;
+    transition: background-color .3s ease,
+    			color .3s ease;
 }
-.drop-down span{
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 36px;
-    font-weight: 600;
+.gui-button:not(.gui-disabled):hover{
+    background-color: var(--main-bg-color-hover);
 }
-.drop-down svg{
-    width: 24px;
-    height: 36px;
-    position: absolute;
-    right: 0;
-    transition: transform 0.2s ease;
+.gui-button.gui-second-style{
+	background-color: var(--second-bg-color);
 }
-.drop-down.drop-down-open svg{
-    transform: rotate(180deg);
+.gui-button:not(.gui-disabled).gui-second-style:hover{
+	background-color: var(--second-bg-color-hover);
 }
-.drop-down .drop-down_list{
-    width: 100%;
-    top: 100%;
-    border-radius: 3px;
-    position: absolute;
-    right: 0;
-    background-color: #ffffff;
-    z-index: 10;
-    overflow-x: hidden;
-    max-height: 185px;
-    margin-top: 10px;
-    transition: max-height 0.2s ease,
-                visibility 0.2s;
-    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.12);
-}
-.drop-down:not(.drop-down-open) .drop-down_list{
-    max-height: 0px !important;
-    visibility: hidden;
-}
-.drop-down .drop-down_list li{
-    font-size: 15px;
-    font-weight: 600;
-    list-style: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    user-select: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: background-color 0.2s ease;
-    color: #202020;
-}
-.drop-down .drop-down_list li.select{
-    background-color: #1976d2;
-    color: #fff;
-}
-.drop-down .drop-down_list li:not(.select):hover{
-    background-color: rgba(25, 118, 210, 0.13);
-}
-
-.gui-loader{
-    fill: none !important;
-    stroke: white;
-    stroke-width: 2px;
-    width: 40px !important;
-    height: 40px !important;
-    position: absolute;
-    stroke-dasharray: 50;
-    animation: gui-loader-spin 2s infinite linear, gui-loader-fil 2.6s infinite ease;
-}
-
-@keyframes gui-loader-spin{
-    0%{
-        transform: rotate(-90deg);
-    }
-    100%{
-        transform: rotate(270deg);
-    }
-}
-
-@keyframes gui-loader-fil{
-    0%{
-        stroke-dashoffset: -50;
-    }
-    100%{
-        stroke-dashoffset: -150;
-    }
+.gui-button.gui-disabled{
+	opacity: .5;
+	cursor: default;
 }
