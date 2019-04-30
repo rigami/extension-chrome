@@ -11,7 +11,7 @@ function Core(){
 			else btn.class().remove("gui-second-style");
 		}),
 		checkbox: Checkbox.create((e, btn)=>{console.log("Checkbox value: ", btn.checked)}),
-		slider: Slider.create()
+		slider: Slider.create((e, btn)=>{console.log(btn.value); sliderValue.content(btn.value)})
 	}
 
 	let sliderValue = UI.create("span").content("0");

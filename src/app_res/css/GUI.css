@@ -49,7 +49,7 @@
     font: inherit;
     cursor: pointer;
     padding: 0;
-    min-height: 18px;
+    height: 18px;
 }
 .gui-checkbox-handler-container{
     height: 10px;
@@ -88,6 +88,47 @@
     background-color: var(--main-bg-color-hover)    
 }
 .gui-checkbox.gui-disabled{
+    opacity: .5;
+    cursor: default;
+}
+
+.gui-slider{
+    outline: none;
+    border: none;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    height: 18px;
+    display: inline-block;
+}
+.gui-slider-handler-container{
+    height: 4px;
+    width: 226px;
+    border-radius: 5px;
+    position: relative;
+    margin: 7px 0px;
+    background-color: var(--second-bg-color-light); 
+}
+.gui-slider-handler{
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    position: absolute;
+    top: -7px;
+    left: 0;
+    pointer-events: none;
+    background-color: var(--second-bg-color); 
+    transition: background-color .3s ease;
+}
+
+.gui-slider:not(.gui-disabled):hover .gui-slider-handler-container{
+    background-color: var(--second-bg-color-light-hover);
+}
+.gui-slider:not(.gui-disabled):hover .gui-slider-handler{
+    background-color: var(--second-bg-color-hover);    
+}
+.gui-slider.gui-disabled{
     opacity: .5;
     cursor: default;
 }

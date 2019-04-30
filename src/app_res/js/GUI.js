@@ -102,9 +102,15 @@ class Checkbox extends GUI{
 
 		this._checked = false;
 
-		this.class().add("gui-checkbox");
-
-		this.append(UI.create().class("gui-checkbox-handler-container").append(UI.create().class("gui-checkbox-handler")));		
+		this.class().add("gui-checkbox")
+			.append(
+				UI.create()
+					.class("gui-checkbox-handler-container")
+					.append(
+						UI.create()
+							.class("gui-checkbox-handler")
+					)
+			);		
 		this.event("click", function(){
 			this._checked = !this._checked;
 			if(this._checked) this.class().add("gui-checked");
@@ -131,10 +137,48 @@ class Checkbox extends GUI{
 }
 
 class Slider extends GUI{
-	constructor(){
+	constructor(callback){
 		super();
 
 		this._value = 0;
+
+		var handlerDom = UI.create().class("gui-slider-handler");
+
+		this.class().add("gui-slider")
+			.append(
+				UI.create()
+					.class("gui-slider-handler-container")
+					.append(handlerDom)
+					.event("mousedown", function(e){
+						//console.log(e)
+					}.bind(this))
+			);	
+
+		var mouseIsPressed = false;	
+		this.event("mousedown", function(e, btn){
+			mouseIsPressed = true;
+			let val = 0;
+			if(e.offsetX > 9) val = (e.offsetX-9)/(btn.html.clientWidth-18);
+			if(e.offsetX >= (btn.html.clientWidth-9)) val = 1;
+			console.log(val)
+			this._value = val;
+			handlerDom.style().add("left", val*(btn.html.clientWidth-18)+"px");
+			//if(callback) callback(...arguments);
+		}.bind(this))
+		this.event("mousemove", function(e, btn){
+			if(!mouseIsPressed) return;
+			let val = 0;
+			if(e.offsetX > 9) val = (e.offsetX-9)/(btn.html.clientWidth-18);
+			if(e.offsetX >= (btn.html.clientWidth-9)) val = 1;
+			console.log(val)
+			this._value = val;
+			handlerDom.style().add("left", val*(btn.html.clientWidth-18)+"px");
+			if(callback) callback(...arguments);
+
+		}.bind(this))
+		this.event("mouseup", function(e, btn){
+			mouseIsPressed = false;
+		}.bind(this))
 	}
 
 	get value(){
