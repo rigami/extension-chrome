@@ -127,6 +127,12 @@
 }
 .gui-slider:not(.gui-disabled):hover .gui-slider-handler{
     background-color: var(--second-bg-color-hover);    
+}/*
+.gui-slider:not(.gui-disabled):active .gui-slider-handler-container{
+    background-color: var(--main-bg-color-light-hover);
+}*/
+.gui-slider:not(.gui-disabled):active .gui-slider-handler{
+    background-color: var(--main-bg-color-hover);    
 }
 .gui-slider.gui-disabled{
     opacity: .5;

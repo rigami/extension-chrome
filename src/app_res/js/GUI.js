@@ -150,35 +150,48 @@ class Slider extends GUI{
 					.class("gui-slider-handler-container")
 					.append(handlerDom)
 					.event("mousedown", function(e){
-						//console.log(e)
+						console.log("Click on handler")
+						console.log(e.clientX);
+						handlerOffsetX = e.clientX;
 					}.bind(this))
 			);	
 
-		var mouseIsPressed = false;	
-		this.event("mousedown", function(e, btn){
-			mouseIsPressed = true;
-			let val = 0;
-			if(e.offsetX > 9) val = (e.offsetX-9)/(btn.html.clientWidth-18);
-			if(e.offsetX >= (btn.html.clientWidth-9)) val = 1;
-			console.log(val)
-			this._value = val;
-			handlerDom.style().add("left", val*(btn.html.clientWidth-18)+"px");
-			//if(callback) callback(...arguments);
-		}.bind(this))
-		this.event("mousemove", function(e, btn){
-			if(!mouseIsPressed) return;
-			let val = 0;
-			if(e.offsetX > 9) val = (e.offsetX-9)/(btn.html.clientWidth-18);
-			if(e.offsetX >= (btn.html.clientWidth-9)) val = 1;
-			console.log(val)
-			this._value = val;
-			handlerDom.style().add("left", val*(btn.html.clientWidth-18)+"px");
-			if(callback) callback(...arguments);
+		var mouseIsPressed = false;
 
-		}.bind(this))
+		var ths = this;
+
+		var offestX = 0;
+
+		var handlerOffsetX = 0;
+
+		this.event("mousedown", function(e, btn){
+			//console.log("Click on sliedr")
+			mouseIsPressed = true;
+			addEventListener("mousemove", moveHandler, false);
+			addEventListener("mouseup", endMoveHandler, false);
+			offestX = e.clientX - e.offsetX;
+			moveHandler(e);
+		}.bind(this));
 		this.event("mouseup", function(e, btn){
-			mouseIsPressed = false;
+			
 		}.bind(this))
+
+		function moveHandler(e){
+			let val = 0;
+			if(e.clientX - offestX > 9) val = (e.clientX - offestX-9)/(ths.html.clientWidth-18);
+			console.log(handlerOffsetX - offestX)
+			if(e.clientX - offestX >= (ths.html.clientWidth-9)) val = 1;
+			console.log(ths._value*(ths.html.clientWidth-18)>=val*(ths.html.clientWidth-18), ths._value*(ths.html.clientWidth-18)<=val*(ths.html.clientWidth))
+			ths._value = val;
+			handlerDom.style().add("left", val*(ths.html.clientWidth-18)+"px");
+
+			if(callback) callback(e, ths);
+		}
+		function endMoveHandler(e){
+			mouseIsPressed = false;
+			removeEventListener("mousemove", moveHandler, false);
+			removeEventListener("mouseup", endMoveHandler, false);
+		}
 	}
 
 	get value(){

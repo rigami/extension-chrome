@@ -11,10 +11,10 @@ function Core(){
 			else btn.class().remove("gui-second-style");
 		}),
 		checkbox: Checkbox.create((e, btn)=>{console.log("Checkbox value: ", btn.checked)}),
-		slider: Slider.create((e, btn)=>{console.log(btn.value); sliderValue.content(btn.value)})
+		slider: Slider.create((e, btn)=>{sliderValue.content(Math.round(btn.value*100)/100+"%)")})
 	}
 
-	let sliderValue = UI.create("span").content("0");
+	let sliderValue = UI.create("span").content("0%)");
 
 	this.page
 		.append(
@@ -43,7 +43,7 @@ function Core(){
 		)
 		.append(
 			UI.create()
-				.append(UI.create("h2").append("Slider (value: ").append(sliderValue).append("%)"))
+				.append(UI.create("h2").append("Slider (value: ").append(sliderValue)/*.append("%)")*/)
 				.append(elements.slider)
 		)
 }
