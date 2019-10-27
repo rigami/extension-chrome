@@ -1,15 +1,50 @@
-var app = null;
-pageIsLoad = false;
+import Button from "./GUI/Button.js";
+import Checkbox from "./GUI/Checkbox.js";
+import UI from "./GUI/coreUI.js";
+import SettingsRow from "./components/SettingsRow.js";
+import Store from "./stores/lightStore.js";
 
-new Localization(localStorage.getItem("language")? localStorage.getItem("language") : navigator.language.substring(3))
-	.onload(function(){
-		app = new Core();
-		app.initialization();
-	})
-	.onerror(function(){
-		console.error("Error set language");
-	});
 
-window.onload = function(){
-	pageIsLoad = true;
-}
+let [counter, setCounter, addCounterListener] = new Store(0, true);
+
+new UI(document.body)
+	.append(
+		SettingsRow.create({
+			title: "Test settings row stand",
+			subtitle: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis et elit lacus.
+			 Phasellus vel malesuada erat. Sed eget sem lobortis, mollis dui et, dictum diam. Phasellus ut aliquam nisl.
+			  Maecenas ultricies metus id ante tincidunt, non mollis augue imperdiet. Etiam convallis nisi ac lacus pulvinar sollicitudin. 
+			  Mauris ut risus at turpis posuere volutpat eget eu nunc. Sed non viverra sem.`
+		})
+	)
+	.append(
+		SettingsRow.create({
+			title: "Button test stand",
+			subtitle: ()=>{
+				let counterDom = UI.create("p");
+
+				addCounterListener(value => {
+					counterDom.content(`This is button. Button clicked ${value} times`)
+				}, true);
+
+				return counterDom;
+			},
+			action: Button.create({
+				label: "Test ripple effect",
+				onclick: () => {
+					setCounter(value => value+1);
+				}
+			}),
+			isRipple: false
+		})
+	)
+	.append(
+		SettingsRow.create({
+			title: "Checkbox test stand",
+			subtitle: "This is checkbox",
+			action: Checkbox.create({
+
+			}),
+			isRipple: false
+		})
+	)

@@ -1,0 +1,23 @@
+:root{
+    --bg-main: #fff;
+    --bg-second: #fff;
+
+    --gui-main: #2675F0;
+    --gui-main-light: #CFE1FC;
+    --gui-second: #545454;
+    --gui-second-light: #E5E5E5;
+
+    --gui-main-hover: #5e99f4;
+    --gui-main-light-hover: #dfebfd;
+    --gui-second-hover: #868686;
+    --gui-second-light-hover: #efefef;
+
+    --ripple-gui-main: #fff;
+    --ripple-gui-second: #fff;
+    --ripple-bg-main: #bbbbbb;
+    --ripple-bg-second: #bbbbbb;
+
+	--text-light: #fff;
+
+	--font-size-normal: 15px;
+}

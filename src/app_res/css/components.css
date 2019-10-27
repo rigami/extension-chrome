@@ -1,0 +1,22 @@
+.settings-row{
+	padding: 15px;
+	width: 100%;
+	display: flex;
+	box-sizing: border-box;
+}
+.settings-row_text{
+	flex-grow: 1;
+}
+.settings-row_text *{
+	margin: 0;
+}
+.settings-row_text p{
+	margin-top: 7px;
+	color: #6B6B6B;
+}
+.settings-row_action{
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	padding-left: 15px;
+}

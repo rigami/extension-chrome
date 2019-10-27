@@ -1,4 +1,4 @@
-# Specify filepatterns you want git to ignore.
+# Sp-modulesecify filepatterns you want git to ignore.
 
-Versions/
+node_modules
 temporary files/
