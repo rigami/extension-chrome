@@ -189,17 +189,27 @@
     top: 28px;
     left: 0;
     right: 0;
-    max-height: 240px;
     z-index: 1;
-    box-shadow: 0 2px 11px #0000001c;
     border-radius: 2px;
+    overflow: hidden;
+    height: 0px;
+    background-color: white;
+    transition: .3s ease;
+}
+.gui-dropdown-list-scroll-helper{
+    display: block;
+    padding: 5px 0;
+    max-height: 210px;
     overflow: auto;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
 }
 .gui-dropdown-list{
     padding: 0;
-    margin: 5px 0px;
+    margin: 0;
     width: 100%;
-    background-color: white;
 }
 .gui-dropdown-list-li{
     list-style-type: none;
@@ -210,6 +220,11 @@
     white-space: nowrap;
     padding: 0 15px;
 }
+
+.gui-dropdown-list-container.open{
+    box-shadow: 0 2px 11px #0000001c;    
+}
+
 .gui-dropdown:not(.gui-disabled) .gui-dropdown-select-value-container:hover{
     background-color: var(--gui-second-light-hover);
 }

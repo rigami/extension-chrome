@@ -14,10 +14,8 @@ class List extends UI{
 	constructor(list){
 		super();
 
-		this._namespace = List.getNamespace();
-
-		this._list = UI.create().class()
-				.add(List.getNamespace("container"))
+		this._list = UI.create("ul")
+			.class(List.getNamespace())
 			.append(
 				list.map(el => UI.create("li")
 					.class(List.getNamespace("li"))
@@ -27,26 +25,32 @@ class List extends UI{
 					})
 				)
 			)
+
+		this._srollHelper = UI.create()
+			.class(List.getNamespace("scroll-helper"))
+			.append(this._list)
 
 		this.class()
 				.add(List.getNamespace("container"))
-			.append(
-				list.map(el => UI.create("li")
-					.class(List.getNamespace("li"))
-					.content(el.label)
-					.event("click", () => {
-
-					})
-				)
-			)
+			.append(this._srollHelper)
 	}
 
 	open = () => {
-		console.log(this)
+		this.class()
+				.add("open")
+			.style()
+				.add("height", this._srollHelper.html.clientHeight+"px");
+	}
+
+	close = () => {
+		this.class()
+				.add("clsoe")
+			.style()
+				.remove("height");
 	}
 
 	static getNamespace(className){
-		return GUI.getNamespace("dropdown-list")+(className? "-"+className : "");
+		return Dropdown.getNamespace("list")+(className? "-"+className : "");
 	}
 }
 
@@ -79,13 +83,14 @@ class Dropdown extends GUI{
 		this._isOpen = false;
 
 		let listDOM = new List(list);
-		listDOM.open()
 		let openButton = new OpenButton({
 			list,
 			isRipple,
 			defaultValue,
 			onclick: () => {
 				this._isOpen = !this._isOpen;
+				if(this._isOpen) listDOM.open();
+				else listDOM.close();
 			}
 		});
 
