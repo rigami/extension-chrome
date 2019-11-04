@@ -137,8 +137,11 @@ class UI{
 				this._root._dom.innerHTML += content;
 			}else{
 				content = typeof content == "function"? content() : content;
-				content = content.html || content;
-				this._root._dom.appendChild(content);
+				if(content.forEach){
+					content.forEach(el => this._root._dom.appendChild(el.html || el));
+				}else{
+					this._root._dom.appendChild(content.html || content);					
+				}
 			}
 			if(this._root._customEvents["appendcontent"]) this._root._dom.dispatchEvent(this._root._customEvents["appendcontent"]);
 		}		

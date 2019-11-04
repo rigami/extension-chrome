@@ -29,8 +29,7 @@ class RippleCircle extends UI{
 
 		setTimeout(() => {
 			this.style()
-					.add("transform", `translate(${-this.radius}px, ${-this.radius}px) scale(${.8})`)
-					.add("opacity", .25)
+					.add("transform", `translate(${-this.radius}px, ${-this.radius}px) scale(${1})`)
 		}, 50);
 	}
 
@@ -42,8 +41,8 @@ class RippleCircle extends UI{
 				.add("opacity", "0")
 
 		setTimeout(() => {
-			this.destroy();
-		}, 900);
+			//this.destroy();
+		}, 1000);
 	}
 
 	static create(){
@@ -52,7 +51,7 @@ class RippleCircle extends UI{
 }
 
 class Ripple extends UI{
-	constructor(){
+	constructor(parent){
 		super("span");
 
 		this._namespace = Ripple.getNamespace("root");
@@ -61,12 +60,20 @@ class Ripple extends UI{
 		this.circleProcess = null;
 
 		this.class().add(this._namespace);
+
+		if(parent){
+			parent.event()
+					.add("mousedown", (e) => this.start(e))
+				.class()
+					.add(this._namespaceRoot)
+				.append(this)
+		}
 	}
 
 	start(e){
 		this.circleProcess = RippleCircle.create({
-			x: e.clientX,
-			y: e.clientY,
+			x: e.clientX || this.html.getBoundingClientRect().x+e.rippleX,
+			y: e.clientY || this.html.getBoundingClientRect().y+e.rippleY,
 			width: this.html.clientWidth,
 			height: this.html.clientHeight,
 			rootY: this.html.getBoundingClientRect().y,

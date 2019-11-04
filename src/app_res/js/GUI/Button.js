@@ -11,13 +11,7 @@ class Button extends GUI{
 		if(label) this.append().text(label);
 		if(onclick) this.event().add("click", onclick);
 		
-		if(isRipple){
-			this._ripple = Ripple.create().insert(this);
-
-			this.event().add("mousedown", (e) => this._ripple.start(e));
-
-			this.class().add(this._ripple._namespaceRoot);
-		}
+		if(isRipple) Ripple.create(this);
 	}
 
 	static getNamespace(className){

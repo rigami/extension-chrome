@@ -6,13 +6,9 @@ class SettingsRow extends UI{
 		super(component);
 
 		this._namespace = SettingsRow.getNamespace();
-		if(isRipple){
-			this._ripple = Ripple.create().insert(this);
+		if(isRipple) Ripple.create(this);
 
-			this.event().add("mousedown", (e) => this._ripple.start(e));
-
-			this.class().add(this._ripple._namespaceRoot);
-		}
+		this.onClickListener = null;
 
 		this.class()
 			.add(this._namespace)
@@ -29,8 +25,12 @@ class SettingsRow extends UI{
 			.append(
 				action && UI.create()
 					.class(SettingsRow.getNamespace("action"))
-					.append(action)
+					.append(typeof action === "function"? action((onClickListener)=>{
+						this.onClickListener = onClickListener;
+					}) : action)
 			)
+			.event()
+				.add("click", () => {if(this.onClickListener) this.onClickListener()})
 	}
 
 	static getNamespace(className){

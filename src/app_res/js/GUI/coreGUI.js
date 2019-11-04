@@ -1,10 +1,18 @@
 import UI from "./coreUI.js";
 
 class GUI extends UI{
-	constructor(){
-		super(...arguments);
-		this._hintText = "";
-		this._enabled = true;
+	constructor(props = {}){
+
+		const {
+			enabled = true,
+			hintText = "",
+			UIProps
+		} = props;
+
+		super(UIProps);
+
+		this._hintText = hintText;
+		this._enabled = enabled;
 	}
 
 	get enabled(){
