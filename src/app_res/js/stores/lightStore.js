@@ -10,8 +10,8 @@ class Store{
 		return this._value;
 	}
 
-	setValue = (mutationCallback) => {
-		this._value = mutationCallback(this._value);
+	setValue = (mutationCallbackOrValue) => {
+		this._value = typeof mutationCallbackOrValue === 'function'? mutationCallbackOrValue(this._value) : mutationCallbackOrValue;
 		this._listeners.forEach(listener => listener(this._value));		
 	}
 

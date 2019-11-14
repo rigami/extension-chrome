@@ -1,16 +1,19 @@
 .gui-ripple-parent{
     position: relative;
 }
+.gui-ripple-root-no-overflow,
 .gui-ripple-root{
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    overflow: hidden;
     border-radius: inherit;
     pointer-events: none;
     z-index: 0;
+}
+.gui-ripple-root{
+    overflow: hidden;
 }
 .gui-ripple-circle{
     position: absolute;
@@ -18,8 +21,13 @@
     border-radius: 50%;
     transform-origin: center;
     opacity: .5;
+    pointer-events: none;
     transition: .4s ease,
                 opacity .46s cubic-bezier(0.58, 0.41, 0.86, 0.4);
+}
+.gui-ripple-circle_fast{
+    transition: .3s ease,
+                opacity .3s cubic-bezier(0.58, 0.41, 0.86, 0.4);
 }
 .gui-ripple-circle_hold{
     transition: 1s ease,
@@ -39,13 +47,41 @@
     font-weight: 600;
     cursor: pointer;
     transition: background-color .3s ease,
-    			color .3s ease;
+    			color .3s ease,
+                transform .3s ease;
+}
+.gui-button-only-icon{
+    padding: 10px;
+}
+.gui-button-icon-only,
+.gui-button-icon{
+    fill: var(--text-light);
+    width: 22px;
+    display: block;
+}
+.gui-button-icon{    
+    height: 100%;
+    position: absolute;
+    left: 30px;
+    top: 0;
+}
+.gui-button-icon-only{
+    height: 22px;
+}
+.gui-button-icon-helper-text{
+    margin-left: 30px;
 }
 .gui-button .gui-ripple-circle{
     background-color: var(--ripple-gui-main);    
 }
 .gui-button:not(.gui-disabled):hover{
     background-color: var(--gui-main-hover);
+}
+.gui-button:not(.gui-disabled):active{
+    transform: scale(.98);
+    transition: background-color .3s ease,
+                color .3s ease,
+                transform .08s ease;  
 }
 .gui-button.gui-second-style{
 	background-color: var(--gui-second);
@@ -159,7 +195,7 @@
 }
 
 .gui-dropdown{
-    height: 28px;
+    height: 34px;
     width: 226px;
     position: relative;
     cursor: pointer;
@@ -168,7 +204,7 @@
     height: 100%;
     width: 100%;
     position: absolute;    
-    border-radius: 2px;    
+    border-radius: 3px;    
     background-color: var(--gui-second-light); 
     transition: background-color .3s ease;
 }
@@ -181,16 +217,27 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 28px;
+    line-height: 34px;
     text-align: center;
+}
+.gui-dropdown-select-value--arrow-icon{
+    position: absolute;
+    right: 5px;
+    height: 34px;
+    width: 22px;
+    fill: var(--gui-second);
+    transition: .3s cubic-bezier(0.79, 0.01, 0.15, 1.02);
+}
+.gui-dropdown.open .gui-dropdown-select-value--arrow-icon{
+    transform: rotate(180deg);
 }
 .gui-dropdown-list-container{
     position: absolute;
-    top: 28px;
+    top: 34px;
     left: 0;
     right: 0;
     z-index: 1;
-    border-radius: 2px;
+    border-radius: 0 0 4px 4px;
     overflow: hidden;
     height: 0px;
     background-color: white;
@@ -213,16 +260,40 @@
 }
 .gui-dropdown-list-li{
     list-style-type: none;
-    height: 25px;
-    line-height: 25px;
+    height: 30px;
+    line-height: 30px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: flex;
     padding: 0 15px;
 }
+.gui-dropdown-list-li-no-panning{
+    padding: 0;    
+    padding-right: 15px;
+}
+.gui-dropdown-list-check-icon{
+    width: 20px;
+    height: 30px;
+    margin: 0 8px;
+    visibility: hidden;
+    fill: var(--gui-main);
+}
+.gui-dropdown-list-li.selected .gui-dropdown-list-check-icon{
+    visibility: visible;
+}
+.gui-dropdown-list-li .gui-ripple-circle{
+    background-color: var(--gui-main);    
+}
+/*.gui-dropdown-list-li.selected .gui-ripple-circle{
+    background-color: var(--ripple-gui-main);    
+}*/
 
 .gui-dropdown-list-container.open{
     box-shadow: 0 2px 11px #0000001c;    
+}
+.gui-dropdown.open .gui-dropdown-select-value-container{ 
+    border-radius: 3px 3px 0 0;       
 }
 
 .gui-dropdown:not(.gui-disabled) .gui-dropdown-select-value-container:hover{
@@ -230,4 +301,57 @@
 }
 .gui-dropdown-list-li:hover{
     background-color: var(--gui-main-light-hover);
+}
+
+.gui-input{
+    position: relative;
+    z-index: 0;
+}
+.gui-input-title{
+    position: absolute;
+    font-size: var(--font-size-normal);
+    top: 9px;
+    left: 16px;
+    pointer-events: none;
+    transition: .2s cubic-bezier(.09, 0, .09, 1);
+    transform-origin: bottom left;
+    z-index: 2;
+    color: var(--gui-second);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 32px);
+}
+.gui-input.focus .gui-input-title,
+.gui-input.active .gui-input-title{
+    transform: translateY(-20px) scale(.75);
+}
+.gui-input-input{
+    padding: 9px 16px;
+    border: 1px solid var(--gui-second);
+    border-radius: 5px;
+    font: inherit;
+    font-size: var(--font-size-normal);
+    outline: none;
+}
+.gui-input.focus .gui-input-input{
+    border: 1px solid var(--gui-main);
+}
+.gui-input.focus .gui-input-title{
+    color: var(--gui-main);
+}
+.gui-input-title-helper-container{
+    position: absolute;
+    top: 0;
+    left: 11px;
+    height: 1px;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1;
+}
+.gui-input-title-helper{
+    height: 100%;
+    background-color: var(--bg-main);
+    transition: .2s ease;
 }

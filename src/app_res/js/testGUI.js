@@ -2,12 +2,19 @@ import Button from "./GUI/Button.js";
 import Checkbox from "./GUI/Checkbox.js";
 import Slider from "./GUI/Slider.js";
 import Dropdown from "./GUI/Dropdown.js";
+import Input from "./GUI/Input.js";
 import UI from "./GUI/coreUI.js";
 import SettingsRow from "./components/SettingsRow.js";
 import Store from "./stores/lightStore.js";
+import { Settings as SettingsIcon } from "./Icons/Icons.js";
 
+import LOC from "../lang/RU.js";
+
+console.log(LOC)
 
 let [counter, setCounter, addCounterListener] = new Store(0, true);
+let [sliderValue, setSliderValue, addSliderValueListener] = new Store(.5, true);
+let [inputValue, setInputValue, addInputValueListener] = new Store('', true);
 
 new UI(document.body)
 	.append(
@@ -42,6 +49,28 @@ new UI(document.body)
 	)
 	.append(
 		SettingsRow.create({
+			title: "Button with icon",
+			action: Button.create({
+				icon: SettingsIcon,
+				label: "Test ripple effect",
+			}),
+			isRipple: false
+		})
+	)
+	.append(
+		SettingsRow.create({
+			title: "Button only icon",
+			action: Button.create({
+				icon: SettingsIcon,
+				onclick: () => {
+					setCounter(value => value+1);
+				}
+			}),
+			isRipple: false
+		})
+	)
+	.append(
+		SettingsRow.create({
 			title: "Checkbox test stand",
 			subtitle: "This is checkbox",
 			action: (onclick) => {
@@ -50,7 +79,6 @@ new UI(document.body)
 				});
 
 				onclick(() => {
-					console.log(checkbox.checked)
 					checkbox.setValue(!checkbox.checked);
 				});
 
@@ -61,9 +89,18 @@ new UI(document.body)
 	.append(
 		SettingsRow.create({
 			title: "Slider test stand",
-			subtitle: "This is slider",
-			action: Slider.create({
+			subtitle: ()=>{
+				let counterDom = UI.create("p");
 
+				addSliderValueListener(value => {
+					counterDom.content(`This is slider. Slider value: ${Math.round(value*100)}%`)
+				}, true);
+
+				return counterDom;
+			},
+			action: Slider.create({
+				value: sliderValue,
+				onchange: setSliderValue
 			}),			
 			isRipple: false
 		})
@@ -105,7 +142,42 @@ new UI(document.body)
 					{value: "item_3", label: "Item 3"},
 					{value: "item_4", label: "Item 4"},
 					{value: "item_5", label: "Item 5"}
-				]
+				],
+				onchange: (values, changeValue, dropdown) => {
+					//console.log(values, changeValue)
+				},
+				labelFormat: (list, selectedValues) => {
+					let labels = list.filter(el => selectedValues[el.value]).map(el => el.label);
+
+					if(labels.length === list.length) return "All";
+
+					if(labels.length > 1){
+						labels = labels.slice(0, labels.length-1).join(", ")+" and "+labels[labels.length-1];
+					}else{
+						labels = labels.join(", ");
+					}
+
+					return labels || "No selected";
+				}
+			}),			
+			isRipple: false
+		})
+	)
+	.append(
+		SettingsRow.create({
+			title: "Input test stand",
+			subtitle: ()=>{
+				let counterDom = UI.create("p");
+
+				addInputValueListener(value => {
+					counterDom.content(`This input. Input value: '${value}'`)
+				}, true);
+
+				return counterDom;
+			},
+			action: Input.create({
+				title: "Input test",
+				onchange: setInputValue
 			}),			
 			isRipple: false
 		})

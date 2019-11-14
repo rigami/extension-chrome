@@ -1,8 +1,8 @@
 import UI from "./coreUI.js";
 import GUI from "./coreGUI.js";
 
-class RippleCircle extends UI{
-	constructor({x, y, width, height, rootX, rootY}){
+class Circle extends UI{
+	constructor({x, y, width, height, rootX, rootY, fast = false}){
 		super("div");
 
 		this._namespace = Ripple.getNamespace("circle");
@@ -12,8 +12,8 @@ class RippleCircle extends UI{
 		this.startX = x - rootX;
 		this.startY = y - rootY;
 
-		let maxRadiusX = Math.max(width - this.startX, this.startX);
-		let maxRadiusY = Math.max(height - this.startY, this.startY);
+		let maxRadiusX = Math.max(width*(fast? 1.25 : 1) - this.startX, this.startX);
+		let maxRadiusY = Math.max(height*(fast? 1.25 : 1) - this.startY, this.startY);
 
 		this.radius =  Math.sqrt(maxRadiusX*maxRadiusX + maxRadiusY*maxRadiusY);
 
@@ -24,7 +24,7 @@ class RippleCircle extends UI{
 				.add("height", `${this.radius*2}px`)
 				.add("transform", `translate(${-this.radius}px, ${-this.radius}px) scale(${0})`)
 			.class()
-				.add(this._namespace+"_hold")
+				.add(this._namespace+fast? "_fast" : "_hold")
 
 
 		setTimeout(() => {
@@ -35,18 +35,19 @@ class RippleCircle extends UI{
 
 	end(){
 		this.class()
+				.remove(this._namespace+"_fast")
 				.remove(this._namespace+"_hold")
 			.style()
 				.add("transform", `translate(${-this.radius}px, ${-this.radius}px) scale(${1})`)
 				.add("opacity", "0")
 
 		setTimeout(() => {
-			//this.destroy();
+			this.destroy();
 		}, 1000);
 	}
 
 	static create(){
-		return new RippleCircle(...arguments);
+		return new Circle(...arguments);
 	}
 }
 
@@ -58,10 +59,10 @@ class Ripple extends UI{
 		this._namespaceRoot = Ripple.getNamespace("parent");
 		this._namespaceCircle = Ripple.getNamespace("circle");
 		this.circleProcess = null;
-
-		this.class().add(this._namespace);
+		this.parent = parent;
 
 		if(parent){
+			this.class().add(this._namespace);
 			parent.event()
 					.add("mousedown", (e) => this.start(e))
 				.class()
@@ -71,7 +72,7 @@ class Ripple extends UI{
 	}
 
 	start(e){
-		this.circleProcess = RippleCircle.create({
+		this.circleProcess = Circle.create({
 			x: e.clientX || this.html.getBoundingClientRect().x+e.rippleX,
 			y: e.clientY || this.html.getBoundingClientRect().y+e.rippleY,
 			width: this.html.clientWidth,
@@ -100,6 +101,8 @@ class Ripple extends UI{
 	static getNamespace(className){
 		return GUI.getNamespace("ripple")+(className? "-"+className : "");
 	}
+
+	static _circle = Circle;
 
 	static create(){
 		return new Ripple(...arguments);

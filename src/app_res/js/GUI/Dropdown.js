@@ -1,30 +1,56 @@
 import GUI from "./coreGUI.js";
 import UI from "./coreUI.js";
 import Ripple from "./Ripple.js";
-
-function getValue(list, searchValue) {
-	let findValue = list.find((li) => li.value == searchValue);
-
-	findValue = findValue? findValue.value : findValue;
-
-	return findValue || 'No select value';
-}
+import {
+	ArrowDown as ArrowDownIcon,
+	Check as CheckIcon
+} from "../Icons/Icons.js";
 
 class List extends UI{
-	constructor(list){
+	constructor({list, preventClose, onselect, isMultiple = false}){
 		super();
+
+		let selectedValues = {};
+
+		function SimpleLi(el, index){
+			return UI.create("li")
+				.class(List.getNamespace("li"))
+				.content(el.label)
+				.event("click", () => {
+					if(selectedValues && list[selectedValues.index]) list[selectedValues.index].class().remove('selected');
+					list[index].class().add('selected');
+					selectedValues = {value: el.value, index};
+					onselect(el.value, el);
+				}).add("mousedown", preventClose)
+		}
+
+		function CheckboxLi(el){
+			return UI.create("li")
+				.class(List.getNamespace("li"))
+					.add(List.getNamespace("li-no-panning"))
+				.append(CheckIcon.create({
+					class: List.getNamespace("check-icon")
+				}))
+				.append(
+					UI.create("span").content(el.label)
+				)
+				.event("click", (e, ths) => {
+					if(selectedValues[el.value]){
+						delete selectedValues[el.value];
+						ths.class().remove('selected');
+					}else{
+						selectedValues[el.value] = el.value;
+						ths.class().add('selected');
+					}
+					onselect(selectedValues, el.value);
+				}).add("mousedown", preventClose)
+		}
+
+		list = list.map((el, i) => Ripple.create(isMultiple? CheckboxLi(el) : SimpleLi(el, i)).parent);
 
 		this._list = UI.create("ul")
 			.class(List.getNamespace())
-			.append(
-				list.map(el => UI.create("li")
-					.class(List.getNamespace("li"))
-					.content(el.label)
-					.event("click", () => {
-
-					})
-				)
-			)
+			.append(list)
 
 		this._srollHelper = UI.create()
 			.class(List.getNamespace("scroll-helper"))
@@ -44,7 +70,7 @@ class List extends UI{
 
 	close = () => {
 		this.class()
-				.add("clsoe")
+				.remove("open")
 			.style()
 				.remove("height");
 	}
@@ -55,19 +81,27 @@ class List extends UI{
 }
 
 class OpenButton extends UI{
-	constructor({list, isRipple = true, onclick, defaultValue}){
+	constructor({onclick, onmousedown, defaultLabel}){
 		super();
 
-		if(isRipple) Ripple.create(this);
+		Ripple.create(this);
+
+		this._label = UI.create("span")
+			.class(OpenButton.getNamespace())
+			.content(defaultLabel)
 
 		this.class()
 				.add(OpenButton.getNamespace("container"))
-			.append(
-				UI.create("span")
-					.class(OpenButton.getNamespace())
-					.content(getValue(list, defaultValue))
-			)
+			.append(this._label)
+			.append(ArrowDownIcon.create({
+				class: OpenButton.getNamespace("-arrow-icon")
+			}))
 			.event("click", onclick)
+			.event("mousedown", onmousedown)
+	}
+
+	changeLabel = (newLabel) => {
+		this._label.content(newLabel);
 	}
 
 	static getNamespace(className){
@@ -76,31 +110,89 @@ class OpenButton extends UI{
 }
 
 class Dropdown extends GUI{
-	constructor({onchange, isRipple = true, isMultiple = false, list = [], defaultValue = null}){
+	constructor({onchange, isMultiple = false, list = [], defaultValue = null, labelFormat = null}){
 		super("div");
 
 		this._namespace = Dropdown.getNamespace();
 		this._isOpen = false;
+		this._selectValue = isMultiple && !defaultValue? {} : defaultValue;
+		this._preventClose = () => {
+			window.removeEventListener("mousedown", listenerCallback, false);
+		}
+		this._setCloseListener = () => {
+			window.addEventListener("mousedown", listenerCallback, false);
+			window.addEventListener("mouseup", restoreListenerCallback, false);
+		}
 
-		let listDOM = new List(list);
-		let openButton = new OpenButton({
+		let ths = this;
+
+		this._listDOM = new List({
 			list,
-			isRipple,
-			defaultValue,
-			onclick: () => {
-				this._isOpen = !this._isOpen;
-				if(this._isOpen) listDOM.open();
-				else listDOM.close();
+			preventClose: this._preventClose,
+			isMultiple,
+			onselect: (valueOrValues, elementOrChangeValue) => {
+				this._selectValue = valueOrValues;
+				openButton.changeLabel((labelFormat || Dropdown.getLabel)(list, valueOrValues));
+				if(!isMultiple){
+					this.close();
+					if(onchange) onchange(valueOrValues, elementOrChangeValue);
+				}else{
+					if(onchange) onchange(list.filter(el => valueOrValues[el.value]).map(el => el.value), elementOrChangeValue);
+				}
 			}
+		});
+		let openButton = new OpenButton({
+			defaultLabel: (labelFormat || Dropdown.getLabel)(list, this._selectValue),
+			onclick: () => {
+				if(!this._isOpen) this.open();
+				else this.close();
+			},
+			onmousedown: this._preventClose
 		});
 
 		this.class()
 				.add(this._namespace)
 			.append(openButton)
-			.append(
-				listDOM
-			)
+			.append(this._listDOM);
+
+		function listenerCallback(){
+			window.removeEventListener("mousedown", listenerCallback, false);
+			ths.close();
+		}
+
+		function restoreListenerCallback(){
+			window.removeEventListener("mouseup", restoreListenerCallback, false);
+			if(ths._isOpen) ths._setCloseListener();
+		}
 	}
+
+	open = () => {
+		this.class().add("open");
+		this._listDOM.open();
+		this._isOpen = true;
+		this._setCloseListener();
+	}
+
+	close = () => {
+		this.class().remove("open");
+		this._listDOM.close();
+		this._isOpen = false;
+		this._preventClose();
+	}
+
+	static getLabel(list, searchValueOrValues) {
+		let findValue = '';
+		if(typeof searchValueOrValues === 'object'){
+			findValue = list.filter((li) => searchValueOrValues && searchValueOrValues[li.value]).map(el => el.label);
+			findValue = findValue.join(", ");
+		}else{
+			findValue = list.find((li) => li.value == searchValueOrValues);
+			findValue = findValue? findValue.label : findValue;
+		}
+		
+
+		return findValue || 'No select value';
+	}	
 
 	static getNamespace(className){
 		return GUI.getNamespace("dropdown")+(className? "-"+className : "");

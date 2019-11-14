@@ -1,37 +1,31 @@
 import GUI from "./coreGUI.js";
 import UI from "./coreUI.js";
-import Ripple from "./Ripple.js";
+import Ripple from "./RippleCircle.js";
 
 class Checkbox extends GUI{
-	constructor({onclick, isRipple = true, uncontrollable = false}){
+	constructor({onclick, uncontrollable = false}){
 		super("button");
 
 		this._checked = false;
 		this._uncontrollable = uncontrollable;
 		this._namespace = Checkbox.getNamespace();
 
-		if(isRipple){
-			this._ripple = Ripple.create();
-
-			this.event().add("mousedown", () => this._ripple.start({
-				rippleX: this._checked? 34 : 0,
-				rippleY: 5
-			}));
-
-			this.class().add(this._ripple._namespaceRoot);
-		}
+		this._ripple = Ripple.create();
 
 		this.class()
 				.add(this._namespace)
 			.append(
 				UI.create()
 					.class(Checkbox.getNamespace("handler-container"))
-					.append(this._ripple)
 					.append(
 						UI.create()
 							.class(Checkbox.getNamespace("handler"))
+								.add(this._ripple._namespaceRoot)
+							.append(this._ripple)
 					)
-			);	
+			)
+			.event()
+				.add("mousedown", (e) => this._ripple.start(e))
 
 		if(!this._uncontrollable)
 			this.event().add("click", () => {

@@ -1,38 +1,34 @@
 import GUI from "./coreGUI.js";
 import UI from "./coreUI.js";
-import Ripple from "./Ripple.js";
+import Ripple from "./RippleCircle.js";
 
 class Slider extends GUI{
-	constructor({onchange, isRipple = true}){
+	constructor({onchange, value = 0}){
 		super();
 
-		this._value = 0;
+		this._value = value;
 
-		if(isRipple){
-			this._ripple = Ripple.create();
+		this._ripple = Ripple.create();
 
-			this.event().add("mousedown", (e) => this._ripple.start({
-				rippleX: e.offsetX,
-				rippleY: 2
-			}));
+		var handlerDom = UI.create()
+				.class("gui-slider-handler")
+					.add(this._ripple._namespaceRoot)
+				.append(this._ripple)
+				.style()
+					.add("left", `${this._value*(226-18)}px`);
 
-			this.class().add(this._ripple._namespaceRoot);
-		}
-
-		var handlerDom = UI.create().class("gui-slider-handler");
-
-		this.class().add("gui-slider")
+		this.class()
+				.add("gui-slider")
 			.append(
 				UI.create()
 					.class("gui-slider-handler-container")
-					.append(this._ripple)
 					.append(handlerDom)
 					.event("mousedown", function(e){
-						console.log("Click on handler")
-						console.log(e.clientX);
 						handlerOffsetX = e.clientX;
 					}.bind(this))
-			);	
+			)
+			.event()
+				.add("mousedown", (e) => this._ripple.start());	
 
 		var mouseIsPressed = false;
 
@@ -61,9 +57,9 @@ class Slider extends GUI{
 			if(e.clientX - offestX >= (ths.html.clientWidth-9)) val = 1;
 			//console.log(ths._value*(ths.html.clientWidth-18)>=val*(ths.html.clientWidth-18), ths._value*(ths.html.clientWidth-18)<=val*(ths.html.clientWidth))
 			ths._value = val;
-			handlerDom.style().add("left", val*(ths.html.clientWidth-18)+"px");
+			handlerDom.style().add("left", `${val*(ths.html.clientWidth-18)}px`);
 
-			if(onchange) onchange(e, ths);
+			if(onchange) onchange(val, e, ths);
 		}
 		function endMoveHandler(e){
 			mouseIsPressed = false;
