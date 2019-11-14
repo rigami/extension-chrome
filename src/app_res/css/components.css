@@ -9,6 +9,7 @@
 }
 .settings-row_text *{
 	margin: 0;
+	word-break: break-word;
 }
 .settings-row_text p{
 	margin-top: 7px;

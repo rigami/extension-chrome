@@ -5,12 +5,13 @@ import Dropdown from "./GUI/Dropdown.js";
 import Input from "./GUI/Input.js";
 import UI from "./GUI/coreUI.js";
 import SettingsRow from "./components/SettingsRow.js";
-import Store from "./stores/lightStore.js";
+import Store from "./utils/Store.js";
 import { Settings as SettingsIcon } from "./Icons/Icons.js";
+import { setLocale, getValue as LOC} from "./utils/Locale.js";
 
-import LOC from "../lang/RU.js";
+setLocale("RU");
 
-console.log(LOC)
+console.log(LOC("hello_world"))
 
 let [counter, setCounter, addCounterListener] = new Store(0, true);
 let [sliderValue, setSliderValue, addSliderValueListener] = new Store(.5, true);

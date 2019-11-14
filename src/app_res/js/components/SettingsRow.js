@@ -16,10 +16,10 @@ class SettingsRow extends UI{
 				UI.create()
 					.class(SettingsRow.getNamespace("text"))
 					.append(
-						typeof title == "object"? title : UI.create("h2").append(title)
+						typeof title !== "string"? UI.create(title) : UI.create("h2").append(title)
 					)
 					.append(
-						typeof subtitle == "object"? subtitle : UI.create("p").append(subtitle)
+						typeof subtitle !== "string"? UI.create(subtitle) : UI.create("p").append(subtitle)
 					)
 			)
 			.append(

@@ -1,10 +1,22 @@
 class UI{
 	constructor(element){
-		if(typeof element === "object"){
+		if(
+			element instanceof UI
+			/*|| element instanceof UIClass
+			|| element instanceof UIStyle
+			|| element instanceof UIAttribute
+			|| element instanceof UIEvent
+			|| element instanceof UIAppend
+			|| element instanceof UIContent*/
+		){
+			return element;
+		}else if(typeof element === "function"){
+			return UI.create(element());
+		}else if(typeof element === "object"){
 			this._dom = element;
 		}else{
 			this._dom = document.createElement(element || "div");
-		}		
+		}			
 		this._customEvents = {};
 		this._root = this;
 	}
