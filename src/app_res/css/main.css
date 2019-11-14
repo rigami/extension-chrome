@@ -1,6 +1,40 @@
 body{
 	margin: 0;
-	padding: 15px;
 	font-family: "Fira Sans";
 	user-select: none;
+	height: 100vh;
+	overflow: hidden;
+}
+
+.home{
+	height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.heart{
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.heart svg{
+	transition: transform 1s ease;
+	cursor: pointer;
+}
+.heart:hover svg{
+	transform: scale(1.2);
+	transition: transform .3s ease;
+}
+.heart:active svg{
+	transform: scale(1.12);
+	transition: transform .1s ease;
+}
+.heart span{
+	position: absolute;
+	color: #fff;
+	font-weight: 900;
+	margin-bottom: 35px;
+	transition: opacity 0.2s ease;
 }
