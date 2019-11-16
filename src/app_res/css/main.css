@@ -1,6 +1,60 @@
 body{
 	margin: 0;
-	padding: 15px;
 	font-family: "Fira Sans";
 	user-select: none;
+	height: 100vh;
+	overflow: hidden;
+}
+.home{
+	height: 100%;
+}
+.home-background{
+	height: 100%;
+    width: 100%;
+    background-position: 50%;
+    background-size: cover;
+}
+.home-actionsbar {
+    position: absolute;
+    right: 24px;
+    bottom: 22px;
+    width: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    box-shadow: 0 1px 16px rgba(0, 0, 0, .28);
+    border-radius: 18px;
+}
+
+.home-action-button{
+	background-color: #fff;
+    width: 36px;
+    height: 36px;
+    padding: 7px;
+    border-radius: 50%;
+}
+.home-action-button:not(.gui-disabled):hover{
+	background-color: rgba(0, 0, 0, 0.15);
+}
+.home-action-button svg{
+	fill: #1F1F1F;
+}
+.home-action-button .gui-ripple-circle{
+    background-color: rgba(0, 0, 0, 0.34);    
+}
+.divider{
+	width: calc(100% - 10px);
+	height: 1px;
+	background-color: var(--gui-second);
+	border: none;
+    margin: 0 5px;
+}
+.divider.full-width{
+	width: 100%;
+	margin: 0;
+}
+.home-actionsbar .divider{
+	background-color: #E9E9E9;
+	margin: 2px 5px;
 }

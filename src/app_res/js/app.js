@@ -5,3 +5,6 @@ import UI from "./GUI/coreUI.js";
 import Home from "./pages/Home.js";
 
 setLocale("RU");
+
+UI.create(document.body)
+	.append(Home.create())

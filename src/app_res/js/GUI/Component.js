@@ -1,10 +1,10 @@
 import UI from "./coreUI.js";
 
 class Component extends UI{
-	constructor({namespace, component}){
+	constructor({namespace, component, parentClassName}){
 		super(component);
 
-		this._namespace = namespace;		
+		this._namespace = (parentClassName? parentClassName+"-" : "")+namespace;		
 	}
 
 	getNamespace(className){

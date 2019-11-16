@@ -3,15 +3,15 @@ import Ripple from "./Ripple.js";
 import UI from "./coreUI.js";
 
 class Button extends GUI{
-	constructor({label, icon, onclick, isRipple = true}){
+	constructor({label, icon, onclick, isRipple = true, namespace, iconProps = {}}){
 		super({UIProps: "button"});
 
 		this.class()
-			.add(Button.getNamespace())
-			.add(!label && icon? Button.getNamespace("only-icon") : "");
+			.add((namespace || Button).getNamespace())
+			.add(!label && icon? (namespace || Button).getNamespace("only-icon") : "");
 
-		if(icon) this.append(icon.create({ class: Button.getNamespace(label? "icon" : "icon-only") }))
-		if(label) this.append(icon? UI.create("span").class(Button.getNamespace("icon-helper-text")).content(label) : label);
+		if(icon) this.append(icon.create({ class: (namespace || Button).getNamespace(label? "icon" : "icon-only"), ...iconProps }))
+		if(label) this.append(icon? UI.create("span").class((namespace || Button).getNamespace("icon-helper-text")).content(label) : label);
 		if(onclick) this.event().add("click", onclick);
 		
 		if(isRipple) Ripple.create(this);
