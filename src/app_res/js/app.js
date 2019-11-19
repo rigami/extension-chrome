@@ -1,10 +1,13 @@
 import { setLocale, getValue as LOC} from "./utils/Locale.js";
-import Store from "./utils/Store.js";
+import lightTheme from "./themes/light.js";
+import { setTheme } from "./themes/style.js";
+
 import UI from "./GUI/coreUI.js";
 
 import Home from "./pages/Home.js";
 
 setLocale("RU");
+setTheme(lightTheme);
 
 UI.create(document.body)
-	.append(Home.create())
+	.append(Home())

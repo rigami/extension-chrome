@@ -1,26 +1,15 @@
 import Component from "../GUI/Component.js";
+import UI from "../GUI/coreUI.js";
+import { useStyles } from "../themes/style.js";
 
-class Background extends Component{
-	constructor(props){
-		super({
-			...props,
-			namespace: "background"
-		});
+function Background(){
+	const styles = useStyles({
+		height: "100%",
+		backgroundImage: `url(${"app_res/img/bg-test.png"})`
+	});	
 
-		this.class()
-				.add(this._namespace)
-			.style()
-				.add("background-image", `url(${"app_res/img/bg-test.png"})`)
-
-	}
-
-	static getNamespace(className){
-		return "background"+(className? "_"+className : "");
-	}
-
-	static create(){
-		return new Background(...arguments);
-	}
+	return UI.create()
+		.style(styles)
 }
 
 export default Background;

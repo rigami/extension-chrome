@@ -57,7 +57,11 @@ class UI{
 	}
 
 	style(stl){
-		if(stl) this._root._dom.style = stl;
+		if(stl){
+			if(typeof stl === "object"){
+				Object.keys(stl).forEach(key => this._root._dom.style[key] = stl[key]);
+			}else this._root._dom.style = stl;
+		}
 		let _root = this._root;
 
 		return new class UIStyle extends UI{
@@ -65,14 +69,24 @@ class UI{
 				super();
 				this._root = _root;
 			}
-			add(key, value){
-				if(key && value) _root._dom.style[key] = value;
-				else console.error("UI: Invalid arguments for add style method. Method should be called as 'add(name, value)'");
+			add(keyOrStl, value){
+				if(typeof keyOrStl === "object"){
+					Object.keys(keyOrStl).forEach(key => this._root._dom.style[key] = keyOrStl[key]);
+				}else{					
+					if(keyOrStl && value) _root._dom.style[keyOrStl] = value;
+					else console.error("UI: Invalid arguments for add style method. Method should be called as 'add(name, value)'");
+				}
 
 				return this;
 			}
-			remove(key){
-				if(key) _root._dom.style[key] = "";
+			remove(keyOrStl){
+				if(keyOrStl){
+					if(typeof keyOrStl === "object"){
+						Object.keys(keyOrStl).forEach(key => this._root._dom.style[key] = "");
+					}else{
+						_root._dom.style[keyOrStl] = "";
+					}
+				}				
 
 				return this;
 			}
@@ -150,9 +164,9 @@ class UI{
 			}else{
 				content = typeof content == "function"? content() : content;
 				if(content.forEach){
-					content.forEach(el => this._root._dom.appendChild(el.html || el));
+					content.forEach(el => this._root._dom.appendChild((el && el.render || el).html || el));
 				}else{
-					this._root._dom.appendChild(content.html || content);					
+					this._root._dom.appendChild((content && content.render || content).html || content);					
 				}
 			}
 			if(this._root._customEvents["appendcontent"]) this._root._dom.dispatchEvent(this._root._customEvents["appendcontent"]);

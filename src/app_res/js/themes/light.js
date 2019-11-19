@@ -1,0 +1,1 @@
+export { defaultTheme as default } from "./style.js";
