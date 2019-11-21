@@ -1,9 +1,74 @@
 import Component from "../GUI/Component.js";
 import UI from "../GUI/coreUI.js";
 import Button from "../GUI/Button.js";
+import SettingsRow from "../components/SettingsRow.js";
+import { getSafeValue as locale} from "../utils/Locale.js";
+import {
+	PhotoLibrary as PhotoLibraryIcon,
+	Toll as TollIcon
+} from "../Icons/Icons.js";
 
-import { useStyles } from "../themes/style.js";
+import { useStyles, useTheme } from "../themes/style.js";
 
+const linksConfig = {
+	settings: [
+		{
+			icon: () => RowIcon({icon: PhotoLibraryIcon, color: useTheme().palette.primary.main}),
+			label: locale("backgrounds_label"),
+			description: locale("backgrounds_description")
+		},
+		{
+			icon: () => RowIcon({icon: TollIcon, color: useTheme().palette.primary.main}),
+			label: locale("bookmarks_label"),
+			description: locale("bookmarks_description")
+		},
+		{
+			icon: () => RowIcon({icon: PhotoLibraryIcon, color: useTheme().palette.primary.main}),
+			label: locale("widgets_label"),
+			description: locale("widgets_description")
+		},
+		{
+			icon: () => RowIcon({icon: PhotoLibraryIcon, color: useTheme().palette.primary.main}),
+			label: locale("other_label"),
+			description: locale("other_description")
+		}		
+	],
+	others: [
+		{
+			icon: () => RowIcon({icon: PhotoLibraryIcon, color: "#9C27B0"}),
+			label: locale("about_label"),
+			description: locale("about_description")
+		}
+	]
+};
+
+function RowIcon({icon, color} = {}){
+	const styles = useStyles(theme => ({
+		wrapper: {
+			backgroundColor: color,
+			borderRadius: "50%",
+	    	padding: "11px"
+		}
+	}));
+
+	return UI.create()
+		.style(styles.wrapper)
+		.append(icon.create({size: 20, fill: "#fff", style: "display: block;"}))
+}
+
+function Divider({width = "middle"} = {}){
+	const styles = useStyles(theme => ({
+		width: width === "middle"? "calc(100% - 10px)" : "100%",
+		height: "1px",
+		backgroundColor: theme.palette.second.light,
+		border: "none",
+	    margin: `${theme.spacing(1)} 0`,
+		marginLeft: theme.spacing(6)
+	}));
+
+	return UI.create("hr")
+		.style(styles)
+}
 
 function SettingsContainer(){
 	const styles = useStyles(theme => ({		
@@ -21,6 +86,23 @@ function SettingsContainer(){
 		}
 	}));
 
+	let links = [];
+	let header;
+	let page;
+
+
+
+	Object.keys(linksConfig)
+		.forEach((section, i) => {
+			if(i) links.push(Divider())
+
+			linksConfig[section].forEach(link => links.push(SettingsRow.create({
+				icon: link.icon,
+				title: link.label,
+				subtitle: link.description
+			})));
+		});
+
 	this.open = () => {
 		this.render.style().remove(styles.hide).add(styles.stable);
 	};
@@ -28,12 +110,16 @@ function SettingsContainer(){
 		this.render.style().add(styles.hide);
 	};
 	this.render = UI.create()
-		.style({...styles.stable, ...styles.hide});
+		.style({...styles.stable, ...styles.hide})
+		.append(links)
+		.append(
+			UI.create()
+				.append(header)
+				.append(page)
+		)
 }
 
 function SettingsMenu(setIsOpenSettings){
-
-	console.log(setIsOpenSettings)
 	const styles = useStyles({
 		stable: {
 			position: "absolute",
