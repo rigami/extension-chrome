@@ -99,3 +99,41 @@ export class Refresh extends Icon{
 		return new Refresh(...arguments);
 	}
 }
+
+export class PhotoLibrary extends Icon{
+	constructor(props){
+		super({
+			props: {
+				...props,
+				viewBox: "0 0 24 24",
+			},
+			icon: 
+			`
+			<path d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-10.6-3.47l1.63 2.18 2.58-3.22c.2-.25.58-.25.78 0l2.96 3.7c.26.33.03.81-.39.81H9c-.41 0-.65-.47-.4-.8l2-2.67c.2-.26.6-.26.8 0zM2 7v13c0 1.1.9 2 2 2h13c.55 0 1-.45 1-1s-.45-1-1-1H5c-.55 0-1-.45-1-1V7c0-.55-.45-1-1-1s-1 .45-1 1z"/>
+			`
+		});
+	}
+
+	static create(){
+		return new PhotoLibrary(...arguments);
+	}
+}
+
+export class Toll extends Icon{
+	constructor(props){
+		super({
+			props: {
+				...props,
+				viewBox: "0 0 24 24",
+			},
+			icon: 
+			`
+			<path d="M15 4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zM3 12c0-2.39 1.4-4.46 3.43-5.42.34-.16.57-.47.57-.84v-.19c0-.68-.71-1.11-1.32-.82C2.92 5.99 1 8.77 1 12s1.92 6.01 4.68 7.27c.61.28 1.32-.14 1.32-.82v-.18c0-.37-.23-.69-.57-.85C4.4 16.46 3 14.39 3 12z"/>
+			`
+		});
+	}
+
+	static create(){
+		return new Toll(...arguments);
+	}
+}
