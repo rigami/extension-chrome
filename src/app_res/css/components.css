@@ -21,3 +21,7 @@
 	align-items: center;
 	padding-left: 15px;
 }
+.settings-row_icon{
+	padding: 3px;
+    padding-right: 18px;
+}

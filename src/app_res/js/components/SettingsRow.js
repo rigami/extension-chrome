@@ -2,7 +2,7 @@ import UI from "../GUI/coreUI.js";
 import Ripple from "../GUI/Ripple.js";
 
 class SettingsRow extends UI{
-	constructor({component = "li", isRipple = true, title, subtitle, action}){
+	constructor({component = "li", isRipple = true, icon, title, subtitle, action}){
 		super(component);
 
 		this._namespace = SettingsRow.getNamespace();
@@ -12,6 +12,11 @@ class SettingsRow extends UI{
 
 		this.class()
 			.add(this._namespace)
+			.append(
+				icon && UI.create()
+					.class(SettingsRow.getNamespace("icon"))
+					.append(icon)
+			)
 			.append(
 				UI.create()
 					.class(SettingsRow.getNamespace("text"))
