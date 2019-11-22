@@ -24,7 +24,7 @@ function Home(){
 		.style(styles)
 		.append(Background)
 		.append(observer({
-			element: () => new SettingsMenu(setIsOpenSettings),
+			element: () => new SettingsMenu({onClose: () => setIsOpenSettings(false)}),
 			mutation: (settings, isOpen, oldValue) => isOpen? setTimeout(settings.open, oldValue === null? 50 : 0) : settings.close(),
 			listener: addIsOpenSettingsValueListener
 		}))

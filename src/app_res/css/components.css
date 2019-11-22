@@ -9,11 +9,15 @@
 }
 .settings-row_text *{
 	margin: 0;
-	word-break: break-word;
+    word-break: break-word;
+    font-weight: 400;
+    font-size: 15px;
+    color: #000;
 }
 .settings-row_text p{
-	margin-top: 7px;
+	font-size: 13px;
 	color: #6B6B6B;
+	margin-top: 2px;
 }
 .settings-row_action{
 	flex-shrink: 0;
