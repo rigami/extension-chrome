@@ -2,11 +2,12 @@ import UI from "./coreUI.js";
 import Ripple from "./Ripple.js";
 
 class RippleCircle extends Ripple{
-	constructor(parent){
+	constructor(parent, params = {}){
 		super();
 
 		this._namespace = Ripple.getNamespace("root-no-overflow");
 		this.parent = parent;
+		this._params = params;
 		
 		this.class().add(this._namespace);
 
@@ -27,7 +28,11 @@ class RippleCircle extends Ripple{
 			height: this.html.clientHeight,
 			rootY: this.html.getBoundingClientRect().y,
 			rootX: this.html.getBoundingClientRect().x,
-			fast: true
+			params: {
+				fast: true,
+				maxSize: 1.25,
+				...this._params
+			}
 		}).insert(this);
 
 		let ths = this;

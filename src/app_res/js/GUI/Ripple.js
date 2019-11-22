@@ -2,7 +2,7 @@ import UI from "./coreUI.js";
 import GUI from "./coreGUI.js";
 
 class Circle extends UI{
-	constructor({x, y, width, height, rootX, rootY, fast = false}){
+	constructor({x, y, width, height, rootX, rootY, params = {}}){
 		super("div");
 
 		this._namespace = Ripple.getNamespace("circle");
@@ -12,8 +12,8 @@ class Circle extends UI{
 		this.startX = x - rootX;
 		this.startY = y - rootY;
 
-		let maxRadiusX = Math.max(width*(fast? 1.25 : 1) - this.startX, this.startX);
-		let maxRadiusY = Math.max(height*(fast? 1.25 : 1) - this.startY, this.startY);
+		let maxRadiusX = Math.max(width*(params.maxSize || 1) - this.startX, this.startX*(params.maxSize || 1));
+		let maxRadiusY = Math.max(height*(params.maxSize || 1) - this.startY, this.startY*(params.maxSize || 1));
 
 		this.radius =  Math.sqrt(maxRadiusX*maxRadiusX + maxRadiusY*maxRadiusY);
 
@@ -24,7 +24,7 @@ class Circle extends UI{
 				.add("height", `${this.radius*2}px`)
 				.add("transform", `translate(${-this.radius}px, ${-this.radius}px) scale(${0})`)
 			.class()
-				.add(this._namespace+fast? "_fast" : "_hold")
+				.add(this._namespace+params.fast? "_fast" : "_hold")
 
 
 		setTimeout(() => {
@@ -52,7 +52,7 @@ class Circle extends UI{
 }
 
 class Ripple extends UI{
-	constructor(parent){
+	constructor(parent, params = {}){
 		super("span");
 
 		this._namespace = Ripple.getNamespace("root");
@@ -60,6 +60,7 @@ class Ripple extends UI{
 		this._namespaceCircle = Ripple.getNamespace("circle");
 		this.circleProcess = null;
 		this.parent = parent;
+		this._params = params;
 
 		if(parent){
 			this.class().add(this._namespace);
@@ -78,7 +79,10 @@ class Ripple extends UI{
 			width: this.html.clientWidth,
 			height: this.html.clientHeight,
 			rootY: this.html.getBoundingClientRect().y,
-			rootX: this.html.getBoundingClientRect().x
+			rootX: this.html.getBoundingClientRect().x,
+			params: {
+				...this._params
+			}
 		}).insert(this);
 
 		let ths = this;
