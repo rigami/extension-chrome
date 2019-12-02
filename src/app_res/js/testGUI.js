@@ -5,7 +5,7 @@ import Dropdown from "./GUI/Dropdown.js";
 import Input from "./GUI/Input.js";
 import UI from "./GUI/coreUI.js";
 import SettingsRow from "./components/SettingsRow.js";
-import Store from "./utils/Store.js";
+import { Store } from "./utils/Store.js";
 import { Settings as SettingsIcon } from "./Icons/Icons.js";
 import { setLocale, getValue as LOC} from "./utils/Locale.js";
 

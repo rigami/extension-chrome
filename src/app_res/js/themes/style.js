@@ -65,6 +65,6 @@ export const useTheme = () => new function(){
 };
 
 export const useStyles = (styles) => {
-	console.log("useStyles")
+	//console.log("useStyles")
 	return typeof styles === "function"? styles(stylesConstructor) : styles;
 }

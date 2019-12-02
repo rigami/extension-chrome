@@ -1,5 +1,5 @@
-import UI from "./coreUI.js";
-import GUI from "./coreGUI.js";
+import UI from "./UI.js";
+import GUI from "./GUI.js";
 
 class Circle extends UI{
 	constructor({x, y, width, height, rootX, rootY, params = {}}){

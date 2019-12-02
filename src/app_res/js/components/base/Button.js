@@ -1,6 +1,6 @@
-import GUI from "./coreGUI.js";
-import Ripple from "./Ripple.js";
-import UI from "./coreUI.js";
+import GUI from "../../core/GUI.js";
+import Ripple from "../../core/Ripple.js";
+import UI from "../../core/UI.js";
 
 class Button extends GUI{
 	constructor({label, icon, onclick, isRipple = true, namespace, iconProps = {}}){
@@ -10,7 +10,7 @@ class Button extends GUI{
 			.add((namespace || Button).getNamespace())
 			.add(!label && icon? (namespace || Button).getNamespace("only-icon") : "");
 
-		if(icon) this.append(icon.create({ class: (namespace || Button).getNamespace(label? "icon" : "icon-only"), ...iconProps }))
+		if(icon) this.append(icon({ class: (namespace || Button).getNamespace(label? "icon" : "icon-only"), ...iconProps }))
 		if(label) this.append(icon? UI.create("span").class((namespace || Button).getNamespace("icon-helper-text")).content(label) : label);
 		if(onclick) this.event().add("click", onclick);
 		

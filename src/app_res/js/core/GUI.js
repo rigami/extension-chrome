@@ -1,4 +1,4 @@
-import UI from "./coreUI.js";
+import UI from "./UI.js";
 
 class GUI extends UI{
 	constructor(props = {}){

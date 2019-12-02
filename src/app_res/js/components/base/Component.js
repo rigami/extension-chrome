@@ -1,4 +1,4 @@
-import UI from "./coreUI.js";
+import UI from "../../core/UI.js";
 
 class Component extends UI{
 	constructor({namespace, component, parentClassName}){

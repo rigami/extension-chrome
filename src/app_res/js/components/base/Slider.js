@@ -1,6 +1,6 @@
-import GUI from "./coreGUI.js";
-import UI from "./coreUI.js";
-import Ripple from "./RippleCircle.js";
+import GUI from "../../core/GUI.js";
+import UI from "../../core/UI.js";
+import Ripple from "../../core/RippleCircle.js";
 
 class Slider extends GUI{
 	constructor({onchange, value = 0}){

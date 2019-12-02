@@ -1,10 +1,10 @@
-import GUI from "./coreGUI.js";
-import UI from "./coreUI.js";
-import Ripple from "./Ripple.js";
+import GUI from "../../core/GUI.js";
+import UI from "../../core/UI.js";
+import Ripple from "../../core/Ripple.js";
 import {
 	ArrowDown as ArrowDownIcon,
 	Check as CheckIcon
-} from "../Icons/Icons.js";
+} from "../../core/Icons.js";
 
 class List extends UI{
 	constructor({list, preventClose, onselect, isMultiple = false}){

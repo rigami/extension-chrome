@@ -1,4 +1,4 @@
-import UI from "./coreUI.js";
+import UI from "./UI.js";
 import Ripple from "./Ripple.js";
 
 class RippleCircle extends Ripple{

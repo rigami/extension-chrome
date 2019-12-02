@@ -1,4 +1,4 @@
-import UI from "../GUI/coreUI.js";
+import UI from "../core/UI.js";
 
 export class Store{
 	constructor(defaultValue){
@@ -26,7 +26,7 @@ export class Store{
 }
 
 export function observer({ element, mutation, listener }){
-	let obsvElem = typeof element == "function"? UI.create() :  element;
+	let obsvElem = typeof element == "function"? UI.create("obsv-elem") :  element;
 
 	listener((value, oldValue) => {
 		if(typeof element == "function"){

@@ -1,5 +1,5 @@
-import GUI from "./coreGUI.js";
-import UI from "./coreUI.js";
+import GUI from "../../core/GUI.js";
+import UI from "../../core/UI.js";
 
 class Input extends GUI{
 	constructor({title, onchange}){

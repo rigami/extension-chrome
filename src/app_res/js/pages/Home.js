@@ -1,17 +1,17 @@
-import Component from "../GUI/Component.js";
-import UI from "../GUI/coreUI.js";
-import Button from "../GUI/Button.js";
+import UI from "../core/UI.js";
+import Button from "../components/base/Button.js";
 import { Store, observer } from "../utils/Store.js";
 
 import {
 	Settings as SettingsIcon,
 	Refresh as RefreshIcon
-} from "../Icons/Icons.js";
+} from "../core/Icons.js";
 
 import { useStyles } from "../themes/style.js";
 
-import Background from "../components/Background.js";
-import SettingsMenu from "../components/SettingsMenu.js";
+import Background from "../components/custom/Background.js";
+import SettingsMenu from "../components/custom/SettingsMenu.js";
+import Divider from "../components/base/Divider.js";
 
 let [isOpenSettings, setIsOpenSettings, addIsOpenSettingsValueListener] = new Store(null, true);
 
@@ -64,19 +64,6 @@ function ActionBar(namespace){
 				}
 			})
 		)
-}
-
-function Divider({width = "middle"} = {}){
-	const styles = useStyles(theme => ({
-		width: width === "middle"? "calc(100% - 10px)" : "100%",
-		height: "1px",
-		backgroundColor: theme.palette.second.light,
-		border: "none",
-	    margin: `${theme.spacing(.5)} ${theme.spacing(1)}`
-	}));
-
-	return UI.create("hr")
-		.style(styles)
 }
 
 class ButtonAction extends Button{

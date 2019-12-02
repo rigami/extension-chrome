@@ -1,6 +1,5 @@
-import Component from "../GUI/Component.js";
-import UI from "../GUI/coreUI.js";
-import { useStyles } from "../themes/style.js";
+import UI from "../../core/UI.js";
+import { useStyles } from "../../themes/style.js";
 
 function Background(){
 	const styles = useStyles({
