@@ -50,11 +50,17 @@ export const defaultTheme = {
 };
 
 let usedTheme = null;
-let stylesConstructor = null
+let stylesConstructor = null;
+
+let stylesList = {};
+let classesList = {};
+let classesBlock = document.createElement("style");
 
 export function setTheme(theme){
 	usedTheme = theme;
 	stylesConstructor = useTheme();
+
+	document.head.appendChild(classesBlock)
 }
 
 export const useTheme = () => new function(){
@@ -65,6 +71,55 @@ export const useTheme = () => new function(){
 };
 
 export const useStyles = (styles) => {
-	//console.log("useStyles")
 	return typeof styles === "function"? styles(stylesConstructor) : styles;
+}
+
+export const useClasses = (styles) => {
+	styles = typeof styles === "function"? styles(stylesConstructor) : styles;
+	
+	let calcClasses = {};
+
+	Object.keys(styles).forEach(className => {
+		let calcStyle = "";
+
+		Object.keys(styles[className]).forEach(style => {
+			let i = 0;
+
+			let lowerStyle = style;
+
+			while(i < lowerStyle.length){
+				if(lowerStyle[i] === lowerStyle[i].toUpperCase()){
+					lowerStyle = lowerStyle.substring(0, i)+"-"+lowerStyle[i].toLowerCase()+lowerStyle.substring(i+1)
+					i++;
+				}
+				i++;
+			}
+
+			calcStyle += lowerStyle+":"+styles[className][style]+";";
+		});
+
+		if(classesList[className]){
+			classesList[className]++;
+		}else{
+			classesList[className] = 1;
+		}
+
+		let i = 0;
+
+		while(i < (classesList[className] || 0) && stylesList[className+"-"+i] !== calcStyle) i++;
+
+		calcClasses[className] = className+"-"+i;
+
+		if(i !== classesList[className]){
+			classesList[className]--;
+		}else{
+			stylesList[className+"-"+classesList[className]] = calcStyle;
+		}
+
+		
+	});
+
+	classesBlock.innerHTML = Object.keys(stylesList).map(className => `.${className}{${stylesList[className]}}`).join("");
+
+	return calcClasses;
 }

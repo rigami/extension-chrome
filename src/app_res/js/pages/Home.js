@@ -17,11 +17,13 @@ let [isOpenSettings, setIsOpenSettings, addIsOpenSettingsValueListener] = new St
 
 function Home(){
 	const styles = useStyles({
-		height: "100%"
+		root: {
+			height: "100%"
+		}
 	});
 
 	return UI.create()
-		.style(styles)
+		.style(styles.root)
 		.append(Background)
 		.append(observer({
 			element: () => new SettingsMenu({onClose: () => setIsOpenSettings(false)}),
@@ -35,20 +37,22 @@ export default Home;
 
 function ActionBar(namespace){
 	const styles = useStyles(theme => ({
-		position: "absolute",
-	    right: theme.spacing(6),
-	    bottom: theme.spacing(5),
-	    width: theme.spacing(9),
-	    display: "flex",
-	    flexDirection: "column",
-	    alignItems: "center",
-	    backgroundColor: theme.palette.bg.main,
-	    boxShadow: theme.boxShadow.normal,
-	    borderRadius: theme.spacing(4.5)
+		root: {
+			position: "absolute",
+		    right: theme.spacing(6),
+		    bottom: theme.spacing(5),
+		    width: theme.spacing(9),
+		    display: "flex",
+		    flexDirection: "column",
+		    alignItems: "center",
+		    backgroundColor: theme.palette.bg.main,
+		    boxShadow: theme.boxShadow.normal,
+		    borderRadius: theme.spacing(4.5)
+		}
 	}));
 
 	return UI.create()
-		.style(styles)
+		.style(styles.root)
 		.append(
 			ButtonAction.create({
 				icon: SettingsIcon,

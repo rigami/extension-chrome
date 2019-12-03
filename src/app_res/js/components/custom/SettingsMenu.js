@@ -214,7 +214,7 @@ function SettingsContainer({onClose}){
 		}
 	}));
 
-	let [pagesState, setPagesStateValue, addPagesStateValueListener] = new Store({});
+	let [activePage, setActivePage, activePageListener] = new Store(null);
 
 	let links = [];
 
@@ -226,10 +226,19 @@ function SettingsContainer({onClose}){
 				icon: link.icon,
 				title: link.label,
 				subtitle: link.description,
-				color: link.color
+				color: link.color,
+				onClick: () => {
+					console.log(links)
+					links.forEach(l => {if(l.small) l.small();})
+					setActivePage(() => link.type);
+				}
 			})
 		));
 	});
+
+	activePageListener((v) => {
+		console.log("Active page:", v)
+	})
 
 	this.open = () => {
 		this.render.style().remove(styles.hide).add(styles.stable);

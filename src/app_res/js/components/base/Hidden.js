@@ -1,8 +1,8 @@
 import UI from "../../core/UI.js";
-import { useStyles, useTheme } from "../../themes/style.js";
+import { useClasses, useTheme } from "../../themes/style.js";
 
 function Hidden({onUnhide, onHide, children, style = {}}){
-	const styles = useStyles({
+	const classes = useClasses({
 		root: {
 			overflow: "hidden",
 			transition: ".3s ease",
@@ -10,42 +10,65 @@ function Hidden({onUnhide, onHide, children, style = {}}){
 			height: '100%'
 		},
 		container: {
-			position: 'absolute',
 			top: 0,
-			right: 0,
+			left: 0,
 			bottom: 0
 		},
+		containerActive: {
+			position: 'absolute',
+		},
 		hideHorizontal: {
-			width: 0
+			width: "0 !important"
 		},
 		hideVertical: {
-			height: 0
+			height: "0 !important"
 		},
 	});
 
-	if(children.forEach) throw new Error("Prop 'children' should be the only element")
+	//if(children.forEach) throw new Error("Prop 'children' should be the only element")
 
 	this.hide = ({vertical = false, horizontal = true} = {}) => {
-		let size = (children.html || children).clientWidth;
+		let width = wrp.html.clientWidth;
+		let height = wrp.html.clientHeight;
+
 		this.render
 			.style()
-				.add(vertical? styles.hideVertical : {})
-				.add(horizontal? styles.hideHorizontal : {});
+				.add("width", width+"px")
+				.add("height", height+"px");
+
+		wrp.style().add({
+			width: width+"px",
+			height: height+"px"
+		})
+			wrp.class().add(classes.containerActive)
+
+		setTimeout(() => {
+
+			this.render
+				.class()
+					.add(horizontal? classes.hideHorizontal : "")
+					.add(vertical? classes.hideVertical : "")	
+		}, 10000);
+				
 		if(onHide) onHide();
 	}
 	this.unhide = () => {
 		this.render
-			.style()
-				.add({...styles.root, ...style.root});
+			.class()
+				.add(classes.root)
+				.remove(classes.hidden)
+			.styles()
+				.remove(style.root)
 		if(onUnhide) onUnhide();
 	}
 
 	let wrp = UI.create()
-				.style(styles.container)
+				.class(classes.container)
 				.append(children)
 
 	this.render = UI.create("div")
-		.style({...styles.root, ...style.root})
+		.class(classes.root)
+		.style(style.root)
 		.append(wrp)
 }
 

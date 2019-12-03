@@ -1,18 +1,15 @@
 import UI from "../../core/UI.js";
 import Ripple from "../../core/Ripple.js";
 import Hidden from "../base/Hidden.js";
-import { useStyles, useTheme } from "../../themes/style.js";
+import { useClasses, useStyles, useTheme } from "../../themes/style.js";
 
-function MainMenuRow({ component = "li", isRipple = true, icon, title, subtitle, color }){
-	const styles = useStyles(theme => ({
+function MainMenuRow({ component = "li", isRipple = true, icon, title, subtitle, color, onClick = ()=>{} }){
+	const classes = useClasses(theme => ({
 		root: {
 			padding: theme.spacing(4),
 			width: "100%",
 			display: "flex",
 			boxSizing: "border-box"
-		},
-		textRoot: {
-			flexGrow: 1
 		},
 		text: {
 			margin: 0,
@@ -37,37 +34,41 @@ function MainMenuRow({ component = "li", isRipple = true, icon, title, subtitle,
 		}
 	}));
 
-	let onClickListener;
+	const styles = useStyles(theme => ({
+		textRoot: {
+			width: "100%"
+		}
+	}));
 
 	let textBlock = Hidden({
-		children: UI.create()
-			.style(styles.textRoot)
-			.append(
-				(typeof title !== "string"? UI.create(title) : UI.create("h2").append(title)).style(styles.text)
-			)
-			.append(
-				(typeof subtitle !== "string"? UI.create(subtitle) : UI.create("p").append(subtitle)).style({...styles.text, ...styles.subtitle})
-			)
+		style: {
+			root: classes.textRoot,
+			hidden: { opacity: 0 }
+		},
+		children: [
+			(typeof title !== "string"? UI.create(title) : UI.create("h2").append(title)).class(classes.text),
+			(typeof subtitle !== "string"? UI.create(subtitle) : UI.create("p").append(subtitle)).class(classes.text+" "+classes.subtitle)
+		]
 	});
 
-	this.small = () => textBlock.hide({ horizontal: true });
+	this.small = () => textBlock.hide({ vertical: true, horizontal: true });
 
 	this.full = () => textBlock.unhide();
 
 	this.render = UI.create()
-		.style(styles.root)
+		.class(classes.root)
 		.append(
 			UI.create()
-				.style(styles.iconRoot)
+				.class(classes.iconRoot)
 				.append(
 					UI.create()
-						.style(styles.icon)
+						.class(classes.icon)
 						.append(icon({size: 20, fill: "#fff", style: "display: block;"}))
 				)
 		)
 		.append(textBlock)
 		.event()
-			.add("click", () => {if(onClickListener) onClickListener()})
+			.add("click", onClick)
 
 	if(isRipple) Ripple.create(this.render);
 }
