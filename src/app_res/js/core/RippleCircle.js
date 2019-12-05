@@ -3,7 +3,7 @@ import Ripple from "./Ripple.js";
 
 class RippleCircle extends Ripple{
 	constructor(parent, params = {}){
-		super();
+		super(null, {...params, isExtends: true});
 
 		this._namespace = Ripple.getNamespace("root-no-overflow");
 		this.parent = parent;
@@ -16,7 +16,9 @@ class RippleCircle extends Ripple{
 					.add("mousedown", (e) => this.start(e))
 				.class()
 					.add(this._namespaceRoot)
-				.append(this)
+				.append(this);
+
+			return parent;
 		}
 	}
 
@@ -31,7 +33,8 @@ class RippleCircle extends Ripple{
 			params: {
 				fast: true,
 				maxSize: 1.25,
-				...this._params
+				...this._params,
+				isExtends: true
 			}
 		}).insert(this);
 

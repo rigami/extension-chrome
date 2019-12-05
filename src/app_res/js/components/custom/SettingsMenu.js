@@ -13,7 +13,7 @@ import {
 import Ripple from "../../core/RippleCircle.js";
 import { Store, observer } from "../../utils/Store.js";
 
-import { useStyles, useTheme } from "../../themes/style.js";
+import { useClasses, useTheme } from "../../themes/style.js";
 
 import Divider from "../base/Divider.js";
 import Hidden from "../base/Hidden.js";
@@ -65,7 +65,7 @@ const linksConfig = {
 
 
 function Header({title, onBack}){
-	const styles = useStyles(theme => ({
+	const classes = useClasses(theme => ({
 		container: {
 			display: 'flex',
 		    alignItems: 'center',
@@ -84,10 +84,10 @@ function Header({title, onBack}){
 	let _ripple = Ripple.create(null, {maxSize: .7});
 
 	return UI.create()
-		.style(styles.container)
+		.class(classes.container)
 		.append(
 			UI.create()
-				.style(styles.button)
+				.class(classes.button)
 				.class()
 					.add(_ripple._namespaceRoot)
 				.append(_ripple)
@@ -96,12 +96,12 @@ function Header({title, onBack}){
 					.add("mousedown", (e) => _ripple.start(e))
 		)
 		.append(
-			UI.create("span").style(styles.title).content(title)
+			UI.create("span").class(classes.title).content(title)
 		)
 }
 
 function MainPage({onClose, onOpenDirectory}){
-	const styles = useStyles(theme => ({		
+	const classes = useClasses(theme => ({		
 		stable: {
 			width: "450px",
 			height: "100%",
@@ -136,7 +136,7 @@ function MainPage({onClose, onOpenDirectory}){
 			));
 		});
 	this.render = UI.create()
-		.style({...styles.stable, ...styles.hide})
+		.class(classes.stable+" "+classes.hide)
 		.append(
 			Header({
 				title: locale("settings"),
@@ -147,7 +147,7 @@ function MainPage({onClose, onOpenDirectory}){
 }
 
 function BackgroundsPage({onClose, onOpen}){
-	const styles = useStyles(theme => ({		
+	const classes = useClasses(theme => ({		
 		stable: {
 			width: "500px",
 			height: "100%",
@@ -172,7 +172,7 @@ function BackgroundsPage({onClose, onOpen}){
 			));
 		});
 	this.render = UI.create()
-		.style({...styles.stable})
+		.class(classes.stable)
 		.append(
 			Header({
 				title: locale("backgrounds_label"),
@@ -192,7 +192,7 @@ function BackgroundsPage({onClose, onOpen}){
 }
 
 function SettingsContainer({onClose}){
-	const styles = useStyles(theme => ({		
+	const classes = useClasses(theme => ({		
 		stable: {
 			height: "100%",
 			backgroundColor: theme.palette.bg.main,
@@ -218,6 +218,8 @@ function SettingsContainer({onClose}){
 
 	let links = [];
 
+	let isCollapse = false;
+
 	Object.keys(linksConfig).forEach((section, i) => {
 		if(i) links.push(Divider());
 
@@ -228,8 +230,12 @@ function SettingsContainer({onClose}){
 				subtitle: link.description,
 				color: link.color,
 				onClick: () => {
-					console.log(links)
-					links.forEach(l => {if(l.small) l.small();})
+					isCollapse = !isCollapse;
+					links.forEach(l => {
+						if(!l.isSmall) return;
+
+						if(!l.isSmall()) l.small(); else l.full();
+					})
 					setActivePage(() => link.type);
 				}
 			})
@@ -241,21 +247,22 @@ function SettingsContainer({onClose}){
 	})
 
 	this.open = () => {
-		this.render.style().remove(styles.hide).add(styles.stable);
+		this.render.class().remove(classes.hide).add(classes.stable);
 	};
 	this.close = () => {
-		this.render.style().add(styles.hide);
+		this.render.class().add(classes.hide);
 	};
 
 
 
 	this.render = UI.create()
-		.style({...styles.stable, ...styles.hide, ...{width: "450px"}})
+		.class(classes.stable+" "+classes.hide)
+		.style({width: "450px"})
 		.append(links)
 
 
 	/*UI.create()
-		.style({...styles.pageWrp, pointerEvents: "all"})
+		.style({...classes.pageWrp, pointerEvents: "all"})
 		.append(
 			new MainPage({
 				onClose,
@@ -265,7 +272,7 @@ function SettingsContainer({onClose}){
 		.insert(this.render);
 
 	UI.create()
-		.style({...styles.pageWrp, width: "500px"})
+		.style({...classes.pageWrp, width: "500px"})
 		.append(
 			observer({
 				element: () => Hidden({
@@ -294,7 +301,7 @@ function SettingsContainer({onClose}){
 }
 
 function SettingsMenu({onClose}){
-	const styles = useStyles({
+	const classes = useClasses({
 		stable: {
 			position: "absolute",
 		    top: 0,
@@ -321,18 +328,18 @@ function SettingsMenu({onClose}){
 	let settingsContainer = new SettingsContainer({onClose});
 
 	this.open = () => {
-		this.render.style().remove(styles.hide).add(styles.stable);
+		this.render.class().remove(classes.hide).add(classes.stable);
 		settingsContainer.open();
 	};
 	this.close = () => {
-		this.render.style().add(styles.hide);
+		this.render.class().add(classes.hide);
 		settingsContainer.close();		
 	};
 	this.render = UI.create()
-		.style({...styles.stable, ...styles.hide})
+		.class(classes.stable+" "+classes.hide)
 		.append(
 			UI.create()
-				.style(styles.closeButton)
+				.class(classes.closeButton)
 				.event("click", onClose)
 		)
 		.append(settingsContainer)

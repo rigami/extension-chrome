@@ -1,74 +1,91 @@
 import UI from "../../core/UI.js";
 import { useClasses, useTheme } from "../../themes/style.js";
 
-function Hidden({onUnhide, onHide, children, style = {}}){
-	const classes = useClasses({
+function Hidden({onUnhide, onHide, children, classes = {}}){
+
+	let externalClasses = classes;
+
+	classes = useClasses({
 		root: {
-			overflow: "hidden",
-			transition: ".3s ease",
-			position: 'relative',
-			height: '100%'
+			height: 0,
+		    overflow: "hidden",
+		    transition: "height 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
 		},
-		container: {
-			top: 0,
-			left: 0,
-			bottom: 0
+		rootEntered: {
+			height: "auto",
+    		overflow: "visible"
 		},
-		containerActive: {
-			position: 'absolute',
+		wrapper: {
+			display: "flex"
 		},
-		hideHorizontal: {
-			width: "0 !important"
-		},
-		hideVertical: {
-			height: "0 !important"
+		wrapperInner: {
+			width: "100%"
 		},
 	});
 
-	//if(children.forEach) throw new Error("Prop 'children' should be the only element")
+	let timer = null;
 
-	this.hide = ({vertical = false, horizontal = true} = {}) => {
-		let width = wrp.html.clientWidth;
+	this.hide = () => {
+
 		let height = wrp.html.clientHeight;
+
+		if(timer) clearTimeout(timer);
 
 		this.render
 			.style()
-				.add("width", width+"px")
-				.add("height", height+"px");
+				.add("height", height+"px")
+			.class()
+				.remove(classes.rootEntered)
 
-		wrp.style().add({
-			width: width+"px",
-			height: height+"px"
-		})
-			wrp.class().add(classes.containerActive)
-
-		setTimeout(() => {
-
+		timer = setTimeout(() => {
 			this.render
+				.style()
+					.add("height", 0+"px")
 				.class()
-					.add(horizontal? classes.hideHorizontal : "")
-					.add(vertical? classes.hideVertical : "")	
-		}, 10000);
-				
-		if(onHide) onHide();
+					.add(externalClasses.hidden);
+
+			timer = setTimeout(() => {
+				if(onHide) onHide();
+			}, 300);
+		});			
 	}
 	this.unhide = () => {
+
+		let height = wrp.html.clientHeight;
+
+		if(timer) clearTimeout(timer);
+
 		this.render
-			.class()
-				.add(classes.root)
-				.remove(classes.hidden)
-			.styles()
-				.remove(style.root)
-		if(onUnhide) onUnhide();
+			.style()
+				.add("height", height+"px")
+			.class()			
+				.remove(externalClasses.hidden)
+
+		timer = setTimeout(() => {
+			this.render
+				.class()
+					.add(classes.rootEntered)
+				.style()
+					.add("height", "auto")
+
+				if(onUnhide) onUnhide();
+		}, 300);
 	}
 
 	let wrp = UI.create()
-				.class(classes.container)
-				.append(children)
+				.class(classes.wrapper)
+				.append(
+					UI.create()
+						.class(classes.wrapperInner)
+						.append(children)
+				)
 
 	this.render = UI.create("div")
 		.class(classes.root)
-		.style(style.root)
+			.add(classes.rootEntered)
+			.add(externalClasses.root)
+		.style()
+			.add("height", "auto")
 		.append(wrp)
 }
 

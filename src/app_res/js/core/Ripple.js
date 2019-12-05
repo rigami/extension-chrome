@@ -61,14 +61,17 @@ class Ripple extends UI{
 		this.circleProcess = null;
 		this.parent = parent;
 		this._params = params;
+		
+		if(!params.isExtends) this.class().add(this._namespace);
 
 		if(parent){
-			this.class().add(this._namespace);
 			parent.event()
 					.add("mousedown", (e) => this.start(e))
 				.class()
 					.add(this._namespaceRoot)
 				.append(this)
+
+			return parent;
 		}
 	}
 

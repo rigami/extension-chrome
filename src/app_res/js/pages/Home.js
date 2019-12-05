@@ -7,7 +7,7 @@ import {
 	Refresh as RefreshIcon
 } from "../core/Icons.js";
 
-import { useStyles } from "../themes/style.js";
+import { useClasses } from "../themes/style.js";
 
 import Background from "../components/custom/Background.js";
 import SettingsMenu from "../components/custom/SettingsMenu.js";
@@ -16,14 +16,14 @@ import Divider from "../components/base/Divider.js";
 let [isOpenSettings, setIsOpenSettings, addIsOpenSettingsValueListener] = new Store(null, true);
 
 function Home(){
-	const styles = useStyles({
+	const classes = useClasses({
 		root: {
 			height: "100%"
 		}
 	});
 
 	return UI.create()
-		.style(styles.root)
+		.class(classes.root)
 		.append(Background)
 		.append(observer({
 			element: () => new SettingsMenu({onClose: () => setIsOpenSettings(false)}),
@@ -36,7 +36,7 @@ function Home(){
 export default Home;
 
 function ActionBar(namespace){
-	const styles = useStyles(theme => ({
+	const classes = useClasses(theme => ({
 		root: {
 			position: "absolute",
 		    right: theme.spacing(6),
@@ -52,7 +52,7 @@ function ActionBar(namespace){
 	}));
 
 	return UI.create()
-		.style(styles.root)
+		.class(classes.root)
 		.append(
 			ButtonAction.create({
 				icon: SettingsIcon,

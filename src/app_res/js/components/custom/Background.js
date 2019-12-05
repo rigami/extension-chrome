@@ -1,8 +1,8 @@
 import UI from "../../core/UI.js";
-import { useStyles } from "../../themes/style.js";
+import { useClasses } from "../../themes/style.js";
 
 function Background(){
-	const styles = useStyles({
+	const classes = useClasses({
 		root: {
 			height: "100%",
 			backgroundImage: `url(${"app_res/img/bg-test.png"})`
@@ -10,7 +10,7 @@ function Background(){
 	});	
 
 	return UI.create()
-		.style(styles.root)
+		.class(classes.root)
 }
 
 export default Background;

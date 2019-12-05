@@ -1,12 +1,12 @@
 import UI from "../../core/UI.js";
-import { useStyles } from "../../themes/style.js";
+import { useClasses } from "../../themes/style.js";
 
 /**
  * @param {String} width [middle|full]
  * @param {String} direction [horizontal|vertical]
  */
 function Divider({width = "middle", direction = "horizontal"} = {}){
-	const styles = useStyles(theme => ({
+	const classes = useClasses(theme => ({
 		root: {
 			width: width === "middle"? "calc(100% - 10px)" : "100%",
 			height: "1px",
@@ -18,7 +18,7 @@ function Divider({width = "middle", direction = "horizontal"} = {}){
 	}));
 
 	return UI.create("hr")
-		.style(styles.root)
+		.class(classes.root)
 }
 
 export default Divider;

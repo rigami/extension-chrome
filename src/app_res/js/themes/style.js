@@ -52,15 +52,19 @@ export const defaultTheme = {
 let usedTheme = null;
 let stylesConstructor = null;
 
-let stylesList = {};
-let classesList = {};
-let classesBlock = document.createElement("style");
+let stylesList = [];
+const classesAlphabet = ["a", "b", "c", "d", "e", "f", "j", "h", "i", "g", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+let classesIndex = 0;
+let updateTimeout = null;
+let stableClassesStore = document.createElement("style");
+let tempClassesStore = document.createElement("style");
 
 export function setTheme(theme){
 	usedTheme = theme;
 	stylesConstructor = useTheme();
 
-	document.head.appendChild(classesBlock)
+	document.head.appendChild(stableClassesStore);
+	document.head.appendChild(tempClassesStore);
 }
 
 export const useTheme = () => new function(){
@@ -98,28 +102,44 @@ export const useClasses = (styles) => {
 			calcStyle += lowerStyle+":"+styles[className][style]+";";
 		});
 
-		if(classesList[className]){
-			classesList[className]++;
-		}else{
-			classesList[className] = 1;
+		let i = 0;		
+
+		while(i < classesIndex && stylesList[i] !== calcStyle) i++;
+
+		calcClasses[className] = getClassName(i);
+
+		if(i === classesIndex){
+			classesIndex++;
+			stylesList.push(calcStyle);
 		}
-
-		let i = 0;
-
-		while(i < (classesList[className] || 0) && stylesList[className+"-"+i] !== calcStyle) i++;
-
-		calcClasses[className] = className+"-"+i;
-
-		if(i !== classesList[className]){
-			classesList[className]--;
-		}else{
-			stylesList[className+"-"+classesList[className]] = calcStyle;
-		}
-
-		
 	});
 
-	classesBlock.innerHTML = Object.keys(stylesList).map(className => `.${className}{${stylesList[className]}}`).join("");
+	updateStyles();
 
 	return calcClasses;
+}
+
+function getClassName(index = 0){
+	let className = '';
+
+	while(index >= classesAlphabet.length){
+		let symbol = index % classesAlphabet.length;
+		className = classesAlphabet[symbol]+className;
+		index = Math.floor(index / classesAlphabet.length);
+	}
+
+	className = classesAlphabet[index]+className;
+
+	return className;
+}
+
+function updateStyles(){
+	if(updateTimeout) clearTimeout(updateTimeout);
+
+	tempClassesStore.innerHTML = stylesList.map((style, index) => `.${getClassName(index)}{${style}}`).join("");
+
+	updateTimeout = setTimeout(() => {
+		stableClassesStore.innerHTML = tempClassesStore.innerHTML;
+		//tempClassesStore.innerHTML = '';
+	}, 1000);
 }
