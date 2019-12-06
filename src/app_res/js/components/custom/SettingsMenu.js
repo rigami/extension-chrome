@@ -20,6 +20,12 @@ import Hidden from "../base/Hidden.js";
 
 import MainMenuRow from "./MainMenuRow.js";
 
+import BackgroundPage from "./BackgroundsSettings.js";
+import BookmarksPage from "./BookmarksSettings.js";
+import WidgetsPage from "./WidgetsSettings.js";
+import OtherPage from "./OtherSettings.js";
+import AboutPage from "./AboutSettings.js";
+
 const linksConfig = {
 	settings: [
 		{
@@ -27,28 +33,32 @@ const linksConfig = {
 			icon: PhotoLibraryIcon,
 			color: "#2675F0",
 			label: locale("backgrounds_label"),
-			description: locale("backgrounds_description")
+			description: locale("backgrounds_description"),
+			page: BackgroundPage
 		},
 		{
 			type: "bookmarks",
 			icon: TollIcon,
 			color: "#8BC34A",
 			label: locale("bookmarks_label"),
-			description: locale("bookmarks_description")
+			description: locale("bookmarks_description"),
+			page: BookmarksPage
 		},
 		{
 			type: "widgets",
 			icon: WidgetsIcon,
 			color: "#ff5722",
 			label: locale("widgets_label"),
-			description: locale("widgets_description")
+			description: locale("widgets_description"),
+			page: WidgetsPage
 		},
 		{
 			type: "other",
 			icon: CategoryIcon,
 			color: "#3f51b5",
 			label: locale("other_label"),
-			description: locale("other_description")
+			description: locale("other_description"),
+			page: OtherPage
 		}		
 	],
 	others: [
@@ -57,11 +67,11 @@ const linksConfig = {
 			icon: InfoIcon,
 			color: "#9C27B0",
 			label: locale("about_label"),
-			description: locale("about_description")
+			description: locale("about_description"),
+			page: AboutPage
 		}
 	]
 };
-
 
 
 function Header({title, onBack}){
@@ -73,7 +83,8 @@ function Header({title, onBack}){
 		},
 		title: {
 			fontSize: theme.typography.size.title1,
-			fontWeight: "bold"
+			fontWeight: "bold",
+			whiteSpace: "nowrap"
 		},
 		button: {
 			padding: theme.spacing(2.5),
@@ -83,7 +94,11 @@ function Header({title, onBack}){
 
 	let _ripple = Ripple.create(null, {maxSize: .7});
 
-	return UI.create()
+	let titleDom = UI.create("span").class(classes.title).content(title);
+
+	this.setTitle = (newTitle) => titleDom.content(newTitle);
+
+	this.render =  UI.create()
 		.class(classes.container)
 		.append(
 			UI.create()
@@ -95,100 +110,79 @@ function Header({title, onBack}){
 				.event("click", onBack)
 					.add("mousedown", (e) => _ripple.start(e))
 		)
-		.append(
-			UI.create("span").class(classes.title).content(title)
-		)
+		.append(titleDom)
 }
 
-function MainPage({onClose, onOpenDirectory}){
+function Page(){
 	const classes = useClasses(theme => ({		
-		stable: {
+		root: {
 			width: "450px",
 			height: "100%",
-			display: 'inline-block',
 			position: "absolute",
-			left: 0,
-			top: 0,
-			backgroundColor: "#ffffff"
+		    right: 0,
+		    top: 0,
+		    height: "calc(100vh - 70px)",
+		    overflow: "auto",
+		    pointerEvents: "none"
+		},
+		pageContainer: {
+			pointerEvents: "all"
+		},
+		page: {
+			transition: ".3s ease",
+			backgroundColor: theme.palette.bg.main
+		},
+		hide: {
+			opacity: 0,			
+			transform: "translateX(50px)"
+		},
+		oldPage: {
+			position: "absolute",
+		    left: 0,
+		    top: 0,
+		    opacity: 0,
 		}
 	}));
 
-	let links = [];
+	let activePage = null;
 
-	Object.keys(linksConfig)
-		.forEach((section, i) => {
-			if(i) links.push(Divider())
+	let pageContainer = UI.create().class(classes.pageContainer);
+	let heightController = Hidden({
+		children: pageContainer
+	});
 
-			linksConfig[section].forEach(link => links.push(
-				SettingsRow({
-					style: {
-						text: {
-							height: 0,
-    						opacity: 0
-						}
-					},
-					icon: link.icon,
-					title: link.label,
-					subtitle: link.description
-				}).render
-					.event()
-						.add("click", () => onOpenDirectory(link.type))
-			));
-		});
-	this.render = UI.create()
-		.class(classes.stable+" "+classes.hide)
-		.append(
-			Header({
-				title: locale("settings"),
-				onBack: onClose
-			})
-		)
-		.append(links)
-}
+	this.setPage = (category) => {
+		if(!category){
+			activePage.class().add(classes.oldPage).add(classes.hide);
+			setTimeout(() => {
+				activePage.destroy();
+				activePage = null;
+			}, 300);
 
-function BackgroundsPage({onClose, onOpen}){
-	const classes = useClasses(theme => ({		
-		stable: {
-			width: "500px",
-			height: "100%",
-			backgroundColor: "#ffffff"
+			return;
 		}
-	}));
 
-	let links = [];
-	let content = [];
+		let page = category.page().class().add(classes.hide).add(classes.page);
+		heightController.setHeight(pageContainer.html.clientHeight);
 
-	Object.keys(linksConfig)
-		.forEach((section, i) => {
-			if(i) links.push(Divider())
+		if(activePage) activePage.class().add(classes.oldPage);
+		pageContainer.append(page);
 
-			linksConfig[section].forEach(link => links.push(UI.create(link.icon()).style({margin: "18px"})));
+		setTimeout(() => {
+			heightController.unhide();
+			page.class().remove(classes.hide);
 
-			linksConfig[section].forEach(link => content.push(
-				SettingsRow({
-					title: link.label,
-					subtitle: link.description
-				})
-			));
-		});
+			setTimeout(() => {
+				if(activePage) activePage.destroy();
+				activePage = page;
+			}, 300);
+		}, 0);
+	};
+
+
 	this.render = UI.create()
-		.class(classes.stable)
-		.append(
-			Header({
-				title: locale("backgrounds_label"),
-				onBack: onClose
-			})
-		)
-		.append(
-			UI.create()
-				.style({display: "flex"})
-				.append(
-					UI.create().append(links)
-				)
-				.append(
-					UI.create().append(content)
-				)
-		)
+		.class(classes.root)
+		.append(heightController)
 }
 
 function SettingsContainer({onClose}){
@@ -211,39 +205,68 @@ function SettingsContainer({onClose}){
 		},
 		hide: {
 			transform: "translateX(100%)"
+		},
+		page: {
+			position: "relative"
+		},
+		smallDivider: {
+			width: "40px"
 		}
 	}));
 
 	let [activePage, setActivePage, activePageListener] = new Store(null);
 
-	let links = [];
+	let header = new Header({
+		title: locale("settings_label"),
+		onBack: () => setActivePage(page => {
+			if(!page) onClose();
 
-	let isCollapse = false;
-
-	Object.keys(linksConfig).forEach((section, i) => {
-		if(i) links.push(Divider());
-
-		linksConfig[section].forEach(link => links.push(
-			MainMenuRow({ 
-				icon: link.icon,
-				title: link.label,
-				subtitle: link.description,
-				color: link.color,
-				onClick: () => {
-					isCollapse = !isCollapse;
-					links.forEach(l => {
-						if(!l.isSmall) return;
-
-						if(!l.isSmall()) l.small(); else l.full();
-					})
-					setActivePage(() => link.type);
-				}
-			})
-		));
+			return null;
+		})
 	});
 
-	activePageListener((v) => {
-		console.log("Active page:", v)
+	let links = [];
+
+	let categoriesByName = {};
+
+	let pageContainer = new Page();
+
+	Object.keys(linksConfig).forEach((section, i) => {
+		if(i) links.push(Divider());		
+
+		linksConfig[section].forEach(link => {
+			categoriesByName[link.type] = link;
+
+			return links.push(
+				MainMenuRow({ 
+					icon: link.icon,
+					title: link.label,
+					subtitle: link.description,
+					color: link.color,
+					onClick: () => setActivePage(link.type)
+				})
+			)
+		});
+	});
+
+	activePageListener((page, oldPage) => {
+		if(page === oldPage) return;
+
+		links.forEach(l => {
+			if(!l.isSmall){
+				if(page) l.class().add(classes.smallDivider);
+				else l.class().remove(classes.smallDivider);
+				return;
+			}
+
+			if(page) l.small(); else l.full();
+		});
+
+		header.setTitle(locale(`${page || "settings"}_label`));
+		pageContainer.setPage(categoriesByName[page]);
+
+		if(page) this.render.style().add({width: "534px"});
+		else this.render.style().add({width: "450px"});
 	})
 
 	this.open = () => {
@@ -251,53 +274,19 @@ function SettingsContainer({onClose}){
 	};
 	this.close = () => {
 		this.render.class().add(classes.hide);
+		setActivePage(null);
 	};
-
-
 
 	this.render = UI.create()
 		.class(classes.stable+" "+classes.hide)
 		.style({width: "450px"})
-		.append(links)
-
-
-	/*UI.create()
-		.style({...classes.pageWrp, pointerEvents: "all"})
+		.append(header)
 		.append(
-			new MainPage({
-				onClose,
-				onOpenDirectory: page => setPagesStateValue(pages => ({...pages, [page]: true}))
-			})
+			UI.create()
+				.class(classes.page)
+				.append(links)
+				.append(pageContainer)
 		)
-		.insert(this.render);
-
-	UI.create()
-		.style({...classes.pageWrp, width: "500px"})
-		.append(
-			observer({
-				element: () => Hidden({
-					style: {
-						root: {
-							height: "100%",
-							width: "100%",
-							display: 'inline-block',
-							position: "absolute",
-							right: 0,
-							top: 0,
-							pointerEvents: "all"
-						}
-					},
-					onUnhide: () => this.render.style().add("width", "500px"),
-					onHide: () => this.render.style().add("width", "450px"),
-					children: new BackgroundsPage({
-						onClose: () => setPagesStateValue(pages => ({...pages, backgrounds: false}))
-					})
-				}),
-				mutation: (page, pagesValue) => pagesValue.backgrounds? page.unhide() : page.hide(),
-				listener: addPagesStateValueListener
-			})
-		)
-		.insert(this.render);*/	
 }
 
 function SettingsMenu({onClose}){

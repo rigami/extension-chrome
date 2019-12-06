@@ -1,7 +1,7 @@
 import UI from "../../core/UI.js";
 import { useClasses, useTheme } from "../../themes/style.js";
 
-function Hidden({onUnhide, onHide, children, classes = {}}){
+function Hidden({onUnhide, onHide, onSetHeight, children, classes = {}, hide = false}){
 
 	let externalClasses = classes;
 
@@ -71,6 +71,29 @@ function Hidden({onUnhide, onHide, children, classes = {}}){
 				if(onUnhide) onUnhide();
 		}, 300);
 	}
+	this.setHeight = (newHeight) => {
+		let height = wrp.html.clientHeight;
+
+		if(timer) clearTimeout(timer);
+
+		this.render
+			.style()
+				.add("height", height+"px")
+			.class()
+				.remove(classes.rootEntered)
+
+		timer = setTimeout(() => {
+			this.render
+				.style()
+					.add("height", newHeight+"px")
+				.class()
+					.add(externalClasses.blocked);
+
+			timer = setTimeout(() => {
+				if(onSetHeight) onSetHeight();
+			}, 300);
+		});		
+	}
 
 	let wrp = UI.create()
 				.class(classes.wrapper)
@@ -82,10 +105,11 @@ function Hidden({onUnhide, onHide, children, classes = {}}){
 
 	this.render = UI.create("div")
 		.class(classes.root)
-			.add(classes.rootEntered)
+			.add(hide? "" : classes.rootEntered)
 			.add(externalClasses.root)
+			.add(hide? externalClasses.hidden : "")
 		.style()
-			.add("height", "auto")
+			.add("height", hide? "0px" : "auto")
 		.append(wrp)
 }
 
