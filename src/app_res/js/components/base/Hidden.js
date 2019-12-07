@@ -1,7 +1,7 @@
 import UI from "../../core/UI.js";
 import { useClasses, useTheme } from "../../themes/style.js";
 
-function Hidden({onUnhide, onHide, onSetHeight, children, classes = {}, hide = false}){
+function Hidden({onUnhide, onHide, onSetHeight, children, classes = {}, height}){
 
 	let externalClasses = classes;
 
@@ -101,15 +101,16 @@ function Hidden({onUnhide, onHide, onSetHeight, children, classes = {}, hide = f
 					UI.create()
 						.class(classes.wrapperInner)
 						.append(children)
-				)
+				);
 
 	this.render = UI.create("div")
 		.class(classes.root)
-			.add(hide? "" : classes.rootEntered)
+			.add(height === 0? "" : classes.rootEntered)
 			.add(externalClasses.root)
-			.add(hide? externalClasses.hidden : "")
+			.add(height === 0? externalClasses.hidden : "")
+			.add(height? externalClasses.blocked : "")
 		.style()
-			.add("height", hide? "0px" : "auto")
+			.add("height", (!height && height !== 0)? "auto" : height+"px")
 		.append(wrp)
 }
 

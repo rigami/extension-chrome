@@ -116,31 +116,33 @@ function Header({title, onBack}){
 function Page(){
 	const classes = useClasses(theme => ({		
 		root: {
-			width: "450px",
+			width: "700px",
 			height: "100%",
 			position: "absolute",
-		    right: 0,
+		    left: "84px",
 		    top: 0,
 		    height: "calc(100vh - 70px)",
-		    overflow: "auto",
-		    pointerEvents: "none"
+		    overflow: "auto"
 		},
 		pageContainer: {
 			pointerEvents: "all"
 		},
 		page: {
-			transition: ".3s ease",
+			transition: "opacity .3s ease, transform .3s ease",
 			backgroundColor: theme.palette.bg.main
 		},
 		hide: {
 			opacity: 0,			
-			transform: "translateX(50px)"
+			//transform: "translateX(50px)"
 		},
 		oldPage: {
 			position: "absolute",
 		    left: 0,
 		    top: 0,
 		    opacity: 0,
+		},
+		disabled: {
+			pointerEvents: "none"
 		}
 	}));
 
@@ -148,12 +150,20 @@ function Page(){
 
 	let pageContainer = UI.create().class(classes.pageContainer);
 	let heightController = Hidden({
-		children: pageContainer
+		onSetHeight: () => {
+			this.render.class().add(classes.disabled);
+		},
+		onUnhide: () => {
+			this.render.class().remove(classes.disabled);
+		},
+		children: pageContainer,
+		height: document.body.clientHeight - 70
 	});
 
 	this.setPage = (category) => {
 		if(!category){
 			activePage.class().add(classes.oldPage).add(classes.hide);
+			heightController.setHeight(document.body.clientHeight - 70);
 			setTimeout(() => {
 				activePage.destroy();
 				activePage = null;
@@ -182,6 +192,7 @@ function Page(){
 
 	this.render = UI.create()
 		.class(classes.root)
+			.add(classes.disabled)
 		.append(heightController)
 }
 
@@ -200,8 +211,7 @@ function SettingsContainer({onClose}){
 			width: "100%",
 			position: "absolute",
 			left: 0,
-			top: 0,
-			pointerEvents: "none"
+			top: 0			
 		},
 		hide: {
 			transform: "translateX(100%)"
@@ -265,7 +275,7 @@ function SettingsContainer({onClose}){
 		header.setTitle(locale(`${page || "settings"}_label`));
 		pageContainer.setPage(categoriesByName[page]);
 
-		if(page) this.render.style().add({width: "534px"});
+		if(page) this.render.style().add({width: "784px"});
 		else this.render.style().add({width: "450px"});
 	})
 

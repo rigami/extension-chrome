@@ -70,8 +70,6 @@ class Ripple extends UI{
 				.class()
 					.add(this._namespaceRoot)
 				.append(this)
-
-			return parent;
 		}
 	}
 

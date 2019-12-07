@@ -93,7 +93,7 @@ class OpenButton extends UI{
 		this.class()
 				.add(OpenButton.getNamespace("container"))
 			.append(this._label)
-			.append(ArrowDownIcon.create({
+			.append(ArrowDownIcon({
 				class: OpenButton.getNamespace("-arrow-icon")
 			}))
 			.event("click", onclick)

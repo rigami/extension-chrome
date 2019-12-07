@@ -17,8 +17,6 @@ class RippleCircle extends Ripple{
 				.class()
 					.add(this._namespaceRoot)
 				.append(this);
-
-			return parent;
 		}
 	}
 
