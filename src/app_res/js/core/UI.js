@@ -164,9 +164,12 @@ class UI{
 			}else{
 				content = typeof content == "function"? content() : content;
 				if(content.forEach){
-					content.forEach(el => this._root._dom.appendChild((el && el.render || el).html || el));
+					content.forEach(el => {
+						el = typeof el == "function"? el() : el;
+						if(el) this._root._dom.appendChild((el && el.render || el).html || el)
+					});
 				}else{
-					this._root._dom.appendChild((content && content.render || content).html || content);					
+					if(content) this._root._dom.appendChild((content && content.render || content).html || content);					
 				}
 			}
 			if(this._root._customEvents["appendcontent"]) this._root._dom.dispatchEvent(this._root._customEvents["appendcontent"]);

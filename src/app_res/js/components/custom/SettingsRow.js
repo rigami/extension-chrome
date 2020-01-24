@@ -1,9 +1,9 @@
 import UI from "../../core/UI.js";
 import Ripple from "../../core/Ripple.js";
-import { useStyles, useTheme } from "../../themes/style.js";
+import { useClasses, useTheme } from "../../themes/style.js";
 
-function SettingsRow({ component = "li", isRipple = true, icon, title, subtitle, action }){
-	const styles = useStyles(theme => ({
+function SettingsRow({ component = "li", isRipple = true, icon, title, subtitle, action, onClick }){
+	const classes = useClasses(theme => ({
 		root: {
 			padding: theme.spacing(4),
 			width: "100%",
@@ -21,6 +21,7 @@ function SettingsRow({ component = "li", isRipple = true, icon, title, subtitle,
 		    color: theme.palette.text.title.dark
 		},
 		subtitle: {
+			"$classIndex": 1,
 			fontSize: theme.typography.size.subtitle,
 			color: theme.palette.text.subtitle.dark,
 			marginTop: theme.spacing(.5)
@@ -40,31 +41,37 @@ function SettingsRow({ component = "li", isRipple = true, icon, title, subtitle,
 	let onClickListener;
 
 	this.render = UI.create()
-		.style(styles.root)
+		.class(classes.root)
 		.append(
 			icon && UI.create()
-				.style(styles.icon)
+				.class(classes.icon)
 				.append(icon)
 		)
 		.append(
 			UI.create()
-				.style(styles.textRoot)
+				.class(classes.textRoot)
 				.append(
-					(typeof title !== "string"? UI.create(title) : UI.create("h2").append(title)).style(styles.text)
+					(typeof title !== "string"? UI.create(title) : UI.create("h2").append(title))
+						.class(classes.text)
 				)
 				.append(
-					(typeof subtitle !== "string"? UI.create(subtitle) : UI.create("p").append(subtitle)).style({...styles.text, ...styles.subtitle})
+					(typeof subtitle !== "string"? UI.create(subtitle) : UI.create("p").append(subtitle))
+						.class(classes.text)
+							.add(classes.subtitle)
 				)
 		)
 		.append(
 			action && UI.create()
-				.style(styles.action)
+				.class(classes.action)
 				.append(typeof action === "function"? action((listener)=>{
 					onClickListener = listener;
 				}) : action)
 		)
 		.event()
-			.add("click", () => {if(onClickListener) onClickListener()})
+			.add("click", () => {
+				if(onClickListener) onClickListener();
+				if(onClick) onClick();
+			})
 
 	if(isRipple) Ripple.create(this.render);
 }

@@ -217,7 +217,8 @@ function SettingsContainer({onClose}){
 			transform: "translateX(100%)"
 		},
 		page: {
-			position: "relative"
+			position: "relative",
+			width: "450px"
 		},
 		smallDivider: {
 			width: "40px"

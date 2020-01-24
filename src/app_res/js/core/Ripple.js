@@ -42,7 +42,7 @@ class Circle extends UI{
 				.add("opacity", "0")
 
 		setTimeout(() => {
-			this.destroy();
+			//this.destroy();
 		}, 1000);
 	}
 

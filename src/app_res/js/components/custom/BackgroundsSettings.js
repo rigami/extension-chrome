@@ -6,6 +6,68 @@ import Divider from "../base/Divider.js";
 import SettingsRow from "./SettingsRow.js";
 import { useClasses } from "../../themes/style.js";
 import { getSafeValue as locale} from "../../utils/Locale.js";
+import {
+	ArrowRight as ArrowRightIcon
+} from "../../core/Icons.js";
+import { Store, observer } from "../../utils/Store.js";
+import Hidden from "../base/Hidden.js";
+
+function BackgroundSheduler(){
+	let container = UI.create();
+
+	SettingsRow({
+		title: locale("background_selection_method"),
+		subtitle: locale("background_selection_method_description"),
+		action: Dropdown.create({
+			onchange: (value, item, dropdown) => {
+
+			},
+			defaultValue: "random",
+			list: [
+				"random",
+				"constant"
+			].map(key => ({value: key, label: locale(key)}))
+		}),			
+		isRipple: false
+	}).render.insert(container);
+
+	SettingsRow({
+		title: locale("change_background_period"),
+		subtitle: locale("change_background_period_description"),
+		action: Dropdown.create({
+			onchange: (value, item, dropdown) => {
+
+			},
+			defaultValue: "every_open",
+			list: [
+				"every_open",
+				"every_1_hour",
+				"every_6_hours",
+				"every_12_hours"
+			].map(key => ({value: key, label: locale(key)}))
+		}),			
+		isRipple: false
+	}).render.insert(container);
+
+	SettingsRow({
+		title: locale("background_types"),
+		subtitle: locale("background_types_description"),
+		action: Dropdown.create({
+			onchange: (value, item, dropdown) => {
+
+			},
+			defaultValue: "images",
+			list: [
+				"images",
+				"videos",
+				"fill_color"
+			].map(key => ({value: key, label: locale(key)}))
+		}),			
+		isRipple: false
+	}).render.insert(container);
+
+	return container;
+}
 
 
 function BackgroundSettings(){
@@ -33,7 +95,7 @@ function BackgroundSettings(){
 	SettingsRow({
 		title: locale("my_library"),
 		subtitle: locale("you_count_backgrounds", 15),
-		action: () => {}
+		action: ArrowRightIcon({size: 22})
 	}).render.insert(page);
 
 	SettingsRow({
@@ -54,7 +116,7 @@ function BackgroundSettings(){
 	SettingsRow({
 		title: locale("my_library"),
 		subtitle: locale("you_count_backgrounds", 15),
-		action: () => {}
+		action: ArrowRightIcon({size: 22})
 	}).render.insert(page);
 
 	SettingsRow({
@@ -74,8 +136,12 @@ function BackgroundSettings(){
 		isRipple: false
 	}).render.insert(page);
 
-	["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].forEach(day => {
-		Divider().insert(page);
+	Divider().insert(page);
+
+	//By days
+	["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].forEach((day, index, { length }) => {
+		let [isUsed, setIsUsed, isUsedListener] = new Store(false);
+
 
 		SettingsRow({
 			title: locale(day),
@@ -86,11 +152,28 @@ function BackgroundSettings(){
 
 				onclick(() => {
 					checkbox.setValue(!checkbox.checked);
+					setIsUsed(!checkbox.checked);
 				});
 
 				return checkbox;
 			}
 		}).render.insert(page);
+
+		//BackgroundSheduler().insert(page);
+		observer({
+			element: () => Hidden({
+				children: [
+					BackgroundSheduler,
+					length !== index+1 && Divider
+				],
+				height: 0
+			}),
+			mutation: (sheduler, isUsed) => {
+				if(isUsed) sheduler.hide();
+				else sheduler.unhide();
+			},
+			listener: isUsedListener
+		}).insert(page);
 	});
 
 	return page;

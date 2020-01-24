@@ -29,6 +29,8 @@ function Hidden({onUnhide, onHide, onSetHeight, children, classes = {}, height})
 
 		let height = wrp.html.clientHeight;
 
+		console.log(height)
+
 		if(timer) clearTimeout(timer);
 
 		this.render
@@ -47,7 +49,7 @@ function Hidden({onUnhide, onHide, onSetHeight, children, classes = {}, height})
 			timer = setTimeout(() => {
 				if(onHide) onHide();
 			}, 300);
-		});			
+		}, 100);		
 	}
 	this.unhide = () => {
 
