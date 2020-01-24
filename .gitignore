@@ -1,4 +1,2 @@
-# Specify filepatterns you want git to ignore.
-
-Versions/
-temporary files/
+node_modules
+temp
