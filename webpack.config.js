@@ -6,9 +6,8 @@ module.exports = {
     context: path.resolve(__dirname, "src"),
     entry: './index.js',
     output: {
-        publicPath: '/',
-        filename: 'bundle.js',
-        path: '/build',
+        filename: '[name].bundle.js',
+        path: path.resolve(__dirname, 'build'),
     },
     devtool: 'inline-source-map',
     devServer: {
@@ -40,5 +39,10 @@ module.exports = {
             'react-dom': 'preact/compat',
             'ui-pages': '/ui-pages'
         }
-    }
+    },
+    optimization: {
+        splitChunks: {
+            chunks: 'all'
+        },
+    },
 };
