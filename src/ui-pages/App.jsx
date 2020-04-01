@@ -1,22 +1,18 @@
-import React, { useState } from "preact/compat";
+import React from "preact/compat";
 import { h, Component, render, Fragment } from "preact";
-import { Button, CssBaseline  } from "@material-ui/core";
+import { CssBaseline } from "@material-ui/core";
 
-import Workspace from "./Workspace";
-import WorkspaceMenu from "../ui-components/WorkspaceMenu";
 import Menu from "../ui-components/Menu";
+import Desktop from "../ui-components/Desktop";
+
 
 function App() {
-    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <Fragment>
             <CssBaseline />
-            <Workspace>
-
-            </Workspace>
-            <WorkspaceMenu onMenu={() => setIsOpen(true)}/>
-            <Menu isOpen={isOpen} onClose={() => setIsOpen(false)} />
+            <Desktop />
+            <Menu />
         </Fragment>
     );
 }

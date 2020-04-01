@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function CategoryWrapper({ category, isOpen, onOpen, onClose, children }) {
+function CategoryWrapper({ category, isOpen, onOpen, onClose, children, width }) {
     const classes = useStyles();
     const collapseRef = useRef(null);
     const itemRef = useRef(null);
@@ -57,7 +57,7 @@ function CategoryWrapper({ category, isOpen, onOpen, onClose, children }) {
                 in={isOpen}
                 ref={collapseRef}
                 unmountOnExit
-                style={{ top: offsetTop }}
+                style={{ top: offsetTop, width: width.wide }}
                 className={classes.pageRoot}
             >
                 <Box className={classes.pageWrapper}>
@@ -77,6 +77,7 @@ function CategoryWrapper({ category, isOpen, onOpen, onClose, children }) {
                 className={classes.row}
                 ref={itemRef}
                 onClick={() => onOpen()}
+                style={{ width: width.default }}
             >
                 <ListItemAvatar>
                     <Avatar>
