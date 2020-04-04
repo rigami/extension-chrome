@@ -37,7 +37,10 @@ module.exports = {
         alias: {
             'react': 'preact/compat',
             'react-dom': 'preact/compat',
-            'ui-pages': '/ui-pages'
+            'ui': '/ui',
+            'i18n': '/i18n',
+            'dict': '/dict',
+            'config': '/config',
         }
     },
     optimization: {
