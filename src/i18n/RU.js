@@ -16,6 +16,10 @@ export default {
                     [BG_TYPE.VIDEO]: "Видео",
                     [BG_TYPE.ANIMATION]: "Анимация",
                     [BG_TYPE.IMAGE]: "Изображение",
+                    upload_from_computer: "Загрузите фон с компьютера",
+                    get_from_library: "Получить из библиотеки",
+                    set_bg: "Устновать фон",
+                    remove_bg: "Удаить фон",
                 },
                 dimming_power: {
                     title: "Сила затемнения фона",

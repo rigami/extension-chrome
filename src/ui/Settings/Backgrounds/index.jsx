@@ -65,7 +65,7 @@ function BackgroundsMenu({onSelect, onClose}) {
                 title={locale.settings.backgrounds.scheduler.selection_method.title}
                 description={locale.settings.backgrounds.scheduler.selection_method.description}
                 action={{
-                    type: SettingsRow.TYPE.DROPDOWN,
+                    type: SettingsRow.TYPE.SELECT,
                     locale: locale.settings.backgrounds.scheduler.selection_method,
                     defaultValue: settings.backgrounds.selection_method,
                     onChange: (newValue, oldValue) => {
@@ -80,7 +80,7 @@ function BackgroundsMenu({onSelect, onClose}) {
                 title={locale.settings.backgrounds.scheduler.change_interval.title}
                 description={locale.settings.backgrounds.scheduler.change_interval.description}
                 action={{
-                    type: SettingsRow.TYPE.DROPDOWN,
+                    type: SettingsRow.TYPE.SELECT,
                     locale: locale.settings.backgrounds.scheduler.change_interval,
                     defaultValue: settings.backgrounds.change_interval,
                     onChange: (newValue, oldValue) => {
@@ -99,7 +99,7 @@ function BackgroundsMenu({onSelect, onClose}) {
                 title={locale.settings.backgrounds.scheduler.bg_type.title}
                 description={locale.settings.backgrounds.scheduler.bg_type.description}
                 action={{
-                    type: SettingsRow.TYPE.DROPDOWN,
+                    type: SettingsRow.TYPE.MULTISELECT,
                     locale: locale.settings.backgrounds.scheduler.bg_type,
                     defaultValue: settings.backgrounds.bg_type,
                     onChange: (newValue, oldValue) => {

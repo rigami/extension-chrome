@@ -10,6 +10,8 @@ import {
     Slider,
     Switch,
     Box,
+    ListItemIcon,
+    Checkbox,
 } from "@material-ui/core";
 import {
     NavigateNextRounded as ArrowRightIcon,
@@ -23,7 +25,7 @@ import locale from "../../i18n/RU";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        paddingRight: 16,
+        paddingRight: theme.spacing(4),
         width: 750,
         flexDirection: 'column',
         alignItems: 'stretch',
@@ -32,7 +34,7 @@ const useStyles = makeStyles(theme => ({
         width: 220,
         justifyContent: 'flex-end',
         display: 'flex',
-        marginRight: 16,
+        marginRight: theme.spacing(4),
     },
     noPointerEvents: {
         pointerEvents: 'none',
@@ -51,7 +53,8 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
-        paddingLeft: '56px',
+        paddingLeft: 56,
+        paddingBottom: theme.spacing(1.5),
     },
 }));
 
@@ -63,7 +66,8 @@ class SettingsRow extends Component {
     static TYPE = {
         LINK: "link",
         SLIDER: "slider",
-        DROPDOWN: "dropdown",
+        SELECT: "select",
+        MULTISELECT: "multiselect",
         CHECKBOX: "checkbox",
     };
 
@@ -97,15 +101,34 @@ class SettingsRow extends Component {
                             {action.type === SettingsRow.TYPE.SLIDER && (
                                 <Slider {...action} valueLabelDisplay="auto"/>
                             )}
-                            {action.type === SettingsRow.TYPE.DROPDOWN && (
+                            {action.type === SettingsRow.TYPE.SELECT && (
                                 <Select
+                                    {...action}
                                     value={action.defaultValue}
                                     variant="outlined"
                                     style={{ width: '100%' }}
-                                    {...action}
                                 >
                                     {action.values.map((value) => (
-                                        <MenuItem value={value}>{action.locale && action.locale[value] || value}</MenuItem>
+                                        <MenuItem key={value} value={value}>
+                                            {action.locale && action.locale[value] || value}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            )}
+                            {action.type === SettingsRow.TYPE.MULTISELECT && (
+                                <Select
+                                    {...action}
+                                    value={action.defaultValue}
+                                    variant="outlined"
+                                    style={{ width: '100%' }}
+                                    multiple
+                                    renderValue={(selected) => selected.map(value => action.locale[value || value]).join(', ')}
+                                >
+                                    {action.values.map((value) => (
+                                        <MenuItem key={value} value={value}>
+                                            <Checkbox color="primary" checked={action.selected && action.selected.find(el => el === value)} />
+                                            <ListItemText primary={action.locale && action.locale[value] || value} />
+                                        </MenuItem>
                                     ))}
                                 </Select>
                             )}
