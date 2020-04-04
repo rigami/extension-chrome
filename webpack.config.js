@@ -41,6 +41,7 @@ module.exports = {
             'i18n': '/i18n',
             'dict': '/dict',
             'config': '/config',
+            'themes': '/themes',
         }
     },
     optimization: {

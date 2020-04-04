@@ -9,6 +9,7 @@ import {
     Select,
     Slider,
     Switch,
+    Box,
 } from "@material-ui/core";
 import {
     NavigateNextRounded as ArrowRightIcon,
@@ -22,8 +23,10 @@ import locale from "../../i18n/RU";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        paddingRight: 284,
+        paddingRight: 16,
         width: 750,
+        flexDirection: 'column',
+        alignItems: 'stretch',
     },
     secondaryAction: {
         width: 220,
@@ -33,7 +36,23 @@ const useStyles = makeStyles(theme => ({
     },
     noPointerEvents: {
         pointerEvents: 'none',
-    }
+    },
+    rowWrapper: {
+        display: 'flex',
+        position: 'relative',
+        textAlign: 'left',
+        alignItems: 'center',
+        paddingRight: 284,
+        width: '100%',
+
+    },
+    bodyWrapper: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        paddingLeft: '56px',
+    },
 }));
 
 class SettingsRow extends Component {
@@ -48,7 +67,7 @@ class SettingsRow extends Component {
         CHECKBOX: "checkbox",
     };
 
-    render({ title, description, action }) {
+    render({ title, description, action, children }) {
         const classes = useStyles();
 
         return (
@@ -59,43 +78,48 @@ class SettingsRow extends Component {
                 button={action && action.type === SettingsRow.TYPE.LINK}
                 onClick={action && action.type === SettingsRow.TYPE.LINK && action.onClick}
             >
-                <ListItemAvatar/>
-                <ListItemText
-                    primary={title}
-                    secondary={description}
-                />
-                {action && (
-                    <ListItemSecondaryAction
-                        className={clsx(
-                            action.type === SettingsRow.TYPE.LINK && classes.noPointerEvents,
-                            classes.secondaryAction
-                        )}
-                    >
-                        {action.type === SettingsRow.TYPE.LINK && (
-                            <ArrowRightIcon/>
-                        )}
-                        {action.type === SettingsRow.TYPE.SLIDER && (
-                            <Slider {...action}/>
-                        )}
-                        {action.type === SettingsRow.TYPE.DROPDOWN && (
-                            <Select
-                                value={action.defaultValue}
-                                variant="outlined"
-                                style={{ width: '100%' }}
-                                {...action}
-                            >
-                                {action.values.map((value) => (
-                                    <MenuItem value={value}>{action.locale && action.locale[value] || value}</MenuItem>
-                                ))}
-                            </Select>
-                        )}
-                        {action.type === SettingsRow.TYPE.CHECKBOX && (
-                            <Switch
-                                edge="end"
-                                {...action}
-                            />
-                        )}
-                    </ListItemSecondaryAction>
+                <div className={classes.rowWrapper}>
+                    <ListItemAvatar/>
+                    <ListItemText
+                        primary={title}
+                        secondary={description}
+                    />
+                    {action && (
+                        <ListItemSecondaryAction
+                            className={clsx(
+                                action.type === SettingsRow.TYPE.LINK && classes.noPointerEvents,
+                                classes.secondaryAction
+                            )}
+                        >
+                            {action.type === SettingsRow.TYPE.LINK && (
+                                <ArrowRightIcon/>
+                            )}
+                            {action.type === SettingsRow.TYPE.SLIDER && (
+                                <Slider {...action} valueLabelDisplay="auto"/>
+                            )}
+                            {action.type === SettingsRow.TYPE.DROPDOWN && (
+                                <Select
+                                    value={action.defaultValue}
+                                    variant="outlined"
+                                    style={{ width: '100%' }}
+                                    {...action}
+                                >
+                                    {action.values.map((value) => (
+                                        <MenuItem value={value}>{action.locale && action.locale[value] || value}</MenuItem>
+                                    ))}
+                                </Select>
+                            )}
+                            {action.type === SettingsRow.TYPE.CHECKBOX && (
+                                <Switch
+                                    edge="end"
+                                    {...action}
+                                />
+                            )}
+                        </ListItemSecondaryAction>
+                    )}
+                </div>
+                {children && (
+                    <Box className={classes.bodyWrapper}>{children}</Box>
                 )}
             </ListItem>
         );

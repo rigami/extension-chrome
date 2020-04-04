@@ -1,37 +1,55 @@
 import React, { useState, useRef } from "preact/compat";
 import { h, Component, render, Fragment } from "preact";
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
-import {IconButton, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
+import {IconButton, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, Typography } from "@material-ui/core";
 import {ArrowBackRounded as BackIcon} from "@material-ui/icons";
 import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        paddingTop: theme.spacing(2),
-        paddingBottom: theme.spacing(2),
+        backgroundColor: fade(theme.palette.common.white, 0.8),
+    },
+    toolbar: {
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
     },
     backButton: {
         padding: theme.spacing(1),
+        marginRight: theme.spacing(2),
         color: "#000",
     },
     title: {
         fontSize: '22px',
         fontWeight: 800,
-    }
+    },
+    actions: {
+        marginLeft: theme.spacing(4),
+    },
+    grow: {
+        flexGrow: 1,
+    },
 }));
 
-function PageHeader({ title, onBack }) {
+function PageHeader({ title, onBack, actions }) {
     const classes = useStyles();
 
     return (
-        <ListItem className={classes.root}>
-            <ListItemIcon>
-                <IconButton className={classes.backButton} onClick={() => onBack()}>
+        <AppBar position="sticky" color="transparent" elevation={0} className={classes.root}>
+            <Toolbar className={classes.toolbar}>
+                <IconButton
+                    className={classes.backButton}
+                    onClick={() => onBack()}
+                >
                     <BackIcon />
                 </IconButton>
-            </ListItemIcon>
-            <ListItemText classes={{ primary: classes.title }} primary={title} />
-        </ListItem>
+                <Typography className={classes.title} variant="h6" noWrap>{title}</Typography>
+                <div className={classes.actions}>
+                    {actions}
+                </div>
+                <div className={classes.grow} />
+            </Toolbar>
+        </AppBar>
     );
 }
 

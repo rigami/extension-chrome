@@ -12,6 +12,10 @@ export default {
                 library: {
                     title: "Ваша библиотека",
                     description: (count_bg) => `У вас сейчас ${count_bg} фонов`,
+                    [BG_TYPE.FILL_COLOR]: "Сплошной цвет",
+                    [BG_TYPE.VIDEO]: "Видео",
+                    [BG_TYPE.ANIMATION]: "Анимация",
+                    [BG_TYPE.IMAGE]: "Изображение",
                 },
                 dimming_power: {
                     title: "Сила затемнения фона",

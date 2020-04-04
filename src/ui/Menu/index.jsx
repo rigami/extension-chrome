@@ -14,6 +14,8 @@ function Menu() {
         setIsOpen(false);
     };
 
+    console.log(stack)
+
     return (
         <Fragment>
             <FabMenu
@@ -26,7 +28,7 @@ function Menu() {
                 onClose={() => handleClose()}
 
             >
-                <List>
+                <List disablePadding>
                     {stack[stack.length - 1]({
                         onClose: () => {
                             if (stack.length === 1) {

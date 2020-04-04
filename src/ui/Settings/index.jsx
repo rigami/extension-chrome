@@ -70,7 +70,7 @@ const additional = [
     },
 ];
 
-function DrawerMenu({ onSelect, onClose }) {
+function GeneralMenu({ onSelect, onClose }) {
     const classes = useStyles();
 
     return (
@@ -111,4 +111,4 @@ function DrawerMenu({ onSelect, onClose }) {
     );
 }
 
-export default DrawerMenu;
+export default GeneralMenu;
