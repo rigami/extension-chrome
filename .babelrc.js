@@ -8,7 +8,8 @@ module.exports = {
         "@babel/preset-react",
     ],
     "plugins": [
-        "@babel/plugin-proposal-class-properties",
+        ["@babel/plugin-proposal-decorators", { "legacy": true }],
+        ["@babel/plugin-proposal-class-properties", { "loose": true }],
         ["@babel/plugin-transform-react-jsx", {
             "pragma": "h",
             "pragmaFrag": "Fragment"
@@ -22,6 +23,8 @@ module.exports = {
                 'i18n': path.resolve(__dirname, 'src/i18n'),
                 'dict': path.resolve(__dirname, 'src/dict'),
                 'config': path.resolve(__dirname, 'src/config'),
+                'themes': path.resolve(__dirname, 'src/themes'),
+                'stores': path.resolve(__dirname, 'src/stores'),
             }
         }]
     ]

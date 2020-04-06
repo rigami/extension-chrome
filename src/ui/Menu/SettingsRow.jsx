@@ -31,10 +31,9 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'stretch',
     },
     secondaryAction: {
-        width: 220,
+        width: 252,
         justifyContent: 'flex-end',
         display: 'flex',
-        marginRight: theme.spacing(4),
     },
     noPointerEvents: {
         pointerEvents: 'none',
@@ -71,7 +70,7 @@ class SettingsRow extends Component {
         CHECKBOX: "checkbox",
     };
 
-    render({ title, description, action, children }) {
+    render({title, description, action, children}) {
         const classes = useStyles();
 
         return (
@@ -104,9 +103,10 @@ class SettingsRow extends Component {
                             {action.type === SettingsRow.TYPE.SELECT && (
                                 <Select
                                     {...action}
-                                    value={action.defaultValue}
+                                    value={action.value}
                                     variant="outlined"
-                                    style={{ width: '100%' }}
+                                    style={{width: '100%'}}
+                                    IconComponent={ArrowBottomIcon}
                                 >
                                     {action.values.map((value) => (
                                         <MenuItem key={value} value={value}>
@@ -118,18 +118,36 @@ class SettingsRow extends Component {
                             {action.type === SettingsRow.TYPE.MULTISELECT && (
                                 <Select
                                     {...action}
-                                    value={action.defaultValue}
+                                    value={action.value}
                                     variant="outlined"
                                     style={{ width: '100%' }}
                                     multiple
-                                    renderValue={(selected) => selected.map(value => action.locale[value || value]).join(', ')}
+                                    IconComponent={ArrowBottomIcon}
+                                    displayEmpty
+                                    renderValue={(selected) => {
+                                        if (action.value.length === 0) {
+                                            return locale.global.nothing_selected;
+                                        } else if (action.values.length === action.value.length) {
+                                            return locale.global.all;
+                                        } else {
+                                            return selected
+                                                .map(value => action.locale && action.locale[value] || value)
+                                                .join(', ');
+                                        }
+                                    }}
                                 >
-                                    {action.values.map((value) => (
-                                        <MenuItem key={value} value={value}>
-                                            <Checkbox color="primary" checked={action.selected && action.selected.find(el => el === value)} />
-                                            <ListItemText primary={action.locale && action.locale[value] || value} />
-                                        </MenuItem>
-                                    ))}
+                                    {action.values.map((value) => {
+                                        console.log(action.value, action.value.find(el => el === value))
+                                        return (
+                                            <MenuItem key={value+action.value.find(el => el === value)} value={value} >
+                                                <Checkbox
+                                                    color="primary"
+                                                    checked={action.value.find(el => el === value)}
+                                                />
+                                                <ListItemText primary={action.locale && action.locale[value] || value}/>
+                                            </MenuItem>
+                                        );
+                                    })}
                                 </Select>
                             )}
                             {action.type === SettingsRow.TYPE.CHECKBOX && (

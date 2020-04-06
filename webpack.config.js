@@ -42,6 +42,7 @@ module.exports = {
             'dict': '/dict',
             'config': '/config',
             'themes': '/themes',
+            'stores': '/stores',
         }
     },
     optimization: {
