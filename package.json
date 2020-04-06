@@ -1,0 +1,45 @@
+{
+  "name": "clock-tab",
+  "version": "1.0.0",
+  "description": "<h1>ClockTab</h1>",
+  "main": "index.js",
+  "dependencies": {
+    "@material-ui/core": "^4.9.8",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/styles": "latest",
+    "clsx": "^1.1.0",
+    "mobx": "^5.15.4",
+    "mobx-react": "^6.1.8",
+    "preact": "^10.3.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-decorators": "^7.8.3",
+    "@babel/plugin-transform-react-jsx": "^7.9.4",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "babel-loader": "^8.1.0",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "babel-plugin-transform-decorators": "^6.24.1",
+    "clean-webpack-plugin": "^3.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.1"
+  },
+  "scripts": {
+    "build": "webpack --mode=production",
+    "start": "webpack-dev-server --open --mode development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Danilkinkin/ClockTab.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Danilkinkin/ClockTab/issues"
+  },
+  "homepage": "https://github.com/Danilkinkin/ClockTab#readme"
+}
