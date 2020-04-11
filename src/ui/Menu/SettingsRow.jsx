@@ -12,6 +12,7 @@ import {
     Box,
     ListItemIcon,
     Checkbox,
+    Menu,
 } from "@material-ui/core";
 import {
     NavigateNextRounded as ArrowRightIcon,
@@ -136,18 +137,15 @@ class SettingsRow extends Component {
                                         }
                                     }}
                                 >
-                                    {action.values.map((value) => {
-                                        console.log(action.value, action.value.find(el => el === value))
-                                        return (
-                                            <MenuItem key={value+action.value.find(el => el === value)} value={value} >
-                                                <Checkbox
-                                                    color="primary"
-                                                    checked={action.value.find(el => el === value)}
-                                                />
-                                                <ListItemText primary={action.locale && action.locale[value] || value}/>
-                                            </MenuItem>
-                                        );
-                                    })}
+                                    {action.values.map((value) => (
+                                        <MenuItem key={value} value={value}>
+                                            <Checkbox
+                                                color="primary"
+                                                checked={action.value.indexOf(value) > -1}
+                                            />
+                                            <ListItemText primary={action.locale && action.locale[value] || value}/>
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                             )}
                             {action.type === SettingsRow.TYPE.CHECKBOX && (

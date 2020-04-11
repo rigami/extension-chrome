@@ -14,8 +14,6 @@ function Menu() {
         setIsOpen(false);
     };
 
-    console.log(stack)
-
     return (
         <Fragment>
             <FabMenu

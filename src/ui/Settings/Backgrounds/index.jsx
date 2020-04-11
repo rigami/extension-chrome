@@ -1,6 +1,6 @@
 import React, {useState, useRef} from "preact/compat";
 import {h, Component, render, Fragment} from "preact";
-import { observer } from "mobx-react"
+import { observer, inject } from "mobx-react"
 import {BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE} from "dict";
 import settings from "config/settings";
 import {
@@ -19,8 +19,6 @@ import SectionHeader from "ui/Menu/SectionHeader";
 import SettingsRow from "ui/Menu/SettingsRow";
 import LibraryPage from "./Library";
 
-import backgroundsStore from "stores/backgrounds";
-
 
 function BGCard() {
     return (
@@ -30,10 +28,7 @@ function BGCard() {
     );
 }
 
-function BackgroundsMenu({onSelect, onClose}) {
-
-    console.log(backgroundsStore.bg_type)
-
+function BackgroundsMenu({ backgroundsStore, onSelect, onClose}) {
     return (
         <Fragment>
             <PageHeader title={locale.settings.backgrounds.title} onBack={() => onClose()}/>
@@ -59,6 +54,7 @@ function BackgroundsMenu({onSelect, onClose}) {
                     type: SettingsRow.TYPE.SLIDER,
                     value: 30,
                     onChange: (newValue, oldValue) => {
+
                     },
                     min: 0,
                     max: 100,
@@ -72,7 +68,7 @@ function BackgroundsMenu({onSelect, onClose}) {
                 action={{
                     type: SettingsRow.TYPE.SELECT,
                     locale: locale.settings.backgrounds.scheduler.selection_method,
-                    value: backgroundsStore.selection_method,
+                    value: backgroundsStore.selectionMethod,
                     onChange: (event) => backgroundsStore.setSelectionMethod(event.target.value),
                     values: [
                         BG_SELECT_MODE.RANDOM,
@@ -86,7 +82,7 @@ function BackgroundsMenu({onSelect, onClose}) {
                 action={{
                     type: SettingsRow.TYPE.SELECT,
                     locale: locale.settings.backgrounds.scheduler.change_interval,
-                    value: backgroundsStore.change_interval,
+                    value: backgroundsStore.changeInterval,
                     onChange: (event) => backgroundsStore.setChangeInterval(event.target.value),
                     values: [
                         BG_CHANGE_INTERVAL.OPEN_TAB,
@@ -104,7 +100,7 @@ function BackgroundsMenu({onSelect, onClose}) {
                 action={{
                     type: SettingsRow.TYPE.MULTISELECT,
                     locale: locale.settings.backgrounds.scheduler.bg_type,
-                    value: backgroundsStore.bg_type,
+                    value: backgroundsStore.bgType,
                     onChange: (event) => {
                         console.log(event.target.value);
                         backgroundsStore.setBgType(event.target.value);
@@ -121,4 +117,4 @@ function BackgroundsMenu({onSelect, onClose}) {
     );
 }
 
-export default observer(BackgroundsMenu);
+export default inject('backgroundsStore')(observer(BackgroundsMenu));

@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "preact/compat";
+import React, {useState, useRef, useEffect} from "preact/compat";
 import {h, Component, render, Fragment} from "preact";
 import {BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE} from "dict";
 import settings from "config/settings";
@@ -17,13 +17,14 @@ import {
     DeleteForeverRounded as DeleteIcon,
     CheckRounded as SetIcon,
 } from "@material-ui/icons";
-import { fade } from '@material-ui/core/styles/colorManipulator';
+import {fade} from '@material-ui/core/styles/colorManipulator';
 
 import locale from "i18n/RU";
 import PageHeader from "ui/Menu/PageHeader";
 import SectionHeader from "ui/Menu/SectionHeader";
 import SettingsRow from "ui/Menu/SettingsRow";
 import {makeStyles} from "@material-ui/core/styles";
+import {inject, observer} from "mobx-react";
 
 const useStyles = makeStyles((theme) => ({
     bgWrapper: {
@@ -35,13 +36,14 @@ const useStyles = makeStyles((theme) => ({
     },
     bgCard: {
         width: '100%',
-        height: theme.spacing(20),
         position: 'relative',
     },
     bgCardWrapper: {
-        paddingRight: theme.spacing(0.5),
-        paddingBottom: theme.spacing(0.5),
+        marginRight: theme.spacing(0.5),
+        marginBottom: theme.spacing(0.5),
         flexBasis: '25%',
+        height: theme.spacing(20),
+        position: 'relative',
     },
     bgActionsWrapper: {
         position: 'absolute',
@@ -75,35 +77,50 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function BGCard() {
+function BGCard({id, src}) {
     const classes = useStyles();
 
     return (
-        <Box className={classes.bgCardWrapper}>
-            <Avatar variant="square" className={classes.bgCard}>
-                <WallpaperIcon fontSize="large"/>
-                <Box className={classes.bgActionsWrapper}>
-                    <Tooltip title={locale.settings.backgrounds.general.library.set_bg}>
-                        <IconButton className={classes.setIcon}>
-                            <SetIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Divider orientation="vertical" variant="middle" className={classes.bgActionDivider} />
-                    <Tooltip title={locale.settings.backgrounds.general.library.remove_bg}>
-                        <IconButton className={classes.deleteIcon}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
-                </Box>
-            </Avatar>
+        <Box className={classes.bgCardWrapper} style={{ backgroundImage: `url('${src}')` }}>
+            {!src && (
+                <Avatar variant="square" className={classes.bgCard} >
+                    <WallpaperIcon fontSize="large"/>
+                </Avatar>
+            )}
+            <Box className={classes.bgActionsWrapper}>
+                <Tooltip title={locale.settings.backgrounds.general.library.set_bg}>
+                    <IconButton className={classes.setIcon}>
+                        <SetIcon/>
+                    </IconButton>
+                </Tooltip>
+                <Divider orientation="vertical" variant="middle" className={classes.bgActionDivider}/>
+                <Tooltip title={locale.settings.backgrounds.general.library.remove_bg}>
+                    <IconButton className={classes.deleteIcon}>
+                        <DeleteIcon/>
+                    </IconButton>
+                </Tooltip>
+            </Box>
         </Box>
     );
 }
 
-function LibraryMenu({onSelect, onClose}) {
+function LibraryMenu({backgroundsStore, onSelect, onClose}) {
     const classes = useStyles();
+    const [bgs, setBgs] = useState(null);
+    const [state, setState] = useState('pending');
 
-    console.log(locale)
+
+    useEffect(() => {
+        backgroundsStore.getAllBGs()
+            .then((values) => {
+                setBgs(values);
+                setState('done');
+            })
+            .catch((e) => {
+                setState('failed');
+                console.error("failed", e)
+            });
+    }, []);
 
     return (
         <Fragment>
@@ -116,67 +133,39 @@ function LibraryMenu({onSelect, onClose}) {
                             variant="contained"
                             disableElevation
                             color="primary"
-                            startIcon={<UploadFromComputerIcon />}
-                            style={{ marginRight: 16 }}
+                            startIcon={<UploadFromComputerIcon/>}
+                            style={{marginRight: 16}}
                         >
                             {locale.settings.backgrounds.general.library.upload_from_computer}
                         </Button>
                         <Button
                             variant="outlined"
                             color="primary"
-                            startIcon={<GetFromLibraryIcon />}
+                            startIcon={<GetFromLibraryIcon/>}
                         >
                             {locale.settings.backgrounds.general.library.get_from_library}
                         </Button>
                     </Fragment>
                 )}
             />
-            <SectionHeader title={locale.settings.backgrounds.general.library[BG_TYPE.IMAGE]} />
-            <Box className={classes.bgWrapper}>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-            </Box>
-            <SectionHeader title={locale.settings.backgrounds.general.library[BG_TYPE.ANIMATION]} />
-            <Box className={classes.bgWrapper}>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-            </Box>
-            <SectionHeader title={locale.settings.backgrounds.general.library[BG_TYPE.VIDEO]} />
-            <Box className={classes.bgWrapper}>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-            </Box>
-            <SectionHeader title={locale.settings.backgrounds.general.library[BG_TYPE.FILL_COLOR]} />
-            <Box className={classes.bgWrapper}>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-            </Box>
+            {state === 'pending' && (
+                "Загрузка..."
+            )}
+            {state === 'done' && Object.keys(BG_TYPE).filter((BGType) => bgs.filter(({type}) => type === BG_TYPE[BGType]).length > 0).map((BGType) => (
+                <Fragment>
+                    <SectionHeader title={locale.settings.backgrounds.general.library[BG_TYPE[BGType]]}/>
+                    <Box className={classes.bgWrapper}>
+                        {bgs.filter(({type}) => type === BG_TYPE[BGType]).map((bg) => (
+                            <BGCard bgId={bg.id} src={bg.src}/>
+                        ))}
+                    </Box>
+                </Fragment>
+            ))}
+            {state === 'failed' && (
+                "Ошибка загрузки"
+            )}
         </Fragment>
     );
 }
 
-export default LibraryMenu;
+export default inject('backgroundsStore')(observer(LibraryMenu));
