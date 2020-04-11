@@ -13,6 +13,7 @@ module.exports = {
     devServer: {
         contentBase: '/build',
         hot: true,
+        open: false,
     },
     plugins: [
         new CleanWebpackPlugin(),
@@ -43,6 +44,7 @@ module.exports = {
             'config': '/config',
             'themes': '/themes',
             'stores': '/stores',
+            'utils': '/utils',
         }
     },
     optimization: {
