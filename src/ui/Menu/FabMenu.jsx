@@ -27,9 +27,9 @@ function FabMenu({ onOpenMenu, onRefreshBackground }) {
         if (!rootAl.current) return;
 
         const {x, y, height, width} = rootAl.current.getBoundingClientRect();
-        const cX = (x + width * 0.5);
-        const cY = (y + height * 0.5);
-        let dist = Math.abs(cX - e.pageX) + Math.abs(cY - e.pageY);
+        const a = Math.abs((x + width * 0.5) - e.pageX);
+        const b = Math.abs((y + height * 0.5) - e.pageY);
+        let dist = 0.96 * Math.max(a, b) + 0.4 * Math.min(a, b);
         dist = ( dist > 700 ? 700 : dist < 160 ? 160 : dist ) - 160;
 
         setDistance(1 - dist / 540);
