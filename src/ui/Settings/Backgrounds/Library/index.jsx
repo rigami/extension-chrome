@@ -1,13 +1,15 @@
 import React, {useState, useRef, useEffect} from "preact/compat";
 import {h, Component, render, Fragment} from "preact";
 import {BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE} from "dict";
-import settings from "config/settings";
 import {
     Box,
     Avatar,
     Button,
     IconButton,
-    Divider, Tooltip,
+    Divider,
+    Tooltip,
+    CircularProgress,
+    Typography,
 } from "@material-ui/core";
 import {
     WallpaperRounded as WallpaperIcon,
@@ -18,6 +20,7 @@ import {
     CheckRounded as SetIcon,
 } from "@material-ui/icons";
 import {fade} from '@material-ui/core/styles/colorManipulator';
+import enqueueSnackbar, {useSnackbar} from 'notistack';
 
 import locale from "i18n/RU";
 import PageHeader from "ui/Menu/PageHeader";
@@ -74,16 +77,26 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: fade(theme.palette.common.white, 0.5),
         height: 30,
         width: 2,
-    }
+    },
+    centerPage: {
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    input: {
+        display: 'none',
+    },
 }));
 
 function BGCard({id, src}) {
     const classes = useStyles();
 
     return (
-        <Box className={classes.bgCardWrapper} style={{ backgroundImage: `url('${src}')` }}>
+        <Box className={classes.bgCardWrapper} style={{backgroundImage: `url('${src}')`}}>
             {!src && (
-                <Avatar variant="square" className={classes.bgCard} >
+                <Avatar variant="square" className={classes.bgCard}>
                     <WallpaperIcon fontSize="large"/>
                 </Avatar>
             )}
@@ -106,6 +119,8 @@ function BGCard({id, src}) {
 
 function LibraryMenu({backgroundsStore, onSelect, onClose}) {
     const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar();
+
     const [bgs, setBgs] = useState(null);
     const [state, setState] = useState('pending');
 
@@ -118,7 +133,7 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
             })
             .catch((e) => {
                 setState('failed');
-                console.error("failed", e)
+                console.error("Failed load bg`s from db:", e)
             });
     }, []);
 
@@ -129,27 +144,56 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
                 onBack={() => onClose()}
                 actions={(
                     <Fragment>
-                        <Button
-                            variant="contained"
-                            disableElevation
-                            color="primary"
-                            startIcon={<UploadFromComputerIcon/>}
-                            style={{marginRight: 16}}
-                        >
-                            {locale.settings.backgrounds.general.library.upload_from_computer}
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            startIcon={<GetFromLibraryIcon/>}
-                        >
-                            {locale.settings.backgrounds.general.library.get_from_library}
-                        </Button>
+                        <input
+                            className={classes.input}
+                            id="upload-from-system"
+                            multiple
+                            type="file"
+                            accept="video/*,image/*"
+                            onChange={(event) => {
+                                if (event.srcElement.files.length === 0) return;
+
+                                backgroundsStore.loadBGsToLocalCatalog(event.srcElement.files)
+                                    .then(() => enqueueSnackbar("Все фоны загружены", {variant: 'success'}))
+                                    .catch(() => enqueueSnackbar("Не удалось загрузить фоны", {variant: 'error'}))
+                                    .finally(() => {
+                                        console.log(event);
+
+                                        event.srcElement.files = null;
+                                    })
+                            }}
+                        />
+                        <label htmlFor="upload-from-system">
+                            <Button
+                                variant="contained"
+                                component="span"
+                                disableElevation
+                                color="primary"
+                                startIcon={<UploadFromComputerIcon/>}
+                                style={{marginRight: 16}}
+                            >
+                                {locale.settings.backgrounds.general.library.upload_from_computer}
+                            </Button>
+                        </label>
+                        <Tooltip title="Пока недоступно">
+                            <div>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    startIcon={<GetFromLibraryIcon/>}
+                                    disabled
+                                >
+                                    {locale.settings.backgrounds.general.library.get_from_library}
+                                </Button>
+                            </div>
+                        </Tooltip>
                     </Fragment>
                 )}
             />
             {state === 'pending' && (
-                "Загрузка..."
+                <Box className={classes.centerPage}>
+                    <CircularProgress/>
+                </Box>
             )}
             {state === 'done' && Object.keys(BG_TYPE).filter((BGType) => bgs.filter(({type}) => type === BG_TYPE[BGType]).length > 0).map((BGType) => (
                 <Fragment>
@@ -162,7 +206,10 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
                 </Fragment>
             ))}
             {state === 'failed' && (
-                "Ошибка загрузки"
+                <Box className={classes.centerPage}>
+                    <Typography variant='h5' color='error'>Ошибка</Typography>
+                    <Typography variant='body1' gutterBottom>Не удалось загрузить фоны</Typography>
+                </Box>
             )}
         </Fragment>
     );
