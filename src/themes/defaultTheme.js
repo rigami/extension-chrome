@@ -12,4 +12,26 @@ export default createMuiTheme({
             contrastText: "#fff",
         },
     },
+    typography: {
+        h5: {
+            fontWeight: 600,
+        },
+    },
+    overrides: {
+        MuiButton: {
+            label: {
+                fontWeight: 600,
+            },
+        },
+        MuiTypography: {
+            gutterBottom: {
+                marginBottom: '0.8em',
+            }
+        },
+    },
+    props: {
+        MuiButton: {
+            disableElevation: true,
+        },
+    },
 });
