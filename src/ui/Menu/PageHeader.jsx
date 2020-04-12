@@ -1,8 +1,13 @@
-import React, { useState, useRef } from "preact/compat";
-import { h, Component, render, Fragment } from "preact";
-import { fade } from '@material-ui/core/styles/colorManipulator';
+import React, {useState, useRef} from "preact/compat";
+import {h, Component, render, Fragment} from "preact";
+import {fade} from '@material-ui/core/styles/colorManipulator';
 
-import {IconButton, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, Typography } from "@material-ui/core";
+import {
+    IconButton,
+    AppBar,
+    Toolbar,
+    Typography
+} from "@material-ui/core";
 import {ArrowBackRounded as BackIcon} from "@material-ui/icons";
 import {makeStyles} from "@material-ui/core/styles";
 
@@ -25,13 +30,15 @@ const useStyles = makeStyles(theme => ({
     },
     actions: {
         marginLeft: theme.spacing(4),
+        display: 'flex',
+        flexDirection: 'row',
     },
     grow: {
         flexGrow: 1,
     },
 }));
 
-function PageHeader({ title, onBack, actions }) {
+function PageHeader({title, onBack, actions}) {
     const classes = useStyles();
 
     return (
@@ -41,13 +48,13 @@ function PageHeader({ title, onBack, actions }) {
                     className={classes.backButton}
                     onClick={() => onBack()}
                 >
-                    <BackIcon />
+                    <BackIcon/>
                 </IconButton>
                 <Typography className={classes.title} variant="h6" noWrap>{title}</Typography>
                 <div className={classes.actions}>
                     {actions}
                 </div>
-                <div className={classes.grow} />
+                <div className={classes.grow}/>
             </Toolbar>
         </AppBar>
     );
