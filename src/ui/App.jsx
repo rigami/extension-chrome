@@ -2,6 +2,7 @@ import React from "preact/compat";
 import { h, Component, render, Fragment } from "preact";
 import { CssBaseline } from "@material-ui/core";
 import { Provider } from 'mobx-react';
+import { SnackbarProvider } from 'notistack';
 
 import Menu from "./Menu";
 import Desktop from "./Desktop";
@@ -17,9 +18,11 @@ function App() {
     return (
         <Provider {...stores}>
             <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <Desktop />
-                <Menu />
+                <SnackbarProvider maxSnack={4}>
+                    <CssBaseline />
+                    <Desktop />
+                    <Menu />
+                </SnackbarProvider>
             </ThemeProvider>
         </Provider>
     );

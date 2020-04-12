@@ -33,15 +33,10 @@ class DbConnectorStore {
     getAllItems (){
         const result = this._store.getAll();
 
-        console.log(result)
-
         return new Promise((resolve, reject) => {
             result.onsuccess = (event) => resolve(event.target.result);
 
-            result.onerror = (e) => {
-                console.error("err", e)
-                reject(e);
-            };
+            result.onerror = (e) => reject;
         });
     }
 }
@@ -80,8 +75,6 @@ class DBConnector {
             if (!_db) reject(new Error("DB not configuration yet"));
 
             const transaction = _db.transaction([name], "readwrite");
-
-            console.log(transaction)
 
             transaction.oncomplete = (e) => {
                 console.log(e);

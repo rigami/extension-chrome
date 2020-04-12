@@ -8,6 +8,7 @@ module.exports = {
         "@babel/preset-react",
     ],
     "plugins": [
+        ["@babel/plugin-syntax-throw-expressions"],
         ["@babel/plugin-proposal-decorators", { "legacy": true }],
         ["@babel/plugin-proposal-class-properties", { "loose": true }],
         ["@babel/plugin-transform-react-jsx", {
