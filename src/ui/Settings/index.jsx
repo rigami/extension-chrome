@@ -1,23 +1,18 @@
 import React, { useState, useRef } from "preact/compat";
 import { h, Component, render, Fragment } from "preact";
 import {
-    List,
     ListItem,
     ListItemText,
     Divider,
-    Drawer,
-    ListItemIcon,
     ListItemAvatar,
     Avatar,
-    IconButton,
-    Collapse,
-    Box
 } from "@material-ui/core";
 import {
     SettingsRounded as SettingsIcon,
     CollectionsRounded as BackgroundsIcon,
     CollectionsBookmarkRounded as BookmarksIcon,
     HelpRounded as AboutIcon,
+    BackupRounded as BackupIcon,
 } from "@material-ui/icons";
 
 import locale from "i18n/RU";
@@ -48,7 +43,7 @@ const general = [
         icon: BookmarksIcon,
         id: "bookmarks",
         page: (props) => (<InWork title={locale.settings.bookmarks.title} {...props} />),
-        color: "#26D0A7",
+        color: "#ff4f88",
     },
     {
         title: locale.settings.app.title,
@@ -57,6 +52,14 @@ const general = [
         id: "app",
         page: (props) => (<InWork title={locale.settings.app.title} {...props} />),
         color: "#F88317",
+    },
+    {
+        title: locale.settings.backup.title,
+        description: locale.settings.backup.description,
+        icon: BackupIcon,
+        id: "backup",
+        page: (props) => (<InWork title={locale.settings.backup.title} {...props} />),
+        color: "#0f9d58",
     },
 ];
 const additional = [

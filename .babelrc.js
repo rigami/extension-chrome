@@ -21,6 +21,7 @@ module.exports = {
                 "react": "preact-compat",
                 "react-dom": "preact-compat",
                 'ui': path.resolve(__dirname, 'src/ui'),
+                'ui-components': path.resolve(__dirname, 'src/ui-components'),
                 'i18n': path.resolve(__dirname, 'src/i18n'),
                 'dict': path.resolve(__dirname, 'src/dict'),
                 'config': path.resolve(__dirname, 'src/config'),

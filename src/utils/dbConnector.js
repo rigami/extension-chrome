@@ -55,6 +55,17 @@ class DBConnector {
             backgroundsStore.createIndex("author", "author", { unique: false });
             backgroundsStore.createIndex("description", "description", { unique: false });
             backgroundsStore.createIndex("source_link", "source_link", { unique: false });
+
+
+            backgroundsStore.add({
+                id: 1,
+                author: "Tim Gouw",
+                type: "image",
+                preview: "https://images.unsplash.com/photo-1455463640095-c56c5f258548?ixlib=rb-1.2.1&auto=format&fit=crop&w=1349&q=80",
+                src: "https://images.unsplash.com/photo-1455463640095-c56c5f258548?ixlib=rb-1.2.1&auto=format&fit=crop&w=1349&q=80",
+                description: "Test bg",
+                source_link: "https://unsplash.com/photos/S4QAzzXPaRs",
+            });
         };
 
         return new Promise((resolve, reject) => {

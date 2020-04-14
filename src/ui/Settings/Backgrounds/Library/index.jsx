@@ -154,8 +154,16 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
                                 if (event.srcElement.files.length === 0) return;
 
                                 backgroundsStore.loadBGsToLocalCatalog(event.srcElement.files)
-                                    .then(() => enqueueSnackbar("Все фоны загружены", {variant: 'success'}))
-                                    .catch(() => enqueueSnackbar("Не удалось загрузить фоны", {variant: 'error'}))
+                                    .then(() => enqueueSnackbar({
+                                        message: 'Все фоны загружены',
+                                        variant: 'success'
+                                    }, {
+                                        persist: true,
+                                    }))
+                                    .catch(() => enqueueSnackbar({
+                                        message: 'Не удалось загрузить фоны',
+                                        variant: 'error'
+                                    }))
                                     .finally(() => {
                                         console.log(event);
 

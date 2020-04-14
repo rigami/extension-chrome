@@ -1,4 +1,5 @@
 import {createMuiTheme} from '@material-ui/core/styles';
+import {fade} from '@material-ui/core/styles/colorManipulator';
 
 export default createMuiTheme({
     palette: {
@@ -11,6 +12,9 @@ export default createMuiTheme({
             main: "#8526D0",
             contrastText: "#fff",
         },
+        snackbar: {
+            default: fade("#fff", 0.95),
+        }
     },
     typography: {
         h5: {

@@ -8,6 +8,7 @@ import Menu from "./Menu";
 import Desktop from "./Desktop";
 import {ThemeProvider} from "@material-ui/styles";
 import theme from "../themes/defaultTheme"
+import Snackbar from "../ui-components/Snackbar";
 
 import backgroundsStore from "stores/backgrounds";
 
@@ -18,7 +19,12 @@ function App() {
     return (
         <Provider {...stores}>
             <ThemeProvider theme={theme}>
-                <SnackbarProvider maxSnack={4}>
+                <SnackbarProvider
+                    maxSnack={4}
+                    content={(key, options) => (
+                        <Snackbar id={key} {...options} />
+                    )}
+                >
                     <CssBaseline />
                     <Desktop />
                     <Menu />
