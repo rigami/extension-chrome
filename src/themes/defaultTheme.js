@@ -20,6 +20,9 @@ export default createMuiTheme({
         h5: {
             fontWeight: 600,
         },
+        h6: {
+            fontWeight: 600,
+        },
     },
     overrides: {
         MuiButton: {
