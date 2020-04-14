@@ -32,6 +32,12 @@ export default createMuiTheme({
                 marginBottom: '0.8em',
             }
         },
+        MuiTooltip: {
+            tooltip: {
+                backgroundColor: fade('#000', 0.82),
+                fontSize: '0.8rem',
+            }
+        },
     },
     props: {
         MuiButton: {
