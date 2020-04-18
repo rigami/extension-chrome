@@ -5,16 +5,17 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     context: path.resolve(__dirname, "src"),
-    entry: './index.js',
+    entry: {
+        app: './index.js',
+    },
     output: {
-        chunkFilename: '[id].bundle.js',
+        filename: '[name].[hash].bundle.js',
         path: path.resolve(__dirname, 'build'),
     },
     devtool: 'inline-source-map',
     devServer: {
         contentBase: path.resolve(__dirname, 'public'),
         hot: true,
-        injectHot: (compilerConfig) => compilerConfig.name === 'only-include',
         open: false,
         overlay: true,
         writeToDisk: true,
@@ -54,7 +55,11 @@ module.exports = {
                 use: {
                     loader: "babel-loader"
                 }
-            }
+            },
+            {
+                test: path.resolve(__dirname, 'node_modules/library/polyfill.js'),
+                use: 'null-loader',
+            },
         ]
     },
     resolve: {

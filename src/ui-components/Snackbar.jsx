@@ -62,7 +62,7 @@ function Snackbar({id, message, description: defaultDescription, variant, button
     const [progress, setProgress] = useState(0);
     const [description, setDescription] = useState(defaultDescription);
 
-    useEffect(() => progressEffect(
+    useEffect(() => progressEffect && progressEffect(
         (progressValue) => setProgress(progressValue),
         (descriptionValue) => setDescription(descriptionValue)
     ), []);

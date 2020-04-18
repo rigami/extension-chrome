@@ -2,9 +2,15 @@ const path = require('path');
 
 module.exports = {
     "presets": [
-        /*["@babel/preset-env", {
-            "targets": "last 2 versions",
-        }],*/
+        ["@babel/preset-env", {
+            "targets": {
+                "chrome": 75,
+                "esmodules": true,
+            },
+            "bugfixes": true,
+            "loose": true,
+            "shippedProposals": true
+        }],
         "@babel/preset-react",
     ],
     "plugins": [
