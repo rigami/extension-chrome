@@ -1,8 +1,24 @@
-import { observable, action } from 'mobx';
-import app_variables from "config/appVariables";
+import {observable, action} from 'mobx';
 import default_settings from "config/settings";
-import { BG_TYPE } from "dict";
-import DBConnector from "../utils/dbConnector";
+import appVariables from "config/appVariables";
+import {BG_TYPE} from "dict";
+import DBConnector from "utils/dbConnector";
+import { queuingDecorator } from "utils/decorators";
+
+const getPreview = (file) => {
+    console.log("Get preview for file:", file);
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            console.log("Result preview for file:", file);
+            resolve();
+        }, 3000);
+    });
+};
+
+export const ERRORS = {
+    TOO_MANY_FILES: 'too_many_files',
+    NO_FILES: 'no_files',
+};
 
 class BackgroundsStore {
     @observable changeInterval;
@@ -11,6 +27,7 @@ class BackgroundsStore {
     @observable currentBGId;
     _currentBG;
     _store;
+    // _getPreview = queuingDecorator(getPreview);
 
     constructor() {
         this.changeInterval = default_settings.backgrounds.change_interval;
@@ -76,6 +93,31 @@ class BackgroundsStore {
 
         return DBConnector.getStore("backgrounds")
             .then((store) => store.getAllItems());
+    }
+
+    @action('load bg`s to local catalog from pc')
+    loadBGsToLocalCatalog(fileList) {
+        console.log("Upload bg`s:", fileList);
+
+        if(!fileList || fileList.length === 0) return Promise.reject(ERRORS.NO_FILES);
+
+        if (fileList.length > appVariables.maxUploadFiles) return Promise.reject(ERRORS.TOO_MANY_FILES);
+
+        const uploadTimestamp = Date.now().toString();
+
+        return Promise.all(Array.from(fileList).map((file, index) => {
+            console.log(file);
+
+            return {
+                id: uploadTimestamp + "-" + index,
+                getPreview: () => getPreview(file),
+                type: ~file.type.indexOf("video") ? [BG_TYPE.VIDEO] : [BG_TYPE.IMAGE, BG_TYPE.ANIMATION],
+                size: file.size / 1024,
+                format: file.type.substring(file.type.indexOf("/") + 1),
+                name: file.name,
+                file,
+            };
+        }));
     }
 }
 

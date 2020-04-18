@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "preact/compat";
 import { h, Component, render, Fragment } from "preact";
 
 import FabMenu from "./FabMenu";
-import { Drawer, List } from "@material-ui/core";
+import {DialogContentText, Drawer, List} from "@material-ui/core";
 import HomePage from "../Settings";
 import {makeStyles} from "@material-ui/core/styles";
 import {useSnackbar} from "notistack";
@@ -27,7 +27,7 @@ function Menu() {
     };
 
     useEffect(() => {
-        enqueueSnackbar({
+        /*enqueueSnackbar({
             message: 'Загрузка фонов',
             description: '0%',
             variant: 'progress',
@@ -67,7 +67,7 @@ function Menu() {
             progress: 75,
             requireInteraction: true,
             silent: true,
-        });
+        });*/
     }, []);
 
     return (

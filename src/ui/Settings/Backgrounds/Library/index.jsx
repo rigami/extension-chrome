@@ -9,7 +9,7 @@ import {
     Divider,
     Tooltip,
     CircularProgress,
-    Typography,
+    Typography, DialogContentText,
 } from "@material-ui/core";
 import {
     WallpaperRounded as WallpaperIcon,
@@ -28,6 +28,7 @@ import SectionHeader from "ui/Menu/SectionHeader";
 import SettingsRow from "ui/Menu/SettingsRow";
 import {makeStyles} from "@material-ui/core/styles";
 import {inject, observer} from "mobx-react";
+import LoadBGFromLocalButton from "./LoadBGFromLocalButton";
 
 const useStyles = makeStyles((theme) => ({
     bgWrapper: {
@@ -90,6 +91,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+
 function BGCard({id, src}) {
     const classes = useStyles();
 
@@ -119,7 +121,6 @@ function BGCard({id, src}) {
 
 function LibraryMenu({backgroundsStore, onSelect, onClose}) {
     const classes = useStyles();
-    const {enqueueSnackbar} = useSnackbar();
 
     const [bgs, setBgs] = useState(null);
     const [state, setState] = useState('pending');
@@ -144,45 +145,7 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
                 onBack={() => onClose()}
                 actions={(
                     <Fragment>
-                        <input
-                            className={classes.input}
-                            id="upload-from-system"
-                            multiple
-                            type="file"
-                            accept="video/*,image/*"
-                            onChange={(event) => {
-                                if (event.srcElement.files.length === 0) return;
-
-                                backgroundsStore.loadBGsToLocalCatalog(event.srcElement.files)
-                                    .then(() => enqueueSnackbar({
-                                        message: 'Все фоны загружены',
-                                        variant: 'success'
-                                    }, {
-                                        persist: true,
-                                    }))
-                                    .catch(() => enqueueSnackbar({
-                                        message: 'Не удалось загрузить фоны',
-                                        variant: 'error'
-                                    }))
-                                    .finally(() => {
-                                        console.log(event);
-
-                                        event.srcElement.files = null;
-                                    })
-                            }}
-                        />
-                        <label htmlFor="upload-from-system">
-                            <Button
-                                variant="contained"
-                                component="span"
-                                disableElevation
-                                color="primary"
-                                startIcon={<UploadFromComputerIcon/>}
-                                style={{marginRight: 16}}
-                            >
-                                {locale.settings.backgrounds.general.library.upload_from_computer}
-                            </Button>
-                        </label>
+                        <LoadBGFromLocalButton />
                         <Tooltip title="Пока недоступно">
                             <div>
                                 <Button

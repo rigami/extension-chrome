@@ -1,4 +1,6 @@
 import { THEME, BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE } from "dict";
+import { ERRORS as BG_UPLOAD_ERRORS } from "stores/backgrounds";
+import appVariables from "config/appVariables";
 
 export default {
     /*Settings*/
@@ -17,9 +19,17 @@ export default {
                     [BG_TYPE.ANIMATION]: "Анимация",
                     [BG_TYPE.IMAGE]: "Изображения",
                     upload_from_computer: "Загрузите фон с компьютера",
+                    upload_from_computer_confirm: "Загрузка фонов",
                     get_from_library: "Получить из библиотеки",
                     set_bg: "Устновать фон",
                     remove_bg: "Удаить фон",
+                    [BG_UPLOAD_ERRORS.NO_FILES]: {
+                        message: "Нет файлов для загрузки",
+                    },
+                    [BG_UPLOAD_ERRORS.TOO_MANY_FILES]: {
+                        message: "Слишком много файлов для одновременной загрузки",
+                        description: `Максимальное количество файлов для одновременной загрузки: ${appVariables.maxUploadFiles}`,
+                    },
                 },
                 dimming_power: {
                     title: "Сила затемнения фона",
@@ -75,5 +85,14 @@ export default {
     global: {
         all: "Все",
         nothing_selected: "Ничего не выбрано",
+        cancel: "Отмена",
+        bg_type: {
+            title: "Тип фона",
+            description: "Выберете тип фона",
+            [BG_TYPE.FILL_COLOR]: "Сплошной цвет",
+            [BG_TYPE.VIDEO]: "Видео",
+            [BG_TYPE.ANIMATION]: "Анимация",
+            [BG_TYPE.IMAGE]: "Изображение",
+        },
     }
 };

@@ -14,6 +14,7 @@ import {
     CloseRounded as CloseIcon,
 } from "@material-ui/icons";
 import {makeStyles} from "@material-ui/core/styles";
+import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
     scrollContainer: {
@@ -30,6 +31,14 @@ const useStyles = makeStyles((theme) => ({
         top: theme.spacing(1),
         color: theme.palette.grey[500],
     },
+    denseBodyHorizontal: {
+        paddingLeft: 0,
+        paddingRight: 0,
+    },
+    denseBodyVertical: {
+        paddingTop: 0,
+        paddingBottom: 0,
+    },
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -38,8 +47,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 function AdvancedDialogTitle({ children, onClose, ...other }) {
     const classes = useStyles();
-
-    console.log(onClose)
 
     return (
         <DialogTitle disableTypography className={classes.title} {...other}>
@@ -53,20 +60,24 @@ function AdvancedDialogTitle({ children, onClose, ...other }) {
     );
 }
 
-function Modal({ title, open, onClose, showCloseInHeader, children, buttons }) {
+function Modal({ title, onClose, showCloseInHeader, children, buttons, denseBody, ...other }) {
     const classes = useStyles();
 
     return (
         <Dialog
-            open={open}
             TransitionComponent={Transition}
-            onClose={onClose}
             classes={{
                 container: classes.scrollContainer,
             }}
+            {...other}
+            onClose={onClose}
+            disableEnforceFocus
         >
             <AdvancedDialogTitle onClose={showCloseInHeader && onClose}>{title}</AdvancedDialogTitle>
-            <DialogContent>
+            <DialogContent className={clsx(
+                (typeof denseBody === "boolean" || (denseBody && denseBody.horizontal)) && classes.denseBodyHorizontal,
+                (typeof denseBody === "boolean" || (denseBody && denseBody.vertical)) && classes.denseBodyVertical,
+            )}>
                 {children}
             </DialogContent>
             {buttons && (

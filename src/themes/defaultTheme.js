@@ -17,17 +17,18 @@ export default createMuiTheme({
         }
     },
     typography: {
+        fontFamily: "system-ui",
         h5: {
-            fontWeight: 600,
+            fontWeight: 700,
         },
         h6: {
-            fontWeight: 600,
+            fontWeight: 700,
         },
     },
     overrides: {
         MuiButton: {
             label: {
-                fontWeight: 600,
+                fontWeight: 700,
             },
         },
         MuiTypography: {

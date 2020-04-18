@@ -123,6 +123,7 @@ class SettingsRow extends Component {
                                     variant="outlined"
                                     style={{ width: '100%' }}
                                     multiple
+
                                     IconComponent={ArrowBottomIcon}
                                     displayEmpty
                                     renderValue={(selected) => {
