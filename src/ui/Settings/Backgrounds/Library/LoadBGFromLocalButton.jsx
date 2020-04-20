@@ -52,17 +52,15 @@ function LoadBGFromLocalButton({backgroundsStore}) {
                 type="file"
                 accept="video/*,image/*"
                 onChange={(event) => {
-                    if (event.srcElement.files.length === 0) return;
+                    if (event.target.files.length === 0) return;
 
-                    console.log("LOAD FILES")
-
-                    backgroundsStore.addToUploadQueue(event.srcElement.files)
+                    backgroundsStore.addToUploadQueue(event.target.files)
                         .catch((e) => enqueueSnackbar({
                             ...locale.settings.backgrounds.general.library[e],
                             variant: 'error'
                         }))
                         .finally(() => {
-                            event.srcElement.files = null;
+                            event.target.value = '';
                         })
                 }}
             />
