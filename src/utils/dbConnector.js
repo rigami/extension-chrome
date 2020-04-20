@@ -62,6 +62,16 @@ class DbConnectorStore {
         });
     }
 
+    getAllKeys (){
+        const result = this._store.getAllKeys();
+
+        return new Promise((resolve, reject) => {
+            result.onsuccess = (event) => resolve(event.target.result);
+
+            result.onerror = (e) => reject;
+        });
+    }
+
     getAllItems (){
         const result = this._store.getAll();
 

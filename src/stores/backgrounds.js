@@ -77,14 +77,13 @@ class BackgroundsStore {
     @action('next bg')
     nextBG() {
         return DBConnector.getStore("backgrounds")
-            .then((store) => {
-                store.getMaxPrimaryKey();
-
-                return DBConnector.getStore("backgrounds");
+            .then((store) => store.getAllKeys())
+            .then((keys) => {
+                return keys[Math.round(Math.random() * (keys.length - 1))];
             })
-            .then((store) => store.getAllItems())
-            .then((values) => {
-                return values[Math.round(Math.random() * (Object.keys(values).length - 1))];
+            .then((bgId) => {
+                return DBConnector.getStore("backgrounds")
+                    .then((store) => store.getItem(bgId));
             })
             .then((bg) => {
                 console.log("Next bg:", bg);
