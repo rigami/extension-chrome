@@ -5,6 +5,7 @@ import {inject, observer} from "mobx-react";
 import FSConnector from "../utils/fsConnector";
 import {BG_TYPE} from "../dict";
 import clsx from "clsx";
+import { Fade } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -14,15 +15,12 @@ const useStyles = makeStyles(theme => ({
         right: 0,
         bottom: 0,
         backgroundColor: theme.palette.type === 'dark' ? theme.palette.common.black : theme.palette.common.white,
+        overflow: 'hidden',
     },
     bg: {
         width: '100%',
         height: '100%',
-        opacity: 0,
-        transition: theme.transitions.create('opacity', {
-            duration: theme.transitions.duration.complex,
-            easing: theme.transitions.easing.easeOut,
-        }),
+        pointerEvents: "none",
     },
     image: {
         backgroundPosition: '50%',
@@ -34,50 +32,76 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function Desktop({backgroundsStore}) {
+function Desktop({backgroundsStore, onChangedBG }) {
     const classes = useStyles();
+
     const [bg, setBg] = useState(null);
+    const [nextBg, setNextBg] = useState(null);
+    const [state, setState] = useState("pending");
 
     useEffect(() => {
-        const bg = backgroundsStore.getCurrentBG();
+        const currentBg = backgroundsStore.getCurrentBG();
 
-        if (!bg) {
-            setBg(null);
+        if (!currentBg) {
+            setState("failed");
             return;
         }
 
-        setBg({
-            ...bg,
-            src: FSConnector.getURL(bg.fileName),
-        });
+        if (!bg && !nextBg) {
+            setBg({
+                ...currentBg,
+                src: FSConnector.getURL(currentBg.fileName),
+            });
+        } else {
+            if (bg && nextBg && (state === "pending")) {
+                setBg({
+                    ...currentBg,
+                    src: FSConnector.getURL(currentBg.fileName),
+                });
+                setNextBg(null);
+            } else {
+                setNextBg({
+                    ...currentBg,
+                    src: FSConnector.getURL(currentBg.fileName),
+                });
+            }
+            setState("pending");
+        }
     }, [backgroundsStore.currentBGId]);
 
     return (
-        <div className={classes.root}>
-            {bg && (bg.type === BG_TYPE.IMAGE || bg.type === BG_TYPE.ANIMATION) && (
-                <div
-                    className={clsx(classes.bg, classes.image)}
-                    style={{
-                        backgroundImage: `url('${bg.src}')`,
-                        opacity: bg ? 1 : 0,
-                        imageRendering: bg.antiAliasing ? 'auto' : 'pixelated',
-                    }}
-                />
-            )}
-            {bg && (bg.type === BG_TYPE.VIDEO) && (
-                <video
-                    autoPlay
-                    loop
-                    muted
-                    src={bg.src}
-                    className={clsx(classes.bg, classes.video)}
-                    style={{
-                        opacity: bg ? 1 : 0,
-                        imageRendering: bg.antiAliasing ? 'auto' : 'pixelated',
-                    }}
-                />
-            )}
-        </div>
+        <Fade
+            in={state === "done"}
+            onExited={() => {
+                if (nextBg) {
+                    setBg(nextBg);
+                    setNextBg(null);
+                    setState("pending");
+                }
+            }}
+        >
+            <div className={classes.root}>
+                {bg && (bg.type === BG_TYPE.IMAGE || bg.type === BG_TYPE.ANIMATION) && (
+                    <img
+                        className={clsx(classes.bg, classes.image)}
+                        src={bg.src}
+                        style={{ imageRendering: bg.antiAliasing ? 'auto' : 'pixelated' }}
+                        onLoad={() => setState("done")}
+                    />
+                )}
+                {bg && (bg.type === BG_TYPE.VIDEO) && (
+                    <video
+                        autoPlay
+                        loop
+                        muted
+                        src={bg.src}
+                        className={clsx(classes.bg, classes.video)}
+                        style={{ imageRendering: bg.antiAliasing ? 'auto' : 'pixelated' }}
+                        onPlay={() => setState("done")}
+                    />
+                )}
+            </div>
+        </Fade>
     );
 }
 
