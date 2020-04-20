@@ -7,30 +7,34 @@ import { SnackbarProvider } from 'notistack';
 import Menu from "./Menu";
 import Desktop from "./Desktop";
 import {ThemeProvider} from "@material-ui/styles";
-import theme from "../themes/defaultTheme"
-import Snackbar from "../ui-components/Snackbar";
-
-import backgroundsStore from "stores/backgrounds";
-
-const stores = { backgroundsStore };
+import theme from "themes/defaultTheme"
+import Snackbar from "ui-components/Snackbar";
+import UploadBGForm from "ui-components/UploadBGForm";
+import ConfigurationApp from "./ConfigurationApp";
 
 function App() {
 
     return (
-        <Provider {...stores}>
-            <ThemeProvider theme={theme}>
-                <SnackbarProvider
-                    maxSnack={4}
-                    content={(key, options) => (
-                        <Snackbar id={key} {...options} />
-                    )}
-                >
-                    <CssBaseline />
-                    <Desktop />
-                    <Menu />
-                </SnackbarProvider>
-            </ThemeProvider>
-        </Provider>
+        <ConfigurationApp>
+            {(stores) => (
+                <Provider {...stores}>
+                    <ThemeProvider theme={theme}>
+                        <CssBaseline />
+                        <SnackbarProvider
+                            maxSnack={4}
+                            content={(key, options) => (
+                                <Snackbar id={key} {...options} />
+                            )}
+                        >
+                            <UploadBGForm>
+                                <Desktop />
+                                <Menu />
+                            </UploadBGForm>
+                        </SnackbarProvider>
+                    </ThemeProvider>
+                </Provider>
+            )}
+        </ConfigurationApp>
     );
 }
 

@@ -3,6 +3,7 @@ import { h, Component, render, Fragment } from "preact";
 import {Card, IconButton, Divider, Tooltip} from "@material-ui/core";
 import { Refresh as RefreshIcon, Settings as SettingsIcon } from "@material-ui/icons";
 import {makeStyles} from "@material-ui/core/styles";
+import {inject, observer} from "mobx-react";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -52,11 +53,9 @@ function FabMenu({ onOpenMenu, onRefreshBackground }) {
             </Tooltip>
             <Divider className={classes.divider}/>
             <Tooltip title='Обновить фон' placement='left'>
-                <div>
-                    <IconButton size='small' disabled>
-                        <RefreshIcon />
-                    </IconButton>
-                </div>
+                <IconButton size='small' onClick={() => onRefreshBackground()}>
+                    <RefreshIcon />
+                </IconButton>
             </Tooltip>
         </Card>
     );

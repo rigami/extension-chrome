@@ -6,6 +6,7 @@ import {DialogContentText, Drawer, List} from "@material-ui/core";
 import HomePage from "../Settings";
 import {makeStyles} from "@material-ui/core/styles";
 import {useSnackbar} from "notistack";
+import {inject} from "mobx-react";
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -15,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Menu() {
+function Menu({ backgroundsStore }) {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
     const [isOpen, setIsOpen] = useState(false);
@@ -74,7 +75,9 @@ function Menu() {
         <Fragment>
             <FabMenu
                 onOpenMenu={() => setIsOpen(true)}
-                onRefreshBackground={() => {}}
+                onRefreshBackground={() => {
+                    backgroundsStore.nextBG()
+                }}
             />
             <Drawer
                 anchor="right"
@@ -99,4 +102,4 @@ function Menu() {
     );
 }
 
-export default Menu;
+export default inject('backgroundsStore')(Menu);

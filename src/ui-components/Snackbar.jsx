@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Snackbar({id, message, description: defaultDescription, variant, buttons, progressEffect}, ref) {
+function Snackbar({id, message, description: defaultDescription, variant, buttons, progressEffect, close = true}, ref) {
     const theme = useTheme();
     const classes = useStyles();
     const {closeSnackbar} = useSnackbar();
@@ -87,15 +87,20 @@ function Snackbar({id, message, description: defaultDescription, variant, button
                         {variant === 'error' && (<ErrorIcon color='error'/>)}
                         {variant === 'warning' && (<WarningIcon style={{color: theme.palette.warning.main}}/>)}
                         {variant === 'progress' && (
-                            <CircularProgress size={26} thickness={3.4} variant="determinate" value={progress}/>
+                            <CircularProgress
+                                size={26}
+                                thickness={3.4}
+                                variant={progressEffect ? "determinate" : "indeterminate"}
+                                value={progress}
+                            />
                         )}
                     </Fragment>
                 )}
-                action={
+                action={close && (
                     <IconButton className={classes.expand} onClick={handleDismiss}>
                         <CloseIcon/>
                     </IconButton>
-                }
+                )}
                 title={message}
                 subheader={description}
             />

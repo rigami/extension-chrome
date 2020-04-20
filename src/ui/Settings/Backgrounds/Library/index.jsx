@@ -21,6 +21,7 @@ import {
 } from "@material-ui/icons";
 import {fade} from '@material-ui/core/styles/colorManipulator';
 import enqueueSnackbar, {useSnackbar} from 'notistack';
+import FSConnector from "utils/fsConnector";
 
 import locale from "i18n/RU";
 import PageHeader from "ui/Menu/PageHeader";
@@ -29,6 +30,7 @@ import SettingsRow from "ui/Menu/SettingsRow";
 import {makeStyles} from "@material-ui/core/styles";
 import {inject, observer} from "mobx-react";
 import LoadBGFromLocalButton from "./LoadBGFromLocalButton";
+import FullscreenStub from "ui/Settings/FullscreenStub";
 
 const useStyles = makeStyles((theme) => ({
     bgWrapper: {
@@ -39,15 +41,17 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: theme.spacing(1.5),
     },
     bgCard: {
-        width: '100%',
         position: 'relative',
+        backgroundSize: 'cover',
+        backgroundPosition: '50%',
+        height: '100%',
+        width: '100%',
     },
     bgCardWrapper: {
-        marginRight: theme.spacing(0.5),
-        marginBottom: theme.spacing(0.5),
+        paddingRight: theme.spacing(0.5),
+        paddingBottom: theme.spacing(0.5),
         flexBasis: '25%',
         height: theme.spacing(20),
-        position: 'relative',
     },
     bgActionsWrapper: {
         position: 'absolute',
@@ -89,33 +93,39 @@ const useStyles = makeStyles((theme) => ({
     input: {
         display: 'none',
     },
+    bgStub: {
+        position: 'absolute',
+        zIndex: -1,
+        height: '100%',
+        width: '100%',
+    }
 }));
 
 
-function BGCard({id, src}) {
+function BGCard({id, fileName, onSet, onRemove}) {
     const classes = useStyles();
 
     return (
-        <Box className={classes.bgCardWrapper} style={{backgroundImage: `url('${src}')`}}>
-            {!src && (
-                <Avatar variant="square" className={classes.bgCard}>
+        <div className={classes.bgCardWrapper}>
+            <Box className={classes.bgCard} style={{backgroundImage: `url('${FSConnector.getURL(fileName, "preview")}')`}}>
+                <Avatar variant="square" className={classes.bgStub}>
                     <WallpaperIcon fontSize="large"/>
                 </Avatar>
-            )}
-            <Box className={classes.bgActionsWrapper}>
-                <Tooltip title={locale.settings.backgrounds.general.library.set_bg}>
-                    <IconButton className={classes.setIcon}>
-                        <SetIcon/>
-                    </IconButton>
-                </Tooltip>
-                <Divider orientation="vertical" variant="middle" className={classes.bgActionDivider}/>
-                <Tooltip title={locale.settings.backgrounds.general.library.remove_bg}>
-                    <IconButton className={classes.deleteIcon}>
-                        <DeleteIcon/>
-                    </IconButton>
-                </Tooltip>
+                <Box className={classes.bgActionsWrapper}>
+                    <Tooltip title={locale.settings.backgrounds.general.library.set_bg}>
+                        <IconButton className={classes.setIcon} onClick={onSet}>
+                            <SetIcon/>
+                        </IconButton>
+                    </Tooltip>
+                    <Divider orientation="vertical" variant="middle" className={classes.bgActionDivider}/>
+                    <Tooltip title={locale.settings.backgrounds.general.library.remove_bg}>
+                        <IconButton className={classes.deleteIcon} onClick={onRemove}>
+                            <DeleteIcon/>
+                        </IconButton>
+                    </Tooltip>
+                </Box>
             </Box>
-        </Box>
+        </div>
     );
 }
 
@@ -127,7 +137,8 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
 
 
     useEffect(() => {
-        backgroundsStore.getAllBGs()
+        backgroundsStore.getStore()
+            .then((store) => store.getAllItems())
             .then((values) => {
                 setBgs(values);
                 setState('done');
@@ -136,7 +147,7 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
                 setState('failed');
                 console.error("Failed load bg`s from db:", e)
             });
-    }, []);
+    }, [backgroundsStore.count]);
 
     return (
         <Fragment>
@@ -145,7 +156,7 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
                 onBack={() => onClose()}
                 actions={(
                     <Fragment>
-                        <LoadBGFromLocalButton />
+                        <LoadBGFromLocalButton/>
                         <Tooltip title="Пока недоступно">
                             <div>
                                 <Button
@@ -160,6 +171,9 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
                         </Tooltip>
                     </Fragment>
                 )}
+                style={{
+                    width: 960,
+                }}
             />
             {state === 'pending' && (
                 <Box className={classes.centerPage}>
@@ -171,11 +185,22 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
                     <SectionHeader title={locale.settings.backgrounds.general.library[BG_TYPE[BGType]]}/>
                     <Box className={classes.bgWrapper}>
                         {bgs.filter(({type}) => type === BG_TYPE[BGType]).map((bg) => (
-                            <BGCard bgId={bg.id} src={bg.src}/>
+                            <BGCard
+                                {...bg}
+                                onSet={() => {
+
+                                }}
+                                onRemove={() => {
+                                    backgroundsStore.removeFromStore(bg.id);
+                                }}
+                            />
                         ))}
                     </Box>
                 </Fragment>
             ))}
+            {state === 'done' && bgs.length === 0 && (
+                <FullscreenStub message="У вас еще нет ни одного фона" />
+            )}
             {state === 'failed' && (
                 <Box className={classes.centerPage}>
                     <Typography variant='h5' color='error'>Ошибка</Typography>

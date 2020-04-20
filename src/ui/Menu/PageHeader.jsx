@@ -38,11 +38,11 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function PageHeader({title, onBack, actions}) {
+function PageHeader({title, onBack, actions, ...other}) {
     const classes = useStyles();
 
     return (
-        <AppBar position="sticky" color="transparent" elevation={0} className={classes.root}>
+        <AppBar position="sticky" color="transparent" elevation={0} className={classes.root} {...other}>
             <Toolbar className={classes.toolbar}>
                 <IconButton
                     className={classes.backButton}

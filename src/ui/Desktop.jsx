@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "preact/compat";
 import {h, Component, render, Fragment} from "preact";
 import {makeStyles} from "@material-ui/core/styles";
 import {inject, observer} from "mobx-react";
+import FSConnector from "../utils/fsConnector";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -28,22 +29,32 @@ const useStyles = makeStyles(theme => ({
 
 function Desktop({backgroundsStore}) {
     const classes = useStyles();
-    const [bgSrc, setBgSrc] = useState(null);
+    const [bg, setBg] = useState(null);
 
     useEffect(() => {
         const bg = backgroundsStore.getCurrentBG();
 
         if (!bg) {
-            setBgSrc(null);
+            setBg(null);
             return;
         }
 
-        setBgSrc(bg.src);
+        setBg({
+            ...bg,
+            src: FSConnector.getURL(bg.fileName),
+        });
     }, [backgroundsStore.currentBGId]);
 
     return (
         <div className={classes.root}>
-            <div className={classes.bg} style={{ backgroundImage: `url('${bgSrc}')`, opacity: bgSrc ? 1 : 0 }}/>
+            <div
+                className={classes.bg}
+                style={{
+                    backgroundImage: bg && `url('${bg.src}')`,
+                    opacity: bg ? 1 : 0,
+                    imageRendering: bg && bg.antiAliasing ? 'auto' : 'pixelated',
+                }}
+            />
         </div>
     );
 }

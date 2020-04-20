@@ -6,15 +6,24 @@ class DbConnectorStore {
     _store;
 
     constructor(store) {
-        console.log(store)
         this._store = store;
     }
 
-    setItem (value){
+    addItem (value){
         const result = this._store.add(value);
 
         return new Promise((resolve, reject) => {
-            result.onsuccess = resolve;
+            result.onsuccess = (event) => resolve(event.target.result);
+
+            result.onerror = reject;
+        });
+    }
+
+    removeItem (key){
+        const result = this._store.delete(key);
+
+        return new Promise((resolve, reject) => {
+            result.onsuccess = (event) => resolve(event.target.result);
 
             result.onerror = reject;
         });
@@ -30,8 +39,42 @@ class DbConnectorStore {
         });
     }
 
+    getQuery (){
+        const result = this._store.getAllKeys(IDBKeyRange.bound(1, 7))
+
+        return new Promise((resolve, reject) => {
+            result.onsuccess = (event) => {
+                console.log("res", event.target.result)
+                resolve(event.target.result)
+            };
+
+            result.onerror = (e) => reject;
+        });
+    }
+
+    getMaxPrimaryKey (){
+        const result = this._store.openCursor(null, 'prev');
+
+        return new Promise((resolve, reject) => {
+            result.onsuccess = (event) => resolve(event.target.result);
+
+            result.onerror = (e) => reject;
+        });
+    }
+
     getAllItems (){
         const result = this._store.getAll();
+
+        return new Promise((resolve, reject) => {
+            result.onsuccess = (event) => resolve(event.target.result);
+
+            result.onerror = (e) => reject;
+        });
+    }
+
+
+    getSize (){
+        const result = this._store.count();
 
         return new Promise((resolve, reject) => {
             result.onsuccess = (event) => resolve(event.target.result);
@@ -42,31 +85,10 @@ class DbConnectorStore {
 }
 
 class DBConnector {
-    static config (){
+    static config (onupgradeneeded){
         const resultDB = indexedDB.open(app_variables.db.name, app_variables.db.version);
 
-        resultDB.onupgradeneeded = (event) => {
-            console.log("Upgrade db version", event);
-            const db = event.target.result;
-            
-            const backgroundsStore = db.createObjectStore("backgrounds", { keyPath: "id", autoIncremen: true });
-            backgroundsStore.createIndex("type", "type", { unique: false });
-            backgroundsStore.createIndex("src", "src", { unique: false });
-            backgroundsStore.createIndex("author", "author", { unique: false });
-            backgroundsStore.createIndex("description", "description", { unique: false });
-            backgroundsStore.createIndex("source_link", "source_link", { unique: false });
-
-
-            backgroundsStore.add({
-                id: 1,
-                author: "Tim Gouw",
-                type: "image",
-                preview: "https://images.unsplash.com/photo-1455463640095-c56c5f258548?ixlib=rb-1.2.1&auto=format&fit=crop&w=1349&q=80",
-                src: "https://images.unsplash.com/photo-1455463640095-c56c5f258548?ixlib=rb-1.2.1&auto=format&fit=crop&w=1349&q=80",
-                description: "Test bg",
-                source_link: "https://unsplash.com/photos/S4QAzzXPaRs",
-            });
-        };
+        if (onupgradeneeded) resultDB.onupgradeneeded = (event) => onupgradeneeded(event.target.result);
 
         return new Promise((resolve, reject) => {
             resultDB.onerror = reject;
@@ -87,14 +109,7 @@ class DBConnector {
 
             const transaction = _db.transaction([name], "readwrite");
 
-            transaction.oncomplete = (e) => {
-                console.log(e);
-            }
-
-            transaction.onerror = (e) => {
-                console.error("Eer", e)
-                reject(e);
-            };
+            transaction.onerror = reject;
 
             const store = transaction.objectStore(name);
 

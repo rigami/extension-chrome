@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: 0,
         paddingBottom: 0,
     },
+    paper: {
+        background: 'none',
+    },
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -60,7 +63,7 @@ function AdvancedDialogTitle({ children, onClose, ...other }) {
     );
 }
 
-function Modal({ title, onClose, showCloseInHeader, children, buttons, denseBody, ...other }) {
+function Modal({ title, onClose, showCloseInHeader, children, buttons, denseBody, empty, ...other }) {
     const classes = useStyles();
 
     return (
@@ -68,26 +71,37 @@ function Modal({ title, onClose, showCloseInHeader, children, buttons, denseBody
             TransitionComponent={Transition}
             classes={{
                 container: classes.scrollContainer,
+                paper: classes.paper,
             }}
             {...other}
             onClose={onClose}
             disableEnforceFocus
+            PaperProps={empty && {
+                elevation: 0,
+                style: { overflow: 'unset' }
+            }}
+            scroll="body"
         >
-            <AdvancedDialogTitle onClose={showCloseInHeader && onClose}>{title}</AdvancedDialogTitle>
-            <DialogContent className={clsx(
-                (typeof denseBody === "boolean" || (denseBody && denseBody.horizontal)) && classes.denseBodyHorizontal,
-                (typeof denseBody === "boolean" || (denseBody && denseBody.vertical)) && classes.denseBodyVertical,
-            )}>
-                {children}
-            </DialogContent>
-            {buttons && (
-                <DialogActions>
-                    {buttons.map(({ title, ...other }) => (
-                        <Button {...other}>
-                            {title}
-                        </Button>
-                    ))}
-                </DialogActions>
+            {empty && (children)}
+            {!empty && (
+                <Fragment>
+                    <AdvancedDialogTitle onClose={showCloseInHeader && onClose}>{title}</AdvancedDialogTitle>
+                    <DialogContent className={clsx(
+                        (typeof denseBody === "boolean" || (denseBody && denseBody.horizontal)) && classes.denseBodyHorizontal,
+                        (typeof denseBody === "boolean" || (denseBody && denseBody.vertical)) && classes.denseBodyVertical,
+                    )}>
+                        {children}
+                    </DialogContent>
+                    {buttons && (
+                        <DialogActions>
+                            {buttons.map(({ title, ...other }) => (
+                                <Button {...other}>
+                                    {title}
+                                </Button>
+                            ))}
+                        </DialogActions>
+                    )}
+                </Fragment>
             )}
         </Dialog>
     );

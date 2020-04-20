@@ -48,4 +48,7 @@ export default createMuiTheme({
             disableElevation: true,
         },
     },
+    zIndex: {
+        dropFiles: 1350,
+    },
 });

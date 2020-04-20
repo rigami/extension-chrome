@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "preact/compat";
+import React, {useState, useRef, useEffect} from "preact/compat";
 import {h, Component, render, Fragment} from "preact";
 import { observer, inject } from "mobx-react"
 import {BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE} from "dict";
@@ -11,6 +11,7 @@ import {
 import {
     WallpaperRounded as WallpaperIcon,
     AddRounded as AddIcon,
+    MoreHorizRounded as MoreIcon,
 } from "@material-ui/icons";
 
 import locale from "i18n/RU";
@@ -18,34 +19,52 @@ import PageHeader from "ui/Menu/PageHeader";
 import SectionHeader from "ui/Menu/SectionHeader";
 import SettingsRow from "ui/Menu/SettingsRow";
 import LibraryPage from "./Library";
+import FSConnector from "../../../utils/fsConnector";
 
 
-function BGCard() {
+function BGCard({ src }) {
     return (
-        <Avatar variant="rounded" style={{width: 48, height: 48, marginRight: 8}}>
+        <Avatar src={src} variant="rounded" style={{width: 48, height: 48, marginRight: 8}}>
             <WallpaperIcon/>
         </Avatar>
     );
 }
 
 function BackgroundsMenu({ backgroundsStore, onSelect, onClose}) {
+
+    const [bgs, setBgs] = useState(null);
+
+    useEffect(() => {
+        backgroundsStore.getStore()
+            .then((store) => store.getAllItems())
+            .then((values) => {
+                setBgs(values.map(({ fileName }) => FSConnector.getURL(fileName, "preview")));
+            })
+            .catch((e) => {
+                console.error("Failed load bg`s from db:", e)
+            });
+    }, [backgroundsStore.count]);
+
     return (
         <Fragment>
             <PageHeader title={locale.settings.backgrounds.title} onBack={() => onClose()}/>
             <SectionHeader title={locale.settings.backgrounds.general.title}/>
             <SettingsRow
                 title={locale.settings.backgrounds.general.library.title}
-                description={locale.settings.backgrounds.general.library.description(15)}
+                description={locale.settings.backgrounds.general.library.description(backgroundsStore.count)}
                 action={{
                     type: SettingsRow.TYPE.LINK,
                     onClick: () => onSelect(LibraryPage),
                 }}
             >
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
-                <BGCard/>
+                {bgs && bgs.slice(0, 8).map((src) => (
+                    <BGCard src={src}/>
+                ))}
+                {bgs && bgs.length > 8 && (
+                    <Avatar variant="rounded" style={{width: 48, height: 48, marginRight: 8}}>
+                        <MoreIcon/>
+                    </Avatar>
+                )}
             </SettingsRow>
             <SettingsRow
                 title={locale.settings.backgrounds.general.dimming_power.title}
