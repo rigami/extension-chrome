@@ -10,7 +10,7 @@ import {ThemeProvider} from "@material-ui/styles";
 import theme from "themes/defaultTheme"
 import Snackbar from "ui-components/Snackbar";
 import UploadBGForm from "ui-components/UploadBGForm";
-import ConfigurationApp from "./ConfigurationApp";
+import ConfigurationApp from "hoc/ConfigurationApp";
 
 function App() {
 

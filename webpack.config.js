@@ -75,6 +75,7 @@ module.exports = {
             'themes': '/themes',
             'stores': '/stores',
             'utils': '/utils',
+            'hoc': '/hoc',
         }
     },
     optimization: {
