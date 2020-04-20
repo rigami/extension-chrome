@@ -4,6 +4,7 @@ import {Card, IconButton, Divider, Tooltip} from "@material-ui/core";
 import { Refresh as RefreshIcon, Settings as SettingsIcon } from "@material-ui/icons";
 import {makeStyles} from "@material-ui/core/styles";
 import {inject, observer} from "mobx-react";
+import {fade} from '@material-ui/core/styles/colorManipulator';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -12,6 +13,8 @@ const useStyles = makeStyles(theme => ({
         padding: theme.spacing(.5),
         bottom: theme.spacing(3),
         right: theme.spacing(3),
+        backdropFilter: 'blur(10px) brightness(200%)',
+        backgroundColor: fade(theme.palette.common.white, 0.52),
     },
     divider: {
         marginTop: theme.spacing(.5),
