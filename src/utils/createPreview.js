@@ -83,18 +83,21 @@ const getPreview = (file) => {
         if (~file.type.indexOf(BG_TYPE.VIDEO)) {
             const video = document.createElement("video");
             video.setAttribute("src", URL.createObjectURL(file));
-            video.setAttribute("autoplay", "");
-            video.setAttribute("muted", "");
 
-            video.addEventListener('play', () => {
+            video.onseeked = () => {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 ctx.drawImage(video, 0, 0);
                 postprocessing(canvas, resolve);
-            }, false);
+
+                setTimeout(() => video.pause(), 500);
+            };
 
             video.onloadedmetadata = () => {
-                video.currentTime = video.duration / 2;
+                video.muted = true;
+                video.play().then(() => {
+                    video.currentTime = video.duration / 2;
+                });
             };
 
         } else {
