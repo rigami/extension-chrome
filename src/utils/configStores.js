@@ -26,7 +26,6 @@ class ConfigStores {
                             return fetch(appVariables.defaultBG.src)
                                 .then((response) => response.blob())
                                 .then((file) => {
-                                    console.log(file)
                                     fullFile = file;
                                     return createPreview(file);
                                 })
@@ -40,6 +39,11 @@ class ConfigStores {
                                     ...appVariables.defaultBG,
                                     fileName,
                                 }))
+                                .then((bgId) => StorageConnector.setJSONItem("currentBG", {
+                                    ...appVariables.defaultBG,
+                                    fileName,
+                                    id: bgId,
+                                }));
                         }
                     })
                     .then(() => StorageConnector.setItem("firstContactTimestamp", Date.now().toString()))
@@ -60,17 +64,15 @@ class ConfigStores {
     }
 
     static configFS() {
-        return FSConnector.getFS("/")
+        return FSConnector.getPath("/")
             .then((rootFS) => {
-                console.log(rootFS);
-
-                return FSConnector.createFS(rootFS, "bookmarksIcons")
+                return rootFS.createPath("bookmarksIcons")
                     .then(() => rootFS);
             })
-            .then((rootFS) => FSConnector.createFS(rootFS, "backgrounds"))
+            .then((rootFS) => rootFS.createPath("backgrounds"))
             .then((backgroundsFS) => {
-                return FSConnector.createFS(backgroundsFS, "full")
-                    .then(() => FSConnector.createFS(backgroundsFS, "preview"))
+                return backgroundsFS.createPath("full")
+                    .then(() => backgroundsFS.createPath("preview"))
             })
             .then(() => console.log("Success create fs"));
     }
