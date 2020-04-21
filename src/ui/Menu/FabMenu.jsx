@@ -46,7 +46,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground }) {
     }, []);
 
     return (
-        <Card className={classes.root} elevation={6} ref={rootAl} style={{ opacity: distance }}>
+        <Card className={classes.root} elevation={12} ref={rootAl} style={{ opacity: distance }}>
             <Tooltip title='Настройки' placement='left'>
                 <IconButton size='small' className={classes.button} onClick={() => onOpenMenu()}>
                     <SettingsIcon />
