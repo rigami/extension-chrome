@@ -97,13 +97,13 @@ function Desktop({backgroundsStore, onChangedBG }) {
                 }}
             >
                 <div className={classes.root}>
-                    {state === "failed" && bg && (
+                    {state === "failed" && (
                         <FullscreenStub
                             iconRender={(props) => (<BrokenIcon {...props} />)}
                             message="Ошибка загрузка фона"
-                            description="Ну удается отобразить фон по неизвестной причине"
+                            description={bg ? "Ну удается отобразить фон по неизвестной причине" : "Нет фона для отрисовки"}
                             style={{ height: "100vh" }}
-                            actions={[
+                            actions={bg && [
                                 {
                                     title: "Удалить фон",
                                     onClick: () => {
@@ -120,14 +120,6 @@ function Desktop({backgroundsStore, onChangedBG }) {
                                     startIcon: (<DeleteIcon />),
                                 }
                             ]}
-                        />
-                    )}
-                    {state === "failed" && !bg && (
-                        <FullscreenStub
-                            iconRender={(props) => (<BrokenIcon {...props} />)}
-                            message="Ошибка загрузка фона"
-                            description="Нет фона для отрисовки"
-                            style={{ height: "100vh" }}
                         />
                     )}
                     {bg && (bg.type === BG_TYPE.IMAGE || bg.type === BG_TYPE.ANIMATION) && (
