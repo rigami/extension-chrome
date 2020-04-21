@@ -1,17 +1,28 @@
 import React, {useEffect, useRef, useState} from "preact/compat";
 import { h, Component, render, Fragment } from "preact";
-import {Card, IconButton, Divider, Tooltip} from "@material-ui/core";
-import { Refresh as RefreshIcon, Settings as SettingsIcon } from "@material-ui/icons";
-import {makeStyles} from "@material-ui/core/styles";
+import {
+    Card,
+    IconButton,
+    Divider,
+    Tooltip,
+    Box
+} from "@material-ui/core";
+import {
+    Refresh as RefreshIcon,
+    Settings as SettingsIcon
+} from "@material-ui/icons";
+import {makeStyles, useTheme} from "@material-ui/core/styles";
 import {inject, observer} from "mobx-react";
 import {fade} from '@material-ui/core/styles/colorManipulator';
 
 const useStyles = makeStyles(theme => ({
     root: {
         position: 'absolute',
-        borderRadius: theme.spacing(3),
         bottom: theme.spacing(3),
         right: theme.spacing(3),
+    },
+    card: {
+        borderRadius: theme.spacing(3),
         backdropFilter: 'blur(10px) brightness(200%)',
         backgroundColor: fade(theme.palette.common.white, 0.52),
     },
@@ -20,8 +31,9 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function FabMenu({ onOpenMenu, onRefreshBackground }) {
+function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings }) {
     const classes = useStyles();
+    const theme = useTheme();
     const [distance, setDistance] = useState(999);
     const rootAl = useRef();
 
@@ -46,19 +58,30 @@ function FabMenu({ onOpenMenu, onRefreshBackground }) {
     }, []);
 
     return (
-        <Card className={classes.root} elevation={12} ref={rootAl} style={{ opacity: distance }}>
-            <Tooltip title='Настройки' placement='left'>
-                <IconButton size='small' className={classes.button} onClick={() => onOpenMenu()}>
-                    <SettingsIcon />
-                </IconButton>
-            </Tooltip>
-            <Divider/>
-            <Tooltip title='Обновить фон' placement='left'>
-                <IconButton size='small' className={classes.button} onClick={() => onRefreshBackground()}>
-                    <RefreshIcon />
-                </IconButton>
-            </Tooltip>
-        </Card>
+        <Box className={classes.root} ref={rootAl} style={{ opacity: distance }}>
+            <Card className={classes.card} elevation={12} style={{ marginBottom: theme.spacing(2) }}>
+                {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }) => (
+                    <Tooltip title={tooltip} placement='left'>
+                        <IconButton size='small' className={classes.button} {...props}>
+                            {Icon}
+                        </IconButton>
+                    </Tooltip>
+                ))}
+            </Card>
+            <Card className={classes.card} elevation={12}>
+                <Tooltip title='Настройки' placement='left'>
+                    <IconButton size='small' className={classes.button} onClick={() => onOpenMenu()}>
+                        <SettingsIcon />
+                    </IconButton>
+                </Tooltip>
+                <Divider/>
+                <Tooltip title='Обновить фон' placement='left'>
+                    <IconButton size='small' className={classes.button} onClick={() => onRefreshBackground()}>
+                        <RefreshIcon />
+                    </IconButton>
+                </Tooltip>
+            </Card>
+        </Box>
     );
 }
 
