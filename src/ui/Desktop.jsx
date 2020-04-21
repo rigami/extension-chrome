@@ -135,7 +135,7 @@ function Desktop({backgroundsStore, onChangedBG }) {
                             className={clsx(classes.bg, classes.image)}
                             src={bg.src}
                             style={{ imageRendering: bg.antiAliasing ? 'auto' : 'pixelated' }}
-                            onLoad={() => setState("failed")}
+                            onLoad={() => setState("done")}
                             onError={() => setState("failed")}
                             ref={bgRef}
                         />
