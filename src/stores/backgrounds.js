@@ -214,6 +214,8 @@ class BackgroundsStore {
             .then((store) => {
                 return store.getItem(removeBGId)
                     .then((value) => {
+                        if (!value) throw "Not find in db";
+
                         fileName = value.fileName;
                     })
                     .then(() => store);
@@ -221,10 +223,12 @@ class BackgroundsStore {
             .then((store) => store.removeItem(removeBGId))
             .then(() => {
                 this.count = this.count - 1;
+                console.log("remove from db")
             })
+            .catch((e) => console.error(e))
             .then(() => FSConnector.removeFile("/backgrounds/full/"+fileName))
             .then(() => FSConnector.removeFile("/backgrounds/preview/"+fileName))
-
+            .catch((e) => console.error(e))
     }
 }
 
