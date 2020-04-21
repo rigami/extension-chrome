@@ -30,7 +30,7 @@ import SettingsRow from "ui/Menu/SettingsRow";
 import {makeStyles} from "@material-ui/core/styles";
 import {inject, observer} from "mobx-react";
 import LoadBGFromLocalButton from "./LoadBGFromLocalButton";
-import FullscreenStub from "ui/Settings/FullscreenStub";
+import FullscreenStub from "ui-components/FullscreenStub";
 
 const useStyles = makeStyles((theme) => ({
     bgWrapper: {
@@ -187,12 +187,8 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
                         {bgs.filter(({type}) => type === BG_TYPE[BGType]).map((bg) => (
                             <BGCard
                                 {...bg}
-                                onSet={() => {
-                                    backgroundsStore.setCurrentBG(bg.id);
-                                }}
-                                onRemove={() => {
-                                    backgroundsStore.removeFromStore(bg.id);
-                                }}
+                                onSet={() => backgroundsStore.setCurrentBG(bg.id)}
+                                onRemove={() => backgroundsStore.removeFromStore(bg.id)}
                             />
                         ))}
                     </Box>

@@ -3,26 +3,7 @@ import {h, Component, render, Fragment} from "preact";
 import {inject, observer} from "mobx-react";
 
 import {useSnackbar} from "notistack";
-import {
-    Button,
-    Table,
-    TableHead,
-    TableBody,
-    TableRow,
-    TableCell,
-    IconButton,
-    CircularProgress,
-    Tooltip,
-    Card,
-    Checkbox,
-    CardContent,
-    Typography,
-    CardMedia,
-    FormControlLabel,
-    Switch,
-    Drawer,
-    Container,
-} from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import {
     Add as UploadFromComputerIcon,
     CloseRounded as DeleteIcon,
