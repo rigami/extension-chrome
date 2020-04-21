@@ -58,8 +58,12 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings }) {
     }, []);
 
     return (
-        <Box className={classes.root} ref={rootAl} style={{ opacity: distance }}>
-            <Card className={classes.card} elevation={12} style={{ marginBottom: theme.spacing(2) }}>
+        <Box className={classes.root} ref={rootAl}>
+            <Card
+                className={classes.card}
+                elevation={12}
+                style={{ marginBottom: theme.spacing(2), opacity: distance }}
+            >
                 {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }) => (
                     <Tooltip title={tooltip} placement='left'>
                         <IconButton size='small' className={classes.button} {...props}>
@@ -68,7 +72,11 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings }) {
                     </Tooltip>
                 ))}
             </Card>
-            <Card className={classes.card} elevation={12}>
+            <Card
+                className={classes.card}
+                elevation={12}
+                style={{ opacity: distance }}
+            >
                 <Tooltip title='Настройки' placement='left'>
                     <IconButton size='small' className={classes.button} onClick={() => onOpenMenu()}>
                         <SettingsIcon />
