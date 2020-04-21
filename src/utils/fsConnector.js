@@ -66,8 +66,11 @@ class FSConnector {
 
     static saveFile(pathOrFSConnector, file, name) {
         if (typeof pathOrFSConnector === "string") {
-            return FSConnector.getPath(pathOrFSConnector)
-                .then((fsConnector) => FSConnector.saveFile(fsConnector, file, name));
+            const path = name ? pathOrFSConnector : pathOrFSConnector.substring(0, pathOrFSConnector.lastIndexOf("/"));
+            const fileName = name || pathOrFSConnector.substring(pathOrFSConnector.lastIndexOf("/") + 1);
+
+            return FSConnector.getPath(path)
+                .then((fsConnector) => FSConnector.saveFile(fsConnector, file, fileName));
         }
 
         if (!file) return Promise.reject("File is require");
