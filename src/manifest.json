@@ -3,7 +3,7 @@
 
   "name": "ClockTab - Новая вкладка",
   "short_name": "ClockTab",
-  "version": "1.6.28",
+  "version": "2.0.00",
   "homepage_url": "http://danilkinkin.com/projects/clockTab/",
   "minimum_chrome_version": "48",
   "offline_enabled": true,
