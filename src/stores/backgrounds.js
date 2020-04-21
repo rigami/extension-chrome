@@ -20,6 +20,7 @@ class BackgroundsStore {
     @observable uploadQueue = [];
     @observable bgState;
     @observable count;
+    @observable dimmingPower;
     _currentBG;
 
     // _getPreview = queuingDecorator(getPreview);
@@ -29,11 +30,19 @@ class BackgroundsStore {
         this.selectionMethod = default_settings.backgrounds.selection_method;
         this.bgType = default_settings.backgrounds.bg_type;
 
-        StorageConnector.getJSONItem("currentBG")
+        StorageConnector.getJSONItem("bg_current")
             .then((value) => {
                 this._currentBG = value;
                 this.currentBGId = this._currentBG.id;
                 this.bgState = value.pause ? "pause" : "play";
+            })
+            .catch((e) => {
+                console.error(e)
+            });
+
+        StorageConnector.getItem("bg_dimming_power")
+            .then((value) => {
+                this.dimmingPower = +value;
             })
             .catch((e) => {
                 console.error(e)
@@ -85,7 +94,7 @@ class BackgroundsStore {
             pause: false,
         };
 
-        return StorageConnector.setJSONItem("currentBG", this._currentBG)
+        return StorageConnector.setJSONItem("bg_current", this._currentBG)
             .then(() => FSConnector.removeFile("/backgrounds/full", "temporaryVideoFrame"));
     }
 
@@ -93,7 +102,7 @@ class BackgroundsStore {
     pause() {
         this.bgState = "pause";
 
-        return StorageConnector.setJSONItem("currentBG", {
+        return StorageConnector.setJSONItem("bg_current", {
             ...this._currentBG,
             pause: true,
         });
@@ -124,9 +133,18 @@ class BackgroundsStore {
                     pause: timestamp,
                 };
 
-                return StorageConnector.setJSONItem("currentBG", this._currentBG);
+                return StorageConnector.setJSONItem("bg_current", this._currentBG);
             })
             .then(() => this._currentBG);
+    }
+
+    @action('set dimming power')
+    setDimmingPower(value, save = true) {
+        this.dimmingPower = value;
+
+        if (save) {
+            StorageConnector.setItem("bg_dimming_power", value);
+        }
     }
 
     @action('next bg')
@@ -153,7 +171,7 @@ class BackgroundsStore {
 
                 return bg;
             })
-            .then((bg) => StorageConnector.setJSONItem("currentBG", bg))
+            .then((bg) => StorageConnector.setJSONItem("bg_current", bg))
             .catch((e) => {
                 console.error(e)
             });

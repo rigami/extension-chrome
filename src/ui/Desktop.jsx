@@ -9,7 +9,7 @@ import {
 import FSConnector from "../utils/fsConnector";
 import {BG_TYPE} from "../dict";
 import clsx from "clsx";
-import { Fade } from "@material-ui/core";
+import {Fade} from "@material-ui/core";
 import FullscreenStub from "ui-components/FullscreenStub";
 import {useSnackbar} from "notistack";
 import createPreview from "utils/createPreview";
@@ -44,9 +44,17 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: theme.palette.error.dark,
         },
     },
+    dimmingSurface: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: theme.palette.common.black,
+    },
 }));
 
-function Desktop({backgroundsStore, onChangedBG }) {
+function Desktop({backgroundsStore, onChangedBG}) {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
 
@@ -151,12 +159,18 @@ function Desktop({backgroundsStore, onChangedBG }) {
                 }}
             >
                 <div className={classes.root}>
+                    {state !== "failed" && (
+                        <div
+                            className={classes.dimmingSurface}
+                            style={{opacity: backgroundsStore.dimmingPower / 100}}
+                        />
+                    )}
                     {state === "failed" && (
                         <FullscreenStub
                             iconRender={(props) => (<BrokenIcon {...props} />)}
                             message="Ошибка загрузка фона"
                             description={bg ? "Ну удается отобразить фон по неизвестной причине" : "Нет фона для отрисовки"}
-                            style={{ height: "100vh" }}
+                            style={{height: "100vh"}}
                             actions={bg && [
                                 {
                                     title: "Удалить фон",
@@ -171,7 +185,7 @@ function Desktop({backgroundsStore, onChangedBG }) {
                                     },
                                     variant: "contained",
                                     className: classes.deleteBG,
-                                    startIcon: (<DeleteIcon />),
+                                    startIcon: (<DeleteIcon/>),
                                 }
                             ]}
                         />
@@ -187,7 +201,7 @@ function Desktop({backgroundsStore, onChangedBG }) {
                         <img
                             className={clsx(classes.bg, classes.image)}
                             src={bg.src}
-                            style={{ imageRendering: bg.antiAliasing ? 'auto' : 'pixelated' }}
+                            style={{imageRendering: bg.antiAliasing ? 'auto' : 'pixelated'}}
                             onLoad={() => setState("done")}
                             onError={() => setState("failed")}
                             ref={bgRef}
@@ -200,7 +214,7 @@ function Desktop({backgroundsStore, onChangedBG }) {
                             muted
                             src={bg.src}
                             className={clsx(classes.bg, classes.video)}
-                            style={{ imageRendering: bg.antiAliasing ? 'auto' : 'pixelated' }}
+                            style={{imageRendering: bg.antiAliasing ? 'auto' : 'pixelated'}}
                             onPlay={() => setState("done")}
                             onError={() => setState("failed")}
                             ref={bgRef}

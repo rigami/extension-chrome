@@ -17,9 +17,9 @@ import {
 import locale from "i18n/RU";
 import PageHeader from "ui/Menu/PageHeader";
 import SectionHeader from "ui/Menu/SectionHeader";
-import SettingsRow from "ui/Menu/SettingsRow";
+import SettingsRow, { ROWS_TYPE } from "ui/Menu/SettingsRow";
 import LibraryPage from "./Library";
-import FSConnector from "../../../utils/fsConnector";
+import FSConnector from "utils/fsConnector";
 
 
 function BGCard({ src }) {
@@ -53,7 +53,7 @@ function BackgroundsMenu({ backgroundsStore, onSelect, onClose}) {
                 title={locale.settings.backgrounds.general.library.title}
                 description={locale.settings.backgrounds.general.library.description(backgroundsStore.count)}
                 action={{
-                    type: SettingsRow.TYPE.LINK,
+                    type: ROWS_TYPE.LINK,
                     onClick: () => onSelect(LibraryPage),
                 }}
             >
@@ -70,22 +70,25 @@ function BackgroundsMenu({ backgroundsStore, onSelect, onClose}) {
                 title={locale.settings.backgrounds.general.dimming_power.title}
                 description={locale.settings.backgrounds.general.dimming_power.description}
                 action={{
-                    type: SettingsRow.TYPE.SLIDER,
-                    value: 30,
-                    onChange: (newValue, oldValue) => {
-
+                    type: ROWS_TYPE.SLIDER,
+                    value: typeof backgroundsStore.dimmingPower === 'number' ? backgroundsStore.dimmingPower : 0,
+                    onChange: (event, value) => {
+                        backgroundsStore.setDimmingPower(value, false);
+                    },
+                    onChangeCommitted:  (event, value) => {
+                        backgroundsStore.setDimmingPower(value, true);
                     },
                     min: 0,
-                    max: 100,
+                    max: 90,
                 }}
-                type={SettingsRow.TYPE.SLIDER}
+                type={ROWS_TYPE.SLIDER}
             />
             <SectionHeader title={locale.settings.backgrounds.scheduler.title}/>
             <SettingsRow
                 title={locale.settings.backgrounds.scheduler.selection_method.title}
                 description={locale.settings.backgrounds.scheduler.selection_method.description}
                 action={{
-                    type: SettingsRow.TYPE.SELECT,
+                    type: ROWS_TYPE.SELECT,
                     locale: locale.settings.backgrounds.scheduler.selection_method,
                     value: backgroundsStore.selectionMethod,
                     onChange: (event) => backgroundsStore.setSelectionMethod(event.target.value),
@@ -99,7 +102,7 @@ function BackgroundsMenu({ backgroundsStore, onSelect, onClose}) {
                 title={locale.settings.backgrounds.scheduler.change_interval.title}
                 description={locale.settings.backgrounds.scheduler.change_interval.description}
                 action={{
-                    type: SettingsRow.TYPE.SELECT,
+                    type: ROWS_TYPE.SELECT,
                     locale: locale.settings.backgrounds.scheduler.change_interval,
                     value: backgroundsStore.changeInterval,
                     onChange: (event) => backgroundsStore.setChangeInterval(event.target.value),
@@ -117,7 +120,7 @@ function BackgroundsMenu({ backgroundsStore, onSelect, onClose}) {
                 title={locale.settings.backgrounds.scheduler.bg_type.title}
                 description={locale.settings.backgrounds.scheduler.bg_type.description}
                 action={{
-                    type: SettingsRow.TYPE.MULTISELECT,
+                    type: ROWS_TYPE.MULTISELECT,
                     locale: locale.settings.backgrounds.scheduler.bg_type,
                     value: backgroundsStore.bgType,
                     onChange: (event) => {

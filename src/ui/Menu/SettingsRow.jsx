@@ -58,112 +58,107 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-class SettingsRow extends Component {
-    constructor() {
-        super();
-    }
+const TYPE = {
+    LINK: "link",
+    SLIDER: "slider",
+    SELECT: "select",
+    MULTISELECT: "multiselect",
+    CHECKBOX: "checkbox",
+    NONE: "none",
+};
 
-    static TYPE = {
-        LINK: "link",
-        SLIDER: "slider",
-        SELECT: "select",
-        MULTISELECT: "multiselect",
-        CHECKBOX: "checkbox",
-    };
+function SettingsRow({title, description, action: { type: actionType = TYPE.NONE, ...actionProps} = {}, children}) {
+    const classes = useStyles();
 
-    render({title, description, action, children}) {
-        const classes = useStyles();
+    return (
+        <ListItem
+            classes={{
+                root: classes.root,
+            }}
+            button={actionType === TYPE.LINK}
+            onClick={actionType === TYPE.LINK && actionProps.onClick}
+        >
+            <div className={classes.rowWrapper}>
+                <ListItemAvatar/>
+                <ListItemText
+                    primary={title}
+                    secondary={description}
+                />
+                {actionType !== TYPE.NONE && (
+                    <ListItemSecondaryAction
+                        className={clsx(
+                            actionType === TYPE.LINK && classes.noPointerEvents,
+                            classes.secondaryAction
+                        )}
+                    >
+                        {actionType === TYPE.LINK && (
+                            <ArrowRightIcon/>
+                        )}
+                        {actionType === TYPE.SLIDER && (
+                            <Slider {...actionProps} valueLabelDisplay="auto"/>
+                        )}
+                        {actionType === TYPE.SELECT && (
+                            <Select
+                                {...actionProps}
+                                variant="outlined"
+                                style={{width: '100%'}}
+                                IconComponent={ArrowBottomIcon}
+                            >
+                                {actionProps.values.map((value) => (
+                                    <MenuItem key={value} value={value}>
+                                        {actionProps.locale && actionProps.locale[value] || value}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        )}
+                        {actionType === TYPE.MULTISELECT && (
+                            <Select
+                                {...actionProps}
+                                variant="outlined"
+                                style={{ width: '100%' }}
+                                multiple
 
-        return (
-            <ListItem
-                classes={{
-                    root: classes.root,
-                }}
-                button={action && action.type === SettingsRow.TYPE.LINK}
-                onClick={action && action.type === SettingsRow.TYPE.LINK && action.onClick}
-            >
-                <div className={classes.rowWrapper}>
-                    <ListItemAvatar/>
-                    <ListItemText
-                        primary={title}
-                        secondary={description}
-                    />
-                    {action && (
-                        <ListItemSecondaryAction
-                            className={clsx(
-                                action.type === SettingsRow.TYPE.LINK && classes.noPointerEvents,
-                                classes.secondaryAction
-                            )}
-                        >
-                            {action.type === SettingsRow.TYPE.LINK && (
-                                <ArrowRightIcon/>
-                            )}
-                            {action.type === SettingsRow.TYPE.SLIDER && (
-                                <Slider {...action} valueLabelDisplay="auto"/>
-                            )}
-                            {action.type === SettingsRow.TYPE.SELECT && (
-                                <Select
-                                    {...action}
-                                    value={action.value}
-                                    variant="outlined"
-                                    style={{width: '100%'}}
-                                    IconComponent={ArrowBottomIcon}
-                                >
-                                    {action.values.map((value) => (
-                                        <MenuItem key={value} value={value}>
-                                            {action.locale && action.locale[value] || value}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            )}
-                            {action.type === SettingsRow.TYPE.MULTISELECT && (
-                                <Select
-                                    {...action}
-                                    value={action.value}
-                                    variant="outlined"
-                                    style={{ width: '100%' }}
-                                    multiple
-
-                                    IconComponent={ArrowBottomIcon}
-                                    displayEmpty
-                                    renderValue={(selected) => {
-                                        if (action.value.length === 0) {
-                                            return locale.global.nothing_selected;
-                                        } else if (action.values.length === action.value.length) {
-                                            return locale.global.all;
-                                        } else {
-                                            return selected
-                                                .map(value => action.locale && action.locale[value] || value)
-                                                .join(', ');
-                                        }
-                                    }}
-                                >
-                                    {action.values.map((value) => (
-                                        <MenuItem key={value} value={value}>
-                                            <Checkbox
-                                                color="primary"
-                                                checked={action.value.indexOf(value) > -1}
-                                            />
-                                            <ListItemText primary={action.locale && action.locale[value] || value}/>
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            )}
-                            {action.type === SettingsRow.TYPE.CHECKBOX && (
-                                <Switch
-                                    edge="end"
-                                    {...action}
-                                />
-                            )}
-                        </ListItemSecondaryAction>
-                    )}
-                </div>
-                {children && (
-                    <Box className={classes.bodyWrapper}>{children}</Box>
+                                IconComponent={ArrowBottomIcon}
+                                displayEmpty
+                                renderValue={(selected) => {
+                                    if (actionProps.value.length === 0) {
+                                        return locale.global.nothing_selected;
+                                    } else if (actionProps.values.length === actionProps.value.length) {
+                                        return locale.global.all;
+                                    } else {
+                                        return selected
+                                            .map(value => actionProps.locale && actionProps.locale[value] || value)
+                                            .join(', ');
+                                    }
+                                }}
+                            >
+                                {actionProps.values.map((value) => (
+                                    <MenuItem key={value} value={value}>
+                                        <Checkbox
+                                            color="primary"
+                                            checked={actionProps.value.indexOf(value) > -1}
+                                        />
+                                        <ListItemText primary={actionProps.locale && actionProps.locale[value] || value}/>
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        )}
+                        {actionType === TYPE.CHECKBOX && (
+                            <Switch
+                                edge="end"
+                                {...actionProps}
+                            />
+                        )}
+                    </ListItemSecondaryAction>
                 )}
-            </ListItem>
-        );
-    }
+            </div>
+            {children && (
+                <Box className={classes.bodyWrapper}>{children}</Box>
+            )}
+        </ListItem>
+    );
 }
+
+export const ROWS_TYPE = TYPE;
 
 export default SettingsRow;

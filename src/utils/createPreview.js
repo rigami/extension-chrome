@@ -91,7 +91,7 @@ const getPreview = (fileOrSrc, type, { size = "preview", antiAliasing = true, ti
             if (size === "full") {
                 canvas.toBlob(resolve, "image/jpeg", 1);
             } else {
-                postprocessing(canvas, { size, antiAliasing, timeStamp }).then(resolve);
+                postprocessing(canvas, { antiAliasing }).then(resolve);
             }
         };
 
