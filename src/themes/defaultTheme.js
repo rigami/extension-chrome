@@ -39,7 +39,8 @@ export default createMuiTheme({
         MuiTooltip: {
             tooltip: {
                 backgroundColor: fade('#000', 0.82),
-                fontSize: '0.8rem',
+                fontSize: '0.85rem',
+                padding: "6px 12px",
             }
         },
     },
