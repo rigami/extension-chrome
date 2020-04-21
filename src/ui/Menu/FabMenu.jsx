@@ -10,15 +10,13 @@ const useStyles = makeStyles(theme => ({
     root: {
         position: 'absolute',
         borderRadius: theme.spacing(3),
-        padding: theme.spacing(.5),
         bottom: theme.spacing(3),
         right: theme.spacing(3),
         backdropFilter: 'blur(10px) brightness(200%)',
         backgroundColor: fade(theme.palette.common.white, 0.52),
     },
-    divider: {
-        marginTop: theme.spacing(.5),
-        marginBottom: theme.spacing(.5),
+    button: {
+        padding: theme.spacing(1),
     }
 }));
 
@@ -50,13 +48,13 @@ function FabMenu({ onOpenMenu, onRefreshBackground }) {
     return (
         <Card className={classes.root} elevation={6} ref={rootAl} style={{ opacity: distance }}>
             <Tooltip title='Настройки' placement='left'>
-                <IconButton size='small' onClick={() => onOpenMenu()}>
+                <IconButton size='small' className={classes.button} onClick={() => onOpenMenu()}>
                     <SettingsIcon />
                 </IconButton>
             </Tooltip>
-            <Divider className={classes.divider}/>
+            <Divider/>
             <Tooltip title='Обновить фон' placement='left'>
-                <IconButton size='small' onClick={() => onRefreshBackground()}>
+                <IconButton size='small' className={classes.button} onClick={() => onRefreshBackground()}>
                     <RefreshIcon />
                 </IconButton>
             </Tooltip>
