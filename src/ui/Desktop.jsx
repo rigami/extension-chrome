@@ -12,6 +12,7 @@ import clsx from "clsx";
 import { Fade } from "@material-ui/core";
 import FullscreenStub from "ui-components/FullscreenStub";
 import {useSnackbar} from "notistack";
+import createPreview from "utils/createPreview";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -53,6 +54,7 @@ function Desktop({backgroundsStore, onChangedBG }) {
     const [bg, setBg] = useState(null);
     const [nextBg, setNextBg] = useState(null);
     const [state, setState] = useState("pending");
+    const [captureFrameTimer, setCaptureFrameTimer] = useState(null);
 
     useEffect(() => {
         const currentBg = backgroundsStore.getCurrentBG();
@@ -62,27 +64,79 @@ function Desktop({backgroundsStore, onChangedBG }) {
             return;
         }
 
+        const src = FSConnector.getURL(typeof currentBg.pause === "number" ? "temporaryVideoFrame" : currentBg.fileName);
+
         if (!bg && !nextBg) {
             setBg({
                 ...currentBg,
-                src: FSConnector.getURL(currentBg.fileName),
+                src,
             });
         } else {
             if (bg && nextBg && state === "pending") {
                 setBg({
                     ...currentBg,
-                    src: FSConnector.getURL(currentBg.fileName),
+                    src,
                 });
                 setNextBg(null);
             } else {
                 setNextBg({
                     ...currentBg,
-                    src: FSConnector.getURL(currentBg.fileName),
+                    src,
                 });
             }
             setState("pending");
         }
     }, [backgroundsStore.currentBGId]);
+
+    useEffect(() => {
+        if (!bgRef.current || !bg || bg.type !== BG_TYPE.VIDEO) return;
+
+        console.log(backgroundsStore.bgState, bg)
+
+        if (backgroundsStore.bgState === "pause") {
+            if (typeof bg.pause === "number") {
+                bgRef.current.currentTime = bg.pause;
+                return;
+            }
+
+            bgRef.current.onpause = () => {
+                const captureBGId = bg.id;
+                setCaptureFrameTimer(setTimeout(() => {
+                    backgroundsStore.saveTemporaryVideoFrame(captureBGId, bgRef.current.currentTime)
+                        .then((bg) => {
+                            console.log("finish transform video to frame", bg)
+                            setNextBg({
+                                ...bg,
+                                src: FSConnector.getURL("temporaryVideoFrame"),
+                            });
+                            setState("pending");
+                        })
+                        .catch((e) => console.log(e));
+                }, 5000));
+            };
+
+            bgRef.current.play().then(() => {
+                bgRef.current.pause();
+            });
+        } else {
+            const currentBg = backgroundsStore.getCurrentBG();
+
+            if (currentBg.id !== bg.id) return;
+
+            if (bgRef.current.play) bgRef.current.play();
+
+            setNextBg({
+                ...currentBg,
+                src: FSConnector.getURL(currentBg.fileName),
+            });
+            setState("pending");
+        }
+
+        return () => {
+            if (captureFrameTimer) clearTimeout(captureFrameTimer);
+            setCaptureFrameTimer(null);
+        };
+    }, [backgroundsStore.bgState]);
 
     return (
         <Fragment>
@@ -122,7 +176,14 @@ function Desktop({backgroundsStore, onChangedBG }) {
                             ]}
                         />
                     )}
-                    {bg && (bg.type === BG_TYPE.IMAGE || bg.type === BG_TYPE.ANIMATION) && (
+                    {(
+                        bg
+                        && (
+                            bg.type === BG_TYPE.IMAGE
+                            || bg.type === BG_TYPE.ANIMATION
+                            || (bg.type === BG_TYPE.VIDEO && typeof bg.pause === "number")
+                        )
+                    ) && (
                         <img
                             className={clsx(classes.bg, classes.image)}
                             src={bg.src}
@@ -132,9 +193,9 @@ function Desktop({backgroundsStore, onChangedBG }) {
                             ref={bgRef}
                         />
                     )}
-                    {bg && (bg.type === BG_TYPE.VIDEO) && (
+                    {bg && bg.type === BG_TYPE.VIDEO && typeof bg.pause !== "number" && (
                         <video
-                            autoPlay
+                            autoPlay={!bg.pause}
                             loop
                             muted
                             src={bg.src}

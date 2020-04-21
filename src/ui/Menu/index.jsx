@@ -1,12 +1,23 @@
-import React, { useState, useEffect } from "preact/compat";
-import { h, Component, render, Fragment } from "preact";
+import React, {useState, useEffect} from "preact/compat";
+import {h, Component, render, Fragment} from "preact";
 
 import FabMenu from "./FabMenu";
-import {DialogContentText, Drawer, List} from "@material-ui/core";
+import {
+    Drawer,
+    List,
+    Typography,
+    Divider,
+} from "@material-ui/core";
+import {
+    PauseRounded as PauseIcon,
+    PlayArrowRounded as PlayIcon,
+} from "@material-ui/icons";
 import HomePage from "../Settings";
 import {makeStyles} from "@material-ui/core/styles";
 import {useSnackbar} from "notistack";
-import {inject} from "mobx-react";
+import {inject, observer} from "mobx-react";
+import {BG_TYPE} from "../../dict";
+import {fade} from '@material-ui/core/styles/colorManipulator';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -14,13 +25,22 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
     },
+    divider: {
+        backgroundColor: fade(theme.palette.common.white, 0.12),
+        marginTop: theme.spacing(0.5),
+        marginBottom: theme.spacing(0.5),
+    },
+    description: {
+        color: theme.palette.text.secondary,
+    },
 }));
 
-function Menu({ backgroundsStore }) {
+function Menu({backgroundsStore}) {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
     const [isOpen, setIsOpen] = useState(false);
     const [stack, setStack] = useState([HomePage]);
+    const [fastSettings, setFastSettings] = useState([]);
 
     const handleClose = () => {
         setStack([HomePage]);
@@ -28,48 +48,31 @@ function Menu({ backgroundsStore }) {
     };
 
     useEffect(() => {
-        /*enqueueSnackbar({
-            message: 'Загрузка фонов',
-            description: '0%',
-            variant: 'progress',
-            progressEffect: (updateValue, updateDescription) => {
-                let progress = 0;
-
-                const timer = setInterval(() => {
-                    progress = progress >= 100 ? 0 : progress + 0.2;
-                    updateValue(progress);
-                    updateDescription(Math.round(progress)+'%');
-                }, 20);
-
-                return () => clearInterval(timer);
-            },
-        }, {
-            persist: true,
-        });
-
-
-        chrome.notifications.create("test", {
-            type: "basic",
-            iconUrl: "resource/64x64.png",
-            title: "test",
-            message: "Test message",
-            buttons: [
-                { title: "Button 1" },
-                { title: "Button 2" },
-            ],
-            contextMessage: "contextMessage, contextMessage - contextMessage. contextMessage!",
-        });
-
-        chrome.notifications.create("test2", {
-            type: "progress",
-            iconUrl: "resource/64x64.png",
-            title: "test",
-            message: "Test progress message",
-            progress: 75,
-            requireInteraction: true,
-            silent: true,
-        });*/
-    }, []);
+        if (backgroundsStore.currentBGId && backgroundsStore.getCurrentBG().type === BG_TYPE.VIDEO) {
+            if (backgroundsStore.bgState === "play") {
+                setFastSettings([{
+                    tooltip: (
+                        <Fragment>
+                            <b>Остановить видео</b>
+                            <Divider className={classes.divider}/>
+                            Живые обой это красиво, но они потребляют больше энергии чем статическое изображения.
+                            Для сбережения энергии можно остановить видео
+                        </Fragment>
+                    ),
+                    onClick: () => backgroundsStore.pause(),
+                    icon: <PauseIcon/>
+                }]);
+            } else {
+                setFastSettings([{
+                    tooltip: "Воспроизвести видео",
+                    onClick: () => backgroundsStore.play(),
+                    icon: <PlayIcon/>
+                }]);
+            }
+        } else {
+            setFastSettings([]);
+        }
+    }, [backgroundsStore.currentBGId, backgroundsStore.bgState]);
 
     return (
         <Fragment>
@@ -78,12 +81,13 @@ function Menu({ backgroundsStore }) {
                 onRefreshBackground={() => {
                     backgroundsStore.nextBG()
                 }}
+                fastSettings={fastSettings}
             />
             <Drawer
                 anchor="right"
                 open={isOpen}
                 onClose={() => handleClose()}
-
+                disableEnforceFocus
             >
                 <List disablePadding className={classes.list}>
                     {stack[stack.length - 1]({
@@ -102,4 +106,4 @@ function Menu({ backgroundsStore }) {
     );
 }
 
-export default inject('backgroundsStore')(Menu);
+export default inject('backgroundsStore')(observer(Menu));

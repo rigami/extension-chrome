@@ -1,114 +1,127 @@
 import {BG_TYPE} from "../dict";
 
-const getPreview = (file) => {
-    console.log("Getting preview for file:", file);
+const getPreview = (fileOrSrc, type, { size = "preview", antiAliasing = true, timeStamp } = {}) => {
+    console.log("Getting preview for file:", fileOrSrc);
 
-    function postprocessing(cnvs, callback) {
-        const oc = document.createElement('canvas');
-        const octx = oc.getContext('2d');
+    function postprocessing(cnvs, { antiAliasing }) {
+        return new Promise((resolve, reject) => {
+            const oc = document.createElement('canvas');
+            const octx = oc.getContext('2d');
 
-        if ((cnvs.width > 320 * 4) && (cnvs.height > 240 * 4)) {
-            oc.width = cnvs.width * 0.5;
-            oc.height = cnvs.width * 0.5;
+            const endWidth = 320;
+            const endHeight = 240;
 
-            octx.drawImage(cnvs, 0, 0, oc.width, oc.height);
+            if ((cnvs.width > endWidth * 4) && (cnvs.height > endHeight * 4)) {
+                oc.width = cnvs.width * 0.5;
+                oc.height = cnvs.width * 0.5;
 
-            octx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5);
+                octx.drawImage(cnvs, 0, 0, oc.width, oc.height);
 
-            cnvs.getContext("2d").drawImage(
-                oc,
-                0,
-                0,
-                oc.width * 0.5,
-                oc.height * 0.5,
+                octx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5);
+
+                cnvs.getContext("2d").drawImage(
+                    oc,
+                    0,
+                    0,
+                    oc.width * 0.5,
+                    oc.height * 0.5,
+                    0,
+                    0,
+                    cnvs.width,
+                    cnvs.height
+                );
+            }
+
+            const canvasResize = document.createElement("canvas");
+            const ctxResize = canvasResize.getContext("2d");
+
+            if (cnvs.width / cnvs.height < 1.33334) {
+                canvasResize.width = endWidth;
+                canvasResize.height = endWidth / cnvs.width * cnvs.height;
+            } else {
+                canvasResize.width = endHeight / cnvs.height * cnvs.width;
+                canvasResize.height = endHeight;
+            }
+
+            ctxResize.drawImage(
+                cnvs,
                 0,
                 0,
                 cnvs.width,
-                cnvs.height
-            );
-        }
-
-        const canvasResize = document.createElement("canvas");
-        const ctxResize = canvasResize.getContext("2d");
-
-        if (cnvs.width / cnvs.height < 1.33334) {
-            canvasResize.width = 320;
-            canvasResize.height = 320 / cnvs.width * cnvs.height;
-        } else {
-            canvasResize.width = 240 / cnvs.height * cnvs.width;
-            canvasResize.height = 240;
-        }
-
-        ctxResize.drawImage(
-            cnvs,
-            0,
-            0,
-            cnvs.width,
-            cnvs.height,
-            0,
-            0,
-            canvasResize.width,
-            canvasResize.height
-        );
-        oc.width = 320;
-        oc.height = 240;
-
-        if (cnvs.width / cnvs.height < 1.33334) {
-            octx.drawImage(
-                canvasResize,
+                cnvs.height,
                 0,
-                -(canvasResize.height - 240) * 0.5,
-                canvasResize.width,
-                canvasResize.height
-            );
-        } else {
-            octx.drawImage(
-                canvasResize,
-                -(canvasResize.width - 320) * 0.5,
                 0,
                 canvasResize.width,
                 canvasResize.height
             );
-        }
-        oc.toBlob(function (blob) {
-            callback(blob);
-        }, "image/jpeg", 1);
+            oc.width = endWidth;
+            oc.height = endHeight;
+
+            if (cnvs.width / cnvs.height < 1.33334) {
+                octx.drawImage(
+                    canvasResize,
+                    0,
+                    -(canvasResize.height - endHeight) * 0.5,
+                    canvasResize.width,
+                    canvasResize.height
+                );
+            } else {
+                octx.drawImage(
+                    canvasResize,
+                    -(canvasResize.width - endWidth) * 0.5,
+                    0,
+                    canvasResize.width,
+                    canvasResize.height
+                );
+            }
+            oc.toBlob(resolve, "image/jpeg", 1);
+        });
     }
 
 
     return new Promise((resolve, reject) => {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
+        const fileType = typeof fileOrSrc === "object" ? fileOrSrc.type : type;
+        const fileSrc = typeof fileOrSrc === "object" ? URL.createObjectURL(fileOrSrc) : fileOrSrc;
 
-        if (~file.type.indexOf(BG_TYPE.VIDEO)) {
+        const render = (drawElement) => {
+            ctx.drawImage(drawElement, 0, 0);
+
+            if (size === "full") {
+                canvas.toBlob(resolve, "image/jpeg", 1);
+            } else {
+                postprocessing(canvas, { size, antiAliasing, timeStamp }).then(resolve);
+            }
+        };
+
+        if (~fileType.indexOf(BG_TYPE.VIDEO)) {
             const video = document.createElement("video");
-            video.setAttribute("src", URL.createObjectURL(file));
+            video.setAttribute("src", fileSrc);
 
             video.onseeked = () => {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-                ctx.drawImage(video, 0, 0);
-                postprocessing(canvas, resolve);
+                render(video);
 
-                setTimeout(() => video.pause(), 500);
+                setTimeout(() => video.pause(), 100);
             };
 
             video.onloadedmetadata = () => {
                 video.muted = true;
                 video.play().then(() => {
-                    video.currentTime = video.duration / 2;
+                    video.currentTime = timeStamp || video.duration / 2;
                 });
             };
 
         } else {
             const img = document.createElement("img");
-            img.setAttribute("src", URL.createObjectURL(file));
+            img.setAttribute("src", fileSrc);
 
-            img.onload = function () {
+            img.onload = () => {
                 canvas.width = img.width;
                 canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                postprocessing(canvas, resolve);
+                render(img);
             }
         }
     });

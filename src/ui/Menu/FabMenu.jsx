@@ -64,8 +64,8 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings }) {
                 elevation={12}
                 style={{ marginBottom: theme.spacing(2), opacity: distance }}
             >
-                {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }) => (
-                    <Tooltip title={tooltip} placement='left'>
+                {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }, index) => (
+                    <Tooltip title={tooltip} placement='left' key={index+tooltip}>
                         <IconButton size='small' className={classes.button} {...props}>
                             {Icon}
                         </IconButton>
