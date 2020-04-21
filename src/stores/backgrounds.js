@@ -28,6 +28,15 @@ class BackgroundsStore {
         this.selectionMethod = default_settings.backgrounds.selection_method;
         this.bgType = default_settings.backgrounds.bg_type;
 
+        StorageConnector.getItem("currentBG")
+            .then((value) => {
+                this._currentBG = value;
+                this.currentBGId = this._currentBG.id;
+            })
+            .catch((e) => {
+                console.error(e)
+            });
+
         StorageConnector.getJSONItem("currentBG")
             .then((value) => {
                 this._currentBG = value;
@@ -81,12 +90,17 @@ class BackgroundsStore {
             .then((keys) => {
                 return keys[Math.round(Math.random() * (keys.length - 1))];
             })
-            .then((bgId) => {
-                return DBConnector.getStore("backgrounds")
-                    .then((store) => store.getItem(bgId));
-            })
+            .then((bgId) => this.setCurrentBG(bgId));
+    }
+
+    @action('set current bg')
+    setCurrentBG(currentBGId) {
+        if (this.currentBGId === currentBGId) return Promise.resolve();
+
+        return DBConnector.getStore("backgrounds")
+            .then((store) => store.getItem(currentBGId))
             .then((bg) => {
-                console.log("Next bg:", bg);
+                console.log("Set current bg:", bg);
                 this._currentBG = bg;
                 this.currentBGId = this._currentBG.id;
 

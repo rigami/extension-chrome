@@ -188,7 +188,7 @@ function LibraryMenu({backgroundsStore, onSelect, onClose}) {
                             <BGCard
                                 {...bg}
                                 onSet={() => {
-
+                                    backgroundsStore.setCurrentBG(bg.id);
                                 }}
                                 onRemove={() => {
                                     backgroundsStore.removeFromStore(bg.id);
