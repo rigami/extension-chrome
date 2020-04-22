@@ -117,16 +117,15 @@ function SettingsRow({title, description, action: { type: actionType = TYPE.NONE
                                 variant="outlined"
                                 style={{ width: '100%' }}
                                 multiple
-
                                 IconComponent={ArrowBottomIcon}
                                 displayEmpty
                                 renderValue={(selected) => {
-                                    if (actionProps.value.length === 0) {
+                                    if (actionProps.value && (actionProps.value.length === 0)) {
                                         return locale.global.nothing_selected;
-                                    } else if (actionProps.values.length === actionProps.value.length) {
+                                    } else if (actionProps.values && actionProps.value && (actionProps.values.length === actionProps.value.length)) {
                                         return locale.global.all;
                                     } else {
-                                        return selected
+                                        return selected && selected
                                             .map(value => actionProps.locale && actionProps.locale[value] || value)
                                             .join(', ');
                                     }
@@ -136,7 +135,7 @@ function SettingsRow({title, description, action: { type: actionType = TYPE.NONE
                                     <MenuItem key={value} value={value}>
                                         <Checkbox
                                             color="primary"
-                                            checked={actionProps.value.indexOf(value) > -1}
+                                            checked={actionProps.value && actionProps.value.indexOf(value) > -1}
                                         />
                                         <ListItemText primary={actionProps.locale && actionProps.locale[value] || value}/>
                                     </MenuItem>

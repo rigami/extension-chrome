@@ -69,6 +69,8 @@ function Desktop({backgroundsStore, onChangedBG}) {
 
         if (!currentBg) {
             setState("failed");
+            setBg(null);
+            setNextBg(null);
             return;
         }
 

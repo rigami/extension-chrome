@@ -2,7 +2,7 @@ import {observable, action} from 'mobx';
 import default_settings from "config/settings";
 import appVariables from "config/appVariables";
 import {BG_TYPE} from "dict";
-import DBConnector from "utils/dbConnector";
+import DBConnector, {DBQuery} from "utils/dbConnector";
 import FSConnector from "utils/fsConnector";
 import StorageConnector from "utils/storageConnector";
 import getPreview from "utils/createPreview";
@@ -26,57 +26,65 @@ class BackgroundsStore {
     // _getPreview = queuingDecorator(getPreview);
 
     constructor() {
-        this.changeInterval = default_settings.backgrounds.change_interval;
-        this.selectionMethod = default_settings.backgrounds.selection_method;
-        this.bgType = default_settings.backgrounds.bg_type;
-
         StorageConnector.getJSONItem("bg_current")
             .then((value) => {
                 this._currentBG = value;
                 this.currentBGId = this._currentBG.id;
                 this.bgState = value.pause ? "pause" : "play";
             })
-            .catch((e) => {
-                console.error(e)
-            });
+            .catch((e) => console.error(e));
 
         StorageConnector.getItem("bg_dimming_power")
-            .then((value) => {
-                this.dimmingPower = +value;
-            })
-            .catch((e) => {
-                console.error(e)
-            });
+            .then((value) => this.dimmingPower = +value)
+            .catch((e) => console.error(e));
+
+        StorageConnector.getItem("bg_selection_method")
+            .then((value) => this.selectionMethod = value)
+            .catch((e) => console.error(e));
+
+        StorageConnector.getItem("bg_change_interval")
+            .then((value) => this.changeInterval = value)
+            .catch((e) => console.error(e));
+
+        StorageConnector.getJSONItem("bg_type")
+            .then((value) => this.bgType = value)
+            .catch((e) => console.error(e));
 
         DBConnector.getStore("backgrounds")
             .then((store) => store.getSize())
-            .then((value) => {
-                this.count = value;
-            })
+            .then((value) => this.count = value)
             .catch((e) => console.error("Failed get store or value", e));
     }
 
     @action('set selection method')
     setSelectionMethod(selectionMethod) {
         this.selectionMethod = selectionMethod;
+
+        StorageConnector.setItem("bg_selection_method", selectionMethod);
     }
 
     @action('set change interval')
     setChangeInterval(changeInterval) {
         this.changeInterval = changeInterval;
+
+        StorageConnector.setItem("bg_change_interval", changeInterval);
     }
 
     @action('set bg types')
     setBgType(bgTypes) {
         this.bgType = [...bgTypes];
+
+        StorageConnector.setJSONItem("bg_type", bgTypes);
+
+        this.nextBG();
     }
 
-    @action('toggle bg type')
-    toggleBgType(bgType) {
-        if (this.bgType.find(type => type === bgType)) {
-            this.bgType.filter(type => type !== bgType)
-        } else {
-            this.bgType.push(bgType);
+    @action('set dimming power')
+    setDimmingPower(value, save = true) {
+        this.dimmingPower = value;
+
+        if (save) {
+            StorageConnector.setItem("bg_dimming_power", value);
         }
     }
 
@@ -138,19 +146,12 @@ class BackgroundsStore {
             .then(() => this._currentBG);
     }
 
-    @action('set dimming power')
-    setDimmingPower(value, save = true) {
-        this.dimmingPower = value;
-
-        if (save) {
-            StorageConnector.setItem("bg_dimming_power", value);
-        }
-    }
-
     @action('next bg')
     nextBG() {
         return DBConnector.getStore("backgrounds")
-            .then((store) => store.getAllKeys())
+            .then((store) => store.getAllKeys(DBQuery.create((value) => {
+                return ~this.bgType.indexOf(value.type) && value.id !== this.currentBGId;
+            }, "type")))
             .then((keys) => {
                 return keys[Math.round(Math.random() * (keys.length - 1))];
             })
@@ -160,6 +161,14 @@ class BackgroundsStore {
     @action('set current bg')
     setCurrentBG(currentBGId) {
         if (this.currentBGId === currentBGId) return Promise.resolve();
+
+        if (!currentBGId) {
+            this._currentBG = null;
+            this.currentBGId = null;
+            this.bgState = "play";
+
+            return StorageConnector.setJSONItem("bg_current", null);
+        }
 
         return DBConnector.getStore("backgrounds")
             .then((store) => store.getItem(currentBGId))

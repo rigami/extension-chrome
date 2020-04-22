@@ -2,14 +2,36 @@ import app_variables from "../config/appVariables";
 
 let _db = null;
 
-class DbConnectorStore {
+/* class IDBValuesRange {
+    _values;
+
+    constructor(values) {
+        this._values = values;
+    }
+} */
+
+class DBQuery {
+    _column;
+    _func;
+
+    constructor(func, column) {
+        this._column = column;
+        this._func = func;
+    }
+
+    static create(func, column) {
+        return new DBQuery(func, column);
+    }
+}
+
+class DBConnectorStore {
     _store;
 
     constructor(store) {
         this._store = store;
     }
 
-    addItem (value){
+    addItem(value) {
         const result = this._store.add(value);
 
         return new Promise((resolve, reject) => {
@@ -19,7 +41,7 @@ class DbConnectorStore {
         });
     }
 
-    removeItem (key){
+    removeItem(key) {
         const result = this._store.delete(key);
 
         return new Promise((resolve, reject) => {
@@ -29,7 +51,7 @@ class DbConnectorStore {
         });
     }
 
-    getItem (key){
+    getItem(key) {
         const result = this._store.get(key);
 
         return new Promise((resolve, reject) => {
@@ -39,8 +61,8 @@ class DbConnectorStore {
         });
     }
 
-    getQuery (){
-        const result = this._store.getAllKeys(IDBKeyRange.bound(1, 7))
+    getQuery(dbQuery) {
+        const result = this._store.getAllKeys(dbQuery)
 
         return new Promise((resolve, reject) => {
             result.onsuccess = (event) => {
@@ -52,7 +74,7 @@ class DbConnectorStore {
         });
     }
 
-    getMaxPrimaryKey (){
+    getMaxPrimaryKey() {
         const result = this._store.openCursor(null, 'prev');
 
         return new Promise((resolve, reject) => {
@@ -62,8 +84,41 @@ class DbConnectorStore {
         });
     }
 
-    getAllKeys (){
-        const result = this._store.getAllKeys();
+    getAllKeys(dbQuery) {
+        let index = this._store;
+
+        if (dbQuery && dbQuery._column) index = this._store.index(dbQuery._column);
+
+        return new Promise((resolve, reject) => {
+            if (dbQuery && dbQuery._func) {
+                const openCursor = index.openCursor();
+                const result = [];
+
+                openCursor.onsuccess = (event) => {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        if (dbQuery._func(cursor.value)) result.push(cursor.value[this._store.keyPath]);
+
+                        cursor.continue();
+                    } else {
+                        resolve(result);
+                    }
+                };
+
+                openCursor.onerror = reject;
+            } else {
+                const result = index.getAllKeys(dbQuery);
+
+                result.onsuccess = (event) => resolve(event.target.result);
+
+                result.onerror = reject;
+            }
+        });
+    }
+
+    getAllItems(dbQuery) {
+        if (dbQuery && dbQuery._column) this._store.index(dbQuery._column);
+        const result = this._store.getAll(dbQuery && dbQuery._range);
 
         return new Promise((resolve, reject) => {
             result.onsuccess = (event) => resolve(event.target.result);
@@ -72,18 +127,8 @@ class DbConnectorStore {
         });
     }
 
-    getAllItems (){
-        const result = this._store.getAll();
 
-        return new Promise((resolve, reject) => {
-            result.onsuccess = (event) => resolve(event.target.result);
-
-            result.onerror = (e) => reject;
-        });
-    }
-
-
-    getSize (){
+    getSize() {
         const result = this._store.count();
 
         return new Promise((resolve, reject) => {
@@ -95,7 +140,7 @@ class DbConnectorStore {
 }
 
 class DBConnector {
-    static config (onupgradeneeded){
+    static config(onupgradeneeded) {
         const resultDB = indexedDB.open(app_variables.db.name, app_variables.db.version);
 
         if (onupgradeneeded) resultDB.onupgradeneeded = (event) => onupgradeneeded(event.target.result);
@@ -109,11 +154,11 @@ class DBConnector {
         });
     }
 
-    static get isConfig (){
+    static get isConfig() {
         return !!_db;
     }
 
-    static getStore (name){
+    static getStore(name) {
         return new Promise((resolve, reject) => {
             if (!_db) reject(new Error("DB not configuration yet"));
 
@@ -123,9 +168,11 @@ class DBConnector {
 
             const store = transaction.objectStore(name);
 
-            resolve(new DbConnectorStore(store));
+            resolve(new DBConnectorStore(store));
         });
     }
 }
+
+export {DBQuery};
 
 export default DBConnector;
