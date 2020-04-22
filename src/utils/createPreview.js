@@ -82,7 +82,7 @@ const getPreview = (fileOrSrc, type, { size = "preview", antiAliasing = true, ti
     return new Promise((resolve, reject) => {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        const fileType = typeof fileOrSrc === "object" ? fileOrSrc.type : type;
+        const fileType = typeof fileOrSrc === "object" ? fileOrSrc.type.toUpperCase() : type;
         const fileSrc = typeof fileOrSrc === "object" ? URL.createObjectURL(fileOrSrc) : fileOrSrc;
 
         const render = (drawElement) => {

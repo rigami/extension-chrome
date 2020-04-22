@@ -1,25 +1,25 @@
 export const THEME = {
-    LIGHT: "light",
-    DARK: 'dark',
+    LIGHT: "LIGHT",
+    DARK: 'DARK',
 };
 
 export const BG_TYPE = {
-    IMAGE: "image",
-    VIDEO: "video",
-    ANIMATION: "animation",
-    FILL_COLOR: "fill_color",
+    IMAGE: "IMAGE",
+    VIDEO: "VIDEO",
+    ANIMATION: "ANIMATION",
+    FILL_COLOR: "FILL_COLOR",
 };
 
 export const BG_CHANGE_INTERVAL = {
-    OPEN_TAB: "open_tab",
-    MINUTES_30: "minutes_30",
-    HOURS_1: "hours_1",
-    HOURS_6: "hours_6",
-    HOURS_12: "hours_12",
-    DAY_1: "day_1",
+    OPEN_TAB: "OPEN_TAB",
+    MINUTES_30: "MINUTES_30",
+    HOURS_1: "HOURS_1",
+    HOURS_6: "HOURS_6",
+    HOURS_12: "HOURS_12",
+    DAY_1: "DAY_1",
 };
 
 export const BG_SELECT_MODE = {
-    RANDOM: "random",
-    SPECIFIC: "specific",
+    RANDOM: "RANDOM",
+    SPECIFIC: "SPECIFIC",
 };

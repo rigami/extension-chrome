@@ -1,3 +1,5 @@
+import {BG_TYPE} from "../dict";
+
 export default {
     db: {
         name: "clock_tab",
@@ -10,7 +12,7 @@ export default {
     defaultBG: {
         src: "https://images.unsplash.com/photo-1455463640095-c56c5f258548?ixlib=rb-1.2.1&auto=format&fit=crop&w=1349&q=80",
         author: "Tim Gouw",
-        type: "image",
+        type: BG_TYPE.IMAGE,
         description: "Unsplash photo",
         sourceLink: "https://unsplash.com/photos/S4QAzzXPaRs",
     },
