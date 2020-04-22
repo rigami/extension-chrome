@@ -67,6 +67,8 @@ function Desktop({backgroundsStore, onChangedBG}) {
     useEffect(() => {
         const currentBg = backgroundsStore.getCurrentBG();
 
+        if (backgroundsStore.bgState === "pending") return;
+
         if (!currentBg) {
             setState("failed");
             setBg(null);

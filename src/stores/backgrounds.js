@@ -1,7 +1,7 @@
 import {observable, action} from 'mobx';
 import default_settings from "config/settings";
 import appVariables from "config/appVariables";
-import {BG_TYPE} from "dict";
+import {BG_TYPE, BG_CHANGE_INTERVAL_MILLISECONDS} from "dict";
 import DBConnector, {DBQuery} from "utils/dbConnector";
 import FSConnector from "utils/fsConnector";
 import StorageConnector from "utils/storageConnector";
@@ -18,7 +18,7 @@ class BackgroundsStore {
     @observable bgType;
     @observable currentBGId;
     @observable uploadQueue = [];
-    @observable bgState;
+    @observable bgState = "pending";
     @observable count;
     @observable dimmingPower;
     _currentBG;
@@ -26,14 +26,6 @@ class BackgroundsStore {
     // _getPreview = queuingDecorator(getPreview);
 
     constructor() {
-        StorageConnector.getJSONItem("bg_current")
-            .then((value) => {
-                this._currentBG = value;
-                this.currentBGId = this._currentBG.id;
-                this.bgState = value.pause ? "pause" : "play";
-            })
-            .catch((e) => console.error(e));
-
         StorageConnector.getItem("bg_dimming_power")
             .then((value) => this.dimmingPower = +value)
             .catch((e) => console.error(e));
@@ -48,6 +40,24 @@ class BackgroundsStore {
 
         StorageConnector.getJSONItem("bg_type")
             .then((value) => this.bgType = value)
+            .catch((e) => console.error(e));
+
+        StorageConnector.getJSONItem("bg_next_switch_timestamp")
+            .then((value) => {
+                if (value > Date.now()) {
+                    StorageConnector.getJSONItem("bg_current")
+                        .then((value) => {
+                            this._currentBG = value;
+                            this.currentBGId = this._currentBG.id;
+                            this.bgState = value.pause ? "pause" : "play";
+                        })
+                        .catch((e) => this.nextBG());
+
+                    return;
+                }
+
+                this.nextBG();
+            })
             .catch((e) => console.error(e));
 
         DBConnector.getStore("backgrounds")
@@ -68,6 +78,8 @@ class BackgroundsStore {
         this.changeInterval = changeInterval;
 
         StorageConnector.setItem("bg_change_interval", changeInterval);
+
+        this.nextBG();
     }
 
     @action('set bg types')
@@ -161,6 +173,10 @@ class BackgroundsStore {
     @action('set current bg')
     setCurrentBG(currentBGId) {
         if (this.currentBGId === currentBGId) return Promise.resolve();
+
+        console.log(this.changeInterval, Date.now(), BG_CHANGE_INTERVAL_MILLISECONDS[this.changeInterval])
+
+        StorageConnector.setJSONItem("bg_next_switch_timestamp", Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.changeInterval]);
 
         if (!currentBGId) {
             this._currentBG = null;

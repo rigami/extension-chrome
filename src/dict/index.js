@@ -19,6 +19,15 @@ export const BG_CHANGE_INTERVAL = {
     DAY_1: "DAY_1",
 };
 
+export const BG_CHANGE_INTERVAL_MILLISECONDS = {
+    OPEN_TAB: 0,
+    MINUTES_30: 30 * 60 * 1000,
+    HOURS_1: 60 * 60 * 1000,
+    HOURS_6: 6 * 60 * 60 * 1000,
+    HOURS_12: 12 * 60 * 60 * 1000,
+    DAY_1: 24 * 60 * 60 * 1000,
+};
+
 export const BG_SELECT_MODE = {
     RANDOM: "RANDOM",
     SPECIFIC: "SPECIFIC",
