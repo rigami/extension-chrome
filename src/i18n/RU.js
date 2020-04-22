@@ -41,8 +41,8 @@ export default {
                 selection_method: {
                     title: "Метод выбора фона",
                     description: "Выберете один из методов по приниципу которого будет выбираться фон",
-                    [BG_SELECT_MODE.SPECIFIC]: "Специальный",
-                    [BG_SELECT_MODE.RANDOM]: "Случайны",
+                    [BG_SELECT_MODE.SPECIFIC]: "Оперделеный",
+                    [BG_SELECT_MODE.RANDOM]: "Случайный",
                 },
                 change_interval: {
                     title: "Интервал изменения фона",

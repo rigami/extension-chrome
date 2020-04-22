@@ -7,11 +7,12 @@ import {
     Box,
     Avatar,
     Button,
+    Collapse, Tooltip, IconButton, Divider,
 } from "@material-ui/core";
 import {
     WallpaperRounded as WallpaperIcon,
-    AddRounded as AddIcon,
     MoreHorizRounded as MoreIcon,
+    BrokenImageRounded as BrokenIcon,
 } from "@material-ui/icons";
 
 import locale from "i18n/RU";
@@ -57,8 +58,8 @@ function BackgroundsMenu({ backgroundsStore, onSelect, onClose}) {
                     onClick: () => onSelect(LibraryPage),
                 }}
             >
-                {bgs && bgs.slice(0, 8).map((src) => (
-                    <BGCard src={src}/>
+                {bgs && bgs.slice(0, 8).map((src, index) => (
+                    <BGCard src={src} key={index}/>
                 ))}
                 {bgs && bgs.length > 8 && (
                     <Avatar variant="rounded" style={{width: 48, height: 48, marginRight: 8}}>
@@ -98,43 +99,64 @@ function BackgroundsMenu({ backgroundsStore, onSelect, onClose}) {
                     ]
                 }}
             />
-            <SettingsRow
-                title={locale.settings.backgrounds.scheduler.change_interval.title}
-                description={locale.settings.backgrounds.scheduler.change_interval.description}
-                action={{
-                    type: ROWS_TYPE.SELECT,
-                    locale: locale.settings.backgrounds.scheduler.change_interval,
-                    value: backgroundsStore.changeInterval,
-                    onChange: (event) => backgroundsStore.setChangeInterval(event.target.value),
-                    values: [
-                        BG_CHANGE_INTERVAL.OPEN_TAB,
-                        BG_CHANGE_INTERVAL.MINUTES_30,
-                        BG_CHANGE_INTERVAL.HOURS_1,
-                        BG_CHANGE_INTERVAL.HOURS_6,
-                        BG_CHANGE_INTERVAL.HOURS_12,
-                        BG_CHANGE_INTERVAL.DAY_1
-                    ]
-                }}
-            />
-            <SettingsRow
-                title={locale.settings.backgrounds.scheduler.bg_type.title}
-                description={locale.settings.backgrounds.scheduler.bg_type.description}
-                action={{
-                    type: ROWS_TYPE.MULTISELECT,
-                    locale: locale.settings.backgrounds.scheduler.bg_type,
-                    value: backgroundsStore.bgType || [],
-                    onChange: (event) => {
-                        console.log(event.target.value);
-                        backgroundsStore.setBgType(event.target.value);
-                    },
-                    values: [
-                        BG_TYPE.IMAGE,
-                        BG_TYPE.ANIMATION,
-                        BG_TYPE.VIDEO,
-                        BG_TYPE.FILL_COLOR,
-                    ]
-                }}
-            />
+            <Collapse in={backgroundsStore.selectionMethod === BG_SELECT_MODE.SPECIFIC}>
+                <SettingsRow
+                    title="Фон рабочего стола"
+                    description="Измените фон рабочего стола"
+                    action={{
+                        type: ROWS_TYPE.LINK,
+                        onClick: () => onSelect(LibraryPage),
+                        component: (
+                            <Avatar
+                                src={backgroundsStore.currentBGId && FSConnector.getURL(backgroundsStore.getCurrentBG().fileName)}
+                                variant="rounded"
+                                style={{width: 48, height: 48, marginRight: 8}}
+                            >
+                                <BrokenIcon/>
+                            </Avatar>
+                        )
+                    }}
+                />
+            </Collapse>
+            <Collapse in={backgroundsStore.selectionMethod === BG_SELECT_MODE.RANDOM}>
+                <SettingsRow
+                    title={locale.settings.backgrounds.scheduler.change_interval.title}
+                    description={locale.settings.backgrounds.scheduler.change_interval.description}
+                    action={{
+                        type: ROWS_TYPE.SELECT,
+                        locale: locale.settings.backgrounds.scheduler.change_interval,
+                        value: backgroundsStore.changeInterval,
+                        onChange: (event) => backgroundsStore.setChangeInterval(event.target.value),
+                        values: [
+                            BG_CHANGE_INTERVAL.OPEN_TAB,
+                            BG_CHANGE_INTERVAL.MINUTES_30,
+                            BG_CHANGE_INTERVAL.HOURS_1,
+                            BG_CHANGE_INTERVAL.HOURS_6,
+                            BG_CHANGE_INTERVAL.HOURS_12,
+                            BG_CHANGE_INTERVAL.DAY_1
+                        ]
+                    }}
+                />
+                <SettingsRow
+                    title={locale.settings.backgrounds.scheduler.bg_type.title}
+                    description={locale.settings.backgrounds.scheduler.bg_type.description}
+                    action={{
+                        type: ROWS_TYPE.MULTISELECT,
+                        locale: locale.settings.backgrounds.scheduler.bg_type,
+                        value: backgroundsStore.bgType || [],
+                        onChange: (event) => {
+                            console.log(event.target.value);
+                            backgroundsStore.setBgType(event.target.value);
+                        },
+                        values: [
+                            BG_TYPE.IMAGE,
+                            BG_TYPE.ANIMATION,
+                            BG_TYPE.VIDEO,
+                            BG_TYPE.FILL_COLOR,
+                        ]
+                    }}
+                />
+            </Collapse>
         </Fragment>
     );
 }
