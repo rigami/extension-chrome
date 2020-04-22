@@ -35,6 +35,14 @@ const useStyles = makeStyles(theme => ({
         width: 252,
         justifyContent: 'flex-end',
         display: 'flex',
+        alignItems: 'center',
+        justifySelf: 'center',
+        position: 'relative',
+        right: 'unset',
+        top: 'unset',
+        transform: 'unset',
+        flexShrink: 0,
+        flexGrow: 0,
     },
     noPointerEvents: {
         pointerEvents: 'none',
@@ -43,8 +51,6 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         position: 'relative',
         textAlign: 'left',
-        alignItems: 'center',
-        paddingRight: 284,
         width: '100%',
 
     },
@@ -56,15 +62,22 @@ const useStyles = makeStyles(theme => ({
         paddingLeft: 56,
         paddingBottom: theme.spacing(1.5),
     },
+    textWrapper: {
+        minHeight: '44px',
+    },
+    linkArrow: {
+        marginLeft: theme.spacing(1),
+    },
 }));
 
 const TYPE = {
-    LINK: "link",
-    SLIDER: "slider",
-    SELECT: "select",
-    MULTISELECT: "multiselect",
-    CHECKBOX: "checkbox",
-    NONE: "none",
+    LINK: "LINK",
+    SLIDER: "SLIDER",
+    SELECT: "SELECT",
+    MULTISELECT: "MULTISELECT",
+    CHECKBOX: "CHECKBOX",
+    NONE: "NONE",
+    CUSTOM: "CUSTOM",
 };
 
 function SettingsRow({title, description, action: { type: actionType = TYPE.NONE, ...actionProps} = {}, children}) {
@@ -83,6 +96,7 @@ function SettingsRow({title, description, action: { type: actionType = TYPE.NONE
                 <ListItemText
                     primary={title}
                     secondary={description}
+                    className={classes.textWrapper}
                 />
                 {actionType !== TYPE.NONE && (
                     <ListItemSecondaryAction
@@ -92,7 +106,10 @@ function SettingsRow({title, description, action: { type: actionType = TYPE.NONE
                         )}
                     >
                         {actionType === TYPE.LINK && (
-                            <ArrowRightIcon/>
+                            <Fragment>
+                                {actionProps && actionProps.component}
+                                <ArrowRightIcon className={classes.linkArrow}/>
+                            </Fragment>
                         )}
                         {actionType === TYPE.SLIDER && (
                             <Slider {...actionProps} valueLabelDisplay="auto"/>
@@ -147,6 +164,9 @@ function SettingsRow({title, description, action: { type: actionType = TYPE.NONE
                                 edge="end"
                                 {...actionProps}
                             />
+                        )}
+                        {actionType === TYPE.CUSTOM && (
+                            actionProps.component
                         )}
                     </ListItemSecondaryAction>
                 )}
