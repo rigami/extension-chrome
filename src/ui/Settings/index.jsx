@@ -18,6 +18,7 @@ import {
 import locale from "i18n/RU";
 import Header from "ui/Menu/PageHeader";
 import BackgroundsPage from "./Backgrounds";
+import AboutPage from "./About";
 import InWork from "./InWork";
 import {makeStyles} from "@material-ui/core/styles";
 
@@ -68,7 +69,7 @@ const additional = [
         description: locale.settings.about.description,
         icon: AboutIcon,
         id: "about",
-        page: (props) => (<InWork title={locale.settings.about.title} {...props} />),
+        page: AboutPage,
         color: "#9C27B0",
     },
 ];
