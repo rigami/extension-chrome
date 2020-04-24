@@ -65,7 +65,7 @@ function BackgroundsMenu({ onSelect, onClose}) {
                 <ListItemIcon>
                     <HomeIcon />
                 </ListItemIcon>
-                <ListItemText primary="Домашняя страница проекта" />
+                <ListItemText primary={locale.settings.about.home_page} />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
                         <ArrowRightIcon />
@@ -77,8 +77,8 @@ function BackgroundsMenu({ onSelect, onClose}) {
                     <ReviewIcon />
                 </ListItemIcon>
                 <ListItemText
-                    primary="Написать отзыв о проекте"
-                    secondary="Расскажите о своих впечетлениях"
+                    primary={locale.settings.about.review.title}
+                    secondary={locale.settings.about.review.description}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
@@ -91,8 +91,8 @@ function BackgroundsMenu({ onSelect, onClose}) {
                     <BugIcon />
                 </ListItemIcon>
                 <ListItemText
-                    primary="Сообщить о багах в проекте"
-                    secondary="Если вы встретили какой то баг, сообщите мне, и я обязательно его поправлю"
+                    primary={locale.settings.about.bug_report.title}
+                    secondary={locale.settings.about.bug_report.description}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
@@ -105,8 +105,8 @@ function BackgroundsMenu({ onSelect, onClose}) {
                     <EmailIcon />
                 </ListItemIcon>
                 <ListItemText
-                    primary="Написать разработчику на прямую"
-                    secondary="Напишите мне на почту, если хотите что то сообщить лично"
+                    primary={locale.settings.about.contact.title}
+                    secondary={locale.settings.about.contact.description}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
