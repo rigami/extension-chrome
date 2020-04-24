@@ -58,7 +58,15 @@ class BackgroundsStore {
 
                 this.nextBG();
             })
-            .catch((e) => console.error(e));
+            .catch((e) => {
+                StorageConnector.getJSONItem("bg_current")
+                    .then((value) => {
+                        this._currentBG = value;
+                        this.currentBGId = this._currentBG.id;
+                        this.bgState = value.pause ? "pause" : "play";
+                    })
+                    .catch((e) => this.nextBG());
+            });
 
         DBConnector.getStore("backgrounds")
             .then((store) => store.getSize())

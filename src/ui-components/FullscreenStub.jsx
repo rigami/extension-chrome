@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function InWork({iconRender, message, description, actions, ...other}) {
+function InWork({iconRender, message, description, actions, children, ...other}) {
     const classes = useStyles();
 
     return (
@@ -37,6 +37,7 @@ function InWork({iconRender, message, description, actions, ...other}) {
             {description && (
                 <Typography variant="body1" className={classes.description} gutterBottom>{description}</Typography>
             )}
+            {children}
             {actions && actions.map(({title, ...props}) => (
                 <Button {...props}>{title}</Button>
             ))}

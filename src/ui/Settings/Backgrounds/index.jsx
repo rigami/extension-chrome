@@ -108,7 +108,7 @@ function BackgroundsMenu({ backgroundsStore, onSelect, onClose}) {
                         onClick: () => onSelect(LibraryPage),
                         component: (
                             <Avatar
-                                src={backgroundsStore.currentBGId && FSConnector.getURL(backgroundsStore.getCurrentBG().fileName)}
+                                src={backgroundsStore.currentBGId && FSConnector.getURL(backgroundsStore.getCurrentBG().fileName, "preview")}
                                 variant="rounded"
                                 style={{width: 48, height: 48, marginRight: 8}}
                             >

@@ -15,11 +15,11 @@ import ConfigurationApp from "hoc/ConfigurationApp";
 function App() {
 
     return (
-        <ConfigurationApp>
-            {(stores) => (
-                <Provider {...stores}>
-                    <ThemeProvider theme={theme}>
-                        <CssBaseline />
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <ConfigurationApp>
+                {(stores) => (
+                    <Provider {...stores}>
                         <SnackbarProvider
                             maxSnack={4}
                             content={(key, options) => (
@@ -31,10 +31,10 @@ function App() {
                                 <Menu />
                             </UploadBGForm>
                         </SnackbarProvider>
-                    </ThemeProvider>
-                </Provider>
-            )}
-        </ConfigurationApp>
+                    </Provider>
+                )}
+            </ConfigurationApp>
+        </ThemeProvider>
     );
 }
 
