@@ -18,6 +18,7 @@ import {
     BugReportRounded as BugIcon,
     ChatBubbleRounded as ReviewIcon,
     EmailRounded as EmailIcon,
+    PolicyRounded as PolicyIcon,
 } from "@material-ui/icons";
 
 import locale from "i18n/RU";
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
         width: 64,
         height: 64,
         marginBottom: theme.spacing(1),
+        backgroundColor: theme.palette.primary.main,
     },
     appVersion: {
         color: theme.palette.text.secondary,
@@ -46,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function BackgroundsMenu({ onSelect, onClose}) {
+function About({ onSelect, onClose}) {
     const classes = useStyles();
 
     return (
@@ -54,7 +56,7 @@ function BackgroundsMenu({ onSelect, onClose}) {
             <PageHeader title={locale.settings.about.title} onBack={() => onClose()}/>
             <Box className={classes.splash}>
                 <Avatar className={classes.appIcon} variant="rounded">
-                    <SettingsIcon />
+                    <SettingsIcon fontSize="large" />
                 </Avatar>
                 <Typography className={classes.appVersion} variant="body2">
                     v{chrome.runtime.getManifest().version}
@@ -114,6 +116,19 @@ function BackgroundsMenu({ onSelect, onClose}) {
                     </IconButton>
                 </ListItemSecondaryAction>
             </ListItem>
+            <ListItem button className={classes.row}>
+                <ListItemIcon>
+                    <PolicyIcon />
+                </ListItemIcon>
+                <ListItemText
+                    primary={locale.settings.about.policy}
+                />
+                <ListItemSecondaryAction>
+                    <IconButton edge="end">
+                        <ArrowRightIcon />
+                    </IconButton>
+                </ListItemSecondaryAction>
+            </ListItem>
             <ListItem className={classes.row}>
                 <ListItemIcon/>
                 <ListItemText secondary="Danilkinkin | 2020" />
@@ -122,4 +137,4 @@ function BackgroundsMenu({ onSelect, onClose}) {
     );
 }
 
-export default BackgroundsMenu;
+export default About;
