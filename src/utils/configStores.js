@@ -4,6 +4,7 @@ import StorageConnector from "./storageConnector";
 import createPreview from "utils/createPreview";
 import appVariables from "config/appVariables";
 import default_settings from "config/settings";
+import {THEME} from "../dict";
 
 class ConfigStores {
     static setup(progressCallBack) {

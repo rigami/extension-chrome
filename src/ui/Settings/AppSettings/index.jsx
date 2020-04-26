@@ -1,4 +1,4 @@
-import React from "preact/compat";
+import React, {useState} from "preact/compat";
 import {h, Component, render, Fragment} from "preact";
 import {
     Typography,
@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 function AppSettings({ appConfigStore, onSelect, onClose}) {
     const classes = useStyles();
+    const [, setForceUpdate] = useState(0);
 
     return (
         <Fragment>
@@ -48,7 +49,10 @@ function AppSettings({ appConfigStore, onSelect, onClose}) {
                     width: 72,
                     checked: appConfigStore.theme === THEME.DARK,
                     color: "primary",
-                    onChange: (event, value) => appConfigStore.setTheme(value ? THEME.DARK : THEME.LIGHT),
+                    onChange: (event, value) => {
+                        appConfigStore.setTheme(value ? THEME.DARK : THEME.LIGHT)
+                            .then(() => setForceUpdate(old => old + 1));
+                    },
                 }}
             />
             <SettingsRow

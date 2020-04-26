@@ -1,10 +1,9 @@
 import {createMuiTheme} from '@material-ui/core/styles';
 import {fade} from '@material-ui/core/styles/colorManipulator';
 
-export default createMuiTheme({
+const theme = {
     palette: {
         type: "light",
-        backdropType: "light",
         primary: {
             main: "#2675F0",
             contrastText: "#fff",
@@ -61,4 +60,8 @@ export default createMuiTheme({
     zIndex: {
         dropFiles: 1350,
     },
-});
+};
+
+export {theme};
+
+export default createMuiTheme(theme);

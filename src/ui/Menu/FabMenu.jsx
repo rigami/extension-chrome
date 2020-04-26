@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
     card: {
         borderRadius: theme.spacing(3),
         backdropFilter: 'blur(10px) brightness(200%)',
-        backgroundColor: fade(theme.palette.common.white, 0.52),
+        backgroundColor: fade(theme.palette.background.default, 0.52),
     },
     button: {
         padding: theme.spacing(1),

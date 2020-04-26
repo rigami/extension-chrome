@@ -1,11 +1,11 @@
 import {action, observable} from "mobx";
 import StorageConnector from "../utils/storageConnector";
-import {THEME} from "../dict";
 
 class AppConfigStore {
     @observable theme;
     @observable backdropTheme;
     @observable tabName;
+    _onChangeTheme;
 
     constructor() {
         StorageConnector.getItem("app_theme")
@@ -25,14 +25,17 @@ class AppConfigStore {
     setTheme(theme) {
         this.theme = theme;
 
-        StorageConnector.setItem("app_theme", theme);
+        return StorageConnector.setItem("app_theme", theme)
+            .then(() => {
+                if (this._onChangeTheme) this._onChangeTheme()
+            });
     }
 
     @action('set app backdrop theme')
     setBackdropTheme(theme) {
         this.backdropTheme = theme;
 
-        StorageConnector.setItem("app_backdrop_theme", theme);
+        return StorageConnector.setItem("app_backdrop_theme", theme);
     }
 
     @action('set app tab name')
@@ -41,7 +44,7 @@ class AppConfigStore {
 
         if (document) document.title = tabName || "\u200E";
 
-        StorageConnector.setItem("app_tab_name", tabName);
+        return StorageConnector.setItem("app_tab_name", tabName);
     }
 }
 

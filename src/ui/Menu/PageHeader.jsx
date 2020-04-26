@@ -13,7 +13,7 @@ import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        backgroundColor: fade(theme.palette.common.white, 0.8),
+        backgroundColor: fade(theme.palette.background.paper, 0.8),
     },
     toolbar: {
         paddingLeft: theme.spacing(2),
@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     backButton: {
         padding: theme.spacing(1),
         marginRight: theme.spacing(2),
-        color: "#000",
+        color: theme.palette.getContrastText(theme.palette.background.paper),
     },
     title: {
         fontSize: '22px',

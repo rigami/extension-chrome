@@ -13,6 +13,7 @@ import {Fade} from "@material-ui/core";
 import FullscreenStub from "ui-components/FullscreenStub";
 import {useSnackbar} from "notistack";
 import createPreview from "utils/createPreview";
+import default_settings from "../config/settings";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -53,7 +54,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function Desktop({backgroundsStore}) {
+function Desktop({backgroundsStore, appConfigStore}) {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
 
@@ -153,6 +154,9 @@ function Desktop({backgroundsStore}) {
         <Fragment>
             <Fade
                 in={state === "done" || state === "failed"}
+                onExit={() => {
+                    document.documentElement.style.backgroundColor = appConfigStore.backdropTheme === THEME.DARK ? "#000" : "#fff";
+                }}
                 onExited={() => {
                     if (nextBg) {
                         setBg(nextBg);
@@ -229,4 +233,4 @@ function Desktop({backgroundsStore}) {
     );
 }
 
-export default inject('backgroundsStore')(observer(Desktop));
+export default inject('backgroundsStore')(inject('appConfigStore')(observer(Desktop)));

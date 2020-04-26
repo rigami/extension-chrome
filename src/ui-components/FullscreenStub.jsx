@@ -19,6 +19,9 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '56px',
         marginBottom: theme.spacing(1),
     },
+    title: {
+       color: theme.palette.text.primary,
+    },
     description: {
         color: theme.palette.text.secondary,
     }
@@ -32,7 +35,7 @@ function InWork({iconRender, message, description, actions, children, ...other})
         <Box className={classes.root} {...other}>
             {iconRender && iconRender({className: classes.icon})}
             {message && (
-                <Typography variant="h6">{message}</Typography>
+                <Typography variant="h6" className={classes.title}>{message}</Typography>
             )}
             {description && (
                 <Typography variant="body1" className={classes.description} gutterBottom>{description}</Typography>
