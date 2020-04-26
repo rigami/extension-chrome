@@ -4,6 +4,7 @@ import {fade} from '@material-ui/core/styles/colorManipulator';
 export default createMuiTheme({
     palette: {
         type: "light",
+        backdropType: "light",
         primary: {
             main: "#2675F0",
             contrastText: "#fff",
@@ -42,6 +43,14 @@ export default createMuiTheme({
                 fontSize: '0.85rem',
                 padding: "6px 12px",
             }
+        },
+        MuiSwitch: {
+            thumb: {
+                boxShadow: "none",
+            },
+            switchBase: {
+                color: "#5e5e5e",
+            },
         },
     },
     props: {

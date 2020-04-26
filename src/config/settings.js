@@ -12,6 +12,7 @@ export default {
 
     },
     app: {
+        backdropTheme: THEME.DARK,
         theme: THEME.LIGHT,
     },
 };

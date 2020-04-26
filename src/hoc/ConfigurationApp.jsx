@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from "preact/compat";
 import { h, Component, render, Fragment } from "preact";
 import { LinearProgress, Fade } from "@material-ui/core";
-import { Provider } from 'mobx-react';
-import { SnackbarProvider } from 'notistack';
-import ConfigStores from "../utils/configStores";
+import ConfigStores from "utils/configStores";
 import BackgroundsStore from "stores/backgrounds";
+import AppConfigStore from "stores/app";
+
 import FullscreenStub from "ui-components/FullscreenStub";
-import StorageConnector from "../utils/storageConnector";
 
 function ConfigurationApp({ children }) {
 
@@ -16,8 +15,10 @@ function ConfigurationApp({ children }) {
     const [stores, setStores] = useState(null);
 
     const initStores = () => {
+        document.title = localStorage.getItem("app_tab_name") || "\u200E";
         setStores({
             backgroundsStore: new BackgroundsStore(),
+            appConfigStore: new AppConfigStore(),
         });
     };
 

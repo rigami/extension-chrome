@@ -17,6 +17,8 @@ class ConfigStores {
             .then(() => StorageConnector.setJSONItem("bg_type", default_settings.backgrounds.bg_type))
             .then(() => StorageConnector.setItem("bg_change_interval", default_settings.backgrounds.change_interval))
             .then(() => StorageConnector.setItem("bg_dimming_power", default_settings.backgrounds.dimming_power))
+            .then(() => StorageConnector.setItem("app_theme", default_settings.app.theme))
+            .then(() => StorageConnector.setItem("app_backdrop_theme", default_settings.app.backdropTheme))
             .then(() => StorageConnector.setItem("last_setup_timestamp", Date.now().toString()))
     }
 

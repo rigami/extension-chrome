@@ -27,12 +27,11 @@ import locale from "../../i18n/RU";
 const useStyles = makeStyles(theme => ({
     root: {
         paddingRight: theme.spacing(4),
-        width: 750,
         flexDirection: 'column',
         alignItems: 'stretch',
     },
     secondaryAction: {
-        width: 252,
+        width: "100%",
         justifyContent: 'flex-end',
         display: 'flex',
         alignItems: 'center',
@@ -42,7 +41,7 @@ const useStyles = makeStyles(theme => ({
         top: 'unset',
         transform: 'unset',
         flexShrink: 0,
-        flexGrow: 0,
+        flexGrow: 1,
     },
     noPointerEvents: {
         pointerEvents: 'none',
@@ -62,9 +61,7 @@ const useStyles = makeStyles(theme => ({
         paddingLeft: 56,
         paddingBottom: theme.spacing(1.5),
     },
-    textWrapper: {
-        minHeight: '44px',
-    },
+    textWrapper: {},
     linkArrow: {
         marginLeft: theme.spacing(1),
     },
@@ -80,19 +77,40 @@ const TYPE = {
     CUSTOM: "CUSTOM",
 };
 
-function SettingsRow({title, description, action: { type: actionType = TYPE.NONE, ...actionProps} = {}, children}) {
+function SettingsRow(props) {
     const classes = useStyles();
+    const {
+        title,
+        description,
+        withoutIcon,
+        action: {
+            type: actionType = TYPE.NONE,
+            width: actionWidth = 252,
+            ...actionProps
+        } = {},
+        width = 750,
+        children,
+    } = props;
+
+    const [value, setValue] = useState(actionType === TYPE.CHECKBOX && actionProps.checked || actionProps.value);
 
     return (
         <ListItem
             classes={{
                 root: classes.root,
             }}
-            button={actionType === TYPE.LINK}
-            onClick={actionType === TYPE.LINK && actionProps.onClick}
+            style={{width}}
+            button={actionType === TYPE.LINK || actionType === TYPE.CHECKBOX}
+            onClick={(event) => {
+                if (actionType === TYPE.LINK && actionProps.onClick) actionProps.onClick(event);
+                if (actionType === TYPE.CHECKBOX) {
+                    setValue(!value);
+                    if (actionProps.onChange) actionProps.onChange(event, !value);
+                }
+            }}
         >
             <div className={classes.rowWrapper}>
-                <ListItemAvatar/>
+                {!withoutIcon && <ListItemAvatar/>}
                 <ListItemText
                     primary={title}
                     secondary={description}
@@ -104,6 +122,7 @@ function SettingsRow({title, description, action: { type: actionType = TYPE.NONE
                             actionType === TYPE.LINK && classes.noPointerEvents,
                             classes.secondaryAction
                         )}
+                        style={{maxWidth: actionWidth}}
                     >
                         {actionType === TYPE.LINK && (
                             <Fragment>
@@ -132,7 +151,7 @@ function SettingsRow({title, description, action: { type: actionType = TYPE.NONE
                             <Select
                                 {...actionProps}
                                 variant="outlined"
-                                style={{ width: '100%' }}
+                                style={{width: '100%'}}
                                 multiple
                                 IconComponent={ArrowBottomIcon}
                                 displayEmpty
@@ -154,7 +173,8 @@ function SettingsRow({title, description, action: { type: actionType = TYPE.NONE
                                             color="primary"
                                             checked={actionProps.value && actionProps.value.indexOf(value) > -1}
                                         />
-                                        <ListItemText primary={actionProps.locale && actionProps.locale[value] || value}/>
+                                        <ListItemText
+                                            primary={actionProps.locale && actionProps.locale[value] || value}/>
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -162,6 +182,7 @@ function SettingsRow({title, description, action: { type: actionType = TYPE.NONE
                         {actionType === TYPE.CHECKBOX && (
                             <Switch
                                 edge="end"
+                                checked={value}
                                 {...actionProps}
                             />
                         )}

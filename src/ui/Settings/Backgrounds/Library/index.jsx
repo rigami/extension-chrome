@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
         width: 960,
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(1.5),
+        paddingBottom: theme.spacing(1.5),
     },
     bgCard: {
         position: 'relative',

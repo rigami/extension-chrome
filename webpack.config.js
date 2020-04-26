@@ -23,7 +23,13 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin({
-            cleanAfterEveryBuildPatterns: ['*.bundle.js', '*.hot-update.js', '!resource/*', '!manifest.json'],
+            cleanAfterEveryBuildPatterns: [
+                '*.bundle.js',
+                '*.hot-update.js',
+                '!resource/*',
+                '!manifest.json',
+                '!fastInitialization.js',
+            ],
         }),
         new HtmlWebpackPlugin({
             template: "./index.html",
@@ -31,7 +37,7 @@ module.exports = {
         }),
         new CopyWebpackPlugin([
             {
-                from: "./manifest.json",
+                from: "./config/manifest.json",
                 to:   "./manifest.json",
                 transform (content, path) {
                     return content;
@@ -41,7 +47,13 @@ module.exports = {
                 from: path.resolve(__dirname, 'public/'),
                 to:   "./resource/",
                 transform (content, path) {
-                    console.log(path)
+                    return content;
+                }
+            },
+            {
+                from: './fastInitialization.js',
+                to:   "./fastInitialization.js",
+                transform (content, path) {
                     return content;
                 }
             }
@@ -50,11 +62,26 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.svg$/,
+                exclude: /node_modules/,
+                use: [
+                    /*{
+                        loader: "babel-loader",
+                    },*/
+                    {
+                        loader: "react-svg-loader",
+                        /*options: {
+                            jsx: true,
+                        },*/
+                    },
+                ],
+            },
+            {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: "babel-loader"
-                }
+                    loader: "babel-loader",
+                },
             },
             {
                 test: path.resolve(__dirname, 'node_modules/library/polyfill.js'),
@@ -63,7 +90,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.jsx', '.js', '.json', '.less'],
+        extensions: ['.jsx', '.js', '.json', '.less', 'svg'],
         alias: {
             'react': 'preact/compat',
             'react-dom': 'preact/compat',
@@ -76,6 +103,7 @@ module.exports = {
             'stores': '/stores',
             'utils': '/utils',
             'hoc': '/hoc',
+            'images': '/images',
         }
     },
     optimization: {

@@ -1,13 +1,13 @@
 import React, {useState, useEffect, useRef} from "preact/compat";
 import {h, Component, render, Fragment} from "preact";
-import {makeStyles} from "@material-ui/core/styles";
+import {makeStyles, useTheme} from "@material-ui/core/styles";
 import {inject, observer} from "mobx-react";
 import {
     BrokenImageRounded as BrokenIcon,
     DeleteRounded as DeleteIcon,
 } from "@material-ui/icons";
 import FSConnector from "../utils/fsConnector";
-import {BG_TYPE} from "../dict";
+import {BG_TYPE, THEME} from "../dict";
 import clsx from "clsx";
 import {Fade} from "@material-ui/core";
 import FullscreenStub from "ui-components/FullscreenStub";
@@ -21,7 +21,6 @@ const useStyles = makeStyles(theme => ({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: theme.palette.type === 'dark' ? theme.palette.common.black : theme.palette.common.white,
         overflow: 'hidden',
     },
     bg: {
@@ -54,7 +53,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function Desktop({backgroundsStore, onChangedBG}) {
+function Desktop({backgroundsStore}) {
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar();
 
