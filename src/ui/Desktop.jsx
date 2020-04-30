@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'preact/compat';
 import { h, Fragment } from 'preact';
 import { makeStyles } from '@material-ui/core/styles';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import {
 	BrokenImageRounded as BrokenIcon,
 	DeleteRounded as DeleteIcon,
@@ -13,9 +13,10 @@ import locale from '@/i18n/RU';
 import { Fade } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useSnackbar } from 'notistack';
-import PropTypes from 'prop-types';
-import BackgroundsStore from '@/stores/backgrounds';
-import AppConfigStore from '@/stores/app';
+import { useContext } from 'preact/hooks';
+import { context as BackgroundsContext } from '@/stores/backgrounds/Provider';
+import { context as AppConfigContext } from '@/stores/app/Provider';
+
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -52,9 +53,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function Desktop({ backgroundsStore, appConfigStore }) {
+function Desktop() {
 	const classes = useStyles();
 	const { enqueueSnackbar } = useSnackbar();
+	const backgroundsStore = useContext(BackgroundsContext);
+	const appConfigStore = useContext(AppConfigContext);
 
 	const bgRef = useRef();
 	const [bg, setBg] = useState(null);
@@ -111,22 +114,22 @@ function Desktop({ backgroundsStore, appConfigStore }) {
 						const captureBGId = bg.id;
 						setCaptureFrameTimer(setTimeout(() => {
 							backgroundsStore.saveTemporaryVideoFrame(captureBGId, bgRef.current.currentTime)
-								.then((bg) => {
-									console.log('finish transform video to frame', bg);
-									setNextBg({
-										...bg,
-										src: FSConnector.getURL('temporaryVideoFrame'),
-									});
-									setState('pending');
-								})
-								.catch((e) => console.log(e));
+							.then((bg) => {
+								console.log('finish transform video to frame', bg);
+								setNextBg({
+									...bg,
+									src: FSConnector.getURL('temporaryVideoFrame'),
+								});
+								setState('pending');
+							})
+							.catch((e) => console.log(e));
 						}, 5000));
 					};
 
 					bgRef.current.play()
-						.then(() => {
-							bgRef.current.pause();
-						});
+					.then(() => {
+						bgRef.current.pause();
+					});
 				}
 			} else {
 				const currentBg = backgroundsStore.getCurrentBG();
@@ -191,15 +194,15 @@ function Desktop({ backgroundsStore, appConfigStore }) {
 									onClick: () => {
 										console.log('Remove bg:', bg);
 										backgroundsStore.removeFromStore(bg.id)
-											.then(() => backgroundsStore.nextBG())
-											.then(() => enqueueSnackbar({
-												message: 'Битый фон удален',
-												variant: 'warning',
-											}));
+										.then(() => backgroundsStore.nextBG())
+										.then(() => enqueueSnackbar({
+											message: 'Битый фон удален',
+											variant: 'warning',
+										}));
 									},
 									variant: 'contained',
 									className: classes.deleteBG,
-									startIcon: (<DeleteIcon />),
+									startIcon: (<DeleteIcon/>),
 								},
 							]}
 						/>
@@ -240,9 +243,4 @@ function Desktop({ backgroundsStore, appConfigStore }) {
 	);
 }
 
-Desktop.propTypes = {
-	backgroundsStore: PropTypes.instanceOf(BackgroundsStore).isRequired,
-	appConfigStore: PropTypes.instanceOf(AppConfigStore).isRequired,
-};
-
-export default inject('backgroundsStore')(inject('appConfigStore')(observer(Desktop)));
+export default observer(Desktop);

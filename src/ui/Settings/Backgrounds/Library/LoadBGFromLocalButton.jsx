@@ -1,17 +1,18 @@
 import React, { Fragment } from 'preact/compat';
 import { h } from 'preact';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 
 import { useSnackbar } from 'notistack';
 import { Button } from '@material-ui/core';
 import { Add as UploadFromComputerIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import locale from '@/i18n/RU';
-import PropTypes from 'prop-types';
-import BackgroundsStore from '@/stores/backgrounds';
+import { useContext } from 'preact/hooks';
+import { context as BackgroundsContext } from '@/stores/backgrounds/Provider';
 
 const useStyles = makeStyles(() => ({ input: { display: 'none' } }));
-function LoadBGFromLocalButton({ backgroundsStore }) {
+function LoadBGFromLocalButton({}) {
+	const backgroundsStore = useContext(BackgroundsContext);
 	const classes = useStyles();
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -52,6 +53,4 @@ function LoadBGFromLocalButton({ backgroundsStore }) {
 	);
 }
 
-LoadBGFromLocalButton.propTypes = { backgroundsStore: PropTypes.instanceOf(BackgroundsStore).isRequired };
-
-export default inject('backgroundsStore')(observer(LoadBGFromLocalButton));
+export default observer(LoadBGFromLocalButton);

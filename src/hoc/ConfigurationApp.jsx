@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'preact/compat';
 import { h, Fragment } from 'preact';
 import { LinearProgress, Fade } from '@material-ui/core';
 import ConfigStores from '@/utils/configStores';
-import BackgroundsStore from '@/stores/backgrounds';
-import AppConfigStore from '@/stores/app';
+import BackgroundsStore from '@/stores/backgrounds/service';
+import AppConfigStore from '@/stores/app/service';
 
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import PropTypes from 'prop-types';

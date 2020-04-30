@@ -24,11 +24,12 @@ import locale from '@/i18n/RU';
 import PageHeader from '@/ui/Menu/PageHeader';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import { makeStyles } from '@material-ui/core/styles';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import PropTypes from 'prop-types';
-import BackgroundsStore from '@/stores/backgrounds';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
+import { useContext } from 'preact/hooks';
+import { context as BackgroundsContext } from '@/stores/backgrounds/Provider';
 
 const useStyles = makeStyles((theme) => ({
 	bgWrapper: {
@@ -129,7 +130,9 @@ BGCard.propTypes = {
 	onRemove: PropTypes.func.isRequired,
 };
 
-function LibraryMenu({ backgroundsStore, onClose }) {
+function LibraryMenu({ onClose }) {
+	const backgroundsStore = useContext(BackgroundsContext);
+
 	const classes = useStyles();
 
 	const [bgs, setBgs] = useState(null);
@@ -211,8 +214,7 @@ function LibraryMenu({ backgroundsStore, onClose }) {
 }
 
 LibraryMenu.propTypes = {
-	backgroundsStore: PropTypes.instanceOf(BackgroundsStore).isRequired,
 	onClose: PropTypes.func.isRequired,
 };
 
-export default inject('backgroundsStore')(observer(LibraryMenu));
+export default observer(LibraryMenu);

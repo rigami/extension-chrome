@@ -1,7 +1,7 @@
 import {
 	THEME, BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE,
 } from '@/dict';
-import { ERRORS as BG_UPLOAD_ERRORS } from '@/stores/backgrounds';
+import { ERRORS as BG_UPLOAD_ERRORS } from '@/stores/backgrounds/service';
 import appVariables from '@/config/appVariables';
 
 export default {

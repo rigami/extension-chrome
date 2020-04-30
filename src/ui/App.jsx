@@ -1,7 +1,6 @@
 import React, { useState } from 'preact/compat';
 import { h, render } from 'preact';
 import { CssBaseline } from '@material-ui/core';
-import { Provider } from 'mobx-react';
 import { SnackbarProvider } from 'notistack';
 
 import Menu from '@/ui/Menu';
@@ -13,6 +12,9 @@ import ConfigurationApp from '@/hoc/ConfigurationApp';
 import { THEME } from '@/dict';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
+import Nest from '@/utils/Nest';
+import BackgroundsProvider from '@/stores/backgrounds/Provider';
+import AppConfigProvider from '@/stores/app/Provider';
 
 function App() {
 	const [theme, setTheme] = useState(localStorage.getItem('app_theme') === THEME.DARK ? darkTheme : lightTheme);
@@ -20,29 +22,35 @@ function App() {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			<ConfigurationApp>
-				{(stores) => {
-					stores.appConfigStore._onChangeTheme = () => {
-						setTheme(localStorage.getItem('app_theme') === THEME.DARK ? darkTheme : lightTheme);
-					};
+			<Nest components={[
+				({ children }) => (
+					<ConfigurationApp>
+						{(stores) => {
+							stores.appConfigStore._onChangeTheme = () => {
+								setTheme(localStorage.getItem('app_theme') === THEME.DARK ? darkTheme : lightTheme);
+							};
 
-					return (
-						<Provider {...stores}>
-							<SnackbarProvider
-								maxSnack={4}
-								content={(key, options) => (
-									<Snackbar id={key} {...options} />
-								)}
-							>
-								<UploadBGForm>
-									<Desktop />
-									<Menu />
-								</UploadBGForm>
-							</SnackbarProvider>
-						</Provider>
-					);
-				}}
-			</ConfigurationApp>
+							return children;
+						}}
+					</ConfigurationApp>
+				),
+				BackgroundsProvider,
+				AppConfigProvider,
+				({ children }) => (
+					<SnackbarProvider
+						maxSnack={4}
+						content={(key, options) => (
+							<Snackbar id={key} {...options} />
+						)}
+					>
+						{children}
+					</SnackbarProvider>
+				),
+				UploadBGForm,
+			]}>
+				<Desktop />
+				<Menu />
+			</Nest>
 		</ThemeProvider>
 	);
 }

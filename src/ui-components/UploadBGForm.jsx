@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'preact/compat';
+import React, {
+	useEffect, useRef, useState, useContext,
+} from 'preact/compat';
 import { h, Fragment } from 'preact';
 import {
 	Button,
@@ -14,7 +16,7 @@ import {
 	Typography,
 	Box,
 } from '@material-ui/core';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import {
@@ -24,7 +26,7 @@ import {
 import locale from '@/i18n/RU';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import PropTypes from 'prop-types';
-import BackgroundsStore from '@/stores/backgrounds';
+import { context as BackgroundsStoreContext } from '@/stores/backgrounds/Provider';
 import { BG_TYPE } from '../dict';
 
 const {
@@ -207,10 +209,13 @@ BGCard.defaultProps = {
 };
 
 
-function UploadBGForm({ backgroundsStore, children }) {
+function UploadBGForm({ children }) {
+	const backgroundsStore = useContext(BackgroundsStoreContext);
+	console.log(backgroundsStore);
+	const { enqueueSnackbar } = useSnackbar();
+
 	const classes = useStyles();
 	const theme = useTheme();
-	const { enqueueSnackbar } = useSnackbar();
 
 	const dragRef = useRef(null);
 	const [dragFiles, setDragFiles] = useState(null);
@@ -297,9 +302,6 @@ function UploadBGForm({ backgroundsStore, children }) {
 	);
 }
 
-UploadBGForm.propTypes = {
-	backgroundsStore: PropTypes.instanceOf(BackgroundsStore).isRequired,
-	children: PropTypes.element.isRequired,
-};
+UploadBGForm.propTypes = { children: PropTypes.element.isRequired };
 
-export default inject('backgroundsStore')(observer(UploadBGForm));
+export default observer(UploadBGForm);

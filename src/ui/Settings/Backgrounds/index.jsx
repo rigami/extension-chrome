@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'preact/compat';
 import { h, Fragment } from 'preact';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE } from '@/dict';
 import {
 	Avatar,
@@ -18,8 +18,10 @@ import SectionHeader from '@/ui/Menu/SectionHeader';
 import SettingsRow, { ROWS_TYPE } from '@/ui/Menu/SettingsRow';
 import FSConnector from '@/utils/fsConnector';
 import PropTypes from 'prop-types';
-import BackgroundsStore from '@/stores/backgrounds';
+import BackgroundsStore from '@/stores/backgrounds/service';
 import LibraryPage from './Library';
+import { useContext } from 'preact/hooks';
+import { context as BackgroundsContext } from '@/stores/backgrounds/Provider';
 
 
 function BGCard({ src }) {
@@ -37,7 +39,9 @@ function BGCard({ src }) {
 
 BGCard.propTypes = { src: PropTypes.string.isRequired };
 
-function BackgroundsMenu({ backgroundsStore, onSelect, onClose }) {
+function BackgroundsMenu({ onSelect, onClose }) {
+	const backgroundsStore = useContext(BackgroundsContext);
+
 	const [bgs, setBgs] = useState(null);
 
 	useEffect(() => {
@@ -179,9 +183,8 @@ function BackgroundsMenu({ backgroundsStore, onSelect, onClose }) {
 }
 
 BackgroundsMenu.propTypes = {
-	backgroundsStore: PropTypes.instanceOf(BackgroundsStore).isRequired,
 	onSelect: PropTypes.func.isRequired,
 	onClose: PropTypes.func.isRequired,
 };
 
-export default inject('backgroundsStore')(observer(BackgroundsMenu));
+export default observer(BackgroundsMenu);

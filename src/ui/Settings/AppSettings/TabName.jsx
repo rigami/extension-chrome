@@ -10,10 +10,11 @@ import {} from '@material-ui/icons';
 import locale from '@/i18n/RU';
 import PageHeader from '@/ui/Menu/PageHeader';
 import { makeStyles } from '@material-ui/core/styles';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import TabNameExampleImage from '@/images/tabName.svg';
 import PropTypes from 'prop-types';
-import AppConfigStore from '@/stores/app';
+import { useContext } from 'preact/hooks';
+import { context as AppConfigContext } from '@/stores/app/Provider';
 
 const useStyles = makeStyles((theme) => ({
 	row: {
@@ -34,7 +35,8 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function TabName({ appConfigStore, onClose }) {
+function TabName({ onClose }) {
+	const appConfigStore = useContext(AppConfigContext);
 	const classes = useStyles();
 
 	return (
@@ -80,8 +82,7 @@ function TabName({ appConfigStore, onClose }) {
 }
 
 TabName.propTypes = {
-	appConfigStore: PropTypes.instanceOf(AppConfigStore).isRequired,
 	onClose: PropTypes.func.isRequired,
 };
 
-export default inject('appConfigStore')(observer(TabName));
+export default observer(TabName);

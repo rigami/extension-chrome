@@ -11,13 +11,14 @@ import {
 	PlayArrowRounded as PlayIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import { inject, observer } from 'mobx-react';
+import { inject, observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import PropTypes from 'prop-types';
-import BackgroundsStore from '@/stores/backgrounds';
-import { BG_TYPE } from '../../dict';
+import { BG_TYPE } from '@/dict';
 import HomePage from '../Settings';
 import FabMenu from './FabMenu';
+import { useContext } from 'preact/hooks';
+import { context as BackgroundsContext } from '@/stores/backgrounds/Provider';
 
 const useStyles = makeStyles((theme) => ({
 	list: {
@@ -33,7 +34,9 @@ const useStyles = makeStyles((theme) => ({
 	description: { color: theme.palette.text.secondary },
 }));
 
-function Menu({ backgroundsStore }) {
+function Menu({ }) {
+	const backgroundsStore = useContext(BackgroundsContext);
+
 	const classes = useStyles();
 	const [isOpen, setIsOpen] = useState(false);
 	const [stack, setStack] = useState([HomePage]);
@@ -103,6 +106,4 @@ function Menu({ backgroundsStore }) {
 	);
 }
 
-Menu.propTypes = { backgroundsStore: PropTypes.instanceOf(BackgroundsStore).isRequired };
-
-export default inject('backgroundsStore')(observer(Menu));
+export default observer(Menu);
