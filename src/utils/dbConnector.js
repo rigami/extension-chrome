@@ -1,178 +1,145 @@
-import app_variables from "../config/appVariables";
+import appVariables from '../config/appVariables';
 
 let _db = null;
 
-/* class IDBValuesRange {
-    _values;
-
-    constructor(values) {
-        this._values = values;
-    }
-} */
-
 class DBQuery {
-    _column;
-    _func;
+	_column;
 
-    constructor(func, column) {
-        this._column = column;
-        this._func = func;
-    }
+	_func;
 
-    static create(func, column) {
-        return new DBQuery(func, column);
-    }
+	constructor(func, column) {
+		this._column = column;
+		this._func = func;
+	}
+
+	static create(func, column) {
+		return new DBQuery(func, column);
+	}
+}
+
+function resultToPromise(result) {
+	return new Promise((resolve, reject) => {
+		result.onsuccess = (event) => resolve(event.target.result);
+
+		result.onerror = reject;
+	});
 }
 
 class DBConnectorStore {
-    _store;
+	_store;
 
-    constructor(store) {
-        this._store = store;
-    }
+	constructor(store) {
+		this._store = store;
+	}
 
-    addItem(value) {
-        const result = this._store.add(value);
+	addItem(value) {
+		const result = this._store.add(value);
 
-        return new Promise((resolve, reject) => {
-            result.onsuccess = (event) => resolve(event.target.result);
+		return resultToPromise(result);
+	}
 
-            result.onerror = reject;
-        });
-    }
+	removeItem(key) {
+		const result = this._store.delete(key);
 
-    removeItem(key) {
-        const result = this._store.delete(key);
+		return resultToPromise(result);
+	}
 
-        return new Promise((resolve, reject) => {
-            result.onsuccess = (event) => resolve(event.target.result);
+	getItem(key) {
+		const result = this._store.get(key);
 
-            result.onerror = reject;
-        });
-    }
+		return resultToPromise(result);
+	}
 
-    getItem(key) {
-        const result = this._store.get(key);
+	getQuery(dbQuery) {
+		const result = this._store.getAllKeys(dbQuery);
 
-        return new Promise((resolve, reject) => {
-            result.onsuccess = (event) => resolve(event.target.result);
+		return resultToPromise(result);
+	}
 
-            result.onerror = reject;
-        });
-    }
+	getMaxPrimaryKey() {
+		const result = this._store.openCursor(null, 'prev');
 
-    getQuery(dbQuery) {
-        const result = this._store.getAllKeys(dbQuery)
+		return resultToPromise(result);
+	}
 
-        return new Promise((resolve, reject) => {
-            result.onsuccess = (event) => {
-                console.log("res", event.target.result)
-                resolve(event.target.result)
-            };
+	getAllKeys(dbQuery) {
+		let index = this._store;
 
-            result.onerror = (e) => reject;
-        });
-    }
+		if (dbQuery && dbQuery._column) index = this._store.index(dbQuery._column);
 
-    getMaxPrimaryKey() {
-        const result = this._store.openCursor(null, 'prev');
+		if (dbQuery && dbQuery._func) {
+			const openCursor = index.openCursor();
+			const result = [];
 
-        return new Promise((resolve, reject) => {
-            result.onsuccess = (event) => resolve(event.target.result);
+			return new Promise((resolve, reject) => {
+				openCursor.onsuccess = (event) => {
+					const cursor = event.target.result;
+					if (cursor) {
+						if (dbQuery._func(cursor.value)) result.push(cursor.value[this._store.keyPath]);
 
-            result.onerror = (e) => reject;
-        });
-    }
+						cursor.continue();
+					} else {
+						resolve(result);
+					}
+				};
 
-    getAllKeys(dbQuery) {
-        let index = this._store;
+				openCursor.onerror = reject;
+			});
+		} else {
+			const result = index.getAllKeys(dbQuery);
 
-        if (dbQuery && dbQuery._column) index = this._store.index(dbQuery._column);
+			return resultToPromise(result);
+		}
+	}
 
-        return new Promise((resolve, reject) => {
-            if (dbQuery && dbQuery._func) {
-                const openCursor = index.openCursor();
-                const result = [];
+	getAllItems(dbQuery) {
+		if (dbQuery && dbQuery._column) this._store.index(dbQuery._column);
+		const result = this._store.getAll(dbQuery && dbQuery._range);
 
-                openCursor.onsuccess = (event) => {
-                    const cursor = event.target.result;
-                    if (cursor) {
-                        if (dbQuery._func(cursor.value)) result.push(cursor.value[this._store.keyPath]);
-
-                        cursor.continue();
-                    } else {
-                        resolve(result);
-                    }
-                };
-
-                openCursor.onerror = reject;
-            } else {
-                const result = index.getAllKeys(dbQuery);
-
-                result.onsuccess = (event) => resolve(event.target.result);
-
-                result.onerror = reject;
-            }
-        });
-    }
-
-    getAllItems(dbQuery) {
-        if (dbQuery && dbQuery._column) this._store.index(dbQuery._column);
-        const result = this._store.getAll(dbQuery && dbQuery._range);
-
-        return new Promise((resolve, reject) => {
-            result.onsuccess = (event) => resolve(event.target.result);
-
-            result.onerror = (e) => reject;
-        });
-    }
+		return resultToPromise(result);
+	}
 
 
-    getSize() {
-        const result = this._store.count();
+	getSize() {
+		const result = this._store.count();
 
-        return new Promise((resolve, reject) => {
-            result.onsuccess = (event) => resolve(event.target.result);
-
-            result.onerror = (e) => reject;
-        });
-    }
+		return resultToPromise(result);
+	}
 }
 
 class DBConnector {
-    static config(onupgradeneeded) {
-        const resultDB = indexedDB.open(app_variables.db.name, app_variables.db.version);
+	static config(onupgradeneeded) {
+		const result = indexedDB.open(appVariables.db.name, appVariables.db.version);
 
-        if (onupgradeneeded) resultDB.onupgradeneeded = (event) => onupgradeneeded(event.target.result);
+		if (onupgradeneeded) result.onupgradeneeded = (event) => onupgradeneeded(event.target.result);
 
-        return new Promise((resolve, reject) => {
-            resultDB.onerror = reject;
-            resultDB.onsuccess = (event) => {
-                _db = event.target.result;
-                resolve(event);
-            };
-        });
-    }
+		return resultToPromise(result)
+			.then((db) => {
+				_db = db;
 
-    static get isConfig() {
-        return !!_db;
-    }
+				return db;
+			});
+	}
 
-    static getStore(name) {
-        return new Promise((resolve, reject) => {
-            if (!_db) reject(new Error("DB not configuration yet"));
+	static get isConfig() {
+		return !!_db;
+	}
 
-            const transaction = _db.transaction([name], "readwrite");
+	static getStore(name) {
+		return new Promise((resolve, reject) => {
+			if (!_db) reject(new Error('DB not configuration yet'));
 
-            transaction.onerror = reject;
+			const transaction = _db.transaction([name], 'readwrite');
 
-            const store = transaction.objectStore(name);
+			transaction.onerror = reject;
 
-            resolve(new DBConnectorStore(store));
-        });
-    }
+			const store = transaction.objectStore(name);
+
+			resolve(new DBConnectorStore(store));
+		});
+	}
 }
 
-export {DBQuery};
+export { DBQuery };
 
 export default DBConnector;

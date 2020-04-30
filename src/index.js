@@ -1,7 +1,7 @@
-import 'ui/App';
+import '@/ui/App';
 
 if (module.hot) {
-    module.hot.accept('./', function() {
+	module.hot.accept('./', () => {
 
-    })
+	});
 }

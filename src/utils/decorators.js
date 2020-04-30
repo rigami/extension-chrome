@@ -1,50 +1,48 @@
 export const queuingDecorator = (func) => {
-    let queue = [];
-    let pendingPromise = false;
+	const queue = [];
+	let pendingPromise = false;
 
-    const runQueue = () => {
-        if (pendingPromise) {
-            console.log("Queue is pending. Wait...");
-            return;
-        }
+	const runQueue = () => {
+		if (pendingPromise) {
+			console.log('Queue is pending. Wait...');
+			return;
+		}
 
-        if (queue.length === 0) {
-            console.log("End queue");
-            return;
-        }
+		if (queue.length === 0) {
+			console.log('End queue');
+			return;
+		}
 
-        pendingPromise = true;
-        console.log("Calc from queue");
-        queue.shift()().finally(() => {
-            console.log("Calc!");
-            pendingPromise = false;
-            runQueue();
-        });
-    };
+		pendingPromise = true;
+		console.log('Calc from queue');
+		queue.shift()().finally(() => {
+			console.log('Calc!');
+			pendingPromise = false;
+			runQueue();
+		});
+	};
 
-    return (x) => {
-        return new Promise((resolve, reject) => {
-            console.log("Add to queue for file:", x);
-            queue.push(() => func(x).finally(resolve));
+	return (x) => new Promise((resolve) => {
+		console.log('Add to queue for file:', x);
+		queue.push(() => func(x).finally(resolve));
 
-            runQueue();
-        });
-    };
+		runQueue();
+	});
 };
 
 export const cachingDecorator = (func) => {
-    let cache = new Map();
+	const cache = new Map();
 
-    return (x) => {
-        if (cache.has(x)) {
-            console.log("FROM CACHE")
-            return cache.get(x);
-        }
+	return (x) => {
+		if (cache.has(x)) {
+			console.log('FROM CACHE');
+			return cache.get(x);
+		}
 
-        let result = func(x);
-        console.log("CALC")
+		const result = func(x);
+		console.log('CALC');
 
-        cache.set(x, result);
-        return result;
-    };
+		cache.set(x, result);
+		return result;
+	};
 };
