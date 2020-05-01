@@ -1,6 +1,6 @@
 {
   "name": "clock-tab",
-  "version": "1.0.0",
+  "version": "2.0.00",
   "description": "<h1>ClockTab</h1>",
   "main": "index.js",
   "scripts": {
