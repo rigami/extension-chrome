@@ -4,7 +4,7 @@
   "description": "<h1>ClockTab</h1>",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --mode=production",
+    "build": "webpack --mode production",
     "start": "webpack-dev-server --mode development",
     "lint": "eslint --ext .jsx,.js,.json ./src --fix"
   },

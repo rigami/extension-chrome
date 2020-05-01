@@ -5,15 +5,15 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const paths = require('./alias.config.js');
 
-
-module.exports = {
+module.exports = (env, args) => ({
 	context: path.resolve(__dirname, 'src'),
 	entry: { app: './index.js' },
+	mode: args.mode || 'development',
 	output: {
 		filename: '[name].[hash].bundle.js',
 		path: path.resolve(__dirname, 'build'),
 	},
-	devtool: 'inline-source-map',
+	devtool: args.mode === 'production' ? false : 'inline-source-map',
 	devServer: {
 		contentBase: path.resolve(__dirname, 'public'),
 		hot: true,
@@ -23,7 +23,7 @@ module.exports = {
 		disableHostCheck: true,
 	},
 	plugins: [
-		new BundleAnalyzerPlugin(),
+		args.mode === 'production' ? new BundleAnalyzerPlugin() : () => {},
 		new CleanWebpackPlugin({
 			cleanAfterEveryBuildPatterns: [
 				'*.bundle.js',
@@ -86,4 +86,4 @@ module.exports = {
 		alias: paths(),
 	},
 	optimization: { splitChunks: { chunks: 'all' } },
-};
+});
