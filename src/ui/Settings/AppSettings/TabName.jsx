@@ -5,7 +5,6 @@ import {
 	Box,
 	Typography,
 } from '@material-ui/core';
-import {} from '@material-ui/icons';
 
 import locale from '@/i18n/RU';
 import PageHeader from '@/ui/Menu/PageHeader';
@@ -13,8 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import TabNameExampleImage from '@/images/tabName.svg';
 import PropTypes from 'prop-types';
-import { useContext } from 'preact/hooks';
-import { context as AppConfigContext } from '@/stores/app/Provider';
+import { useService as useAppConfigService } from '@/stores/app';
 
 const useStyles = makeStyles((theme) => ({
 	row: {
@@ -36,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function TabName({ onClose }) {
-	const appConfigStore = useContext(AppConfigContext);
+	const appConfigStore = useAppConfigService();
 	const classes = useStyles();
 
 	return (
@@ -81,8 +79,6 @@ function TabName({ onClose }) {
 	);
 }
 
-TabName.propTypes = {
-	onClose: PropTypes.func.isRequired,
-};
+TabName.propTypes = { onClose: PropTypes.func.isRequired };
 
 export default observer(TabName);

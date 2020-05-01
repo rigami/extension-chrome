@@ -7,14 +7,13 @@ import { Button } from '@material-ui/core';
 import { Add as UploadFromComputerIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import locale from '@/i18n/RU';
-import { useContext } from 'preact/hooks';
-import { context as BackgroundsContext } from '@/stores/backgrounds/Provider';
+import { useService as useBackgroundsService } from '@/stores/backgrounds';
 
 const useStyles = makeStyles(() => ({ input: { display: 'none' } }));
 function LoadBGFromLocalButton({}) {
-	const backgroundsStore = useContext(BackgroundsContext);
-	const classes = useStyles();
+	const backgroundsStore = useBackgroundsService();
 	const { enqueueSnackbar } = useSnackbar();
+	const classes = useStyles();
 
 	return (
 		<Fragment>

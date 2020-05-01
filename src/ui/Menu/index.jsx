@@ -11,14 +11,12 @@ import {
 	PlayArrowRounded as PlayIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import { inject, observer } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import PropTypes from 'prop-types';
 import { BG_TYPE } from '@/dict';
+import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import HomePage from '../Settings';
 import FabMenu from './FabMenu';
-import { useContext } from 'preact/hooks';
-import { context as BackgroundsContext } from '@/stores/backgrounds/Provider';
 
 const useStyles = makeStyles((theme) => ({
 	list: {
@@ -35,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Menu({ }) {
-	const backgroundsStore = useContext(BackgroundsContext);
+	const backgroundsStore = useBackgroundsService();
 
 	const classes = useStyles();
 	const [isOpen, setIsOpen] = useState(false);

@@ -18,10 +18,8 @@ import SectionHeader from '@/ui/Menu/SectionHeader';
 import SettingsRow, { ROWS_TYPE } from '@/ui/Menu/SettingsRow';
 import FSConnector from '@/utils/fsConnector';
 import PropTypes from 'prop-types';
-import BackgroundsStore from '@/stores/backgrounds/service';
+import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import LibraryPage from './Library';
-import { useContext } from 'preact/hooks';
-import { context as BackgroundsContext } from '@/stores/backgrounds/Provider';
 
 
 function BGCard({ src }) {
@@ -40,7 +38,7 @@ function BGCard({ src }) {
 BGCard.propTypes = { src: PropTypes.string.isRequired };
 
 function BackgroundsMenu({ onSelect, onClose }) {
-	const backgroundsStore = useContext(BackgroundsContext);
+	const backgroundsStore = useBackgroundsService();
 
 	const [bgs, setBgs] = useState(null);
 

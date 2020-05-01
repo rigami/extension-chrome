@@ -13,8 +13,8 @@ import { THEME } from '@/dict';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
-import BackgroundsProvider from '@/stores/backgrounds/Provider';
-import AppConfigProvider from '@/stores/app/Provider';
+import { Provider as BackgroundsProvider } from '@/stores/backgrounds';
+import { Provider as AppConfigProvider } from '@/stores/app';
 
 function App() {
 	const [theme, setTheme] = useState(localStorage.getItem('app_theme') === THEME.DARK ? darkTheme : lightTheme);

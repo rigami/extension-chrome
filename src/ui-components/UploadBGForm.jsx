@@ -1,6 +1,4 @@
-import React, {
-	useEffect, useRef, useState, useContext,
-} from 'preact/compat';
+import React, { useEffect, useRef, useState } from 'preact/compat';
 import { h, Fragment } from 'preact';
 import {
 	Button,
@@ -26,8 +24,8 @@ import {
 import locale from '@/i18n/RU';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import PropTypes from 'prop-types';
-import { context as BackgroundsStoreContext } from '@/stores/backgrounds/Provider';
-import { BG_TYPE } from '../dict';
+import { useService as useBackgroundsService } from '@/stores/backgrounds';
+import { BG_TYPE } from '@/dict';
 
 const {
 	global: localeGlobal,
@@ -210,8 +208,7 @@ BGCard.defaultProps = {
 
 
 function UploadBGForm({ children }) {
-	const backgroundsStore = useContext(BackgroundsStoreContext);
-	console.log(backgroundsStore);
+	const backgroundsStore = useBackgroundsService();
 	const { enqueueSnackbar } = useSnackbar();
 
 	const classes = useStyles();

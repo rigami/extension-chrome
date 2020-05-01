@@ -1,6 +1,7 @@
-import React, { createContext } from 'preact/compat';
+import React, { createContext, useContext } from 'preact/compat';
 import { h } from 'preact';
 import { observer, useLocalStore } from 'mobx-react-lite';
+import PropTypes from 'prop-types';
 import BackgroundsService from './service';
 
 const context = createContext({});
@@ -16,6 +17,12 @@ function BackgroundsProvider({ children }) {
 	);
 }
 
-export { context };
+BackgroundsProvider.propTypes = { children: PropTypes.element.isRequired };
 
-export default observer(BackgroundsProvider);
+const observerProvider = observer(BackgroundsProvider);
+const useService = () => useContext(context);
+
+export {
+	observerProvider as Provider,
+	useService,
+};

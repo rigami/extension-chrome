@@ -14,8 +14,8 @@ import { Fade } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useSnackbar } from 'notistack';
 import { useContext } from 'preact/hooks';
-import { context as BackgroundsContext } from '@/stores/backgrounds/Provider';
-import { context as AppConfigContext } from '@/stores/app/Provider';
+import { useService as useBackgroundsService } from '@/stores/backgrounds';
+import { useService as useAppConfigService } from '@/stores/app';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -56,8 +56,8 @@ const useStyles = makeStyles((theme) => ({
 function Desktop() {
 	const classes = useStyles();
 	const { enqueueSnackbar } = useSnackbar();
-	const backgroundsStore = useContext(BackgroundsContext);
-	const appConfigStore = useContext(AppConfigContext);
+	const backgroundsStore = useBackgroundsService();
+	const appConfigStore = useAppConfigService();
 
 	const bgRef = useRef();
 	const [bg, setBg] = useState(null);
@@ -114,22 +114,22 @@ function Desktop() {
 						const captureBGId = bg.id;
 						setCaptureFrameTimer(setTimeout(() => {
 							backgroundsStore.saveTemporaryVideoFrame(captureBGId, bgRef.current.currentTime)
-							.then((bg) => {
-								console.log('finish transform video to frame', bg);
-								setNextBg({
-									...bg,
-									src: FSConnector.getURL('temporaryVideoFrame'),
-								});
-								setState('pending');
-							})
-							.catch((e) => console.log(e));
+								.then((bg) => {
+									console.log('finish transform video to frame', bg);
+									setNextBg({
+										...bg,
+										src: FSConnector.getURL('temporaryVideoFrame'),
+									});
+									setState('pending');
+								})
+								.catch((e) => console.log(e));
 						}, 5000));
 					};
 
 					bgRef.current.play()
-					.then(() => {
-						bgRef.current.pause();
-					});
+						.then(() => {
+							bgRef.current.pause();
+						});
 				}
 			} else {
 				const currentBg = backgroundsStore.getCurrentBG();
@@ -194,15 +194,15 @@ function Desktop() {
 									onClick: () => {
 										console.log('Remove bg:', bg);
 										backgroundsStore.removeFromStore(bg.id)
-										.then(() => backgroundsStore.nextBG())
-										.then(() => enqueueSnackbar({
-											message: 'Битый фон удален',
-											variant: 'warning',
-										}));
+											.then(() => backgroundsStore.nextBG())
+											.then(() => enqueueSnackbar({
+												message: 'Битый фон удален',
+												variant: 'warning',
+											}));
 									},
 									variant: 'contained',
 									className: classes.deleteBG,
-									startIcon: (<DeleteIcon/>),
+									startIcon: (<DeleteIcon />),
 								},
 							]}
 						/>

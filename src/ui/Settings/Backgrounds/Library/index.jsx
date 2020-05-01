@@ -27,9 +27,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import PropTypes from 'prop-types';
-import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 import { useContext } from 'preact/hooks';
-import { context as BackgroundsContext } from '@/stores/backgrounds/Provider';
+import { useService as useBackgroundsService } from '@/stores/backgrounds';
+import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 
 const useStyles = makeStyles((theme) => ({
 	bgWrapper: {
@@ -131,7 +131,7 @@ BGCard.propTypes = {
 };
 
 function LibraryMenu({ onClose }) {
-	const backgroundsStore = useContext(BackgroundsContext);
+	const backgroundsStore = useBackgroundsService();
 
 	const classes = useStyles();
 
@@ -213,8 +213,6 @@ function LibraryMenu({ onClose }) {
 	);
 }
 
-LibraryMenu.propTypes = {
-	onClose: PropTypes.func.isRequired,
-};
+LibraryMenu.propTypes = { onClose: PropTypes.func.isRequired };
 
 export default observer(LibraryMenu);
