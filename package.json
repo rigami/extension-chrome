@@ -6,8 +6,7 @@
 	"scripts": {
 		"build": "webpack --mode production",
 		"start": "webpack-dev-server --mode development",
-		"lint": "eslint --ext .jsx,.js,.json ./src --fix",
-		"precommit": "yarn lint"
+		"lint": "eslint --ext .jsx,.js,.json ./src --fix"
 	},
 		"repository": "git+https://github.com/Danilkinkin/ClockTab.git",
 		"author": "Danilkinkin <Danilkinkin@gmail.com>",
