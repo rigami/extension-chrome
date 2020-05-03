@@ -27,7 +27,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import PropTypes from 'prop-types';
-import { useContext } from 'preact/hooks';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 

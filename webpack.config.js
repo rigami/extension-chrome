@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const paths = require('./alias.config.js');
 
 module.exports = (env, args) => ({
@@ -65,25 +66,23 @@ module.exports = (env, args) => ({
 		rules: [
 			{
 				test: /\.svg$/,
-				exclude: /node_modules/,
-				use: [
-					{ loader: 'react-svg-loader' },
-				],
+				loader: require.resolve('react-svg-loader'),
 			},
 			{
 				test: /\.(js|jsx)$/,
-				exclude: /node_modules/,
-				use: { loader: 'babel-loader' },
-			},
-			{
-				test: path.resolve(__dirname, 'node_modules/library/polyfill.js'),
-				use: 'null-loader',
+				loader: require.resolve('babel-loader'),
 			},
 		],
 	},
 	resolve: {
-		extensions: ['.jsx', '.js', '.json', '.less', 'svg'],
+		extensions: ['.jsx', '.js', '.json', '.less', '.svg'],
 		alias: paths(),
+		plugins: [ PnpWebpackPlugin ],
+	},
+	resolveLoader: {
+		plugins: [
+			PnpWebpackPlugin.moduleLoader(module),
+		],
 	},
 	optimization: { splitChunks: { chunks: 'all' } },
 });

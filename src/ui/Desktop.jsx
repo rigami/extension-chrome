@@ -13,7 +13,6 @@ import locale from '@/i18n/RU';
 import { Fade } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useSnackbar } from 'notistack';
-import { useContext } from 'preact/hooks';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import { useService as useAppConfigService } from '@/stores/app';
 
