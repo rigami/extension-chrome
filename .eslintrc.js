@@ -30,6 +30,7 @@ module.exports = {
 	'parserOptions': {
 		'ecmaFeatures': {
 			'legacyDecorators': true,
+			'impliedStrict': true,
 			'jsx': true,
 			'modules': true,
 		},
@@ -64,33 +65,52 @@ module.exports = {
 		'no-continue': 'off',
 		'react/jsx-indent': ['warn', 'tab'],
 		'react/jsx-props-no-spreading': 'off',
-		'no-unused-vars': ['warn', {
-			"varsIgnorePattern": "^h$|^React$"
-		}],
+		'no-unused-vars': ['warn', { 'varsIgnorePattern': '^h$|^React$' }],
 		'react/forbid-prop-types': 'off',
 		'no-restricted-globals': 'off',
 		'object-curly-spacing': ['error', 'always'],
 		'object-curly-newline': ['warn', {
-			'ObjectExpression': { 'multiline': true, 'minProperties': 2 },
-			'ObjectPattern': { 'multiline': true, 'minProperties': 5 },
-			'ImportDeclaration': { 'multiline': true, 'minProperties': 4 },
-			'ExportDeclaration': { 'multiline': true, 'minProperties': 4 },
+			'ObjectExpression': {
+				'multiline': true,
+				'minProperties': 2
+			},
+			'ObjectPattern': {
+				'multiline': true,
+				'minProperties': 5
+			},
+			'ImportDeclaration': {
+				'multiline': true,
+				'minProperties': 4
+			},
+			'ExportDeclaration': {
+				'multiline': true,
+				'minProperties': 4
+			},
 		}],
 		'object-property-newline': ['warn', { 'allowAllPropertiesOnSameLine': false }],
 		'no-duplicate-imports': 'error',
 		'react-hooks/exhaustive-deps': 'off',
-		'react/jsx-max-props-per-line': ['warn', { 'maximum': 3, 'when': 'always' }],
+		'react/jsx-max-props-per-line': ['warn', {
+			'maximum': 3,
+			'when': 'always'
+		}],
+		'array-element-newline': ['warn', {
+			'multiline': true,
+			'minItems': 4
+		}],
+		'array-bracket-newline': ['warn', { 'multiline': true }],
+		'arrow-body-style': ['error', 'as-needed'],
 	},
 	'overrides': [
 		{
-			'files': [ '*/i18n/*.js', '*/config/*' ],
+			'files': ['*/i18n/*.js', '*/config/*'],
 			'rules': {
 				'sonarjs/no-duplicate-string': 'off',
 				'max-len': 'off',
 			}
 		},
 		{
-			'files': [ '*.jsx' ],
+			'files': ['*.jsx'],
 			'rules': {
 				'sonarjs/cognitive-complexity': ['error', 85],
 			}
@@ -106,7 +126,8 @@ module.exports = {
 				map: (() => {
 					const p = paths(__dirname + '/src/');
 
-					return Object.keys(p).map((key) => [key, p[key]]);
+					return Object.keys(p)
+					.map((key) => [key, p[key]]);
 				})(),
 				extensions: ['.js', '.jsx', '.json']
 			}

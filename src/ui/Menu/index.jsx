@@ -48,24 +48,28 @@ function Menu({ }) {
 	useEffect(() => {
 		if (backgroundsStore.currentBGId && backgroundsStore.getCurrentBG().type === BG_TYPE.VIDEO) {
 			if (backgroundsStore.bgState === 'play') {
-				setFastSettings([{
-					tooltip: (
-						<Fragment>
-							<b>Остановить видео</b>
-							<Divider className={classes.divider} />
-							Живые обой это красиво, но они потребляют больше энергии чем статическое изображения.
-							Для сбережения энергии можно остановить видео
-						</Fragment>
-					),
-					onClick: () => backgroundsStore.pause(),
-					icon: <PauseIcon />,
-				}]);
+				setFastSettings([
+					{
+						tooltip: (
+							<Fragment>
+								<b>Остановить видео</b>
+								<Divider className={classes.divider} />
+								Живые обой это красиво, но они потребляют больше энергии чем статическое изображения.
+								Для сбережения энергии можно остановить видео
+							</Fragment>
+						),
+						onClick: () => backgroundsStore.pause(),
+						icon: <PauseIcon />,
+					},
+				]);
 			} else {
-				setFastSettings([{
-					tooltip: 'Воспроизвести видео',
-					onClick: () => backgroundsStore.play(),
-					icon: <PlayIcon />,
-				}]);
+				setFastSettings([
+					{
+						tooltip: 'Воспроизвести видео',
+						onClick: () => backgroundsStore.play(),
+						icon: <PlayIcon />,
+					},
+				]);
 			}
 		} else {
 			setFastSettings([]);

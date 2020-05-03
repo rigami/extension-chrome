@@ -75,14 +75,16 @@ module.exports = (env, args) => ({
 		],
 	},
 	resolve: {
-		extensions: ['.jsx', '.js', '.json', '.less', '.svg'],
-		alias: paths(),
-		plugins: [ PnpWebpackPlugin ],
-	},
-	resolveLoader: {
-		plugins: [
-			PnpWebpackPlugin.moduleLoader(module),
+		extensions: [
+			'.jsx',
+			'.js',
+			'.json',
+			'.less',
+			'.svg',
 		],
+		alias: paths(),
+		plugins: [PnpWebpackPlugin],
 	},
+	resolveLoader: { plugins: [PnpWebpackPlugin.moduleLoader(module)] },
 	optimization: { splitChunks: { chunks: 'all' } },
 });

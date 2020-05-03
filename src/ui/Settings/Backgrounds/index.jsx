@@ -105,10 +105,7 @@ function BackgroundsMenu({ onSelect, onClose }) {
 					locale: locale.settings.backgrounds.scheduler.selection_method,
 					value: backgroundsStore.selectionMethod,
 					onChange: (event) => backgroundsStore.setSelectionMethod(event.target.value),
-					values: [
-						BG_SELECT_MODE.RANDOM,
-						BG_SELECT_MODE.SPECIFIC,
-					],
+					values: [BG_SELECT_MODE.RANDOM, BG_SELECT_MODE.SPECIFIC],
 				}}
 			/>
 			<Collapse in={backgroundsStore.selectionMethod === BG_SELECT_MODE.SPECIFIC}>
