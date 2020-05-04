@@ -3,7 +3,8 @@ import {
 	BG_CHANGE_INTERVAL,
 	BG_TYPE,
 	BG_SELECT_MODE,
-	BKMS_FAP_STYLE, BKMS_FAP_POSITION,
+	BKMS_FAP_STYLE,
+	BKMS_FAP_POSITION,
 } from '@/dict';
 
 import locale from '@/i18n/RU';
@@ -24,6 +25,7 @@ export default {
 	bookmarks: {
 		fapStyle: BKMS_FAP_STYLE.CONTAINED,
 		fapPosition: BKMS_FAP_POSITION.BOTTOM,
+		openOnStartup: false,
 	},
 	app: {
 		backdropTheme: THEME.DARK,
