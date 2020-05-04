@@ -117,7 +117,6 @@ function Desktop() {
 						setCaptureFrameTimer(setTimeout(() => {
 							backgroundsStore.saveTemporaryVideoFrame(captureBGId, bgRef.current.currentTime)
 								.then((bg) => {
-									console.log('finish transform video to frame', bg);
 									setNextBg({
 										...bg,
 										src: FSConnector.getURL('temporaryVideoFrame'),
@@ -195,7 +194,6 @@ function Desktop() {
 								{
 									title: 'Удалить фон',
 									onClick: () => {
-										console.log('Remove bg:', bg);
 										backgroundsStore.removeFromStore(bg.id)
 											.then(() => backgroundsStore.nextBG())
 											.then(() => enqueueSnackbar({
@@ -222,10 +220,7 @@ function Desktop() {
 							className={clsx(classes.bg, classes.image)}
 							src={bg.src}
 							style={{ imageRendering: bg.antiAliasing ? 'auto' : 'pixelated' }}
-							onLoad={() => {
-								console.log('Load bg');
-								setState('done');
-							}}
+							onLoad={() => setState('done')}
 							onError={() => setState('failed')}
 							ref={bgRef}
 						/>

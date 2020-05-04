@@ -160,10 +160,7 @@ function BackgroundsMenu({ onSelect, onClose }) {
 						type: ROWS_TYPE.MULTISELECT,
 						locale: locale.settings.backgrounds.scheduler.bg_type,
 						value: backgroundsStore.bgType || [],
-						onChange: (event) => {
-							console.log(event.target.value);
-							backgroundsStore.setBgType(event.target.value);
-						},
+						onChange: (event) => backgroundsStore.setBgType(event.target.value),
 						values: [
 							BG_TYPE.IMAGE,
 							BG_TYPE.ANIMATION,

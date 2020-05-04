@@ -8,7 +8,6 @@ class AppConfigStore {
 	@observable tabName;
 
 	constructor() {
-		console.error('CREATE');
 		StorageConnector.getItem('app_theme')
 			.then((value) => { this.theme = value; })
 			.catch((e) => console.error(e));

@@ -240,7 +240,6 @@ function UploadBGForm({ children }) {
 
 		dragRef.current.ondrop = (event) => {
 			event.preventDefault();
-			console.log('drop', event.dataTransfer.files);
 			setDragFiles(null);
 			backgroundsStore.addToUploadQueue(event.dataTransfer.files)
 				.catch((e) => enqueueSnackbar({

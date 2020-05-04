@@ -133,9 +133,6 @@ class BackgroundsStore {
 
 	@action('pause bg')
 	saveTemporaryVideoFrame(captureBgId, timestamp) {
-		console.log('Transform video to frame');
-		console.log(captureBgId, this.currentBGId, this.bgState);
-
 		if (captureBgId !== this.currentBGId || this.bgState !== 'pause') {
 			return Promise.reject(ERRORS.ID_BG_IS_CHANGED);
 		}
@@ -199,7 +196,6 @@ class BackgroundsStore {
 		return DBConnector.getStore('backgrounds')
 			.then((store) => store.getItem(currentBGId))
 			.then((bg) => {
-				console.log('Set current bg:', bg);
 				this._currentBG = bg;
 				this.currentBGId = this._currentBG.id;
 				this.bgState = 'play';
@@ -229,7 +225,6 @@ class BackgroundsStore {
 
 		const getNextPreview = () => {
 			const bg = this.uploadQueue.find(({ preview }) => preview === 'pending');
-			console.log('Next bg', bg);
 
 			if (!bg) return;
 
@@ -251,20 +246,16 @@ class BackgroundsStore {
 				.catch((e) => console.error(e));
 		};
 
-		return Promise.all(Array.prototype.map.call(fileList, (file, index) => {
-			console.log(file);
-
-			return {
-				id: `${uploadTimestamp}-${index}`,
-				preview: 'pending',
-				previewUrl: null,
-				type: ~file.type.indexOf('video') ? [BG_TYPE.VIDEO] : [BG_TYPE.IMAGE, BG_TYPE.ANIMATION],
-				size: file.size / 1024 / 1024,
-				format: file.type.substring(file.type.indexOf('/') + 1),
-				name: file.name,
-				file,
-			};
-		})).then((bgs) => {
+		return Promise.all(Array.prototype.map.call(fileList, (file, index) => ({
+			id: `${uploadTimestamp}-${index}`,
+			preview: 'pending',
+			previewUrl: null,
+			type: ~file.type.indexOf('video') ? [BG_TYPE.VIDEO] : [BG_TYPE.IMAGE, BG_TYPE.ANIMATION],
+			size: file.size / 1024 / 1024,
+			format: file.type.substring(file.type.indexOf('/') + 1),
+			name: file.name,
+			file,
+		}))).then((bgs) => {
 			this.uploadQueue = [...this.uploadQueue, ...bgs];
 
 			getNextPreview();
@@ -287,7 +278,6 @@ class BackgroundsStore {
 				...options,
 			},
 		};
-		console.log(saveBG);
 
 		return FSConnector.saveFile(this._FULL_PATH, saveBG.file, saveBGId)
 			.then(() => FSConnector.saveFile('/backgrounds/preview', saveBG.preview, saveBGId))

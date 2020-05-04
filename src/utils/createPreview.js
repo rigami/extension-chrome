@@ -1,8 +1,6 @@
-import { BG_TYPE } from '../dict';
+import { BG_TYPE } from '@/dict';
 
 const getPreview = (fileOrSrc, type, { size = 'preview', antiAliasing = true, timeStamp } = {}) => {
-	console.log('Getting preview for file:', fileOrSrc);
-
 	function postprocessing(cnvs, { /* antiAliasing */ }) {
 		return new Promise((resolve) => {
 			const oc = document.createElement('canvas');
