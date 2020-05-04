@@ -38,3 +38,10 @@ export const BKMS_FAP_STYLE = {
 	TRANSPARENT: 'TRANSPARENT',
 	CONTAINED: 'CONTAINED',
 };
+
+export const BKMS_FAP_POSITION = {
+	TOP: 'TOP',
+	RIGHT: 'RIGHT',
+	BOTTOM: 'BOTTOM',
+	LEFT: 'LEFT',
+};

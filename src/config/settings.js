@@ -3,7 +3,7 @@ import {
 	BG_CHANGE_INTERVAL,
 	BG_TYPE,
 	BG_SELECT_MODE,
-	BKMS_FAP_STYLE,
+	BKMS_FAP_STYLE, BKMS_FAP_POSITION,
 } from '@/dict';
 
 import locale from '@/i18n/RU';
@@ -21,7 +21,10 @@ export default {
 		current_bg_link: 'default_bg',
 		dimming_power: 25,
 	},
-	bookmarks: { fapStyle: BKMS_FAP_STYLE.CONTAINED },
+	bookmarks: {
+		fapStyle: BKMS_FAP_STYLE.CONTAINED,
+		fapPosition: BKMS_FAP_POSITION.BOTTOM,
+	},
 	app: {
 		backdropTheme: THEME.DARK,
 		theme: THEME.LIGHT,
