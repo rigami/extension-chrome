@@ -20,6 +20,8 @@ class ConfigStores {
 			.then(() => StorageConnector.setItem('app_backdrop_theme', defaultSettings.app.backdropTheme))
 			.then(() => StorageConnector.setJSONItem('app_use_system_font', defaultSettings.app.useSystemFont))
 			.then(() => StorageConnector.setItem('app_tab_name', defaultSettings.app.tabName))
+			.then(() => StorageConnector.setItem('bkms_fap_style', defaultSettings.bookmarks.fapStyle))
+			.then(() => StorageConnector.setItem('bkms_fap_position', defaultSettings.bookmarks.fapPosition))
 			.then(() => StorageConnector.setItem('last_setup_timestamp', Date.now().toString()))
 			.then(() => progressCallBack(100));
 	}

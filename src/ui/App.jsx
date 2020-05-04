@@ -15,6 +15,7 @@ import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
 import { Provider as BackgroundsProvider } from '@/stores/backgrounds';
 import { Provider as AppConfigProvider } from '@/stores/app';
+import { Provider as BookmarksProvider } from '@/stores/bookmarks';
 
 function App() {
 	const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
@@ -24,12 +25,13 @@ function App() {
 			<CssBaseline />
 			<Nest components={[
 				ConfigurationApp,
-				BackgroundsProvider,
 				({ children }) => (
 					<AppConfigProvider onTheme={() => setTheme(localStorage.getItem('app_theme'))} >
 						{children}
 					</AppConfigProvider>
 				),
+				BackgroundsProvider,
+				BookmarksProvider,
 				({ children }) => (
 					<SnackbarProvider
 						maxSnack={4}
