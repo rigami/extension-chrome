@@ -18,6 +18,8 @@ class ConfigStores {
 			.then(() => StorageConnector.setItem('bg_dimming_power', defaultSettings.backgrounds.dimming_power))
 			.then(() => StorageConnector.setItem('app_theme', defaultSettings.app.theme))
 			.then(() => StorageConnector.setItem('app_backdrop_theme', defaultSettings.app.backdropTheme))
+			.then(() => StorageConnector.setJSONItem('app_use_system_font', defaultSettings.app.useSystemFont))
+			.then(() => StorageConnector.setItem('app_tab_name', defaultSettings.app.tabName))
 			.then(() => StorageConnector.setItem('last_setup_timestamp', Date.now().toString()))
 			.then(() => progressCallBack(100));
 	}

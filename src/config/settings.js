@@ -1,6 +1,11 @@
 import {
-	THEME, BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE,
+	THEME,
+	BG_CHANGE_INTERVAL,
+	BG_TYPE,
+	BG_SELECT_MODE,
 } from '@/dict';
+
+import locale from '@/i18n/RU';
 
 export default {
 	backgrounds: {
@@ -19,5 +24,7 @@ export default {
 	app: {
 		backdropTheme: THEME.DARK,
 		theme: THEME.LIGHT,
+		useSystemFont: true,
+		tabName: locale.global.tab_name.default,
 	},
 };

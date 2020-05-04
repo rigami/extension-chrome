@@ -32,6 +32,7 @@ module.exports = (env, args) => ({
 				'!resource/*',
 				'!manifest.json',
 				'!fastInitialization.js',
+				'!index.html',
 			],
 		}),
 		new HtmlWebpackPlugin({
@@ -71,6 +72,22 @@ module.exports = (env, args) => ({
 			{
 				test: /\.(js|jsx)$/,
 				loader: require.resolve('babel-loader'),
+			},
+			{
+				test: /\.css$/i,
+				loader: [require.resolve('style-loader'), require.resolve('css-loader')],
+			},
+			{
+				test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
+				use: [
+					{
+						loader: require.resolve('file-loader'),
+						options: {
+							name: '[name].[ext]',
+							outputPath: './resource/',
+						},
+					},
+				],
 			},
 		],
 	},

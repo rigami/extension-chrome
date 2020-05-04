@@ -63,9 +63,14 @@ function Desktop() {
 	const [nextBg, setNextBg] = useState(null);
 	const [state, setState] = useState('pending');
 	const [captureFrameTimer, setCaptureFrameTimer] = useState(null);
+	const [bgId, setBgId] = useState(null);
 
 	useEffect(() => {
+		if (backgroundsStore.currentBGId === bgId) return;
+
 		const currentBg = backgroundsStore.getCurrentBG();
+
+		setBgId(backgroundsStore.currentBGId);
 
 		if (backgroundsStore.bgState === 'pending') return;
 
@@ -103,8 +108,6 @@ function Desktop() {
 
 	useEffect(() => {
 		if (bgRef.current && bg && bg.type === BG_TYPE.VIDEO) {
-			console.log(backgroundsStore.bgState, bg);
-
 			if (backgroundsStore.bgState === 'pause') {
 				if (typeof bg.pause === 'number') {
 					bgRef.current.currentTime = bg.pause;
@@ -147,10 +150,11 @@ function Desktop() {
 
 
 		return () => {
-			if (captureFrameTimer) clearTimeout(captureFrameTimer);
+			if (typeof captureFrameTimer === 'number') clearTimeout(+captureFrameTimer);
 			setCaptureFrameTimer(null);
 		};
 	}, [backgroundsStore.bgState]);
+
 
 	return (
 		<Fragment>
@@ -218,7 +222,10 @@ function Desktop() {
 							className={clsx(classes.bg, classes.image)}
 							src={bg.src}
 							style={{ imageRendering: bg.antiAliasing ? 'auto' : 'pixelated' }}
-							onLoad={() => setState('done')}
+							onLoad={() => {
+								console.log('Load bg');
+								setState('done');
+							}}
 							onError={() => setState('failed')}
 							ref={bgRef}
 						/>

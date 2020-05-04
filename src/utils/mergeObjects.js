@@ -13,8 +13,6 @@ const merge = (parent, ...childs) => {
 		}
 	});
 
-	console.log(mergeObject);
-
 	return mergeObject;
 };
 

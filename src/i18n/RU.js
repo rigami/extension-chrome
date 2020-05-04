@@ -116,6 +116,10 @@ export default {
 	},
 	/* Global values */
 	global: {
+		tab_name: {
+			default: 'Новая вкладка',
+			prepare: 'Подготовка',
+		},
 		all: 'Все',
 		nothing_selected: 'Ничего не выбрано',
 		cancel: 'Отмена',

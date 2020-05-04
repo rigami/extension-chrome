@@ -15,7 +15,7 @@ import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { BG_TYPE } from '@/dict';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
-import HomePage from '../Settings';
+import HomePage from './Settings';
 import FabMenu from './FabMenu';
 
 const useStyles = makeStyles((theme) => ({

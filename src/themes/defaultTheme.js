@@ -12,10 +12,14 @@ const theme = {
 			main: '#8526D0',
 			contrastText: '#fff',
 		},
+		warning: {
+			main: '#f46600',
+			contrastText: '#fff',
+		},
 		snackbar: { default: fade('#fff', 0.95) },
 	},
 	typography: {
-		fontFamily: 'system-ui',
+		fontFamily: localStorage.getItem('app_use_system_font') === 'true' ? 'system-ui' : 'Roboto, sans-serif',
 		h5: { fontWeight: 700 },
 		h6: { fontWeight: 700 },
 	},

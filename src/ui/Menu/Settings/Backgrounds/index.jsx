@@ -15,7 +15,7 @@ import {
 import locale from '@/i18n/RU';
 import PageHeader from '@/ui/Menu/PageHeader';
 import SectionHeader from '@/ui/Menu/SectionHeader';
-import SettingsRow, { ROWS_TYPE } from '@/ui/Menu/SettingsRow';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import FSConnector from '@/utils/fsConnector';
 import PropTypes from 'prop-types';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
@@ -57,7 +57,7 @@ function BackgroundsMenu({ onSelect, onClose }) {
 		<Fragment>
 			<PageHeader title={locale.settings.backgrounds.title} onBack={() => onClose()} />
 			<SectionHeader title={locale.settings.backgrounds.general.title} />
-			<SettingsRow
+			<MenuRow
 				title={locale.settings.backgrounds.general.library.title}
 				description={locale.settings.backgrounds.general.library.description(backgroundsStore.count)}
 				action={{
@@ -78,8 +78,8 @@ function BackgroundsMenu({ onSelect, onClose }) {
 						<MoreIcon />
 					</Avatar>
 				)}
-			</SettingsRow>
-			<SettingsRow
+			</MenuRow>
+			<MenuRow
 				title={locale.settings.backgrounds.general.dimming_power.title}
 				description={locale.settings.backgrounds.general.dimming_power.description}
 				action={{
@@ -97,7 +97,7 @@ function BackgroundsMenu({ onSelect, onClose }) {
 				type={ROWS_TYPE.SLIDER}
 			/>
 			<SectionHeader title={locale.settings.backgrounds.scheduler.title} />
-			<SettingsRow
+			<MenuRow
 				title={locale.settings.backgrounds.scheduler.selection_method.title}
 				description={locale.settings.backgrounds.scheduler.selection_method.description}
 				action={{
@@ -109,7 +109,7 @@ function BackgroundsMenu({ onSelect, onClose }) {
 				}}
 			/>
 			<Collapse in={backgroundsStore.selectionMethod === BG_SELECT_MODE.SPECIFIC}>
-				<SettingsRow
+				<MenuRow
 					title="Фон рабочего стола"
 					description="Измените фон рабочего стола"
 					action={{
@@ -135,7 +135,7 @@ function BackgroundsMenu({ onSelect, onClose }) {
 				/>
 			</Collapse>
 			<Collapse in={backgroundsStore.selectionMethod === BG_SELECT_MODE.RANDOM}>
-				<SettingsRow
+				<MenuRow
 					title={locale.settings.backgrounds.scheduler.change_interval.title}
 					description={locale.settings.backgrounds.scheduler.change_interval.description}
 					action={{
@@ -153,7 +153,7 @@ function BackgroundsMenu({ onSelect, onClose }) {
 						],
 					}}
 				/>
-				<SettingsRow
+				<MenuRow
 					title={locale.settings.backgrounds.scheduler.bg_type.title}
 					description={locale.settings.backgrounds.scheduler.bg_type.description}
 					action={{

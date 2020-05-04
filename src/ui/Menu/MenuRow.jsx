@@ -70,7 +70,7 @@ const TYPE = {
 	CUSTOM: 'CUSTOM',
 };
 
-function SettingsRow(props) {
+function MenuRow(props) {
 	const classes = useStyles();
 	const {
 		title,
@@ -193,7 +193,7 @@ function SettingsRow(props) {
 	);
 }
 
-SettingsRow.propTypes = {
+MenuRow.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string,
 	withoutIcon: PropTypes.bool,
@@ -204,7 +204,7 @@ SettingsRow.propTypes = {
 	width: PropTypes.number,
 	children: PropTypes.element,
 };
-SettingsRow.defaultProps = {
+MenuRow.defaultProps = {
 	description: null,
 	withoutIcon: false,
 	width: 750,
@@ -217,4 +217,4 @@ SettingsRow.defaultProps = {
 
 export const ROWS_TYPE = TYPE;
 
-export default SettingsRow;
+export default MenuRow;

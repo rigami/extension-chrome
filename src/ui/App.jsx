@@ -17,25 +17,19 @@ import { Provider as BackgroundsProvider } from '@/stores/backgrounds';
 import { Provider as AppConfigProvider } from '@/stores/app';
 
 function App() {
-	const [theme, setTheme] = useState(localStorage.getItem('app_theme') === THEME.DARK ? darkTheme : lightTheme);
+	const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
 
 	return (
-		<ThemeProvider theme={theme}>
+		<ThemeProvider theme={theme === THEME.DARK ? darkTheme : lightTheme}>
 			<CssBaseline />
 			<Nest components={[
-				({ children }) => (
-					<ConfigurationApp>
-						{(stores) => {
-							stores.appConfigStore._onChangeTheme = () => {
-								setTheme(localStorage.getItem('app_theme') === THEME.DARK ? darkTheme : lightTheme);
-							};
-
-							return children;
-						}}
-					</ConfigurationApp>
-				),
+				ConfigurationApp,
 				BackgroundsProvider,
-				AppConfigProvider,
+				({ children }) => (
+					<AppConfigProvider onTheme={() => setTheme(localStorage.getItem('app_theme'))} >
+						{children}
+					</AppConfigProvider>
+				),
 				({ children }) => (
 					<SnackbarProvider
 						maxSnack={4}

@@ -2,39 +2,28 @@ import React, { useEffect, useState } from 'preact/compat';
 import { h, Fragment } from 'preact';
 import { LinearProgress, Fade } from '@material-ui/core';
 import ConfigStores from '@/utils/configStores';
-import BackgroundsStore from '@/stores/backgrounds/service';
-import AppConfigStore from '@/stores/app/service';
 
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import PropTypes from 'prop-types';
+import locale from '@/i18n/RU';
 
 function ConfigurationApp({ children }) {
 	const [isConfig, setIsConfig] = useState(false);
 	const [isFirstContact, setIsFirstContact] = useState(false);
 	const [progress, setProgress] = useState(0);
-	const [stores, setStores] = useState(null);
-
-	const initStores = () => {
-		document.title = localStorage.getItem('app_tab_name') || '\u200E';
-		setStores({
-			backgroundsStore: new BackgroundsStore(),
-			appConfigStore: new AppConfigStore(),
-		});
-	};
 
 	useEffect(() => {
 		ConfigStores.config()
 			.then(() => {
 				setIsConfig(true);
-				initStores();
 			})
 			.catch(() => {
+				document.title = locale.global.tab_name.prepare;
 				console.error('Error config app. Perhaps first start. Setup data');
 				setIsFirstContact(true);
 
 				return ConfigStores.setup((progressValue) => setProgress(progressValue))
 					.then(() => {
-						initStores();
 						setTimeout(() => setIsConfig(true), 1200);
 					});
 			});
@@ -42,7 +31,7 @@ function ConfigurationApp({ children }) {
 
 	return (
 		<Fragment>
-			{isConfig && !isFirstContact && children(stores)}
+			{isConfig && !isFirstContact && children}
 			{isFirstContact && (
 				<Fragment>
 					<Fade in={!isConfig}>
