@@ -1,5 +1,5 @@
 import {
-	THEME, BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE,
+	THEME, BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE, BKMS_FAP_STYLE, BKMS_FAP_POSITION,
 } from '@/dict';
 import { ERRORS as BG_UPLOAD_ERRORS } from '@/stores/backgrounds/service';
 import appVariables from '@/config/appVariables';
@@ -80,6 +80,21 @@ export default {
 		bookmarks: {
 			title: 'Закладки и меню быстрого доступа',
 			description: 'Добавить новые фоны, настройть переключение и другие настойки рабочего стола',
+			use_fap: 'Использовать панель быстрого доступа',
+			fap_style: {
+				title: 'Вариант панели быстрого доступа',
+				[BKMS_FAP_STYLE.HIDDEN]: 'Отключен',
+				[BKMS_FAP_STYLE.TRANSPARENT]: 'Без подложки',
+				[BKMS_FAP_STYLE.CONTAINED]: 'С подложкой',
+			},
+			fap_position: {
+				title: 'Позиционирование панели',
+				[BKMS_FAP_POSITION.TOP]: 'Сверху',
+				[BKMS_FAP_POSITION.RIGHT]: 'Справа',
+				[BKMS_FAP_POSITION.BOTTOM]: 'Снизу',
+				[BKMS_FAP_POSITION.LEFT]: 'Слева',
+			},
+			open_on_startup: 'Открытие при запуске',
 		},
 		app: {
 			title: 'Настройки окружения',

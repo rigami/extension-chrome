@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 import BackgroundsPage from './Backgrounds';
 import AboutPage from './About';
 import AppSettingsPage from './AppSettings';
+import BookmarksPage from './Bookmarks';
 
 const useStyles = makeStyles((theme) => ({
 	divider: {
@@ -44,6 +45,7 @@ const general = [
 		description: locale.settings.bookmarks.description,
 		icon: <BookmarksIcon />,
 		id: 'bookmarks',
+		page: BookmarksPage,
 		color: '#ff4f88',
 	},
 	{
