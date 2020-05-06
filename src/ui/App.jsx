@@ -16,6 +16,7 @@ import Nest from '@/utils/Nest';
 import { Provider as BackgroundsProvider } from '@/stores/backgrounds';
 import { Provider as AppConfigProvider } from '@/stores/app';
 import { Provider as BookmarksProvider } from '@/stores/bookmarks';
+import FAP from '@/ui/Bookmarks/FAP';
 
 function App() {
 	const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
@@ -44,6 +45,7 @@ function App() {
 				),
 				UploadBGForm,
 			]}>
+				<FAP />
 				<Desktop />
 				<Menu />
 			</Nest>
