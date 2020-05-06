@@ -1,13 +1,6 @@
 import React, { useState } from 'preact/compat';
 import { h, Fragment } from 'preact';
-import {
-	Typography,
-	ListItem,
-	ListItemIcon,
-	ListItemText,
-	Collapse,
-} from '@material-ui/core';
-import { InfoRounded as InfoIcon } from '@material-ui/icons';
+import { Typography } from '@material-ui/core';
 
 import locale from '@/i18n/RU';
 import PageHeader from '@/ui/Menu/PageHeader';

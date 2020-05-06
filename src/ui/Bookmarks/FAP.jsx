@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'preact/compat';
+import React, { useState } from 'preact/compat';
 import { h, Fragment } from 'preact';
 import {
 	Card,
@@ -7,8 +7,6 @@ import {
 	CardHeader,
 	ClickAwayListener,
 	Avatar,
-	CardContent,
-	Typography,
 	List,
 	ListItem,
 	ListItemAvatar,
@@ -54,7 +52,10 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: theme.palette.common.white,
 		'&:hover': { backgroundColor: theme.palette.common.white },
 	},
-	popperWrapper: { zIndex: theme.zIndex.drawer, willChange: 'auto !important' },
+	popperWrapper: {
+		zIndex: theme.zIndex.drawer,
+		willChange: 'auto !important',
+	},
 	popper: {
 		width: 310,
 		marginBottom: theme.spacing(2),
@@ -84,11 +85,11 @@ function FolderButton ({}) {
 					className={classes.popperWrapper}>
 					<Card className={classes.popper} elevation={16}>
 						<CardHeader title="Папка" />
-						{/*<CardContent>
+						{/* <CardContent>
 							<Typography variant="body2" color="textSecondary" component="p">
 								Папка пуста
 							</Typography>
-						</CardContent>*/}
+						</CardContent> */}
 						<List disablePadding>
 							<ListItem divider button>
 								<ListItemAvatar>

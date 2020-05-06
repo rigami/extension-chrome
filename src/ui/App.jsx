@@ -17,6 +17,7 @@ import { Provider as BackgroundsProvider } from '@/stores/backgrounds';
 import { Provider as AppConfigProvider } from '@/stores/app';
 import { Provider as BookmarksProvider } from '@/stores/bookmarks';
 import FAP from '@/ui/Bookmarks/FAP';
+import Bookmarks from '@/ui/Bookmarks'
 
 function App() {
 	const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
@@ -46,6 +47,7 @@ function App() {
 				UploadBGForm,
 			]}>
 				<FAP />
+				<Bookmarks />
 				<Desktop />
 				<Menu />
 			</Nest>

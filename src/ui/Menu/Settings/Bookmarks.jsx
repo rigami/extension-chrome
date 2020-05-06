@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'preact/compat';
+import React from 'preact/compat';
 import { h, Fragment } from 'preact';
 import { observer } from 'mobx-react-lite';
 import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/dict';
