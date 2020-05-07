@@ -4,22 +4,18 @@ import {
 	Box,
 	Drawer,
 	Container,
-	Card,
-	Avatar,
-	Typography,
 	ListItem,
 	ListItemText,
 	ListItemIcon,
 	Chip,
-	CardActionArea,
-	Tooltip,
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
-	LinkRounded as LinkIcon,
 	LabelRounded as LabelIcon,
 } from '@material-ui/icons';
+import CardLink from './CardLink';
+import CardLinkExtend from './CardLink/Extend';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -29,40 +25,6 @@ const useStyles = makeStyles((theme) => ({
 	categoryWrapper: {
 		display: 'flex',
 		flexWrap: 'wrap',
-	},
-	cardLink: {
-		width: 180,
-		height: 110,
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'center',
-		marginRight: theme.spacing(2),
-		marginBottom: theme.spacing(2),
-	},
-	cardLinkIcon: {
-		margin: 'auto',
-	},
-	cardLinkDescription: {
-		width: '100%',
-		padding: theme.spacing(0.5),
-		paddingTop: 0,
-	},
-	cardLinkCategories: {
-		display: 'flex',
-		flexWrap: 'wrap',
-	},
-	cardLinkCategory: {
-		width: theme.spacing(1),
-		height: theme.spacing(1),
-		borderRadius: theme.spacing(0.5),
-		marginRight: theme.spacing(0.6),
-	},
-	cardAction: {
-		width: '100%',
-		height: '100%',
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'stretch',
 	},
 	chipContainer: {
 		display: 'flex',
@@ -77,41 +39,9 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function CardLink({ title, src, icon, categories }) {
-	const classes = useStyles();
-
-	return (
-		<Tooltip
-			title={(
-				<Fragment>
-					{title}
-					<br/>
-					<Typography variant='caption'>{src}</Typography>
-				</Fragment>
-			)}
-			enterDelay={400}
-		>
-			<Card className={classes.cardLink} variant="outlined">
-				<CardActionArea className={classes.cardAction}>
-					<Avatar className={classes.cardLinkIcon}>
-						<LinkIcon />
-					</Avatar>
-					<div className={classes.cardLinkDescription}>
-						<div className={classes.cardLinkCategories}>
-							{categories.map(({ title, color, id }) => (
-								<div key={id} className={classes.cardLinkCategory} style={{ backgroundColor: color }} />
-							))}
-						</div>
-						<Typography>{title}</Typography>
-					</div>
-				</CardActionArea>
-			</Card>
-		</Tooltip>
-	);
-}
-
 function Bookmarks() {
 	const classes = useStyles();
+	const theme = useTheme();
 
 	useEffect(() => {
 
@@ -133,46 +63,61 @@ function Bookmarks() {
 							<Chip label={label} onClick={() => {}} />
 						))}
 					</Box>
-					<ListItem disableGutters>
-						<ListItemIcon style={{ minWidth: 36 }} >
-							<LabelIcon style={{ color: "#EB4799" }} />
-						</ListItemIcon>
-						<ListItemText primary="Category #1" secondary="Description category #1" />
-					</ListItem>
-					<Box className={classes.categoryWrapper}>
-						{[].concat(...Array.from({ length: 23 }, () => ({
-							title: "Пример ссылки",
+					{
+						[].concat(...Array.from({ length: 563 }, (e, index) => ({
+							title: index % 3 ? `Пример ссылки #${index + 1}` : `Пример очееень длиного названия ссылки #${index +
+							1}`,
+							description:  index % 4 ?
+								index % 3 ?
+									"Описание ссылки, оно не так сильно выделяется"
+									: "Описание ссылки, оно не так сильно выделяется. Теперь в 2 раза длинее! Ого скажете вы а неет, все норм, это для теста"
+								: null,
 							src: "https://website.com",
 							icon: null,
 							categories: [
-								{ id: "id#1", title: "Category #1", color: "#EB4799"},
-								{ id: "id#2", title: "Category #2", color: "#FF8800"},
-								{ id: "id#3", title: "Category #3", color: "#FFC933"},
+								{ id: 0, title: "Category #1", color: "#EB4799"},
+								{ id: 1, title: "Category #2", color: "#FF8800"},
+								{ id: 2, title: "Category #3", color: "#FFC933"},
 							]
-						}))).map((card) => (
-							<CardLink {...card} />
-						))}
-					</Box>
-					<ListItem disableGutters>
-						<ListItemIcon style={{ minWidth: 36 }} >
-							<LabelIcon style={{ color: "#FF8800" }} />
-						</ListItemIcon>
-						<ListItemText primary="Category #2" secondary="Description category #2" />
-					</ListItem>
-					<Box className={classes.categoryWrapper}>
-						{[].concat(...Array.from({ length: 3 }, () => ({
-							title: "Пример ссылки",
-							src: "https://website.com",
-							icon: null,
-							categories: [
-								{ id: "id#1", title: "Category #1", color: "#EB4799"},
-								{ id: "id#2", title: "Category #2", color: "#FF8800"},
-								{ id: "id#3", title: "Category #3", color: "#FFC933"},
-							]
-						}))).map((card) => (
-							<CardLink {...card} />
-						))}
-					</Box>
+						})))
+						.reduce((acc, curr, index) => {
+							let category = Math.floor(index / 97);
+							let column = index % 6;
+
+							if (typeof acc[category] === 'undefined') acc[category] = [];
+							if (typeof acc[category][column] === 'undefined') acc[category][column] = [];
+
+							acc[category][column].push(curr);
+
+							return acc;
+						}, [])
+						.map((category, index) => (
+							<Fragment>
+								<ListItem disableGutters>
+									<ListItemIcon style={{ minWidth: 36 }} >
+										<LabelIcon style={{ color: "#FF8800" }} />
+									</ListItemIcon>
+									<ListItemText
+										primary={`Category #${index + 1}`}
+										secondary={`Description category #${index + 1}`}
+									/>
+								</ListItem>
+								<Box className={classes.categoryWrapper}>
+									{category.map((column, index, arr) => (
+										<Box style={{ marginRight: arr.length - 1 !== index && theme.spacing(2) }}>
+										{column.map((card) => (
+											Math.random() > 0.5 ? (
+												<CardLinkExtend {...card} style={{ marginBottom: theme.spacing(2) }} />
+											) : (
+												<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
+											)
+										))}
+										</Box>
+									))}
+								</Box>
+							</Fragment>
+						))
+					}
 				</Container>
 			</Box>
 		</Drawer>
