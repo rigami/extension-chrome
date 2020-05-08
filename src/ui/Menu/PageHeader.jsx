@@ -1,6 +1,5 @@
 import React from 'preact/compat';
 import { h } from 'preact';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import {
 	IconButton,

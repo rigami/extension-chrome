@@ -76,6 +76,7 @@ function CardLink({ title, src, icon, categories, ...other }) {
 				</Fragment>
 			)}
 			enterDelay={400}
+			enterNextDelay={400}
 		>
 			<Card className={classes.root} variant="outlined" {...other}>
 				<CardActionArea className={classes.rootActionWrapper}>

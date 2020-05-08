@@ -1,4 +1,4 @@
-import React, { useEffect } from 'preact/compat';
+import React, { useEffect, useState } from 'preact/compat';
 import { h, Fragment } from 'preact';
 import {
 	Box,
@@ -9,13 +9,14 @@ import {
 	ListItemIcon,
 	Chip,
 } from '@material-ui/core';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalStore } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
 	LabelRounded as LabelIcon,
 } from '@material-ui/icons';
 import CardLink from './CardLink';
 import CardLinkExtend from './CardLink/Extend';
+import { useService as useBookmarksService } from '@/stores/bookmarks';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -29,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
 	chipContainer: {
 		display: 'flex',
 		flexWrap: 'wrap',
+		marginBottom: theme.spacing(1),
 		'& > *': {
 			marginRight: theme.spacing(1),
 			marginBottom: theme.spacing(1),
@@ -37,11 +39,33 @@ const useStyles = makeStyles((theme) => ({
 	container: {
 		paddingTop: theme.spacing(2),
 	},
+	categoryTitle: {
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		whiteSpace: 'nowrap',
+	},
+	categoryDescription: {
+		display: '-webkit-box',
+		overflow: 'hidden',
+		'-webkit-box-orient': 'vertical',
+		'-webkit-line-clamp': 3,
+	},
+	categoryText: {
+		maxWidth: 700,
+	},
+	chipColor: {
+		width: theme.spacing(2),
+		height: theme.spacing(2),
+		borderRadius: '50%',
+		marginLeft: `${theme.spacing(1)}px !important`,
+	},
 }));
 
 function Bookmarks() {
 	const classes = useStyles();
 	const theme = useTheme();
+	const bookmarksStore = useBookmarksService();
+	const [selectedCategories, setSelectedCategories] = useState([]);
 
 	useEffect(() => {
 
@@ -57,63 +81,84 @@ function Bookmarks() {
 			<Box className={classes.root}>
 				<Container className={classes.container}>
 					<Box className={classes.chipContainer}>
-						{[].concat(...Array.from({ length: 15 }, (elem, index) => ({
-							label: `Category #${index + 1}`,
-						}))).map(({ label }) => (
-							<Chip label={label} onClick={() => {}} />
-						))}
+						{
+							bookmarksStore.getCategories({})
+								.map(({ id, title, color }) => (
+									<Chip
+										key={id}
+										icon={<div className={classes.chipColor} style={{ backgroundColor: color }} />}
+										label={title}
+										variant={~selectedCategories.indexOf(id) ? "default" : "outlined"}
+										onClick={() => {
+											if (~selectedCategories.indexOf(id)) {
+												setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
+											} else {
+												setSelectedCategories([...selectedCategories, id]);
+											}
+										}}
+									/>
+								))
+						}
 					</Box>
 					{
-						[].concat(...Array.from({ length: 563 }, (e, index) => ({
-							title: index % 3 ? `Пример ссылки #${index + 1}` : `Пример очееень длиного названия ссылки #${index +
-							1}`,
-							description:  index % 4 ?
-								index % 3 ?
-									"Описание ссылки, оно не так сильно выделяется"
-									: "Описание ссылки, оно не так сильно выделяется. Теперь в 2 раза длинее! Ого скажете вы а неет, все норм, это для теста"
-								: null,
-							src: "https://website.com",
-							icon: null,
-							categories: [
-								{ id: 0, title: "Category #1", color: "#EB4799"},
-								{ id: 1, title: "Category #2", color: "#FF8800"},
-								{ id: 2, title: "Category #3", color: "#FFC933"},
-							]
-						})))
-						.reduce((acc, curr, index) => {
-							let category = Math.floor(index / 97);
-							let column = index % 6;
-
-							if (typeof acc[category] === 'undefined') acc[category] = [];
-							if (typeof acc[category][column] === 'undefined') acc[category][column] = [];
-
-							acc[category][column].push(curr);
-
-							return acc;
-						}, [])
-						.map((category, index) => (
+						Object.keys(bookmarksStore.getBookmarks({
+							selectCategories: selectedCategories
+						}))
+						.sort((categoryA, categoryB) => {
+							if (categoryA > categoryB) {
+								return -1;
+							} else if (categoryA < categoryB) {
+								return 1;
+							} else {
+								return 0;
+							}
+						})
+						.map((category) => (
 							<Fragment>
-								<ListItem disableGutters>
-									<ListItemIcon style={{ minWidth: 36 }} >
-										<LabelIcon style={{ color: "#FF8800" }} />
-									</ListItemIcon>
-									<ListItemText
-										primary={`Category #${index + 1}`}
-										secondary={`Description category #${index + 1}`}
-									/>
-								</ListItem>
+								{category !== 'all' && (
+									<ListItem disableGutters>
+										{category !== 'best' && (
+											<ListItemIcon style={{ minWidth: 36 }} >
+												<LabelIcon style={{ color: bookmarksStore.getCategory(category).color }} />
+											</ListItemIcon>
+										)}
+										<ListItemText
+											classes={{
+												root: classes.categoryText,
+												primary: classes.categoryTitle,
+												secondary: classes.categoryDescription,
+											}}
+											primary={category !== 'best' ? bookmarksStore.getCategory(category).title : "Best matches"}
+											secondary={category !== 'best' && bookmarksStore.getCategory(category).description}
+										/>
+									</ListItem>
+								)}
 								<Box className={classes.categoryWrapper}>
-									{category.map((column, index, arr) => (
-										<Box style={{ marginRight: arr.length - 1 !== index && theme.spacing(2) }}>
-										{column.map((card) => (
-											Math.random() > 0.5 ? (
-												<CardLinkExtend {...card} style={{ marginBottom: theme.spacing(2) }} />
-											) : (
-												<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
-											)
-										))}
-										</Box>
-									))}
+									{
+										bookmarksStore.getBookmarks({
+											selectCategories: selectedCategories
+										})[category]
+											.reduce((acc, curr, index) => {
+												let column = index % 6;
+
+												if (typeof acc[column] === 'undefined') acc[column] = [];
+
+												acc[column].push(curr);
+
+												return acc;
+											}, [])
+											.map((column, index, arr) => (
+												<Box style={{ marginRight: arr.length - 1 !== index && theme.spacing(2) }}>
+												{column.map((card) => (
+													Math.random() > 0.5 ? (
+														<CardLinkExtend {...card} style={{ marginBottom: theme.spacing(2) }} />
+													) : (
+														<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
+													)
+												))}
+												</Box>
+											))
+									}
 								</Box>
 							</Fragment>
 						))
