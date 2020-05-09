@@ -11,8 +11,10 @@ import {
 	Zoom,
 	Fab,
 	Typography,
+	Tooltip,
+	Fade,
 } from '@material-ui/core';
-import { observer, useLocalStore } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
 	LabelRounded as LabelIcon,
@@ -70,11 +72,18 @@ const useStyles = makeStyles((theme) => ({
 	},
 	fab: {
 		position: 'absolute',
-		bottom: theme.spacing(2),
-		right: theme.spacing(2),
+		bottom: theme.spacing(4),
+		right: theme.spacing(4),
 	},
 	fabIcon: {
 		marginRight: theme.spacing(1),
+	},
+	addCategory: {
+		marginLeft: '3px !important',
+		marginRight: 3,
+	},
+	addCategoryTitle: {
+		display: 'none',
 	},
 }));
 
@@ -83,12 +92,22 @@ const maxColumnCalc = () => Math.min(
 	6
 );
 
+const duration = 300;
+
+const defaultStyle = {
+	transition: `opacity ${duration}ms ease-in-out`,
+	opacity: 0,
+}
+
 function Bookmarks() {
 	const classes = useStyles();
 	const theme = useTheme();
 	const bookmarksStore = useBookmarksService();
 	const [selectedCategories, setSelectedCategories] = useState([]);
 	const [columnsCount, setColumnsCount] = useState(null);
+	const [isSearching, setIsSearching] = useState(true);
+	const [findBookmarks, setFindBookmarks] = useState(null);
+
 
 	const transitionDuration = {
 		enter: theme.transitions.duration.enteringScreen,
@@ -100,6 +119,19 @@ function Bookmarks() {
 	useEffect(() => {
 		setColumnsCount(maxColumnCalc())
 	}, []);
+
+	useEffect(() => {
+		setIsSearching(true);
+	}, [selectedCategories.length]);
+
+	useEffect(() => {
+		if (isSearching && findBookmarks === null) {
+			setFindBookmarks(bookmarksStore.getBookmarks({
+				selectCategories: selectedCategories
+			}));
+			setIsSearching(false);
+		}
+	}, [findBookmarks, isSearching]);
 
 	return (
 		<Drawer
@@ -129,84 +161,100 @@ function Bookmarks() {
 									/>
 								))
 						}
+						<Tooltip title="Добавить новую категорию">
+							<Chip
+								classes={{
+									icon: classes.addCategory,
+									label: classes.addCategoryTitle,
+								}}
+								icon={<AddIcon />}
+								variant="outlined"
+								onClick={() => {
+
+								}}
+							/>
+						</Tooltip>
 					</Box>
-					{
-						Object.keys(bookmarksStore.getBookmarks({
-							selectCategories: selectedCategories
-						}))
-						.sort((categoryA, categoryB) => {
-							if (categoryA > categoryB) {
-								return -1;
-							} else if (categoryA < categoryB) {
-								return 1;
-							} else {
-								return 0;
-							}
-						})
-						.map((category) => {
-							columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
+					<Fade
+						in={!isSearching}
+						onExited={() => {
+							setFindBookmarks(null);
+						}}
+					>
+						<div>
+						{
+							findBookmarks && Object.keys(findBookmarks)
+							.sort((categoryA, categoryB) => {
+								if (categoryA > categoryB) {
+									return -1;
+								} else if (categoryA < categoryB) {
+									return 1;
+								} else {
+									return 0;
+								}
+							})
+							.map((category) => {
+								columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
 
-							return (
-								<Fragment>
-									{category !== 'all' && (
-										<ListItem disableGutters className={classes.categoryHeader}>
-											{category !== 'best' && (
-												<ListItemIcon style={{ minWidth: 36 }} >
-													<LabelIcon style={{ color: bookmarksStore.getCategory(category).color }} />
-												</ListItemIcon>
-											)}
-											<ListItemText
-												classes={{
-													root: classes.categoryText,
-													primary: classes.categoryTitle,
-													secondary: classes.categoryDescription,
-												}}
-												primary={category !== 'best' ? bookmarksStore.getCategory(category).title : "Best matches"}
-												secondary={category !== 'best' && bookmarksStore.getCategory(category).description}
-											/>
-										</ListItem>
-									)}
-									<Box className={classes.categoryWrapper}>
-										{bookmarksStore.getBookmarks({
-											selectCategories: selectedCategories
-										})[category].length === 0 && (
-											<Typography>Ничего не найдено</Typography>
+								return (
+									<Fragment>
+										{category !== 'all' && (
+											<ListItem disableGutters className={classes.categoryHeader}>
+												{category !== 'best' && (
+													<ListItemIcon style={{ minWidth: 36 }} >
+														<LabelIcon style={{ color: bookmarksStore.getCategory(category).color }} />
+													</ListItemIcon>
+												)}
+												<ListItemText
+													classes={{
+														root: classes.categoryText,
+														primary: classes.categoryTitle,
+														secondary: classes.categoryDescription,
+													}}
+													primary={category !== 'best' ? bookmarksStore.getCategory(category).title : "Best matches"}
+													secondary={category !== 'best' && bookmarksStore.getCategory(category).description}
+												/>
+											</ListItem>
 										)}
-										{
-											bookmarksStore.getBookmarks({
-												selectCategories: selectedCategories
-											})[category]
-												.reduce((acc, curr, index) => {
-													let column = 0;
-													columnStabilizer.forEach((element, index) => {
-														if (columnStabilizer[column] > element) column = index;
-													});
+										<Box className={classes.categoryWrapper}>
+											{findBookmarks[category].length === 0 && (
+												<Typography variant="body1" style={{ color: theme.palette.text.secondary }}>Нет подходящих элементов</Typography>
+											)}
+											{
+												findBookmarks[category]
+													.reduce((acc, curr, index) => {
+														let column = 0;
+														columnStabilizer.forEach((element, index) => {
+															if (columnStabilizer[column] > element) column = index;
+														});
 
-													columnStabilizer[column] += curr.type === 'extend' ? curr.description ? 2 : 1.2 : 1;
+														columnStabilizer[column] += curr.type === 'extend' ? curr.description ? 2 : 1.2 : 1;
 
-													if (typeof acc[column] === 'undefined') acc[column] = [];
+														if (typeof acc[column] === 'undefined') acc[column] = [];
 
-													acc[column].push(curr);
+														acc[column].push(curr);
 
-													return acc;
-												}, [])
-												.map((column, index, arr) => (
-													<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
-														{column.map((card) => (
-															card.type === 'extend' ? (
-																<CardLinkExtend {...card} style={{ marginBottom: theme.spacing(2) }} />
-															) : (
-																<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
-															)
-														))}
-													</Box>
-												))
-										}
-									</Box>
-								</Fragment>
-							);
-						})
-					}
+														return acc;
+													}, [])
+													.map((column, index, arr) => (
+														<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
+															{column.map((card) => (
+																card.type === 'extend' ? (
+																	<CardLinkExtend {...card} style={{ marginBottom: theme.spacing(2) }} />
+																) : (
+																	<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
+																)
+															))}
+														</Box>
+													))
+											}
+										</Box>
+									</Fragment>
+								);
+							})
+						}
+						</div>
+					</Fade>
 				</Container>
 				<Zoom
 					in={true}

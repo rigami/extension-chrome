@@ -1,6 +1,6 @@
 import { action, observable } from 'mobx';
 import StorageConnector from '@/utils/storageConnector';
-import { hslToRgb, recomposeColor, ColorObject } from '@material-ui/core/styles/colorManipulator';
+import { hslToRgb, recomposeColor } from '@material-ui/core/styles/colorManipulator';
 
 const categories = [...Array.from({ length: 12 }, (e, index) => ({
 	id: index,

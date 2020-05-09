@@ -10,6 +10,7 @@ import {
 import { ArrowBackRounded as BackIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const useStyles = makeStyles((theme) => ({
 	root: { backgroundColor: fade(theme.palette.background.paper, 0.8) },
