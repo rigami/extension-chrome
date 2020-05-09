@@ -56,6 +56,13 @@ const useStyles = makeStyles((theme) => ({
 	},
 	banner: {
 		width: '100%',
+		height: 64,
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	extendBanner: {
+		width: '100%',
 		height: 90,
 		backgroundColor: theme.palette.grey[300],
 		display: 'flex',
@@ -73,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function CardLink({ title, src, icon, categories, description, ...other }) {
+function CardLink({ title, src, icon, categories, type, description, ...other }) {
 	const classes = useStyles();
 
 	return (
@@ -90,7 +97,7 @@ function CardLink({ title, src, icon, categories, description, ...other }) {
 		>
 			<Card className={classes.root} variant="outlined" {...other}>
 				<CardActionArea className={classes.rootActionWrapper}>
-					<Box className={classes.banner}>
+					<Box className={type === 'extend' ? classes.extendBanner : classes.banner}>
 						<Avatar className={classes.icon}>
 							<LinkIcon />
 						</Avatar>

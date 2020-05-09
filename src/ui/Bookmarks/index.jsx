@@ -21,7 +21,6 @@ import {
 	AddRounded as AddIcon,
 } from '@material-ui/icons';
 import CardLink from './CardLink';
-import CardLinkExtend from './CardLink/Extend';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import ReactResizeDetector from 'react-resize-detector';
 import CreateCategoryButton from './CreateCategoryButton';
@@ -221,11 +220,7 @@ function Bookmarks() {
 													.map((column, index, arr) => (
 														<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
 															{column.map((card) => (
-																card.type === 'extend' ? (
-																	<CardLinkExtend {...card} style={{ marginBottom: theme.spacing(2) }} />
-																) : (
-																	<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
-																)
+																<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
 															))}
 														</Box>
 													))
