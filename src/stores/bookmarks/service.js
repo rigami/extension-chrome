@@ -69,7 +69,6 @@ class AppConfigStore {
 
 	@action('get category by id')
 	getCategory(categoryId) {
-		console.log("GET CATEGORY", categoryId)
 		return categories[categoryId];
 	}
 
@@ -81,6 +80,8 @@ class AppConfigStore {
 		const matches = (item) => item.categories.filter((category) => ~selectCategories.indexOf(category.id));
 
 		const result = {};
+
+		if (selectCategories.length > 1) result.best = [];
 
 		bookmarks
 			.filter((item) => {
@@ -100,11 +101,13 @@ class AppConfigStore {
 			})
 		.forEach((item) => {
 			const match = matches(item);
-			if (match.length !== 1) {
+			if (selectCategories.length !== 1 && match.length === selectCategories.length) {
 				result.best = [...(result.best || []), item];
-			} else {
-				result[match[0].id] = [...(result[match[0].id] || []), item];
 			}
+
+			match.forEach(({ id }) => {
+				result[id] = [...(result[id] || []), item];
+			});
 		});
 
 		return result;

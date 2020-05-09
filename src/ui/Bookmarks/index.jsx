@@ -10,6 +10,7 @@ import {
 	Chip,
 	Zoom,
 	Fab,
+	Typography,
 } from '@material-ui/core';
 import { observer, useLocalStore } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -166,35 +167,40 @@ function Bookmarks() {
 										</ListItem>
 									)}
 									<Box className={classes.categoryWrapper}>
+										{bookmarksStore.getBookmarks({
+											selectCategories: selectedCategories
+										})[category].length === 0 && (
+											<Typography>Ничего не найдено</Typography>
+										)}
 										{
 											bookmarksStore.getBookmarks({
 												selectCategories: selectedCategories
 											})[category]
-											.reduce((acc, curr, index) => {
-												let column = 0;
-												columnStabilizer.forEach((element, index) => {
-													if (columnStabilizer[column] > element) column = index;
-												});
+												.reduce((acc, curr, index) => {
+													let column = 0;
+													columnStabilizer.forEach((element, index) => {
+														if (columnStabilizer[column] > element) column = index;
+													});
 
-												columnStabilizer[column] += curr.type === 'extend' ? curr.description ? 2 : 1.2 : 1;
+													columnStabilizer[column] += curr.type === 'extend' ? curr.description ? 2 : 1.2 : 1;
 
-												if (typeof acc[column] === 'undefined') acc[column] = [];
+													if (typeof acc[column] === 'undefined') acc[column] = [];
 
-												acc[column].push(curr);
+													acc[column].push(curr);
 
-												return acc;
-											}, [])
-											.map((column, index, arr) => (
-												<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
-													{column.map((card) => (
-														card.type === 'extend' ? (
-															<CardLinkExtend {...card} style={{ marginBottom: theme.spacing(2) }} />
-														) : (
-															<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
-														)
-													))}
-												</Box>
-											))
+													return acc;
+												}, [])
+												.map((column, index, arr) => (
+													<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
+														{column.map((card) => (
+															card.type === 'extend' ? (
+																<CardLinkExtend {...card} style={{ marginBottom: theme.spacing(2) }} />
+															) : (
+																<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
+															)
+														))}
+													</Box>
+												))
 										}
 									</Box>
 								</Fragment>
