@@ -18,6 +18,7 @@ const bookmarks = [...Array.from({ length: 73 }, (e, index) => ({
 		: null,
 	src: "https://website.com",
 	icon: null,
+	type: Math.random() > 0.5 ? 'extend' : 'default',
 	categories: categories.filter(() => Math.random() > 0.75),
 }))];
 

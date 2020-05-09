@@ -94,6 +94,8 @@ function Bookmarks() {
 		exit: theme.transitions.duration.leavingScreen,
 	};
 
+	let columnStabilizer = null;
+
 	useEffect(() => {
 		setColumnsCount(maxColumnCalc())
 	}, []);
@@ -140,33 +142,41 @@ function Bookmarks() {
 								return 0;
 							}
 						})
-						.map((category) => (
-							<Fragment>
-								{category !== 'all' && (
-									<ListItem disableGutters className={classes.categoryHeader}>
-										{category !== 'best' && (
-											<ListItemIcon style={{ minWidth: 36 }} >
-												<LabelIcon style={{ color: bookmarksStore.getCategory(category).color }} />
-											</ListItemIcon>
-										)}
-										<ListItemText
-											classes={{
-												root: classes.categoryText,
-												primary: classes.categoryTitle,
-												secondary: classes.categoryDescription,
-											}}
-											primary={category !== 'best' ? bookmarksStore.getCategory(category).title : "Best matches"}
-											secondary={category !== 'best' && bookmarksStore.getCategory(category).description}
-										/>
-									</ListItem>
-								)}
-								<Box className={classes.categoryWrapper}>
-									{
-										bookmarksStore.getBookmarks({
-											selectCategories: selectedCategories
-										})[category]
+						.map((category) => {
+							columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
+
+							return (
+								<Fragment>
+									{category !== 'all' && (
+										<ListItem disableGutters className={classes.categoryHeader}>
+											{category !== 'best' && (
+												<ListItemIcon style={{ minWidth: 36 }} >
+													<LabelIcon style={{ color: bookmarksStore.getCategory(category).color }} />
+												</ListItemIcon>
+											)}
+											<ListItemText
+												classes={{
+													root: classes.categoryText,
+													primary: classes.categoryTitle,
+													secondary: classes.categoryDescription,
+												}}
+												primary={category !== 'best' ? bookmarksStore.getCategory(category).title : "Best matches"}
+												secondary={category !== 'best' && bookmarksStore.getCategory(category).description}
+											/>
+										</ListItem>
+									)}
+									<Box className={classes.categoryWrapper}>
+										{
+											bookmarksStore.getBookmarks({
+												selectCategories: selectedCategories
+											})[category]
 											.reduce((acc, curr, index) => {
-												let column = index % columnsCount;
+												let column = 0;
+												columnStabilizer.forEach((element, index) => {
+													if (columnStabilizer[column] > element) column = index;
+												});
+
+												columnStabilizer[column] += curr.type === 'extend' ? curr.description ? 2 : 1.2 : 1;
 
 												if (typeof acc[column] === 'undefined') acc[column] = [];
 
@@ -177,7 +187,7 @@ function Bookmarks() {
 											.map((column, index, arr) => (
 												<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
 													{column.map((card) => (
-														Math.random() > 0.5 ? (
+														card.type === 'extend' ? (
 															<CardLinkExtend {...card} style={{ marginBottom: theme.spacing(2) }} />
 														) : (
 															<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
@@ -185,10 +195,11 @@ function Bookmarks() {
 													))}
 												</Box>
 											))
-									}
-								</Box>
-							</Fragment>
-						))
+										}
+									</Box>
+								</Fragment>
+							);
+						})
 					}
 				</Container>
 				<Zoom
