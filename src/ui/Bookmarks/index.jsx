@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'preact/compat';
+import React, { useEffect, useState, useRef } from 'preact/compat';
 import { h, Fragment } from 'preact';
 import {
 	Box,
@@ -8,20 +8,25 @@ import {
 	ListItemText,
 	ListItemIcon,
 	Chip,
+	Zoom,
+	Fab,
 } from '@material-ui/core';
 import { observer, useLocalStore } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
 	LabelRounded as LabelIcon,
+	AddRounded as AddIcon,
 } from '@material-ui/icons';
 import CardLink from './CardLink';
 import CardLinkExtend from './CardLink/Extend';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
+import ReactResizeDetector from 'react-resize-detector';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
 		height: '100vh',
-		overflow: 'auto',
+		overflow: 'hidden',
+		overflowY: 'scroll',
 	},
 	categoryWrapper: {
 		display: 'flex',
@@ -59,16 +64,38 @@ const useStyles = makeStyles((theme) => ({
 		borderRadius: '50%',
 		marginLeft: `${theme.spacing(1)}px !important`,
 	},
+	categoryHeader: {
+		marginTop: theme.spacing(3),
+	},
+	fab: {
+		position: 'absolute',
+		bottom: theme.spacing(2),
+		right: theme.spacing(2),
+	},
+	fabIcon: {
+		marginRight: theme.spacing(1),
+	},
 }));
+
+const maxColumnCalc = () => Math.min(
+	Math.floor((document.getElementById("bookmarks-container").clientWidth + 16 - 48)/ 196),
+	6
+);
 
 function Bookmarks() {
 	const classes = useStyles();
 	const theme = useTheme();
 	const bookmarksStore = useBookmarksService();
 	const [selectedCategories, setSelectedCategories] = useState([]);
+	const [columnsCount, setColumnsCount] = useState(null);
+
+	const transitionDuration = {
+		enter: theme.transitions.duration.enteringScreen,
+		exit: theme.transitions.duration.leavingScreen,
+	};
 
 	useEffect(() => {
-
+		setColumnsCount(maxColumnCalc())
 	}, []);
 
 	return (
@@ -78,8 +105,8 @@ function Bookmarks() {
 			onClose={() => {}}
 			disableEnforceFocus
 		>
-			<Box className={classes.root}>
-				<Container className={classes.container}>
+			<Box id="bookmarks-container" className={classes.root}>
+				<Container className={classes.container} fixed style={{ maxWidth: columnsCount * 196 - 16 + 48 }}>
 					<Box className={classes.chipContainer}>
 						{
 							bookmarksStore.getCategories({})
@@ -116,7 +143,7 @@ function Bookmarks() {
 						.map((category) => (
 							<Fragment>
 								{category !== 'all' && (
-									<ListItem disableGutters>
+									<ListItem disableGutters className={classes.categoryHeader}>
 										{category !== 'best' && (
 											<ListItemIcon style={{ minWidth: 36 }} >
 												<LabelIcon style={{ color: bookmarksStore.getCategory(category).color }} />
@@ -139,7 +166,7 @@ function Bookmarks() {
 											selectCategories: selectedCategories
 										})[category]
 											.reduce((acc, curr, index) => {
-												let column = index % 6;
+												let column = index % columnsCount;
 
 												if (typeof acc[column] === 'undefined') acc[column] = [];
 
@@ -148,14 +175,14 @@ function Bookmarks() {
 												return acc;
 											}, [])
 											.map((column, index, arr) => (
-												<Box style={{ marginRight: arr.length - 1 !== index && theme.spacing(2) }}>
-												{column.map((card) => (
-													Math.random() > 0.5 ? (
-														<CardLinkExtend {...card} style={{ marginBottom: theme.spacing(2) }} />
-													) : (
-														<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
-													)
-												))}
+												<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
+													{column.map((card) => (
+														Math.random() > 0.5 ? (
+															<CardLinkExtend {...card} style={{ marginBottom: theme.spacing(2) }} />
+														) : (
+															<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
+														)
+													))}
 												</Box>
 											))
 									}
@@ -164,6 +191,20 @@ function Bookmarks() {
 						))
 					}
 				</Container>
+				<Zoom
+					in={true}
+					timeout={transitionDuration}
+					style={{
+						transitionDelay: `${true ? transitionDuration.exit : 0}ms`,
+					}}
+					unmountOnExit
+				>
+					<Fab className={classes.fab} color="primary" variant="extended">
+						<AddIcon className={classes.fabIcon}/>
+						Добавить закладку
+					</Fab>
+				</Zoom>
+				<ReactResizeDetector handleWidth onResize={() => setColumnsCount(maxColumnCalc())} />
 			</Box>
 		</Drawer>
 	);

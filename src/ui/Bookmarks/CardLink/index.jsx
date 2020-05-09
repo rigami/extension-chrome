@@ -88,7 +88,9 @@ function CardLink({ title, src, icon, categories, ...other }) {
 					<div className={classes.body}>
 						<div className={classes.categoriesWrapper}>
 							{categories.map(({ title, color, id }) => (
-								<div key={id} className={classes.category} style={{ backgroundColor: color }} />
+								<Tooltip title={title}>
+									<div key={id} className={classes.category} style={{ backgroundColor: color }} />
+								</Tooltip>
 							))}
 						</div>
 						<Typography className={classes.title}>{title}</Typography>
