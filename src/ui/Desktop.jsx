@@ -10,21 +10,22 @@ import FSConnector from '@/utils/fsConnector';
 import { BG_TYPE, THEME } from '@/dict';
 import clsx from 'clsx';
 import locale from '@/i18n/RU';
-import { Fade } from '@material-ui/core';
+import { Fade, Box } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useSnackbar } from 'notistack';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import { useService as useAppConfigService } from '@/stores/app';
+import GlobalScroll from '@/ui/GlobalScroll'
+import Menu from '@/ui/Menu'
+import Nest from '@/utils/Nest'
 
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		position: 'absolute',
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
+		width: '100vw',
+		height: '100vh',
 		overflow: 'hidden',
+		position: 'relative',
 	},
 	bg: {
 		width: '100%',
@@ -156,7 +157,7 @@ function Desktop() {
 
 
 	return (
-		<Fragment>
+		<Box className={classes.root}>
 			<Fade
 				in={state === 'done' || state === 'failed'}
 				onExit={() => {
@@ -240,7 +241,8 @@ function Desktop() {
 					)}
 				</div>
 			</Fade>
-		</Fragment>
+			<Menu />
+		</Box>
 	);
 }
 

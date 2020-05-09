@@ -6,6 +6,7 @@ class AppConfigStore {
 	@observable backdropTheme;
 	@observable useSystemFont;
 	@observable tabName;
+	@observable activity = "desktop";
 
 	constructor() {
 		StorageConnector.getItem('app_theme')
@@ -26,6 +27,11 @@ class AppConfigStore {
 				if (document) document.title = value || '\u200E';
 			})
 			.catch((e) => console.error(e));
+	}
+
+	@action('set activity')
+	setActivity(activity) {
+		this.activity = activity;
 	}
 
 	@action('set app theme')

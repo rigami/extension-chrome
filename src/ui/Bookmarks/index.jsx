@@ -11,7 +11,6 @@ import {
 	Zoom,
 	Fab,
 	Typography,
-	Tooltip,
 	Fade,
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
@@ -24,12 +23,14 @@ import CardLink from './CardLink';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import ReactResizeDetector from 'react-resize-detector';
 import CreateCategoryButton from './CreateCategoryButton';
+import { useService as useAppService } from '@/stores/app';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		height: '100vh',
-		overflow: 'hidden',
-		overflowY: 'scroll',
+		minHeight: '100vh',
+		width: '100vw',
+		zIndex: theme.zIndex.drawer,
+		backgroundColor: theme.palette.background.paper,
 	},
 	categoryWrapper: {
 		display: 'flex',
@@ -38,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
 	chipContainer: {
 		display: 'flex',
 		flexWrap: 'wrap',
-		marginTop: theme.spacing(2),
 		marginBottom: theme.spacing(3),
 		'& > *': {
 			marginRight: theme.spacing(1),
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 	container: {
-		paddingTop: theme.spacing(2),
+
 	},
 	categoryTitle: {
 		overflow: 'hidden',
@@ -75,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
 		position: 'absolute',
 		bottom: theme.spacing(4),
 		right: theme.spacing(4),
+		zIndex: theme.zIndex.snackbar,
 	},
 	fabIcon: {
 		marginRight: theme.spacing(1),
@@ -97,6 +98,7 @@ function Bookmarks() {
 	const classes = useStyles();
 	const theme = useTheme();
 	const bookmarksStore = useBookmarksService();
+	const appService = useAppService();
 	const [selectedCategories, setSelectedCategories] = useState([]);
 	const [columnsCount, setColumnsCount] = useState(null);
 	const [isSearching, setIsSearching] = useState(true);
@@ -111,7 +113,7 @@ function Bookmarks() {
 	let columnStabilizer = null;
 
 	useEffect(() => {
-		setColumnsCount(maxColumnCalc())
+		setColumnsCount(maxColumnCalc());
 	}, []);
 
 	useEffect(() => {
@@ -128,12 +130,7 @@ function Bookmarks() {
 	}, [findBookmarks, isSearching]);
 
 	return (
-		<Drawer
-			anchor="bottom"
-			open={true}
-			onClose={() => {}}
-			disableEnforceFocus
-		>
+		<Fragment>
 			<Box id="bookmarks-container" className={classes.root}>
 				<Container className={classes.container} fixed style={{ maxWidth: columnsCount * 196 - 16 + 48 }}>
 					<Box className={classes.chipContainer}>
@@ -233,22 +230,20 @@ function Bookmarks() {
 						</div>
 					</Fade>
 				</Container>
-				<Zoom
-					in={true}
-					timeout={transitionDuration}
-					style={{
-						transitionDelay: `${true ? transitionDuration.exit : 0}ms`,
-					}}
-					unmountOnExit
-				>
-					<Fab className={classes.fab} color="primary" variant="extended">
-						<AddIcon className={classes.fabIcon}/>
-						Добавить закладку
-					</Fab>
-				</Zoom>
 				<ReactResizeDetector handleWidth onResize={() => setColumnsCount(maxColumnCalc())} />
 			</Box>
-		</Drawer>
+			<Zoom
+				in={appService.activity === "bookmarks"}
+				timeout={transitionDuration}
+				style={{ transitionDelay: 0 }}
+				unmountOnExit
+			>
+				<Fab className={classes.fab} color="primary" variant="extended">
+					<AddIcon className={classes.fabIcon}/>
+					Добавить закладку
+				</Fab>
+			</Zoom>
+		</Fragment>
 	);
 }
 

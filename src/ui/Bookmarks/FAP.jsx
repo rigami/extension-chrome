@@ -23,10 +23,10 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		position: 'absolute',
-		bottom: theme.spacing(2),
-		paddingLeft: theme.spacing(2),
-		paddingRight: theme.spacing(2),
+		position: 'sticky',
+		top: 0,
+		bottom: 0,
+		padding: theme.spacing(2),
 		width: '100%',
 		zIndex: theme.zIndex.speedDial,
 		display: 'flex',

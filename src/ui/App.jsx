@@ -3,8 +3,6 @@ import { h, render } from 'preact';
 import { CssBaseline } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 
-import Menu from '@/ui/Menu';
-import Desktop from '@/ui/Desktop';
 import { ThemeProvider } from '@material-ui/styles';
 import Snackbar from '@/ui-components/Snackbar';
 import UploadBGForm from '@/ui-components/UploadBGForm';
@@ -16,8 +14,11 @@ import Nest from '@/utils/Nest';
 import { Provider as BackgroundsProvider } from '@/stores/backgrounds';
 import { Provider as AppConfigProvider } from '@/stores/app';
 import { Provider as BookmarksProvider } from '@/stores/bookmarks';
-import FAP from '@/ui/Bookmarks/FAP';
-import Bookmarks from '@/ui/Bookmarks'
+import FAP from './Bookmarks/FAP';
+import Bookmarks from './Bookmarks';
+import Menu from './Menu';
+import Desktop from './Desktop';
+import GlobalScroll from './GlobalScroll'
 
 function App() {
 	const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
@@ -46,10 +47,11 @@ function App() {
 				),
 				UploadBGForm,
 			]}>
-				<FAP />
-				<Bookmarks />
-				<Desktop />
-				<Menu />
+				<GlobalScroll>
+					<Desktop />
+					<FAP />
+					<Bookmarks />
+				</GlobalScroll>
 			</Nest>
 		</ThemeProvider>
 	);
