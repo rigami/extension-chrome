@@ -24,6 +24,7 @@ import CardLink from './CardLink';
 import CardLinkExtend from './CardLink/Extend';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import ReactResizeDetector from 'react-resize-detector';
+import CreateCategoryButton from './CreateCategoryButton';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -38,7 +39,8 @@ const useStyles = makeStyles((theme) => ({
 	chipContainer: {
 		display: 'flex',
 		flexWrap: 'wrap',
-		marginBottom: theme.spacing(1),
+		marginTop: theme.spacing(2),
+		marginBottom: theme.spacing(3),
 		'& > *': {
 			marginRight: theme.spacing(1),
 			marginBottom: theme.spacing(1),
@@ -77,13 +79,6 @@ const useStyles = makeStyles((theme) => ({
 	},
 	fabIcon: {
 		marginRight: theme.spacing(1),
-	},
-	addCategory: {
-		marginLeft: '3px !important',
-		marginRight: 3,
-	},
-	addCategoryTitle: {
-		display: 'none',
 	},
 }));
 
@@ -161,19 +156,7 @@ function Bookmarks() {
 									/>
 								))
 						}
-						<Tooltip title="Добавить новую категорию">
-							<Chip
-								classes={{
-									icon: classes.addCategory,
-									label: classes.addCategoryTitle,
-								}}
-								icon={<AddIcon />}
-								variant="outlined"
-								onClick={() => {
-
-								}}
-							/>
-						</Tooltip>
+						<CreateCategoryButton />
 					</Box>
 					<Fade
 						in={!isSearching}
@@ -212,7 +195,6 @@ function Bookmarks() {
 														secondary: classes.categoryDescription,
 													}}
 													primary={category !== 'best' ? bookmarksStore.getCategory(category).title : "Best matches"}
-													secondary={category !== 'best' && bookmarksStore.getCategory(category).description}
 												/>
 											</ListItem>
 										)}
