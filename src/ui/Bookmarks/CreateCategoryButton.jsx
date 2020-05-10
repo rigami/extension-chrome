@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 		display: 'flex',
 		alignItems: 'center',
 		marginTop: theme.spacing(2),
+		marginBottom: theme.spacing(2),
 	},
 	addCategory: {
 		marginLeft: '3px !important',

@@ -58,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	popper: {
 		width: 310,
+		marginTop: theme.spacing(2),
 		marginBottom: theme.spacing(2),
 		backdropFilter: 'blur(15px) brightness(130%)',
 		backgroundColor: fade(theme.palette.background.default, 0.70),
