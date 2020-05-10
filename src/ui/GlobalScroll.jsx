@@ -39,34 +39,31 @@ function GlobalScroll({ children }) {
 	const classes = useStyles();
 	const appService = useAppService();
 	const [isShowScroll, setIsShowScroll] = useState(false);
-	const store = useLocalStore(() => ({ scrollbar: null }));
+	const store = useLocalStore(() => ({ scrollbar: null, scrollDirection: null }));
 
-	const handlerScroll = ({ scrollTop }) => {
-		if (scrollTop > document.documentElement.clientHeight * 0.3) {
-			appService.setActivity('bookmarks');
-		} else {
-			appService.setActivity('desktop');
-		}
-
+	const handlerScroll = ({ scrollTop }, { scrollTop: prevScrollTop }) => {
+		store.scrollDirection = prevScrollTop - scrollTop > 0 ? 'up' : 'down';
 		setIsShowScroll(scrollTop > document.documentElement.clientHeight);
 	};
 
 	const handlerScrollStop = ({ scrollTop }) => {
 		if (
-			(appService.activity === 'desktop' && scrollTop < 150)
-			|| (appService.activity === 'bookmarks' && scrollTop < document.documentElement.clientHeight - 150)
+			(store.scrollDirection === 'down' && scrollTop < 150)
+			|| (store.scrollDirection === 'up' && scrollTop < document.documentElement.clientHeight - 150)
 		) {
 			store.scrollbar.contentElement.parentElement.scrollTo({
 				behavior: 'smooth',
 				left: 0,
 				top: 0,
 			});
+			appService.setActivity('desktop');
 		} else if (scrollTop < document.documentElement.clientHeight) {
 			store.scrollbar.contentElement.parentElement.scrollTo({
 				behavior: 'smooth',
 				left: 0,
 				top: document.documentElement.clientHeight,
 			});
+			appService.setActivity('bookmarks');
 		}
 	};
 
