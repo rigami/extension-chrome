@@ -25,6 +25,10 @@ const useStyles = makeStyles((theme) => ({
 		top: 4,
 		bottom: 4,
 		pointerEvents: 'none',
+		transition: theme.transitions.create('opacity', {
+			duration: theme.transitions.duration.standard,
+			easing: theme.transitions.easing.easeInOut,
+		}),
 	},
 	scrollThumb: {
 		backgroundColor: theme.palette.getContrastText(theme.palette.background.paper),
@@ -43,7 +47,7 @@ function GlobalScroll({ children }) {
 
 	const handlerScroll = ({ scrollTop }, { scrollTop: prevScrollTop }) => {
 		store.scrollDirection = prevScrollTop - scrollTop > 0 ? 'up' : 'down';
-		setIsShowScroll(scrollTop > document.documentElement.clientHeight);
+		setIsShowScroll(scrollTop >= document.documentElement.clientHeight);
 	};
 
 	const handlerScrollStop = ({ scrollTop }) => {
@@ -63,6 +67,10 @@ function GlobalScroll({ children }) {
 				left: 0,
 				top: document.documentElement.clientHeight,
 			});
+			appService.setActivity('bookmarks');
+		} else if (scrollTop < document.documentElement.clientHeight) {
+			appService.setActivity('desktop');
+		} else {
 			appService.setActivity('bookmarks');
 		}
 	};
