@@ -9,9 +9,7 @@ import {
 	Box,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import {
-	LinkRounded as LinkIcon,
-} from '@material-ui/icons';
+import { LinkRounded as LinkIcon } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -28,9 +26,7 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: 'stretch',
 		justifyContent: 'flex-end',
 	},
-	icon: {
-		margin: 'auto',
-	},
+	icon: { margin: 'auto' },
 	body: {
 		width: '100%',
 		padding: theme.spacing(1, 2),
@@ -83,7 +79,9 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function CardLink({ title, src, icon, categories, type, description, ...other }) {
+function CardLink({
+	title, src, icon, categories, type, description, ...other
+}) {
 	const classes = useStyles();
 
 	return (
@@ -91,8 +89,8 @@ function CardLink({ title, src, icon, categories, type, description, ...other })
 			title={(
 				<Fragment>
 					{title}
-					<br/>
-					<Typography variant='caption'>{src}</Typography>
+					<br />
+					<Typography variant="caption">{src}</Typography>
 				</Fragment>
 			)}
 			enterDelay={400}
@@ -108,13 +106,15 @@ function CardLink({ title, src, icon, categories, type, description, ...other })
 					<div className={classes.body}>
 						<div className={classes.categoriesWrapper}>
 							{categories.map(({ title, color, id }) => (
-								<Tooltip title={title}>
-									<div key={id} className={classes.category} style={{ backgroundColor: color }} />
+								<Tooltip key={id} title={title}>
+									<div className={classes.category} style={{ backgroundColor: color }} />
 								</Tooltip>
 							))}
 						</div>
 						<Typography className={classes.title}>{title}</Typography>
-						{description && (<Typography variant="body2" className={classes.description}>{description}</Typography>)}
+						{description && (
+							<Typography variant="body2" className={classes.description}>{description}</Typography>
+						)}
 					</div>
 				</CardActionArea>
 			</Card>

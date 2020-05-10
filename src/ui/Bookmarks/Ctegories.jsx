@@ -7,8 +7,8 @@ import {
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
-import CreateCategoryButton from './CreateCategoryButton';
 import clsx from 'clsx';
+import CreateCategoryButton from './CreateCategoryButton';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -40,21 +40,21 @@ function Categories ({ onChange, className: externalClassName, sortByPopular }) 
 		<Box className={clsx(classes.root, externalClassName)}>
 			{
 				bookmarksStore.getCategories({})
-				.map(({ id, title, color }) => (
-					<Chip
-						key={id}
-						icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
-						label={title}
-						variant={~selectedCategories.indexOf(id) ? "default" : "outlined"}
-						onClick={() => {
-							if (~selectedCategories.indexOf(id)) {
-								setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
-							} else {
-								setSelectedCategories([...selectedCategories, id]);
-							}
-						}}
-					/>
-				))
+					.map(({ id, title, color }) => (
+						<Chip
+							key={id}
+							icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
+							label={title}
+							variant={~selectedCategories.indexOf(id) ? 'default' : 'outlined'}
+							onClick={() => {
+								if (~selectedCategories.indexOf(id)) {
+									setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
+								} else {
+									setSelectedCategories([...selectedCategories, id]);
+								}
+							}}
+						/>
+					))
 			}
 			<CreateCategoryButton />
 		</Box>

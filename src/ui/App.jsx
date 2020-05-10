@@ -16,9 +16,8 @@ import { Provider as AppConfigProvider } from '@/stores/app';
 import { Provider as BookmarksProvider } from '@/stores/bookmarks';
 import FAP from './Bookmarks/FAP';
 import Bookmarks from './Bookmarks';
-import Menu from './Menu';
 import Desktop from './Desktop';
-import GlobalScroll from './GlobalScroll'
+import GlobalScroll from './GlobalScroll';
 
 function App() {
 	const [theme, setTheme] = useState(localStorage.getItem('app_theme'));

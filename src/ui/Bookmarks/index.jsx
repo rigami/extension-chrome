@@ -11,15 +11,13 @@ import {
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import {
-	LabelRounded as LabelIcon,
-} from '@material-ui/icons';
-import CardLink from './CardLink';
+import { LabelRounded as LabelIcon } from '@material-ui/icons';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import ReactResizeDetector from 'react-resize-detector';
 import { useService as useAppService } from '@/stores/app';
+import Categories from '@/ui/Bookmarks/Ctegories';
 import CreateBookmarkButton from './CreateBookmarkButton';
-import Categories from '@/ui/Bookmarks/Ctegories'
+import CardLink from './CardLink';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -32,12 +30,8 @@ const useStyles = makeStyles((theme) => ({
 		display: 'flex',
 		flexWrap: 'wrap',
 	},
-	chipContainer: {
-		marginBottom: theme.spacing(3),
-	},
-	container: {
-
-	},
+	chipContainer: { marginBottom: theme.spacing(3) },
+	container: {},
 	categoryTitle: {
 		overflow: 'hidden',
 		textOverflow: 'ellipsis',
@@ -49,17 +43,13 @@ const useStyles = makeStyles((theme) => ({
 		'-webkit-box-orient': 'vertical',
 		'-webkit-line-clamp': 3,
 	},
-	categoryText: {
-		maxWidth: 700,
-	},
-	categoryHeader: {
-		marginTop: theme.spacing(3),
-	},
+	categoryText: { maxWidth: 700 },
+	categoryHeader: { marginTop: theme.spacing(3) },
 }));
 
 const maxColumnCalc = () => Math.min(
-	Math.floor((document.getElementById("bookmarks-container").clientWidth + 16 - 48)/ 196),
-	6
+	Math.floor((document.getElementById('bookmarks-container').clientWidth + 16 - 48) / 196),
+	6,
 );
 
 function Bookmarks() {
@@ -84,9 +74,7 @@ function Bookmarks() {
 
 	useEffect(() => {
 		if (isSearching && findBookmarks === null) {
-			setFindBookmarks(bookmarksStore.getBookmarks({
-				selectCategories: selectedCategories
-			}));
+			setFindBookmarks(bookmarksStore.getBookmarks({ selectCategories: selectedCategories }));
 			setIsSearching(false);
 		}
 	}, [findBookmarks, isSearching]);
@@ -106,72 +94,72 @@ function Bookmarks() {
 						}}
 					>
 						<div>
-						{
-							findBookmarks && Object.keys(findBookmarks)
-							.sort((categoryA, categoryB) => {
-								if (categoryA > categoryB) {
-									return -1;
-								} else if (categoryA < categoryB) {
-									return 1;
-								} else {
-									return 0;
-								}
-							})
-							.map((category) => {
-								columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
+							{
+								findBookmarks && Object.keys(findBookmarks)
+									.sort((categoryA, categoryB) => {
+										if (categoryA > categoryB) {
+											return -1;
+										} else if (categoryA < categoryB) {
+											return 1;
+										} else {
+											return 0;
+										}
+									})
+									.map((category) => {
+										columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
 
-								return (
-									<Fragment>
-										{category !== 'all' && (
-											<ListItem disableGutters className={classes.categoryHeader}>
-												{category !== 'best' && (
-													<ListItemIcon style={{ minWidth: 36 }} >
-														<LabelIcon style={{ color: bookmarksStore.getCategory(category).color }} />
-													</ListItemIcon>
+										return (
+											<Fragment>
+												{category !== 'all' && (
+													<ListItem disableGutters className={classes.categoryHeader}>
+														{category !== 'best' && (
+															<ListItemIcon style={{ minWidth: 36 }} >
+																<LabelIcon style={{ color: bookmarksStore.getCategory(category).color }} />
+															</ListItemIcon>
+														)}
+														<ListItemText
+															classes={{
+																root: classes.categoryText,
+																primary: classes.categoryTitle,
+																secondary: classes.categoryDescription,
+															}}
+															primary={category !== 'best' ? bookmarksStore.getCategory(category).title : 'Best matches'}
+														/>
+													</ListItem>
 												)}
-												<ListItemText
-													classes={{
-														root: classes.categoryText,
-														primary: classes.categoryTitle,
-														secondary: classes.categoryDescription,
-													}}
-													primary={category !== 'best' ? bookmarksStore.getCategory(category).title : "Best matches"}
-												/>
-											</ListItem>
-										)}
-										<Box className={classes.categoryWrapper}>
-											{findBookmarks[category].length === 0 && (
-												<Typography variant="body1" style={{ color: theme.palette.text.secondary }}>Нет подходящих элементов</Typography>
-											)}
-											{
-												findBookmarks[category]
-													.reduce((acc, curr, index) => {
-														let column = 0;
-														columnStabilizer.forEach((element, index) => {
-															if (columnStabilizer[column] > element) column = index;
-														});
+												<Box className={classes.categoryWrapper}>
+													{findBookmarks[category].length === 0 && (
+														<Typography variant="body1" style={{ color: theme.palette.text.secondary }}>Нет подходящих элементов</Typography>
+													)}
+													{
+														findBookmarks[category]
+															.reduce((acc, curr, index) => {
+																let column = 0;
+																columnStabilizer.forEach((element, index) => {
+																	if (columnStabilizer[column] > element) column = index;
+																});
 
-														columnStabilizer[column] += curr.type === 'extend' ? curr.description ? 2 : 1.2 : 1;
+																columnStabilizer[column] += curr.type === 'extend' ? curr.description ? 2 : 1.2 : 1;
 
-														if (typeof acc[column] === 'undefined') acc[column] = [];
+																if (typeof acc[column] === 'undefined') acc[column] = [];
 
-														acc[column].push(curr);
+																acc[column].push(curr);
 
-														return acc;
-													}, [])
-													.map((column, index, arr) => (
-														<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
-															{column.map((card) => (
-																<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
-															))}
-														</Box>
-													))
-											}
-										</Box>
-									</Fragment>
-								);
-							})
-						}
+																return acc;
+															}, [])
+															.map((column, index, arr) => (
+																<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
+																	{column.map((card) => (
+																		<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
+																	))}
+																</Box>
+															))
+													}
+												</Box>
+											</Fragment>
+										);
+									})
+							}
 						</div>
 					</Fade>
 				</Container>

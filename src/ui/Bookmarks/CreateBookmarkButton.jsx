@@ -4,13 +4,11 @@ import {
 	Zoom,
 	Fab,
 } from '@material-ui/core';
-import {
-	AddRounded as AddIcon,
-} from '@material-ui/icons';
+import { AddRounded as AddIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import CreateBookmarkModal from '@/ui/Bookmarks/CreateBookmarkModal'
-import { useService as useAppService } from '@/stores/app'
+import CreateBookmarkModal from '@/ui/Bookmarks/CreateBookmarkModal';
+import { useService as useAppService } from '@/stores/app';
 
 const useStyles = makeStyles((theme) => ({
 	fab: {
@@ -18,9 +16,7 @@ const useStyles = makeStyles((theme) => ({
 		bottom: theme.spacing(4),
 		right: theme.spacing(4),
 	},
-	fabIcon: {
-		marginRight: theme.spacing(1),
-	},
+	fabIcon: { marginRight: theme.spacing(1) },
 }));
 
 function CreateBookmarkButton () {
@@ -37,7 +33,7 @@ function CreateBookmarkButton () {
 	return (
 		<Fragment>
 			<Zoom
-				in={appService.activity === "bookmarks"}
+				in={appService.activity === 'bookmarks'}
 				timeout={transitionDuration}
 				style={{ transitionDelay: 0 }}
 				unmountOnExit
@@ -48,7 +44,7 @@ function CreateBookmarkButton () {
 					variant="extended"
 					onClick={() => setIsOpen(true)}
 				>
-					<AddIcon className={classes.fabIcon}/>
+					<AddIcon className={classes.fabIcon} />
 					Добавить закладку
 				</Fab>
 			</Zoom>

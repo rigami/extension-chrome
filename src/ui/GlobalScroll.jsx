@@ -32,9 +32,7 @@ const useStyles = makeStyles((theme) => ({
 		borderRadius: 2,
 		pointerEvents: 'auto',
 	},
-	hideScroll: {
-		opacity: 0,
-	},
+	hideScroll: { opacity: 0 },
 }));
 
 function GlobalScroll({ children }) {
@@ -45,9 +43,9 @@ function GlobalScroll({ children }) {
 
 	const handlerScroll = ({ scrollTop }) => {
 		if (scrollTop > document.documentElement.clientHeight * 0.3) {
-			appService.setActivity("bookmarks");
+			appService.setActivity('bookmarks');
 		} else {
-			appService.setActivity("desktop");
+			appService.setActivity('desktop');
 		}
 
 		setIsShowScroll(scrollTop > document.documentElement.clientHeight);
@@ -78,13 +76,13 @@ function GlobalScroll({ children }) {
 			className={classes.root}
 			noDefaultStyles
 			wrapperProps={{
-				renderer: props => {
+				renderer: (props) => {
 					const { elementRef, ...restProps } = props;
 					return <div {...restProps} ref={elementRef} className={classes.scrollWrapper} />;
-				}
+				},
 			}}
 			trackYProps={{
-				renderer: props => {
+				renderer: (props) => {
 					const { elementRef, ...restProps } = props;
 					return (
 						<div
@@ -93,13 +91,13 @@ function GlobalScroll({ children }) {
 							className={clsx(!isShowScroll && classes.hideScroll, classes.scrollBar)}
 						/>
 					);
-				}
+				},
 			}}
 			thumbYProps={{
-				renderer: props => {
+				renderer: (props) => {
 					const { elementRef, ...restProps } = props;
 					return <div {...restProps} ref={elementRef} className={classes.scrollThumb} />;
-				}
+				},
 			}}
 			momentum
 			noScrollX={false}

@@ -19,8 +19,8 @@ import { useSnackbar } from 'notistack';
 import locale from '@/i18n/RU';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
-import Categories from './Ctegories'
-import CardLink from '@/ui/Bookmarks/CardLink'
+import CardLink from '@/ui/Bookmarks/CardLink';
+import Categories from './Ctegories';
 
 const {
 	global: localeGlobal,
@@ -56,12 +56,8 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: theme.palette.grey[900],
 		boxSizing: 'content-box',
 	},
-	typeSwitcher: {
-		marginBottom: theme.spacing(2),
-	},
-	notSelectButton: {
-		color: theme.palette.text.secondary,
-	},
+	typeSwitcher: { marginBottom: theme.spacing(2) },
+	notSelectButton: { color: theme.palette.text.secondary },
 	controls: {
 		display: 'flex',
 		alignItems: 'center',
@@ -95,15 +91,9 @@ const useStyles = makeStyles((theme) => ({
 		color: theme.palette.common.white,
 		'& *': { pointerEvents: 'none' },
 	},
-	input: {
-		marginTop: theme.spacing(2),
-	},
-	chipContainer: {
-		marginTop: theme.spacing(2),
-	},
-	addDescriptionButton: {
-		marginTop: theme.spacing(2),
-	},
+	input: { marginTop: theme.spacing(2) },
+	chipContainer: { marginTop: theme.spacing(2) },
+	addDescriptionButton: { marginTop: theme.spacing(2) },
 }));
 
 
@@ -112,7 +102,7 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 	const { enqueueSnackbar } = useSnackbar();
 	const [title, setTitle] = useState(null);
 	const [description, setDescription] = useState(null);
-	const [type, setType] = useState("default");
+	const [type, setType] = useState('default');
 
 	const classes = useStyles();
 	const theme = useTheme();
@@ -143,17 +133,17 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 								<ButtonGroup className={classes.typeSwitcher}>
 									<Button
 										className={type !== 'default' && classes.notSelectButton}
-										color={type === 'default' && "primary"}
-										variant={type === 'default' && "contained"}
-										onClick={() => setType("default")}
+										color={type === 'default' && 'primary'}
+										variant={type === 'default' && 'contained'}
+										onClick={() => setType('default')}
 									>
 										Обычная
 									</Button>
 									<Button
 										className={type !== 'extend' && classes.notSelectButton}
-										color={type === 'extend' && "primary"}
-										variant={type === 'extend' && "contained"}
-										onClick={() => setType("extend")}
+										color={type === 'extend' && 'primary'}
+										variant={type === 'extend' && 'contained'}
+										onClick={() => setType('extend')}
 									>
 										Расширенная
 									</Button>
@@ -209,7 +199,7 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 								<Button
 									startIcon={<AddIcon />}
 									className={classes.addDescriptionButton}
-									onClick={() => setDescription("")}
+									onClick={() => setDescription('')}
 								>
 									Добавить описание
 								</Button>
@@ -241,6 +231,6 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 	);
 }
 
-CreateBookmarkModal.propTypes = {  };
+CreateBookmarkModal.propTypes = { };
 
 export default observer(CreateBookmarkModal);

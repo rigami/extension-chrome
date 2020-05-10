@@ -15,9 +15,9 @@ import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useSnackbar } from 'notistack';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import { useService as useAppConfigService } from '@/stores/app';
-import GlobalScroll from '@/ui/GlobalScroll'
-import Menu from '@/ui/Menu'
-import Nest from '@/utils/Nest'
+import GlobalScroll from '@/ui/GlobalScroll';
+import Menu from '@/ui/Menu';
+import Nest from '@/utils/Nest';
 
 
 const useStyles = makeStyles((theme) => ({

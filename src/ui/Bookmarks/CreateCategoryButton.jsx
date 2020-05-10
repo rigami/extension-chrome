@@ -9,15 +9,11 @@ import {
 	InputBase,
 	Button,
 } from '@material-ui/core';
-import {
-	AddRounded as AddIcon,
-} from '@material-ui/icons';
+import { AddRounded as AddIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-	popperWrapper: {
-		zIndex: theme.zIndex.modal,
-	},
+	popperWrapper: { zIndex: theme.zIndex.modal },
 	popper: {
 		display: 'flex',
 		alignItems: 'center',
@@ -28,16 +24,12 @@ const useStyles = makeStyles((theme) => ({
 		marginLeft: '3px !important',
 		marginRight: 3,
 	},
-	addCategoryTitle: {
-		display: 'none',
-	},
-	input: {
-		padding: theme.spacing(2),
-	},
+	addCategoryTitle: { display: 'none' },
+	input: { padding: theme.spacing(2) },
 	saveButton: {
 		marginLeft: theme.spacing(2),
 		marginRight: theme.spacing(2),
-	}
+	},
 }));
 
 function CreateCategoryButton () {
@@ -81,7 +73,7 @@ function CreateCategoryButton () {
 						label: classes.addCategoryTitle,
 					}}
 					icon={<AddIcon />}
-					variant={isOpen ? "default" : "outlined"}
+					variant={isOpen ? 'default' : 'outlined'}
 				/>
 			</Tooltip>
 		</Fragment>
