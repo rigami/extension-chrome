@@ -2,7 +2,7 @@ import React, { useState } from 'preact/compat';
 import { h } from 'preact';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalStore } from 'mobx-react-lite';
 import { useService as useAppService } from '@/stores/app';
 import Scrollbar from 'react-scrollbars-custom';
 import clsx from 'clsx';
@@ -41,6 +41,7 @@ function GlobalScroll({ children }) {
 	const classes = useStyles();
 	const appService = useAppService();
 	const [isShowScroll, setIsShowScroll] = useState(false);
+	const store = useLocalStore(() => ({ scrollbar: null }));
 
 	const handlerScroll = ({ scrollTop }) => {
 		if (scrollTop > document.documentElement.clientHeight * 0.3) {
@@ -51,6 +52,26 @@ function GlobalScroll({ children }) {
 
 		setIsShowScroll(scrollTop > document.documentElement.clientHeight);
 	};
+
+	const handlerScrollStop = ({ scrollTop }) => {
+		if (
+			(appService.activity === 'desktop' && scrollTop < 150)
+			|| (appService.activity === 'bookmarks' && scrollTop < document.documentElement.clientHeight - 150)
+		) {
+			store.scrollbar.contentElement.parentElement.scrollTo({
+				behavior: 'smooth',
+				left: 0,
+				top: 0,
+			});
+		} else if (scrollTop < document.documentElement.clientHeight) {
+			store.scrollbar.contentElement.parentElement.scrollTo({
+				behavior: 'smooth',
+				left: 0,
+				top: document.documentElement.clientHeight,
+			});
+		}
+	};
+
 
 	return (
 		<Scrollbar
@@ -83,6 +104,8 @@ function GlobalScroll({ children }) {
 			momentum
 			noScrollX={false}
 			onScroll={handlerScroll}
+			onScrollStop={handlerScrollStop}
+			ref={(ref) => { store.scrollbar = ref; }}
 		>
 			{children}
 		</Scrollbar>
