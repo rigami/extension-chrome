@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
 	root: {
 		minHeight: '100vh',
 		width: '100vw',
-		zIndex: theme.zIndex.drawer,
 		backgroundColor: theme.palette.background.paper,
+		transform: 'translate3d(0,0,0)',
 	},
 	categoryWrapper: {
 		display: 'flex',
@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
 		marginTop: theme.spacing(3),
 	},
 	fab: {
-		position: 'absolute',
+		position: 'fixed',
 		bottom: theme.spacing(4),
 		right: theme.spacing(4),
 		zIndex: theme.zIndex.snackbar,
@@ -86,13 +86,6 @@ const maxColumnCalc = () => Math.min(
 	Math.floor((document.getElementById("bookmarks-container").clientWidth + 16 - 48)/ 196),
 	6
 );
-
-const duration = 300;
-
-const defaultStyle = {
-	transition: `opacity ${duration}ms ease-in-out`,
-	opacity: 0,
-}
 
 function Bookmarks() {
 	const classes = useStyles();

@@ -27,6 +27,7 @@
 		"preact-compat": "^3.19.0",
 		"prop-types": "^15.7.2",
 		"react-resize-detector": "^4.2.3",
+		"react-scrollbars-custom": "^4.0.21",
 		"tiny-warning": "^1.0.3"
 	},
 	"devDependencies": {
