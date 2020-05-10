@@ -2,14 +2,10 @@ import React, { useEffect, useState, useRef } from 'preact/compat';
 import { h, Fragment } from 'preact';
 import {
 	Box,
-	Drawer,
 	Container,
 	ListItem,
 	ListItemText,
 	ListItemIcon,
-	Chip,
-	Zoom,
-	Fab,
 	Typography,
 	Fade,
 } from '@material-ui/core';
@@ -17,13 +13,13 @@ import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
 	LabelRounded as LabelIcon,
-	AddRounded as AddIcon,
 } from '@material-ui/icons';
 import CardLink from './CardLink';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import ReactResizeDetector from 'react-resize-detector';
-import CreateCategoryButton from './CreateCategoryButton';
 import { useService as useAppService } from '@/stores/app';
+import CreateBookmarkButton from './CreateBookmarkButton';
+import Categories from '@/ui/Bookmarks/Ctegories'
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -37,13 +33,7 @@ const useStyles = makeStyles((theme) => ({
 		flexWrap: 'wrap',
 	},
 	chipContainer: {
-		display: 'flex',
-		flexWrap: 'wrap',
 		marginBottom: theme.spacing(3),
-		'& > *': {
-			marginRight: theme.spacing(1),
-			marginBottom: theme.spacing(1),
-		},
 	},
 	container: {
 
@@ -62,23 +52,8 @@ const useStyles = makeStyles((theme) => ({
 	categoryText: {
 		maxWidth: 700,
 	},
-	chipColor: {
-		width: theme.spacing(2),
-		height: theme.spacing(2),
-		borderRadius: '50%',
-		marginLeft: `${theme.spacing(1)}px !important`,
-	},
 	categoryHeader: {
 		marginTop: theme.spacing(3),
-	},
-	fab: {
-		position: 'fixed',
-		bottom: theme.spacing(4),
-		right: theme.spacing(4),
-		zIndex: theme.zIndex.snackbar,
-	},
-	fabIcon: {
-		marginRight: theme.spacing(1),
 	},
 }));
 
@@ -96,12 +71,6 @@ function Bookmarks() {
 	const [columnsCount, setColumnsCount] = useState(null);
 	const [isSearching, setIsSearching] = useState(true);
 	const [findBookmarks, setFindBookmarks] = useState(null);
-
-
-	const transitionDuration = {
-		enter: theme.transitions.duration.enteringScreen,
-		exit: theme.transitions.duration.leavingScreen,
-	};
 
 	let columnStabilizer = null;
 
@@ -126,27 +95,10 @@ function Bookmarks() {
 		<Fragment>
 			<Box id="bookmarks-container" className={classes.root}>
 				<Container className={classes.container} fixed style={{ maxWidth: columnsCount * 196 - 16 + 48 }}>
-					<Box className={classes.chipContainer}>
-						{
-							bookmarksStore.getCategories({})
-								.map(({ id, title, color }) => (
-									<Chip
-										key={id}
-										icon={<div className={classes.chipColor} style={{ backgroundColor: color }} />}
-										label={title}
-										variant={~selectedCategories.indexOf(id) ? "default" : "outlined"}
-										onClick={() => {
-											if (~selectedCategories.indexOf(id)) {
-												setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
-											} else {
-												setSelectedCategories([...selectedCategories, id]);
-											}
-										}}
-									/>
-								))
-						}
-						<CreateCategoryButton />
-					</Box>
+					<Categories
+						className={classes.chipContainer}
+						onChange={(categories) => setSelectedCategories(categories)}
+					/>
 					<Fade
 						in={!isSearching}
 						onExited={() => {
@@ -225,17 +177,7 @@ function Bookmarks() {
 				</Container>
 				<ReactResizeDetector handleWidth onResize={() => setColumnsCount(maxColumnCalc())} />
 			</Box>
-			<Zoom
-				in={appService.activity === "bookmarks"}
-				timeout={transitionDuration}
-				style={{ transitionDelay: 0 }}
-				unmountOnExit
-			>
-				<Fab className={classes.fab} color="primary" variant="extended">
-					<AddIcon className={classes.fabIcon}/>
-					Добавить закладку
-				</Fab>
-			</Zoom>
+			<CreateBookmarkButton />
 		</Fragment>
 	);
 }

@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
 		width: '100%',
 		padding: theme.spacing(1, 2),
 		paddingTop: 0,
+		boxSizing: 'border-box',
 	},
 	categoriesWrapper: {
 		display: 'flex',
@@ -53,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
 		'-webkit-line-clamp': 2,
 		overflow: 'hidden',
 		lineHeight: 1.2,
+		wordBreak: 'break-word',
 	},
 	banner: {
 		width: '100%',
@@ -77,6 +79,7 @@ const useStyles = makeStyles((theme) => ({
 		'-webkit-line-clamp': 4,
 		overflow: 'hidden',
 		marginTop: theme.spacing(0.6),
+		wordBreak: 'break-word',
 	},
 }));
 

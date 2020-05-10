@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { useService as useAppService } from '@/stores/app';
 import Scrollbar from 'react-scrollbars-custom';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -23,24 +24,32 @@ const useStyles = makeStyles((theme) => ({
 		right: 4,
 		top: 4,
 		bottom: 4,
+		pointerEvents: 'none',
 	},
 	scrollThumb: {
 		backgroundColor: theme.palette.getContrastText(theme.palette.background.paper),
 		width: 4,
-		borderRadius: 2
+		borderRadius: 2,
+		pointerEvents: 'auto',
+	},
+	hideScroll: {
+		opacity: 0,
 	},
 }));
 
 function GlobalScroll({ children }) {
 	const classes = useStyles();
 	const appService = useAppService();
+	const [isShowScroll, setIsShowScroll] = useState(false);
 
 	const handlerScroll = ({ scrollTop }) => {
-		if (scrollTop > document.documentElement.clientHeight * 0.5) {
+		if (scrollTop > document.documentElement.clientHeight * 0.3) {
 			appService.setActivity("bookmarks");
 		} else {
 			appService.setActivity("desktop");
 		}
+
+		setIsShowScroll(scrollTop > document.documentElement.clientHeight);
 	};
 
 	return (
@@ -56,7 +65,13 @@ function GlobalScroll({ children }) {
 			trackYProps={{
 				renderer: props => {
 					const { elementRef, ...restProps } = props;
-					return <div {...restProps} ref={elementRef} className={classes.scrollBar} />;
+					return (
+						<div
+							{...restProps}
+							ref={elementRef}
+							className={clsx(!isShowScroll && classes.hideScroll, classes.scrollBar)}
+						/>
+					);
 				}
 			}}
 			thumbYProps={{
