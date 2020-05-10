@@ -30,6 +30,18 @@ const useStyles = makeStyles((theme) => ({
 		marginLeft: theme.spacing(2),
 		marginRight: theme.spacing(2),
 	},
+	chipActive: {
+		backgroundColor: '#616161',
+		borderColor: '#616161',
+		'&:focus': {
+			backgroundColor: '#616161 !important',
+			borderColor: '#616161',
+		},
+		'&:hover': {
+			backgroundColor: '#888888 !important',
+			borderColor: '#888888',
+		},
+	},
 }));
 
 function CreateCategoryButton () {
@@ -69,11 +81,12 @@ function CreateCategoryButton () {
 						setIsBlockEvent(false);
 					}}
 					classes={{
+						root: isOpen && classes.chipActive,
 						icon: classes.addCategory,
 						label: classes.addCategoryTitle,
 					}}
 					icon={<AddIcon />}
-					variant={isOpen ? 'default' : 'outlined'}
+					variant='outlined'
 				/>
 			</Tooltip>
 		</Fragment>

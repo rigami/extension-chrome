@@ -25,6 +25,18 @@ const useStyles = makeStyles((theme) => ({
 		borderRadius: '50%',
 		marginLeft: `${theme.spacing(1)}px !important`,
 	},
+	chipActive: {
+		backgroundColor: '#616161',
+		borderColor: '#616161',
+		'&:focus': {
+			backgroundColor: '#616161 !important',
+			borderColor: '#616161',
+		},
+		'&:hover': {
+			backgroundColor: '#888888 !important',
+			borderColor: '#888888',
+		},
+	},
 }));
 
 function Categories ({ onChange, className: externalClassName, sortByPopular }) {
@@ -45,7 +57,8 @@ function Categories ({ onChange, className: externalClassName, sortByPopular }) 
 							key={id}
 							icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
 							label={title}
-							variant={~selectedCategories.indexOf(id) ? 'default' : 'outlined'}
+							className={~selectedCategories.indexOf(id) && classes.chipActive}
+							variant='outlined'
 							onClick={() => {
 								if (~selectedCategories.indexOf(id)) {
 									setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
