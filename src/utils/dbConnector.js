@@ -127,7 +127,7 @@ class DBConnector {
 
 	static getStore(name) {
 		return new Promise((resolve, reject) => {
-			if (!_db) reject(new Error('DB not configuration yet'));
+			// if (!_db) reject(new Error('DB not configuration yet'));
 
 			const transaction = _db.transaction([name], 'readwrite');
 

@@ -11,6 +11,7 @@ import {
 } from '@material-ui/core';
 import { AddRounded as AddIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
+import { useService as useBookmarksService } from '@/stores/bookmarks'
 
 const useStyles = makeStyles((theme) => ({
 	popperWrapper: { zIndex: theme.zIndex.modal },
@@ -27,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
 	addCategoryTitle: { display: 'none' },
 	input: { padding: theme.spacing(2) },
 	saveButton: {
-		marginLeft: theme.spacing(2),
 		marginRight: theme.spacing(2),
 	},
 	chipActive: {
@@ -44,11 +44,21 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function CreateCategoryButton () {
+function CreateCategoryButton ({ isShowTitle }) {
 	const classes = useStyles();
+	const bookmarksStore = useBookmarksService();
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [isOpen, setIsOpen] = useState(false);
 	const [isBlockEvent, setIsBlockEvent] = useState(false);
+	const [categoryName, setCategoryName] = useState('');
+
+	const handlerSubmit = (event) => {
+		event.preventDefault();
+		if (categoryName.trim() !== '') {
+			setIsOpen(false);
+			bookmarksStore.addCategory(categoryName);
+		}
+	};
 
 	return (
 		<Fragment>
@@ -62,10 +72,27 @@ function CreateCategoryButton () {
 			>
 				<Popper
 					open={isOpen} anchorEl={anchorEl} placement="bottom"
-					className={classes.popperWrapper}>
+					className={classes.popperWrapper}
+				>
 					<Card className={classes.popper} elevation={16}>
-						<InputBase className={classes.input} placeholder="Категория" variant="outlined" />
-						<Button className={classes.saveButton} variant="contained" color="primary">Сохранить</Button>
+						<form onSubmit={handlerSubmit}>
+							<InputBase
+								className={classes.input}
+								placeholder="Категория"
+								variant="outlined"
+								autoFocus
+								onChange={(event) => setCategoryName(event.target.value)}
+							/>
+							<Button
+								className={classes.saveButton}
+								onClick={handlerSubmit}
+								variant="contained"
+								color="primary"
+								type='submit'
+							>
+								Сохранить
+							</Button>
+						</form>
 					</Card>
 				</Popper>
 			</ClickAwayListener>
@@ -82,11 +109,12 @@ function CreateCategoryButton () {
 					}}
 					classes={{
 						root: isOpen && classes.chipActive,
-						icon: classes.addCategory,
-						label: classes.addCategoryTitle,
+						icon: !isShowTitle && classes.addCategory,
+						label: !isShowTitle && classes.addCategoryTitle,
 					}}
 					icon={<AddIcon />}
 					variant='outlined'
+					label={isShowTitle && 'Добавить категорию'}
 				/>
 			</Tooltip>
 		</Fragment>

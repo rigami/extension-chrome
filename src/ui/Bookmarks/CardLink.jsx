@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function CardLink({
-	title, src, icon, categories, type, description, ...other
+	name, src, icon, categories, type, description, ...other
 }) {
 	const classes = useStyles();
 
@@ -88,7 +88,7 @@ function CardLink({
 		<Tooltip
 			title={(
 				<Fragment>
-					{title}
+					{name}
 					<br />
 					<Typography variant="caption">{src}</Typography>
 				</Fragment>
@@ -105,13 +105,13 @@ function CardLink({
 					</Box>
 					<div className={classes.body}>
 						<div className={classes.categoriesWrapper}>
-							{categories.map(({ title, color, id }) => (
-								<Tooltip key={id} title={title}>
+							{categories.map(({ name, color, id }) => (
+								<Tooltip key={id} title={name}>
 									<div className={classes.category} style={{ backgroundColor: color }} />
 								</Tooltip>
 							))}
 						</div>
-						<Typography className={classes.title}>{title}</Typography>
+						<Typography className={classes.title}>{name}</Typography>
 						{description && (
 							<Typography variant="body2" className={classes.description}>{description}</Typography>
 						)}

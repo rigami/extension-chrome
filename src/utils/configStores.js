@@ -99,6 +99,26 @@ class ConfigStores {
 					store.createIndex('count_clicks', 'countClicks', { unique: false });
 				});
 
+			DBConnector.getStore('bookmarks_by_categories')
+				.catch(() => db.createObjectStore('bookmarks_by_categories', {
+					keyPath: 'id',
+					autoIncrement: true,
+				}))
+				.then((store) => {
+					store.createIndex('category_id', 'categoryId', { unique: false });
+					store.createIndex('bookmark_id', 'bookmarkId', { unique: false });
+				});
+
+			DBConnector.getStore('categories')
+				.catch(() => db.createObjectStore('categories', {
+					keyPath: 'id',
+					autoIncrement: true,
+				}))
+				.then((store) => {
+					store.createIndex('name', 'name', { unique: false });
+					store.createIndex('color', 'color', { unique: true });
+				});
+
 		}).then((r) => console.log('Success connect to db', r));
 	}
 

@@ -107,16 +107,17 @@ function Bookmarks() {
 											return 0;
 										}
 									})
-									.map((category) => {
+									.map((categoryId) => {
 										columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
+										const category = categoryId !== 'all' && categoryId !== 'best' && bookmarksStore.getCategory(categoryId);
 
 										return (
 											<Fragment>
-												{category !== 'all' && (
+												{categoryId !== 'all' && (
 													<ListItem disableGutters className={classes.categoryHeader}>
-														{category !== 'best' && (
+														{categoryId !== 'best' && (
 															<ListItemIcon style={{ minWidth: 36 }} >
-																<LabelIcon style={{ color: bookmarksStore.getCategory(category).color }} />
+																<LabelIcon style={{ color: category && category.color }} />
 															</ListItemIcon>
 														)}
 														<ListItemText
@@ -125,23 +126,28 @@ function Bookmarks() {
 																primary: classes.categoryTitle,
 																secondary: classes.categoryDescription,
 															}}
-															primary={category !== 'best' ? bookmarksStore.getCategory(category).title : 'Best matches'}
+															primary={categoryId !== 'best' ? (category && category.name) || "Неизвестная категория" : 'Best matches'}
 														/>
 													</ListItem>
 												)}
 												<Box className={classes.categoryWrapper}>
-													{findBookmarks[category].length === 0 && (
+													{findBookmarks[categoryId].length === 0 && (
 														<Typography variant="body1" style={{ color: theme.palette.text.secondary }}>Нет подходящих элементов</Typography>
 													)}
 													{
-														findBookmarks[category]
+														findBookmarks[categoryId]
 															.reduce((acc, curr, index) => {
 																let column = 0;
 																columnStabilizer.forEach((element, index) => {
 																	if (columnStabilizer[column] > element) column = index;
 																});
 
-																columnStabilizer[column] += curr.type === 'extend' ? curr.description ? 2 : 1.2 : 1;
+																columnStabilizer[column] += curr.type === 'extend' ? 0.8 : 0.6;
+																columnStabilizer[column] += Math.min(Math.ceil(curr.name.length / 15), 2) * 0.2 || 0.4
+																columnStabilizer[column] += (curr.description && Math.min(Math.ceil(curr.description.length / 20), 4) * 0.17) || 0;
+																columnStabilizer[column] += 0.12;
+
+																//console.log(columnStabilizer)
 
 																if (typeof acc[column] === 'undefined') acc[column] = [];
 

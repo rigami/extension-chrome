@@ -187,8 +187,6 @@ function FAP() {
 	const theme = useTheme();
 	const appService = useBookmarksService();
 
-	console.log(appService.fapStyle, BKMS_FAP_STYLE.HIDDEN)
-
 	return (
 		<Fade in={appService.fapStyle !== BKMS_FAP_STYLE.HIDDEN} unmountOnExit>
 			<div

@@ -115,6 +115,7 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 				style: { background: 'none' },
 			}}
 			onClose={() => onClose()}
+			disableEnforceFocus
 		>
 			<Container
 				maxWidth="md"
