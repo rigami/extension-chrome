@@ -107,42 +107,90 @@ class BookmarksStore {
 			.then(() => this._syncCategories());
 	}
 
-	@action('get bookmarks')
-	getBookmarks({ selectCategories = [] } = {}) {
-		if (selectCategories.length === 0) return { all: bookmarks };
+	@action('search bookmarks')
+	search({ categories = [] } = {}) {
+		if (categories.length === 0) return DBConnector.getStore('bookmarks')
+			.then((store) => store.getAllItems())
+			.then((bookmarks) => ([{ category: { id: 'all' }, bookmarks }]));
 
-		const matches = (item) => item.categories.filter((category) => ~selectCategories.indexOf(category.id));
+		const matches = (item) => item.categories.filter((category) => ~categories.indexOf(category.id));
 
-		const result = {};
+		const draftResult = [];
 
-		if (selectCategories.length > 1) result.best = [];
+		if (categories.length > 1) draftResult.best = [];
 
-		bookmarks
-			.filter((item) => matches(item).length !== 0)
-			.sort((itemA, itemB) => {
-				const itemAMatches = matches(itemA).length;
-				const itemBMatches = matches(itemB).length;
+		return DBConnector.getStore('bookmarks')
+			.then((store) => store.getAllItems())
+			.then((bookmarks) => {
+				bookmarks
+					.filter((item) => matches(item).length !== 0)
+					.sort((itemA, itemB) => {
+						const itemAMatches = matches(itemA).length;
+						const itemBMatches = matches(itemB).length;
 
-				if (itemAMatches > itemBMatches) {
-					return -1;
-				} else if (itemAMatches < itemBMatches) {
-					return 1;
-				} else {
-					return 0;
+						if (itemAMatches > itemBMatches) {
+							return -1;
+						} else if (itemAMatches < itemBMatches) {
+							return 1;
+						} else {
+							return 0;
+						}
+					})
+					.forEach((item) => {
+						const match = matches(item);
+						if (categories.length !== 1 && match.length === categories.length) {
+							draftResult.best = [...(draftResult.best || []), item];
+						}
+
+						match.forEach(({ id }) => {
+							draftResult[id] = [...(draftResult[id] || []), item];
+						});
+					});
+
+				const result = [];
+
+				for(let category in draftResult) {
+					console.log(category);
+
+					result.push({
+						category: {
+							id: category,
+							name: category === 'best' ? 'Best matches' : '',
+							...(category !== 'all' && category !== 'best' && this.getCategory(category)),
+						},
+						bookmarks: draftResult[category],
+					});
 				}
-			})
-			.forEach((item) => {
-				const match = matches(item);
-				if (selectCategories.length !== 1 && match.length === selectCategories.length) {
-					result.best = [...(result.best || []), item];
-				}
 
-				match.forEach(({ id }) => {
-					result[id] = [...(result[id] || []), item];
-				});
+				result.sort((resA, resB) => {
+					if (resA.category > resB.category) {
+						return -1;
+					} else if (resA.category < resB.category) {
+						return 1;
+					} else {
+						return 0;
+					}
+				})
+
+				return result;
 			});
+	}
 
-		return result;
+	@action('add bookmarks')
+	addBookmark({ url, name, description, ico_url, categories }) {
+		return DBConnector.getStore('bookmarks')
+			.then((store) => store.addItem({
+				url,
+				name,
+				description,
+			}))
+			.then((bookmarkId) => Promise.all(
+				categories.map((categoryId) => DBConnector.getStore('bookmarks_by_categories')
+					.then((store) => store.addItem({
+						categoryId,
+						bookmarkId,
+					})))
+			));
 	}
 }
 

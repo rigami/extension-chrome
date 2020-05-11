@@ -105,7 +105,7 @@ function CardLink({
 					</Box>
 					<div className={classes.body}>
 						<div className={classes.categoriesWrapper}>
-							{categories.map(({ name, color, id }) => (
+							{categories && categories.map(({ name, color, id }) => (
 								<Tooltip key={id} title={name}>
 									<div className={classes.category} style={{ backgroundColor: color }} />
 								</Tooltip>

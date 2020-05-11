@@ -50,24 +50,22 @@ function Categories ({ onChange, className: externalClassName, sortByPopular }) 
 
 	return (
 		<Box className={clsx(classes.root, externalClassName)}>
-			{bookmarksStore.categories
-				.map(({ id, name, color }) => (
-					<Chip
-						key={id}
-						icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
-						label={name}
-						className={~selectedCategories.indexOf(id) && classes.chipActive}
-						variant='outlined'
-						onClick={() => {
-							if (~selectedCategories.indexOf(id)) {
-								setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
-							} else {
-								setSelectedCategories([...selectedCategories, id]);
-							}
-						}}
-					/>
-				))
-			}
+			{bookmarksStore.categories.map(({ id, name, color }) => (
+				<Chip
+					key={id}
+					icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
+					label={name}
+					className={~selectedCategories.indexOf(id) && classes.chipActive}
+					variant='outlined'
+					onClick={() => {
+						if (~selectedCategories.indexOf(id)) {
+							setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
+						} else {
+							setSelectedCategories([...selectedCategories, id]);
+						}
+					}}
+				/>
+			))}
 			<CreateCategoryButton isShowTitle={bookmarksStore.categories.length === 0} />
 		</Box>
 	);

@@ -98,14 +98,22 @@ const useStyles = makeStyles((theme) => ({
 
 
 function CreateBookmarkModal({ isOpen, onClose }) {
-	const bookmarksStore = useBookmarksService();
-	const { enqueueSnackbar } = useSnackbar();
-	const [title, setTitle] = useState(null);
-	const [description, setDescription] = useState(null);
-	const [type, setType] = useState('default');
-
 	const classes = useStyles();
 	const theme = useTheme();
+
+	const bookmarksStore = useBookmarksService();
+	const { enqueueSnackbar } = useSnackbar();
+	const [url, setUrl] = useState(null);
+	const [name, setName] = useState(null);
+	const [description, setDescription] = useState(null);
+	const [type, setType] = useState('default');
+	const [categories, setCategories] = useState([]);
+
+	const handlerSave = () => {
+		bookmarksStore.addBookmark({ url, name, description, categories })
+			.then(() => onClose());
+	};
+
 	return (
 		<Drawer
 			anchor="bottom"
@@ -129,7 +137,7 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 						className={classes.cover}
 					>
 						{/* <CircularProgress style={{ color: theme.palette.common.white }} /> */}
-						{title && (
+						{name && (
 							<Fragment>
 								<ButtonGroup className={classes.typeSwitcher}>
 									<Button
@@ -150,14 +158,14 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 									</Button>
 								</ButtonGroup>
 								<CardLink
-									title={title}
+									name={name}
 									description={description}
 									categories={[]}
 									type={type}
 								/>
 							</Fragment>
 						)}
-						{!title && (
+						{!name && (
 							<Typography>Укажите название</Typography>
 						)}
 					</CardMedia>
@@ -171,18 +179,19 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 								variant="outlined"
 								fullWidth
 								className={classes.input}
+								onChange={(event) => setUrl(event.target.value)}
 							/>
 							<TextField
 								label="Название"
 								variant="outlined"
 								fullWidth
 								className={classes.input}
-								onChange={(event) => setTitle(event.target.value)}
+								onChange={(event) => setName(event.target.value)}
 							/>
 							<Categories
 								className={classes.chipContainer}
 								sortByPopular
-								onChange={(categories) => {}}
+								onChange={(categories) => setCategories(categories)}
 							/>
 							{description !== null && (
 								<TextField
@@ -219,7 +228,7 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 								<Button
 									variant="contained"
 									color="primary"
-									onClick={() => {}}
+									onClick={handlerSave}
 								>
 									Сохранить
 								</Button>

@@ -76,8 +76,12 @@ function Bookmarks() {
 
 	useEffect(() => {
 		if (isSearching && findBookmarks === null) {
-			setFindBookmarks(bookmarksStore.getBookmarks({ selectCategories: selectedCategories }));
-			setIsSearching(false);
+			bookmarksStore.search({ selectCategories: selectedCategories })
+				.then((searchResult) => {
+					console.log("RESULT SEARCH", searchResult)
+					setFindBookmarks(searchResult);
+					setIsSearching(false);
+				});
 		}
 	}, [findBookmarks, isSearching]);
 
@@ -96,78 +100,62 @@ function Bookmarks() {
 						}}
 					>
 						<div>
-							{
-								findBookmarks && Object.keys(findBookmarks)
-									.sort((categoryA, categoryB) => {
-										if (categoryA > categoryB) {
-											return -1;
-										} else if (categoryA < categoryB) {
-											return 1;
-										} else {
-											return 0;
-										}
-									})
-									.map((categoryId) => {
-										columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
-										const category = categoryId !== 'all' && categoryId !== 'best' && bookmarksStore.getCategory(categoryId);
+							{findBookmarks !== null && findBookmarks.map(({ category, bookmarks }) => {
+								columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
 
-										return (
-											<Fragment>
-												{categoryId !== 'all' && (
-													<ListItem disableGutters className={classes.categoryHeader}>
-														{categoryId !== 'best' && (
-															<ListItemIcon style={{ minWidth: 36 }} >
-																<LabelIcon style={{ color: category && category.color }} />
-															</ListItemIcon>
-														)}
-														<ListItemText
-															classes={{
-																root: classes.categoryText,
-																primary: classes.categoryTitle,
-																secondary: classes.categoryDescription,
-															}}
-															primary={categoryId !== 'best' ? (category && category.name) || "Неизвестная категория" : 'Best matches'}
-														/>
-													</ListItem>
+								return (
+									<Fragment>
+										{category.id !== 'all' && (
+											<ListItem disableGutters className={classes.categoryHeader}>
+												{category.id !== 'best' && (
+													<ListItemIcon style={{ minWidth: 36 }} >
+														<LabelIcon style={{ color: category && category.color }} />
+													</ListItemIcon>
 												)}
-												<Box className={classes.categoryWrapper}>
-													{findBookmarks[categoryId].length === 0 && (
-														<Typography variant="body1" style={{ color: theme.palette.text.secondary }}>Нет подходящих элементов</Typography>
-													)}
-													{
-														findBookmarks[categoryId]
-															.reduce((acc, curr, index) => {
-																let column = 0;
-																columnStabilizer.forEach((element, index) => {
-																	if (columnStabilizer[column] > element) column = index;
-																});
+												<ListItemText
+													classes={{
+														root: classes.categoryText,
+														primary: classes.categoryTitle,
+														secondary: classes.categoryDescription,
+													}}
+													primary={(category && category.name) || "Неизвестная категория"}
+												/>
+											</ListItem>
+										)}
+										<Box className={classes.categoryWrapper}>
+											{bookmarks.length === 0 && (
+												<Typography variant="body1" style={{ color: theme.palette.text.secondary }}>Нет подходящих элементов</Typography>
+											)}
+											{bookmarks.reduce((acc, curr, index) => {
+												let column = 0;
+												columnStabilizer.forEach((element, index) => {
+													if (columnStabilizer[column] > element) column = index;
+												});
 
-																columnStabilizer[column] += curr.type === 'extend' ? 0.8 : 0.6;
-																columnStabilizer[column] += Math.min(Math.ceil(curr.name.length / 15), 2) * 0.2 || 0.4
-																columnStabilizer[column] += (curr.description && Math.min(Math.ceil(curr.description.length / 20), 4) * 0.17) || 0;
-																columnStabilizer[column] += 0.12;
+												columnStabilizer[column] += curr.type === 'extend' ? 0.8 : 0.6;
+												columnStabilizer[column] += Math.min(Math.ceil(curr.name.length / 15), 2) * 0.2 || 0.4
+												columnStabilizer[column] += (curr.description && Math.min(Math.ceil(curr.description.length / 20), 4) * 0.17) || 0;
+												columnStabilizer[column] += 0.12;
 
-																//console.log(columnStabilizer)
+												//console.log(columnStabilizer)
 
-																if (typeof acc[column] === 'undefined') acc[column] = [];
+												if (typeof acc[column] === 'undefined') acc[column] = [];
 
-																acc[column].push(curr);
+												acc[column].push(curr);
 
-																return acc;
-															}, [])
-															.map((column, index, arr) => (
-																<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
-																	{column.map((card) => (
-																		<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
-																	))}
-																</Box>
-															))
-													}
+												return acc;
+											}, [])
+											.map((column, index, arr) => (
+												<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
+													{column.map((card) => (
+														<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
+													))}
 												</Box>
-											</Fragment>
-										);
-									})
-							}
+											))}
+										</Box>
+									</Fragment>
+								);
+							})}
 						</div>
 					</Fade>
 				</Container>
