@@ -1,6 +1,7 @@
 import { action, observable } from 'mobx';
 import StorageConnector from '@/utils/storageConnector';
 import { hslToRgb, recomposeColor } from '@material-ui/core/styles/colorManipulator';
+import DBConnector from '@/utils/dbConnector'
 
 const categories = [
 	...Array.from({ length: 12 }, (e, index) => ({
@@ -15,7 +16,7 @@ const categories = [
 
 const bookmarks = [
 	...Array.from({ length: 73 }, (e, index) => ({
-		title: index % 3 ? `Пример ссылки #${index + 1}` : `Пример очееень длиного названия ссылки #${index
+		name: index % 3 ? `Пример ссылки #${index + 1}` : `Пример очееень длиного названия ссылки #${index
 	+ 1}`,
 		description: index % 4
 			? index % 3
@@ -29,10 +30,11 @@ const bookmarks = [
 	})),
 ];
 
-class AppConfigStore {
+class BookmarksStore {
 	@observable fapStyle;
 	@observable fapPosition;
 	@observable openOnStartup;
+	@observable categories = [];
 
 	constructor() {
 		StorageConnector.getItem('bkms_fap_style')
@@ -46,6 +48,8 @@ class AppConfigStore {
 		StorageConnector.getItem('bkms_open_on_startup')
 			.then((value) => { this.openOnStartup = value; })
 			.catch((e) => console.error(e));
+
+		this._syncCategories();
 	}
 
 	@action('set fast access panel style')
@@ -69,14 +73,38 @@ class AppConfigStore {
 		return StorageConnector.setItem('bkms_open_on_startup', position);
 	}
 
-	@action('get categories')
-	getCategories(options) {
-		return categories;
+	@action('sync categories with db')
+	_syncCategories() {
+		return DBConnector.getStore("categories")
+			.then((store) => store.getAllItems())
+			.then((value) => { this.categories = value; });
 	}
 
 	@action('get category by id')
 	getCategory(categoryId) {
-		return categories[categoryId];
+		return this.categories.find(({ id }) => id === categoryId);
+	}
+
+	@action('add category')
+	addCategory(name) {
+		let color;
+
+		return DBConnector.getStore("categories")
+			.then((store) => {
+				return store.getSize()
+					.then((size) => {
+						color = hslToRgb(recomposeColor({
+							type: 'hsl',
+							values: [330 - size * 30, 80, 60],
+						}));
+					})
+					.then(() => store);
+			})
+			.then((store) => store.addItem({
+				name,
+				color,
+			}))
+			.then(() => this._syncCategories());
 	}
 
 	@action('get bookmarks')
@@ -118,4 +146,4 @@ class AppConfigStore {
 	}
 }
 
-export default AppConfigStore;
+export default BookmarksStore;
