@@ -11,26 +11,34 @@ import {
 	ListItem,
 	ListItemAvatar,
 	ListItemText,
+	Fade,
 } from '@material-ui/core';
 import {
 	FolderRounded as FolderIcon,
 	LinkRounded as LinkIcon,
 } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
+import { useService as useBookmarksService } from '@/stores/bookmarks';
+import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/dict'
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		position: 'sticky',
-		top: 0,
-		bottom: 0,
 		padding: theme.spacing(2),
 		width: '100%',
+		boxSizing: 'content-box',
 		zIndex: theme.zIndex.speedDial,
 		display: 'flex',
 		pointerEvents: 'none',
+		justifyContent: 'center',
+		position: 'relative',
+	},
+	stickyRoot: {
+		position: 'sticky',
+		top: 0,
+		bottom: 0,
 	},
 	panel: {
 		padding: theme.spacing(1),
@@ -42,11 +50,25 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: fade(theme.palette.background.default, 0.52),
 		display: 'flex',
 	},
+	absolutePanel: {
+		position: 'fixed',
+		top: theme.spacing(2),
+	},
+	panelTransparent: {
+		background: 'none',
+		backdropFilter: 'none',
+		boxShadow: 'none',
+		padding: 0,
+		paddingLeft: theme.spacing(1),
+	},
 	iconButton: {
 		marginRight: theme.spacing(1),
 		padding: theme.spacing(1),
 		backgroundColor: fade(theme.palette.common.white, 0.32),
 		'&:hover': { backgroundColor: fade(theme.palette.common.white, 0.52) },
+	},
+	iconBlur: {
+		backdropFilter: 'blur(10px) brightness(130%)',
 	},
 	activeIconButton: {
 		backgroundColor: theme.palette.common.white,
@@ -65,8 +87,9 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function FolderButton ({}) {
+function FolderButton ({ className: externalClassName }) {
 	const classes = useStyles();
+
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [isOpen, setIsOpen] = useState(false);
 	const [isBlockEvent, setIsBlockEvent] = useState(false);
@@ -131,7 +154,7 @@ function FolderButton ({}) {
 			<IconButton
 				id="folder-button"
 				ref={anchorEl}
-				className={clsx(classes.iconButton, isOpen && classes.activeIconButton)}
+				className={clsx(classes.iconButton, isOpen && classes.activeIconButton, externalClassName)}
 				onMouseDown={() => {
 					if (!isOpen) setIsBlockEvent(true);
 				}}
@@ -147,12 +170,12 @@ function FolderButton ({}) {
 	);
 }
 
-function LinkButton ({}) {
+function LinkButton ({ className: externalClassName }) {
 	const classes = useStyles();
 
 	return (
 		<IconButton
-			className={classes.iconButton}
+			className={clsx(classes.iconButton, externalClassName)}
 		>
 			<LinkIcon />
 		</IconButton>
@@ -161,19 +184,35 @@ function LinkButton ({}) {
 
 function FAP() {
 	const classes = useStyles();
+	const theme = useTheme();
+	const appService = useBookmarksService();
+
+	console.log(appService.fapStyle, BKMS_FAP_STYLE.HIDDEN)
 
 	return (
-		<div className={classes.root} >
-			<Card
-				className={classes.panel}
-				elevation={12}
+		<Fade in={appService.fapStyle !== BKMS_FAP_STYLE.HIDDEN} unmountOnExit>
+			<div
+				className={clsx(
+					classes.root,
+					appService.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot
+				)}
+				style={{ height: 40 + theme.spacing(appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 2) }}
 			>
-				<LinkButton />
-				<LinkButton />
-				<FolderButton />
-				<LinkButton />
-			</Card>
-		</div>
+				<Card
+					className={clsx(
+						classes.panel,
+						appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.panelTransparent,
+						appService.fapPosition === BKMS_FAP_POSITION.TOP && classes.absolutePanel,
+					)}
+					elevation={12}
+				>
+					<LinkButton className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur} />
+					<LinkButton className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur} />
+					<FolderButton className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur} />
+					<LinkButton className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur} />
+				</Card>
+			</div>
+		</Fade>
 	);
 }
 

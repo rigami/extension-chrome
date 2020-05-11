@@ -52,21 +52,21 @@ class AppConfigStore {
 	setFAPStyle(style) {
 		this.fapStyle = style;
 
-		return StorageConnector.getItem('bkms_fap_style', style);
+		return StorageConnector.setItem('bkms_fap_style', style);
 	}
 
 	@action('set fast access panel position')
 	setFAPPosition(position) {
 		this.fapPosition = position;
 
-		return StorageConnector.getItem('bkms_fap_position', position);
+		return StorageConnector.setItem('bkms_fap_position', position);
 	}
 
 	@action('set open on startup')
 	setOpenOnStartup(position) {
 		this.openOnStartup = position;
 
-		return StorageConnector.getItem('bkms_open_on_startup', position);
+		return StorageConnector.setItem('bkms_open_on_startup', position);
 	}
 
 	@action('get categories')

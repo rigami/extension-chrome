@@ -41,7 +41,5 @@ export const BKMS_FAP_STYLE = {
 
 export const BKMS_FAP_POSITION = {
 	TOP: 'TOP',
-	RIGHT: 'RIGHT',
 	BOTTOM: 'BOTTOM',
-	LEFT: 'LEFT',
 };

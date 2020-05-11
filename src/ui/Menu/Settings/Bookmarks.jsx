@@ -49,9 +49,7 @@ function BookmarksSettings({ onClose }) {
 						onChange: (event) => bookmarksStore.setFAPPosition(event.target.value),
 						values: [
 							BKMS_FAP_POSITION.TOP,
-							BKMS_FAP_POSITION.RIGHT,
 							BKMS_FAP_POSITION.BOTTOM,
-							BKMS_FAP_POSITION.LEFT,
 						],
 					}}
 				/>

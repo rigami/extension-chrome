@@ -90,9 +90,7 @@ export default {
 			fap_position: {
 				title: 'Позиционирование панели',
 				[BKMS_FAP_POSITION.TOP]: 'Сверху',
-				[BKMS_FAP_POSITION.RIGHT]: 'Справа',
 				[BKMS_FAP_POSITION.BOTTOM]: 'Снизу',
-				[BKMS_FAP_POSITION.LEFT]: 'Слева',
 			},
 			open_on_startup: 'Открытие при запуске',
 		},

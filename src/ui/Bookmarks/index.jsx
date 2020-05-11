@@ -30,7 +30,9 @@ const useStyles = makeStyles((theme) => ({
 		display: 'flex',
 		flexWrap: 'wrap',
 	},
-	chipContainer: { marginBottom: theme.spacing(3) },
+	chipContainer: {
+		marginBottom: theme.spacing(3),
+	},
 	container: {},
 	categoryTitle: {
 		overflow: 'hidden',
