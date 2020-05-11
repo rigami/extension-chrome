@@ -66,20 +66,39 @@ class ConfigStores {
 			});
 	}
 
-	static configDB(onlyOpen) {
+	static configDB() {
 		return DBConnector.config((db) => {
-			if (onlyOpen) throw new Error('Dont permission for upgrade db');
-
 			console.log('Upgrade db version', db);
 
-			const backgroundsStore = db.createObjectStore('backgrounds', {
-				keyPath: 'id',
-				autoIncrement: true,
-			});
-			backgroundsStore.createIndex('type', 'type', { unique: false });
-			backgroundsStore.createIndex('author', 'author', { unique: false });
-			backgroundsStore.createIndex('source_link', 'sourceLink', { unique: false });
-			backgroundsStore.createIndex('file_name', 'fileName', { unique: false });
+			DBConnector.getStore('backgrounds')
+				.catch((e) => {
+					console.error(e)
+					return db.createObjectStore('backgrounds', {
+						keyPath: 'id',
+						autoIncrement: true,
+					})
+				})
+				.then((store) => {
+					store.createIndex('type', 'type', { unique: false });
+					store.createIndex('author', 'author', { unique: false });
+					store.createIndex('source_link', 'sourceLink', { unique: false });
+					store.createIndex('file_name', 'fileName', { unique: false });
+				});
+
+			DBConnector.getStore('bookmarks')
+				.catch(() => db.createObjectStore('bookmarks', {
+					keyPath: 'id',
+					autoIncrement: true,
+				}))
+				.then((store) => {
+					store.createIndex('type', 'type', { unique: false });
+					store.createIndex('ico_file_name', 'icoFileName', { unique: false });
+					store.createIndex('url', 'url', { unique: false });
+					store.createIndex('name', 'name', { unique: false });
+					store.createIndex('description', 'description', { unique: false });
+					store.createIndex('count_clicks', 'countClicks', { unique: false });
+				});
+
 		}).then((r) => console.log('Success connect to db', r));
 	}
 

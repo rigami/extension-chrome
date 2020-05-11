@@ -3,7 +3,7 @@ import { BG_TYPE } from '@/dict';
 export default {
 	db: {
 		name: 'clock_tab',
-		version: 1,
+		version: 2,
 	},
 	fs: { root: `filesystem:chrome-extension://${chrome.runtime.id}/persistent/` },
 	maxUploadFiles: 15,
