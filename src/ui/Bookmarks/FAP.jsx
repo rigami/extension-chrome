@@ -26,19 +26,20 @@ import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/dict'
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		padding: theme.spacing(2),
+		padding: theme.spacing(3),
+		paddingBottom: 0,
 		width: '100%',
-		boxSizing: 'content-box',
 		zIndex: theme.zIndex.speedDial,
 		display: 'flex',
 		pointerEvents: 'none',
 		justifyContent: 'center',
 		position: 'relative',
+		boxSizing: 'border-box',
 	},
 	stickyRoot: {
 		position: 'sticky',
 		top: 0,
-		bottom: 0,
+		bottom: theme.spacing(3),
 	},
 	panel: {
 		padding: theme.spacing(1),
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	absolutePanel: {
 		position: 'fixed',
-		top: theme.spacing(2),
+		top: theme.spacing(3),
 	},
 	panelTransparent: {
 		background: 'none',
@@ -194,7 +195,7 @@ function FAP() {
 					classes.root,
 					appService.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot
 				)}
-				style={{ height: 40 + theme.spacing(appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 2) }}
+				style={{ height: 40 + theme.spacing(3 + (appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 2)) }}
 			>
 				<Card
 					className={clsx(

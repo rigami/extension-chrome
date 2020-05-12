@@ -33,7 +33,9 @@ const useStyles = makeStyles((theme) => ({
 	chipContainer: {
 		marginBottom: theme.spacing(3),
 	},
-	container: {},
+	container: {
+		paddingTop: theme.spacing(3),
+	},
 	categoryTitle: {
 		overflow: 'hidden',
 		textOverflow: 'ellipsis',
@@ -85,6 +87,14 @@ function Bookmarks() {
 		}
 	}, [findBookmarks, isSearching]);
 
+	useEffect(() => {
+		if (appService.activity === 'bookmarks') {
+			setIsSearching(true);
+		} else {
+			setIsSearching(false);
+		}
+	}, [appService.activity]);
+
 	return (
 		<Fragment>
 			<Box id="bookmarks-container" className={classes.root}>
@@ -94,10 +104,8 @@ function Bookmarks() {
 						onChange={(categories) => setSelectedCategories(categories)}
 					/>
 					<Fade
-						in={!isSearching}
-						onExited={() => {
-							setFindBookmarks(null);
-						}}
+						in={!isSearching && appService.activity === 'bookmarks'}
+						onExited={() => setFindBookmarks(null)}
 					>
 						<div>
 							{findBookmarks !== null && findBookmarks.map(({ category, bookmarks }) => {
