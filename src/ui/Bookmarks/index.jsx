@@ -63,7 +63,7 @@ function Bookmarks() {
 	const appService = useAppService();
 	const [selectedCategories, setSelectedCategories] = useState([]);
 	const [columnsCount, setColumnsCount] = useState(null);
-	const [isSearching, setIsSearching] = useState(true);
+	const [isSearching, setIsSearching] = useState(false);
 	const [findBookmarks, setFindBookmarks] = useState(null);
 
 	let columnStabilizer = null;

@@ -9,15 +9,14 @@ const categories = [
 		title: `Category #${index + 1}`,
 		color: hslToRgb(recomposeColor({
 			type: 'hsl',
-			values: [330 - index * 30, 80, 60],
+			values: [330 - index * 340, 80, 60],
 		})),
 	})),
 ];
 
 const bookmarks = [
 	...Array.from({ length: 73 }, (e, index) => ({
-		name: index % 3 ? `Пример ссылки #${index + 1}` : `Пример очееень длиного названия ссылки #${index
-	+ 1}`,
+		name: index % 3 ? `Пример ссылки #${index + 1}` : `Пример очееень длиного названия ссылки #${index + 1}`,
 		description: index % 4
 			? index % 3
 				? 'Описание ссылки, оно не так сильно выделяется'
@@ -109,80 +108,104 @@ class BookmarksStore {
 
 	@action('search bookmarks')
 	search({ categories = [] } = {}) {
-		if (categories.length === 0) return DBConnector.getStore('bookmarks')
+
+
+
+		return Promise.resolve([]);
+
+		let bookmarks_by_categories = {};
+
+		return DBConnector.getStore('bookmarks_by_categories')
 			.then((store) => store.getAllItems())
-			.then((bookmarks) => ([{ category: { id: 'all' }, bookmarks }]));
+			.then((values) => {
+				values.forEach(({ categoryId, bookmarkId }) => {
+					bookmarks_by_categories[bookmarkId] = [...(bookmarks_by_categories[bookmarkId] || []), categoryId];
+				});
 
-		const matches = (item) => item.categories.filter((category) => ~categories.indexOf(category.id));
+				if (categories.length === 0) return DBConnector.getStore('bookmarks')
+					.then((store) => store.getAllItems())
+					.then((bookmarks) => ([{
+						category: { id: 'all' },
+						bookmarks: bookmarks.map((item) => {
+							return {
+								...item,
+								categories: bookmarks_by_categories[item.id],
+							};
+						}),
+					}]));
 
-		const draftResult = [];
+				const matches = (item) => item.categories.filter((category) => ~categories.indexOf(category.id));
 
-		if (categories.length > 1) draftResult.best = [];
+				const draftResult = [];
 
-		return DBConnector.getStore('bookmarks')
-			.then((store) => store.getAllItems())
-			.then((bookmarks) => {
-				bookmarks
-					.filter((item) => matches(item).length !== 0)
-					.sort((itemA, itemB) => {
-						const itemAMatches = matches(itemA).length;
-						const itemBMatches = matches(itemB).length;
+				if (categories.length > 1) draftResult.best = [];
 
-						if (itemAMatches > itemBMatches) {
-							return -1;
-						} else if (itemAMatches < itemBMatches) {
-							return 1;
-						} else {
-							return 0;
-						}
-					})
-					.forEach((item) => {
-						const match = matches(item);
-						if (categories.length !== 1 && match.length === categories.length) {
-							draftResult.best = [...(draftResult.best || []), item];
-						}
+				return DBConnector.getStore('bookmarks')
+					.then((store) => store.getAllItems())
+					.then((bookmarks) => {
+						bookmarks
+						.filter((item) => matches(item).length !== 0)
+						.sort((itemA, itemB) => {
+							const itemAMatches = matches(itemA).length;
+							const itemBMatches = matches(itemB).length;
 
-						match.forEach(({ id }) => {
-							draftResult[id] = [...(draftResult[id] || []), item];
+							if (itemAMatches > itemBMatches) {
+								return -1;
+							} else if (itemAMatches < itemBMatches) {
+								return 1;
+							} else {
+								return 0;
+							}
+						})
+						.forEach((item) => {
+							const match = matches(item);
+							if (categories.length !== 1 && match.length === categories.length) {
+								draftResult.best = [...(draftResult.best || []), item];
+							}
+
+							match.forEach(({ id }) => {
+								draftResult[id] = [...(draftResult[id] || []), item];
+							});
 						});
+
+						const result = [];
+
+						for(let category in draftResult) {
+							console.log(category);
+
+							result.push({
+								category: {
+									id: category,
+									name: category === 'best' ? 'Best matches' : '',
+									...(category !== 'all' && category !== 'best' && this.getCategory(category)),
+								},
+								bookmarks: draftResult[category],
+							});
+						}
+
+						result.sort((resA, resB) => {
+							if (resA.category > resB.category) {
+								return -1;
+							} else if (resA.category < resB.category) {
+								return 1;
+							} else {
+								return 0;
+							}
+						})
+
+						return result;
 					});
-
-				const result = [];
-
-				for(let category in draftResult) {
-					console.log(category);
-
-					result.push({
-						category: {
-							id: category,
-							name: category === 'best' ? 'Best matches' : '',
-							...(category !== 'all' && category !== 'best' && this.getCategory(category)),
-						},
-						bookmarks: draftResult[category],
-					});
-				}
-
-				result.sort((resA, resB) => {
-					if (resA.category > resB.category) {
-						return -1;
-					} else if (resA.category < resB.category) {
-						return 1;
-					} else {
-						return 0;
-					}
-				})
-
-				return result;
 			});
 	}
 
 	@action('add bookmarks')
-	addBookmark({ url, name, description, ico_url, categories }) {
+	addBookmark({ url, name, description, ico_url, categories, type }) {
 		return DBConnector.getStore('bookmarks')
 			.then((store) => store.addItem({
 				url,
 				name,
 				description,
+				type,
 			}))
 			.then((bookmarkId) => Promise.all(
 				categories.map((categoryId) => DBConnector.getStore('bookmarks_by_categories')

@@ -110,7 +110,7 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 	const [categories, setCategories] = useState([]);
 
 	const handlerSave = () => {
-		bookmarksStore.addBookmark({ url, name, description, categories })
+		bookmarksStore.addBookmark({ url, name, description, categories, type })
 			.then(() => onClose());
 	};
 
