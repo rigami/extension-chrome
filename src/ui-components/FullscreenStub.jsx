@@ -55,13 +55,14 @@ function FullScreenStub(props) {
 
 FullScreenStub.propTypes = {
 	iconRender: PropTypes.func,
-	message: PropTypes.string.isRequired,
+	message: PropTypes.string,
 	description: PropTypes.string,
 	actions: PropTypes.arrayOf(PropTypes.object),
 	children: PropTypes.element,
 };
 FullScreenStub.defaultProps = {
 	iconRender: null,
+	message: null,
 	description: null,
 	actions: null,
 	children: null,

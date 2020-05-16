@@ -12,7 +12,7 @@ import {
 	TextField,
 	ButtonGroup,
 } from '@material-ui/core';
-import { AddRounded as AddIcon } from '@material-ui/icons';
+import { AddRounded as AddIcon, LinkRounded as URLIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
@@ -21,6 +21,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import Categories from './Ctegories';
+import FullScreenStub from '@/ui-components/FullscreenStub'
 
 const {
 	global: localeGlobal,
@@ -55,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
 		flexShrink: 0,
 		backgroundColor: theme.palette.grey[900],
 		boxSizing: 'content-box',
+		minWidth: 180,
 	},
 	typeSwitcher: { marginBottom: theme.spacing(2) },
 	notSelectButton: { color: theme.palette.text.secondary },
@@ -137,7 +139,7 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 						className={classes.cover}
 					>
 						{/* <CircularProgress style={{ color: theme.palette.common.white }} /> */}
-						{name && (
+						{name && url && (
 							<Fragment>
 								<ButtonGroup className={classes.typeSwitcher}>
 									<Button
@@ -165,8 +167,17 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 								/>
 							</Fragment>
 						)}
-						{!name && (
-							<Typography>Укажите название</Typography>
+						{!url && (
+							<FullScreenStub
+								iconRender={(props) => (<URLIcon {...props} />)}
+								description="Укажите адрес"
+							/>
+						)}
+						{!name && url && (
+							<FullScreenStub
+								iconRender={(props) => (<URLIcon {...props} />)}
+								description="Дайте закладке имя"
+							/>
 						)}
 					</CardMedia>
 					<div className={classes.details}>
@@ -228,6 +239,7 @@ function CreateBookmarkModal({ isOpen, onClose }) {
 								<Button
 									variant="contained"
 									color="primary"
+									disabled={!url || !name}
 									onClick={handlerSave}
 								>
 									Сохранить
