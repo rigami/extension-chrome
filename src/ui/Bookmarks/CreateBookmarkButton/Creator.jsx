@@ -154,6 +154,7 @@ function Creator({ onSave, onCancel }) {
 							className={classes.chipContainer}
 							sortByPopular
 							onChange={(categories) => setCategories(categories)}
+							autoSelect
 						/>
 						{description !== null && (
 							<TextField

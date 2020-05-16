@@ -75,7 +75,10 @@ class BookmarksStore {
 				name: name.trim(),
 				color,
 			}))
-			.then(() => this._syncCategories());
+			.then((id) => {
+				return this._syncCategories()
+					.then(() => id);
+			});
 	}
 
 	@action('search bookmarks')

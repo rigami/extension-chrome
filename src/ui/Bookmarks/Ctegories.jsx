@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function Categories ({ onChange, className: externalClassName, sortByPopular }) {
+function Categories ({ onChange, className: externalClassName, sortByPopular, onCreate, autoSelect = false }) {
 	const classes = useStyles();
 	const bookmarksStore = useBookmarksService();
 	const [selectedCategories, setSelectedCategories] = useState([]);
@@ -72,7 +72,13 @@ function Categories ({ onChange, className: externalClassName, sortByPopular }) 
 					}}
 				/>
 			))}
-			<CreateCategoryButton isShowTitle={bookmarksStore.categories.length === 0} />
+			<CreateCategoryButton
+				isShowTitle={bookmarksStore.categories.length === 0}
+				onCreate={(newId) => {
+					if (autoSelect) setSelectedCategories([...selectedCategories, newId]);
+					onCreate(newId);
+				}}
+			/>
 		</Box>
 	);
 }

@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function CreateCategoryButton ({ isShowTitle }) {
+function CreateCategoryButton ({ isShowTitle, onCreate }) {
 	const classes = useStyles();
 	const bookmarksStore = useBookmarksService();
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -56,7 +56,8 @@ function CreateCategoryButton ({ isShowTitle }) {
 		event.preventDefault();
 		if (categoryName.trim() !== '') {
 			setIsOpen(false);
-			bookmarksStore.addCategory(categoryName);
+			bookmarksStore.addCategory(categoryName)
+				.then((categoryId) => onCreate(categoryId));
 		}
 	};
 
