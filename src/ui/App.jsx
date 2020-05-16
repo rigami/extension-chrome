@@ -8,7 +8,7 @@ import Desktop from '@/ui/Desktop';
 import { ThemeProvider } from '@material-ui/styles';
 import Snackbar from '@/ui-components/Snackbar';
 import UploadBGForm from '@/ui-components/UploadBGForm';
-import ConfigurationApp from '@/hoc/ConfigurationApp';
+import ConfigurationApp from '@/ui/ConfigurationApp';
 import { THEME } from '@/dict';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';

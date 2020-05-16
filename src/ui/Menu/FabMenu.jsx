@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'preact/compat';
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import {
 	Card,
 	IconButton,
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 	button: { padding: theme.spacing(1) },
 }));
 
-function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings }) {
+function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG }) {
 	const classes = useStyles();
 	const theme = useTheme();
 	const [distance, setDistance] = useState(999);
@@ -90,12 +90,16 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings }) {
 						<SettingsIcon />
 					</IconButton>
 				</Tooltip>
-				<Divider />
-				<Tooltip title="Обновить фон" placement="left">
-					<IconButton size="small" className={classes.button} onClick={() => onRefreshBackground()}>
-						<RefreshIcon />
-					</IconButton>
-				</Tooltip>
+				{useChangeBG && (
+					<Fragment>
+						<Divider />
+						<Tooltip title="Обновить фон" placement="left">
+							<IconButton size="small" className={classes.button} onClick={() => onRefreshBackground()}>
+								<RefreshIcon />
+							</IconButton>
+						</Tooltip>
+					</Fragment>
+				)}
 			</Card>
 		</Box>
 	);

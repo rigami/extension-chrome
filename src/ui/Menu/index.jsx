@@ -13,7 +13,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { BG_TYPE } from '@/dict';
+import { BG_SELECT_MODE, BG_TYPE } from '@/dict'
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import HomePage from './Settings';
 import FabMenu from './FabMenu';
@@ -84,6 +84,7 @@ function Menu({ }) {
 					backgroundsStore.nextBG();
 				}}
 				fastSettings={fastSettings}
+				useChangeBG={backgroundsStore.selectionMethod === BG_SELECT_MODE.RANDOM}
 			/>
 			<Drawer
 				anchor="right"

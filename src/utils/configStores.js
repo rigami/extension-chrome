@@ -1,7 +1,7 @@
 import createPreview from '@/utils/createPreview';
 import appVariables from '@/config/appVariables';
 import defaultSettings from '@/config/settings';
-import DBConnector from './dbConnector';
+import DBConnector, { open as openDB } from './dbConnector';
 import FSConnector from './fsConnector';
 import StorageConnector from './storageConnector';
 
@@ -26,12 +26,11 @@ class ConfigStores {
 
 	static config() {
 		return StorageConnector.getItem('last_setup_timestamp')
-			.then(() => ConfigStores.configDB(true));
+			.then(() => ConfigStores.configDB());
 	}
 
 	static configUserData() {
-		return DBConnector.getStore('backgrounds')
-			.then((store) => store.getAllItems())
+		return DBConnector().getAll('backgrounds')
 			.then((values) => {
 				if (values.length !== 0) return Promise.resolve();
 
@@ -50,8 +49,7 @@ class ConfigStores {
 						return FSConnector.saveFile('/backgrounds/full', fullFile, fileName);
 					})
 					.then(() => FSConnector.saveFile('/backgrounds/preview', previewFile, fileName))
-					.then(() => DBConnector.getStore('backgrounds'))
-					.then((store) => store.addItem({
+					.then(() => DBConnector().add('backgrounds', {
 						...appVariables.defaultBG,
 						fileName,
 					}))
@@ -63,21 +61,9 @@ class ConfigStores {
 			});
 	}
 
-	static configDB(onlyOpen) {
-		return DBConnector.config((db) => {
-			if (onlyOpen) throw new Error('Dont permission for upgrade db');
-
-			console.log('Upgrade db version', db);
-
-			const backgroundsStore = db.createObjectStore('backgrounds', {
-				keyPath: 'id',
-				autoIncrement: true,
-			});
-			backgroundsStore.createIndex('type', 'type', { unique: false });
-			backgroundsStore.createIndex('author', 'author', { unique: false });
-			backgroundsStore.createIndex('source_link', 'sourceLink', { unique: false });
-			backgroundsStore.createIndex('file_name', 'fileName', { unique: false });
-		}).then((r) => console.log('Success connect to db', r));
+	static configDB() {
+		return openDB()
+			.then(() => console.log('Success connect to db'));
 	}
 
 	static configFS() {
