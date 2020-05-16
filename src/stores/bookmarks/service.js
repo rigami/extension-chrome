@@ -4,38 +4,13 @@ import { hslToRgb, recomposeColor } from '@material-ui/core/styles/colorManipula
 import DBConnector from '@/utils/dbConnector';
 import { cachingDecorator } from '@/utils/decorators';
 
-const categories = [
-	...Array.from({ length: 12 }, (e, index) => ({
-		id: index,
-		title: `Category #${index + 1}`,
-		color: hslToRgb(recomposeColor({
-			type: 'hsl',
-			values: [330 - index * 340, 80, 60],
-		})),
-	})),
-];
-
-const bookmarks = [
-	...Array.from({ length: 73 }, (e, index) => ({
-		name: index % 3 ? `Пример ссылки #${index + 1}` : `Пример очееень длиного названия ссылки #${index + 1}`,
-		description: index % 4
-			? index % 3
-				? 'Описание ссылки, оно не так сильно выделяется'
-				: 'Описание ссылки, оно не так сильно выделяется. Теперь в 2 раза длинее! Ого скажете вы а неет, все норм, это для теста'
-			: null,
-		src: 'https://website.com',
-		icon: null,
-		type: Math.random() > 0.5 ? 'extend' : 'default',
-		categories: categories.filter(() => Math.random() > 0.75),
-	})),
-];
-
 class BookmarksStore {
 	@observable fapStyle;
 	@observable fapPosition;
 	@observable openOnStartup;
 	@observable categories = [];
 	@observable lastSearch = null;
+	@observable lastTruthSearchTimestamp = null;
 
 	constructor() {
 		StorageConnector.getItem('bkms_fap_style')
@@ -106,6 +81,7 @@ class BookmarksStore {
 	@action('search bookmarks')
 	async search(searchQuery = {}) {
 		this.lastSearch = searchQuery;
+		this.lastTruthSearchTimestamp = Date.now();
 
 		const { categories = [] } = searchQuery;
 
@@ -202,7 +178,10 @@ class BookmarksStore {
 					categoryId,
 					bookmarkId,
 				}))
-			));
+			))
+			.then(() => {
+				this.lastTruthSearchTimestamp = Date.now();
+			});
 	}
 }
 

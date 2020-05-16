@@ -62,10 +62,11 @@ function Bookmarks() {
 	const theme = useTheme();
 	const bookmarksStore = useBookmarksService();
 	const appService = useAppService();
-	const [selectedCategories, setSelectedCategories] = useState([]);
+	const isFirstRun = useRef(true);
 	const [columnsCount, setColumnsCount] = useState(null);
 	const [isSearching, setIsSearching] = useState(false);
 	const [findBookmarks, setFindBookmarks] = useState(null);
+	const [lastTruthSearchTimestamp, setLastTruthSearchTimestamp] = useState(bookmarksStore.lastTruthSearchTimestamp);
 
 	let columnStabilizer = null;
 
@@ -74,6 +75,7 @@ function Bookmarks() {
 
 		bookmarksStore.search({ categories: searchCategories })
 			.then((searchResult) => {
+				setLastTruthSearchTimestamp(bookmarksStore.lastTruthSearchTimestamp);
 				setFindBookmarks(searchResult);
 				setIsSearching(false);
 			});
@@ -90,6 +92,17 @@ function Bookmarks() {
 			setIsSearching(false);
 		}
 	}, [appService.activity]);
+
+	useEffect(() => {
+		if (isFirstRun.current) {
+			isFirstRun.current = false;
+			return;
+		}
+
+		if (bookmarksStore.lastTruthSearchTimestamp !== lastTruthSearchTimestamp && !isSearching) {
+			handleSearch(bookmarksStore.lastSearch?.categories);
+		}
+	}, [bookmarksStore.lastTruthSearchTimestamp]);
 
 	return (
 		<Fragment>
