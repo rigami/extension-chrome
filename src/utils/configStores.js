@@ -1,7 +1,7 @@
 import createPreview from '@/utils/createPreview';
 import appVariables from '@/config/appVariables';
 import defaultSettings from '@/config/settings';
-import DBConnector from './dbConnector';
+import DBConnector, { open as openDB } from './dbConnector';
 import FSConnector from './fsConnector';
 import StorageConnector from './storageConnector';
 
@@ -29,12 +29,11 @@ class ConfigStores {
 
 	static config() {
 		return StorageConnector.getItem('last_setup_timestamp')
-			.then(() => ConfigStores.configDB(true));
+			.then(() => ConfigStores.configDB());
 	}
 
 	static configUserData() {
-		return DBConnector.getStore('backgrounds')
-			.then((store) => store.getAllItems())
+		return DBConnector().getAll('backgrounds')
 			.then((values) => {
 				if (values.length !== 0) return Promise.resolve();
 
@@ -53,8 +52,7 @@ class ConfigStores {
 						return FSConnector.saveFile('/backgrounds/full', fullFile, fileName);
 					})
 					.then(() => FSConnector.saveFile('/backgrounds/preview', previewFile, fileName))
-					.then(() => DBConnector.getStore('backgrounds'))
-					.then((store) => store.addItem({
+					.then(() => DBConnector().add('backgrounds', {
 						...appVariables.defaultBG,
 						fileName,
 					}))
@@ -67,59 +65,8 @@ class ConfigStores {
 	}
 
 	static configDB() {
-		return DBConnector.config((db) => {
-			console.log('Upgrade db version', db);
-
-			DBConnector.getStore('backgrounds')
-				.catch((e) => {
-					console.error(e)
-					return db.createObjectStore('backgrounds', {
-						keyPath: 'id',
-						autoIncrement: true,
-					})
-				})
-				.then((store) => {
-					store.createIndex('type', 'type', { unique: false });
-					store.createIndex('author', 'author', { unique: false });
-					store.createIndex('source_link', 'sourceLink', { unique: false });
-					store.createIndex('file_name', 'fileName', { unique: false });
-				});
-
-			DBConnector.getStore('bookmarks')
-				.catch(() => db.createObjectStore('bookmarks', {
-					keyPath: 'id',
-					autoIncrement: true,
-				}))
-				.then((store) => {
-					store.createIndex('type', 'type', { unique: false });
-					store.createIndex('ico_file_name', 'icoFileName', { unique: false });
-					store.createIndex('url', 'url', { unique: false });
-					store.createIndex('name', 'name', { unique: false });
-					store.createIndex('description', 'description', { unique: false });
-					store.createIndex('count_clicks', 'countClicks', { unique: false });
-				});
-
-			DBConnector.getStore('bookmarks_by_categories')
-				.catch(() => db.createObjectStore('bookmarks_by_categories', {
-					keyPath: 'id',
-					autoIncrement: true,
-				}))
-				.then((store) => {
-					store.createIndex('category_id', 'categoryId', { unique: false });
-					store.createIndex('bookmark_id', 'bookmarkId', { unique: false });
-				});
-
-			DBConnector.getStore('categories')
-				.catch(() => db.createObjectStore('categories', {
-					keyPath: 'id',
-					autoIncrement: true,
-				}))
-				.then((store) => {
-					store.createIndex('name', 'name', { unique: false });
-					store.createIndex('color', 'color', { unique: true });
-				});
-
-		}).then((r) => console.log('Success connect to db', r));
+		return openDB()
+			.then(() => console.log('Success connect to db'));
 	}
 
 	static configFS() {

@@ -139,8 +139,7 @@ function LibraryMenu({ onClose }) {
 
 
 	useEffect(() => {
-		backgroundsStore.getStore()
-			.then((store) => store.getAllItems())
+		backgroundsStore.getAll()
 			.then((values) => {
 				setBgs(values);
 				setState('done');

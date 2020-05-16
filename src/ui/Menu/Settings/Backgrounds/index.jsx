@@ -21,7 +21,6 @@ import PropTypes from 'prop-types';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import LibraryPage from './Library';
 
-
 function BGCard({ src }) {
 	return (
 		<Avatar
@@ -43,11 +42,8 @@ function BackgroundsMenu({ onSelect, onClose }) {
 	const [bgs, setBgs] = useState(null);
 
 	useEffect(() => {
-		backgroundsStore.getStore()
-			.then((store) => store.getAllItems())
-			.then((values) => {
-				setBgs(values.map(({ fileName }) => FSConnector.getURL(fileName, 'preview')));
-			})
+		backgroundsStore.getSrcs({ type: 'preview' })
+			.then((links) => setBgs(links))
 			.catch((e) => {
 				console.error('Failed load bg`s from db:', e);
 			});

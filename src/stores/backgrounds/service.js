@@ -1,7 +1,7 @@
 import { observable, action } from 'mobx';
 import appVariables from '@/config/appVariables';
 import { BG_TYPE, BG_CHANGE_INTERVAL_MILLISECONDS } from '@/dict';
-import DBConnector, { DBQuery } from '@/utils/dbConnector';
+import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
 import StorageConnector from '@/utils/storageConnector';
 import getPreview from '@/utils/createPreview';
@@ -63,8 +63,7 @@ class BackgroundsStore {
 					.catch(() => this.nextBG());
 			});
 
-		DBConnector.getStore('backgrounds')
-			.then((store) => store.getSize())
+		DBConnector().count('backgrounds')
 			.then((value) => { this.count = value; })
 			.catch((e) => console.error('Failed get store or value', e));
 	}
@@ -165,15 +164,23 @@ class BackgroundsStore {
 
 	@action('next bg')
 	nextBG() {
-		const query = DBQuery.create(
-			(value) => ~this.bgType.indexOf(value.type) && value.id !== this.currentBGId,
-			'type',
-		);
+		console.log(this.bgType, this.selectionMethod)
 
-		return DBConnector.getStore('backgrounds')
-			.then((store) => store.getAllKeys(query))
-			.then((keys) => keys[Math.round(Math.random() * (keys.length - 1))])
-			.then((bgId) => this.setCurrentBG(bgId));
+		return DBConnector().count('backgrounds')
+			.then((count) => count > 1 ? Math.max(Math.floor(Math.random() * (count - 1)), 0) + 1 : -1)
+			.then(async (pos) => {
+				let index = 0
+				let cursor = await DBConnector().transaction('backgrounds').store.openCursor();
+
+				while (cursor) {
+					if (cursor.key !== this.currentBGId) index++;
+					if (pos === index) return cursor.value;
+					cursor = await cursor.continue();
+				}
+			})
+			.then((bg) => {
+				if (bg) return this.setCurrentBG(bg.id);
+			});
 	}
 
 	@action('set current bg')
@@ -193,8 +200,7 @@ class BackgroundsStore {
 			return StorageConnector.setJSONItem('bg_current', null);
 		}
 
-		return DBConnector.getStore('backgrounds')
-			.then((store) => store.getItem(currentBGId))
+		return DBConnector().get('backgrounds', currentBGId)
 			.then((bg) => {
 				this._currentBG = bg;
 				this.currentBGId = this._currentBG.id;
@@ -206,13 +212,6 @@ class BackgroundsStore {
 			.catch((e) => {
 				console.error(e);
 			});
-	}
-
-	@action('get bg`s store')
-	getStore() {
-		if (!DBConnector.isConfig) return Promise.reject();
-
-		return DBConnector.getStore('backgrounds');
 	}
 
 	@action('add bg`s to queue')
@@ -281,8 +280,7 @@ class BackgroundsStore {
 
 		return FSConnector.saveFile(this._FULL_PATH, saveBG.file, saveBGId)
 			.then(() => FSConnector.saveFile('/backgrounds/preview', saveBG.preview, saveBGId))
-			.then(() => DBConnector.getStore('backgrounds'))
-			.then((store) => store.addItem({
+			.then(() => DBConnector().add('backgrounds', {
 				author: 'unknown',
 				type: saveBG.type[0],
 				fileName: saveBGId,
@@ -300,15 +298,15 @@ class BackgroundsStore {
 	removeFromStore(removeBGId) {
 		let fileName;
 
-		return DBConnector.getStore('backgrounds')
-			.then((store) => store.getItem(removeBGId)
-				.then((value) => {
-					if (!value) throw new Error('Not find in db');
+		return DBConnector().get('backgrounds', removeBGId)
+			.then((value) => {
+				if (!value) throw new Error('Not find in db');
 
-					fileName = value.fileName;
-				})
-				.then(() => store))
-			.then((store) => store.removeItem(removeBGId))
+				fileName = value.fileName;
+			})
+			.then(() => {
+				return DBConnector().delete('backgrounds', removeBGId)
+			})
 			.then(() => {
 				this.count -= 1;
 				console.log('remove from db');
@@ -317,6 +315,18 @@ class BackgroundsStore {
 			.then(() => FSConnector.removeFile(`/backgrounds/full/${fileName}`))
 			.then(() => FSConnector.removeFile(`/backgrounds/preview/${fileName}`))
 			.catch((e) => console.error(e));
+	}
+
+	@action('get srcs')
+	getSrcs(options = {}) {
+		return DBConnector().getAll('backgrounds')
+			.then((values) => values.map(({ fileName }) => FSConnector.getURL(fileName, options.type || 'preview')));
+	}
+
+
+	@action('get all')
+	getAll() {
+		return DBConnector().getAll('backgrounds');
 	}
 }
 
