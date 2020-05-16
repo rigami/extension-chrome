@@ -316,6 +316,18 @@ class BackgroundsStore {
 			.then(() => FSConnector.removeFile(`/backgrounds/preview/${fileName}`))
 			.catch((e) => console.error(e));
 	}
+
+	@action('get srcs')
+	getSrcs(options = {}) {
+		return DBConnector().getAll('backgrounds')
+			.then((values) => values.map(({ fileName }) => FSConnector.getURL(fileName, options.type || 'preview')));
+	}
+
+
+	@action('get all')
+	getAll() {
+		return DBConnector().getAll('backgrounds');
+	}
 }
 
 export default BackgroundsStore;

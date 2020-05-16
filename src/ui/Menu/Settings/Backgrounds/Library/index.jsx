@@ -29,7 +29,6 @@ import FullscreenStub from '@/ui-components/FullscreenStub';
 import PropTypes from 'prop-types';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
-import DBConnector from '@/utils/dbConnector'
 
 const useStyles = makeStyles((theme) => ({
 	bgWrapper: {
@@ -140,8 +139,7 @@ function LibraryMenu({ onClose }) {
 
 
 	useEffect(() => {
-		DBConnector.getStore('backgrounds')
-			.then((store) => store.getAllItems())
+		backgroundsStore.getAll()
 			.then((values) => {
 				setBgs(values);
 				setState('done');

@@ -20,8 +20,6 @@ import FSConnector from '@/utils/fsConnector';
 import PropTypes from 'prop-types';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import LibraryPage from './Library';
-import DBConnector from '@/utils/dbConnector'
-
 
 function BGCard({ src }) {
 	return (
@@ -44,11 +42,8 @@ function BackgroundsMenu({ onSelect, onClose }) {
 	const [bgs, setBgs] = useState(null);
 
 	useEffect(() => {
-		DBConnector.getStore('backgrounds')
-			.then((store) => store.getAllItems())
-			.then((values) => {
-				setBgs(values.map(({ fileName }) => FSConnector.getURL(fileName, 'preview')));
-			})
+		backgroundsStore.getSrcs({ type: 'preview' })
+			.then((links) => setBgs(links))
 			.catch((e) => {
 				console.error('Failed load bg`s from db:', e);
 			});
