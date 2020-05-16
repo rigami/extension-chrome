@@ -7,7 +7,7 @@ import {
 import { AddRounded as AddIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import CreateBookmarkModal from '@/ui/Bookmarks/CreateBookmarkModal';
+import CreateBookmarkModal from '@/ui/Bookmarks/CreateBookmarkButton/DrawerCreator';
 import { useService as useAppService } from '@/stores/app';
 
 const useStyles = makeStyles((theme) => ({
