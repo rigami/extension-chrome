@@ -156,7 +156,7 @@ class BookmarksStore {
 			});
 		}
 
-		if (categories.length > 1) {
+		if (categories.length > 1 && result.length !== 0) {
 			result.unshift({
 				category: { name: 'best' },
 				bookmarks: bestMatches,
