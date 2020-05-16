@@ -18,6 +18,7 @@ import { useService as useAppService } from '@/stores/app';
 import Categories from '@/ui/Bookmarks/Ctegories';
 import CreateBookmarkButton from './CreateBookmarkButton';
 import CardLink from './CardLink';
+import FullScreenStub from '@/ui-components/FullscreenStub'
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -68,28 +69,23 @@ function Bookmarks() {
 
 	let columnStabilizer = null;
 
+	const handleSearch = (searchCategories = []) => {
+		setIsSearching(true);
+
+		bookmarksStore.search({ categories: searchCategories })
+			.then((searchResult) => {
+				setFindBookmarks(searchResult);
+				setIsSearching(false);
+			});
+	};
+
 	useEffect(() => {
 		setColumnsCount(maxColumnCalc());
 	}, []);
 
 	useEffect(() => {
-		setIsSearching(true);
-	}, [selectedCategories.length]);
-
-	useEffect(() => {
-		if (isSearching && findBookmarks === null) {
-			bookmarksStore.search({ selectCategories: selectedCategories })
-				.then((searchResult) => {
-					console.log("RESULT SEARCH", searchResult)
-					setFindBookmarks(searchResult);
-					setIsSearching(false);
-				});
-		}
-	}, [findBookmarks, isSearching]);
-
-	useEffect(() => {
 		if (appService.activity === 'bookmarks') {
-			setIsSearching(true);
+			handleSearch(bookmarksStore.lastSearch?.categories);
 		} else {
 			setIsSearching(false);
 		}
@@ -101,13 +97,16 @@ function Bookmarks() {
 				<Container className={classes.container} fixed style={{ maxWidth: columnsCount * 196 - 16 + 48 }}>
 					<Categories
 						className={classes.chipContainer}
-						onChange={(categories) => setSelectedCategories(categories)}
+						onChange={handleSearch}
 					/>
 					<Fade
 						in={!isSearching && appService.activity === 'bookmarks'}
 						onExited={() => setFindBookmarks(null)}
 					>
 						<div>
+							{findBookmarks !== null && findBookmarks.length === 0 && (
+								<FullScreenStub message="Ничего не найдено (" />
+							)}
 							{findBookmarks !== null && findBookmarks.map(({ category, bookmarks }) => {
 								columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
 

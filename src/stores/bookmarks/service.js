@@ -1,7 +1,8 @@
 import { action, observable } from 'mobx';
 import StorageConnector from '@/utils/storageConnector';
 import { hslToRgb, recomposeColor } from '@material-ui/core/styles/colorManipulator';
-import DBConnector from '@/utils/dbConnector'
+import DBConnector from '@/utils/dbConnector';
+import { cachingDecorator } from '@/utils/decorators';
 
 const categories = [
 	...Array.from({ length: 12 }, (e, index) => ({
@@ -34,6 +35,7 @@ class BookmarksStore {
 	@observable fapPosition;
 	@observable openOnStartup;
 	@observable categories = [];
+	@observable lastSearch = null;
 
 	constructor() {
 		StorageConnector.getItem('bkms_fap_style')
@@ -74,8 +76,7 @@ class BookmarksStore {
 
 	@action('sync categories with db')
 	_syncCategories() {
-		return DBConnector.getStore("categories")
-			.then((store) => store.getAllItems())
+		return DBConnector().getAll("categories")
 			.then((value) => { this.categories = value; });
 	}
 
@@ -88,131 +89,119 @@ class BookmarksStore {
 	addCategory(name) {
 		let color;
 
-		return DBConnector.getStore("categories")
-			.then((store) => {
-				return store.getSize()
-					.then((size) => {
-						color = hslToRgb(recomposeColor({
-							type: 'hsl',
-							values: [330 - size * 30, 80, 60],
-						}));
-					})
-					.then(() => store);
+		return DBConnector().count("categories")
+			.then((size) => {
+				color = hslToRgb(recomposeColor({
+					type: 'hsl',
+					values: [330 - size * 30, 80, 60],
+				}));
 			})
-			.then((store) => store.addItem({
-				name,
+			.then(() => DBConnector().add("categories", {
+				name: name.trim(),
 				color,
 			}))
 			.then(() => this._syncCategories());
 	}
 
 	@action('search bookmarks')
-	search({ categories = [] } = {}) {
+	async search(searchQuery = {}) {
+		this.lastSearch = searchQuery;
 
+		const { categories = [] } = searchQuery;
 
+		const storesName = ['bookmarks_by_categories', 'bookmarks', 'categories'];
+		const tx = DBConnector().transaction(storesName, 'readonly');
+		const stores = {
+			bookmarks_by_categories: tx.objectStore('bookmarks_by_categories'),
+			bookmarks: tx.objectStore('bookmarks'),
+			categories: tx.objectStore('categories'),
+		};
 
-		return Promise.resolve([]);
+		const getCategory = cachingDecorator((categoryId) => stores.categories.get(categoryId));
 
-		let bookmarks_by_categories = {};
+		let findBookmarks = {};
+		let findCategories = {};
+		let findBookmarksByCategories = {};
+		let result = [];
+		let bestMatches = [];
+		let cursor = await stores.bookmarks_by_categories.openCursor();
 
-		return DBConnector.getStore('bookmarks_by_categories')
-			.then((store) => store.getAllItems())
-			.then((values) => {
-				values.forEach(({ categoryId, bookmarkId }) => {
-					bookmarks_by_categories[bookmarkId] = [...(bookmarks_by_categories[bookmarkId] || []), categoryId];
-				});
+		let cursorCategoryId;
+		let cursorBookmarkId;
 
-				if (categories.length === 0) return DBConnector.getStore('bookmarks')
-					.then((store) => store.getAllItems())
-					.then((bookmarks) => ([{
-						category: { id: 'all' },
-						bookmarks: bookmarks.map((item) => {
-							return {
-								...item,
-								categories: bookmarks_by_categories[item.id],
-							};
-						}),
-					}]));
+		while (cursor) {
+			cursorCategoryId = cursor.value.categoryId;
+			cursorBookmarkId = cursor.value.bookmarkId;
 
-				const matches = (item) => item.categories.filter((category) => ~categories.indexOf(category.id));
+			if (categories.length === 0 || ~categories.indexOf(cursorCategoryId)) {
+				if (!findBookmarks[cursorBookmarkId]) {
+					findBookmarks[cursorBookmarkId] = await stores.bookmarks.get(cursorBookmarkId);
+				}
+				if (!findCategories[cursorCategoryId]) {
+					findCategories[cursorCategoryId] = await getCategory(cursorCategoryId);
+				}
+				findBookmarksByCategories[cursorCategoryId] = [
+					...(findBookmarksByCategories[cursorCategoryId] || []),
+					findBookmarks[cursorBookmarkId],
+				];
+			}
+			cursor = await cursor.continue();
+		}
 
-				const draftResult = [];
+		for (const bookmarkId in findBookmarks) {
+			const index = stores.bookmarks_by_categories.index('bookmark_id');
+			let score = 0;
 
-				if (categories.length > 1) draftResult.best = [];
+			for await (const cursor of index.iterate(+bookmarkId)) {
+				const category = await getCategory(cursor.value.categoryId);
 
-				return DBConnector.getStore('bookmarks')
-					.then((store) => store.getAllItems())
-					.then((bookmarks) => {
-						bookmarks
-						.filter((item) => matches(item).length !== 0)
-						.sort((itemA, itemB) => {
-							const itemAMatches = matches(itemA).length;
-							const itemBMatches = matches(itemB).length;
+				if (findCategories[category.id]) score++;
 
-							if (itemAMatches > itemBMatches) {
-								return -1;
-							} else if (itemAMatches < itemBMatches) {
-								return 1;
-							} else {
-								return 0;
-							}
-						})
-						.forEach((item) => {
-							const match = matches(item);
-							if (categories.length !== 1 && match.length === categories.length) {
-								draftResult.best = [...(draftResult.best || []), item];
-							}
+				findBookmarks[bookmarkId].categories = [
+					...(findBookmarks[bookmarkId].categories || []),
+					category,
+				];
+			}
 
-							match.forEach(({ id }) => {
-								draftResult[id] = [...(draftResult[id] || []), item];
-							});
-						});
+			if (score === categories.length) {
+				bestMatches.push(findBookmarks[bookmarkId]);
+			}
+		}
 
-						const result = [];
+		await tx.done;
 
-						for(let category in draftResult) {
-							console.log(category);
-
-							result.push({
-								category: {
-									id: category,
-									name: category === 'best' ? 'Best matches' : '',
-									...(category !== 'all' && category !== 'best' && this.getCategory(category)),
-								},
-								bookmarks: draftResult[category],
-							});
-						}
-
-						result.sort((resA, resB) => {
-							if (resA.category > resB.category) {
-								return -1;
-							} else if (resA.category < resB.category) {
-								return 1;
-							} else {
-								return 0;
-							}
-						})
-
-						return result;
-					});
+		for (const categoryId in findCategories) {
+			result.push({
+				category: findCategories[categoryId],
+				bookmarks: findBookmarksByCategories[categoryId],
 			});
+		}
+
+		if (categories.length > 1) {
+			result.unshift({
+				category: { name: 'best' },
+				bookmarks: bestMatches,
+			});
+		}
+
+		console.log(result, findBookmarks, findCategories);
+
+		return result;
 	}
 
 	@action('add bookmarks')
 	addBookmark({ url, name, description, ico_url, categories, type }) {
-		return DBConnector.getStore('bookmarks')
-			.then((store) => store.addItem({
+		return DBConnector().add('bookmarks', {
 				url,
-				name,
-				description,
+				name: name.trim(),
+				description: description && description.trim(),
 				type,
-			}))
+			})
 			.then((bookmarkId) => Promise.all(
-				categories.map((categoryId) => DBConnector.getStore('bookmarks_by_categories')
-					.then((store) => store.addItem({
-						categoryId,
-						bookmarkId,
-					})))
+				categories.map((categoryId) => DBConnector().add('bookmarks_by_categories', {
+					categoryId,
+					bookmarkId,
+				}))
 			));
 	}
 }

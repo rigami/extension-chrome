@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'preact/compat';
+import React, { useEffect, useState, useRef } from 'preact/compat';
 import { h } from 'preact';
 import {
 	Box,
@@ -43,8 +43,14 @@ function Categories ({ onChange, className: externalClassName, sortByPopular }) 
 	const classes = useStyles();
 	const bookmarksStore = useBookmarksService();
 	const [selectedCategories, setSelectedCategories] = useState([]);
+	const isFirstRun = useRef(true);
 
 	useEffect(() => {
+		if (isFirstRun.current) {
+			isFirstRun.current = false;
+			return;
+		}
+
 		onChange(selectedCategories);
 	}, [selectedCategories.length]);
 

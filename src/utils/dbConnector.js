@@ -1,5 +1,5 @@
 import appVariables from '../config/appVariables';
-import { openDB } from 'idb';
+import { openDB } from 'idb/with-async-ittr.js';
 
 let _db = null;
 
@@ -13,7 +13,7 @@ const open = () => openDB(appVariables.db.name, appVariables.db.version, {
 		backgroundsStore.createIndex('author', 'author', { unique: false });
 		backgroundsStore.createIndex('source_link', 'sourceLink', { unique: false });
 		backgroundsStore.createIndex('file_name', 'fileName', { unique: false });
-	
+
 		const bookmarksStore = db.createObjectStore('bookmarks', {
 			keyPath: 'id',
 			autoIncrement: true,
@@ -24,14 +24,14 @@ const open = () => openDB(appVariables.db.name, appVariables.db.version, {
 		bookmarksStore.createIndex('name', 'name', { unique: false });
 		bookmarksStore.createIndex('description', 'description', { unique: false });
 		bookmarksStore.createIndex('count_clicks', 'countClicks', { unique: false });
-			
+
 		const bByCStore = db.createObjectStore('bookmarks_by_categories', {
 			keyPath: 'id',
 			autoIncrement: true,
 		});
 		bByCStore.createIndex('category_id', 'categoryId', { unique: false });
 		bByCStore.createIndex('bookmark_id', 'bookmarkId', { unique: false });
-		
+
 		const categoriesStore = db.createObjectStore('categories', {
 			keyPath: 'id',
 			autoIncrement: true,
