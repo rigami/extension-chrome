@@ -18,7 +18,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
-import Scrollbar from 'react-scrollbars-custom';
+import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub'
 
 const useStyles = makeStyles((theme) => ({

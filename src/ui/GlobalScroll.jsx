@@ -1,10 +1,9 @@
 import React, { useState } from 'preact/compat';
 import { h } from 'preact';
-import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalStore } from 'mobx-react-lite';
 import { useService as useAppService } from '@/stores/app';
-import Scrollbar from 'react-scrollbars-custom';
+import Scrollbar, { classes as scrollbarClasses } from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
@@ -13,29 +12,7 @@ const useStyles = makeStyles((theme) => ({
 		width: '100vw',
 		backgroundColor: theme.palette.background.paper,
 	},
-	scrollWrapper: {
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
-	},
-	scrollBar: {
-		position: 'absolute',
-		right: 4,
-		top: 4,
-		bottom: 4,
-		pointerEvents: 'none',
-		transition: theme.transitions.create('opacity', {
-			duration: theme.transitions.duration.standard,
-			easing: theme.transitions.easing.easeInOut,
-		}),
-	},
-	scrollThumb: {
-		backgroundColor: theme.palette.getContrastText(theme.palette.background.paper),
-		width: 4,
-		borderRadius: 2,
-		pointerEvents: 'auto',
-	},
+	scrollBar: scrollbarClasses(theme).scrollBar,
 	hideScroll: { opacity: 0 },
 }));
 
@@ -79,13 +56,6 @@ function GlobalScroll({ children }) {
 	return (
 		<Scrollbar
 			className={classes.root}
-			noDefaultStyles
-			wrapperProps={{
-				renderer: (props) => {
-					const { elementRef, ...restProps } = props;
-					return <div {...restProps} ref={elementRef} className={classes.scrollWrapper} />;
-				},
-			}}
 			trackYProps={{
 				renderer: (props) => {
 					const { elementRef, ...restProps } = props;
@@ -98,17 +68,9 @@ function GlobalScroll({ children }) {
 					);
 				},
 			}}
-			thumbYProps={{
-				renderer: (props) => {
-					const { elementRef, ...restProps } = props;
-					return <div {...restProps} ref={elementRef} className={classes.scrollThumb} />;
-				},
-			}}
-			momentum
-			noScrollX={false}
 			onScroll={handlerScroll}
 			onScrollStop={handlerScrollStop}
-			ref={(ref) => { store.scrollbar = ref; }}
+			refScroll={(ref) => { store.scrollbar = ref; }}
 		>
 			{children}
 		</Scrollbar>
