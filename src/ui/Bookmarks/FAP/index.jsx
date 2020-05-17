@@ -23,7 +23,9 @@ import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
-import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/dict'
+import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/dict';
+import Link from './Link';
+import Folder from './Folder';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -69,17 +71,6 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: fade(theme.palette.common.white, 0.32),
 		'&:hover': { backgroundColor: fade(theme.palette.common.white, 0.52) },
 	},
-	iconBlur: {
-		backdropFilter: 'blur(10px) brightness(130%)',
-	},
-	activeIconButton: {
-		backgroundColor: theme.palette.common.white,
-		'&:hover': { backgroundColor: theme.palette.common.white },
-	},
-	popperWrapper: {
-		zIndex: theme.zIndex.drawer,
-		willChange: 'auto !important',
-	},
 	popper: {
 		width: 310,
 		marginTop: theme.spacing(2),
@@ -92,101 +83,6 @@ const useStyles = makeStyles((theme) => ({
 		marginRight: theme.spacing(2),
 	},
 }));
-
-function FolderButton ({ className: externalClassName }) {
-	const classes = useStyles();
-
-	const [anchorEl, setAnchorEl] = useState(null);
-	const [isOpen, setIsOpen] = useState(false);
-	const [isBlockEvent, setIsBlockEvent] = useState(false);
-
-	return (
-		<Fragment>
-			<ClickAwayListener
-				onClickAway={() => {
-					if (isBlockEvent) return;
-
-					setIsOpen(false);
-				}}
-				mouseEvent="onMouseDown"
-			>
-				<Popper
-					open={isOpen} anchorEl={anchorEl} placement="top"
-					className={classes.popperWrapper}>
-					<Card className={classes.popper} elevation={16}>
-						<CardHeader title="Папка" />
-						{/* <CardContent>
-							<Typography variant="body2" color="textSecondary" component="p">
-								Папка пуста
-							</Typography>
-						</CardContent> */}
-						<List disablePadding>
-							<ListItem divider button>
-								<ListItemAvatar>
-									<Avatar>
-										<LinkIcon />
-									</Avatar>
-								</ListItemAvatar>
-								<ListItemText primary="Ссылка 1" />
-							</ListItem>
-							<ListItem divider button>
-								<ListItemAvatar>
-									<Avatar>
-										<LinkIcon />
-									</Avatar>
-								</ListItemAvatar>
-								<ListItemText primary="Ссылка 2" />
-							</ListItem>
-							<ListItem divider button>
-								<ListItemAvatar>
-									<Avatar>
-										<LinkIcon />
-									</Avatar>
-								</ListItemAvatar>
-								<ListItemText primary="Ссылка 3" />
-							</ListItem>
-							<ListItem button>
-								<ListItemAvatar>
-									<Avatar>
-										<LinkIcon />
-									</Avatar>
-								</ListItemAvatar>
-								<ListItemText primary="Ссылка 4" />
-							</ListItem>
-						</List>
-					</Card>
-				</Popper>
-			</ClickAwayListener>
-			<IconButton
-				id="folder-button"
-				ref={anchorEl}
-				className={clsx(classes.iconButton, isOpen && classes.activeIconButton, externalClassName)}
-				onMouseDown={() => {
-					if (!isOpen) setIsBlockEvent(true);
-				}}
-				onClick={(event) => {
-					setAnchorEl(event.currentTarget);
-					if (isBlockEvent) setIsOpen(true);
-					setIsBlockEvent(false);
-				}}
-			>
-				<FolderIcon />
-			</IconButton>
-		</Fragment>
-	);
-}
-
-function LinkButton ({ className: externalClassName }) {
-	const classes = useStyles();
-
-	return (
-		<IconButton
-			className={clsx(classes.iconButton, externalClassName)}
-		>
-			<LinkIcon />
-		</IconButton>
-	);
-}
 
 function FAP() {
 	const classes = useStyles();
@@ -218,14 +114,14 @@ function FAP() {
 					)}
 					{bookmarksStore.favorites.map((fav) => (
 						fav.type === 'bookmark' ? (
-							<LinkButton
+							<Link
 								{...fav}
-								className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur}
+								isBlurBackdrop={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
 							/>
 						) : (
-							<FolderButton
+							<Folder
 								{...fav}
-								className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur}
+								isBlurBackdrop={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
 							/>
 						)
 					))}
