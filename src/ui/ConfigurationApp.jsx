@@ -27,6 +27,10 @@ function ConfigurationApp({ children }) {
 						setTimeout(() => setIsConfig(true), 1200);
 					});
 			});
+
+		window.oncontextmenu = (event) => {
+			event.preventDefault();
+		}
 	}, []);
 
 	return (
