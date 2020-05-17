@@ -121,6 +121,7 @@ function FAP() {
 						) : (
 							<Folder
 								{...fav}
+								color={bookmarksStore.getCategory(fav.id)?.color}
 								isBlurBackdrop={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
 							/>
 						)

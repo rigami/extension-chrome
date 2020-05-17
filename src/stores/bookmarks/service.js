@@ -26,11 +26,12 @@ class BookmarksStore {
 			.then((value) => { this.openOnStartup = value; })
 			.catch((e) => console.error(e));
 
-		StorageConnector.getJSONItem('bkms_favorites')
-			.then((value) => { this.favorites = value; })
-			.catch((e) => console.error(e));
-
-		this._syncCategories();
+		this._syncCategories()
+			.then(() => {
+				return StorageConnector.getJSONItem('bkms_favorites')
+					.then((value) => { this.favorites = value; })
+					.catch((e) => console.error(e));
+			});
 	}
 
 	@action('set fast access panel style')
@@ -87,9 +88,11 @@ class BookmarksStore {
 	}
 
 	@action('search bookmarks')
-	async search(searchQuery = {}) {
-		this.lastSearch = searchQuery;
-		this.lastTruthSearchTimestamp = Date.now();
+	async search(searchQuery = {}, notSaveSearch = false) {
+		if (!notSaveSearch) {
+			this.lastSearch = searchQuery;
+			this.lastTruthSearchTimestamp = Date.now();
+		}
 
 		const { categories = [] } = searchQuery;
 

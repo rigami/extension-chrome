@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function Folder ({ id, isBlurBackdrop }) {
+function Folder ({ id, color, isBlurBackdrop }) {
 	const classes = useStyles();
 
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -80,7 +80,7 @@ function Folder ({ id, isBlurBackdrop }) {
 					setIsBlockEvent(false);
 				}}
 			>
-				<FolderIcon />
+				<FolderIcon style={{ color }} />
 			</IconButton>
 		</Fragment>
 	);
