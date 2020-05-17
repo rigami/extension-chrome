@@ -7,9 +7,13 @@ import {
 	CardActionArea,
 	Tooltip,
 	Box,
+	IconButton,
 } from '@material-ui/core';
+import {
+	LinkRounded as LinkIcon
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import { LinkRounded as LinkIcon } from '@material-ui/icons';
+import EditMenu from './EditMenu';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -17,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
 		display: 'flex',
 		flexDirection: 'column',
 		alignItems: 'center',
+		position: 'relative',
 	},
 	rootActionWrapper: {
 		width: '100%',
@@ -77,11 +82,24 @@ const useStyles = makeStyles((theme) => ({
 		marginTop: theme.spacing(0.6),
 		wordBreak: 'break-word',
 	},
+	menuIcon: {
+		position: 'absolute',
+		right: theme.spacing(0.5),
+		top: theme.spacing(0.5),
+	},
 }));
 
-function CardLink({
-	name, src, icon, categories, type, description, ...other
-}) {
+function CardLink(props) {
+	const {
+		id,
+		name,
+		src,
+		icon,
+		categories,
+		type,
+		description,
+		...other
+	} = props;
 	const classes = useStyles();
 
 	return (
@@ -117,6 +135,10 @@ function CardLink({
 						)}
 					</div>
 				</CardActionArea>
+				<EditMenu
+					className={classes.menuIcon}
+					bookmarkId={id}
+				/>
 			</Card>
 		</Tooltip>
 	);

@@ -12,6 +12,7 @@ import {
 	ListItemAvatar,
 	ListItemText,
 	Fade,
+	Typography,
 } from '@material-ui/core';
 import {
 	FolderRounded as FolderIcon,
@@ -85,6 +86,10 @@ const useStyles = makeStyles((theme) => ({
 		marginBottom: theme.spacing(2),
 		backdropFilter: 'blur(15px) brightness(130%)',
 		backgroundColor: fade(theme.palette.background.default, 0.70),
+	},
+	emptyTitle: {
+		marginLeft: theme.spacing(1),
+		marginRight: theme.spacing(2),
 	},
 }));
 
@@ -187,6 +192,7 @@ function FAP() {
 	const classes = useStyles();
 	const theme = useTheme();
 	const appService = useBookmarksService();
+	const bookmarksStore = useBookmarksService();
 
 	return (
 		<Fade in={appService.fapStyle !== BKMS_FAP_STYLE.HIDDEN} unmountOnExit>
@@ -205,10 +211,24 @@ function FAP() {
 					)}
 					elevation={12}
 				>
-					<LinkButton className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur} />
-					<LinkButton className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur} />
-					<FolderButton className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur} />
-					<LinkButton className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur} />
+					{bookmarksStore.favorites.length === 0 && (
+						<Typography className={classes.emptyTitle}>
+							Быстрых закладок еще нет
+						</Typography>
+					)}
+					{bookmarksStore.favorites.map((fav) => (
+						fav.type === 'bookmark' ? (
+							<LinkButton
+								{...fav}
+								className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur}
+							/>
+						) : (
+							<FolderButton
+								{...fav}
+								className={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.iconBlur}
+							/>
+						)
+					))}
 				</Card>
 			</div>
 		</Fade>

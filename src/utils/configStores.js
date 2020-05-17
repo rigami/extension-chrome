@@ -23,6 +23,7 @@ class ConfigStores {
 			.then(() => StorageConnector.setItem('bkms_fap_style', defaultSettings.bookmarks.fapStyle))
 			.then(() => StorageConnector.setItem('bkms_fap_position', defaultSettings.bookmarks.fapPosition))
 			.then(() => StorageConnector.setItem('bkms_open_on_startup', defaultSettings.bookmarks.openOnStartup))
+			.then(() => StorageConnector.setJSONItem('bkms_favorites', defaultSettings.bookmarks.favorites))
 			.then(() => StorageConnector.setItem('last_setup_timestamp', Date.now().toString()))
 			.then(() => progressCallBack(100));
 	}

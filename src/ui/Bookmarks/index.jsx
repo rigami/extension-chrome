@@ -3,15 +3,11 @@ import { h, Fragment } from 'preact';
 import {
 	Box,
 	Container,
-	ListItem,
-	ListItemText,
-	ListItemIcon,
 	Typography,
 	Fade,
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { LabelRounded as LabelIcon } from '@material-ui/icons';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import ReactResizeDetector from 'react-resize-detector';
 import { useService as useAppService } from '@/stores/app';
@@ -19,6 +15,7 @@ import Categories from '@/ui/Bookmarks/Ctegories';
 import CreateBookmarkButton from './CreateBookmarkButton';
 import CardLink from './CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub'
+import CategoryHeader from '@/ui/Bookmarks/CtegoryHeader'
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -37,19 +34,6 @@ const useStyles = makeStyles((theme) => ({
 	container: {
 		paddingTop: theme.spacing(3),
 	},
-	categoryTitle: {
-		overflow: 'hidden',
-		textOverflow: 'ellipsis',
-		whiteSpace: 'nowrap',
-	},
-	categoryDescription: {
-		display: '-webkit-box',
-		overflow: 'hidden',
-		'-webkit-box-orient': 'vertical',
-		'-webkit-line-clamp': 3,
-	},
-	categoryText: { maxWidth: 700 },
-	categoryHeader: { marginTop: theme.spacing(3) },
 }));
 
 const maxColumnCalc = () => Math.min(
@@ -125,26 +109,15 @@ function Bookmarks() {
 
 								return (
 									<Fragment>
-										{category.id !== 'all' && (
-											<ListItem disableGutters className={classes.categoryHeader}>
-												{category.id !== 'best' && (
-													<ListItemIcon style={{ minWidth: 36 }} >
-														<LabelIcon style={{ color: category && category.color }} />
-													</ListItemIcon>
-												)}
-												<ListItemText
-													classes={{
-														root: classes.categoryText,
-														primary: classes.categoryTitle,
-														secondary: classes.categoryDescription,
-													}}
-													primary={(category && category.name) || "Неизвестная категория"}
-												/>
-											</ListItem>
-										)}
+										{category.id !== 'all' && (<CategoryHeader {...category} />)}
 										<Box className={classes.categoryWrapper}>
 											{bookmarks.length === 0 && (
-												<Typography variant="body1" style={{ color: theme.palette.text.secondary }}>Нет подходящих элементов</Typography>
+												<Typography
+													variant="body1"
+													style={{ color: theme.palette.text.secondary }}
+												>
+													Нет подходящих элементов
+												</Typography>
 											)}
 											{bookmarks.reduce((acc, curr, index) => {
 												let column = 0;
@@ -156,8 +129,6 @@ function Bookmarks() {
 												columnStabilizer[column] += Math.min(Math.ceil(curr.name.length / 15), 2) * 0.2 || 0.4
 												columnStabilizer[column] += (curr.description && Math.min(Math.ceil(curr.description.length / 20), 4) * 0.17) || 0;
 												columnStabilizer[column] += 0.12;
-
-												//console.log(columnStabilizer)
 
 												if (typeof acc[column] === 'undefined') acc[column] = [];
 

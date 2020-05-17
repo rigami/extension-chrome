@@ -11,6 +11,7 @@ class BookmarksStore {
 	@observable categories = [];
 	@observable lastSearch = null;
 	@observable lastTruthSearchTimestamp = null;
+	@observable favorites = [];
 
 	constructor() {
 		StorageConnector.getItem('bkms_fap_style')
@@ -23,6 +24,10 @@ class BookmarksStore {
 
 		StorageConnector.getItem('bkms_open_on_startup')
 			.then((value) => { this.openOnStartup = value; })
+			.catch((e) => console.error(e));
+
+		StorageConnector.getJSONItem('bkms_favorites')
+			.then((value) => { this.favorites = value; })
 			.catch((e) => console.error(e));
 
 		this._syncCategories();
@@ -163,7 +168,7 @@ class BookmarksStore {
 			});
 		}
 
-		console.log(result, findBookmarks, findCategories);
+		// console.log(result, findBookmarks, findCategories);
 
 		return result;
 	}
@@ -185,6 +190,24 @@ class BookmarksStore {
 			.then(() => {
 				this.lastTruthSearchTimestamp = Date.now();
 			});
+	}
+
+	@action('add to favorites')
+	addToFavorites({ type, id }) {
+		this.favorites.push({ type, id });
+
+		console.log(this.favorites)
+
+		return StorageConnector.setJSONItem('bkms_favorites', this.favorites);
+	}
+
+	@action('add to favorites')
+	removeFromFavorites({ type, id }) {
+		this.favorites = this.favorites.filter((fav) => fav.type !== type || fav.id !== id);
+
+		console.log(this.favorites)
+
+		return StorageConnector.setJSONItem('bkms_favorites', this.favorites);
 	}
 }
 

@@ -26,6 +26,7 @@ export default {
 		fapStyle: BKMS_FAP_STYLE.CONTAINED,
 		fapPosition: BKMS_FAP_POSITION.BOTTOM,
 		openOnStartup: false,
+		favorites: [],
 	},
 	app: {
 		backdropTheme: THEME.DARK,
