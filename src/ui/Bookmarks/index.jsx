@@ -15,7 +15,7 @@ import Categories from '@/ui/Bookmarks/Ctegories';
 import CreateBookmarkButton from './CreateBookmarkButton';
 import CardLink from './CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub'
-import CategoryHeader from '@/ui/Bookmarks/CtegoryHeader'
+import Category from '@/ui/Bookmarks/Ctegory'
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -23,10 +23,6 @@ const useStyles = makeStyles((theme) => ({
 		width: '100vw',
 		backgroundColor: theme.palette.background.paper,
 		transform: 'translate3d(0,0,0)',
-	},
-	categoryWrapper: {
-		display: 'flex',
-		flexWrap: 'wrap',
 	},
 	chipContainer: {
 		marginBottom: theme.spacing(3),
@@ -50,18 +46,18 @@ function Bookmarks() {
 	const [columnsCount, setColumnsCount] = useState(null);
 	const [isSearching, setIsSearching] = useState(false);
 	const [findBookmarks, setFindBookmarks] = useState(null);
+	const [searchCategories, setSearchCategories] = useState(null);
 	const [lastTruthSearchTimestamp, setLastTruthSearchTimestamp] = useState(bookmarksStore.lastTruthSearchTimestamp);
 
 	let columnStabilizer = null;
 
 	const handleSearch = (searchCategories = []) => {
-		setIsSearching(true);
-
 		bookmarksStore.search({ categories: searchCategories })
 			.then((searchResult) => {
 				setLastTruthSearchTimestamp(bookmarksStore.lastTruthSearchTimestamp);
 				setFindBookmarks(searchResult);
 				setIsSearching(false);
+				setSearchCategories(null);
 			});
 	};
 
@@ -71,9 +67,10 @@ function Bookmarks() {
 
 	useEffect(() => {
 		if (appService.activity === 'bookmarks') {
-			handleSearch(bookmarksStore.lastSearch?.categories);
-		} else {
-			setIsSearching(false);
+			if (!findBookmarks) {
+				setIsSearching(true);
+				handleSearch(bookmarksStore.lastSearch?.categories);
+			}
 		}
 	}, [appService.activity]);
 
@@ -94,11 +91,17 @@ function Bookmarks() {
 				<Container className={classes.container} fixed style={{ maxWidth: columnsCount * 196 - 16 + 48 }}>
 					<Categories
 						className={classes.chipContainer}
-						onChange={handleSearch}
+						onChange={(categories) => {
+							setSearchCategories(categories);
+							setIsSearching(true);
+						}}
 					/>
 					<Fade
-						in={!isSearching && appService.activity === 'bookmarks'}
-						onExited={() => setFindBookmarks(null)}
+						in={!isSearching}
+						onExited={() => {
+							//setFindBookmarks(null);
+							if (searchCategories) handleSearch(searchCategories);
+						}}
 					>
 						<div>
 							{findBookmarks !== null && findBookmarks.length === 0 && (
