@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
 		backgroundPosition: '50%',
 		backgroundRepeat: 'no-repeat',
 		backgroundSize: 'cover',
+		objectFit: 'cover',
 	},
 	video: { objectFit: 'cover' },
 	deleteBG: {
