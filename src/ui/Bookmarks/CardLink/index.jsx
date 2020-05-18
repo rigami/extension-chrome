@@ -22,6 +22,10 @@ const useStyles = makeStyles((theme) => ({
 		flexDirection: 'column',
 		alignItems: 'center',
 		position: 'relative',
+		'&:hover $menuIcon': {
+			opacity: 1,
+			pointerEvents: 'auto',
+		},
 	},
 	rootActionWrapper: {
 		width: '100%',
@@ -86,6 +90,8 @@ const useStyles = makeStyles((theme) => ({
 		position: 'absolute',
 		right: theme.spacing(0.5),
 		top: theme.spacing(0.5),
+		opacity: 0,
+		pointerEvents: 'none',
 	},
 }));
 

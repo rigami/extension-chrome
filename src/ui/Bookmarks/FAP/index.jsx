@@ -29,7 +29,8 @@ import Folder from './Folder';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		padding: theme.spacing(3),
+		padding: theme.spacing(11),
+		paddingTop: theme.spacing(3),
 		paddingBottom: 0,
 		width: '100%',
 		zIndex: theme.zIndex.speedDial,

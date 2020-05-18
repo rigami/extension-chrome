@@ -76,7 +76,7 @@ function EditMenu ({ className: externalClassName, bookmarkId }) {
 					<ListItemIcon>
 						<EditIcon />
 					</ListItemIcon>
-					<ListItemText primary="Редактировать" />
+					<ListItemText primary="Изменить" />
 				</ListItem>
 				<ListItem button dense >
 					<ListItemIcon>

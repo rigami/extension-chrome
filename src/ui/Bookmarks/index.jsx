@@ -108,43 +108,41 @@ function Bookmarks() {
 								columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
 
 								return (
-									<Fragment>
-										{category.id !== 'all' && (<CategoryHeader {...category} />)}
-										<Box className={classes.categoryWrapper}>
-											{bookmarks.length === 0 && (
-												<Typography
-													variant="body1"
-													style={{ color: theme.palette.text.secondary }}
-												>
-													Нет подходящих элементов
-												</Typography>
-											)}
-											{bookmarks.reduce((acc, curr, index) => {
-												let column = 0;
-												columnStabilizer.forEach((element, index) => {
-													if (columnStabilizer[column] > element) column = index;
-												});
+									<Category {...category}>
+										{bookmarks.length === 0 && (
+											<Typography
+												variant="body1"
+												style={{ color: theme.palette.text.secondary }}
+											>
+												Нет подходящих элементов
+											</Typography>
+										)}
+										{bookmarks.reduce((acc, curr, index) => {
+											let column = 0;
+											columnStabilizer.forEach((element, index) => {
+												if (columnStabilizer[column] > element) column = index;
+											});
 
-												columnStabilizer[column] += curr.type === 'extend' ? 0.8 : 0.6;
-												columnStabilizer[column] += Math.min(Math.ceil(curr.name.length / 15), 2) * 0.2 || 0.4
-												columnStabilizer[column] += (curr.description && Math.min(Math.ceil(curr.description.length / 20), 4) * 0.17) || 0;
-												columnStabilizer[column] += 0.12;
+											columnStabilizer[column] += curr.type === 'extend' ? 0.8 : 0.6;
+											columnStabilizer[column] += Math.min(Math.ceil(curr.name.length / 15), 2) * 0.2 || 0.4
+											columnStabilizer[column] += (curr.description && Math.min(Math.ceil(curr.description.length / 20), 4) * 0.17) || 0;
+											columnStabilizer[column] += 0.12;
 
-												if (typeof acc[column] === 'undefined') acc[column] = [];
+											if (typeof acc[column] === 'undefined') acc[column] = [];
 
-												acc[column].push(curr);
+											acc[column].push(curr);
 
-												return acc;
-											}, [])
+											return acc;
+										}, [])
 											.map((column, index, arr) => (
 												<Box style={{ marginRight: theme.spacing(arr.length - 1 !== index ? 2 : 0) }}>
 													{column.map((card) => (
 														<CardLink {...card} style={{ marginBottom: theme.spacing(2) }} />
 													))}
 												</Box>
-											))}
-										</Box>
-									</Fragment>
+											)
+										)}
+									</Category>
 								);
 							})}
 						</div>
