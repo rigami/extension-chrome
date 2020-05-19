@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function Categories ({ onChange, className: externalClassName, sortByPopular, onCreate, autoSelect = false }) {
+function Categories ({ value, onChange, className: externalClassName, sortByPopular, onCreate, autoSelect = false }) {
 	const classes = useStyles();
 	const bookmarksStore = useBookmarksService();
 	const [selectedCategories, setSelectedCategories] = useState([]);
@@ -53,6 +53,12 @@ function Categories ({ onChange, className: externalClassName, sortByPopular, on
 
 		onChange(selectedCategories);
 	}, [selectedCategories.length]);
+
+	useEffect(() => {
+		if (isFirstRun.current) return;
+
+		if (value) setSelectedCategories(value || []);
+	}, [value && value.length]);
 
 	return (
 		<Box className={clsx(classes.root, externalClassName)}>

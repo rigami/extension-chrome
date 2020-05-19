@@ -26,6 +26,9 @@ class BookmarksStore {
 			.then((value) => { this.openOnStartup = value; })
 			.catch((e) => console.error(e));
 
+		StorageConnector.getJSONItem('bkms_last_search')
+			.then((value) => { this.lastSearch = value; });
+
 		this._syncCategories()
 			.then(() => {
 				return StorageConnector.getJSONItem('bkms_favorites')
@@ -92,6 +95,8 @@ class BookmarksStore {
 		if (!notSaveSearch) {
 			this.lastSearch = searchQuery;
 			this.lastTruthSearchTimestamp = Date.now();
+
+			await StorageConnector.setJSONItem('bkms_last_search', searchQuery);
 		}
 
 		const { categories = [] } = searchQuery;

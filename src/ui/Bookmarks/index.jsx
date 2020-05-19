@@ -71,6 +71,8 @@ function Bookmarks() {
 				setIsSearching(true);
 				handleSearch(bookmarksStore.lastSearch?.categories);
 			}
+
+			setSearchCategories(bookmarksStore.lastSearch?.categories);
 		}
 	}, [appService.activity]);
 
@@ -91,6 +93,7 @@ function Bookmarks() {
 				<Container className={classes.container} fixed style={{ maxWidth: columnsCount * 196 - 16 + 48 }}>
 					<Categories
 						className={classes.chipContainer}
+						value={searchCategories}
 						onChange={(categories) => {
 							setSearchCategories(categories);
 							setIsSearching(true);
