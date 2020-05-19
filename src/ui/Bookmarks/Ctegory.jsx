@@ -91,23 +91,25 @@ function CategoryHeader({ id, color, name, children }) {
 					}}
 					primary={name || "Неизвестная категория"}
 				/>
-				<ListItemSecondaryAction className={classes.actions}>
-					<Tooltip title={isPin() ? "Открепить от панели быстрого доступа" : "Закрепить на панели быстрого доступа"}>
-						<IconButton onClick={handlePin}>
-							{isPin() ? (<UnpinnedFavoriteIcon />) : (<PinnedFavoriteIcon />)}
-						</IconButton>
-					</Tooltip>
-					<Tooltip title="Изменить">
-						<IconButton>
-							<EditIcon />
-						</IconButton>
-					</Tooltip>
-					<Tooltip title="Удалить">
-						<IconButton>
-							<RemoveIcon />
-						</IconButton>
-					</Tooltip>
-				</ListItemSecondaryAction>
+				{id !== 'best' && (
+					<ListItemSecondaryAction className={classes.actions}>
+						<Tooltip title={isPin() ? "Открепить от панели быстрого доступа" : "Закрепить на панели быстрого доступа"}>
+							<IconButton onClick={handlePin}>
+								{isPin() ? (<UnpinnedFavoriteIcon />) : (<PinnedFavoriteIcon />)}
+							</IconButton>
+						</Tooltip>
+						<Tooltip title="Изменить">
+							<IconButton>
+								<EditIcon />
+							</IconButton>
+						</Tooltip>
+						<Tooltip title="Удалить">
+							<IconButton>
+								<RemoveIcon />
+							</IconButton>
+						</Tooltip>
+					</ListItemSecondaryAction>
+				)}
 			</ListItem>
 			<Box className={classes.bookmarksWrapper}>
 				{children}

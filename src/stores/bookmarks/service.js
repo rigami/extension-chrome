@@ -166,7 +166,7 @@ class BookmarksStore {
 
 		if (categories.length > 1 && result.length !== 0) {
 			result.unshift({
-				category: { name: 'best' },
+				category: { id: 'best', name: 'Лучшие совпадения' },
 				bookmarks: bestMatches,
 			});
 		}
