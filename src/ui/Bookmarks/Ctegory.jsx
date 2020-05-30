@@ -1,4 +1,4 @@
-import React from 'preact/compat';
+import React, { useState } from 'preact/compat';
 import { h, Fragment } from 'preact';
 import {
 	ListItem,
@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
 function CategoryHeader({ id, color, name, children }) {
 	const classes = useStyles();
 	const bookmarksStore = useBookmarksService();
+	const [isEdit, setIsEdit] = useState(false);
 
 	const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'category' && fav.id === id);
 
@@ -91,7 +92,7 @@ function CategoryHeader({ id, color, name, children }) {
 					}}
 					primary={name || "Неизвестная категория"}
 				/>
-				{id !== 'best' && (
+				{id !== 'best' && !isEdit && (
 					<ListItemSecondaryAction className={classes.actions}>
 						<Tooltip title={isPin() ? "Открепить от панели быстрого доступа" : "Закрепить на панели быстрого доступа"}>
 							<IconButton onClick={handlePin}>
@@ -99,7 +100,7 @@ function CategoryHeader({ id, color, name, children }) {
 							</IconButton>
 						</Tooltip>
 						<Tooltip title="Изменить">
-							<IconButton>
+							<IconButton onClick={() => setIsEdit(true)}>
 								<EditIcon />
 							</IconButton>
 						</Tooltip>

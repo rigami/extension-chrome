@@ -2818,7 +2818,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"classnames@npm:^2.2.5":
+"classnames@npm:^2.2.5, classnames@npm:^2.2.6":
   version: 2.2.6
   resolution: "classnames@npm:2.2.6"
   checksum: 3/490eaeca5931846737ffd33e472a701d268d5b8bc5717dd4cf108a127b06e86e05350e06799abbbe763a0e4c945b4217f6700b7ae00ddc703505682c370e5cf2
@@ -2934,6 +2934,7 @@ __metadata:
     preact: ^10.4.1
     preact-compat: ^3.19.0
     prop-types: ^15.7.2
+    react-indiana-drag-scroll: ^1.6.1
     react-resize-detector: ^4.2.3
     react-scrollbars-custom: ^4.0.21
     react-svg-loader: ^3.0.3
@@ -3471,6 +3472,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"debounce@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "debounce@npm:1.2.0"
+  checksum: 3/3eb07f76c54f3563d9183aff9a28c61864aa65c3f5f17acc227ce28dc55fb96faa680aebe3c898af17d3e4dfb6cfb92df6179fa9d5566111b129e1de19cfc7e0
+  languageName: node
+  linkType: hard
+
 "debug@npm:2.6.9, debug@npm:^2.2.0, debug@npm:^2.3.3, debug@npm:^2.6.8, debug@npm:^2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -3842,6 +3850,13 @@ __metadata:
     readable-stream: ^2.0.0
     stream-shift: ^1.0.0
   checksum: 3/9581cdb8f6304fdaacb8bbe2b8b393a8da3ece3086dd24070601b70f08ca417305b4f3a94699b984c4981dceb6eebb4c132abfe0445baacfd04f2b66a0524cda
+  languageName: node
+  linkType: hard
+
+"easy-bem@npm:^1.0.0":
+  version: 1.0.2
+  resolution: "easy-bem@npm:1.0.2"
+  checksum: 3/31ba39b7edd655e253c9d3fadaee537c851d886b286ec67ff16364c8cbdaf7051c9ba9a157f62bd3e02ed851bbf0e42ea29027473c6ecb94b508fa4fb1560b7f
   languageName: node
   linkType: hard
 
@@ -8269,6 +8284,21 @@ fsevents@^1.2.7:
     classnames: ^2.2.5
     prop-types: ^15.6.0
   checksum: 3/f7baed7e1758d5dfff8fd68f0a2661e5a05b74501509e1b98edeaf39497135c6a4373475d319bc4376a35bf7ee7e26fab61884123aeb635eeb831463c2e4c0cd
+  languageName: node
+  linkType: hard
+
+"react-indiana-drag-scroll@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "react-indiana-drag-scroll@npm:1.6.1"
+  dependencies:
+    classnames: ^2.2.6
+    debounce: ^1.2.0
+    easy-bem: ^1.0.0
+  peerDependencies:
+    prop-types: ^15.5.4
+    react: ^15.0.0 || ^16.0.0
+    react-dom: ^15.0.0 || ^16.0.0
+  checksum: 3/4f0a45ef15d41b56ac5d136a7817670a63c7d17915ff8cda853324244cd6d611c24048e1d1da00f402af77a9818f721ab134867f010c4f710831f5fc80d619dd
   languageName: node
   linkType: hard
 
