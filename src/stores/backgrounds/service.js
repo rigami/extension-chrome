@@ -7,327 +7,323 @@ import StorageConnector from '@/utils/storageConnector';
 import getPreview from '@/utils/createPreview';
 
 export const ERRORS = {
-	TOO_MANY_FILES: 'TOO_MANY_FILES',
-	NO_FILES: 'NO_FILES',
-	ID_BG_IS_CHANGED: 'ID_BG_IS_CHANGED',
+    TOO_MANY_FILES: 'TOO_MANY_FILES',
+    NO_FILES: 'NO_FILES',
+    ID_BG_IS_CHANGED: 'ID_BG_IS_CHANGED',
 };
 
 class BackgroundsStore {
-	@observable changeInterval;
-	@observable selectionMethod;
-	@observable bgType;
-	@observable currentBGId;
-	@observable uploadQueue = [];
-	@observable bgState = 'pending';
-	@observable count;
-	@observable dimmingPower;
-	_currentBG;
-	_FULL_PATH = '/backgrounds/full';
+    @observable changeInterval;
+    @observable selectionMethod;
+    @observable bgType;
+    @observable currentBGId;
+    @observable uploadQueue = [];
+    @observable bgState = 'pending';
+    @observable count;
+    @observable dimmingPower;
+    _currentBG;
+    _FULL_PATH = '/backgrounds/full';
 
-	// _getPreview = queuingDecorator(getPreview);
+    // _getPreview = queuingDecorator(getPreview);
 
-	constructor() {
-		StorageConnector.getItem('bg_dimming_power')
-			.then((value) => { this.dimmingPower = +value; })
-			.catch((e) => console.error(e));
+    constructor() {
+        StorageConnector.getItem('bg_dimming_power')
+            .then((value) => { this.dimmingPower = +value; })
+            .catch((e) => console.error(e));
 
-		StorageConnector.getItem('bg_selection_method')
-			.then((value) => { this.selectionMethod = value; })
-			.catch((e) => console.error(e));
+        StorageConnector.getItem('bg_selection_method')
+            .then((value) => { this.selectionMethod = value; })
+            .catch((e) => console.error(e));
 
-		StorageConnector.getItem('bg_change_interval')
-			.then((value) => { this.changeInterval = value; })
-			.catch((e) => console.error(e));
+        StorageConnector.getItem('bg_change_interval')
+            .then((value) => { this.changeInterval = value; })
+            .catch((e) => console.error(e));
 
-		StorageConnector.getJSONItem('bg_type')
-			.then((value) => { this.bgType = value; })
-			.catch((e) => console.error(e));
+        StorageConnector.getJSONItem('bg_type')
+            .then((value) => { this.bgType = value; })
+            .catch((e) => console.error(e));
 
-		StorageConnector.getJSONItem('bg_next_switch_timestamp')
-			.then((value) => {
-				if (value > Date.now()) return true;
+        StorageConnector.getJSONItem('bg_next_switch_timestamp')
+            .then((value) => {
+                if (value > Date.now()) return true;
 
-				this.nextBG();
-				return false;
-			})
-			.catch(() => true)
-			.then((requireGetCurrentBG) => {
-				if (!requireGetCurrentBG) return;
+                this.nextBG();
+                return false;
+            })
+            .catch(() => true)
+            .then((requireGetCurrentBG) => {
+                if (!requireGetCurrentBG) return;
 
-				StorageConnector.getJSONItem('bg_current')
-					.then((value) => {
-						this._currentBG = value;
-						this.currentBGId = this._currentBG.id;
-						this.bgState = value.pause ? 'pause' : 'play';
-					})
-					.catch(() => this.nextBG());
-			});
+                StorageConnector.getJSONItem('bg_current')
+                    .then((value) => {
+                        this._currentBG = value;
+                        this.currentBGId = this._currentBG.id;
+                        this.bgState = value.pause ? 'pause' : 'play';
+                    })
+                    .catch(() => this.nextBG());
+            });
 
-		DBConnector().count('backgrounds')
-			.then((value) => { this.count = value; })
-			.catch((e) => console.error('Failed get store or value', e));
-	}
+        DBConnector().count('backgrounds')
+            .then((value) => { this.count = value; })
+            .catch((e) => console.error('Failed get store or value', e));
+    }
 
-	@action('set selection method')
-	setSelectionMethod(selectionMethod) {
-		this.selectionMethod = selectionMethod;
+    @action('set selection method')
+    setSelectionMethod(selectionMethod) {
+        this.selectionMethod = selectionMethod;
 
-		StorageConnector.setItem('bg_selection_method', selectionMethod);
-	}
+        StorageConnector.setItem('bg_selection_method', selectionMethod);
+    }
 
-	@action('set change interval')
-	setChangeInterval(changeInterval) {
-		this.changeInterval = changeInterval;
+    @action('set change interval')
+    setChangeInterval(changeInterval) {
+        this.changeInterval = changeInterval;
 
-		StorageConnector.setItem('bg_change_interval', changeInterval);
+        StorageConnector.setItem('bg_change_interval', changeInterval);
 
-		this.nextBG();
-	}
+        this.nextBG();
+    }
 
-	@action('set bg types')
-	setBgType(bgTypes) {
-		this.bgType = [...bgTypes];
+    @action('set bg types')
+    setBgType(bgTypes) {
+        this.bgType = [...bgTypes];
 
-		StorageConnector.setJSONItem('bg_type', bgTypes);
+        StorageConnector.setJSONItem('bg_type', bgTypes);
 
-		this.nextBG();
-	}
+        this.nextBG();
+    }
 
-	@action('set dimming power')
-	setDimmingPower(value, save = true) {
-		this.dimmingPower = value;
+    @action('set dimming power')
+    setDimmingPower(value, save = true) {
+        this.dimmingPower = value;
 
-		if (save) {
-			StorageConnector.setItem('bg_dimming_power', value);
-		}
-	}
+        if (save) {
+            StorageConnector.setItem('bg_dimming_power', value);
+        }
+    }
 
-	@action('get current bg')
-	getCurrentBG() {
-		return this._currentBG;
-	}
+    @action('get current bg')
+    getCurrentBG() {
+        return this._currentBG;
+    }
 
-	@action('play bg')
-	play() {
-		this.bgState = 'play';
+    @action('play bg')
+    play() {
+        this.bgState = 'play';
 
-		this._currentBG = {
-			...this._currentBG,
-			pause: false,
-		};
+        this._currentBG = {
+            ...this._currentBG,
+            pause: false,
+        };
 
-		return StorageConnector.setJSONItem('bg_current', this._currentBG)
-			.then(() => FSConnector.removeFile(this._FULL_PATH, 'temporaryVideoFrame'));
-	}
+        return StorageConnector.setJSONItem('bg_current', this._currentBG)
+            .then(() => FSConnector.removeFile(this._FULL_PATH, 'temporaryVideoFrame'));
+    }
 
-	@action('pause bg')
-	pause() {
-		this.bgState = 'pause';
+    @action('pause bg')
+    pause() {
+        this.bgState = 'pause';
 
-		return StorageConnector.setJSONItem('bg_current', {
-			...this._currentBG,
-			pause: true,
-		});
-	}
+        return StorageConnector.setJSONItem('bg_current', {
+            ...this._currentBG,
+            pause: true,
+        });
+    }
 
-	@action('pause bg')
-	saveTemporaryVideoFrame(captureBgId, timestamp) {
-		if (captureBgId !== this.currentBGId || this.bgState !== 'pause') {
-			return Promise.reject(ERRORS.ID_BG_IS_CHANGED);
-		}
+    @action('pause bg')
+    saveTemporaryVideoFrame(captureBgId, timestamp) {
+        if (captureBgId !== this.currentBGId || this.bgState !== 'pause') {
+            return Promise.reject(ERRORS.ID_BG_IS_CHANGED);
+        }
 
-		return getPreview(
-			FSConnector.getURL(this._currentBG.fileName),
-			this._currentBG.type,
-			{
-				size: 'full',
-				timeStamp: timestamp,
-			},
-		)
-			.then((frame) => {
-				if (captureBgId !== this.currentBGId || this.bgState !== 'pause') throw ERRORS.ID_BG_IS_CHANGED;
+        return getPreview(
+            FSConnector.getURL(this._currentBG.fileName),
+            this._currentBG.type,
+            {
+                size: 'full',
+                timeStamp: timestamp,
+            },
+        )
+            .then((frame) => {
+                if (captureBgId !== this.currentBGId || this.bgState !== 'pause') throw ERRORS.ID_BG_IS_CHANGED;
 
-				return FSConnector.saveFile(this._FULL_PATH, frame, 'temporaryVideoFrame');
-			})
-			.then(() => {
-				if (captureBgId !== this.currentBGId || this.bgState !== 'pause') throw ERRORS.ID_BG_IS_CHANGED;
+                return FSConnector.saveFile(this._FULL_PATH, frame, 'temporaryVideoFrame');
+            })
+            .then(() => {
+                if (captureBgId !== this.currentBGId || this.bgState !== 'pause') throw ERRORS.ID_BG_IS_CHANGED;
 
-				this._currentBG = {
-					...this._currentBG,
-					pause: timestamp,
-				};
+                this._currentBG = {
+                    ...this._currentBG,
+                    pause: timestamp,
+                };
 
-				return StorageConnector.setJSONItem('bg_current', this._currentBG);
-			})
-			.then(() => this._currentBG);
-	}
+                return StorageConnector.setJSONItem('bg_current', this._currentBG);
+            })
+            .then(() => this._currentBG);
+    }
 
-	@action('next bg')
-	nextBG() {
-		console.log(this.bgType, this.selectionMethod)
+    @action('next bg')
+    nextBG() {
+        console.log(this.bgType, this.selectionMethod);
 
-		return DBConnector().count('backgrounds')
-			.then((count) => count > 1 ? Math.max(Math.floor(Math.random() * (count - 1)), 0) + 1 : -1)
-			.then(async (pos) => {
-				let index = 0
-				let cursor = await DBConnector().transaction('backgrounds').store.openCursor();
+        return DBConnector().count('backgrounds')
+            .then((count) => (count > 1 ? Math.max(Math.floor(Math.random() * (count - 1)), 0) + 1 : -1))
+            .then(async (pos) => {
+                let index = 0;
+                let cursor = await DBConnector().transaction('backgrounds').store.openCursor();
 
-				while (cursor) {
-					if (cursor.key !== this.currentBGId) index++;
-					if (pos === index) return cursor.value;
-					cursor = await cursor.continue();
-				}
-			})
-			.then((bg) => {
-				if (bg) return this.setCurrentBG(bg.id);
-			});
-	}
+                while (cursor) {
+                    if (cursor.key !== this.currentBGId) index++;
+                    if (pos === index) return cursor.value;
+                    cursor = await cursor.continue();
+                }
+            })
+            .then((bg) => bg && this.setCurrentBG(bg.id));
+    }
 
-	@action('set current bg')
-	setCurrentBG(currentBGId) {
-		if (this.currentBGId === currentBGId) return Promise.resolve();
+    @action('set current bg')
+    setCurrentBG(currentBGId) {
+        if (this.currentBGId === currentBGId) return Promise.resolve();
 
-		StorageConnector.setJSONItem(
-			'bg_next_switch_timestamp',
-			Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.changeInterval],
-		);
+        StorageConnector.setJSONItem(
+            'bg_next_switch_timestamp',
+            Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.changeInterval],
+        );
 
-		if (!currentBGId) {
-			this._currentBG = null;
-			this.currentBGId = null;
-			this.bgState = 'play';
+        if (!currentBGId) {
+            this._currentBG = null;
+            this.currentBGId = null;
+            this.bgState = 'play';
 
-			return StorageConnector.setJSONItem('bg_current', null);
-		}
+            return StorageConnector.setJSONItem('bg_current', null);
+        }
 
-		return DBConnector().get('backgrounds', currentBGId)
-			.then((bg) => {
-				this._currentBG = bg;
-				this.currentBGId = this._currentBG.id;
-				this.bgState = 'play';
+        return DBConnector().get('backgrounds', currentBGId)
+            .then((bg) => {
+                this._currentBG = bg;
+                this.currentBGId = this._currentBG.id;
+                this.bgState = 'play';
 
-				return bg;
-			})
-			.then((bg) => StorageConnector.setJSONItem('bg_current', bg))
-			.catch((e) => {
-				console.error(e);
-			});
-	}
+                return bg;
+            })
+            .then((bg) => StorageConnector.setJSONItem('bg_current', bg))
+            .catch((e) => {
+                console.error(e);
+            });
+    }
 
-	@action('add bg`s to queue')
-	addToUploadQueue(fileList) {
-		if (!fileList || fileList.length === 0) return Promise.reject(ERRORS.NO_FILES);
+    @action('add bg`s to queue')
+    addToUploadQueue(fileList) {
+        if (!fileList || fileList.length === 0) return Promise.reject(ERRORS.NO_FILES);
 
-		if (fileList.length > appVariables.maxUploadFiles) return Promise.reject(ERRORS.TOO_MANY_FILES);
+        if (fileList.length > appVariables.maxUploadFiles) return Promise.reject(ERRORS.TOO_MANY_FILES);
 
-		const uploadTimestamp = Date.now().toString();
+        const uploadTimestamp = Date.now().toString();
 
-		const getNextPreview = () => {
-			const bg = this.uploadQueue.find(({ preview }) => preview === 'pending');
+        const getNextPreview = () => {
+            const bg = this.uploadQueue.find(({ preview }) => preview === 'pending');
 
-			if (!bg) return;
+            if (!bg) return;
 
-			getPreview(bg.file)
-				.then((previewFile) => {
-					this.uploadQueue = this.uploadQueue.map((mapBg) => {
-						if (bg.id === mapBg.id) {
-							return {
-								...mapBg,
-								preview: previewFile,
-								previewUrl: URL.createObjectURL(previewFile),
-							};
-						}
+            getPreview(bg.file)
+                .then((previewFile) => {
+                    this.uploadQueue = this.uploadQueue.map((mapBg) => {
+                        if (bg.id === mapBg.id) {
+                            return {
+                                ...mapBg,
+                                preview: previewFile,
+                                previewUrl: URL.createObjectURL(previewFile),
+                            };
+                        }
 
-						return mapBg;
-					});
-					getNextPreview();
-				})
-				.catch((e) => console.error(e));
-		};
+                        return mapBg;
+                    });
+                    getNextPreview();
+                })
+                .catch((e) => console.error(e));
+        };
 
-		return Promise.all(Array.prototype.map.call(fileList, (file, index) => ({
-			id: `${uploadTimestamp}-${index}`,
-			preview: 'pending',
-			previewUrl: null,
-			type: ~file.type.indexOf('video') ? [BG_TYPE.VIDEO] : [BG_TYPE.IMAGE, BG_TYPE.ANIMATION],
-			size: file.size / 1024 / 1024,
-			format: file.type.substring(file.type.indexOf('/') + 1),
-			name: file.name,
-			file,
-		}))).then((bgs) => {
-			this.uploadQueue = [...this.uploadQueue, ...bgs];
+        return Promise.all(Array.prototype.map.call(fileList, (file, index) => ({
+            id: `${uploadTimestamp}-${index}`,
+            preview: 'pending',
+            previewUrl: null,
+            type: ~file.type.indexOf('video') ? [BG_TYPE.VIDEO] : [BG_TYPE.IMAGE, BG_TYPE.ANIMATION],
+            size: file.size / 1024 / 1024,
+            format: file.type.substring(file.type.indexOf('/') + 1),
+            name: file.name,
+            file,
+        }))).then((bgs) => {
+            this.uploadQueue = [...this.uploadQueue, ...bgs];
 
-			getNextPreview();
+            getNextPreview();
 
-			return bgs;
-		});
-	}
+            return bgs;
+        });
+    }
 
-	@action('remove bg from queue')
-	removeFromUploadQueue(removeBGId) {
-		this.uploadQueue = this.uploadQueue.filter(({ id }) => removeBGId !== id);
-	}
+    @action('remove bg from queue')
+    removeFromUploadQueue(removeBGId) {
+        this.uploadQueue = this.uploadQueue.filter(({ id }) => removeBGId !== id);
+    }
 
-	@action('save bg`s in store')
-	saveFromUploadQueue(saveBGId, options) {
-		const saveBG = {
-			...this.uploadQueue.find(({ id }) => saveBGId === id),
-			...{
-				antiAliasing: true,
-				...options,
-			},
-		};
+    @action('save bg`s in store')
+    saveFromUploadQueue(saveBGId, options) {
+        const saveBG = {
+            ...this.uploadQueue.find(({ id }) => saveBGId === id),
+            ...{
+                antiAliasing: true,
+                ...options,
+            },
+        };
 
-		return FSConnector.saveFile(this._FULL_PATH, saveBG.file, saveBGId)
-			.then(() => FSConnector.saveFile('/backgrounds/preview', saveBG.preview, saveBGId))
-			.then(() => DBConnector().add('backgrounds', {
-				author: 'unknown',
-				type: saveBG.type[0],
-				fileName: saveBGId,
-				description: 'user_background',
-				sourceLink: saveBG.name,
-				antiAliasing: saveBG.antiAliasing,
-			}))
-			.then(() => {
-				this.uploadQueue = this.uploadQueue.filter(({ id }) => saveBGId !== id);
-				this.count += 1;
-			});
-	}
+        return FSConnector.saveFile(this._FULL_PATH, saveBG.file, saveBGId)
+            .then(() => FSConnector.saveFile('/backgrounds/preview', saveBG.preview, saveBGId))
+            .then(() => DBConnector().add('backgrounds', {
+                author: 'unknown',
+                type: saveBG.type[0],
+                fileName: saveBGId,
+                description: 'user_background',
+                sourceLink: saveBG.name,
+                antiAliasing: saveBG.antiAliasing,
+            }))
+            .then(() => {
+                this.uploadQueue = this.uploadQueue.filter(({ id }) => saveBGId !== id);
+                this.count += 1;
+            });
+    }
 
-	@action('remove bg from store')
-	removeFromStore(removeBGId) {
-		let fileName;
+    @action('remove bg from store')
+    removeFromStore(removeBGId) {
+        let fileName;
 
-		return DBConnector().get('backgrounds', removeBGId)
-			.then((value) => {
-				if (!value) throw new Error('Not find in db');
+        return DBConnector().get('backgrounds', removeBGId)
+            .then((value) => {
+                if (!value) throw new Error('Not find in db');
 
-				fileName = value.fileName;
-			})
-			.then(() => {
-				return DBConnector().delete('backgrounds', removeBGId)
-			})
-			.then(() => {
-				this.count -= 1;
-				console.log('remove from db');
-			})
-			.catch((e) => console.error(e))
-			.then(() => FSConnector.removeFile(`/backgrounds/full/${fileName}`))
-			.then(() => FSConnector.removeFile(`/backgrounds/preview/${fileName}`))
-			.catch((e) => console.error(e));
-	}
+                fileName = value.fileName;
+            })
+            .then(() => DBConnector().delete('backgrounds', removeBGId))
+            .then(() => {
+                this.count -= 1;
+                console.log('remove from db');
+            })
+            .catch((e) => console.error(e))
+            .then(() => FSConnector.removeFile(`/backgrounds/full/${fileName}`))
+            .then(() => FSConnector.removeFile(`/backgrounds/preview/${fileName}`))
+            .catch((e) => console.error(e));
+    }
 
-	@action('get srcs')
-	getSrcs(options = {}) {
-		return DBConnector().getAll('backgrounds')
-			.then((values) => values.map(({ fileName }) => FSConnector.getURL(fileName, options.type || 'preview')));
-	}
+    @action('get srcs')
+    getSrcs(options = {}) {
+        return DBConnector().getAll('backgrounds')
+            .then((values) => values.map(({ fileName }) => FSConnector.getURL(fileName, options.type || 'preview')));
+    }
 
 
-	@action('get all')
-	getAll() {
-		return DBConnector().getAll('backgrounds');
-	}
+    @action('get all')
+    getAll() {
+        return DBConnector().getAll('backgrounds');
+    }
 }
 
 export default BackgroundsStore;

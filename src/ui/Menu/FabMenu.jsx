@@ -1,115 +1,111 @@
-import React, { useEffect, useRef, useState } from 'preact/compat';
-import { h, Fragment } from 'preact';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-	Card,
-	IconButton,
-	Divider,
-	Tooltip,
-	Box,
+    Card,
+    IconButton,
+    Divider,
+    Tooltip,
+    Box,
 } from '@material-ui/core';
 import {
-	Refresh as RefreshIcon,
-	Settings as SettingsIcon,
+    Refresh as RefreshIcon,
+    Settings as SettingsIcon,
 } from '@material-ui/icons';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
-	root: {
-		position: 'absolute',
-		bottom: theme.spacing(3),
-		right: theme.spacing(3),
-	},
-	card: {
-		borderRadius: theme.spacing(3),
-		backdropFilter: 'blur(10px) brightness(200%)',
-		backgroundColor: fade(theme.palette.background.default, 0.52),
-	},
-	button: { padding: theme.spacing(1) },
+    root: {
+        position: 'absolute',
+        bottom: theme.spacing(3),
+        right: theme.spacing(3),
+    },
+    card: {
+        borderRadius: theme.spacing(3),
+        backdropFilter: 'blur(10px) brightness(200%)',
+        backgroundColor: fade(theme.palette.background.default, 0.52),
+    },
+    button: { padding: theme.spacing(1) },
 }));
 
 function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG }) {
-	const classes = useStyles();
-	const theme = useTheme();
-	const [distance, setDistance] = useState(999);
-	const rootAl = useRef();
+    const classes = useStyles();
+    const theme = useTheme();
+    const rootAl = useRef();
+    const fastAl = useRef();
+    const mainAl = useRef();
 
-	const moveMouseHandler = (e) => {
-		if (!rootAl.current) return;
+    const moveMouseHandler = (e) => {
+        if (!rootAl.current) return;
 
-		const { x, y, height, width } = rootAl.current.getBoundingClientRect();
-		const a = Math.abs((x + width * 0.5) - e.pageX);
-		const b = Math.abs((y + height * 0.5) - e.pageY);
-		let dist = 0.96 * Math.max(a, b) + 0.4 * Math.min(a, b);
+        const { x, y, height, width } = rootAl.current.getBoundingClientRect();
+        const a = Math.abs((x + width * 0.5) - e.pageX);
+        const b = Math.abs((y + height * 0.5) - e.pageY);
+        let dist = 0.96 * Math.max(a, b) + 0.4 * Math.min(a, b);
 
-		if (dist > 700) {
-			dist = 700;
-		} else if (dist < 160) {
-			dist = 160;
-		}
+        if (dist > 700) {
+            dist = 700;
+        } else if (dist < 160) {
+            dist = 160;
+        }
 
-		dist -= 160;
+        dist -= 160;
 
-		setDistance(1 - dist / 540);
-	};
+        const opacity = 1 - dist / 540;
 
-	useEffect(() => {
-		document.addEventListener('mousemove', moveMouseHandler);
+        if (fastAl.current) fastAl.current.style.opacity = opacity;
+        if (mainAl.current) mainAl.current.style.opacity = opacity;
+    };
 
-		return () => {
-			document.removeEventListener('mousemove', moveMouseHandler);
-		};
-	}, []);
+    useEffect(() => {
+        document.addEventListener('mousemove', moveMouseHandler);
 
-	return (
-		<Box className={classes.root} ref={rootAl}>
-			<Card
-				className={classes.card}
-				elevation={12}
-				style={{
-					marginBottom: theme.spacing(2),
-					opacity: distance,
-				}}
-			>
-				{fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }) => (
-					<Tooltip title={tooltip} placement="left" key={tooltip}>
-						<IconButton size="small" className={classes.button} {...props}>
-							{Icon}
-						</IconButton>
-					</Tooltip>
-				))}
-			</Card>
-			<Card
-				className={classes.card}
-				elevation={12}
-				style={{ opacity: distance }}
-			>
-				<Tooltip title="Настройки" placement="left">
-					<IconButton size="small" className={classes.button} onClick={() => onOpenMenu()}>
-						<SettingsIcon />
-					</IconButton>
-				</Tooltip>
-				{useChangeBG && (
-					<Fragment>
-						<Divider />
-						<Tooltip title="Обновить фон" placement="left">
-							<IconButton size="small" className={classes.button} onClick={() => onRefreshBackground()}>
-								<RefreshIcon />
-							</IconButton>
-						</Tooltip>
-					</Fragment>
-				)}
-			</Card>
-		</Box>
-	);
+        return () => {
+            document.removeEventListener('mousemove', moveMouseHandler);
+        };
+    }, []);
+
+    return (
+        <Box className={classes.root} ref={rootAl}>
+            <Card
+                className={classes.card}
+                elevation={12}
+                style={{
+                    marginBottom: theme.spacing(2),
+                }}
+                ref={fastAl}
+            >
+                {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }) => (
+                    <Tooltip title={tooltip} placement="left" key={tooltip}>
+                        <IconButton size="small" className={classes.button} {...props}>
+                            {Icon}
+                        </IconButton>
+                    </Tooltip>
+                ))}
+            </Card>
+            <Card
+                className={classes.card}
+                elevation={12}
+                ref={mainAl}
+            >
+                <Tooltip title="Настройки" placement="left">
+                    <IconButton size="small" className={classes.button} onClick={() => onOpenMenu()}>
+                        <SettingsIcon />
+                    </IconButton>
+                </Tooltip>
+                {useChangeBG && (
+                    <React.Fragment>
+                        <Divider />
+                        <Tooltip title="Обновить фон" placement="left">
+                            <IconButton size="small" className={classes.button} onClick={() => onRefreshBackground()}>
+                                <RefreshIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </React.Fragment>
+                )}
+            </Card>
+        </Box>
+    );
 }
 
-FabMenu.propTypes = {
-	onOpenMenu: PropTypes.func.isRequired,
-	onRefreshBackground: PropTypes.func.isRequired,
-	fastSettings: PropTypes.arrayOf(PropTypes.object),
-};
-FabMenu.defaultProps = { fastSettings: null };
 
 export default FabMenu;

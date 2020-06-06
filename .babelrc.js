@@ -17,10 +17,10 @@ module.exports = {
         ["@babel/plugin-syntax-throw-expressions"],
         ["@babel/plugin-proposal-decorators", { "legacy": true }],
         ["@babel/plugin-proposal-class-properties", { "loose": true }],
-        ["@babel/plugin-transform-react-jsx", {
+        /*["@babel/plugin-transform-react-jsx", {
             "pragma": "h",
             "pragmaFrag": "Fragment"
-        }],
+        }],*/
         ["module-resolver", {
             "root": ["./src"],
             "alias": paths(__dirname+"/src/"),

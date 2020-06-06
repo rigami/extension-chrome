@@ -1,5 +1,5 @@
-import React, { useState } from 'preact/compat';
-import { h, render } from 'preact';
+import React, { useState } from 'react';
+import { render } from 'react-dom';
 import { CssBaseline } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 
@@ -20,40 +20,41 @@ import Desktop from './Desktop';
 import GlobalScroll from './GlobalScroll';
 
 function App() {
-	const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
+    const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
 
-	return (
-		<ThemeProvider theme={theme === THEME.DARK ? darkTheme : lightTheme}>
-			<CssBaseline />
-			<Nest components={[
-				ConfigurationApp,
-				({ children }) => (
-					<AppConfigProvider onTheme={() => setTheme(localStorage.getItem('app_theme'))} >
-						{children}
-					</AppConfigProvider>
-				),
-				BackgroundsProvider,
-				BookmarksProvider,
-				({ children }) => (
-					<SnackbarProvider
-						maxSnack={4}
-						content={(key, options) => (
-							<Snackbar id={key} {...options} />
-						)}
-					>
-						{children}
-					</SnackbarProvider>
-				),
-				UploadBGForm,
-			]}>
-				<GlobalScroll>
-					<Desktop />
-					<FAP />
-					<Bookmarks />
-				</GlobalScroll>
-			</Nest>
-		</ThemeProvider>
-	);
+    return (
+        <ThemeProvider theme={theme === THEME.DARK ? darkTheme : lightTheme}>
+            <CssBaseline />
+            <Nest components={[
+                ConfigurationApp,
+                ({ children }) => (
+                    <AppConfigProvider onTheme={() => setTheme(localStorage.getItem('app_theme'))}>
+                        {children}
+                    </AppConfigProvider>
+                ),
+                BackgroundsProvider,
+                BookmarksProvider,
+                ({ children }) => (
+                    <SnackbarProvider
+                        maxSnack={4}
+                        content={(key, options) => (
+                            <Snackbar id={key} {...options} />
+                        )}
+                    >
+                        {children}
+                    </SnackbarProvider>
+                ),
+                UploadBGForm,
+            ]}
+            >
+                <GlobalScroll>
+                    <Desktop />
+                    <FAP />
+                    <Bookmarks />
+                </GlobalScroll>
+            </Nest>
+        </ThemeProvider>
+    );
 }
 
-render(<App />, document.body);
+render(<App />, document.getElementById('root'));

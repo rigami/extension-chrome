@@ -1,41 +1,41 @@
 export const queuingDecorator = (func) => {
-	const queue = [];
-	let pendingPromise = false;
+    const queue = [];
+    let pendingPromise = false;
 
-	const runQueue = () => {
-		if (pendingPromise) {
-			return;
-		}
+    const runQueue = () => {
+        if (pendingPromise) {
+            return;
+        }
 
-		if (queue.length === 0) {
-			return;
-		}
+        if (queue.length === 0) {
+            return;
+        }
 
-		pendingPromise = true;
-		queue.shift()().finally(() => {
-			pendingPromise = false;
-			runQueue();
-		});
-	};
+        pendingPromise = true;
+        queue.shift()().finally(() => {
+            pendingPromise = false;
+            runQueue();
+        });
+    };
 
-	return (x) => new Promise((resolve) => {
-		queue.push(() => func(x).finally(resolve));
+    return (x) => new Promise((resolve) => {
+        queue.push(() => func(x).finally(resolve));
 
-		runQueue();
-	});
+        runQueue();
+    });
 };
 
 export const cachingDecorator = (func) => {
-	const cache = new Map();
+    const cache = new Map();
 
-	return (x) => {
-		if (cache.has(x)) {
-			return cache.get(x);
-		}
+    return (x) => {
+        if (cache.has(x)) {
+            return cache.get(x);
+        }
 
-		const result = func(x);
+        const result = func(x);
 
-		cache.set(x, result);
-		return result;
-	};
+        cache.set(x, result);
+        return result;
+    };
 };

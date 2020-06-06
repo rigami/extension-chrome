@@ -1,5 +1,5 @@
-import React, { Fragment } from 'preact/compat';
-import { h } from 'preact';
+import React from 'react';
+
 import { observer } from 'mobx-react-lite';
 
 import { useSnackbar } from 'notistack';
@@ -11,45 +11,46 @@ import { useService as useBackgroundsService } from '@/stores/backgrounds';
 
 const useStyles = makeStyles(() => ({ input: { display: 'none' } }));
 function LoadBGFromLocalButton({}) {
-	const backgroundsStore = useBackgroundsService();
-	const { enqueueSnackbar } = useSnackbar();
-	const classes = useStyles();
+    const backgroundsStore = useBackgroundsService();
+    const { enqueueSnackbar } = useSnackbar();
+    const classes = useStyles();
 
-	return (
-		<Fragment>
-			<input
-				className={classes.input}
-				id="upload-from-system"
-				multiple
-				type="file"
-				accept="video/*,image/*"
-				onChange={(event) => {
-					if (event.target.files.length === 0) return;
+    return (
+        <React.Fragment>
+            <input
+                className={classes.input}
+                id="upload-from-system"
+                multiple
+                type="file"
+                accept="video/*,image/*"
+                onChange={(event) => {
+                    const form = event.target;
+                    if (form.files.length === 0) return;
 
-					backgroundsStore.addToUploadQueue(event.target.files)
-						.catch((e) => enqueueSnackbar({
-							...locale.settings.backgrounds.general.library[e],
-							variant: 'error',
-						}))
-						.finally(() => {
-							event.target.value = '';
-						});
-				}}
-			/>
-			<label htmlFor="upload-from-system">
-				<Button
-					variant="contained"
-					component="span"
-					disableElevation
-					color="primary"
-					startIcon={<UploadFromComputerIcon />}
-					style={{ marginRight: 16 }}
-				>
-					{locale.settings.backgrounds.general.library.upload_from_computer}
-				</Button>
-			</label>
-		</Fragment>
-	);
+                    backgroundsStore.addToUploadQueue(form.files)
+                        .catch((e) => enqueueSnackbar({
+                            ...locale.settings.backgrounds.general.library[e],
+                            variant: 'error',
+                        }))
+                        .finally(() => {
+                            form.value = '';
+                        });
+                }}
+            />
+            <label htmlFor="upload-from-system">
+                <Button
+                    variant="contained"
+                    component="span"
+                    disableElevation
+                    color="primary"
+                    startIcon={<UploadFromComputerIcon />}
+                    style={{ marginRight: 16 }}
+                >
+                    {locale.settings.backgrounds.general.library.upload_from_computer}
+                </Button>
+            </label>
+        </React.Fragment>
+    );
 }
 
 export default observer(LoadBGFromLocalButton);

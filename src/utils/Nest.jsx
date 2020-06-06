@@ -1,10 +1,10 @@
-import React from 'preact/compat';
-import { h } from 'preact';
+import React from 'react';
+
 
 function Nest({ components, children }) {
-	return components.reverse().reduce((acc, ComponentProvider) => (
-		<ComponentProvider>{acc}</ComponentProvider>
-	), children);
+    return components.reverse().reduce((acc, ComponentProvider) => (
+        <ComponentProvider>{acc}</ComponentProvider>
+    ), children);
 }
 
 export default Nest;

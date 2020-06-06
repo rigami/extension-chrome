@@ -1,5 +1,5 @@
 {
-	"compilerOptions": {
+    "compilerOptions": {
 		"module": "esnext",
 		"target": "esnext",
 		"lib": [
@@ -11,10 +11,10 @@
 		"paths": {
 			"@/*": ["./*"]
 		}
-	},
-	"exclude": [
+    },
+    "exclude": [
 		"node_modules",
 		".nuxt",
 		"dist"
-	]
+    ]
 }
