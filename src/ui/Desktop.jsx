@@ -186,7 +186,7 @@ function Desktop() {
                             message="Ошибка загрузка фона"
                             description={
                                 (bg && locale.settings.backgrounds.desktop.error_load_bg_unknown_reason)
-								|| locale.settings.backgrounds.desktop.not_found_bg
+                                || locale.settings.backgrounds.desktop.not_found_bg
                             }
                             style={{ height: '100vh' }}
                             actions={bg && [
@@ -209,10 +209,10 @@ function Desktop() {
                     )}
                     {(
                         bg
-						&& (bg.type === BG_TYPE.IMAGE
-							|| bg.type === BG_TYPE.ANIMATION
-							|| (bg.type === BG_TYPE.VIDEO && typeof bg.pause === 'number')
-						)
+                        && (bg.type === BG_TYPE.IMAGE
+                            || bg.type === BG_TYPE.ANIMATION
+                            || (bg.type === BG_TYPE.VIDEO && typeof bg.pause === 'number')
+                        )
                     ) && (
                         <img
                             alt={bg.fileName}

@@ -75,7 +75,7 @@ function AppSettings({ onSelect, onClose }) {
                     type: ROWS_TYPE.LINK,
                     onClick: () => onSelect(TabNamePage),
                     component: (
-                        <Typography className={!appConfigStore.tabName && classes.defaultTabValue || ''}>
+                        <Typography className={(!appConfigStore.tabName && classes.defaultTabValue) || ''}>
                             {appConfigStore.tabName || 'По умолчанию'}
                         </Typography>
                     ),

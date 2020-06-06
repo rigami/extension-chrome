@@ -74,7 +74,7 @@ function Categories(props) {
                     key={id}
                     icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
                     label={name}
-                    className={selectedCategories.indexOf(id) !== -1 && classes.chipActive || ''}
+                    className={(selectedCategories.indexOf(id) !== -1 && classes.chipActive) || ''}
                     variant="outlined"
                     onClick={() => {
                         if (~selectedCategories.indexOf(id)) {

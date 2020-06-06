@@ -35,16 +35,16 @@ function BGCard({ src }) {
 
 const MemoBGCard = memo(BGCard);
 
-function BackgroundsSection ({ onSelect }) {
+function BackgroundsSection({ onSelect }) {
     const backgroundsStore = useBackgroundsService();
     const [bgs, setBgs] = useState(null);
 
     useEffect(() => {
         backgroundsStore.getSrcs({ type: 'preview' })
-        .then((links) => setBgs(links))
-        .catch((e) => {
-            console.error('Failed load bg`s from db:', e);
-        });
+            .then((links) => setBgs(links))
+            .catch((e) => {
+                console.error('Failed load bg`s from db:', e);
+            });
     }, [backgroundsStore.count]);
 
     return useObserver(() => (
@@ -64,10 +64,10 @@ function BackgroundsSection ({ onSelect }) {
                 {bgs && bgs.length > 8 && (
                     <Avatar
                         variant="rounded" style={{
-                        width: 48,
-                        height: 48,
-                        marginRight: 8,
-                    }}
+                            width: 48,
+                            height: 48,
+                            marginRight: 8,
+                        }}
                     >
                         <MoreIcon />
                     </Avatar>
@@ -96,7 +96,7 @@ function BackgroundsSection ({ onSelect }) {
 
 const MemoBackgroundsSection = memo(BackgroundsSection);
 
-function SchedulerSection ({ onSelect }) {
+function SchedulerSection({ onSelect }) {
     const backgroundsStore = useBackgroundsService();
 
     return useObserver(() => (
@@ -179,11 +179,9 @@ function SchedulerSection ({ onSelect }) {
     ));
 }
 
-const MemoSchedulerSection  = memo(SchedulerSection );
+const MemoSchedulerSection = memo(SchedulerSection);
 
 function BackgroundsMenu({ onSelect, onClose }) {
-    const backgroundsStore = useBackgroundsService();
-
     return useObserver(() => (
         <React.Fragment>
             <PageHeader title={locale.settings.backgrounds.title} onBack={() => onClose()} />

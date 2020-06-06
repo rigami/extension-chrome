@@ -8,22 +8,22 @@
     "minimum_chrome_version": "48",
     "offline_enabled": true,
     "icons":{
-		"16":"resource/16x16.png",
-		"32":"resource/32x32.png",
-		"64":"resource/64x64.png",
-		"128":"resource/128x128.png"
+        "16":"resource/16x16.png",
+        "32":"resource/32x32.png",
+        "64":"resource/64x64.png",
+        "128":"resource/128x128.png"
     },
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
     "description":"Простая и красивая новая вкладка для chrome",
     "permissions":[
-		"activeTab",
-		"storage",
-		"unlimitedStorage",
-		"*://*/*",
-		"http://danilkinkin.com/",
-		"notifications"
+        "activeTab",
+        "storage",
+        "unlimitedStorage",
+        "*://*/*",
+        "http://danilkinkin.com/",
+        "notifications"
     ],
     "chrome_url_overrides": {
-		"newtab": "index.html"
+        "newtab": "index.html"
     }
 }

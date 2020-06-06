@@ -101,7 +101,9 @@ function CategoryHeader({ id, color, name, children }) {
                     <ListItemSecondaryAction className={classes.actions}>
                         <Tooltip
                             title={
-                                isPin() ? 'Открепить от панели быстрого доступа' : 'Закрепить на панели быстрого доступа'
+                                isPin()
+                                    ? 'Открепить от панели быстрого доступа'
+                                    : 'Закрепить на панели быстрого доступа'
                             }
                         >
                             <IconButton onClick={handlePin}>

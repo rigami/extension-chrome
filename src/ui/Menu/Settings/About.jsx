@@ -64,7 +64,7 @@ function About({ onClose }) {
                             && chrome.runtime.getManifest
                             && chrome.runtime.getManifest().version
                         )
-                        || "-"
+                        || '-'
                     }
                 </Typography>
             </Box>

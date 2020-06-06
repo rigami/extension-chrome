@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState } from 'react';
 import {
     Button,
     Card,
@@ -58,7 +58,14 @@ const useStyles = makeStyles((theme) => ({
     addDescriptionButton: { marginTop: theme.spacing(2) },
 }));
 
-function BGPreview ({ url, name, type, description, onChangeType }) {
+function BGPreview(props) {
+    const {
+        url,
+        name,
+        type,
+        description,
+        onChangeType,
+    } = props;
     const classes = useStyles();
 
     return (
@@ -96,13 +103,13 @@ function BGPreview ({ url, name, type, description, onChangeType }) {
             )}
             {!url && (
                 <FullScreenStub
-                    iconRender={(props) => (<URLIcon {...props} />)}
+                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
                     description="Укажите адрес"
                 />
             )}
             {!name && url && (
                 <FullScreenStub
-                    iconRender={(props) => (<URLIcon {...props} />)}
+                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
                     description="Дайте закладке имя"
                 />
             )}

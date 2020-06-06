@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     Card,
     IconButton,
@@ -69,9 +69,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
             <Card
                 className={classes.card}
                 elevation={12}
-                style={{
-                    marginBottom: theme.spacing(2),
-                }}
+                style={{ marginBottom: theme.spacing(2) }}
                 ref={fastAl}
             >
                 {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }) => (

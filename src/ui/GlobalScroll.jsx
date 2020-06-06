@@ -33,7 +33,7 @@ function GlobalScroll({ children }) {
     const handlerScrollStop = ({ scrollTop }) => {
         if (
             (store.scrollDirection === 'down' && scrollTop < 150)
-			|| (store.scrollDirection === 'up' && scrollTop < document.documentElement.clientHeight - 150)
+            || (store.scrollDirection === 'up' && scrollTop < document.documentElement.clientHeight - 150)
         ) {
             store.scrollbar.contentElement.parentElement.scrollTo({
                 behavior: 'smooth',

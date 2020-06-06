@@ -151,7 +151,7 @@ function MenuRow(props) {
                                         return locale.global.nothing_selected;
                                     } else if (
                                         actionProps.values && actionProps.value
-										&& (actionProps.values.length === actionProps.value.length)
+                                        && (actionProps.values.length === actionProps.value.length)
                                     ) {
                                         return locale.global.all;
                                     } else {
