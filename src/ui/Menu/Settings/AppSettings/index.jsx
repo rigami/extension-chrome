@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { Typography } from '@material-ui/core';
 import locale from '@/i18n/RU';
-import PageHeader from '@/ui/Menu/PageHeader';
 import { makeStyles } from '@material-ui/core/styles';
-import MenuRow,
-{ ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import { observer } from 'mobx-react-lite';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
+import { useObserver } from 'mobx-react-lite';
 import { THEME } from '@/dict';
 import { useService as useAppConfigService } from '@/stores/app';
 import MenuInfo from '@/ui/Menu/MenuInfo';
-import TabNamePage from './TabName';
+import { content as TabNamePageContent, header as tabNamePageHeader } from './TabName';
 
 const useStyles = makeStyles((theme) => ({
     defaultTabValue: {
@@ -18,15 +16,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function AppSettings({ onSelect, onClose }) {
+const headerProps = { title: locale.settings.app.title };
+
+function AppSettings({ onSelect }) {
     const classes = useStyles();
     const appConfigStore = useAppConfigService();
     const [, setForceUpdate] = useState(0);
     const [defaultFontValue] = useState(appConfigStore.useSystemFont);
 
-    return (
+    return useObserver(() => (
         <React.Fragment>
-            <PageHeader title={locale.settings.app.title} onBack={() => onClose()} />
             <MenuRow
                 title="Тёмная тема подложки"
                 width={520}
@@ -73,7 +72,7 @@ function AppSettings({ onSelect, onClose }) {
                 width={520}
                 action={{
                     type: ROWS_TYPE.LINK,
-                    onClick: () => onSelect(TabNamePage),
+                    onClick: () => onSelect({ content: TabNamePageContent, header: tabNamePageHeader }),
                     component: (
                         <Typography className={(!appConfigStore.tabName && classes.defaultTabValue) || ''}>
                             {appConfigStore.tabName || 'По умолчанию'}
@@ -82,7 +81,7 @@ function AppSettings({ onSelect, onClose }) {
                 }}
             />
         </React.Fragment>
-    );
+    ));
 }
 
-export default observer(AppSettings);
+export { headerProps as header, AppSettings as content };

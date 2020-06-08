@@ -1,24 +1,18 @@
 import React from 'react';
-
-import { observer } from 'mobx-react-lite';
+import { useObserver } from 'mobx-react-lite';
 import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/dict';
 import { Collapse } from '@material-ui/core';
-import {
-
-} from '@material-ui/icons';
-
 import locale from '@/i18n/RU';
-import PageHeader from '@/ui/Menu/PageHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-// import PropTypes from 'prop-types';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 
-function BookmarksSettings({ onClose }) {
+const headerProps = { title: locale.settings.bookmarks.title };
+
+function BookmarksSettings() {
     const bookmarksStore = useBookmarksService();
 
-    return (
+    return useObserver(() => (
         <React.Fragment>
-            <PageHeader title={locale.settings.bookmarks.title} onBack={() => onClose()} />
             <MenuRow
                 title={locale.settings.bookmarks.use_fap}
                 action={{
@@ -52,9 +46,7 @@ function BookmarksSettings({ onClose }) {
                 />
             </Collapse>
         </React.Fragment>
-    );
+    ));
 }
 
-// BookmarksSettings.propTypes = { onClose: PropTypes.func.isRequired };
-
-export default observer(BookmarksSettings);
+export { headerProps as header, BookmarksSettings as content };

@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
     Box,
     Avatar,
@@ -20,11 +19,8 @@ import {
     EmailRounded as EmailIcon,
     PolicyRounded as PolicyIcon,
 } from '@material-ui/icons';
-
 import locale from '@/i18n/RU';
-import PageHeader from '@/ui/Menu/PageHeader';
 import { makeStyles } from '@material-ui/core/styles';
-// import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
     splash: {
@@ -45,12 +41,13 @@ const useStyles = makeStyles((theme) => ({
     row: { width: 520 },
 }));
 
-function About({ onClose }) {
+const headerProps = { title: locale.settings.about.title };
+
+function About() {
     const classes = useStyles();
 
     return (
         <React.Fragment>
-            <PageHeader title={locale.settings.about.title} onBack={() => onClose()} />
             <Box className={classes.splash}>
                 <Avatar className={classes.appIcon} variant="rounded">
                     <SettingsIcon fontSize="large" />
@@ -143,6 +140,4 @@ function About({ onClose }) {
     );
 }
 
-// About.propTypes = { onClose: PropTypes.func.isRequired };
-
-export default About;
+export { headerProps as header, About as content };

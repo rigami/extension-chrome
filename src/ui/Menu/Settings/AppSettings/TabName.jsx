@@ -1,17 +1,13 @@
 import React from 'react';
-
 import {
     TextField,
     Box,
     Typography,
 } from '@material-ui/core';
-
 import locale from '@/i18n/RU';
-import PageHeader from '@/ui/Menu/PageHeader';
 import { makeStyles } from '@material-ui/core/styles';
-import { observer } from 'mobx-react-lite';
+import { useObserver } from 'mobx-react-lite';
 import TabNameExampleImage from '@/images/tabName.svg';
-// import PropTypes from 'prop-types';
 import { useService as useAppConfigService } from '@/stores/app';
 
 const useStyles = makeStyles((theme) => ({
@@ -33,13 +29,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function TabName({ onClose }) {
+const headerProps = { title: locale.settings.app.tab_name };
+
+function TabName() {
     const appConfigStore = useAppConfigService();
     const classes = useStyles();
 
-    return (
+    return useObserver(() => (
         <React.Fragment>
-            <PageHeader title={locale.settings.app.tab_name} onBack={() => onClose()} />
             <Box className={classes.splash}>
                 <TabNameExampleImage />
                 <span
@@ -76,9 +73,7 @@ function TabName({ onClose }) {
                 />
             </Box>
         </React.Fragment>
-    );
+    ));
 }
 
-// TabName.propTypes = { onClose: PropTypes.func.isRequired };
-
-export default observer(TabName);
+export { headerProps as header, TabName as content };

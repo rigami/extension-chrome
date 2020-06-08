@@ -12,12 +12,13 @@ import {
 } from '@material-ui/icons';
 
 import locale from '@/i18n/RU';
-import PageHeader from '@/ui/Menu/PageHeader';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import FSConnector from '@/utils/fsConnector';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
-import LibraryPage from './Library';
+import { content as LibraryPageContent, header as LibraryPageHeader } from './Library';
+
+const headerProps = { title: locale.settings.backgrounds.title };
 
 function BGCard({ src }) {
     return (
@@ -55,7 +56,7 @@ function BackgroundsSection({ onSelect }) {
                 description={locale.settings.backgrounds.general.library.description(backgroundsStore.count)}
                 action={{
                     type: ROWS_TYPE.LINK,
-                    onClick: () => onSelect(LibraryPage),
+                    onClick: () => onSelect({ content: LibraryPageContent, header: LibraryPageHeader }),
                 }}
             >
                 {bgs && bgs.slice(0, 8).map((src) => (
@@ -184,11 +185,10 @@ const MemoSchedulerSection = memo(SchedulerSection);
 function BackgroundsMenu({ onSelect, onClose }) {
     return useObserver(() => (
         <React.Fragment>
-            <PageHeader title={locale.settings.backgrounds.title} onBack={() => onClose()} />
             <MemoBackgroundsSection onSelect={onSelect} />
             <MemoSchedulerSection onSelect={onSelect} />
         </React.Fragment>
     ));
 }
 
-export default BackgroundsMenu;
+export { headerProps as header, BackgroundsMenu as content };

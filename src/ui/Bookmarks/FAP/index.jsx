@@ -56,16 +56,18 @@ const useStyles = makeStyles((theme) => ({
             height: 0,
         },
     },
-    absolutePanel: {
+    disablePadding: {
+        padding: 0,
+        paddingLeft: theme.spacing(1),
+    },
+    absoluteCard: {
         position: 'fixed',
         top: theme.spacing(3),
     },
-    panelTransparent: {
+    cardTransparent: {
         background: 'none',
         backdropFilter: 'none',
         boxShadow: 'none',
-        padding: 0,
-        paddingLeft: theme.spacing(1),
     },
     iconButton: {
         marginRight: theme.spacing(1),
@@ -153,7 +155,14 @@ function FAP() {
                 )}
                 style={{ height: 40 + theme.spacing(3 + (appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 2)) }}
             >
-                <Card elevation={12} className={classes.card}>
+                <Card
+                    elevation={12}
+                    className={clsx(
+                        classes.card,
+                        appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.cardTransparent,
+                        appService.fapPosition === BKMS_FAP_POSITION.TOP && classes.absoluteCard,
+                    )}
+                >
                     <ScrollContainer
                         vertical={false}
                         horizontal
@@ -162,8 +171,7 @@ function FAP() {
                         onWheel={console.log()}
                         className={clsx(
                             classes.panel,
-                            appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.panelTransparent,
-                            appService.fapPosition === BKMS_FAP_POSITION.TOP && classes.absolutePanel,
+                            appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.disablePadding,
                         )}
                         ref={scrollRef}
                     >

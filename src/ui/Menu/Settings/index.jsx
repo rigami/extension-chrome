@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
     ListItem,
     ListItemText,
@@ -14,15 +13,12 @@ import {
     HelpRounded as AboutIcon,
     BackupRounded as BackupIcon,
 } from '@material-ui/icons';
-
 import locale from '@/i18n/RU';
-import Header from '@/ui/Menu/PageHeader';
 import { makeStyles } from '@material-ui/core/styles';
-// import PropTypes from 'prop-types';
-import BackgroundsPage from './Backgrounds';
-import AboutPage from './About';
-import AppSettingsPage from './AppSettings';
-import BookmarksPage from './Bookmarks';
+import { content as BackgroundsPageContent, header as backgroundsPageHeader } from './Backgrounds';
+import { content as AboutPageContent, header as aboutPageHeader } from './About';
+import { content as AppSettingsPageContent, header as appSettingsPageHeader } from './AppSettings';
+import { content as BookmarksPageContent, header as bookmarksPageHeader } from './Bookmarks';
 
 const useStyles = makeStyles((theme) => ({
     divider: {
@@ -37,7 +33,8 @@ const general = [
         description: locale.settings.backgrounds.description,
         icon: <BackgroundsIcon />,
         id: 'backgrounds',
-        page: BackgroundsPage,
+        header: backgroundsPageHeader,
+        content: BackgroundsPageContent,
         color: '#2675F0',
     },
     {
@@ -45,7 +42,8 @@ const general = [
         description: locale.settings.bookmarks.description,
         icon: <BookmarksIcon />,
         id: 'bookmarks',
-        page: BookmarksPage,
+        header: bookmarksPageHeader,
+        content: BookmarksPageContent,
         color: '#ff4f88',
     },
     {
@@ -53,7 +51,8 @@ const general = [
         description: locale.settings.app.description,
         icon: <SettingsIcon />,
         id: 'app',
-        page: AppSettingsPage,
+        header: appSettingsPageHeader,
+        content: AppSettingsPageContent,
         color: '#F88317',
     },
     {
@@ -70,15 +69,19 @@ const additional = [
         description: locale.settings.about.description,
         icon: <AboutIcon />,
         id: 'about',
-        page: AboutPage,
+        header: aboutPageHeader,
+        content: AboutPageContent,
         color: '#9C27B0',
     },
 ];
 
+const headerProps = { title: locale.settings.title };
+
 function Row(props) {
     const {
         title,
-        page,
+        content,
+        header,
         color,
         description,
         icon: Icon,
@@ -88,9 +91,9 @@ function Row(props) {
     return (
         <ListItem
             button
-            onClick={() => onSelect(page)}
+            onClick={() => onSelect({ header, content })}
             style={{ width: 520 }}
-            disabled={!page}
+            disabled={!content}
         >
             <ListItemAvatar>
                 <Avatar style={{ backgroundColor: color }}>
@@ -102,26 +105,11 @@ function Row(props) {
     );
 }
 
-/* Row.propTypes = {
-    title: PropTypes.string.isRequired,
-    page: PropTypes.object,
-    color: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    icon: PropTypes.element.isRequired,
-    onSelect: PropTypes.func.isRequired,
-};
-
-Row.defaultProps = {
-    page: null,
-    description: null,
-}; */
-
-function GeneralMenu({ onClose, onSelect }) {
+function GeneralMenu({ onSelect }) {
     const classes = useStyles();
 
     return (
         <React.Fragment>
-            <Header title={locale.settings.title} onBack={() => onClose()} />
             {general.map((row) => (
                 <Row key={row.id} onSelect={onSelect} {...row} />
             ))}
@@ -133,9 +121,5 @@ function GeneralMenu({ onClose, onSelect }) {
     );
 }
 
-/* GeneralMenu.propTypes = {
-    onClose: PropTypes.func.isRequired,
-    onSelect: PropTypes.func.isRequired,
-}; */
-
 export default GeneralMenu;
+export { headerProps as header };

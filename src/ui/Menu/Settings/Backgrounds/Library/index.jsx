@@ -22,7 +22,7 @@ import locale from '@/i18n/RU';
 import PageHeader from '@/ui/Menu/PageHeader';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import { makeStyles } from '@material-ui/core/styles';
-import { observer } from 'mobx-react-lite';
+import { useObserver } from 'mobx-react-lite';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
@@ -89,6 +89,27 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const headerProps = {
+    title: locale.settings.backgrounds.general.library.title,
+    actions: (
+        <React.Fragment>
+            <LoadBGFromLocalButton />
+            <Tooltip title="Пока недоступно">
+                <div>
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        startIcon={<GetFromLibraryIcon />}
+                        disabled
+                    >
+                        {locale.settings.backgrounds.general.library.get_from_library}
+                    </Button>
+                </div>
+            </Tooltip>
+        </React.Fragment>
+    ),
+    style: { width: 960 },
+};
 
 function BGCard({ fileName, onSet, onRemove }) {
     const classes = useStyles();
@@ -122,7 +143,7 @@ function BGCard({ fileName, onSet, onRemove }) {
 
 const MemoBGCard = memo(BGCard);
 
-function LibraryMenu({ onClose }) {
+function LibraryMenu() {
     const backgroundsStore = useBackgroundsService();
 
     const classes = useStyles();
@@ -143,30 +164,8 @@ function LibraryMenu({ onClose }) {
             });
     }, [backgroundsStore.count]);
 
-    return (
+    return useObserver(() => (
         <React.Fragment>
-            <PageHeader
-                title={locale.settings.backgrounds.general.library.title}
-                onBack={() => onClose()}
-                actions={(
-                    <React.Fragment>
-                        <LoadBGFromLocalButton />
-                        <Tooltip title="Пока недоступно">
-                            <div>
-                                <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    startIcon={<GetFromLibraryIcon />}
-                                    disabled
-                                >
-                                    {locale.settings.backgrounds.general.library.get_from_library}
-                                </Button>
-                            </div>
-                        </Tooltip>
-                    </React.Fragment>
-                )}
-                style={{ width: 960 }}
-            />
             {state === 'pending' && (
                 <Box className={classes.centerPage}>
                     <CircularProgress />
@@ -201,7 +200,7 @@ function LibraryMenu({ onClose }) {
                 </Box>
             )}
         </React.Fragment>
-    );
+    ));
 }
 
-export default observer(LibraryMenu);
+export { headerProps as header, LibraryMenu as content };

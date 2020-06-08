@@ -13,8 +13,9 @@ import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { BG_SELECT_MODE, BG_TYPE } from '@/dict';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
-import HomePage from './Settings';
+import HomePage, { header as homePageHeader } from './Settings';
 import FabMenu from './FabMenu';
+import Header from '@/ui/Menu/PageHeader'
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -35,12 +36,20 @@ function Menu({ }) {
 
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
-    const [stack, setStack] = useState([HomePage]);
+    const [stack, setStack] = useState([{ content: HomePage, header: homePageHeader }]);
     const [fastSettings, setFastSettings] = useState([]);
 
     const handleClose = () => {
-        setStack([HomePage]);
+        setStack([{ content: HomePage, header: homePageHeader }]);
         setIsOpen(false);
+    };
+
+    const handleBack = () => {
+        if (stack.length === 1) {
+            handleClose();
+        } else {
+            setStack(stack.slice(0, stack.length - 1));
+        }
     };
 
     useEffect(() => {
@@ -74,7 +83,8 @@ function Menu({ }) {
         }
     }, [backgroundsStore.currentBGId, backgroundsStore.bgState]);
 
-    const Page = stack[stack.length - 1];
+    const Page = stack[stack.length - 1].content;
+    const headerProps = stack[stack.length - 1] && stack[stack.length - 1].header;
 
     return (
         <React.Fragment>
@@ -93,14 +103,9 @@ function Menu({ }) {
                 disableEnforceFocus
             >
                 <List disablePadding className={classes.list}>
+                    <Header onBack={handleBack} {...headerProps}  />
                     <Page
-                        onClose={() => {
-                            if (stack.length === 1) {
-                                handleClose();
-                            } else {
-                                setStack(stack.slice(0, stack.length - 1));
-                            }
-                        }}
+                        onClose={handleBack}
                         onSelect={(page) => setStack([...stack, page])}
                     />
                 </List>
