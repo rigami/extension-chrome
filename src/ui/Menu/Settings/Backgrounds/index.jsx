@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import { useObserver } from 'mobx-react-lite';
+import { useObserver, observer } from 'mobx-react-lite';
 import { BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE } from '@/dict';
 import {
     Avatar,
@@ -10,7 +10,6 @@ import {
     MoreHorizRounded as MoreIcon,
     BrokenImageRounded as BrokenIcon,
 } from '@material-ui/icons';
-
 import locale from '@/i18n/RU';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
@@ -36,6 +35,36 @@ function BGCard({ src }) {
 
 const MemoBGCard = memo(BGCard);
 
+function LibraryRow({ bgs, onSelect }) {
+    return (
+        <MenuRow
+            title={locale.settings.backgrounds.general.library.title}
+            description={locale.settings.backgrounds.general.library.description(bgs && bgs.length)}
+            action={{
+                type: ROWS_TYPE.LINK,
+                onClick: () => onSelect({ content: LibraryPageContent, header: LibraryPageHeader }),
+            }}
+        >
+            {bgs && bgs.slice(0, 8).map((src) => (
+                <MemoBGCard src={src} key={src} />
+            ))}
+            {bgs && bgs.length > 8 && (
+                <Avatar
+                    variant="rounded" style={{
+                    width: 48,
+                    height: 48,
+                    marginRight: 8,
+                }}
+                >
+                    <MoreIcon />
+                </Avatar>
+            )}
+        </MenuRow>
+    );
+}
+
+const MemoLibraryRow = memo(LibraryRow);
+
 function BackgroundsSection({ onSelect }) {
     const backgroundsStore = useBackgroundsService();
     const [bgs, setBgs] = useState(null);
@@ -48,32 +77,10 @@ function BackgroundsSection({ onSelect }) {
             });
     }, [backgroundsStore.count]);
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
             <SectionHeader title={locale.settings.backgrounds.general.title} />
-            <MenuRow
-                title={locale.settings.backgrounds.general.library.title}
-                description={locale.settings.backgrounds.general.library.description(backgroundsStore.count)}
-                action={{
-                    type: ROWS_TYPE.LINK,
-                    onClick: () => onSelect({ content: LibraryPageContent, header: LibraryPageHeader }),
-                }}
-            >
-                {bgs && bgs.slice(0, 8).map((src) => (
-                    <MemoBGCard src={src} key={src} />
-                ))}
-                {bgs && bgs.length > 8 && (
-                    <Avatar
-                        variant="rounded" style={{
-                            width: 48,
-                            height: 48,
-                            marginRight: 8,
-                        }}
-                    >
-                        <MoreIcon />
-                    </Avatar>
-                )}
-            </MenuRow>
+            <MemoLibraryRow bgs={bgs} onSelect={onSelect} />
             <MenuRow
                 title={locale.settings.backgrounds.general.dimming_power.title}
                 description={locale.settings.backgrounds.general.dimming_power.description}
@@ -92,10 +99,10 @@ function BackgroundsSection({ onSelect }) {
                 type={ROWS_TYPE.SLIDER}
             />
         </React.Fragment>
-    ));
+    );
 }
 
-const MemoBackgroundsSection = memo(BackgroundsSection);
+const MemoBackgroundsSection = memo(observer(BackgroundsSection));
 
 function SchedulerSection({ onSelect }) {
     const backgroundsStore = useBackgroundsService();

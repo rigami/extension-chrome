@@ -19,10 +19,9 @@ import {
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import FSConnector from '@/utils/fsConnector';
 import locale from '@/i18n/RU';
-import PageHeader from '@/ui/Menu/PageHeader';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import { makeStyles } from '@material-ui/core/styles';
-import { useObserver } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
@@ -91,7 +90,12 @@ const useStyles = makeStyles((theme) => ({
 
 const headerProps = {
     title: locale.settings.backgrounds.general.library.title,
-    actions: (
+    actions: (<HeaderActions />),
+    style: { width: 960 },
+};
+
+function HeaderActions() {
+    return (
         <React.Fragment>
             <LoadBGFromLocalButton />
             <Tooltip title="Пока недоступно">
@@ -107,9 +111,8 @@ const headerProps = {
                 </div>
             </Tooltip>
         </React.Fragment>
-    ),
-    style: { width: 960 },
-};
+    );
+}
 
 function BGCard({ fileName, onSet, onRemove }) {
     const classes = useStyles();
@@ -164,7 +167,7 @@ function LibraryMenu() {
             });
     }, [backgroundsStore.count]);
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
             {state === 'pending' && (
                 <Box className={classes.centerPage}>
@@ -200,7 +203,9 @@ function LibraryMenu() {
                 </Box>
             )}
         </React.Fragment>
-    ));
+    );
 }
 
-export { headerProps as header, LibraryMenu as content };
+const ObserverLibraryMenu = observer(LibraryMenu);
+
+export { headerProps as header, ObserverLibraryMenu as content };

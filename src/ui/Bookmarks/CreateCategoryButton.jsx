@@ -41,22 +41,49 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function CreateCategoryButton({ isShowTitle, onCreate }) {
+function CreateCard ({ onCreate }) {
     const classes = useStyles();
-    const bookmarksStore = useBookmarksService();
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [isOpen, setIsOpen] = useState(false);
-    const [isBlockEvent, setIsBlockEvent] = useState(false);
     const [categoryName, setCategoryName] = useState('');
+    const bookmarksStore = useBookmarksService();
 
     const handlerSubmit = (event) => {
         event.preventDefault();
         if (categoryName.trim() !== '') {
-            setIsOpen(false);
+            onCreate();
             bookmarksStore.addCategory(categoryName)
-                .then((categoryId) => onCreate(categoryId));
+            .then((categoryId) => onCreate(categoryId));
         }
     };
+
+    return (
+        <Card className={classes.popper} elevation={16}>
+            <form onSubmit={handlerSubmit}>
+                <InputBase
+                    className={classes.input}
+                    placeholder="Категория"
+                    variant="outlined"
+                    autoFocus
+                    onChange={(event) => setCategoryName(event.target.value)}
+                />
+                <Button
+                    className={classes.saveButton}
+                    onClick={handlerSubmit}
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                >
+                    Сохранить
+                </Button>
+            </form>
+        </Card>
+    );
+}
+
+function CreateCategoryButton({ isShowTitle, onCreate }) {
+    const classes = useStyles();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isBlockEvent, setIsBlockEvent] = useState(false);
 
     return (
         <React.Fragment>
@@ -72,26 +99,12 @@ function CreateCategoryButton({ isShowTitle, onCreate }) {
                     open={isOpen} anchorEl={anchorEl} placement="bottom"
                     className={classes.popperWrapper}
                 >
-                    <Card className={classes.popper} elevation={16}>
-                        <form onSubmit={handlerSubmit}>
-                            <InputBase
-                                className={classes.input}
-                                placeholder="Категория"
-                                variant="outlined"
-                                autoFocus
-                                onChange={(event) => setCategoryName(event.target.value)}
-                            />
-                            <Button
-                                className={classes.saveButton}
-                                onClick={handlerSubmit}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                            >
-                                Сохранить
-                            </Button>
-                        </form>
-                    </Card>
+                    <CreateCard
+                        onCreate={() => {
+                            setIsOpen(false);
+                            onCreate();
+                        }}
+                    />
                 </Popper>
             </ClickAwayListener>
             <Tooltip title="Добавить новую категорию">

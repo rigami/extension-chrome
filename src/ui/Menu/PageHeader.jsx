@@ -35,6 +35,8 @@ const useStyles = makeStyles((theme) => ({
 function PageHeader({ title, onBack, actions, ...other }) {
     const classes = useStyles();
 
+    console.log("RENDER SECTION")
+
     return (
         <AppBar
             position="sticky" color="transparent" elevation={0}

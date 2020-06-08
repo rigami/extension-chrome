@@ -1,7 +1,5 @@
-import React from 'react';
-
-import { observer } from 'mobx-react-lite';
-
+import React, { memo } from 'react';
+import { useObserver } from 'mobx-react-lite';
 import { useSnackbar } from 'notistack';
 import { Button } from '@material-ui/core';
 import { Add as UploadFromComputerIcon } from '@material-ui/icons';
@@ -10,12 +8,13 @@ import locale from '@/i18n/RU';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 
 const useStyles = makeStyles(() => ({ input: { display: 'none' } }));
-function LoadBGFromLocalButton({}) {
+
+function LoadBGFromLocalButton() {
     const backgroundsStore = useBackgroundsService();
     const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
 
-    return (
+    return useObserver(() => (
         <React.Fragment>
             <input
                 className={classes.input}
@@ -50,7 +49,7 @@ function LoadBGFromLocalButton({}) {
                 </Button>
             </label>
         </React.Fragment>
-    );
+    ));
 }
 
-export default observer(LoadBGFromLocalButton);
+export default memo(LoadBGFromLocalButton);

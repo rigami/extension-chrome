@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import {
     Card,
     IconButton,
@@ -106,4 +106,4 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
 }
 
 
-export default FabMenu;
+export default memo(FabMenu);
