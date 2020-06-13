@@ -28,9 +28,12 @@ function ConfigurationApp({ children }) {
                     });
             });
 
-        window.oncontextmenu = (event) => {
-            event.preventDefault();
-        };
+
+        if (localStorage.getItem("mode") !== 'development') {
+            window.oncontextmenu = (event) => {
+                event.preventDefault();
+            };
+        }
     }, []);
 
     return (
