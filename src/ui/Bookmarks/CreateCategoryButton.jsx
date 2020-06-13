@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function CreateCard ({ onCreate }) {
+function CreateCard({ onCreate }) {
     const classes = useStyles();
     const [categoryName, setCategoryName] = useState('');
     const bookmarksStore = useBookmarksService();
@@ -51,7 +51,7 @@ function CreateCard ({ onCreate }) {
         if (categoryName.trim() !== '') {
             onCreate();
             bookmarksStore.addCategory(categoryName)
-            .then((categoryId) => onCreate(categoryId));
+                .then((categoryId) => onCreate(categoryId));
         }
     };
 

@@ -72,7 +72,10 @@ function AppSettings({ onSelect }) {
                 width={520}
                 action={{
                     type: ROWS_TYPE.LINK,
-                    onClick: () => onSelect({ content: TabNamePageContent, header: tabNamePageHeader }),
+                    onClick: () => onSelect({
+                        content: TabNamePageContent,
+                        header: tabNamePageHeader,
+                    }),
                     component: (
                         <Typography className={(!appConfigStore.tabName && classes.defaultTabValue) || ''}>
                             {appConfigStore.tabName || 'По умолчанию'}

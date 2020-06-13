@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 function PageHeader({ title, onBack, actions, ...other }) {
     const classes = useStyles();
 
-    console.log("RENDER SECTION")
+    console.log('RENDER SECTION');
 
     return (
         <AppBar

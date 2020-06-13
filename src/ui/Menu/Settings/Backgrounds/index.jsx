@@ -42,7 +42,10 @@ function LibraryRow({ bgs, onSelect }) {
             description={locale.settings.backgrounds.general.library.description(bgs && bgs.length)}
             action={{
                 type: ROWS_TYPE.LINK,
-                onClick: () => onSelect({ content: LibraryPageContent, header: LibraryPageHeader }),
+                onClick: () => onSelect({
+                    content: LibraryPageContent,
+                    header: LibraryPageHeader,
+                }),
             }}
         >
             {bgs && bgs.slice(0, 8).map((src) => (
@@ -51,10 +54,10 @@ function LibraryRow({ bgs, onSelect }) {
             {bgs && bgs.length > 8 && (
                 <Avatar
                     variant="rounded" style={{
-                    width: 48,
-                    height: 48,
-                    marginRight: 8,
-                }}
+                        width: 48,
+                        height: 48,
+                        marginRight: 8,
+                    }}
                 >
                     <MoreIcon />
                 </Avatar>
@@ -127,7 +130,10 @@ function SchedulerSection({ onSelect }) {
                     description="Измените фон рабочего стола"
                     action={{
                         type: ROWS_TYPE.LINK,
-                        onClick: () => onSelect(LibraryPage),
+                        onClick: () => onSelect({
+                            content: LibraryPageContent,
+                            header: LibraryPageHeader,
+                        }),
                         component: (
                             <Avatar
                                 src={
@@ -189,7 +195,7 @@ function SchedulerSection({ onSelect }) {
 
 const MemoSchedulerSection = memo(SchedulerSection);
 
-function BackgroundsMenu({ onSelect, onClose }) {
+function BackgroundsMenu({ onSelect }) {
     return useObserver(() => (
         <React.Fragment>
             <MemoBackgroundsSection onSelect={onSelect} />

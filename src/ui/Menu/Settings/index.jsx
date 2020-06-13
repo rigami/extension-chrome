@@ -91,7 +91,10 @@ function Row(props) {
     return (
         <ListItem
             button
-            onClick={() => onSelect({ header, content })}
+            onClick={() => onSelect({
+                header,
+                content,
+            })}
             style={{ width: 520 }}
             disabled={!content}
         >

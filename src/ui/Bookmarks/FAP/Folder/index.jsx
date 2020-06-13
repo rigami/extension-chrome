@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import Explorer from './Explorer';
+import EditMenu from '@/ui/Bookmarks/FAP/EditMenu'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -45,6 +46,21 @@ function Folder({ id, color, isBlurBackdrop }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
+    const [isOpenMenu, setIsOpenMenu] = useState(false);
+    const [position, setPosition] = useState(null);
+
+    const handlerContextMenu = (event) => {
+        event.preventDefault();
+        setPosition({
+            top: event.nativeEvent.clientY,
+            left: event.nativeEvent.clientX,
+        });
+        setIsOpenMenu(true);
+    };
+
+    const handleCloseMenu = () => {
+        setIsOpenMenu(false);
+    };
 
     return (
         <React.Fragment>
@@ -63,6 +79,13 @@ function Folder({ id, color, isBlurBackdrop }) {
                     <Explorer id={id} />
                 </Popper>
             </ClickAwayListener>
+            <EditMenu
+                id={id}
+                type="category"
+                isOpen={isOpenMenu}
+                onClose={handleCloseMenu}
+                position={position}
+            />
             <IconButton
                 ref={anchorEl}
                 className={clsx(classes.root, isOpen && classes.activeIconButton, isBlurBackdrop && classes.rootBlur)}
@@ -74,6 +97,7 @@ function Folder({ id, color, isBlurBackdrop }) {
                     if (isBlockEvent) setIsOpen(true);
                     setIsBlockEvent(false);
                 }}
+                onContextMenu={handlerContextMenu}
             >
                 <FolderIcon style={{ color }} />
             </IconButton>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import {
     Card,
@@ -9,16 +9,19 @@ import {
     ListItemAvatar,
     ListItemText,
     CircularProgress,
+    IconButton,
 } from '@material-ui/core';
 import {
     LinkRounded as LinkIcon,
     LabelRounded as LabelIcon,
+    MoreVertRounded as MoreIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
+import EditMenu from '@/ui/Bookmarks/FAP/EditMenu'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -42,6 +45,19 @@ function Folder({ id }) {
     const [category] = useState(bookmarksStore.getCategory(id));
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [position, setPosition] = useState(null);
+    const buttonRef = useRef(null);
+
+    const handleOpen = () => {
+        const { top, left } = buttonRef.current.getBoundingClientRect();
+        setPosition({ top, left });
+        setIsOpen(true);
+    };
+
+    const handleCloseMenu = () => {
+        setIsOpen(false);
+    };
 
     useEffect(() => {
         bookmarksStore.search({ categories: [id] }, true)
@@ -51,14 +67,30 @@ function Folder({ id }) {
             });
     }, []);
 
+
     return (
         <Card className={classes.root} elevation={16}>
+            <EditMenu
+                id={id}
+                type="category"
+                isOpen={isOpen}
+                onClose={handleCloseMenu}
+                position={position}
+            />
             <CardHeader
                 avatar={(
                     <LabelIcon style={{ color: category.color }} />
                 )}
                 title={category.name}
                 classes={{ avatar: classes.avatar }}
+                action={(
+                    <IconButton
+                        onClick={handleOpen}
+                        ref={buttonRef}
+                    >
+                        <MoreIcon />
+                    </IconButton>
+                )}
             />
             <List disablePadding className={classes.list}>
                 <Scrollbar>

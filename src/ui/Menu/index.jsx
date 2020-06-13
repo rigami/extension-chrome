@@ -13,9 +13,9 @@ import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { BG_SELECT_MODE, BG_TYPE } from '@/dict';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
+import Header from '@/ui/Menu/PageHeader';
 import HomePage, { header as homePageHeader } from './Settings';
 import FabMenu from './FabMenu';
-import Header from '@/ui/Menu/PageHeader'
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -36,11 +36,21 @@ function Menu({ }) {
 
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
-    const [stack, setStack] = useState([{ content: HomePage, header: homePageHeader }]);
+    const [stack, setStack] = useState([
+        {
+            content: HomePage,
+            header: homePageHeader,
+        },
+    ]);
     const [fastSettings, setFastSettings] = useState([]);
 
     const handleClose = () => {
-        setStack([{ content: HomePage, header: homePageHeader }]);
+        setStack([
+            {
+                content: HomePage,
+                header: homePageHeader,
+            },
+        ]);
         setIsOpen(false);
     };
 
@@ -103,7 +113,7 @@ function Menu({ }) {
                 disableEnforceFocus
             >
                 <List disablePadding className={classes.list}>
-                    <Header onBack={handleBack} {...headerProps}  />
+                    <Header onBack={handleBack} {...headerProps} />
                     <Page
                         onClose={handleBack}
                         onSelect={(page) => setStack([...stack, page])}

@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
-
 import { LinearProgress, Fade } from '@material-ui/core';
 import ConfigStores from '@/utils/configStores';
-
 import FullscreenStub from '@/ui-components/FullscreenStub';
-// import PropTypes from 'prop-types';
 import locale from '@/i18n/RU';
 
 function ConfigurationApp({ children }) {
@@ -29,7 +26,7 @@ function ConfigurationApp({ children }) {
             });
 
 
-        if (localStorage.getItem("mode") !== 'development') {
+        if (localStorage.getItem('mode') !== 'development') {
             window.oncontextmenu = (event) => {
                 event.preventDefault();
             };
