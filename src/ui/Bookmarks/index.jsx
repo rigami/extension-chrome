@@ -78,7 +78,10 @@ function Bookmarks() {
             return;
         }
 
+        console.log("RESEQRCH")
+
         if (bookmarksStore.lastTruthSearchTimestamp !== lastTruthSearchTimestamp && !isSearching) {
+            setIsSearching(true);
             handleSearch(bookmarksStore.lastSearch?.categories);
         }
     }, [bookmarksStore.lastTruthSearchTimestamp]);

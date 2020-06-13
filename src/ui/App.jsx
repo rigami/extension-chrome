@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { render } from 'react-dom';
 import { CssBaseline } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
-
 import { ThemeProvider } from '@material-ui/styles';
 import Snackbar from '@/ui-components/Snackbar';
 import UploadBGForm from '@/ui-components/UploadBGForm';
@@ -18,6 +17,7 @@ import FAP from './Bookmarks/FAP';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
 import GlobalScroll from './GlobalScroll';
+import GlobalModals from './GlobalModals';
 
 function App() {
     const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
@@ -52,6 +52,7 @@ function App() {
                     <FAP />
                     <Bookmarks />
                 </GlobalScroll>
+                <GlobalModals />
             </Nest>
         </ThemeProvider>
     );

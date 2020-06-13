@@ -32,7 +32,17 @@ function EditMenu({ className: externalClassName, id, type, isOpen, onClose, pos
         } else {
             bookmarksStore.addToFavorites({ type, id });
         }
+        onClose();
     };
+
+    const handleEdit = () => {
+        bookmarksStore.eventBus.dispatch(`edit${type}`, id);
+        onClose();
+    }
+    const handleRemove = () => {
+        bookmarksStore.eventBus.dispatch(`remove${type}`, id);
+        onClose();
+    }
 
     return (
         <React.Fragment>
@@ -53,13 +63,13 @@ function EditMenu({ className: externalClassName, id, type, isOpen, onClose, pos
                         }
                     />
                 </ListItem>
-                <ListItem button dense>
+                <ListItem button dense onClick={handleEdit}>
                     <ListItemIcon>
                         <EditIcon />
                     </ListItemIcon>
                     <ListItemText primary="Изменить" />
                 </ListItem>
-                <ListItem button dense>
+                <ListItem button dense onClick={handleRemove}>
                     <ListItemIcon>
                         <RemoveIcon />
                     </ListItemIcon>

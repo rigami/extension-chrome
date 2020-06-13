@@ -3,6 +3,7 @@ import StorageConnector from '@/utils/storageConnector';
 import { hslToRgb, recomposeColor } from '@material-ui/core/styles/colorManipulator';
 import DBConnector from '@/utils/dbConnector';
 import { cachingDecorator } from '@/utils/decorators';
+import EventBus from '@/utils/eventBus';
 
 class BookmarksStore {
     @observable fapStyle;
@@ -12,8 +13,11 @@ class BookmarksStore {
     @observable lastSearch = null;
     @observable lastTruthSearchTimestamp = null;
     @observable favorites = [];
+    eventBus;
 
     constructor() {
+        this.eventBus = new EventBus();
+
         StorageConnector.getItem('bkms_fap_style')
             .then((value) => { this.fapStyle = value; })
             .catch((e) => console.error(e));
@@ -84,6 +88,11 @@ class BookmarksStore {
             }))
             .then((id) => this._syncCategories()
                 .then(() => id));
+    }
+
+    @action('get bookmark')
+    getBookmark(bookmarkId) {
+        return DBConnector().get('bookmarks', bookmarkId);
     }
 
     @action('search bookmarks')
@@ -174,16 +183,26 @@ class BookmarksStore {
         return result;
     }
 
-    @action('add bookmarks')
-    addBookmark({
-        url, name, description, ico_url, categories, type,
-    }) {
-        return DBConnector().add('bookmarks', {
+    @action('save bookmarks')
+    saveBookmark(props) {
+        const {
+            url,
+            name,
+            description,
+            ico_url,
+            categories = [],
+            type,
+            id,
+        } = props;
+
+        const saveData = {
             url,
             name: name.trim(),
             description: description && description.trim(),
             type,
-        })
+        };
+
+        return (id ? DBConnector().put('bookmarks', { id, ...saveData }) : DBConnector().add('bookmarks', saveData))
             .then((bookmarkId) => Promise.all(
                 categories.map((categoryId) => DBConnector().add('bookmarks_by_categories', {
                     categoryId,

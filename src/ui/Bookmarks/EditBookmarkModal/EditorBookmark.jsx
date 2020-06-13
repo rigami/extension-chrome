@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import {
     Button,
     Card,
@@ -10,13 +10,14 @@ import {
     ButtonGroup,
 } from '@material-ui/core';
 import { AddRounded as AddIcon, LinkRounded as URLIcon } from '@material-ui/icons';
-import { observer } from 'mobx-react-lite';
+import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import locale from '@/i18n/RU';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import Categories from '../Ctegories';
+import { useSnackbar } from 'notistack';
 
 const { global: localeGlobal } = locale;
 
@@ -117,29 +118,50 @@ function BGPreview(props) {
     );
 }
 
-function Creator({ onSave, onCancel }) {
+function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     const classes = useStyles();
     const theme = useTheme();
+    const { enqueueSnackbar } = useSnackbar();
 
     const bookmarksStore = useBookmarksService();
-    const [url, setUrl] = useState('');
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [type, setType] = useState('default');
-    const [categories, setCategories] = useState([]);
+    const store = useLocalStore(() => ({
+        editBookmarkId,
+        url: '',
+        name: '',
+        description: null,
+        type: 'default',
+        categories: [],
+    }));
 
     const handlerSave = () => {
-        bookmarksStore.addBookmark({
-            url,
-            name,
-            description,
-            categories,
-            type,
+        bookmarksStore.saveBookmark({
+            ...store,
+            id: store.editBookmarkId,
         })
             .then(() => onSave());
     };
 
-    return (
+    useEffect(() => {
+        if (!editBookmarkId) return;
+
+        bookmarksStore.getBookmark(editBookmarkId)
+            .then((bookmark) => {
+                store.url = bookmark.url;
+                store.name = bookmark.name;
+                if (!!bookmark.description?.trim()) store.description = bookmark.description;
+                store.type = bookmark.type;
+            })
+            .catch((e) => {
+                console.error(e);
+                onCancel();
+                enqueueSnackbar({
+                    message: 'Ошибка загрузки данных закладки',
+                    variant: 'error',
+                });
+            });
+    }, []);
+
+    return useObserver(() => (
         <Container
             maxWidth="md"
             style={{
@@ -149,54 +171,57 @@ function Creator({ onSave, onCancel }) {
         >
             <Card className={classes.bgCardRoot} elevation={8}>
                 <BGPreview
-                    url={url !== ''}
-                    name={name}
-                    type={type}
-                    description={description}
-                    onChangeType={(newType) => setType(newType)}
+                    url={store.url !== ''}
+                    name={store.name}
+                    type={store.type}
+                    description={store.description}
+                    onChangeType={(newType) => { store.type = newType; }}
                 />
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
                         <Typography component="h5" variant="h5">
-                            Добавление закладки
+                            {!store.editBookmarkId ? 'Добавление закладки' : 'Редактирование закладки'}
                         </Typography>
                         <TextField
                             label="URL адрес"
                             variant="outlined"
                             fullWidth
+                            value={store.url}
                             className={classes.input}
-                            onChange={(event) => setUrl(event.target.value.trim())}
+                            onChange={(event) => { store.url = event.target.value.trim(); }}
                         />
                         <TextField
                             label="Название"
                             variant="outlined"
                             fullWidth
+                            value={store.name}
                             className={classes.input}
-                            onChange={(event) => setName(event.target.value.trim())}
+                            onChange={(event) => { store.name = event.target.value.trim(); }}
                         />
                         <Categories
                             className={classes.chipContainer}
                             sortByPopular
-                            onChange={(newCategories) => setCategories(newCategories)}
+                            onChange={(newCategories) => { store.categories = newCategories; }}
                             autoSelect
                         />
-                        {description !== null && (
+                        {store.description !== null && (
                             <TextField
                                 label="Описание"
                                 variant="outlined"
                                 fullWidth
+                                value={store.description}
                                 className={classes.input}
                                 multiline
                                 rows={3}
                                 rowsMax={3}
-                                onChange={(event) => setDescription(event.target.value.trim())}
+                                onChange={(event) => { store.description = event.target.value.trim(); }}
                             />
                         )}
-                        {description === null && (
+                        {store.description === null && (
                             <Button
                                 startIcon={<AddIcon />}
                                 className={classes.addDescriptionButton}
-                                onClick={() => setDescription('')}
+                                onClick={() => { store.description = ''; }}
                             >
                                 Добавить описание
                             </Button>
@@ -215,7 +240,7 @@ function Creator({ onSave, onCancel }) {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                disabled={!url || !name}
+                                disabled={!store.url || !store.name}
                                 onClick={handlerSave}
                             >
                                 Сохранить
@@ -225,7 +250,7 @@ function Creator({ onSave, onCancel }) {
                 </div>
             </Card>
         </Container>
-    );
+    ));
 }
 
-export default observer(Creator);
+export default observer(EditorBookmark);

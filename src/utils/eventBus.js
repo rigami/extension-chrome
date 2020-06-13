@@ -4,6 +4,8 @@ class EventBus {
     nextListenerId = 0;
 
     dispatch(event, props) {
+        if (!(event in this.byEvents)) return;
+
         this.byEvents[event].forEach((listenerId) => {
             this.listeners[listenerId].callback(props);
         })
@@ -36,3 +38,5 @@ class EventBus {
         delete this.listeners[removeListenerId];
     }
 }
+
+export default EventBus;

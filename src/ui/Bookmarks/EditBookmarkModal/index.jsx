@@ -1,12 +1,12 @@
 import React from 'react';
 import { Drawer } from '@material-ui/core';
-import Creator from './Creator';
+import EditorBookmark from './EditorBookmark';
 
-function CreateBookmarkModal({ isOpen, onClose }) {
+function EditBookmarkModal({ isOpen, onClose, ...other }) {
     return (
         <Drawer
             anchor="bottom"
-            open={isOpen}
+            open={!!isOpen}
             PaperProps={{
                 elevation: 0,
                 style: { background: 'none' },
@@ -14,9 +14,9 @@ function CreateBookmarkModal({ isOpen, onClose }) {
             onClose={onClose}
             disableEnforceFocus
         >
-            <Creator onSave={onClose} onCancel={onClose} />
+            <EditorBookmark onSave={onClose} onCancel={onClose} {...other} />
         </Drawer>
     );
 }
 
-export default CreateBookmarkModal;
+export default EditBookmarkModal;

@@ -51,7 +51,17 @@ function EditMenu({ className: externalClassName, bookmarkId }) {
                 id: bookmarkId,
             });
         }
+        setIsOpen(false);
     };
+
+    const handleEdit = () => {
+        bookmarksStore.eventBus.dispatch('editbookmark', bookmarkId);
+        setIsOpen(false);
+    }
+    const handleRemove = () => {
+        bookmarksStore.eventBus.dispatch('removebookmark', bookmarkId);
+        setIsOpen(false);
+    }
 
     return (
         <React.Fragment>
@@ -79,13 +89,13 @@ function EditMenu({ className: externalClassName, bookmarkId }) {
                         }
                     />
                 </ListItem>
-                <ListItem button dense>
+                <ListItem button dense onClick={handleEdit}>
                     <ListItemIcon>
                         <EditIcon />
                     </ListItemIcon>
                     <ListItemText primary="Изменить" />
                 </ListItem>
-                <ListItem button dense>
+                <ListItem button dense onClick={handleRemove}>
                     <ListItemIcon>
                         <RemoveIcon />
                     </ListItemIcon>
