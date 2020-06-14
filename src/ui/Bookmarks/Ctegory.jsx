@@ -76,53 +76,55 @@ function CategoryHeader({ id, color, name, children }) {
 
     return (
         <Box className={classes.root}>
-            <ListItem
-                disableGutters
-                component="div"
-                classes={{
-                    root: classes.root,
-                    container: classes.container,
-                }}
-            >
-                {id !== 'best' && (
-                    <ListItemIcon style={{ minWidth: 36 }}>
-                        <LabelIcon style={{ color }} />
-                    </ListItemIcon>
-                )}
-                <ListItemText
+            {id !== 'all' && (
+                <ListItem
+                    disableGutters
+                    component="div"
                     classes={{
-                        root: classes.text,
-                        primary: classes.title,
-                        secondary: classes.description,
+                        root: classes.root,
+                        container: classes.container,
                     }}
-                    primary={name || 'Неизвестная категория'}
-                />
-                {id !== 'best' && !isEdit && (
-                    <ListItemSecondaryAction className={classes.actions}>
-                        <Tooltip
-                            title={
-                                isPin()
-                                    ? 'Открепить от панели быстрого доступа'
-                                    : 'Закрепить на панели быстрого доступа'
-                            }
-                        >
-                            <IconButton onClick={handlePin}>
-                                {isPin() ? (<UnpinnedFavoriteIcon />) : (<PinnedFavoriteIcon />)}
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Изменить">
-                            <IconButton onClick={() => setIsEdit(true)}>
-                                <EditIcon />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Удалить">
-                            <IconButton>
-                                <RemoveIcon />
-                            </IconButton>
-                        </Tooltip>
-                    </ListItemSecondaryAction>
-                )}
-            </ListItem>
+                >
+                    {id !== 'best' && (
+                        <ListItemIcon style={{ minWidth: 36 }}>
+                            <LabelIcon style={{ color }} />
+                        </ListItemIcon>
+                    )}
+                    <ListItemText
+                        classes={{
+                            root: classes.text,
+                            primary: classes.title,
+                            secondary: classes.description,
+                        }}
+                        primary={name || 'Неизвестная категория'}
+                    />
+                    {id !== 'best' && !isEdit && (
+                        <ListItemSecondaryAction className={classes.actions}>
+                            <Tooltip
+                                title={
+                                    isPin()
+                                        ? 'Открепить от панели быстрого доступа'
+                                        : 'Закрепить на панели быстрого доступа'
+                                }
+                            >
+                                <IconButton onClick={handlePin}>
+                                    {isPin() ? (<UnpinnedFavoriteIcon />) : (<PinnedFavoriteIcon />)}
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Изменить">
+                                <IconButton onClick={() => setIsEdit(true)}>
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Удалить">
+                                <IconButton>
+                                    <RemoveIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </ListItemSecondaryAction>
+                    )}
+                </ListItem>
+            )}
             <Box className={classes.bookmarksWrapper}>
                 {children}
             </Box>

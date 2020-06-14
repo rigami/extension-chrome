@@ -150,6 +150,16 @@ class BookmarksStore {
         const findBookmarksByCategories = {};
         const result = [];
         const bestMatches = [];
+        const allBookmarks = [];
+
+        if (categories.length === 0) {
+            const bookmarks = await stores.bookmarks.getAll();
+
+            bookmarks.forEach((bookmark) => {
+                findBookmarks[bookmark.id] = bookmark;
+            });
+        }
+
         let cursor = await stores.bookmarks_by_categories.openCursor();
 
         let cursorCategoryId;
@@ -186,14 +196,26 @@ class BookmarksStore {
             if (score === categories.length) {
                 bestMatches.push(findBookmarks[bookmarkId]);
             }
+
+            allBookmarks.push(findBookmarks[bookmarkId]);
         }
 
         await tx.done;
 
-        for (const categoryId in findCategories) {
-            result.push({
-                category: findCategories[categoryId],
-                bookmarks: findBookmarksByCategories[categoryId],
+        if (categories.length !== 0) {
+            for (const categoryId in findCategories) {
+                result.push({
+                    category: findCategories[categoryId],
+                    bookmarks: findBookmarksByCategories[categoryId],
+                });
+            }
+        } else {
+            result.unshift({
+                category: {
+                    id: 'all',
+                    name: 'Все закладки',
+                },
+                bookmarks: allBookmarks,
             });
         }
 

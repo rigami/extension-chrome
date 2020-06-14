@@ -8,8 +8,13 @@ import {
     Typography,
     TextField,
     ButtonGroup,
+    Box,
 } from '@material-ui/core';
-import { AddRounded as AddIcon, LinkRounded as URLIcon } from '@material-ui/icons';
+import {
+    AddRounded as AddIcon,
+    LinkRounded as URLIcon,
+    WarningRounded as WarnIcon,
+} from '@material-ui/icons';
 import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import locale from '@/i18n/RU';
@@ -57,6 +62,15 @@ const useStyles = makeStyles((theme) => ({
     input: { marginTop: theme.spacing(2) },
     chipContainer: { marginTop: theme.spacing(2) },
     addDescriptionButton: { marginTop: theme.spacing(2) },
+    warnMessage: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(1, 0),
+        color: theme.palette.warning.main,
+    },
+    warnIcon: {
+        marginRight: theme.spacing(1),
+    },
 }));
 
 function BGPreview(props) {

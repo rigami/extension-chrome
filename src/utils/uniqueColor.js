@@ -1,6 +1,7 @@
 import { hslToRgb, recomposeColor } from '@material-ui/core/styles/colorManipulator';
 
 function getUniqueColor(key) {
+    const computeKey = key % 98;
     const stepH = 30;
     const shiftH = 20;
     const stepReductionH = 3;
@@ -13,8 +14,8 @@ function getUniqueColor(key) {
         l: 60,
     }
 
-    const angle = key % 12;
-    const stage = Math.floor(key / 12);
+    const angle = computeKey % 12;
+    const stage = Math.floor(computeKey / 12);
 
     color.h = color.h - Math.max(stepH - stepReductionH * stage, 7) * angle - shiftH * stage;
 
@@ -27,10 +28,6 @@ function getUniqueColor(key) {
     if (color.l <= 15) {
         color.l = 15;
         color.s = color.s - stage * stepS;
-
-        if (color.s < 32) {
-            return getUniqueColor(key - 84);
-        }
     }
 
     return hslToRgb(recomposeColor({
