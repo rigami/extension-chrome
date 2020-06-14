@@ -57,8 +57,8 @@ class BackgroundsStore {
                 StorageConnector.getJSONItem('bg_current')
                     .then((value) => {
                         this._currentBG = value;
-                        this.currentBGId = this._currentBG.id;
                         this.bgState = value.pause ? 'pause' : 'play';
+                        this.currentBGId = this._currentBG.id;
                     })
                     .catch(() => this.nextBG());
             });
