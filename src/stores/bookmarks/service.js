@@ -270,6 +270,20 @@ class BookmarksStore {
             saveBookmarkId = await DBConnector().add('bookmarks', saveData);
         }
 
+        const categoriesNow = await DBConnector().getAllFromIndex(
+            'bookmarks_by_categories',
+            'bookmark_id',
+            saveBookmarkId
+        );
+
+        await Promise.all(
+            categoriesNow.map(({ categoryId, id }) => {
+                if (~categories.indexOf(categoryId)) return;
+
+                return DBConnector().delete('bookmarks_by_categories', id);
+            }),
+        );
+
         await Promise.all(
             categories.map((categoryId) => {
                 if (~oldCategories.indexOf(categoryId)) return;
