@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function BGPreview(props) {
+function Preview(props) {
     const {
         url,
         name,
@@ -113,6 +113,7 @@ function BGPreview(props) {
                         description={description}
                         categories={[]}
                         type={type}
+                        preview
                     />
                 </React.Fragment>
             )}
@@ -186,7 +187,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
             }}
         >
             <Card className={classes.bgCardRoot} elevation={8}>
-                <BGPreview
+                <Preview
                     url={store.url !== ''}
                     name={store.name}
                     type={store.type}

@@ -104,6 +104,7 @@ function CardLink(props) {
         categories,
         type,
         description,
+        preview = false,
         ...other
     } = props;
     const classes = useStyles();
@@ -143,7 +144,10 @@ function CardLink(props) {
             enterNextDelay={400}
         >
             <Card className={classes.root} variant="outlined" {...other}>
-                <CardActionArea className={classes.rootActionWrapper} onContextMenu={handlerContextMenu}>
+                <CardActionArea
+                    className={classes.rootActionWrapper}
+                    onContextMenu={!preview ? handlerContextMenu : undefined}
+                >
                     <Box className={type === 'extend' ? classes.extendBanner : classes.banner}>
                         <Avatar className={classes.icon}>
                             <LinkIcon />
@@ -163,20 +167,24 @@ function CardLink(props) {
                         )}
                     </div>
                 </CardActionArea>
-                <EditMenu
-                    id={id}
-                    type="bookmark"
-                    isOpen={isOpenMenu}
-                    onClose={handleCloseMenu}
-                    position={position}
-                />
-                <IconButton
-                    className={classes.menuIcon}
-                    onClick={handleOpenMenu}
-                    ref={buttonRef}
-                >
-                    <MoreIcon />
-                </IconButton>
+                {!preview && (
+                    <React.Fragment>
+                        <EditMenu
+                            id={id}
+                            type="bookmark"
+                            isOpen={isOpenMenu}
+                            onClose={handleCloseMenu}
+                            position={position}
+                        />
+                        <IconButton
+                            className={classes.menuIcon}
+                            onClick={handleOpenMenu}
+                            ref={buttonRef}
+                        >
+                            <MoreIcon />
+                        </IconButton>
+                    </React.Fragment>
+                )}
             </Card>
         </Tooltip>
     );
