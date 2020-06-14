@@ -7,6 +7,7 @@ import {
     Chip,
     InputBase,
     Button,
+    Typography,
 } from '@material-ui/core';
 import { AddRounded as AddIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     popperWrapper: { zIndex: theme.zIndex.modal },
     popper: {
         display: 'flex',
-        alignItems: 'center',
+        flexDirection: 'column',
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
@@ -39,18 +40,23 @@ const useStyles = makeStyles((theme) => ({
             borderColor: '#888888',
         },
     },
+    errorMessage: {
+        padding: theme.spacing(1, 2),
+    },
 }));
 
 function CreateCard({ onCreate }) {
     const classes = useStyles();
     const [categoryName, setCategoryName] = useState('');
+    const [error, setError] = useState(null);
     const bookmarksStore = useBookmarksService();
 
     const handlerSubmit = (event) => {
         event.preventDefault();
         if (categoryName.trim() !== '') {
             bookmarksStore.addCategory(categoryName)
-                .then((categoryId) => onCreate(categoryId));
+                .then((categoryId) => onCreate(categoryId))
+                .catch((e) => setError(e.message));
         }
     };
 
@@ -62,7 +68,10 @@ function CreateCard({ onCreate }) {
                     placeholder="Категория"
                     variant="outlined"
                     autoFocus
-                    onChange={(event) => setCategoryName(event.target.value)}
+                    onChange={(event) => {
+                        setCategoryName(event.target.value);
+                        setError(null);
+                    }}
                 />
                 <Button
                     className={classes.saveButton}
@@ -74,6 +83,11 @@ function CreateCard({ onCreate }) {
                     Сохранить
                 </Button>
             </form>
+            {error && error === 'category_already_exist' && (
+                <Typography className={classes.errorMessage} variant="body2" color="error">
+                    Такая категория уже существует
+                </Typography>
+            )}
         </Card>
     );
 }

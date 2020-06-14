@@ -73,19 +73,24 @@ class BookmarksStore {
     }
 
     @action('add category')
-    addCategory(name) {
-        let color;
+    async addCategory(name) {
+        const countCategories = await DBConnector().count('categories')
+        const color = getUniqueColor(countCategories);
 
-        return DBConnector().count('categories')
-            .then((size) => {
-                color = getUniqueColor(size);
-            })
-            .then(() => DBConnector().add('categories', {
-                name: name.trim(),
-                color,
-            }))
-            .then((id) => this._syncCategories()
-                .then(() => id));
+        const similarCategory = await DBConnector().getFromIndex('categories', 'name', name);
+
+        if (similarCategory) {
+            throw new Error("category_already_exist");
+        }
+
+        const categoryId = await DBConnector().add('categories', {
+            name: name.trim(),
+            color,
+        });
+
+        this._syncCategories();
+
+        return categoryId;
     }
 
     @action('get bookmark')
