@@ -91,8 +91,39 @@ class BookmarksStore {
     }
 
     @action('get bookmark')
-    getBookmark(bookmarkId) {
-        return DBConnector().get('bookmarks', bookmarkId);
+    async getBookmark(bookmarkId) {
+        const bookmark = await DBConnector().get('bookmarks', bookmarkId);
+
+        const storesName = ['bookmarks_by_categories', 'categories'];
+        const tx = DBConnector().transaction(storesName, 'readonly');
+        const stores = {
+            bookmarks_by_categories: tx.objectStore('bookmarks_by_categories'),
+            categories: tx.objectStore('categories'),
+        };
+
+        const getCategory = (categoryId) => stores.categories.get(categoryId);
+
+        const findCategories = [];
+
+        let cursor = await stores.bookmarks_by_categories.openCursor();
+
+        let cursorCategoryId;
+        let cursorBookmarkId;
+
+        while (cursor) {
+            cursorCategoryId = cursor.value.categoryId;
+            cursorBookmarkId = cursor.value.bookmarkId;
+
+            if (cursorBookmarkId === bookmark.id) {
+                const category = await getCategory(cursorCategoryId);
+                findCategories.push(category);
+            }
+            cursor = await cursor.continue();
+        }
+
+        bookmark.categories = findCategories;
+
+        return bookmark;
     }
 
     @action('search bookmarks')
@@ -184,7 +215,7 @@ class BookmarksStore {
     }
 
     @action('save bookmarks')
-    saveBookmark(props) {
+    async saveBookmark(props) {
         const {
             url,
             name,
@@ -202,16 +233,27 @@ class BookmarksStore {
             type,
         };
 
-        return (id ? DBConnector().put('bookmarks', { id, ...saveData }) : DBConnector().add('bookmarks', saveData))
-            .then((bookmarkId) => Promise.all(
-                categories.map((categoryId) => DBConnector().add('bookmarks_by_categories', {
-                    categoryId,
-                    bookmarkId,
-                })),
-            ))
-            .then(() => {
-                this.lastTruthSearchTimestamp = Date.now();
-            });
+        let saveBookmarkId;
+        let oldCategories = [];
+
+        if (id) {
+            const oldBookmark = await this.getBookmark(id);
+            oldCategories = oldBookmark.categories.map((category) => category.id);
+
+            saveBookmarkId = await DBConnector().put('bookmarks', { id, ...saveData });
+        } else {
+            saveBookmarkId = await DBConnector().add('bookmarks', saveData);
+        }
+
+        await Promise.all(
+            categories.map((categoryId) => {
+                if (~oldCategories.indexOf(categoryId)) return;
+
+                return DBConnector().add('bookmarks_by_categories', { categoryId, bookmarkId: saveBookmarkId });
+            }),
+        );
+
+        this.lastTruthSearchTimestamp = Date.now();
     }
 
     @action('add to favorites')

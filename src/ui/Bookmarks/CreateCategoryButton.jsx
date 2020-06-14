@@ -49,7 +49,6 @@ function CreateCard({ onCreate }) {
     const handlerSubmit = (event) => {
         event.preventDefault();
         if (categoryName.trim() !== '') {
-            onCreate();
             bookmarksStore.addCategory(categoryName)
                 .then((categoryId) => onCreate(categoryId));
         }
@@ -100,9 +99,9 @@ function CreateCategoryButton({ isShowTitle, onCreate }) {
                     className={classes.popperWrapper}
                 >
                     <CreateCard
-                        onCreate={() => {
+                        onCreate={(categoryId) => {
                             setIsOpen(false);
-                            onCreate();
+                            onCreate(categoryId);
                         }}
                     />
                 </Popper>

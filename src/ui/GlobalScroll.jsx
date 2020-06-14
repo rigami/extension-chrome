@@ -32,8 +32,8 @@ function GlobalScroll({ children }) {
 
     const handlerScrollStop = ({ scrollTop }) => {
         if (
-            (store.scrollDirection === 'down' && scrollTop < 150)
-            || (store.scrollDirection === 'up' && scrollTop < document.documentElement.clientHeight - 150)
+            (store.scrollDirection === 'down' && scrollTop < 60)
+            || (store.scrollDirection === 'up' && scrollTop < document.documentElement.clientHeight - 60)
         ) {
             store.scrollbar.contentElement.parentElement.scrollTo({
                 behavior: 'smooth',
@@ -41,7 +41,9 @@ function GlobalScroll({ children }) {
                 top: 0,
             });
             appService.setActivity('desktop');
-        } else {
+        } else if (
+            scrollTop < document.documentElement.clientHeight
+        ) {
             store.scrollbar.contentElement.parentElement.scrollTo({
                 behavior: 'smooth',
                 left: 0,

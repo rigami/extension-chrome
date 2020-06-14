@@ -66,6 +66,7 @@ function CustomScroll({ children, refScroll, ...other }) {
             noScrollX={false}
             {...other}
             ref={refScroll}
+            scrollDetectionThreshold={30}
         >
             {children}
         </Scrollbar>

@@ -146,10 +146,12 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
 
         bookmarksStore.getBookmark(editBookmarkId)
             .then((bookmark) => {
+                console.log("Bookmark", bookmark)
                 store.url = bookmark.url;
                 store.name = bookmark.name;
                 if (!!bookmark.description?.trim()) store.description = bookmark.description;
                 store.type = bookmark.type;
+                store.categories = (bookmark.categories || []).map((category) => category.id);
             })
             .catch((e) => {
                 console.error(e);
@@ -201,6 +203,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                         <Categories
                             className={classes.chipContainer}
                             sortByPopular
+                            value={store.categories}
                             onChange={(newCategories) => { store.categories = newCategories; }}
                             autoSelect
                         />

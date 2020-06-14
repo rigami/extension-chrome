@@ -56,6 +56,7 @@ function Categories(props) {
             isFirstRun.current = false;
             return;
         }
+        console.log("ON CHANGE", selectedCategories);
 
         onChange(selectedCategories);
     }, [selectedCategories.length]);
@@ -87,6 +88,7 @@ function Categories(props) {
             <CreateCategoryButton
                 isShowTitle={bookmarksStore.categories.length === 0}
                 onCreate={(newId) => {
+                    console.log("CREATE", newId);
                     if (autoSelect) setSelectedCategories([...selectedCategories, newId]);
                     if (onCreate) onCreate(newId);
                 }}
