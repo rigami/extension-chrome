@@ -18,11 +18,15 @@ const useStyles = makeStyles((theme) => ({
             marginBottom: theme.spacing(1),
         },
     },
+    chip: {
+        maxWidth: 290,
+    },
     chipIcon: {
         width: theme.spacing(2),
         height: theme.spacing(2),
         borderRadius: '50%',
         marginLeft: `${theme.spacing(1)}px !important`,
+        flexShrink: 0,
     },
     chipActive: {
         backgroundColor: '#616161',
@@ -73,7 +77,7 @@ function Categories(props) {
                     key={id}
                     icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
                     label={name}
-                    className={(selectedCategories.indexOf(id) !== -1 && classes.chipActive) || ''}
+                    className={clsx(classes.chip, selectedCategories.indexOf(id) !== -1 && classes.chipActive)}
                     variant="outlined"
                     onClick={() => {
                         if (~selectedCategories.indexOf(id)) {
