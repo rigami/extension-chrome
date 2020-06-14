@@ -41,13 +41,13 @@ const useStyles = makeStyles((theme) => ({
     categoriesWrapper: {
         display: 'flex',
         flexWrap: 'wrap',
-        marginBottom: theme.spacing(0.5),
     },
     category: {
         width: theme.spacing(1),
         height: theme.spacing(1),
         borderRadius: theme.spacing(0.5),
         marginRight: theme.spacing(0.6),
+        marginBottom: theme.spacing(0.5),
     },
     title: {
         display: '-webkit-box',

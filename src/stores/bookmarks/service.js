@@ -4,6 +4,7 @@ import { hslToRgb, recomposeColor } from '@material-ui/core/styles/colorManipula
 import DBConnector from '@/utils/dbConnector';
 import { cachingDecorator } from '@/utils/decorators';
 import EventBus from '@/utils/eventBus';
+import getUniqueColor from "@/utils/uniqueColor";
 
 class BookmarksStore {
     @observable fapStyle;
@@ -77,10 +78,7 @@ class BookmarksStore {
 
         return DBConnector().count('categories')
             .then((size) => {
-                color = hslToRgb(recomposeColor({
-                    type: 'hsl',
-                    values: [330 - size * 30, 80, 60],
-                }));
+                color = getUniqueColor(size);
             })
             .then(() => DBConnector().add('categories', {
                 name: name.trim(),
