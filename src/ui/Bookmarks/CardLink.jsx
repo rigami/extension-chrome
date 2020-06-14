@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
     Card,
     Avatar,
@@ -6,10 +6,14 @@ import {
     CardActionArea,
     Tooltip,
     Box,
+    IconButton,
 } from '@material-ui/core';
-import { LinkRounded as LinkIcon } from '@material-ui/icons';
+import {
+    LinkRounded as LinkIcon,
+    MoreVertRounded as MoreIcon,
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import EditMenu from './EditMenu';
+import EditMenu from './ContextEditMenu';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -103,6 +107,28 @@ function CardLink(props) {
         ...other
     } = props;
     const classes = useStyles();
+    const buttonRef = useRef(null);
+    const [isOpenMenu, setIsOpenMenu] = useState(false);
+    const [position, setPosition] = useState(null);
+
+    const handlerContextMenu = (event) => {
+        event.preventDefault();
+        setPosition({
+            top: event.nativeEvent.clientY,
+            left: event.nativeEvent.clientX,
+        });
+        setIsOpenMenu(true);
+    };
+
+    const handleOpenMenu = () => {
+        const { top, left } = buttonRef.current.getBoundingClientRect();
+        setPosition({ top, left });
+        setIsOpenMenu(true);
+    };
+
+    const handleCloseMenu = () => {
+        setIsOpenMenu(false);
+    };
 
     return (
         <Tooltip
@@ -117,7 +143,7 @@ function CardLink(props) {
             enterNextDelay={400}
         >
             <Card className={classes.root} variant="outlined" {...other}>
-                <CardActionArea className={classes.rootActionWrapper}>
+                <CardActionArea className={classes.rootActionWrapper} onContextMenu={handlerContextMenu}>
                     <Box className={type === 'extend' ? classes.extendBanner : classes.banner}>
                         <Avatar className={classes.icon}>
                             <LinkIcon />
@@ -138,9 +164,19 @@ function CardLink(props) {
                     </div>
                 </CardActionArea>
                 <EditMenu
-                    className={classes.menuIcon}
-                    bookmarkId={id}
+                    id={id}
+                    type="bookmark"
+                    isOpen={isOpenMenu}
+                    onClose={handleCloseMenu}
+                    position={position}
                 />
+                <IconButton
+                    className={classes.menuIcon}
+                    onClick={handleOpenMenu}
+                    ref={buttonRef}
+                >
+                    <MoreIcon />
+                </IconButton>
             </Card>
         </Tooltip>
     );

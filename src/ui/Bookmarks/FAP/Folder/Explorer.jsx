@@ -21,7 +21,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
-import EditMenu from '@/ui/Bookmarks/FAP/EditMenu'
+import EditMenu from '@/ui/Bookmarks/ContextEditMenu'
 
 const useStyles = makeStyles((theme) => ({
     root: {

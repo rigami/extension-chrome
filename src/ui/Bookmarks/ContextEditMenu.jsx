@@ -20,7 +20,7 @@ import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles(() => ({ menu: { width: 230 } }));
 
-function EditMenu({ className: externalClassName, id, type, isOpen, onClose, position }) {
+function ContextEditMenu({ className: externalClassName, id, type, isOpen, onClose, position }) {
     const classes = useStyles();
     const bookmarksStore = useBookmarksService();
 
@@ -80,4 +80,4 @@ function EditMenu({ className: externalClassName, id, type, isOpen, onClose, pos
     );
 }
 
-export default observer(EditMenu);
+export default observer(ContextEditMenu);

@@ -4,7 +4,7 @@ import { LinkRounded as LinkIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
-import EditMenu from '@/ui/Bookmarks/FAP/EditMenu'
+import EditMenu from '@/ui/Bookmarks/ContextEditMenu'
 
 const useStyles = makeStyles((theme) => ({
     root: {
