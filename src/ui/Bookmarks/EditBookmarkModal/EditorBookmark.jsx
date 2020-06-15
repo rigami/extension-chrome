@@ -151,6 +151,8 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     const handlerSave = () => {
         bookmarksStore.saveBookmark({
             ...store,
+            name: store.name.trim(),
+            description: store.description?.trim(),
             id: store.editBookmarkId,
         })
             .then(() => onSave());
@@ -189,9 +191,9 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
             <Card className={classes.bgCardRoot} elevation={8}>
                 <Preview
                     url={store.url !== ''}
-                    name={store.name}
+                    name={store.name.trim()}
                     type={store.type}
-                    description={store.description}
+                    description={store.description?.trim()}
                     onChangeType={(newType) => { store.type = newType; }}
                 />
                 <div className={classes.details}>
@@ -213,7 +215,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                             fullWidth
                             value={store.name}
                             className={classes.input}
-                            onChange={(event) => { store.name = event.target.value.trim(); }}
+                            onChange={(event) => { store.name = event.target.value; }}
                         />
                         <Categories
                             className={classes.chipContainer}
@@ -232,7 +234,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                                 multiline
                                 rows={3}
                                 rowsMax={3}
-                                onChange={(event) => { store.description = event.target.value.trim(); }}
+                                onChange={(event) => { store.description = event.target.value; }}
                             />
                         )}
                         {store.description === null && (
@@ -258,7 +260,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                disabled={!store.url || !store.name}
+                                disabled={!store.url || !store.name.trim()}
                                 onClick={handlerSave}
                             >
                                 Сохранить

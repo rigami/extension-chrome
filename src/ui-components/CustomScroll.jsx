@@ -13,6 +13,7 @@ const exportClasses = (theme) => ({
         left: 0,
         right: 0,
         bottom: 0,
+        transform: 'translate3d(0,0,0)',
     },
     scrollBar: {
         position: 'absolute',
