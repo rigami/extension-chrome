@@ -99,7 +99,7 @@ function CardLink(props) {
     const {
         id,
         name,
-        src,
+        url,
         icon,
         categories,
         type,
@@ -131,13 +131,21 @@ function CardLink(props) {
         setIsOpenMenu(false);
     };
 
+    const handleClick = (event) => {
+        if (event.button === 1) {
+            window.open(url);
+        } else if (event.button === 0) {
+            window.open(url, "_self");
+        }
+    };
+
     return (
         <Tooltip
             title={(
                 <React.Fragment>
                     {name}
                     <br />
-                    <Typography variant="caption">{src}</Typography>
+                    <Typography variant="caption">{url}</Typography>
                 </React.Fragment>
             )}
             enterDelay={400}
@@ -146,6 +154,7 @@ function CardLink(props) {
             <Card className={classes.root} variant="outlined" {...other}>
                 <CardActionArea
                     className={classes.rootActionWrapper}
+                    onMouseUp={handleClick}
                     onContextMenu={!preview ? handlerContextMenu : undefined}
                 >
                     <Box className={type === 'extend' ? classes.extendBanner : classes.banner}>
