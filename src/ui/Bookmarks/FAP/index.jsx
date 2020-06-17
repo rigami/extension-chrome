@@ -105,7 +105,6 @@ const useStyles = makeStyles((theme) => ({
 function FAP() {
     const classes = useStyles();
     const theme = useTheme();
-    const appService = useBookmarksService();
     const bookmarksStore = useBookmarksService();
     const scrollRef = createRef();
     const [isLeft, setIsLeft] = useState(false);
@@ -147,20 +146,20 @@ function FAP() {
     };
 
     return (
-        <Fade in={appService.fapStyle !== BKMS_FAP_STYLE.HIDDEN} unmountOnExit>
+        <Fade in={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN} unmountOnExit>
             <div
                 className={clsx(
                     classes.root,
-                    appService.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
+                    bookmarksStore.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
                 )}
-                style={{ height: 40 + theme.spacing(3 + (appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 2)) }}
+                style={{ height: 40 + theme.spacing(3 + (bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 2)) }}
             >
                 <Card
                     elevation={12}
                     className={clsx(
                         classes.card,
-                        appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.cardTransparent,
-                        appService.fapPosition === BKMS_FAP_POSITION.TOP && classes.absoluteCard,
+                        bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.cardTransparent,
+                        bookmarksStore.fapPosition === BKMS_FAP_POSITION.TOP && classes.absoluteCard,
                     )}
                 >
                     <ScrollContainer
@@ -171,7 +170,7 @@ function FAP() {
                         onWheel={console.log()}
                         className={clsx(
                             classes.panel,
-                            appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.disablePadding,
+                            bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.disablePadding,
                         )}
                         ref={scrollRef}
                     >
@@ -191,14 +190,14 @@ function FAP() {
                                 <Link
                                     {...fav}
                                     key={`${fav.type}-${fav.id}`}
-                                    isBlurBackdrop={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
+                                    isBlurBackdrop={bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
                                 />
                             ) : (
                                 <Folder
                                     {...fav}
                                     key={`${fav.type}-${fav.id}`}
                                     color={bookmarksStore.getCategory(fav.id)?.color}
-                                    isBlurBackdrop={appService.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
+                                    isBlurBackdrop={bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
                                 />
                             )
                         ))}

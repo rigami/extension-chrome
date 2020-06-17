@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
-import { IconButton } from '@material-ui/core';
+import React, { useState, useEffect } from 'react'
+import { IconButton, Tooltip, Typography, CircularProgress } from '@material-ui/core';
 import { LinkRounded as LinkIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import EditMenu from '@/ui/Bookmarks/ContextEditMenu'
+import { observer } from 'mobx-react-lite';
+import {useService as useBookmarksService} from "@/stores/bookmarks";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -18,8 +20,10 @@ const useStyles = makeStyles((theme) => ({
 
 function LinkButton({ id, isBlurBackdrop }) {
     const classes = useStyles();
+    const bookmarksService = useBookmarksService();
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState(null);
+    const [bookmark, setBookmark] = useState(null);
 
     const handlerContextMenu = (event) => {
         event.preventDefault();
@@ -34,6 +38,32 @@ function LinkButton({ id, isBlurBackdrop }) {
         setIsOpen(false);
     };
 
+    const handleClick = (event) => {
+        if (!bookmark) return;
+
+        if (event.button === 1) {
+            window.open(bookmark.url);
+        } else if (event.button === 0) {
+            window.open(bookmark.url, "_self");
+        }
+    };
+
+    useEffect(() => {
+        bookmarksService.getBookmark(id)
+            .then((bkm) => {
+                setBookmark(bkm);
+            });
+    }, []);
+
+    if (!bookmark) {
+        return (
+            <IconButton className={clsx(classes.root, isBlurBackdrop && classes.rootBlur)} >
+                <CircularProgress size={24} />
+            </IconButton>
+        );
+    }
+
+
     return (
         <React.Fragment>
             <EditMenu
@@ -43,14 +73,27 @@ function LinkButton({ id, isBlurBackdrop }) {
                 onClose={handleCloseMenu}
                 position={position}
             />
-            <IconButton
-                className={clsx(classes.root, isBlurBackdrop && classes.rootBlur)}
-                onContextMenu={handlerContextMenu}
+            <Tooltip
+                title={(
+                    <React.Fragment>
+                        {bookmark.name}
+                        <br />
+                        <Typography variant="caption">{bookmark.url}</Typography>
+                    </React.Fragment>
+                )}
+                enterDelay={400}
+                enterNextDelay={400}
             >
-                <LinkIcon />
-            </IconButton>
+                <IconButton
+                    className={clsx(classes.root, isBlurBackdrop && classes.rootBlur)}
+                    onMouseUp={handleClick}
+                    onContextMenu={handlerContextMenu}
+                >
+                    <LinkIcon />
+                </IconButton>
+            </Tooltip>
         </React.Fragment>
     );
 }
 
-export default LinkButton;
+export default observer(LinkButton);

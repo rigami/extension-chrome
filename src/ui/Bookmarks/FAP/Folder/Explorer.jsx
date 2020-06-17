@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-
 import {
     Card,
     CardHeader,
@@ -10,6 +9,8 @@ import {
     ListItemText,
     CircularProgress,
     IconButton,
+    Tooltip,
+    Typography,
 } from '@material-ui/core';
 import {
     LinkRounded as LinkIcon,
@@ -37,6 +38,69 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'auto',
     },
 }));
+
+function Link({ name, url, id, description }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [position, setPosition] = useState(null);
+
+    const handleClick = (event) => {
+        if (event.button === 1) {
+            window.open(url);
+        } else if (event.button === 0) {
+            window.open(url, "_self");
+        }
+    };
+
+    const handlerContextMenu = (event) => {
+        event.preventDefault();
+        setPosition({
+            top: event.nativeEvent.clientY,
+            left: event.nativeEvent.clientX,
+        });
+        setIsOpen(true);
+    };
+
+    const handleCloseMenu = () => {
+        setIsOpen(false);
+    };
+
+    return (
+        <React.Fragment>
+            <EditMenu
+                id={id}
+                type="bookmark"
+                isOpen={isOpen}
+                onClose={handleCloseMenu}
+                position={position}
+            />
+            <Tooltip
+                title={(
+                    <React.Fragment>
+                        {name}
+                        <br />
+                        <Typography variant="caption">{url}</Typography>
+                    </React.Fragment>
+                )}
+                enterDelay={400}
+                enterNextDelay={400}
+            >
+                <ListItem
+                    button
+                    key={id}
+                    onMouseUp={handleClick}
+                    onContextMenu={handlerContextMenu}
+                >
+                    <ListItemAvatar>
+                        <Avatar>
+                            <LinkIcon />
+                        </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary={name} secondary={description} />
+                </ListItem>
+            </Tooltip>
+        </React.Fragment>
+    );
+}
 
 function Folder({ id }) {
     const classes = useStyles();
@@ -107,14 +171,11 @@ function Folder({ id }) {
                         />
                     )}
                     {findBookmarks && findBookmarks.map((bookmark, index) => (
-                        <ListItem divider={index !== findBookmarks.length - 1} button key={bookmark.id}>
-                            <ListItemAvatar>
-                                <Avatar>
-                                    <LinkIcon />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText primary={bookmark.name} secondary={bookmark.description} />
-                        </ListItem>
+                        <Link
+                            key={bookmark.id}
+                            {...bookmark}
+                            divider={index !== findBookmarks.length - 1}
+                        />
                     ))}
                 </Scrollbar>
             </List>
