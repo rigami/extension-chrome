@@ -1,14 +1,11 @@
-import React, { useState, useRef } from 'react';
-
+import React from 'react';
 import {
-    IconButton,
     Menu,
     ListItem,
     ListItemIcon,
     ListItemText,
 } from '@material-ui/core';
 import {
-    MoreVertRounded as MoreIcon,
     BookmarkBorderRounded as PinnedFavoriteIcon,
     BookmarkRounded as UnpinnedFavoriteIcon,
     EditRounded as EditIcon,
@@ -20,11 +17,11 @@ import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles(() => ({ menu: { width: 230 } }));
 
-function ContextEditMenu({ className: externalClassName, id, type, isOpen, onClose, position }) {
+function ContextEditMenu({ className: externalClassName, id, type, isOpen, onClose, position, onEdit }) {
     const classes = useStyles();
     const bookmarksStore = useBookmarksService();
 
-    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
+    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === type && fav.id === id);
 
     const handlePin = () => {
         if (isPin()) {
@@ -36,11 +33,18 @@ function ContextEditMenu({ className: externalClassName, id, type, isOpen, onClo
     };
 
     const handleEdit = () => {
-        bookmarksStore.eventBus.dispatch(`edit${type}`, id);
+        if (onEdit) {
+            onEdit((data) => {
+                bookmarksStore.eventBus.dispatch(`edit${type}`, { id, ...data });
+            });
+        } else {
+            bookmarksStore.eventBus.dispatch(`edit${type}`, { id });
+        }
+
         onClose();
     }
     const handleRemove = () => {
-        bookmarksStore.eventBus.dispatch(`remove${type}`, id);
+        bookmarksStore.eventBus.dispatch(`remove${type}`, { id });
         onClose();
     }
 

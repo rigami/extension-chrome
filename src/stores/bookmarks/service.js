@@ -72,25 +72,40 @@ class BookmarksStore {
         return this.categories.find(({ id }) => id === categoryId);
     }
 
-    @action('add category')
-    async addCategory(name) {
-        const countCategories = await DBConnector().count('categories')
-        const color = getUniqueColor(countCategories);
+    @action('save category')
+    async saveCategory(name, categoryId, userColor) {
+        let color;
+        if (!categoryId) {
+            const countCategories = await DBConnector().count('categories')
+            color = userColor || getUniqueColor(countCategories);
+        } else {
+            color = userColor || this.getCategory(categoryId).color;
+        }
 
         const similarCategory = await DBConnector().getFromIndex('categories', 'name', name);
 
-        if (similarCategory) {
+        if (similarCategory && similarCategory.id !== categoryId) {
             throw new Error("category_already_exist");
         }
 
-        const categoryId = await DBConnector().add('categories', {
-            name: name.trim(),
-            color,
-        });
+        let newCategoryId = categoryId;
+
+        if (categoryId) {
+            await DBConnector().put('categories', {
+                id: categoryId,
+                name: name.trim(),
+                color,
+            });
+        } else {
+            newCategoryId = await DBConnector().add('categories', {
+                name: name.trim(),
+                color,
+            });
+        }
 
         this._syncCategories();
 
-        return categoryId;
+        return newCategoryId;
     }
 
     @action('get bookmark')
