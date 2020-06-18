@@ -108,6 +108,22 @@ class BookmarksStore {
         return newCategoryId;
     }
 
+    @action('remove category')
+    async removeCategory(categoryId) {
+        await DBConnector().delete('categories', categoryId);
+
+        const removeBinds = await DBConnector().getAllFromIndex(
+            'bookmarks_by_categories',
+            'category_id',
+            categoryId
+        );
+
+        await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
+
+        this._syncCategories();
+        this.lastTruthSearchTimestamp = Date.now();
+    }
+
     @action('get bookmark')
     async getBookmark(bookmarkId) {
         const bookmark = await DBConnector().get('bookmarks', bookmarkId);
