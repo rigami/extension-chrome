@@ -14,7 +14,7 @@ function SectionHeader({ title }) {
     const classes = useStyles();
 
     return (
-        <ListSubheader inset className={classes.root}>
+        <ListSubheader inset className={classes.root} disableSticky>
             {title}
         </ListSubheader>
     );
