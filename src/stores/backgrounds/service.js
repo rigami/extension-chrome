@@ -261,6 +261,11 @@ class BackgroundsStore {
         });
     }
 
+    @action('reset upload bg queue')
+    resetUploadQueue() {
+        this.uploadQueue = [];
+    }
+
     @action('remove bg from queue')
     removeFromUploadQueue(removeBGId) {
         this.uploadQueue = this.uploadQueue.filter(({ id }) => removeBGId !== id);

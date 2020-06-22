@@ -15,6 +15,7 @@ import { useSnackbar } from 'notistack';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import { useService as useAppConfigService } from '@/stores/app';
 import Menu from '@/ui/Menu';
+import GlobalContextMenu from "@/ui/GlobalContextMenu";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -63,6 +64,21 @@ function Desktop() {
     const [state, setState] = useState('pending');
     const [captureFrameTimer, setCaptureFrameTimer] = useState(null);
     const [bgId, setBgId] = useState(null);
+    const [isOpenMenu, setIsOpenMenu] = useState(false);
+    const [position, setPosition] = useState(null);
+
+    const handlerContextMenu = (event) => {
+        event.preventDefault();
+        setPosition({
+            top: event.nativeEvent.clientY,
+            left: event.nativeEvent.clientX,
+        });
+        setIsOpenMenu(true);
+    };
+
+    const handleCloseMenu = () => {
+        setIsOpenMenu(false);
+    };
 
     useEffect(() => {
         if (backgroundsStore.currentBGId === bgId) return;
@@ -155,7 +171,12 @@ function Desktop() {
 
 
     return (
-        <Box className={classes.root}>
+        <Box className={classes.root} onContextMenu={handlerContextMenu}>
+            <GlobalContextMenu
+                onClose={handleCloseMenu}
+                isOpen={isOpenMenu}
+                position={position}
+            />
             <Fade
                 in={state === 'done' || state === 'failed'}
                 onExit={() => {

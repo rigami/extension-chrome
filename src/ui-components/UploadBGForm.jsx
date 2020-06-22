@@ -14,17 +14,20 @@ import {
     Tooltip,
     Typography,
     Box,
+    IconButton,
 } from '@material-ui/core';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalStore, useObserver } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import {
     WarningRounded as WarningIcon,
     AddPhotoAlternateRounded as DropIcon,
+    CloseRounded as CloseIcon,
 } from '@material-ui/icons';
 import locale from '@/i18n/RU';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
+import Scrollbar from "@/ui-components/CustomScroll";
 
 const {
     global: localeGlobal,
@@ -89,6 +92,13 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         color: theme.palette.common.white,
         '& *': { pointerEvents: 'none' },
+    },
+    closeIcon: {
+        position: 'absolute',
+        top: theme.spacing(2),
+        right: theme.spacing(2),
+        color: theme.palette.common.white,
+        zIndex: theme.zIndex.modal+1,
     },
 }));
 
@@ -201,6 +211,10 @@ function UploadBGForm({ children }) {
 
     const dragRef = useRef(null);
     const [dragFiles, setDragFiles] = useState(null);
+    const store = useLocalStore(() => ({
+        requireScrollToBottom: false,
+        uploadQueueSize: 0,
+    }));
 
 
     useEffect(() => {
@@ -234,7 +248,14 @@ function UploadBGForm({ children }) {
         };
     }, [dragFiles]);
 
-    return (
+    useEffect(() => {
+        if (store.uploadQueueSize === 0) {
+            store.requireScrollToBottom = true;
+        }
+        store.uploadQueueSize = backgroundsStore.uploadQueue.length;
+    }, [backgroundsStore.uploadQueue.length]);
+
+    return useObserver(() => (
         <React.Fragment>
             {children}
             {dragFiles && dragFiles.length > 0 && (
@@ -255,33 +276,58 @@ function UploadBGForm({ children }) {
                 open={backgroundsStore.uploadQueue.length !== 0}
                 PaperProps={{
                     elevation: 0,
-                    style: { background: 'none' },
+                    style: { background: 'none', height: '100%' },
                 }}
+                disableEnforceFocus
             >
-                <Container
-                    maxWidth="md"
-                    style={{
-                        marginBottom: theme.spacing(3),
-                        marginTop: theme.spacing(3),
+                <Scrollbar
+                    refScroll={(ref) => {
+                        console.log("ref", ref)
+                        if (ref && store.requireScrollToBottom) {
+                            store.requireScrollToBottom = false;
+                            ref.scrollToBottom();
+                        }
                     }}
                 >
-                    {backgroundsStore.uploadQueue.map((row, index) => (
-                        <MemoBGCard
-                            key={row.id}
-                            {...row}
-                            style={{ marginTop: index === 0 ? 0 : theme.spacing(3) }}
-                            onRemove={() => {
-                                backgroundsStore.removeFromUploadQueue(row.id);
-                            }}
-                            onDone={(options) => {
-                                backgroundsStore.saveFromUploadQueue(row.id, options);
-                            }}
-                        />
-                    ))}
-                </Container>
+                    <Container
+                        maxWidth="md"
+                        style={{
+                            paddingBottom: theme.spacing(3),
+                            paddingTop: theme.spacing(3),
+                            minHeight: '100vh',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'flex-end',
+                        }}
+                    >
+                        {backgroundsStore.uploadQueue.map((row, index) => (
+                            <MemoBGCard
+                                key={row.id}
+                                {...row}
+                                style={{ marginTop: index === 0 ? 0 : theme.spacing(3) }}
+                                onRemove={() => {
+                                    backgroundsStore.removeFromUploadQueue(row.id);
+                                }}
+                                onDone={(options) => {
+                                    backgroundsStore.saveFromUploadQueue(row.id, options);
+                                }}
+                            />
+                        ))}
+                    </Container>
+                </Scrollbar>
             </Drawer>
+            {(backgroundsStore.uploadQueue.length !== 0) && (
+                <Tooltip title="Отменить все загрузки">
+                    <IconButton
+                        className={classes.closeIcon}
+                        onClick={() => backgroundsStore.resetUploadQueue()}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </Tooltip>
+            )}
         </React.Fragment>
-    );
+    ));
 }
 
 export default observer(UploadBGForm);
