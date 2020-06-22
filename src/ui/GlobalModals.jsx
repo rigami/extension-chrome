@@ -65,20 +65,15 @@ function GlobalModals () {
                 editCategoryId={edit && edit.id}
             />
             <Dialog
-                open={(edit && edit.action === 'remove') || false}
+                open={(edit && edit.action === 'remove' && edit.type === 'bookmark') || false}
                 onClose={() => setEdit(null)}
             >
                 <DialogTitle>
-                    Удалить
-                    {edit && edit.type === 'bookmark' && ' закладку '}
-                    {edit && edit.type === 'category' && ' категорию '}
-                    ?
+                    Удалить закладку?
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {edit && edit.type === 'bookmark' && 'Она '}
-                        {edit && edit.type === 'category' && 'Она удалится из всех закладках где указана и пропадет '}
-                        пропадет безвозратно. Вы уверены?
+                        Она пропадет безвозратно. Вы уверены?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -87,9 +82,35 @@ function GlobalModals () {
                     </Button>
                     <Button
                         onClick={() => {
-                            if (edit.type === 'category') {
-                                bookmarksStore.removeCategory(edit.id);
-                            }
+                            bookmarksStore.removeBookmark(edit.id);
+                            setEdit(null);
+                        }}
+                        color="primary"
+                        autoFocus
+                    >
+                        Удалить?
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={(edit && edit.action === 'remove' && edit.type === 'category') || false}
+                onClose={() => setEdit(null)}
+            >
+                <DialogTitle>
+                    Удалить категорию?
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Она удалится из всех закладок где указана и пропадет безвозратно. Вы уверены?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setEdit(null)} color="primary">
+                        Отмена
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            bookmarksStore.removeCategory(edit.id);
                             setEdit(null);
                         }}
                         color="primary"

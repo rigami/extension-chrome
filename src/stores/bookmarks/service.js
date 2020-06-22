@@ -326,6 +326,22 @@ class BookmarksStore {
         this.lastTruthSearchTimestamp = Date.now();
     }
 
+    @action('remove bookmark')
+    async removeBookmark(bookmarkId) {
+        await DBConnector().delete('bookmarks', bookmarkId);
+
+        const removeBinds = await DBConnector().getAllFromIndex(
+            'bookmarks_by_categories',
+            'bookmark_id',
+            bookmarkId
+        );
+
+        await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
+
+        this._syncCategories();
+        this.lastTruthSearchTimestamp = Date.now();
+    }
+
     @action('add to favorites')
     addToFavorites({ type, id }) {
         this.favorites.push({
