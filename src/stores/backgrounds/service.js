@@ -248,7 +248,7 @@ class BackgroundsStore {
             preview: 'pending',
             previewUrl: null,
             type: ~file.type.indexOf('video') ? [BG_TYPE.VIDEO] : [BG_TYPE.IMAGE, BG_TYPE.ANIMATION],
-            size: file.size / 1024 / 1024,
+            size: file.size,
             format: file.type.substring(file.type.indexOf('/') + 1),
             name: file.name,
             file,

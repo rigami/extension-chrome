@@ -28,6 +28,7 @@ import locale from '@/i18n/RU';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import Scrollbar from "@/ui-components/CustomScroll";
+import BeautifulFileSize from "@/utils/beautifulFileSize";
 
 const {
     global: localeGlobal,
@@ -146,8 +147,8 @@ function BGCard(props) {
                     <Typography variant="subtitle1" color="textSecondary">
                         Размер:
                         {' '}
-                        {Math.round(size)}
-                        мб
+                        {BeautifulFileSize(size)[0]}
+                        {BeautifulFileSize(size)[1]}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
                         Тип:
@@ -282,7 +283,7 @@ function UploadBGForm({ children }) {
             >
                 <Scrollbar
                     refScroll={(ref) => {
-                        console.log("ref", ref)
+                        // console.log("ref", ref)
                         if (ref && store.requireScrollToBottom) {
                             store.requireScrollToBottom = false;
                             ref.scrollToBottom();
