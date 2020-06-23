@@ -1,6 +1,5 @@
 import { action, observable } from 'mobx';
 import StorageConnector from '@/utils/storageConnector';
-import { hslToRgb, recomposeColor } from '@material-ui/core/styles/colorManipulator';
 import DBConnector from '@/utils/dbConnector';
 import { cachingDecorator } from '@/utils/decorators';
 import EventBus from '@/utils/eventBus';

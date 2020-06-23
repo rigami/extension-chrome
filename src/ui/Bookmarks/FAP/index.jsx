@@ -1,4 +1,4 @@
-import React, { useState, createRef } from 'react';
+import React, { useState, createRef, useEffect, useRef } from 'react';
 import {
     Card,
     IconButton,
@@ -107,6 +107,7 @@ function FAP() {
     const theme = useTheme();
     const bookmarksStore = useBookmarksService();
     const scrollRef = createRef();
+    const rootRef = useRef(null);
     const [isLeft, setIsLeft] = useState(false);
     const [isRight, setIsRight] = useState(false);
 
@@ -125,6 +126,7 @@ function FAP() {
     };
 
     const scrollHandle = (left) => {
+        if (!scrollRef.current) return;
         setIsLeft(left !== 0);
         setIsRight(left + scrollRef.current.base.clientWidth !== scrollRef.current.base.scrollWidth);
     };
@@ -152,6 +154,7 @@ function FAP() {
                     classes.root,
                     bookmarksStore.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
                 )}
+                ref={rootRef}
                 style={{ height: 40 + theme.spacing(3 + (bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 2)) }}
             >
                 <Card

@@ -1,5 +1,6 @@
 import { action, observable } from 'mobx';
 import StorageConnector from '@/utils/storageConnector';
+import EventBus from "@/utils/eventBus";
 
 class AppConfigStore {
     @observable theme;
@@ -7,8 +8,11 @@ class AppConfigStore {
     @observable useSystemFont;
     @observable tabName;
     @observable activity = 'desktop';
+    eventBus;
 
     constructor() {
+        this.eventBus = new EventBus();
+
         StorageConnector.getItem('app_theme')
             .then((value) => { this.theme = value; })
             .catch((e) => console.error(e));

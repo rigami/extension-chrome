@@ -18,6 +18,8 @@ import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
 import GlobalScroll from './GlobalScroll';
 import GlobalModals from './GlobalModals';
+import FakeScroll from "@/ui/FakeScroll";
+import FAPStub from "@/ui/Bookmarks/FAP/Stub";
 
 function App() {
     const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
@@ -49,9 +51,12 @@ function App() {
             >
                 <GlobalScroll>
                     <Desktop />
-                    <FAP />
+                    <FAPStub />
                     <Bookmarks />
                 </GlobalScroll>
+                <FakeScroll>
+                    <FAP />
+                </FakeScroll>
                 <GlobalModals />
             </Nest>
         </ThemeProvider>

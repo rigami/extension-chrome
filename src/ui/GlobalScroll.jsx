@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-
+import React, { useState, useRef, useEffect } from 'react';
+import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalStore } from 'mobx-react-lite';
 import { useService as useAppService } from '@/stores/app';
-import Scrollbar, { classes as scrollbarClasses } from '@/ui-components/CustomScroll';
+// import Scrollbar, { classes as scrollbarClasses } from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
+import Scrollbar  from 'smooth-scrollbar';
+import OverscrollPlugin from 'smooth-scrollbar/plugins/overscroll';
+import ViewScrollPlugin from "@/utils/ViewScrollPlugin";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -12,69 +15,71 @@ const useStyles = makeStyles((theme) => ({
         width: '100vw',
         backgroundColor: theme.palette.background.paper,
     },
-    scrollBar: scrollbarClasses(theme).scrollBar,
+    // scrollBar: scrollbarClasses(theme).scrollBar,
     hideScroll: { opacity: 0 },
 }));
 
 function GlobalScroll({ children }) {
     const classes = useStyles();
     const appService = useAppService();
-    const [isShowScroll, setIsShowScroll] = useState(false);
-    const store = useLocalStore(() => ({
-        scrollbar: null,
-        scrollDirection: null,
-    }));
+    const rootRef = useRef(null);
 
-    const handlerScroll = ({ scrollTop }, { scrollTop: prevScrollTop }) => {
-        store.scrollDirection = prevScrollTop - scrollTop > 0 ? 'up' : 'down';
-        setIsShowScroll(scrollTop >= document.documentElement.clientHeight);
-    };
+    useEffect(() => {
+        Scrollbar.use(ViewScrollPlugin, OverscrollPlugin);
 
-    const handlerScrollStop = ({ scrollTop }) => {
-        if (
-            (store.scrollDirection === 'down' && scrollTop < 60)
-            || (store.scrollDirection === 'up' && scrollTop < document.documentElement.clientHeight - 60)
-        ) {
-            store.scrollbar.contentElement.parentElement.scrollTo({
-                behavior: 'smooth',
-                left: 0,
-                top: 0,
-            });
-            appService.setActivity('desktop');
-        } else if (
-            scrollTop < document.documentElement.clientHeight
-        ) {
-            store.scrollbar.contentElement.parentElement.scrollTo({
-                behavior: 'smooth',
-                left: 0,
-                top: document.documentElement.clientHeight,
-            });
-            appService.setActivity('bookmarks');
-        }
-    };
+        const scrollbar = Scrollbar.init(rootRef.current, {
+            damping: 0.2,
+            thumbMinSize: 0,
+            continuousScrolling: true,
+            syncCallbacks: true,
+            plugins: {
+                overscroll: {
+                    effect: 'bounce',
+                    maxOverscroll: 150,
+                },
+                viewScrollPlugin: {
+                    breakpoints: [
+                        {
+                            id: 'desktop',
+                            value: 0,
+                            block: true,
+                        },
+                        {
+                            id: 'bookmarks',
+                            value: document.documentElement.clientHeight
+                        },
+                    ],
+                    detectOffset: 70,
+                    onBreakpoint: (breakpoint) => {
+                        if (breakpoint?.id === 'desktop') {
+                            appService.setActivity('desktop');
+                        } else if (breakpoint?.id === 'bookmarks') {
+                            appService.setActivity('bookmarks');
+                        }
+                    },
+                },
+            },
+        });
+
+        Scrollbar.detachStyle();
+
+        scrollbar.track.xAxis.element.remove();
+
+        scrollbar.addListener(({ offset }) => {
+            appService.eventBus.dispatch('scroll', offset);
+        });
+
+        console.log("scrollbar", scrollbar)
+    }, []);
 
 
     return (
-        <Scrollbar
+        <Box
             className={classes.root}
-            trackYProps={{
-                renderer: (props) => {
-                    const { elementRef, ...restProps } = props;
-                    return (
-                        <div
-                            {...restProps}
-                            ref={elementRef}
-                            className={clsx(!isShowScroll && classes.hideScroll, classes.scrollBar)}
-                        />
-                    );
-                },
-            }}
-            onScroll={handlerScroll}
-            onScrollStop={handlerScrollStop}
-            refScroll={(ref) => { store.scrollbar = ref; }}
+            ref={rootRef}
         >
             {children}
-        </Scrollbar>
+        </Box>
     );
 }
 
