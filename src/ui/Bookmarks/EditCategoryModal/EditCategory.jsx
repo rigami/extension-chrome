@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function EditCategory({ onSave, editCategoryId }) {
+function EditCategory({ onSave, onError, editCategoryId }) {
     const classes = useStyles();
     const [categoryName, setCategoryName] = useState('');
     const [error, setError] = useState(null);
@@ -34,7 +34,10 @@ function EditCategory({ onSave, editCategoryId }) {
         if (categoryName.trim() !== '') {
             bookmarksStore.saveCategory(categoryName, editCategoryId)
                 .then((categoryId) => onSave(categoryId))
-                .catch((e) => setError(e.message));
+                .catch((e) => {
+                    onError(e.message);
+                    setError(e.message);
+                });
         }
     };
 
@@ -49,6 +52,7 @@ function EditCategory({ onSave, editCategoryId }) {
                     defaultValue={categoryStore?.name}
                     onChange={(event) => {
                         setCategoryName(event.target.value);
+                        onError(null);
                         setError(null);
                     }}
                 />

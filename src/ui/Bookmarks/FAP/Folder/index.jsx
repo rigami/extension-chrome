@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     IconButton,
     Popper,
@@ -10,6 +10,8 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import Explorer from './Explorer';
 import EditMenu from '@/ui/Bookmarks/ContextEditMenu'
+import {useService as useAppService} from "@/stores/app";
+import { useLocalStore } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -42,12 +44,17 @@ const useStyles = makeStyles((theme) => ({
 
 function Folder({ id, color, isBlurBackdrop }) {
     const classes = useStyles();
+    const appService = useAppService();
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const [position, setPosition] = useState(null);
+    const [listenId, setListenId] = useState(null);
+    const store = useLocalStore(() => ({
+        popperRef: null,
+    }));
 
     const handlerContextMenu = (event) => {
         event.preventDefault();
@@ -62,6 +69,16 @@ function Folder({ id, color, isBlurBackdrop }) {
         setIsOpenMenu(false);
     };
 
+    useEffect(() => {
+        if (isOpen) {
+            setListenId(appService.eventBus.on('scroll', () => {
+                store.popperRef.update();
+            }));
+        } else {
+            appService.eventBus.removeListener(listenId);
+        }
+    }, [isOpen]);
+
     return (
         <React.Fragment>
             <ClickAwayListener
@@ -73,7 +90,10 @@ function Folder({ id, color, isBlurBackdrop }) {
                 mouseEvent="onMouseDown"
             >
                 <Popper
-                    open={isOpen} anchorEl={anchorEl} placement="top"
+                    open={isOpen}
+                    anchorEl={anchorEl}
+                    popperRef={(popperRef) => { store.popperRef = popperRef; }}
+                    placement="top"
                     className={classes.popperWrapper}
                 >
                     <Explorer id={id} />

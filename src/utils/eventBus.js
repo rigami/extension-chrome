@@ -7,7 +7,7 @@ class EventBus {
         if (!(event in this.byEvents)) return;
 
         this.byEvents[event].forEach((listenerId) => {
-            this.listeners[listenerId].callback(props);
+            this.listeners[listenerId]?.callback(props);
         })
     }
 
