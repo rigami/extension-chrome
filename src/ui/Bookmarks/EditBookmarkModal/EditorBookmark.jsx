@@ -23,6 +23,7 @@ import CardLink from '@/ui/Bookmarks/CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import Categories from '../Ctegories';
 import { useSnackbar } from 'notistack';
+import SearchField from "@/ui/Bookmarks/EditBookmarkModal/SearchFiled";
 
 const { global: localeGlobal } = locale;
 
@@ -201,13 +202,10 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                         <Typography component="h5" variant="h5">
                             {!store.editBookmarkId ? 'Добавление закладки' : 'Редактирование закладки'}
                         </Typography>
-                        <TextField
-                            label="URL адрес"
-                            variant="outlined"
-                            fullWidth
+                        <SearchField
                             value={store.url}
                             className={classes.input}
-                            onChange={(event) => { store.url = event.target.value.trim(); }}
+                            onChange={(value) => { store.url = value; }}
                         />
                         <TextField
                             label="Название"

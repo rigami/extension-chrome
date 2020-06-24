@@ -22,6 +22,7 @@ module.exports = (env, args) => ({
         overlay: true,
         writeToDisk: true,
         disableHostCheck: true,
+        port: 3000,
     },
     plugins: [
         args.mode === 'production' ? new BundleAnalyzerPlugin() : () => {},
