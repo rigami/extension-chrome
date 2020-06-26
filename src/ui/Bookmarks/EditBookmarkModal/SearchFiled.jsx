@@ -6,14 +6,11 @@ import {
     Typography,
     Avatar,
 } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import locale from '@/i18n/RU';
 import siteSearch, { getFaviconUrl, AbortController } from "@/utils/siteSearch";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { PublicRounded as WebSiteIcon } from '@material-ui/icons';
-import clsx from 'clsx';
-
-const { global: localeGlobal } = locale;
 
 const useStyles = makeStyles((theme) => ({
     favicon: {
@@ -23,6 +20,14 @@ const useStyles = makeStyles((theme) => ({
         height: 16,
         backgroundColor: theme.palette.common.white,
         // border: `1px solid ${theme.palette.common.white}`,
+    },
+    faviconGlobal: {
+        color: '#505050',
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(1),
+        width: 16,
+        height: 16,
+        backgroundColor: theme.palette.common.white,
     },
     input: {
         padding: 0,
@@ -100,10 +105,15 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
         setValue(inputValue);
     };
 
+    useEffect(() => {
+        setValue(defaultValue);
+    }, [defaultValue]);
+
     return (
         <Autocomplete
             fullWidth
             open={isOpen}
+            inputValue={value}
             onClose={() => {
                 setIsOpen(false);
                 setOptions([]);
@@ -116,7 +126,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                     clearTimeout(timer);
                 }
             }}
-            onChange={(option) => onChange(option.url)}
+            onChange={(event, option) => onChange(option.url)}
             getOptionSelected={(option, value) =>
                 (typeof option === "string" ? option : option.title)
                 === (typeof value === "string" ? value : value.title)
@@ -180,6 +190,17 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                     InputProps={{
                         ...params.InputProps,
                         className: classes.input,
+                        startAdornment: (
+                            defaultValue && !loading && !isOpen && (
+                                <Avatar
+                                    key={defaultValue}
+                                    src={getFaviconUrl(defaultValue)}
+                                    className={classes.faviconGlobal}
+                                >
+                                    <WebSiteIcon />
+                                </Avatar>
+                            )
+                        ),
                         endAdornment: (
                             loading && (
                                 <CircularProgress

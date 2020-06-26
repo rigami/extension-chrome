@@ -1,7 +1,7 @@
 const search = (query, signal) => {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', `http://localhost:8080/parser/proxy_DuckDuckGo?query=${encodeURI(query)}`, true);
+        xhr.open('GET', `http://localhost:8080/parser/proxy_DuckDuckGo?query=${query}`, true);
         xhr.responseType = "document";
         xhr.timeout = 10000;
         xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
