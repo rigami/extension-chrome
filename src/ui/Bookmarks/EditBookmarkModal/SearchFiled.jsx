@@ -118,6 +118,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                 setIsOpen(false);
                 setOptions([]);
                 setLoading(false);
+                setValue(defaultValue);
                 if (controller) {
                     controller.abort();
                     setController(null);
@@ -173,12 +174,12 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                     label="Запрос или URL адрес"
                     variant="outlined"
                     className={externalClassName}
-                    value={defaultValue}
                     onChange={handleSearch}
                     onBlur={() => {
                         setIsOpen(false);
                         setOptions([]);
                         setLoading(false);
+                        setValue(defaultValue);
                         if (controller) {
                             controller.abort();
                             setController(null);
