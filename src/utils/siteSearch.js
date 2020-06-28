@@ -7,7 +7,7 @@ const search = (query, signal) => {
         xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
 
         if (signal) {
-            signal._abortHandler = () => xhr.abort();
+            signal.addAbortHandler(() => xhr.abort());
         }
 
         xhr.onload = () => {
@@ -29,7 +29,35 @@ const search = (query, signal) => {
     });
 };
 
-const getFaviconUrl = (url) => {
+const checkExistSite = (url, signal) => {
+    return new Promise((resolve, reject) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', `http://localhost:8080/parser/get_site_info?url=${url}`, true);
+        xhr.timeout = 10000;
+        xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+        xhr.responseType = 'json';
+
+        if (signal) {
+            signal.addAbortHandler(() => xhr.abort());
+        }
+
+        xhr.onload = () => {
+            if (xhr.status !== 200) {
+                reject();
+                return;
+            }
+            resolve(xhr.response);
+        }
+
+        xhr.onerror = xhr.ontimeout = (e) => {
+            reject(e);
+        }
+
+        xhr.send();
+    });
+};
+
+const getFaviconUrl = (url = '') => {
     let origin;
     if (url.indexOf("/", 8) === -1) {
         origin = url;
@@ -41,10 +69,14 @@ const getFaviconUrl = (url) => {
 };
 
 function AbortController() {
-    this.abort = () => this._abortHandler && this._abortHandler();
-    this._abortHandler = null;
+    const _handlers = [];
+
+    this.abort = () => {
+        _handlers.forEach((handler) => handler());
+    }
+    this.addAbortHandler = (handler) => _handlers.push(handler);
 }
 
 
 export default search;
-export { getFaviconUrl, AbortController };
+export { getFaviconUrl, AbortController, checkExistSite };

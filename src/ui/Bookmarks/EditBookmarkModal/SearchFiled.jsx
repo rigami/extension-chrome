@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     TextField,
     CircularProgress,
@@ -6,11 +6,10 @@ import {
     Typography,
     Avatar,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import locale from '@/i18n/RU';
-import siteSearch, { getFaviconUrl, AbortController } from "@/utils/siteSearch";
-import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
-import { PublicRounded as WebSiteIcon } from '@material-ui/icons';
+import {makeStyles} from '@material-ui/core/styles';
+import siteSearch, {getFaviconUrl, AbortController, checkExistSite} from "@/utils/siteSearch";
+import Autocomplete, {createFilterOptions} from "@material-ui/lab/Autocomplete";
+import {PublicRounded as WebSiteIcon} from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
     favicon: {
@@ -58,10 +57,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function SearchField({ className: externalClassName, value: defaultValue, onChange }) {
+function SearchField({className: externalClassName, value: defaultValue, onChange}) {
     const classes = useStyles();
     const [timer, setTimer] = useState(undefined);
-    const [options, setOptions] = React.useState([]);
+    const [searchResults, setSearchResults] = React.useState({
+        straight: {type: 'straight', status: 'pending'},
+        global: []
+    });
     const [loading, setLoading] = React.useState(false);
     const [controller, setController] = React.useState(null);
     const [isOpen, setIsOpen] = React.useState(false);
@@ -83,7 +85,8 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
         }
 
         if (inputValue.trim() === '') {
-            setOptions([]);
+            console.log("HARD RESET")
+            setSearchResults({straight: {type: 'straight', status: 'pending'}, global: []});
             setLoading(false);
             return;
         }
@@ -93,13 +96,71 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
             const controller = new AbortController();
             setController(controller);
 
-            siteSearch(inputValue, controller)
-                .then((results) => {
-                    console.log(`Find for ${inputValue}:`, results)
-                    setOptions(results);
-                    setLoading(false);
+            const results = {
+                straight: 'pending',
+                global: 'pending',
+            };
+
+            const checkResults = () => {
+                console.log(results)
+                if (results.straight === 'pending' || results.global === 'pending') return;
+
+                setLoading(false);
+            };
+
+            checkExistSite(inputValue, controller)
+                .then((siteData) => {
+                    results.straight = 'done';
+                    setSearchResults((oldValue) => ({
+                        ...oldValue,
+                        straight: {
+                            ...siteData,
+                            title: siteData.name,
+                            url: inputValue,
+                            type: 'straight',
+                            status: "done",
+                        },
+                    }));
                     setIsOpen(true);
-                });
+                })
+                .catch(() => {
+                    results.straight = 'failed';
+                    setSearchResults((oldValue) => ({
+                        ...oldValue,
+                        straight: {
+                            type: 'straight',
+                            status: "failed",
+                        },
+                    }));
+                })
+                .finally(checkResults);
+
+            siteSearch(inputValue, controller)
+                .then((foundResults) => {
+                    results.global = 'done';
+                    setSearchResults((oldValue) => ({
+                        ...oldValue,
+                        global: foundResults.map((result) => ({
+                            ...result,
+                            type: 'global',
+                            status: "done",
+                        })),
+                    }));
+                    setIsOpen(true);
+                })
+                .catch(() => {
+                    results.global = 'failed';
+                    setSearchResults((oldValue) => ({
+                        ...oldValue,
+                        global: [
+                            {
+                                type: 'global',
+                                status: "failed",
+                            },
+                        ],
+                    }));
+                })
+                .finally(checkResults);
         }, 1300));
 
         setValue(inputValue);
@@ -109,14 +170,17 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
         setValue(defaultValue);
     }, [defaultValue]);
 
+    console.log("searchResults", searchResults)
+
     return (
         <Autocomplete
             fullWidth
             open={isOpen}
             inputValue={value}
             onClose={() => {
+                console.log("CLOSE")
                 setIsOpen(false);
-                setOptions([]);
+                setSearchResults({straight: {type: 'straight', status: 'pending'}, global: []});
                 setLoading(false);
                 setValue(defaultValue);
                 if (controller) {
@@ -128,22 +192,43 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                 }
             }}
             onChange={(event, option) => onChange(option.url)}
-            getOptionSelected={(option, value) =>
-                (typeof option === "string" ? option : option.title)
-                === (typeof value === "string" ? value : value.title)
-            }
+            getOptionSelected={(option, value) => option.title === value.title}
             getOptionLabel={(option) => option.url}
             autoHighlight
+            groupBy={(option) => option.type}
             noOptionsText={(
                 <Grid container alignItems="center">
                     <Grid item xs>
-                        <span style={{ fontWeight: 700 }}>
+                        <span style={{fontWeight: 700}}>
                             Ничего не найдено
                         </span>
                     </Grid>
                 </Grid>
             )}
             renderOption={(option) => {
+                console.log(option)
+                if (option.status === 'failed') {
+                    return (
+                        <Grid container alignItems="center">
+                            <Grid item xs>
+                                <span style={{fontWeight: 700}}>
+                                    Ничего не найдено
+                                </span>
+                            </Grid>
+                        </Grid>
+                    );
+                }
+                if (option.status === 'pending') {
+                    return (
+                        <Grid container alignItems="center">
+                            <Grid item xs>
+                                <span style={{fontWeight: 700}}>
+                                    Загрузка
+                                </span>
+                            </Grid>
+                        </Grid>
+                    );
+                }
                 return (
                     <Grid container alignItems="center" className={classes.row}>
                         <Grid item>
@@ -152,11 +237,11 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                                 src={getFaviconUrl(option.url)}
                                 className={classes.favicon}
                             >
-                                <WebSiteIcon />
+                                <WebSiteIcon/>
                             </Avatar>
                         </Grid>
                         <Grid item xs className={classes.textBlock}>
-                            <span style={{ fontWeight: 700 }} className={classes.title}>
+                            <span style={{fontWeight: 700}} className={classes.title}>
                               {option.title}
                             </span>
                             <Typography variant="body2" color="textSecondary" className={classes.url}>
@@ -166,7 +251,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                     </Grid>
                 );
             }}
-            options={options}
+            options={[searchResults.straight, ...searchResults.global]}
             filterOptions={filterOptions}
             renderInput={(params) => (
                 <TextField
@@ -176,8 +261,9 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                     className={externalClassName}
                     onChange={handleSearch}
                     onBlur={() => {
+                        console.log("BLUR")
                         setIsOpen(false);
-                        setOptions([]);
+                        setSearchResults({straight: {type: 'straight', status: 'pending'}, global: []});
                         setLoading(false);
                         setValue(defaultValue);
                         if (controller) {
@@ -198,7 +284,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                                     src={getFaviconUrl(defaultValue)}
                                     className={classes.faviconGlobal}
                                 >
-                                    <WebSiteIcon />
+                                    <WebSiteIcon/>
                                 </Avatar>
                             )
                         ),
