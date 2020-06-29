@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function SearchField({className: externalClassName, value: defaultValue, onChange}) {
+function SearchField({ className: externalClassName, value: defaultValue, onChange, autoFocus = false }) {
     const classes = useStyles();
     const [timer, setTimer] = useState(undefined);
     const [searchResults, setSearchResults] = React.useState({
@@ -203,7 +203,7 @@ function SearchField({className: externalClassName, value: defaultValue, onChang
             open={isOpen}
             inputValue={value}
             onClose={resetForm}
-            onChange={(event, option) => onChange(option.url)}
+            onChange={(event, option) => onChange(option)}
             getOptionDisabled={(option) => option.status !== 'done'}
             getOptionSelected={(option, value) => option.title === value.title}
             getOptionLabel={(option) => option.url}
@@ -271,6 +271,7 @@ function SearchField({className: externalClassName, value: defaultValue, onChang
                     label="Запрос или URL адрес"
                     variant="outlined"
                     className={externalClassName}
+                    autoFocus={autoFocus}
                     onChange={handleSearch}
                     onBlur={resetForm}
                     InputProps={{

@@ -144,7 +144,8 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         editBookmarkId,
         url: '',
         name: '',
-        description: null,
+        description: '',
+        useDescription: false,
         type: 'default',
         categories: [],
     }));
@@ -153,7 +154,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         bookmarksStore.saveBookmark({
             ...store,
             name: store.name.trim(),
-            description: store.description?.trim(),
+            description: (store.useDescription && store.description?.trim()) || '',
             id: store.editBookmarkId,
         })
             .then(() => onSave());
@@ -167,7 +168,8 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                 console.log("Bookmark", bookmark)
                 store.url = bookmark.url;
                 store.name = bookmark.name;
-                if (!!bookmark.description?.trim()) store.description = bookmark.description;
+                store.useDescription = !!bookmark.description?.trim();
+                if (store.useDescription) store.description = bookmark.description;
                 store.type = bookmark.type;
                 store.categories = (bookmark.categories || []).map((category) => category.id);
             })
@@ -194,7 +196,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                     url={store.url !== ''}
                     name={store.name.trim()}
                     type={store.type}
-                    description={store.description?.trim()}
+                    description={store.useDescription && store.description?.trim()}
                     onChangeType={(newType) => { store.type = newType; }}
                 />
                 <div className={classes.details}>
@@ -205,11 +207,17 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                         <SearchField
                             value={store.url}
                             className={classes.input}
-                            onChange={(value) => { store.url = value; }}
+                            autoFocus={!editBookmarkId}
+                            onChange={(site) => {
+                                store.url = site.url;
+                                store.name = site.title || '';
+                                store.description = site.description || '';
+                            }}
                         />
                         <TextField
                             label="Название"
                             variant="outlined"
+                            disabled={store.url === ''}
                             fullWidth
                             value={store.name}
                             className={classes.input}
@@ -222,7 +230,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                             onChange={(newCategories) => { store.categories = newCategories; }}
                             autoSelect
                         />
-                        {store.description !== null && (
+                        {store.useDescription && (
                             <TextField
                                 label="Описание"
                                 variant="outlined"
@@ -235,11 +243,11 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                                 onChange={(event) => { store.description = event.target.value; }}
                             />
                         )}
-                        {store.description === null && (
+                        {!store.useDescription && (
                             <Button
                                 startIcon={<AddIcon />}
                                 className={classes.addDescriptionButton}
-                                onClick={() => { store.description = ''; }}
+                                onClick={() => { store.useDescription = true; }}
                             >
                                 Добавить описание
                             </Button>
