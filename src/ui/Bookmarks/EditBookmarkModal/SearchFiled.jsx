@@ -10,6 +10,9 @@ import {makeStyles} from '@material-ui/core/styles';
 import siteSearch, {getFaviconUrl, AbortController, checkExistSite} from "@/utils/siteSearch";
 import Autocomplete, {createFilterOptions} from "@material-ui/lab/Autocomplete";
 import {PublicRounded as WebSiteIcon} from '@material-ui/icons';
+import allLocale from '@/i18n/RU';
+
+const locale = allLocale.settings.bookmarks.editModal;
 
 const useStyles = makeStyles((theme) => ({
     favicon: {
@@ -85,7 +88,6 @@ function SearchField({className: externalClassName, value: defaultValue, onChang
         }
 
         if (inputValue.trim() === '') {
-            console.log("HARD RESET")
             setSearchResults({straight: {type: 'straight', status: 'pending'}, global: []});
             setLoading(false);
             return;
@@ -102,7 +104,6 @@ function SearchField({className: externalClassName, value: defaultValue, onChang
             };
 
             const checkResults = () => {
-                console.log(results)
                 if (results.straight === 'pending' || results.global === 'pending') return;
 
                 setLoading(false);
@@ -138,14 +139,26 @@ function SearchField({className: externalClassName, value: defaultValue, onChang
             siteSearch(inputValue, controller)
                 .then((foundResults) => {
                     results.global = 'done';
-                    setSearchResults((oldValue) => ({
-                        ...oldValue,
-                        global: foundResults.map((result) => ({
-                            ...result,
-                            type: 'global',
-                            status: "done",
-                        })),
-                    }));
+                    if (foundResults.length !== 0) {
+                        setSearchResults((oldValue) => ({
+                            ...oldValue,
+                            global: foundResults.map((result) => ({
+                                ...result,
+                                type: 'global',
+                                status: "done",
+                            })),
+                        }));
+                    } else {
+                        setSearchResults((oldValue) => ({
+                            ...oldValue,
+                            global: [
+                                {
+                                    type: 'global',
+                                    status: "failed",
+                                },
+                            ],
+                        }));
+                    }
                     setIsOpen(true);
                 })
                 .catch(() => {
@@ -166,36 +179,36 @@ function SearchField({className: externalClassName, value: defaultValue, onChang
         setValue(inputValue);
     };
 
+    const resetForm = () => {
+        setIsOpen(false);
+        setSearchResults({straight: {type: 'straight', status: 'pending'}, global: []});
+        setLoading(false);
+        setValue(defaultValue);
+        if (controller) {
+            controller.abort();
+            setController(null);
+        }
+        if (timer) {
+            clearTimeout(timer);
+        }
+    };
+
     useEffect(() => {
         setValue(defaultValue);
     }, [defaultValue]);
-
-    console.log("searchResults", searchResults)
 
     return (
         <Autocomplete
             fullWidth
             open={isOpen}
             inputValue={value}
-            onClose={() => {
-                console.log("CLOSE")
-                setIsOpen(false);
-                setSearchResults({straight: {type: 'straight', status: 'pending'}, global: []});
-                setLoading(false);
-                setValue(defaultValue);
-                if (controller) {
-                    controller.abort();
-                    setController(null);
-                }
-                if (timer) {
-                    clearTimeout(timer);
-                }
-            }}
+            onClose={resetForm}
             onChange={(event, option) => onChange(option.url)}
+            getOptionDisabled={(option) => option.status !== 'done'}
             getOptionSelected={(option, value) => option.title === value.title}
             getOptionLabel={(option) => option.url}
             autoHighlight
-            groupBy={(option) => option.type}
+            groupBy={(option) => locale.group[option.type] || option.type}
             noOptionsText={(
                 <Grid container alignItems="center">
                     <Grid item xs>
@@ -206,7 +219,6 @@ function SearchField({className: externalClassName, value: defaultValue, onChang
                 </Grid>
             )}
             renderOption={(option) => {
-                console.log(option)
                 if (option.status === 'failed') {
                     return (
                         <Grid container alignItems="center">
@@ -260,20 +272,7 @@ function SearchField({className: externalClassName, value: defaultValue, onChang
                     variant="outlined"
                     className={externalClassName}
                     onChange={handleSearch}
-                    onBlur={() => {
-                        console.log("BLUR")
-                        setIsOpen(false);
-                        setSearchResults({straight: {type: 'straight', status: 'pending'}, global: []});
-                        setLoading(false);
-                        setValue(defaultValue);
-                        if (controller) {
-                            controller.abort();
-                            setController(null);
-                        }
-                        if (timer) {
-                            clearTimeout(timer);
-                        }
-                    }}
+                    onBlur={resetForm}
                     InputProps={{
                         ...params.InputProps,
                         className: classes.input,

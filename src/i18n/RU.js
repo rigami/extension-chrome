@@ -93,6 +93,12 @@ export default {
                 [BKMS_FAP_POSITION.BOTTOM]: 'Снизу',
             },
             open_on_startup: 'Открытие при запуске',
+            editModal: {
+                group: {
+                    straight: "Прямая ссылка",
+                    global: "Поиск в сети",
+                },
+            },
         },
         app: {
             title: 'Настройки окружения',
