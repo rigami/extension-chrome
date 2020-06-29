@@ -59,7 +59,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
 
     const bookmarksStore = useBookmarksService();
     const [controller, setController] = useState(null);
-    const [state, setState] = useState('pending');
+    const [state, setState] = useState('loading_images');
     const store = useLocalStore(() => ({
         editBookmarkId,
         url: '',
@@ -111,7 +111,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     useEffect(() => {
         if (editBookmarkId) return;
         store.image = null;
-        setState('pending');
+        setState('loading_images');
 
         if (controller) {
             controller.abort();
@@ -158,7 +158,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
             <Card className={classes.bgCardRoot} elevation={8}>
                 <Preview
                     isOpen={store.isOpenSelectPreview}
-                    isLoading={state === 'pending'}
+                    state={state === 'loading_images'}
                     imageUrl={store.image}
                     name={store.name.trim()}
                     type={store.type}
@@ -180,6 +180,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                                 store.name = site.title || '';
                                 store.description = site.description || '';
                             }}
+                            forceFocus
                         />
                         <TextField
                             label="Название"
@@ -204,6 +205,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                                 fullWidth
                                 value={store.description}
                                 className={classes.input}
+                                disabled={store.url === ''}
                                 multiline
                                 rows={3}
                                 rowsMax={3}

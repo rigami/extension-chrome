@@ -63,7 +63,7 @@ const DEFAULT_STRAIGHT_RESULT_STUB = { id: 'straight-stub', type: 'straight', st
 const DEFAULT_GLOBAL_RESULT_STUB = { id: 'global-stub', type: 'global', status: 'pending' };
 const DEFAULT_RESULTS = {straight: DEFAULT_STRAIGHT_RESULT_STUB, global: []};
 
-function SearchField({ className: externalClassName, value: defaultValue, onChange, autoFocus = false }) {
+function SearchField({ className: externalClassName, value: defaultValue, onChange, autoFocus = false, forceFocus = false }) {
     const classes = useStyles();
     const [timer, setTimer] = useState(undefined);
     const [searchResults, setSearchResults] = React.useState(DEFAULT_RESULTS);
@@ -92,6 +92,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
             setSelectedOption(undefined);
             setSearchResults(DEFAULT_RESULTS);
             setLoading(false);
+            setIsOpen(false);
             setValue(inputValue);
             return;
         }
@@ -287,7 +288,9 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                     className={externalClassName}
                     autoFocus={autoFocus}
                     onChange={handleSearch}
-                    onBlur={resetForm}
+                    onBlur={(event) => {
+                        resetForm();
+                    }}
                     InputProps={{
                         ...params.InputProps,
                         className: classes.input,

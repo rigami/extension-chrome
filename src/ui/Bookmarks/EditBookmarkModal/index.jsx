@@ -11,7 +11,6 @@ function EditBookmarkModal({ isOpen, onClose, ...other }) {
                 elevation: 0,
                 style: { background: 'none' },
             }}
-            onClose={onClose}
             disableEnforceFocus
         >
             <EditorBookmark onSave={onClose} onCancel={onClose} {...other} />

@@ -70,7 +70,7 @@ function Preview(props) {
         isOpen,
         name,
         type,
-        isLoading,
+        state: globalState,
         description,
         categories,
         onChangeType,
@@ -81,7 +81,7 @@ function Preview(props) {
 
     useEffect(() => {
         setState('pending');
-        if (imageUrl === '') {
+        if (!imageUrl) {
             setState('done');
             return;
         }
@@ -100,43 +100,47 @@ function Preview(props) {
         <CardMedia
             className={classes.cover}
         >
-            {state === 'pending' && isLoading && imageUrl && name && (
+            {(state === 'pending' || globalState === 'loading_images') && (
                 <CircularProgress style={{ color: theme.palette.common.white }} />
             )}
-            {state === 'done' && !isLoading && name && imageUrl && (
+            {state !== 'pending' && globalState !== 'loading_images' && (
                 <React.Fragment>
-                    <Button
-                        className={classes.typeSwitcher}
-                        onClick={onChangeType}
-                        startIcon={isOpen ? (<CloseIcon />) : (<OpenIcon />)}
-                        fullWidth
-                    >
-                        Другие варианты
-                    </Button>
-                    <CardLink
-                        name={name}
-                        description={description}
-                        categories={categories}
-                        type={type}
-                        imageUrl={imageUrl}
-                        preview
-                    />
+                    {state === 'done' && name && imageUrl && (
+                        <React.Fragment>
+                            <Button
+                                className={classes.typeSwitcher}
+                                onClick={onChangeType}
+                                startIcon={isOpen ? (<CloseIcon />) : (<OpenIcon />)}
+                                fullWidth
+                            >
+                                Ещё варианты
+                            </Button>
+                            <CardLink
+                                name={name}
+                                description={description}
+                                categories={categories}
+                                type={type}
+                                imageUrl={imageUrl}
+                                preview
+                            />
+                        </React.Fragment>
+                    )}
+                    {state === 'done' && !imageUrl && (
+                        <FullScreenStub
+                            iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
+                            description="Укажите адрес"
+                        />
+                    )}
+                    {state === 'done' && !name && imageUrl && (
+                        <FullScreenStub
+                            iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
+                            description="Дайте закладке имя"
+                        />
+                    )}
+                    {state === 'failed' && (
+                        "Ошибка загрузки иконок, попробуйте другой адрес"
+                    )}
                 </React.Fragment>
-            )}
-            {!imageUrl && !isLoading && (
-                <FullScreenStub
-                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
-                    description="Укажите адрес"
-                />
-            )}
-            {!name && imageUrl && !isLoading && (
-                <FullScreenStub
-                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
-                    description="Дайте закладке имя"
-                />
-            )}
-            {state === 'failed' && !isLoading && imageUrl && (
-                "Ошибка загрузки иконок, попробуйте другой адрес"
             )}
         </CardMedia>
     );
