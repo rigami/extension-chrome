@@ -155,6 +155,7 @@ class BookmarksStore {
         }
 
         bookmark.categories = findCategories;
+        bookmark.imageUrl = bookmark.icoFileName;
 
         return bookmark;
     }
@@ -191,7 +192,10 @@ class BookmarksStore {
             const bookmarks = await stores.bookmarks.getAll();
 
             bookmarks.forEach((bookmark) => {
-                findBookmarks[bookmark.id] = bookmark;
+                findBookmarks[bookmark.id] = {
+                    ...bookmark,
+                    imageUrl: bookmark.icoFileName,
+                };
             });
         }
 
@@ -207,6 +211,10 @@ class BookmarksStore {
             if (categories.length === 0 || ~categories.indexOf(cursorCategoryId)) {
                 if (!findBookmarks[cursorBookmarkId]) {
                     findBookmarks[cursorBookmarkId] = await stores.bookmarks.get(cursorBookmarkId);
+                    findBookmarks[cursorBookmarkId] = {
+                        ...findBookmarks[cursorBookmarkId],
+                        imageUrl: findBookmarks[cursorBookmarkId].icoFileName,
+                    };
                 }
                 if (!findCategories[cursorCategoryId]) {
                     findCategories[cursorCategoryId] = await getCategory(cursorCategoryId);
@@ -275,7 +283,7 @@ class BookmarksStore {
             url,
             name,
             description,
-            ico_url,
+            image_url,
             categories = [],
             type,
             id,
@@ -283,6 +291,7 @@ class BookmarksStore {
 
         const saveData = {
             url,
+            icoFileName: image_url,
             name: name.trim(),
             description: description && description.trim(),
             type,

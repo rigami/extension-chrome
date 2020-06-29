@@ -1,49 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Button,
     Card,
     CardContent,
-    CardMedia,
     Container,
     Typography,
     TextField,
-    ButtonGroup,
-    Box,
 } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
-    LinkRounded as URLIcon,
-    WarningRounded as WarnIcon,
 } from '@material-ui/icons';
 import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import locale from '@/i18n/RU';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
-import CardLink from '@/ui/Bookmarks/CardLink';
-import FullScreenStub from '@/ui-components/FullscreenStub';
 import Categories from '../Ctegories';
 import { useSnackbar } from 'notistack';
 import SearchField from "@/ui/Bookmarks/EditBookmarkModal/SearchFiled";
+import PreviewSelector from "./PreviewSelector";
+import Preview from "./Preview";
+import {getSiteInfo} from "@/utils/siteSearch";
 
 const { global: localeGlobal } = locale;
 
 const useStyles = makeStyles((theme) => ({
+    container: {
+        marginBottom: theme.spacing(3),
+        marginTop: theme.spacing(3),
+        maxWidth: 1044,
+    },
     bgCardRoot: { display: 'flex' },
     content: { flex: '1 0 auto' },
-    cover: {
-        padding: theme.spacing(2),
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        flexDirection: 'column',
-        flexGrow: 0,
-        flexShrink: 0,
-        backgroundColor: theme.palette.grey[900],
-        boxSizing: 'content-box',
-        minWidth: 180,
-    },
-    typeSwitcher: { marginBottom: theme.spacing(2) },
-    notSelectButton: { color: theme.palette.text.secondary },
     controls: {
         display: 'flex',
         alignItems: 'center',
@@ -63,76 +50,7 @@ const useStyles = makeStyles((theme) => ({
     input: { marginTop: theme.spacing(2) },
     chipContainer: { marginTop: theme.spacing(2) },
     addDescriptionButton: { marginTop: theme.spacing(2) },
-    warnMessage: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: theme.spacing(1, 0),
-        color: theme.palette.warning.main,
-    },
-    warnIcon: {
-        marginRight: theme.spacing(1),
-    },
 }));
-
-function Preview(props) {
-    const {
-        url,
-        name,
-        type,
-        description,
-        onChangeType,
-    } = props;
-    const classes = useStyles();
-
-    return (
-        <CardMedia
-            className={classes.cover}
-        >
-            {/* <CircularProgress style={{ color: theme.palette.common.white }} /> */}
-            {name && url && (
-                <React.Fragment>
-                    <ButtonGroup className={classes.typeSwitcher}>
-                        <Button
-                            className={type !== 'default' && classes.notSelectButton}
-                            color={type === 'default' && 'primary'}
-                            variant={type === 'default' && 'contained'}
-                            onClick={() => onChangeType('default')}
-                        >
-                            Обычная
-                        </Button>
-                        <Button
-                            className={type !== 'extend' && classes.notSelectButton}
-                            color={type === 'extend' && 'primary'}
-                            variant={type === 'extend' && 'contained'}
-                            onClick={() => onChangeType('extend')}
-                        >
-                            Расширенная
-                        </Button>
-                    </ButtonGroup>
-                    <CardLink
-                        name={name}
-                        description={description}
-                        categories={[]}
-                        type={type}
-                        preview
-                    />
-                </React.Fragment>
-            )}
-            {!url && (
-                <FullScreenStub
-                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
-                    description="Укажите адрес"
-                />
-            )}
-            {!name && url && (
-                <FullScreenStub
-                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
-                    description="Дайте закладке имя"
-                />
-            )}
-        </CardMedia>
-    );
-}
 
 function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     const classes = useStyles();
@@ -140,6 +58,8 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     const { enqueueSnackbar } = useSnackbar();
 
     const bookmarksStore = useBookmarksService();
+    const [controller, setController] = useState(null);
+    const [state, setState] = useState('pending');
     const store = useLocalStore(() => ({
         editBookmarkId,
         url: '',
@@ -148,11 +68,16 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         useDescription: false,
         type: 'default',
         categories: [],
+        fullCategories: [],
+        image: null,
+        images: [],
+        isOpenSelectPreview: false,
     }));
 
     const handlerSave = () => {
         bookmarksStore.saveBookmark({
             ...store,
+            image_url: store.image,
             name: store.name.trim(),
             description: (store.useDescription && store.description?.trim()) || '',
             id: store.editBookmarkId,
@@ -183,21 +108,63 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
             });
     }, []);
 
+    useEffect(() => {
+        if (editBookmarkId) return;
+        store.image = null;
+        setState('pending');
+
+        if (controller) {
+            controller.abort();
+            setController(null);
+        }
+
+        if (store.url === '') {
+            setState('done');
+            return;
+        }
+
+        getSiteInfo(store.url, controller)
+            .then((siteData) => {
+                setState('done');
+                store.image = siteData.icons[0]?.url;
+                store.images = siteData.icons;
+            })
+            .catch(() => {
+                setState('failed');
+            });
+    }, [store.url]);
+
+    useEffect(() => {
+        store.fullCategories = store.categories.map((categoryId) => bookmarksStore.getCategory(categoryId));
+    }, [store.categories.length]);
+
     return useObserver(() => (
         <Container
-            maxWidth="md"
-            style={{
-                marginBottom: theme.spacing(3),
-                marginTop: theme.spacing(3),
-            }}
+            maxWidth={false}
+            className={classes.container}
         >
+            <PreviewSelector
+                isOpen={store.isOpenSelectPreview}
+                name={store.name.trim()}
+                images={store.images}
+                description={store.useDescription && store.description?.trim()}
+                categories={store.fullCategories}
+                onChange={(imageUrl, type) => {
+                    store.isOpenSelectPreview = false;
+                    store.image = imageUrl;
+                    store.type = type;
+                }}
+            />
             <Card className={classes.bgCardRoot} elevation={8}>
                 <Preview
-                    url={store.url !== ''}
+                    isOpen={store.isOpenSelectPreview}
+                    isLoading={state === 'pending'}
+                    imageUrl={store.image}
                     name={store.name.trim()}
                     type={store.type}
                     description={store.useDescription && store.description?.trim()}
-                    onChangeType={(newType) => { store.type = newType; }}
+                    categories={store.fullCategories}
+                    onChangeType={() => { store.isOpenSelectPreview = !store.isOpenSelectPreview; }}
                 />
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
@@ -266,7 +233,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                disabled={!store.url || !store.name.trim()}
+                                disabled={!store.url || !store.name.trim() || !store.image}
                                 onClick={handlerSave}
                             >
                                 Сохранить

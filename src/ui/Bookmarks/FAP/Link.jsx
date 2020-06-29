@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { IconButton, Tooltip, Typography, CircularProgress } from '@material-ui/core';
+import {
+    IconButton,
+    Tooltip,
+    Typography,
+    CircularProgress,
+    Avatar,
+} from '@material-ui/core';
 import { LinkRounded as LinkIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
@@ -11,11 +17,14 @@ import {useService as useBookmarksService} from "@/stores/bookmarks";
 const useStyles = makeStyles((theme) => ({
     root: {
         marginRight: theme.spacing(1),
-        padding: theme.spacing(1),
+        padding: 0,
         backgroundColor: fade(theme.palette.common.white, 0.32),
         '&:hover': { backgroundColor: fade(theme.palette.common.white, 0.52) },
     },
     rootBlur: { backdropFilter: 'blur(10px) brightness(130%)' },
+    icon: {
+
+    },
 }));
 
 function LinkButton({ id, isBlurBackdrop }) {
@@ -89,7 +98,9 @@ function LinkButton({ id, isBlurBackdrop }) {
                     onMouseUp={handleClick}
                     onContextMenu={handlerContextMenu}
                 >
-                    <LinkIcon />
+                    <Avatar className={classes.icon} src={bookmark.imageUrl}>
+                        <LinkIcon />
+                    </Avatar>
                 </IconButton>
             </Tooltip>
         </React.Fragment>

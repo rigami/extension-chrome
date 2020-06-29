@@ -57,6 +57,10 @@ const checkExistSite = (url, signal) => {
     });
 };
 
+const getSiteInfo = (url, signal) => {
+    return checkExistSite(url, signal);
+};
+
 const getFaviconUrl = (url = '') => {
     let origin;
     if (url.indexOf("/", 8) === -1) {
@@ -79,4 +83,4 @@ function AbortController() {
 
 
 export default search;
-export { getFaviconUrl, AbortController, checkExistSite };
+export { getFaviconUrl, AbortController, checkExistSite, getSiteInfo };

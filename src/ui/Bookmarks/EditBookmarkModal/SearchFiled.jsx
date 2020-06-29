@@ -59,18 +59,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const DEFAULT_STRAIGHT_RESULT_STUB = { id: 'straight-stub', type: 'straight', status: 'pending' };
+const DEFAULT_GLOBAL_RESULT_STUB = { id: 'global-stub', type: 'global', status: 'pending' };
+const DEFAULT_RESULTS = {straight: DEFAULT_STRAIGHT_RESULT_STUB, global: []};
 
 function SearchField({ className: externalClassName, value: defaultValue, onChange, autoFocus = false }) {
     const classes = useStyles();
     const [timer, setTimer] = useState(undefined);
-    const [searchResults, setSearchResults] = React.useState({
-        straight: {type: 'straight', status: 'pending'},
-        global: []
-    });
+    const [searchResults, setSearchResults] = React.useState(DEFAULT_RESULTS);
     const [loading, setLoading] = React.useState(false);
     const [controller, setController] = React.useState(null);
     const [isOpen, setIsOpen] = React.useState(false);
     const [value, setValue] = React.useState('');
+    const [selectedOption, setSelectedOption] = React.useState(undefined);
 
     const filterOptions = createFilterOptions({
         stringify: () => value,
@@ -88,8 +89,10 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
         }
 
         if (inputValue.trim() === '') {
-            setSearchResults({straight: {type: 'straight', status: 'pending'}, global: []});
+            setSelectedOption(undefined);
+            setSearchResults(DEFAULT_RESULTS);
             setLoading(false);
+            setValue(inputValue);
             return;
         }
 
@@ -102,6 +105,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                 straight: 'pending',
                 global: 'pending',
             };
+            setSelectedOption(undefined);
 
             const checkResults = () => {
                 if (results.straight === 'pending' || results.global === 'pending') return;
@@ -115,10 +119,11 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                     setSearchResults((oldValue) => ({
                         ...oldValue,
                         straight: {
+                            ...DEFAULT_STRAIGHT_RESULT_STUB,
                             ...siteData,
+                            id: `straight-result`,
                             title: siteData.name,
                             url: inputValue,
-                            type: 'straight',
                             status: "done",
                         },
                     }));
@@ -129,7 +134,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                     setSearchResults((oldValue) => ({
                         ...oldValue,
                         straight: {
-                            type: 'straight',
+                            ...DEFAULT_STRAIGHT_RESULT_STUB,
                             status: "failed",
                         },
                     }));
@@ -142,9 +147,10 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                     if (foundResults.length !== 0) {
                         setSearchResults((oldValue) => ({
                             ...oldValue,
-                            global: foundResults.map((result) => ({
+                            global: foundResults.map((result, index) => ({
+                                ...DEFAULT_GLOBAL_RESULT_STUB,
                                 ...result,
-                                type: 'global',
+                                id: `global-result-${index}`,
                                 status: "done",
                             })),
                         }));
@@ -153,7 +159,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                             ...oldValue,
                             global: [
                                 {
-                                    type: 'global',
+                                    ...DEFAULT_GLOBAL_RESULT_STUB,
                                     status: "failed",
                                 },
                             ],
@@ -167,7 +173,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                         ...oldValue,
                         global: [
                             {
-                                type: 'global',
+                                ...DEFAULT_GLOBAL_RESULT_STUB,
                                 status: "failed",
                             },
                         ],
@@ -181,7 +187,8 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
 
     const resetForm = () => {
         setIsOpen(false);
-        setSearchResults({straight: {type: 'straight', status: 'pending'}, global: []});
+        setSelectedOption(undefined);
+        setSearchResults(DEFAULT_RESULTS);
         setLoading(false);
         setValue(defaultValue);
         if (controller) {
@@ -203,9 +210,16 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
             open={isOpen}
             inputValue={value}
             onClose={resetForm}
-            onChange={(event, option) => onChange(option)}
+            onChange={(event, option) => {
+                onChange(option);
+                setSelectedOption(option);
+            }}
             getOptionDisabled={(option) => option.status !== 'done'}
-            getOptionSelected={(option, value) => option.title === value.title}
+            getOptionSelected={(option, value) => {
+                // console.log("getOptionSelected", option, value)
+                return option.id === value.id;
+            }}
+            value={selectedOption}
             getOptionLabel={(option) => option.url}
             autoHighlight
             groupBy={(option) => locale.group[option.type] || option.type}

@@ -7,6 +7,7 @@ import {
     Tooltip,
     Box,
     IconButton,
+    CardMedia,
 } from '@material-ui/core';
 import {
     LinkRounded as LinkIcon,
@@ -14,6 +15,7 @@ import {
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import EditMenu from './ContextEditMenu';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -104,7 +106,10 @@ function CardLink(props) {
         categories,
         type,
         description,
+        imageUrl,
         preview = false,
+        onClick,
+        className: externalClassName,
         ...other
     } = props;
     const classes = useStyles();
@@ -132,6 +137,10 @@ function CardLink(props) {
     };
 
     const handleClick = (event) => {
+        if (onClick) {
+            onClick();
+            return;
+        }
         if (event.button === 1) {
             window.open(url);
         } else if (event.button === 0) {
@@ -151,17 +160,22 @@ function CardLink(props) {
             enterDelay={400}
             enterNextDelay={400}
         >
-            <Card className={classes.root} variant="outlined" {...other}>
+            <Card className={clsx(classes.root, externalClassName)} variant="outlined" {...other}>
                 <CardActionArea
                     className={classes.rootActionWrapper}
                     onMouseUp={handleClick}
                     onContextMenu={!preview ? handlerContextMenu : undefined}
                 >
-                    <Box className={type === 'extend' ? classes.extendBanner : classes.banner}>
-                        <Avatar className={classes.icon}>
-                            <LinkIcon />
-                        </Avatar>
-                    </Box>
+                    {type === 'extend' && (
+                        <CardMedia className={classes.extendBanner} image={imageUrl} />
+                    )}
+                    {type === 'default' && (
+                        <Box className={classes.banner}>
+                            <Avatar className={classes.icon} src={imageUrl}>
+                                <LinkIcon />
+                            </Avatar>
+                        </Box>
+                    )}
                     <div className={classes.body}>
                         <div className={classes.categoriesWrapper}>
                             {categories && categories.map(({ name: categoryName, color, id: categoryId }) => (
