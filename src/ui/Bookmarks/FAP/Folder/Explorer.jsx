@@ -23,6 +23,7 @@ import { useService as useBookmarksService } from '@/stores/bookmarks';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import EditMenu from '@/ui/Bookmarks/ContextEditMenu'
+import Image from "@/ui-components/Image";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -37,9 +38,24 @@ const useStyles = makeStyles((theme) => ({
         height: 300,
         overflow: 'auto',
     },
+    primaryText: {
+        display: '-webkit-box',
+        '-webkit-box-orient': 'vertical',
+        '-webkit-line-clamp': 2,
+        overflow: 'hidden',
+        wordBreak: 'break-word',
+    },
+    secondaryText: {
+        display: '-webkit-box',
+        '-webkit-box-orient': 'vertical',
+        '-webkit-line-clamp': 2,
+        overflow: 'hidden',
+        wordBreak: 'break-word',
+    },
 }));
 
-function Link({ name, url, id, description }) {
+function Link({ name, url, imageUrl, id, description }) {
+    const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState(null);
 
@@ -91,11 +107,16 @@ function Link({ name, url, id, description }) {
                     onContextMenu={handlerContextMenu}
                 >
                     <ListItemAvatar>
-                        <Avatar>
-                            <LinkIcon />
-                        </Avatar>
+                        <Image type="circle" src={imageUrl} />
                     </ListItemAvatar>
-                    <ListItemText primary={name} secondary={description} />
+                    <ListItemText
+                        primary={name}
+                        secondary={description}
+                        classes={{
+                            primary: classes.primaryText,
+                            secondary: classes.secondaryText,
+                        }}
+                    />
                 </ListItem>
             </Tooltip>
         </React.Fragment>

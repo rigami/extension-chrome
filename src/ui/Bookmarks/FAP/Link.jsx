@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
     IconButton,
     Tooltip,
     Typography,
-    CircularProgress,
-    Avatar,
 } from '@material-ui/core';
-import { LinkRounded as LinkIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import EditMenu from '@/ui/Bookmarks/ContextEditMenu'
 import { observer } from 'mobx-react-lite';
-import {useService as useBookmarksService} from "@/stores/bookmarks";
+import Image from "@/ui-components/Image";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,12 +24,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function LinkButton({ id, isBlurBackdrop }) {
+function LinkButton({ id, name, url, imageUrl, isBlurBackdrop }) {
     const classes = useStyles();
-    const bookmarksService = useBookmarksService();
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState(null);
-    const [bookmark, setBookmark] = useState(null);
 
     const handlerContextMenu = (event) => {
         event.preventDefault();
@@ -48,30 +43,14 @@ function LinkButton({ id, isBlurBackdrop }) {
     };
 
     const handleClick = (event) => {
-        if (!bookmark) return;
+        if (!url) return;
 
         if (event.button === 1) {
-            window.open(bookmark.url);
+            window.open(url);
         } else if (event.button === 0) {
-            window.open(bookmark.url, "_self");
+            window.open(url, "_self");
         }
     };
-
-    useEffect(() => {
-        bookmarksService.getBookmark(id)
-            .then((bkm) => {
-                setBookmark(bkm);
-            });
-    }, []);
-
-    if (!bookmark) {
-        return (
-            <IconButton className={clsx(classes.root, isBlurBackdrop && classes.rootBlur)} >
-                <CircularProgress size={24} />
-            </IconButton>
-        );
-    }
-
 
     return (
         <React.Fragment>
@@ -85,9 +64,9 @@ function LinkButton({ id, isBlurBackdrop }) {
             <Tooltip
                 title={(
                     <React.Fragment>
-                        {bookmark.name}
+                        {name}
                         <br />
-                        <Typography variant="caption">{bookmark.url}</Typography>
+                        <Typography variant="caption">{url}</Typography>
                     </React.Fragment>
                 )}
                 enterDelay={400}
@@ -98,9 +77,7 @@ function LinkButton({ id, isBlurBackdrop }) {
                     onMouseUp={handleClick}
                     onContextMenu={handlerContextMenu}
                 >
-                    <Avatar className={classes.icon} src={bookmark.imageUrl}>
-                        <LinkIcon />
-                    </Avatar>
+                    <Image type="circle" src={imageUrl} className={classes.icon} />
                 </IconButton>
             </Tooltip>
         </React.Fragment>

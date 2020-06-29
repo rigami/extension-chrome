@@ -110,6 +110,8 @@ function FAP() {
     const rootRef = useRef(null);
     const [isLeft, setIsLeft] = useState(false);
     const [isRight, setIsRight] = useState(false);
+    const [favorites, setFavorites] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const resizeHandle = () => {
         if (!scrollRef.current.base) return;
@@ -147,8 +149,32 @@ function FAP() {
         });
     };
 
+    useEffect(() => {
+        Promise.all(
+            bookmarksStore.favorites.map((fav) => {
+                if (fav.type === 'bookmark') {
+                    return bookmarksStore.getBookmark(fav.id);
+                } else {
+                    return bookmarksStore.getCategory(fav.id);
+                }
+            })
+        )
+            .then((favorites) => {
+                setIsLoading(false);
+                setFavorites(favorites.map((fav, index) => ({
+                    ...fav,
+                    type: bookmarksStore.favorites[index].type,
+                })));
+            })
+            .catch((e) => {
+                console.error("Failed load favorites", e);
+                setIsLoading(false);
+            });
+
+    }, [bookmarksStore.favorites.length]);
+
     return (
-        <Fade in={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN} unmountOnExit>
+        <Fade in={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN || !isLoading} unmountOnExit>
             <div
                 className={clsx(
                     classes.root,
@@ -177,7 +203,7 @@ function FAP() {
                         )}
                         ref={scrollRef}
                     >
-                        {bookmarksStore.favorites.length === 0 && (
+                        {favorites.length === 0 && (
                             <Typography className={classes.emptyTitle}>
                                 Быстрых закладок еще нет
                             </Typography>
@@ -188,7 +214,7 @@ function FAP() {
                         >
                             <LeftIcon />
                         </IconButton>
-                        {bookmarksStore.favorites.map((fav) => (
+                        {favorites.map((fav) => (
                             fav.type === 'bookmark' ? (
                                 <Link
                                     {...fav}
@@ -199,7 +225,6 @@ function FAP() {
                                 <Folder
                                     {...fav}
                                     key={`${fav.type}-${fav.id}`}
-                                    color={bookmarksStore.getCategory(fav.id)?.color}
                                     isBlurBackdrop={bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
                                 />
                             )

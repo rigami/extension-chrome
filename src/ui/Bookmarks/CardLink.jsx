@@ -1,7 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import {
     Card,
-    Avatar,
     Typography,
     CardActionArea,
     Tooltip,
@@ -10,15 +9,12 @@ import {
     CardMedia,
 } from '@material-ui/core';
 import {
-    Skeleton
-} from '@material-ui/lab';
-import {
-    LinkRounded as LinkIcon,
     MoreVertRounded as MoreIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import EditMenu from './ContextEditMenu';
 import clsx from 'clsx';
+import Image from "@/ui-components/Image";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -118,7 +114,6 @@ function CardLink(props) {
     const buttonRef = useRef(null);
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const [position, setPosition] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
 
     const handlerContextMenu = (event) => {
         event.preventDefault();
@@ -151,14 +146,6 @@ function CardLink(props) {
         }
     };
 
-    useEffect(() => {
-        const imgCache = document.createElement('img');
-        imgCache.onload = imgCache.onerror = () => {
-            setIsLoading(false);
-        };
-        imgCache.src = imageUrl;
-    }, []);
-
     return (
         <Tooltip
             title={(
@@ -178,37 +165,11 @@ function CardLink(props) {
                     onContextMenu={!preview ? handlerContextMenu : undefined}
                 >
                     {type === 'extend' && (
-                        <React.Fragment>
-                            {isLoading && (
-                                <Skeleton
-                                    variant="rect"
-                                    animation="wave"
-                                    width={180}
-                                    height={90}
-                                    className={classes.extendBanner}
-                                />
-                            )}
-                            {!isLoading && (
-                                <CardMedia className={classes.extendBanner} image={imageUrl} />
-                            )}
-                        </React.Fragment>
+                        <Image type="rect" src={imageUrl} className={classes.extendBanner} />
                     )}
                     {type === 'default' && (
                         <Box className={classes.banner}>
-                            {isLoading && (
-                                <Skeleton
-                                    variant="circle"
-                                    animation="wave"
-                                    width={40}
-                                    height={40}
-                                    className={classes.icon}
-                                />
-                            )}
-                            {!isLoading && (
-                                <Avatar className={classes.icon} src={imageUrl}>
-                                    <LinkIcon />
-                                </Avatar>
-                            )}
+                            <Image type="circle" src={imageUrl} className={classes.icon} />
                         </Box>
                     )}
                     <div className={classes.body}>

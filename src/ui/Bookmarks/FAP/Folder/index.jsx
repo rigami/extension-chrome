@@ -3,6 +3,7 @@ import {
     IconButton,
     Popper,
     ClickAwayListener,
+    Tooltip,
 } from '@material-ui/core';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -42,10 +43,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Folder({ id, color, isBlurBackdrop }) {
+function Folder({ id, name, color, isBlurBackdrop }) {
     const classes = useStyles();
     const appService = useAppService();
-
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
@@ -106,21 +106,27 @@ function Folder({ id, color, isBlurBackdrop }) {
                 onClose={handleCloseMenu}
                 position={position}
             />
-            <IconButton
-                ref={anchorEl}
-                className={clsx(classes.root, isOpen && classes.activeIconButton, isBlurBackdrop && classes.rootBlur)}
-                onMouseDown={() => {
-                    if (!isOpen) setIsBlockEvent(true);
-                }}
-                onClick={(event) => {
-                    setAnchorEl(event.currentTarget);
-                    if (isBlockEvent) setIsOpen(true);
-                    setIsBlockEvent(false);
-                }}
-                onContextMenu={handlerContextMenu}
+            <Tooltip
+                title={name}
+                enterDelay={400}
+                enterNextDelay={400}
             >
-                <FolderIcon style={{ color }} />
-            </IconButton>
+                <IconButton
+                    ref={anchorEl}
+                    className={clsx(classes.root, isOpen && classes.activeIconButton, isBlurBackdrop && classes.rootBlur)}
+                    onMouseDown={() => {
+                        if (!isOpen) setIsBlockEvent(true);
+                    }}
+                    onClick={(event) => {
+                        setAnchorEl(event.currentTarget);
+                        if (isBlockEvent) setIsOpen(true);
+                        setIsBlockEvent(false);
+                    }}
+                    onContextMenu={handlerContextMenu}
+                >
+                    <FolderIcon style={{ color }} />
+                </IconButton>
+            </Tooltip>
         </React.Fragment>
     );
 }
