@@ -93,6 +93,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                 console.log("Bookmark", bookmark)
                 store.url = bookmark.url;
                 store.name = bookmark.name;
+                store.image = bookmark.imageUrl;
                 store.useDescription = !!bookmark.description?.trim();
                 if (store.useDescription) store.description = bookmark.description;
                 store.type = bookmark.type;
@@ -109,8 +110,9 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     }, []);
 
     useEffect(() => {
-        if (editBookmarkId) return;
-        store.image = null;
+        if (!editBookmarkId) {
+            store.image = null;
+        }
         setState('loading_images');
 
         if (controller) {
@@ -126,7 +128,9 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         getSiteInfo(store.url, controller)
             .then((siteData) => {
                 setState('done');
-                store.image = siteData.icons[0]?.url;
+                if (!editBookmarkId) {
+                    store.image = siteData.icons[0]?.url;
+                }
                 store.images = siteData.icons;
             })
             .catch(() => {
