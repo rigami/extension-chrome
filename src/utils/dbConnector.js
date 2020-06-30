@@ -18,7 +18,7 @@ const open = () => openDB(appVariables.db.name, appVariables.db.version, {
             keyPath: 'id',
             autoIncrement: true,
         });
-        bookmarksStore.createIndex('type', 'type', { unique: false });
+        bookmarksStore.createIndex('ico_variant', 'icoVariant', { unique: false });
         bookmarksStore.createIndex('ico_file_name', 'icoFileName', { unique: false });
         bookmarksStore.createIndex('url', 'url', { unique: false });
         bookmarksStore.createIndex('name', 'name', { unique: false });

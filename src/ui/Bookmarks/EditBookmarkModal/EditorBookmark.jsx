@@ -66,7 +66,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         name: '',
         description: '',
         useDescription: false,
-        type: 'default',
+        icoVariant: 'circle',
         categories: [],
         fullCategories: [],
         image: null,
@@ -153,10 +153,10 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                 images={store.images}
                 description={store.useDescription && store.description?.trim()}
                 categories={store.fullCategories}
-                onChange={(imageUrl, type) => {
+                onChange={(imageUrl, icoVariant) => {
                     store.isOpenSelectPreview = false;
                     store.image = imageUrl;
-                    store.type = type;
+                    store.icoVariant = icoVariant;
                 }}
             />
             <Card className={classes.bgCardRoot} elevation={8}>
@@ -165,7 +165,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                     state={state === 'loading_images'}
                     imageUrl={store.image}
                     name={store.name.trim()}
-                    type={store.type}
+                    icoVariant={store.icoVariant}
                     description={store.useDescription && store.description?.trim()}
                     categories={store.fullCategories}
                     onChangeType={() => { store.isOpenSelectPreview = !store.isOpenSelectPreview; }}

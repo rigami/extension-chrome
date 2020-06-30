@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {
-    IconButton,
+    ButtonBase,
     Tooltip,
     Typography,
 } from '@material-ui/core';
@@ -13,18 +13,20 @@ import Image from "@/ui-components/Image";
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         padding: 0,
-        backgroundColor: fade(theme.palette.common.white, 0.32),
-        '&:hover': { backgroundColor: fade(theme.palette.common.white, 0.52) },
     },
     rootBlur: { backdropFilter: 'blur(10px) brightness(130%)' },
     icon: {
 
     },
+    roundedIcon: {
+        borderRadius: theme.shape.borderRadiusBold,
+    },
 }));
 
-function LinkButton({ id, name, url, imageUrl, isBlurBackdrop }) {
+function LinkButton({ id, name, url, imageUrl, icoVariant, isBlurBackdrop }) {
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState(null);
@@ -72,13 +74,17 @@ function LinkButton({ id, name, url, imageUrl, isBlurBackdrop }) {
                 enterDelay={400}
                 enterNextDelay={400}
             >
-                <IconButton
-                    className={clsx(classes.root, isBlurBackdrop && classes.rootBlur)}
+                <ButtonBase
+                    className={clsx(
+                        classes.root,
+                        isBlurBackdrop && classes.rootBlur,
+                        classes.roundedIcon,
+                    )}
                     onMouseUp={handleClick}
                     onContextMenu={handlerContextMenu}
                 >
-                    <Image type="circle" src={imageUrl} className={classes.icon} />
-                </IconButton>
+                    <Image variant="small" src={imageUrl} className={classes.icon} />
+                </ButtonBase>
             </Tooltip>
         </React.Fragment>
     );

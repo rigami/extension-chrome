@@ -7,8 +7,22 @@ import { Skeleton } from '@material-ui/lab';
 import {
     LinkRounded as LinkIcon,
 } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 
-function Image({ type='circe', src, className: externalClassName }) {
+const useStyles = makeStyles((theme) => ({
+    roundedIconStub: {
+        borderRadius: theme.shape.borderRadiusBold,
+    },
+    roundedIcon: {
+        padding: theme.spacing(0.5),
+        borderRadius: theme.shape.borderRadiusBold,
+        backgroundColor: theme.palette.common.white,
+    },
+}));
+
+function Image({ variant='small', src, className: externalClassName }) {
+    const classes = useStyles();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -19,26 +33,7 @@ function Image({ type='circe', src, className: externalClassName }) {
         imgCache.src = src;
     }, []);
 
-    if (type === 'circle') {
-        return (
-            <React.Fragment>
-                {isLoading && (
-                    <Skeleton
-                        variant="circle"
-                        animation="wave"
-                        width={40}
-                        height={40}
-                        className={externalClassName}
-                    />
-                )}
-                {!isLoading && (
-                    <Avatar className={externalClassName} src={src}>
-                        <LinkIcon />
-                    </Avatar>
-                )}
-            </React.Fragment>
-        );
-    } else if (type === 'rect') {
+    if (variant === 'poster'){
         return (
             <React.Fragment>
                 {isLoading && (
@@ -52,6 +47,25 @@ function Image({ type='circe', src, className: externalClassName }) {
                 )}
                 {!isLoading && (
                     <CardMedia className={externalClassName} image={src} />
+                )}
+            </React.Fragment>
+        );
+    } else {
+        return (
+            <React.Fragment>
+                {isLoading && (
+                    <Skeleton
+                        variant="rect"
+                        animation="wave"
+                        width={40}
+                        height={40}
+                        className={clsx(classes.roundedIconStub, externalClassName)}
+                    />
+                )}
+                {!isLoading && (
+                    <Avatar className={clsx(classes.roundedIcon, externalClassName)} src={src} variant={"rounded"}>
+                        <LinkIcon />
+                    </Avatar>
                 )}
             </React.Fragment>
         );

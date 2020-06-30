@@ -18,6 +18,10 @@ const theme = {
         },
         snackbar: { default: fade('#fff', 0.95) },
     },
+    shape: {
+        borderRadius: 4,
+        borderRadiusBold: 8,
+    },
     typography: {
         fontFamily: localStorage.getItem('app_use_system_font') === 'true' ? 'system-ui' : 'Roboto, sans-serif',
         h5: { fontWeight: 700 },

@@ -69,7 +69,7 @@ function Preview(props) {
         imageUrl,
         isOpen,
         name,
-        type,
+        icoVariant,
         state: globalState,
         description,
         categories,
@@ -119,7 +119,7 @@ function Preview(props) {
                                 name={name}
                                 description={description}
                                 categories={categories}
-                                type={type}
+                                icoVariant={icoVariant}
                                 imageUrl={imageUrl}
                                 preview
                             />

@@ -46,7 +46,7 @@ function PreviewSelector(props) {
         images,
     } = props;
     const classes = useStyles();
-    const [type, setType] = useState('default');
+    const [icoVariant, setIcoVariant] = useState('circle');
 
     return (
         <Collapse in={isOpen} unmountOnExit>
@@ -59,14 +59,14 @@ function PreviewSelector(props) {
                     action={(
                         <ToggleButtonGroup
                             exclusive
-                            value={type}
-                            onChange={(event, newType) => newType && setType(newType)}
+                            value={icoVariant}
+                            onChange={(event, newType) => newType && setIcoVariant(newType)}
                         >
-                            <ToggleButton value="default">
-                                Обычные
+                            <ToggleButton value="small">
+                                Мальнкая иконка
                             </ToggleButton>
-                            <ToggleButton value="extend">
-                                Расширенные
+                            <ToggleButton value="poster">
+                                Постер
                             </ToggleButton>
                         </ToggleButtonGroup>
                     )}
@@ -78,13 +78,13 @@ function PreviewSelector(props) {
                             name={name}
                             description={description}
                             categories={categories}
-                            type={type}
+                            icoVariant={icoVariant}
                             imageUrl={url}
                             preview
                             className={classes.card}
                             onClick={() => {
                                 console.log("onClick")
-                                onChange(url, type);
+                                onChange(url, icoVariant);
                             }}
                         />
                     ))}

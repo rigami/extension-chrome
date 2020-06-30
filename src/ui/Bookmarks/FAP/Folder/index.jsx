@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-    IconButton,
+    ButtonBase,
     Popper,
     ClickAwayListener,
     Tooltip,
@@ -16,15 +16,17 @@ import { useLocalStore } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
-        padding: theme.spacing(1),
-        backgroundColor: fade(theme.palette.common.white, 0.32),
-        '&:hover': { backgroundColor: fade(theme.palette.common.white, 0.52) },
+        padding: theme.spacing(0.5),
+        borderRadius: theme.shape.borderRadiusBold,
+        backgroundColor: theme.palette.common.white,
+        // '&:hover': { backgroundColor: fade(theme.palette.common.white, 0.52) },
     },
     rootBlur: { backdropFilter: 'blur(10px) brightness(130%)' },
     activeIconButton: {
         backgroundColor: theme.palette.common.white,
-        '&:hover': { backgroundColor: theme.palette.common.white },
+        // '&:hover': { backgroundColor: theme.palette.common.white },
     },
     popperWrapper: {
         zIndex: theme.zIndex.drawer,
@@ -40,6 +42,10 @@ const useStyles = makeStyles((theme) => ({
     emptyTitle: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(2),
+    },
+    icon: {
+        width: 32,
+        height: 32,
     },
 }));
 
@@ -111,7 +117,7 @@ function Folder({ id, name, color, isBlurBackdrop }) {
                 enterDelay={400}
                 enterNextDelay={400}
             >
-                <IconButton
+                <ButtonBase
                     ref={anchorEl}
                     className={clsx(classes.root, isOpen && classes.activeIconButton, isBlurBackdrop && classes.rootBlur)}
                     onMouseDown={() => {
@@ -124,8 +130,8 @@ function Folder({ id, name, color, isBlurBackdrop }) {
                     }}
                     onContextMenu={handlerContextMenu}
                 >
-                    <FolderIcon style={{ color }} />
-                </IconButton>
+                    <FolderIcon style={{ color }} className={classes.icon} />
+                </ButtonBase>
             </Tooltip>
         </React.Fragment>
     );

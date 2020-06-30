@@ -102,7 +102,7 @@ function CardLink(props) {
         url,
         icon,
         categories,
-        type,
+        icoVariant,
         description,
         imageUrl,
         preview = false,
@@ -164,12 +164,12 @@ function CardLink(props) {
                     onMouseUp={handleClick}
                     onContextMenu={!preview ? handlerContextMenu : undefined}
                 >
-                    {type === 'extend' && (
-                        <Image type="rect" src={imageUrl} className={classes.extendBanner} />
+                    {icoVariant === 'poster' && (
+                        <Image variant="poster" src={imageUrl} className={classes.extendBanner} />
                     )}
-                    {type === 'default' && (
+                    {icoVariant !== 'poster' && (
                         <Box className={classes.banner}>
-                            <Image type="circle" src={imageUrl} className={classes.icon} />
+                            <Image variant="small" src={imageUrl} className={classes.icon} />
                         </Box>
                     )}
                     <div className={classes.body}>

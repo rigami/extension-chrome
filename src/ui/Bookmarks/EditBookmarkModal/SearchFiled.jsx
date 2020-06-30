@@ -260,6 +260,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                     <Grid container alignItems="center" className={classes.row}>
                         <Grid item>
                             <Avatar
+                                variant="rounded"
                                 key={option.url}
                                 src={getFaviconUrl(option.url)}
                                 className={classes.favicon}

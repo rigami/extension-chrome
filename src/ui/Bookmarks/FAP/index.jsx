@@ -41,13 +41,14 @@ const useStyles = makeStyles((theme) => ({
     card: {
         margin: 'auto',
         pointerEvents: 'auto',
-        borderRadius: theme.spacing(3.5),
-        backdropFilter: 'blur(10px) brightness(130%)',
+        borderRadius: 16,
+        backdropFilter: 'blur(10px) brightness(94%)  contrast(0.7) invert(0.1)',
         backgroundColor: fade(theme.palette.background.default, 0.52),
     },
     panel: {
-        padding: theme.spacing(1, 0),
-        paddingLeft: theme.spacing(1),
+        padding: theme.spacing(1.5, 0),
+        paddingLeft: theme.spacing(0.5),
+        paddingRight: theme.spacing(0.5),
         maxWidth: 1400,
         display: 'block',
         whiteSpace: 'nowrap',
@@ -160,11 +161,11 @@ function FAP() {
             })
         )
             .then((favorites) => {
-                setIsLoading(false);
                 setFavorites(favorites.map((fav, index) => ({
                     ...fav,
                     type: bookmarksStore.favorites[index].type,
                 })));
+                setIsLoading(false);
             })
             .catch((e) => {
                 console.error("Failed load favorites", e);
@@ -174,14 +175,14 @@ function FAP() {
     }, [bookmarksStore.favorites.length]);
 
     return (
-        <Fade in={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN || !isLoading} unmountOnExit>
+        <Fade in={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN && !isLoading} unmountOnExit>
             <div
                 className={clsx(
                     classes.root,
                     bookmarksStore.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
                 )}
                 ref={rootRef}
-                style={{ height: 40 + theme.spacing(3 + (bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 2)) }}
+                style={{ height: 40 + theme.spacing(3 + (bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 3)) }}
             >
                 <Card
                     elevation={12}

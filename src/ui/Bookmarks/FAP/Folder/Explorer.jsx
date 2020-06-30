@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Link({ name, url, imageUrl, id, description }) {
+function Link({ name, url, imageUrl, id, description, icoVariant }) {
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState(null);
@@ -107,7 +107,7 @@ function Link({ name, url, imageUrl, id, description }) {
                     onContextMenu={handlerContextMenu}
                 >
                     <ListItemAvatar>
-                        <Image type="circle" src={imageUrl} />
+                        <Image variant={icoVariant === 'poster' ? 'small' : icoVariant} src={imageUrl} />
                     </ListItemAvatar>
                     <ListItemText
                         primary={name}
@@ -151,7 +151,6 @@ function Folder({ id }) {
                 setIsSearching(false);
             });
     }, []);
-
 
     return (
         <Card className={classes.root} elevation={16}>

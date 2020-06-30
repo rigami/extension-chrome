@@ -285,7 +285,7 @@ class BookmarksStore {
             description,
             image_url,
             categories = [],
-            type,
+            icoVariant,
             id,
         } = props;
 
@@ -294,7 +294,7 @@ class BookmarksStore {
             icoFileName: image_url,
             name: name.trim(),
             description: description && description.trim(),
-            type,
+            icoVariant,
         };
 
         let saveBookmarkId;

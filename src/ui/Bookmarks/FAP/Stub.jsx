@@ -12,7 +12,7 @@ function FAPStub() {
     let height = 0;
 
     if (bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN) {
-        height = 40 + theme.spacing(3 + (bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 2))
+        height = 40 + theme.spacing(3 + (bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 3))
     }
 
     return (
