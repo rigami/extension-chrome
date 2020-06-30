@@ -42,8 +42,8 @@ const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         pointerEvents: 'auto',
         borderRadius: 16,
-        backdropFilter: 'blur(10px) brightness(94%)  contrast(0.7) invert(0.1)',
-        backgroundColor: fade(theme.palette.background.default, 0.52),
+        backdropFilter: 'blur(20px) brightness(98%)  contrast(1.2) invert(0.1)',
+        background: 'none',
     },
     panel: {
         padding: theme.spacing(1.5, 0),
