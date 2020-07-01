@@ -1,9 +1,9 @@
 const search = (query, signal) => {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', `http://localhost:8080/parser/proxy_DuckDuckGo?query=${query}`, true);
+        xhr.open('GET', `http://localhost:8080/site/proxy_DuckDuckGo?query=${query}`, true);
         xhr.responseType = "document";
-        xhr.timeout = 10000;
+        xhr.timeout = 30000;
         xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
 
         if (signal) {
@@ -32,8 +32,8 @@ const search = (query, signal) => {
 const checkExistSite = (url, signal) => {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', `http://localhost:8080/parser/get_site_info?url=${url}`, true);
-        xhr.timeout = 10000;
+        xhr.open('GET', `http://localhost:8080/site_parse/get_data?url=${url}`, true);
+        xhr.timeout = 30000;
         xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
         xhr.responseType = 'json';
 

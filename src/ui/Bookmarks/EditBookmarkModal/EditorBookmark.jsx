@@ -129,7 +129,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
             .then((siteData) => {
                 setState('done');
                 if (!editBookmarkId) {
-                    store.image = siteData.icons[0]?.url;
+                    store.image = siteData.bestIcon?.url;
                 }
                 store.images = siteData.icons;
             })
