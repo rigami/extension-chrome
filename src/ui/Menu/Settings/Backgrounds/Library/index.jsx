@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import { BG_TYPE } from '@/dict';
+import { BG_TYPE } from '@/enum';
 import {
     Box,
     Avatar,

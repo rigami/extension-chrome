@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from 'react';
 import { useObserver, observer } from 'mobx-react-lite';
-import { BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE } from '@/dict';
+import { BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE } from '@/enum';
 import {
     Avatar,
     Collapse,

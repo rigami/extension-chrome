@@ -6,7 +6,7 @@ import {
     DeleteRounded as DeleteIcon,
 } from '@material-ui/icons';
 import FSConnector from '@/utils/fsConnector';
-import { BG_TYPE, THEME } from '@/dict';
+import { BG_TYPE, THEME } from '@/enum';
 import clsx from 'clsx';
 import locale from '@/i18n/RU';
 import { Fade, Box } from '@material-ui/core';

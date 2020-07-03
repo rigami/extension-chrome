@@ -1,4 +1,4 @@
-import { BG_TYPE } from '@/dict';
+import { BG_TYPE } from '@/enum';
 
 export default {
     db: {
@@ -14,4 +14,7 @@ export default {
         description: 'Unsplash photo',
         sourceLink: 'https://unsplash.com/photos/S4QAzzXPaRs',
     },
+    rest: {
+        url: "http://localhost:8080",
+    }
 };

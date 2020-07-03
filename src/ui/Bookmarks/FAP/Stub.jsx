@@ -1,5 +1,5 @@
 import React from 'react';
-import {BKMS_FAP_STYLE} from "@/dict";
+import {BKMS_FAP_STYLE} from "@/enum";
 import {useService as useBookmarksService} from "@/stores/bookmarks";
 import { Box } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';

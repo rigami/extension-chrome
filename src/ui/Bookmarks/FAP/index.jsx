@@ -15,7 +15,7 @@ import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
-import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/dict';
+import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import ScrollContainer from 'react-indiana-drag-scroll';
 import Link from './Link';
 import Folder from './Folder';

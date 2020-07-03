@@ -1,6 +1,6 @@
 import { observable, action } from 'mobx';
 import appVariables from '@/config/appVariables';
-import { BG_TYPE, BG_CHANGE_INTERVAL_MILLISECONDS } from '@/dict';
+import { BG_TYPE, BG_CHANGE_INTERVAL_MILLISECONDS } from '@/enum';
 import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
 import StorageConnector from '@/utils/storageConnector';

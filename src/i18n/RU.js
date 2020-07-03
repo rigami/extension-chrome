@@ -1,6 +1,6 @@
 import {
     THEME, BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE, BKMS_FAP_STYLE, BKMS_FAP_POSITION,
-} from '@/dict';
+} from '@/enum';
 import { ERRORS as BG_UPLOAD_ERRORS } from '@/stores/backgrounds/service';
 import appVariables from '@/config/appVariables';
 

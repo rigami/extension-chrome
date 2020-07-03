@@ -5,7 +5,7 @@ import {
     BG_SELECT_MODE,
     BKMS_FAP_STYLE,
     BKMS_FAP_POSITION,
-} from '@/dict';
+} from '@/enum';
 
 import locale from '@/i18n/RU';
 

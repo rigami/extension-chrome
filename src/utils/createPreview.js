@@ -1,4 +1,4 @@
-import { BG_TYPE } from '@/dict';
+import { BG_TYPE } from '@/enum';
 
 const getPreview = (fileOrSrc, type, { size = 'preview', antiAliasing = true, timeStamp } = {}) => {
     function postprocessing(cnvs, { /* antiAliasing */ }) {

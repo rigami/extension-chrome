@@ -1,0 +1,5 @@
+export default {
+    HIDDEN: 'HIDDEN',
+    TRANSPARENT: 'TRANSPARENT',
+    CONTAINED: 'CONTAINED',
+};

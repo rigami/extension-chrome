@@ -1,6 +1,6 @@
 import React from 'react';
 import { useObserver } from 'mobx-react-lite';
-import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/dict';
+import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import { Collapse } from '@material-ui/core';
 import locale from '@/i18n/RU';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';

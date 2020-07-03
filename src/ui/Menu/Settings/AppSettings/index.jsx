@@ -4,7 +4,7 @@ import locale from '@/i18n/RU';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { useObserver } from 'mobx-react-lite';
-import { THEME } from '@/dict';
+import { THEME } from '@/enum';
 import { useService as useAppConfigService } from '@/stores/app';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import { content as TabNamePageContent, header as tabNamePageHeader } from './TabName';

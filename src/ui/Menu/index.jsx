@@ -11,7 +11,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { BG_SELECT_MODE, BG_TYPE } from '@/dict';
+import { BG_SELECT_MODE, BG_TYPE } from '@/enum';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import Header from '@/ui/Menu/PageHeader';
 import HomePage, { header as homePageHeader } from './Settings';
