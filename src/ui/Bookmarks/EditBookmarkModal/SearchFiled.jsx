@@ -7,7 +7,7 @@ import {
     Avatar,
 } from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
-import siteSearch, {getFaviconUrl, AbortController, checkExistSite} from "@/utils/siteSearch";
+import { search, getFaviconUrl, AbortController, getSiteInfo } from "@/utils/siteSearch";
 import Autocomplete, {createFilterOptions} from "@material-ui/lab/Autocomplete";
 import {PublicRounded as WebSiteIcon} from '@material-ui/icons';
 import allLocale from '@/i18n/RU';
@@ -114,7 +114,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                 setLoading(false);
             };
 
-            checkExistSite(inputValue, controller)
+            getSiteInfo(inputValue, controller)
                 .then((siteData) => {
                     results.straight = 'done';
                     setSearchResults((oldValue) => ({
@@ -142,7 +142,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                 })
                 .finally(checkResults);
 
-            siteSearch(inputValue, controller)
+            search(inputValue, controller)
                 .then((foundResults) => {
                     results.global = 'done';
                     if (foundResults.length !== 0) {
@@ -301,6 +301,7 @@ function SearchField({ className: externalClassName, value: defaultValue, onChan
                                     key={defaultValue}
                                     src={getFaviconUrl(defaultValue)}
                                     className={classes.faviconGlobal}
+                                    variant="rounded"
                                 >
                                     <WebSiteIcon/>
                                 </Avatar>

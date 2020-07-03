@@ -15,6 +15,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import EditMenu from './ContextEditMenu';
 import clsx from 'clsx';
 import Image from "@/ui-components/Image";
+import {BKMS_VARIANT} from "@/enum";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -164,12 +165,12 @@ function CardLink(props) {
                     onMouseUp={handleClick}
                     onContextMenu={!preview ? handlerContextMenu : undefined}
                 >
-                    {icoVariant === 'poster' && (
-                        <Image variant="poster" src={imageUrl} className={classes.extendBanner} />
+                    {icoVariant === BKMS_VARIANT.POSTER && (
+                        <Image variant={BKMS_VARIANT.POSTER} src={imageUrl} className={classes.extendBanner} />
                     )}
-                    {icoVariant !== 'poster' && (
+                    {icoVariant !== BKMS_VARIANT.POSTER && (
                         <Box className={classes.banner}>
-                            <Image variant="small" src={imageUrl} className={classes.icon} />
+                            <Image variant={BKMS_VARIANT.SMALL} src={imageUrl} className={classes.icon} />
                         </Box>
                     )}
                     <div className={classes.body}>

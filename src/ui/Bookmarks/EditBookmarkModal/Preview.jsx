@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import {
     Button,
     CardMedia,
-    ButtonGroup,
+    Box,
     CircularProgress,
 } from '@material-ui/core';
 import {
     ExpandLessRounded as OpenIcon,
     ExpandMoreRounded as CloseIcon,
+    WarningRounded as WarnIcon,
 } from '@material-ui/icons';
 import {
     LinkRounded as URLIcon,
@@ -16,6 +17,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { AbortController, getSiteInfo } from "@/utils/siteSearch";
+import {FETCH} from "@/enum";
 
 const useStyles = makeStyles((theme) => ({
     bgCardRoot: { display: 'flex' },
@@ -30,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
         backgroundColor: theme.palette.grey[900],
         boxSizing: 'content-box',
-        minWidth: 180,
+        width: 182,
     },
     typeSwitcher: { marginBottom: theme.spacing(2) },
     controls: {
@@ -57,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         padding: theme.spacing(1, 0),
         color: theme.palette.warning.main,
+        marginTop: 'auto',
     },
     warnIcon: {
         marginRight: theme.spacing(1),
@@ -77,21 +80,21 @@ function Preview(props) {
     } = props;
     const classes = useStyles();
     const theme = useTheme();
-    const [state, setState] = useState('pending');
+    const [state, setState] = useState(FETCH.PENDING);
 
     useEffect(() => {
-        setState('pending');
+        setState(FETCH.PENDING);
         if (!imageUrl) {
-            setState('done');
+            setState(FETCH.DONE);
             return;
         }
 
         const imgCache = document.createElement('img');
         imgCache.onload = () => {
-            setState('done');
+            setState(FETCH.DONE);
         };
         imgCache.onerror = () => {
-            setState('failed');
+            setState(FETCH.FAILED);
         };
         imgCache.src = imageUrl;
     }, [imageUrl]);
@@ -100,12 +103,14 @@ function Preview(props) {
         <CardMedia
             className={classes.cover}
         >
-            {(state === 'pending' || globalState === 'loading_images') && (
-                <CircularProgress style={{ color: theme.palette.common.white }} />
+            {(state === FETCH.PENDING || globalState === FETCH.PENDING) && (
+                <FullScreenStub>
+                    <CircularProgress style={{ color: theme.palette.common.white }} />
+                </FullScreenStub>
             )}
-            {state !== 'pending' && globalState !== 'loading_images' && (
+            {state !== FETCH.PENDING && globalState !== FETCH.PENDING && (
                 <React.Fragment>
-                    {state === 'done' && name && imageUrl && (
+                    {name && imageUrl && (
                         <React.Fragment>
                             <Button
                                 className={classes.typeSwitcher}
@@ -125,20 +130,23 @@ function Preview(props) {
                             />
                         </React.Fragment>
                     )}
-                    {state === 'done' && !imageUrl && (
+                    {state === FETCH.DONE && !imageUrl && (
                         <FullScreenStub
                             iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
                             description="Укажите адрес"
                         />
                     )}
-                    {state === 'done' && !name && imageUrl && (
+                    {state === FETCH.DONE && !name && imageUrl && (
                         <FullScreenStub
                             iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
                             description="Дайте закладке имя"
                         />
                     )}
-                    {state === 'failed' && (
-                        "Ошибка загрузки иконок, попробуйте другой адрес"
+                    {state === FETCH.FAILED && (
+                        <Box className={classes.warnMessage}>
+                            <WarnIcon  className={classes.warnIcon} />
+                            Не удалось загрузить иконку, попробуйте другую
+                        </Box>
                     )}
                 </React.Fragment>
             )}

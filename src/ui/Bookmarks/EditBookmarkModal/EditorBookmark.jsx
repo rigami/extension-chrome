@@ -6,6 +6,7 @@ import {
     Container,
     Typography,
     TextField,
+    Collapse,
 } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
@@ -20,6 +21,9 @@ import SearchField from "@/ui/Bookmarks/EditBookmarkModal/SearchFiled";
 import PreviewSelector from "./PreviewSelector";
 import Preview from "./Preview";
 import { getSiteInfo, getImageRecalc } from "@/utils/siteSearch";
+import appVariables from "@/config/appVariables";
+import { FETCH, BKMS_VARIANT } from '@/enum'
+import asyncAction from "@/utils/asyncAction";
 
 const { global: localeGlobal } = locale;
 
@@ -66,10 +70,10 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         name: '',
         description: '',
         useDescription: false,
-        icoVariant: 'small',
+        icoVariant: BKMS_VARIANT.SMALL,
         categories: [],
         fullCategories: [],
-        image: null,
+        imageURL: null,
         images: [],
         isOpenSelectPreview: false,
     }));
@@ -77,7 +81,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     const handlerSave = () => {
         bookmarksStore.saveBookmark({
             ...store,
-            image_url: store.image,
+            image_url: store.imageURL,
             name: store.name.trim(),
             description: (store.useDescription && store.description?.trim()) || '',
             id: store.editBookmarkId,
@@ -93,7 +97,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                 console.log("Bookmark", bookmark)
                 store.url = bookmark.url;
                 store.name = bookmark.name;
-                store.image = bookmark.imageUrl;
+                store.imageURL = bookmark.imageUrl;
                 store.useDescription = !!bookmark.description?.trim();
                 if (store.useDescription) store.description = bookmark.description;
                 store.type = bookmark.type;
@@ -111,9 +115,9 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
 
     useEffect(() => {
         if (!editBookmarkId) {
-            store.image = null;
+            store.imageURL = null;
         }
-        setState('loading_images');
+        setState(FETCH.PENDING);
 
         if (controller) {
             controller.abort();
@@ -121,32 +125,37 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         }
 
         if (store.url === '') {
-            setState('done');
+            setState(FETCH.DONE);
             return;
         }
 
-        getSiteInfo(store.url, controller)
-            .then((siteData) => {
-                if (!editBookmarkId) {
-                    (
-                        (siteData.bestIcon?.score === 0)
-                            ? getImageRecalc(`http://localhost:8080/icon_parse/recalc/${siteData.bestIcon.name}`)
-                            : Promise.resolve(siteData.bestIcon)
-                    )
-                        .then((iconData) => {
-                            setState('done');
-                            store.image = iconData?.url;
-                            store.icoVariant = iconData?.type.toLowerCase();
-                            store.images = siteData.icons;
-                        })
-                } else {
-                    setState('done');
-                    store.images = siteData.icons;
+        asyncAction(async () => {
+            const siteData = await getSiteInfo(store.url, controller);
+
+            console.log("GET SITE INFO", siteData)
+
+            if (editBookmarkId) {
+                console.log("UPDATE ICONS")
+                setState(FETCH.DONE);
+                store.images = siteData.icons;
+                return;
+            }
+
+            if (siteData.bestIcon?.score === 0) {
+                console.log("RECALC MAIN ICON")
+                try {
+                    siteData.bestIcon = await getImageRecalc(siteData.bestIcon.name)
+                } catch (e) {
+                    setState(FETCH.FAILED)
                 }
-            })
-            .catch(() => {
-                setState('failed');
-            });
+            }
+
+            store.imageURL = siteData.bestIcon?.url;
+            store.icoVariant = siteData.bestIcon?.type;
+            store.images = siteData.icons;
+        })
+            .then(() => setState(FETCH.DONE))
+            .catch(() => setState(FETCH.FAILED));
     }, [store.url]);
 
     useEffect(() => {
@@ -158,23 +167,24 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
             maxWidth={false}
             className={classes.container}
         >
-            <PreviewSelector
-                isOpen={store.isOpenSelectPreview}
-                name={store.name.trim()}
-                images={store.images}
-                description={store.useDescription && store.description?.trim()}
-                categories={store.fullCategories}
-                onChange={(imageUrl, icoVariant) => {
-                    store.isOpenSelectPreview = false;
-                    store.image = imageUrl;
-                    store.icoVariant = icoVariant;
-                }}
-            />
+            <Collapse in={store.isOpenSelectPreview} unmountOnExit>
+                <PreviewSelector
+                    name={store.name.trim()}
+                    images={store.images}
+                    description={store.useDescription && store.description?.trim()}
+                    categories={store.fullCategories}
+                    onChange={(imageUrl, icoVariant) => {
+                        store.isOpenSelectPreview = false;
+                        store.imageURL = imageUrl;
+                        store.icoVariant = icoVariant;
+                    }}
+                />
+            </Collapse>
             <Card className={classes.bgCardRoot} elevation={8}>
                 <Preview
                     isOpen={store.isOpenSelectPreview}
-                    state={state === 'loading_images'}
-                    imageUrl={store.image}
+                    state={state}
+                    imageUrl={store.imageURL}
                     name={store.name.trim()}
                     icoVariant={store.icoVariant}
                     description={store.useDescription && store.description?.trim()}
@@ -250,7 +260,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                disabled={!store.url || !store.name.trim() || !store.image}
+                                disabled={!store.url || !store.name.trim() || !store.imageURL}
                                 onClick={handlerSave}
                             >
                                 Сохранить

@@ -5,6 +5,7 @@ import {
     Box,
     Button,
 } from '@material-ui/core';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -30,12 +31,13 @@ function FullScreenStub(props) {
         description,
         actions,
         children,
+        className: externalClassName,
         ...other
     } = props;
     const classes = useStyles();
 
     return (
-        <Box className={classes.root} {...other}>
+        <Box className={clsx(classes.root, externalClassName)} {...other}>
             {iconRender && iconRender({ className: classes.icon })}
             {message && (
                 <Typography variant="h6" className={classes.title}>{message}</Typography>

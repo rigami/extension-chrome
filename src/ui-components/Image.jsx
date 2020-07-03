@@ -9,6 +9,7 @@ import {
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import {BKMS_VARIANT} from "@/enum";
 
 const useStyles = makeStyles((theme) => ({
     roundedIconStub: {
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Image({ variant='small', src, className: externalClassName }) {
+function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName }) {
     const classes = useStyles();
     const [isLoading, setIsLoading] = useState(true);
 
@@ -32,7 +33,7 @@ function Image({ variant='small', src, className: externalClassName }) {
         imgCache.src = src;
     }, []);
 
-    if (variant === 'poster'){
+    if (variant === BKMS_VARIANT.POSTER){
         return (
             <React.Fragment>
                 {isLoading && (
