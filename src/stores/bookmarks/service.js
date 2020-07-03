@@ -292,22 +292,31 @@ class BookmarksStore {
 
         const saveData = {
             url,
-            icoFileName: `${Date.now().toString()}`,
             name: name.trim(),
             description: description && description.trim(),
             icoVariant,
         };
 
         let saveBookmarkId;
+        let icoName = `${Date.now().toString()}`;
         let oldCategories = [];
 
         if (id) {
             const oldBookmark = await this.getBookmark(id);
             oldCategories = oldBookmark.categories.map((category) => category.id);
 
-            saveBookmarkId = await DBConnector().put('bookmarks', { id, ...saveData });
+            icoName = oldBookmark.icoFileName || icoName;
+
+            saveBookmarkId = await DBConnector().put('bookmarks', {
+                ...oldBookmark,
+                id,
+                ...saveData,
+            });
         } else {
-            saveBookmarkId = await DBConnector().add('bookmarks', saveData);
+            saveBookmarkId = await DBConnector().add('bookmarks', {
+                ...saveData,
+                icoFileName: icoName,
+            });
         }
 
         const categoriesNow = await DBConnector().getAllFromIndex(
@@ -332,30 +341,30 @@ class BookmarksStore {
             }),
         );
 
-        const img = await new Promise((resolve, reject) => {
-            const imgLoad = document.createElement("img");
-            imgLoad.crossOrigin = "anonymous";
-            imgLoad.src = image_url;
+        if (image_url.substring(0, 11) !== "filesystem:") {
+            const img = await new Promise((resolve, reject) => {
+                const imgLoad = document.createElement("img");
+                imgLoad.crossOrigin = "anonymous";
+                imgLoad.src = image_url;
 
-            imgLoad.onload = () => resolve(imgLoad);
-            imgLoad.onerror = reject
-        });
+                imgLoad.onload = () => resolve(imgLoad);
+                imgLoad.onerror = reject
+            });
 
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
 
-        const context = canvas.getContext('2d');
+            const context = canvas.getContext('2d');
 
-        context.drawImage(img, 0, 0);
+            context.drawImage(img, 0, 0);
 
-        const blob = await new Promise((resolve) => {
-            canvas.toBlob(resolve, 'image/png');
-        });
+            const blob = await new Promise((resolve) => {
+                canvas.toBlob(resolve, 'image/png');
+            });
 
-        console.log("Image blob", blob)
-
-        await FSConnector.saveFile('/bookmarksIcons', blob, saveData.icoFileName);
+            await FSConnector.saveFile('/bookmarksIcons', blob, icoName);
+        }
 
         this.lastTruthSearchTimestamp = Date.now();
     }
