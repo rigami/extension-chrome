@@ -33,36 +33,29 @@ class ConfigStores {
             .then(() => ConfigStores.configDB());
     }
 
-    static configUserData() {
-        return DBConnector().getAll('backgrounds')
-            .then((values) => {
-                if (values.length !== 0) return Promise.resolve();
+    static async configUserData() {
+        const backgrounds = await DBConnector().getAll('backgrounds');
 
-                let fullFile;
-                let previewFile;
-                const fileName = Date.now().toString();
+        if (backgrounds.length !== 0) return Promise.resolve();
 
-                return fetch(appVariables.defaultBG.src)
-                    .then((response) => response.blob())
-                    .then((file) => {
-                        fullFile = file;
-                        return createPreview(file);
-                    })
-                    .then((preview) => {
-                        previewFile = preview;
-                        return FSConnector.saveFile('/backgrounds/full', fullFile, fileName);
-                    })
-                    .then(() => FSConnector.saveFile('/backgrounds/preview', previewFile, fileName))
-                    .then(() => DBConnector().add('backgrounds', {
-                        ...appVariables.defaultBG,
-                        fileName,
-                    }))
-                    .then((bgId) => StorageConnector.setJSONItem('bg_current', {
-                        ...appVariables.defaultBG,
-                        fileName,
-                        id: bgId,
-                    }));
-            });
+        const fileName = Date.now().toString();
+
+        const defaultBG = await fetch(appVariables.defaultBG.src).then((response) => response.blob());
+        const previewDefaultBG = await createPreview(defaultBG);
+
+        await FSConnector.saveFile('/backgrounds/full', defaultBG, fileName);
+        await FSConnector.saveFile('/backgrounds/preview', previewDefaultBG, fileName);
+
+        const bgId = await DBConnector().add('backgrounds', {
+            ...appVariables.defaultBG,
+            fileName,
+        });
+
+        await StorageConnector.setJSONItem('bg_current', {
+            ...appVariables.defaultBG,
+            fileName,
+            id: bgId,
+        });
     }
 
     static configDB() {

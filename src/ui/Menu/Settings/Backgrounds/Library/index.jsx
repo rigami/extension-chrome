@@ -121,7 +121,7 @@ function BGCard({ fileName, onSet, onRemove }) {
         <div className={classes.bgCardWrapper}>
             <Box
                 className={classes.bgCard}
-                style={{ backgroundImage: `url('${FSConnector.getURL(fileName, 'preview')}')` }}
+                style={{ backgroundImage: `url('${FSConnector.getBGURL(fileName, 'preview')}')` }}
             >
                 <Avatar variant="square" className={classes.bgStub}>
                     <WallpaperIcon fontSize="large" />

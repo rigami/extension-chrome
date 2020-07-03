@@ -145,8 +145,16 @@ class FSConnector {
             }));
     }
 
-    static getURL(path, type = 'full') {
-        return `filesystem:${appVariables.fs.root || `${location.origin}/persistent/`}backgrounds/${type}/${path}`;
+    static getBGURL(path, type = 'full') {
+        return FSConnector.getURL(`backgrounds/${type}/${path}`);
+    }
+
+    static getIconURL(path) {
+        return FSConnector.getURL(`bookmarksIcons/${path}`);
+    }
+
+    static getURL(path) {
+        return `filesystem:${appVariables.fs.root || `${location.origin}/persistent/`}${path}`;
     }
 }
 

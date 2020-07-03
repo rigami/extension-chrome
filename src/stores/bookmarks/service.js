@@ -4,6 +4,7 @@ import DBConnector from '@/utils/dbConnector';
 import { cachingDecorator } from '@/utils/decorators';
 import EventBus from '@/utils/eventBus';
 import getUniqueColor from "@/utils/uniqueColor";
+import FSConnector from "@/utils/fsConnector";
 
 class BookmarksStore {
     @observable fapStyle;
@@ -155,7 +156,7 @@ class BookmarksStore {
         }
 
         bookmark.categories = findCategories;
-        bookmark.imageUrl = bookmark.icoFileName;
+        bookmark.imageUrl = FSConnector.getIconURL(bookmark.icoFileName);
 
         return bookmark;
     }
@@ -194,7 +195,7 @@ class BookmarksStore {
             bookmarks.forEach((bookmark) => {
                 findBookmarks[bookmark.id] = {
                     ...bookmark,
-                    imageUrl: bookmark.icoFileName,
+                    imageUrl: FSConnector.getIconURL(bookmark.icoFileName),
                 };
             });
         }
@@ -213,7 +214,7 @@ class BookmarksStore {
                     findBookmarks[cursorBookmarkId] = await stores.bookmarks.get(cursorBookmarkId);
                     findBookmarks[cursorBookmarkId] = {
                         ...findBookmarks[cursorBookmarkId],
-                        imageUrl: findBookmarks[cursorBookmarkId].icoFileName,
+                        imageUrl: FSConnector.getIconURL(findBookmarks[cursorBookmarkId].icoFileName),
                     };
                 }
                 if (!findCategories[cursorCategoryId]) {
@@ -291,7 +292,7 @@ class BookmarksStore {
 
         const saveData = {
             url,
-            icoFileName: image_url,
+            icoFileName: `${Date.now().toString()}`,
             name: name.trim(),
             description: description && description.trim(),
             icoVariant,
@@ -330,6 +331,31 @@ class BookmarksStore {
                 return DBConnector().add('bookmarks_by_categories', { categoryId, bookmarkId: saveBookmarkId });
             }),
         );
+
+        const img = await new Promise((resolve, reject) => {
+            const imgLoad = document.createElement("img");
+            imgLoad.crossOrigin = "anonymous";
+            imgLoad.src = image_url;
+
+            imgLoad.onload = () => resolve(imgLoad);
+            imgLoad.onerror = reject
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const context = canvas.getContext('2d');
+
+        context.drawImage(img, 0, 0);
+
+        const blob = await new Promise((resolve) => {
+            canvas.toBlob(resolve, 'image/png');
+        });
+
+        console.log("Image blob", blob)
+
+        await FSConnector.saveFile('/bookmarksIcons', blob, saveData.icoFileName);
 
         this.lastTruthSearchTimestamp = Date.now();
     }

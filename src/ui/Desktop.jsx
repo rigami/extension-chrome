@@ -58,7 +58,7 @@ function Desktop() {
     const backgroundsStore = useBackgroundsService();
     const appConfigStore = useAppConfigService();
 
-    const bgRef = useRef();
+    const bgRef = useRef(null);
     const [bg, setBg] = useState(null);
     const [nextBg, setNextBg] = useState(null);
     const [state, setState] = useState('pending');
@@ -97,7 +97,7 @@ function Desktop() {
         }
 
         const fileName = typeof currentBg.pause === 'number' ? 'temporaryVideoFrame' : currentBg.fileName;
-        const src = FSConnector.getURL(fileName);
+        const src = FSConnector.getBGURL(fileName);
 
         if (!bg && !nextBg) {
             setBg({
@@ -134,7 +134,7 @@ function Desktop() {
                                 .then((temporaryBG) => {
                                     setNextBg({
                                         ...temporaryBG,
-                                        src: FSConnector.getURL('temporaryVideoFrame'),
+                                        src: FSConnector.getBGURL('temporaryVideoFrame'),
                                     });
                                     setState('pending');
                                 })
@@ -155,7 +155,7 @@ function Desktop() {
 
                     setNextBg({
                         ...currentBg,
-                        src: FSConnector.getURL(currentBg.fileName),
+                        src: FSConnector.getBGURL(currentBg.fileName),
                     });
                     setState('pending');
                 }

@@ -138,7 +138,7 @@ function SchedulerSection({ onSelect }) {
                             <Avatar
                                 src={
                                     backgroundsStore.currentBGId
-                                    && FSConnector.getURL(backgroundsStore.getCurrentBG().fileName, 'preview')
+                                    && FSConnector.getBGURL(backgroundsStore.getCurrentBG().fileName, 'preview')
                                 }
                                 variant="rounded"
                                 style={{

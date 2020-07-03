@@ -12,7 +12,7 @@ import {
     AddRounded as AddIcon,
 } from '@material-ui/icons';
 import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import locale from '@/i18n/RU';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import Categories from '../Ctegories';
@@ -21,7 +21,6 @@ import SearchField from "@/ui/Bookmarks/EditBookmarkModal/SearchFiled";
 import PreviewSelector from "./PreviewSelector";
 import Preview from "./Preview";
 import { getSiteInfo, getImageRecalc } from "@/utils/siteSearch";
-import appVariables from "@/config/appVariables";
 import { FETCH, BKMS_VARIANT } from '@/enum'
 import asyncAction from "@/utils/asyncAction";
 
@@ -58,7 +57,6 @@ const useStyles = makeStyles((theme) => ({
 
 function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     const classes = useStyles();
-    const theme = useTheme();
     const { enqueueSnackbar } = useSnackbar();
 
     const bookmarksStore = useBookmarksService();

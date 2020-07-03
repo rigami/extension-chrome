@@ -137,7 +137,7 @@ class BackgroundsStore {
         }
 
         return getPreview(
-            FSConnector.getURL(this._currentBG.fileName),
+            FSConnector.getBGURL(this._currentBG.fileName),
             this._currentBG.type,
             {
                 size: 'full',
@@ -321,7 +321,7 @@ class BackgroundsStore {
     @action('get srcs')
     getSrcs(options = {}) {
         return DBConnector().getAll('backgrounds')
-            .then((values) => values.map(({ fileName }) => FSConnector.getURL(fileName, options.type || 'preview')));
+            .then((values) => values.map(({ fileName }) => FSConnector.getBGURL(fileName, options.type || 'preview')));
     }
 
 
