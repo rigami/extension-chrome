@@ -16,6 +16,7 @@ import CardLink from '@/ui/Bookmarks/CardLink';
 import { getImageRecalc } from "@/utils/siteSearch"
 import { BKMS_VARIANT } from "@/enum";
 import FullScreenStub from "@/ui-components/FullscreenStub";
+import { useLocalStore, useObserver } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -67,61 +68,46 @@ function PreviewSelector(props) {
         images: defaultImages,
     } = props;
     const classes = useStyles();
-    const [icoVariant, setIcoVariant] = useState(BKMS_VARIANT.SMALL);
-    const [images, setImages] = useState([]);
-    const [size, setSize] = useState(defaultImages.length);
+    const store = useLocalStore(() => ({
+        loadedImages: [],
+        size: defaultImages.length,
+    }));
 
     useEffect(() => {
-        setImages(
-            defaultImages
+        store.loadedImages = defaultImages
                 .filter(({ score }) => score !== 0)
                 .sort(({ score: scoreA }, { score: scoreB }) => {
                     if (scoreA < scoreB) return 1;
                     if (scoreA > scoreB) return -1;
                     return 0;
-                })
-        );
+                });
+        store.size = defaultImages.length;
 
         defaultImages.filter(({ score }) => score === 0).forEach((image) => {
             getImageRecalc(image.name)
                 .then((newData) => {
-                    setImages((oldImages) => {
-                        const insertIndex = Math.max(oldImages.findIndex(({score}) => score < newData.score), 0);
-                        oldImages.splice(insertIndex, 0, newData)
-
-                        return oldImages;
-                    });
+                    const insertIndex = store.loadedImages.findIndex(({score}) => score < newData.score);
+                    console.log("New image", newData, insertIndex, store.loadedImages.length)
+                    store.loadedImages.splice(insertIndex === -1 ? store.loadedImages.length : insertIndex, 0, newData)
                 })
                 .catch(() => {
-                    setSize((oldSize) => oldSize - 1);
+                    store.size -= 1;
                 })
         })
     }, [defaultImages.length]);
 
-    return (
+    useEffect(() => console.log(store.loadedImages), [store.loadedImages.length]);
+
+    return useObserver(() => (
         <Card className={classes.root} elevation={8}>
             <CardHeader
                 title="Другие варианты карточек"
                 classes={{
                     action: classes.headerActions,
                 }}
-                action={(
-                    <ToggleButtonGroup
-                        exclusive
-                        value={icoVariant}
-                        onChange={(event, newType) => newType && setIcoVariant(newType)}
-                    >
-                        <ToggleButton value={BKMS_VARIANT.SMALL}>
-                            Мальнкая иконка
-                        </ToggleButton>
-                        <ToggleButton value={BKMS_VARIANT.POSTER}>
-                            Постер
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                )}
             />
             <CardContent className={classes.content}>
-                {images.map(({ url, type, score }) => (
+                {store.loadedImages.map(({ url, type, score }) => (
                     <CardLink
                         key={url}
                         name={"["+score+"] "+name}
@@ -133,25 +119,25 @@ function PreviewSelector(props) {
                         className={classes.card}
                         onClick={() => {
                             console.log("onClick")
-                            onChange(url, icoVariant);
+                            onChange(url, type);
                         }}
                     />
                 ))}
-                {images.length === 0 && (
+                {store.loadedImages.length === 0 && (
                     <FullScreenStub className={classes.fullscreenStub}>
                         <CircularProgress />
                     </FullScreenStub>
                 )}
             </CardContent>
-            {size !== images.length && (
+            {store.size !== store.loadedImages.length && (
                 <Box className={classes.loadStatus}>
                     <Typography variant="caption">
-                        Загрузка {images.length} из {size}...
+                        Загрузка {store.loadedImages.length} из {store.size}...
                     </Typography>
                 </Box>
             )}
         </Card>
-    );
+    ));
 }
 
 export default PreviewSelector;
