@@ -115,12 +115,13 @@ function FAP() {
     const [isLoading, setIsLoading] = useState(true);
 
     const resizeHandle = () => {
-        if (!scrollRef.current.base) return;
-        if (scrollRef.current.base.clientWidth < scrollRef.current.base.scrollWidth) {
-            setIsLeft(scrollRef.current.base.scrollLeft !== 0);
+        const container = scrollRef.current.container.current;
+        if (!container) return;
+        if (container.clientWidth < container.scrollWidth) {
+            setIsLeft(container.scrollLeft !== 0);
             setIsRight(
-                scrollRef.current.base.scrollLeft + scrollRef.current.base.clientWidth
-                !== scrollRef.current.base.scrollWidth,
+                container.scrollLeft + container.clientWidth
+                !== container.scrollWidth,
             );
         } else {
             setIsLeft(false);
@@ -129,13 +130,14 @@ function FAP() {
     };
 
     const scrollHandle = (left) => {
-        if (!scrollRef.current) return;
+        const container = scrollRef.current.container.current;
+        if (!container) return;
         setIsLeft(left !== 0);
-        setIsRight(left + scrollRef.current.base.clientWidth !== scrollRef.current.base.scrollWidth);
+        setIsRight(left + container.clientWidth !== container.scrollWidth);
     };
 
     const scrollToStartHandle = () => {
-        scrollRef.current.base.scrollTo({
+        scrollRef.current.container.current.scrollTo({
             behavior: 'smooth',
             left: 0,
             top: 0,
@@ -143,9 +145,9 @@ function FAP() {
     };
 
     const scrollToEndHandle = () => {
-        scrollRef.current.base.scrollTo({
+        scrollRef.current.container.current.scrollTo({
             behavior: 'smooth',
-            left: scrollRef.current.base.scrollWidth,
+            left: scrollRef.current.container.current.scrollWidth,
             top: 0,
         });
     };
@@ -197,7 +199,6 @@ function FAP() {
                         horizontal
                         hideScrollbars
                         onScroll={scrollHandle}
-                        onWheel={console.log()}
                         className={clsx(
                             classes.panel,
                             bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.disablePadding,
@@ -210,7 +211,11 @@ function FAP() {
                             </Typography>
                         )}
                         <IconButton
-                            className={clsx(classes.arrowButton, classes.leftArrow, !isLeft && classes.leftArrowHide)}
+                            className={clsx(
+                                classes.arrowButton,
+                                classes.leftArrow,
+                                !isLeft && classes.leftArrowHide,
+                            )}
                             onClick={scrollToStartHandle}
                         >
                             <LeftIcon />
