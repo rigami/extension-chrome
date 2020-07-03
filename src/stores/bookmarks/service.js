@@ -371,6 +371,7 @@ class BookmarksStore {
 
     @action('remove bookmark')
     async removeBookmark(bookmarkId) {
+        const oldBookmark = await this.getBookmark(bookmarkId);
         await DBConnector().delete('bookmarks', bookmarkId);
 
         const removeBinds = await DBConnector().getAllFromIndex(
@@ -380,6 +381,8 @@ class BookmarksStore {
         );
 
         await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
+
+        await FSConnector.removeFile('/bookmarksIcons', oldBookmark.icoFileName);
 
         this._syncCategories();
         this.lastTruthSearchTimestamp = Date.now();
