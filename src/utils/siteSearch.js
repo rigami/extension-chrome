@@ -29,6 +29,35 @@ const search = (query, signal) => {
     });
 };
 
+const getImageRecalc = (url, signal) => {
+    console.log("RECALC IMAGE", url)
+    return new Promise((resolve, reject) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.timeout = 30000;
+        xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+        xhr.responseType = 'json';
+
+        if (signal) {
+            signal.addAbortHandler(() => xhr.abort());
+        }
+
+        xhr.onload = () => {
+            if (xhr.status !== 200) {
+                reject();
+                return;
+            }
+            resolve(xhr.response);
+        }
+
+        xhr.onerror = xhr.ontimeout = (e) => {
+            reject(e);
+        }
+
+        xhr.send();
+    });
+};
+
 const checkExistSite = (url, signal) => {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest();
@@ -83,4 +112,4 @@ function AbortController() {
 
 
 export default search;
-export { getFaviconUrl, AbortController, checkExistSite, getSiteInfo };
+export { getFaviconUrl, AbortController, checkExistSite, getSiteInfo, getImageRecalc };

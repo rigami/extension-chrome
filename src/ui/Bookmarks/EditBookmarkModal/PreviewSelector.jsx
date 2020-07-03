@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Card,
     CardHeader,
@@ -12,6 +12,7 @@ import {
 } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
+import { getImageRecalc } from "@/utils/siteSearch"
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -43,10 +44,43 @@ function PreviewSelector(props) {
         description,
         categories,
         onChange,
-        images,
+        images: defaultImages,
     } = props;
     const classes = useStyles();
-    const [icoVariant, setIcoVariant] = useState('circle');
+    const [icoVariant, setIcoVariant] = useState('small');
+    const [images, setImages] = useState([]);
+
+    useEffect(() => {
+        console.log(defaultImages, defaultImages
+            .filter(({ score }) => score !== 0)
+            .sort(({ score: scoreA }, { score: scoreB }) => {
+                if (scoreA < scoreB) return 1;
+                if (scoreA > scoreB) return -1;
+                return 0;
+            }))
+        setImages(
+            defaultImages
+                .filter(({ score }) => score !== 0)
+                .sort(({ score: scoreA }, { score: scoreB }) => {
+                    if (scoreA < scoreB) return 1;
+                    if (scoreA > scoreB) return -1;
+                    return 0;
+                })
+        );
+
+        defaultImages.filter(({ score }) => score === 0).forEach((image) => {
+            getImageRecalc(`http://localhost:8080/icon_parse/recalc/${image.name}`)
+                .then((newData) => {
+                    setImages((oldImages) => {
+                        const insertIndex = Math.max(oldImages.findIndex(({score}) => score < newData.score), 0);
+                        oldImages.splice(insertIndex, 0, newData)
+                        console.log("NEW DATA ICON", newData, insertIndex, oldImages)
+
+                        return oldImages;
+                    })
+                })
+        })
+    }, [defaultImages.length]);
 
     return (
         <Collapse in={isOpen} unmountOnExit>
@@ -72,13 +106,13 @@ function PreviewSelector(props) {
                     )}
                 />
                 <CardContent className={classes.content}>
-                    {images.map(({ url }) => (
+                    {images.map(({ url, type, score }) => (
                         <CardLink
                             key={url}
-                            name={name}
+                            name={"["+score+"] "+name}
                             description={description}
                             categories={categories}
-                            icoVariant={icoVariant}
+                            icoVariant={type.toLowerCase()}
                             imageUrl={url}
                             preview
                             className={classes.card}

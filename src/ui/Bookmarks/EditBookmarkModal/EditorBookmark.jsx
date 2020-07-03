@@ -19,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import SearchField from "@/ui/Bookmarks/EditBookmarkModal/SearchFiled";
 import PreviewSelector from "./PreviewSelector";
 import Preview from "./Preview";
-import {getSiteInfo} from "@/utils/siteSearch";
+import { getSiteInfo, getImageRecalc } from "@/utils/siteSearch";
 
 const { global: localeGlobal } = locale;
 
@@ -66,7 +66,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         name: '',
         description: '',
         useDescription: false,
-        icoVariant: 'circle',
+        icoVariant: 'small',
         categories: [],
         fullCategories: [],
         image: null,
@@ -127,11 +127,22 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
 
         getSiteInfo(store.url, controller)
             .then((siteData) => {
-                setState('done');
                 if (!editBookmarkId) {
-                    store.image = siteData.bestIcon?.url;
+                    (
+                        (siteData.bestIcon?.score === 0)
+                            ? getImageRecalc(`http://localhost:8080/icon_parse/recalc/${siteData.bestIcon.name}`)
+                            : Promise.resolve(siteData.bestIcon)
+                    )
+                        .then((iconData) => {
+                            setState('done');
+                            store.image = iconData?.url;
+                            store.icoVariant = iconData?.type.toLowerCase();
+                            store.images = siteData.icons;
+                        })
+                } else {
+                    setState('done');
+                    store.images = siteData.icons;
                 }
-                store.images = siteData.icons;
             })
             .catch(() => {
                 setState('failed');

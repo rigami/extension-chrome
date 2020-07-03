@@ -15,7 +15,6 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusBold,
     },
     roundedIcon: {
-        padding: theme.spacing(0.5),
         borderRadius: theme.shape.borderRadiusBold,
         backgroundColor: theme.palette.common.white,
     },
