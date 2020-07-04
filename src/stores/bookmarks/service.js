@@ -120,7 +120,7 @@ class BookmarksStore {
 
         await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
 
-        this._syncCategories();
+        await this._syncCategories();
         this.lastTruthSearchTimestamp = Date.now();
     }
 
@@ -308,9 +308,9 @@ class BookmarksStore {
             icoName = oldBookmark.icoFileName || icoName;
 
             saveBookmarkId = await DBConnector().put('bookmarks', {
-                ...oldBookmark,
                 id,
                 ...saveData,
+                icoFileName: oldBookmark.icoFileName,
             });
         } else {
             saveBookmarkId = await DBConnector().add('bookmarks', {

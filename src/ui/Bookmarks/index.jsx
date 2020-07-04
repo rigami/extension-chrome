@@ -154,7 +154,13 @@ function Bookmarks() {
                                                 >
                                                     {column.map((card) => (
                                                         <CardLink
-                                                            {...card}
+                                                            id={card.id}
+                                                            name={card.name}
+                                                            url={card.url}
+                                                            categories={card.categories}
+                                                            icoVariant={card.icoVariant}
+                                                            description={card.description}
+                                                            imageUrl={card.imageUrl}
                                                             key={card.id}
                                                             style={{ marginBottom: theme.spacing(2) }}
                                                         />

@@ -103,7 +103,6 @@ function CardLink(props) {
         id,
         name,
         url,
-        icon,
         categories,
         icoVariant,
         description,
