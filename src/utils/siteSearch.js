@@ -2,10 +2,10 @@ import appVariables from "@/config/appVariables";
 import xhrPromise, { AbortController } from "@/utils/xhrPromise";
 
 const search = async (query, signal) => {
-    const response = xhrPromise(`${appVariables.rest.url}/site/proxy_DuckDuckGo?query=${query}`, {
+    const response = await xhrPromise(`${appVariables.rest.url}/site/proxy_DuckDuckGo?query=${query}`, {
         responseType: "document",
         signal,
-    })
+    });
 
     return Array.from(response.body.querySelectorAll(".result-link")).map((link) => ({
         url: link.href,

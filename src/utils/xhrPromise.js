@@ -4,7 +4,7 @@ const xhrPromise = (url, options = {}) => {
         xhr.open('GET', url, true);
         xhr.timeout = 30000;
         xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
-        xhr.responseType = options.response || 'json';
+        xhr.responseType = options.responseType || 'json';
 
         if (options.signal) {
             options.signal.addAbortHandler(() => xhr.abort());
@@ -18,15 +18,15 @@ const xhrPromise = (url, options = {}) => {
                 });
                 return;
             }
-            switch (options.response) {
+            switch (options.responseType) {
                 case "json":
-                    resolve(xhr.response);
+                    resolve(xhr.responseType);
                     break;
                 case "document":
                     resolve(xhr.responseXML);
                     break;
                 default:
-                    resolve(xhr.response);
+                    resolve(xhr.responseType);
                     break;
             }
 
