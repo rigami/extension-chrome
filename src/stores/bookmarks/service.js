@@ -371,7 +371,7 @@ class BookmarksStore {
 
     @action('remove bookmark')
     async removeBookmark(bookmarkId) {
-        const oldBookmark = await this.getBookmark(bookmarkId);
+        const oldBookmark = await DBConnector().get('bookmarks', bookmarkId);
         await DBConnector().delete('bookmarks', bookmarkId);
 
         const removeBinds = await DBConnector().getAllFromIndex(

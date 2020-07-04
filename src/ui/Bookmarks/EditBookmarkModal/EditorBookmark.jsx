@@ -7,6 +7,7 @@ import {
     Typography,
     TextField,
     Collapse,
+    CircularProgress,
 } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
@@ -61,7 +62,8 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
 
     const bookmarksStore = useBookmarksService();
     const [controller, setController] = useState(null);
-    const [state, setState] = useState('loading_images');
+    const [isLoading, setIsLoading] = useState(false);
+    const [state, setState] = useState(FETCH.PENDING);
     const store = useLocalStore(() => ({
         editBookmarkId,
         url: '',
@@ -74,6 +76,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         imageURL: null,
         images: [],
         isOpenSelectPreview: false,
+        isSave: false,
     }));
 
     const handlerSave = () => {
@@ -89,6 +92,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
 
     useEffect(() => {
         if (!editBookmarkId) return;
+        setIsLoading(true);
 
         bookmarksStore.getBookmark(editBookmarkId)
             .then((bookmark) => {
@@ -100,6 +104,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                 if (store.useDescription) store.description = bookmark.description;
                 store.type = bookmark.type;
                 store.categories = (bookmark.categories || []).map((category) => category.id);
+                setIsLoading(false);
             })
             .catch((e) => {
                 console.error(e);
@@ -130,17 +135,13 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         asyncAction(async () => {
             const siteData = await getSiteInfo(store.url, controller);
 
-            console.log("GET SITE INFO", siteData)
-
             if (editBookmarkId) {
-                console.log("UPDATE ICONS")
                 setState(FETCH.DONE);
                 store.images = siteData.icons;
                 return;
             }
 
             if (siteData.bestIcon?.score === 0) {
-                console.log("RECALC MAIN ICON")
                 try {
                     siteData.bestIcon = await getImageRecalc(siteData.bestIcon.name)
                 } catch (e) {
@@ -159,6 +160,12 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     useEffect(() => {
         store.fullCategories = store.categories.map((categoryId) => bookmarksStore.getCategory(categoryId));
     }, [store.categories.length]);
+
+    if (isLoading) {
+        return useObserver(() => (
+            <CircularProgress />
+        ));
+    }
 
     return useObserver(() => (
         <Container

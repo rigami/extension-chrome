@@ -87,7 +87,6 @@ function PreviewSelector(props) {
             getImageRecalc(image.name)
                 .then((newData) => {
                     const insertIndex = store.loadedImages.findIndex(({score}) => score < newData.score);
-                    console.log("New image", newData, insertIndex, store.loadedImages.length)
                     store.loadedImages.splice(insertIndex === -1 ? store.loadedImages.length : insertIndex, 0, newData)
                 })
                 .catch(() => {

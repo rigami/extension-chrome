@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         flexGrow: 0,
         flexShrink: 0,
-        backgroundColor: theme.palette.grey[900],
+        backgroundColor: theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[200],
         boxSizing: 'content-box',
         width: 182,
     },

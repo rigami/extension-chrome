@@ -6,7 +6,6 @@ import {
     Tooltip,
     Box,
     IconButton,
-    CardMedia,
 } from '@material-ui/core';
 import {
     MoreVertRounded as MoreIcon,
@@ -94,6 +93,9 @@ const useStyles = makeStyles((theme) => ({
         opacity: 0,
         pointerEvents: 'none',
     },
+    borderIcon: {
+        boxShadow: `0 0 0 1px #e0e0e0`,
+    },
 }));
 
 function CardLink(props) {
@@ -170,7 +172,11 @@ function CardLink(props) {
                     )}
                     {icoVariant !== BKMS_VARIANT.POSTER && (
                         <Box className={classes.banner}>
-                            <Image variant={BKMS_VARIANT.SMALL} src={imageUrl} className={classes.icon} />
+                            <Image
+                                variant={BKMS_VARIANT.SMALL}
+                                src={imageUrl}
+                                className={clsx(classes.icon, classes.borderIcon)}
+                            />
                         </Box>
                     )}
                     <div className={classes.body}>
