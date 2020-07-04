@@ -62,7 +62,7 @@ class BookmarksStore {
     }
 
     @action('sync categories with db')
-    _syncCategories() {
+    async _syncCategories() {
         return DBConnector().getAll('categories')
             .then((value) => { this.categories = value; });
     }
@@ -103,7 +103,7 @@ class BookmarksStore {
             });
         }
 
-        this._syncCategories();
+        await this._syncCategories();
 
         return newCategoryId;
     }

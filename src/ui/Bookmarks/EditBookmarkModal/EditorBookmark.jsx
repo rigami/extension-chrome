@@ -76,7 +76,6 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         imageURL: null,
         images: [],
         isOpenSelectPreview: false,
-        isSave: false,
     }));
 
     const handlerSave = () => {
@@ -86,8 +85,9 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
             name: store.name.trim(),
             description: (store.useDescription && store.description?.trim()) || '',
             id: store.editBookmarkId,
-        })
-            .then(() => onSave());
+        });
+
+        onSave();
     };
 
     useEffect(() => {
