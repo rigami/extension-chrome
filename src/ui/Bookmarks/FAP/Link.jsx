@@ -10,6 +10,7 @@ import clsx from 'clsx';
 import EditMenu from '@/ui/Bookmarks/ContextEditMenu'
 import { observer } from 'mobx-react-lite';
 import Image from "@/ui-components/Image";
+import {BKMS_VARIANT} from "@/enum";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -83,7 +84,11 @@ function LinkButton({ id, name, url, imageUrl, icoVariant, isBlurBackdrop }) {
                     onMouseUp={handleClick}
                     onContextMenu={handlerContextMenu}
                 >
-                    <Image variant="small" src={imageUrl} className={classes.icon} />
+                    <Image
+                        src={imageUrl}
+                        className={classes.icon}
+                        alternativeIcon={icoVariant === BKMS_VARIANT.SYMBOL ? name[0].toUpperCase() : undefined}
+                    />
                 </ButtonBase>
             </Tooltip>
         </React.Fragment>

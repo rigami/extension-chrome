@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusBold,
         backgroundColor: theme.palette.common.white,
         color: theme.palette.text.primary,
+        fontWeight: 800,
     },
 }));
 
