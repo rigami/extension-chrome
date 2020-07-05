@@ -341,7 +341,7 @@ class BookmarksStore {
             }),
         );
 
-        if (image_url.substring(0, 11) !== "filesystem:") {
+        if (image_url && image_url.substring(0, 11) !== "filesystem:") {
             const img = await new Promise((resolve, reject) => {
                 const imgLoad = document.createElement("img");
                 imgLoad.crossOrigin = "anonymous";
@@ -364,6 +364,12 @@ class BookmarksStore {
             });
 
             await FSConnector.saveFile('/bookmarksIcons', blob, icoName);
+        } else if (!image_url && id) {
+            try {
+                await FSConnector.removeFile('/bookmarksIcons', icoName);
+            } catch (e) {
+
+            }
         }
 
         this.lastTruthSearchTimestamp = Date.now();
@@ -384,7 +390,7 @@ class BookmarksStore {
 
         await FSConnector.removeFile('/bookmarksIcons', oldBookmark.icoFileName);
 
-        this._syncCategories();
+        await this._syncCategories();
         this.lastTruthSearchTimestamp = Date.now();
     }
 

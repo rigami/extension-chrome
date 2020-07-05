@@ -102,7 +102,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                 store.imageURL = bookmark.imageUrl;
                 store.useDescription = !!bookmark.description?.trim();
                 if (store.useDescription) store.description = bookmark.description;
-                store.type = bookmark.type;
+                store.icoVariant = bookmark.icoVariant;
                 store.categories = (bookmark.categories || []).map((category) => category.id);
                 setIsLoading(false);
             })
@@ -189,6 +189,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                 <Preview
                     isOpen={store.isOpenSelectPreview}
                     state={state}
+                    url={store.url}
                     imageUrl={store.imageURL}
                     name={store.name.trim()}
                     icoVariant={store.icoVariant}
@@ -265,7 +266,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                disabled={!store.url || !store.name.trim() || !store.imageURL}
+                                disabled={!store.url || !store.name.trim()}
                                 onClick={handlerSave}
                             >
                                 Сохранить

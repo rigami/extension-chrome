@@ -65,7 +65,7 @@ function PreviewSelector(props) {
         description,
         categories,
         onChange,
-        images: defaultImages,
+        images: defaultImages = [],
     } = props;
     const classes = useStyles();
     const store = useLocalStore(() => ({
@@ -95,8 +95,6 @@ function PreviewSelector(props) {
         })
     }, [defaultImages.length]);
 
-    useEffect(() => console.log(store.loadedImages), [store.loadedImages.length]);
-
     return useObserver(() => (
         <Card className={classes.root} elevation={8}>
             <CardHeader
@@ -122,11 +120,16 @@ function PreviewSelector(props) {
                         }}
                     />
                 ))}
-                {store.loadedImages.length === 0 && (
-                    <FullScreenStub className={classes.fullscreenStub}>
-                        <CircularProgress />
-                    </FullScreenStub>
-                )}
+                <CardLink
+                    name={name}
+                    description={description}
+                    imageUrl={null}
+                    categories={categories}
+                    icoVariant={BKMS_VARIANT.SYMBOL}
+                    preview
+                    className={classes.card}
+                    onClick={() => onChange(null, BKMS_VARIANT.SYMBOL)}
+                />
             </CardContent>
             {store.size !== store.loadedImages.length && (
                 <Box className={classes.loadStatus}>

@@ -20,13 +20,13 @@ const xhrPromise = (url, options = {}) => {
             }
             switch (options.responseType) {
                 case "json":
-                    resolve(xhr.responseType);
+                    resolve(xhr.response);
                     break;
                 case "document":
                     resolve(xhr.responseXML);
                     break;
                 default:
-                    resolve(xhr.responseType);
+                    resolve(xhr.response);
                     break;
             }
 

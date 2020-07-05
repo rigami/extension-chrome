@@ -18,10 +18,11 @@ const useStyles = makeStyles((theme) => ({
     roundedIcon: {
         borderRadius: theme.shape.borderRadiusBold,
         backgroundColor: theme.palette.common.white,
+        color: theme.palette.text.primary,
     },
 }));
 
-function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName }) {
+function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName, alternativeIcon }) {
     const classes = useStyles();
     const [isLoading, setIsLoading] = useState(true);
 
@@ -63,8 +64,8 @@ function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName
                     />
                 )}
                 {!isLoading && (
-                    <Avatar className={clsx(classes.roundedIcon, externalClassName)} src={src} variant={"rounded"}>
-                        <LinkIcon />
+                    <Avatar className={clsx(classes.roundedIcon, externalClassName)} src={src || undefined} variant={"rounded"}>
+                        {alternativeIcon || (<LinkIcon />)}
                     </Avatar>
                 )}
             </React.Fragment>

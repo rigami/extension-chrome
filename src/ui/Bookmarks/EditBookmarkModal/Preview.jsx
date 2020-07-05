@@ -17,7 +17,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { AbortController, getSiteInfo } from "@/utils/siteSearch";
-import {FETCH} from "@/enum";
+import {BKMS_VARIANT, FETCH} from "@/enum";
 
 const useStyles = makeStyles((theme) => ({
     bgCardRoot: { display: 'flex' },
@@ -69,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Preview(props) {
     const {
+        url,
         imageUrl,
         isOpen,
         name,
@@ -84,7 +85,7 @@ function Preview(props) {
 
     useEffect(() => {
         setState(FETCH.PENDING);
-        if (!imageUrl) {
+        if (!imageUrl || icoVariant === BKMS_VARIANT.SYMBOL) {
             setState(FETCH.DONE);
             return;
         }
@@ -99,6 +100,16 @@ function Preview(props) {
         imgCache.src = imageUrl;
     }, [imageUrl]);
 
+    let pendingState;
+
+    if (name && (imageUrl || icoVariant === BKMS_VARIANT.SYMBOL)) {
+        pendingState = "DONE";
+    } else if (!url) {
+        pendingState = "FAILED_URL";
+    } else if (!name) {
+        pendingState = "FAILED_NAME";
+    }
+
     return (
         <CardMedia
             className={classes.cover}
@@ -110,7 +121,7 @@ function Preview(props) {
             )}
             {state !== FETCH.PENDING && globalState !== FETCH.PENDING && (
                 <React.Fragment>
-                    {name && imageUrl && (
+                    {pendingState === 'DONE' && (
                         <React.Fragment>
                             <Button
                                 className={classes.typeSwitcher}
@@ -130,13 +141,13 @@ function Preview(props) {
                             />
                         </React.Fragment>
                     )}
-                    {state === FETCH.DONE && !imageUrl && (
+                    {pendingState === "FAILED_URL" && (
                         <FullScreenStub
                             iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
                             description="Укажите адрес"
                         />
                     )}
-                    {state === FETCH.DONE && !name && imageUrl && (
+                    {pendingState === "FAILED_NAME" && (
                         <FullScreenStub
                             iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
                             description="Дайте закладке имя"
