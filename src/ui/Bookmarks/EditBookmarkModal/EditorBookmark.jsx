@@ -84,6 +84,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         isOpenSelectPreview: false,
         searchRequest: '',
         requireScrollToBottom: true,
+        blockResetSearch: false,
     }));
 
     const handlerSave = () => {
@@ -211,6 +212,9 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                         store.name = title || '';
                         store.description = description || '';
                     }}
+                    onClick={() => {
+                        store.blockResetSearch = true;
+                    }}
                 />
                 <Card className={classes.bgCardRoot} elevation={8}>
                     <Preview
@@ -238,9 +242,13 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                                 onChange={(event) => {
                                     store.searchRequest = event.target.value;
                                 }}
-                                /* onBlur={() => {
-                                    store.searchRequest = store.url;
-                                }} */
+                                onBlur={() => {
+                                    if (store.blockResetSearch) {
+                                        store.blockResetSearch = false;
+                                    } else {
+                                        store.searchRequest = store.url;
+                                    }
+                                }}
                             />
                             <TextField
                                 label="Название"

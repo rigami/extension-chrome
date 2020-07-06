@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function SearchResults({ searchRequest = "", onSelect }) {
+function SearchResults({ searchRequest = "", onSelect, onClick }) {
     const classes = useStyles();
     const [timer, setTimer] = useState(undefined);
     const [globalResults, setGlobalResults] = React.useState([]);
@@ -138,13 +138,8 @@ function SearchResults({ searchRequest = "", onSelect }) {
 
     return (
         <React.Fragment>
-            <Fade in={loading} unmountOnExit>
-                <Card className={clsx(classes.root, classes.search)} elevation={8}>
-                    Поиск...
-                </Card>
-            </Fade>
             <Fade in={!loading && isOpen} unmountOnExit>
-                <Card className={classes.root} elevation={8}>
+                <Card className={classes.root} elevation={8} onMouseDown={onClick}>
                     <List disablePadding>
                         <ListSubheader>Поиск в сети</ListSubheader>
                         {globalResults && globalResults.map((option) => (
@@ -174,7 +169,12 @@ function SearchResults({ searchRequest = "", onSelect }) {
                                 />
                             </ListItem>
                         ))}
-                        <ListSubheader>Прямое поиск</ListSubheader>
+                        {globalResults && globalResults.length === 0 && (
+                            <ListItem>
+                                Ничего не нейдено
+                            </ListItem>
+                        )}
+                        <ListSubheader>Прямой поиск</ListSubheader>
                         {straightResults && (
                             <ListItem
                                 className={classes.row}
@@ -210,6 +210,11 @@ function SearchResults({ searchRequest = "", onSelect }) {
                             </ListItem>
                         )}
                     </List>
+                </Card>
+            </Fade>
+            <Fade in={loading} unmountOnExit>
+                <Card className={clsx(classes.root, classes.search)} elevation={8} onMouseDown={onClick}>
+                    Поиск...
                 </Card>
             </Fade>
         </React.Fragment>
