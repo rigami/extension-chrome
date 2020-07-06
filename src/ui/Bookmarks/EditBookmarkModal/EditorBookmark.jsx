@@ -8,6 +8,7 @@ import {
     TextField,
     Collapse,
     CircularProgress,
+    Fade,
 } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
@@ -18,12 +19,13 @@ import locale from '@/i18n/RU';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import Categories from '../Ctegories';
 import { useSnackbar } from 'notistack';
-import SearchField from "@/ui/Bookmarks/EditBookmarkModal/SearchFiled";
 import PreviewSelector from "./PreviewSelector";
+import SearchResults from "./SearchResults";
 import Preview from "./Preview";
 import { getSiteInfo, getImageRecalc } from "@/utils/siteSearch";
-import { FETCH, BKMS_VARIANT } from '@/enum'
+import { FETCH, BKMS_VARIANT } from '@/enum';
 import asyncAction from "@/utils/asyncAction";
+import Scrollbar from "@/ui-components/CustomScroll";
 
 const { global: localeGlobal } = locale;
 
@@ -32,6 +34,10 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(3),
         marginTop: theme.spacing(3),
         maxWidth: 1044,
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
     },
     bgCardRoot: { display: 'flex' },
     content: { flex: '1 0 auto' },
@@ -76,6 +82,8 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         imageURL: null,
         images: [],
         isOpenSelectPreview: false,
+        searchRequest: '',
+        requireScrollToBottom: true,
     }));
 
     const handlerSave = () => {
@@ -168,114 +176,136 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     }
 
     return useObserver(() => (
-        <Container
-            maxWidth={false}
-            className={classes.container}
+        <Scrollbar
+            refScroll={(ref) => {
+                console.log("REF", ref)
+                if (ref && store.requireScrollToBottom) {
+                    store.requireScrollToBottom = false;
+                    ref.scrollToBottom();
+                }
+            }}
         >
-            <Collapse in={store.isOpenSelectPreview} unmountOnExit>
-                <PreviewSelector
-                    name={store.name.trim()}
-                    images={store.images}
-                    description={store.useDescription && store.description?.trim()}
-                    categories={store.fullCategories}
-                    onChange={(imageUrl, icoVariant) => {
-                        store.isOpenSelectPreview = false;
-                        store.imageURL = imageUrl;
-                        store.icoVariant = icoVariant;
+            <Container
+                maxWidth={false}
+                className={classes.container}
+            >
+                <Collapse in={store.isOpenSelectPreview} unmountOnExit>
+                    <PreviewSelector
+                        name={store.name.trim()}
+                        images={store.images}
+                        description={store.useDescription && store.description?.trim()}
+                        categories={store.fullCategories}
+                        onChange={(imageUrl, icoVariant) => {
+                            store.isOpenSelectPreview = false;
+                            store.imageURL = imageUrl;
+                            store.icoVariant = icoVariant;
+                        }}
+                    />
+                </Collapse>
+                <SearchResults
+                    searchRequest={(store.url === store.searchRequest) ? "" : store.searchRequest}
+                    onSelect={({ url, title, description}) => {
+                        console.log("SEARCH", { url, title, description});
+                        store.url = url;
+                        store.searchRequest = url;
+                        store.name = title || '';
+                        store.description = description || '';
                     }}
                 />
-            </Collapse>
-            <Card className={classes.bgCardRoot} elevation={8}>
-                <Preview
-                    isOpen={store.isOpenSelectPreview}
-                    state={state}
-                    url={store.url}
-                    imageUrl={store.imageURL}
-                    name={store.name.trim()}
-                    icoVariant={store.icoVariant}
-                    description={store.useDescription && store.description?.trim()}
-                    categories={store.fullCategories}
-                    onChangeType={() => { store.isOpenSelectPreview = !store.isOpenSelectPreview; }}
-                />
-                <div className={classes.details}>
-                    <CardContent className={classes.content}>
-                        <Typography component="h5" variant="h5">
-                            {!store.editBookmarkId ? 'Добавление закладки' : 'Редактирование закладки'}
-                        </Typography>
-                        <SearchField
-                            value={store.url}
-                            className={classes.input}
-                            autoFocus={!editBookmarkId}
-                            onChange={(site) => {
-                                store.url = site.url;
-                                store.name = site.title || '';
-                                store.description = site.description || '';
-                            }}
-                            forceFocus
-                        />
-                        <TextField
-                            label="Название"
-                            variant="outlined"
-                            disabled={store.url === ''}
-                            fullWidth
-                            value={store.name}
-                            className={classes.input}
-                            onChange={(event) => { store.name = event.target.value; }}
-                        />
-                        <Categories
-                            className={classes.chipContainer}
-                            sortByPopular
-                            value={store.categories}
-                            onChange={(newCategories) => { store.categories = newCategories; }}
-                            autoSelect
-                        />
-                        {store.useDescription && (
+                <Card className={classes.bgCardRoot} elevation={8}>
+                    <Preview
+                        isOpen={store.isOpenSelectPreview}
+                        state={state}
+                        url={store.url}
+                        imageUrl={store.imageURL}
+                        name={store.name.trim()}
+                        icoVariant={store.icoVariant}
+                        description={store.useDescription && store.description?.trim()}
+                        categories={store.fullCategories}
+                        onChangeType={() => { store.isOpenSelectPreview = !store.isOpenSelectPreview; }}
+                    />
+                    <div className={classes.details}>
+                        <CardContent className={classes.content}>
+                            <Typography component="h5" variant="h5">
+                                {!store.editBookmarkId ? 'Добавление закладки' : 'Редактирование закладки'}
+                            </Typography>
                             <TextField
-                                label="Описание"
+                                label="Запрос или URL адрес"
                                 variant="outlined"
                                 fullWidth
-                                value={store.description}
+                                value={store.searchRequest}
                                 className={classes.input}
-                                disabled={store.url === ''}
-                                multiline
-                                rows={3}
-                                rowsMax={3}
-                                onChange={(event) => { store.description = event.target.value; }}
+                                onChange={(event) => {
+                                    store.searchRequest = event.target.value;
+                                }}
+                                /* onBlur={() => {
+                                    store.searchRequest = store.url;
+                                }} */
                             />
-                        )}
-                        {!store.useDescription && (
+                            <TextField
+                                label="Название"
+                                variant="outlined"
+                                disabled={store.url === ''}
+                                fullWidth
+                                value={store.name}
+                                className={classes.input}
+                                onChange={(event) => { store.name = event.target.value; }}
+                            />
+                            <Categories
+                                className={classes.chipContainer}
+                                sortByPopular
+                                value={store.categories}
+                                onChange={(newCategories) => { store.categories = newCategories; }}
+                                autoSelect
+                            />
+                            {store.useDescription && (
+                                <TextField
+                                    label="Описание"
+                                    variant="outlined"
+                                    fullWidth
+                                    value={store.description}
+                                    className={classes.input}
+                                    disabled={store.url === ''}
+                                    multiline
+                                    rows={3}
+                                    rowsMax={3}
+                                    onChange={(event) => { store.description = event.target.value; }}
+                                />
+                            )}
+                            {!store.useDescription && (
+                                <Button
+                                    startIcon={<AddIcon />}
+                                    className={classes.addDescriptionButton}
+                                    onClick={() => { store.useDescription = true; }}
+                                >
+                                    Добавить описание
+                                </Button>
+                            )}
+                        </CardContent>
+                        <div className={classes.controls}>
                             <Button
-                                startIcon={<AddIcon />}
-                                className={classes.addDescriptionButton}
-                                onClick={() => { store.useDescription = true; }}
+                                variant="text"
+                                color="default"
+                                className={classes.button}
+                                onClick={onCancel}
                             >
-                                Добавить описание
+                                {localeGlobal.cancel}
                             </Button>
-                        )}
-                    </CardContent>
-                    <div className={classes.controls}>
-                        <Button
-                            variant="text"
-                            color="default"
-                            className={classes.button}
-                            onClick={onCancel}
-                        >
-                            {localeGlobal.cancel}
-                        </Button>
-                        <div className={classes.button}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                disabled={!store.url || !store.name.trim()}
-                                onClick={handlerSave}
-                            >
-                                Сохранить
-                            </Button>
+                            <div className={classes.button}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={!store.url || !store.name.trim()}
+                                    onClick={handlerSave}
+                                >
+                                    Сохранить
+                                </Button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </Card>
-        </Container>
+                </Card>
+            </Container>
+        </Scrollbar>
     ));
 }
 

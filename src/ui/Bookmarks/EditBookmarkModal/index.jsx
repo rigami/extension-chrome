@@ -9,7 +9,7 @@ function EditBookmarkModal({ isOpen, onClose, ...other }) {
             open={!!isOpen}
             PaperProps={{
                 elevation: 0,
-                style: { background: 'none' },
+                style: { background: 'none', height: '100%' },
             }}
             disableEnforceFocus
         >
