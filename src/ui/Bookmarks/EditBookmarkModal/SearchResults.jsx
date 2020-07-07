@@ -2,22 +2,16 @@ import React, { useEffect, useState } from 'react';
 import {
     Button,
     Card,
-    Grid,
     Avatar,
-    Container,
-    Typography,
-    TextField,
-    Collapse,
-    CircularProgress,
     List,
     ListSubheader,
     ListItem,
     ListItemText,
     ListItemAvatar,
     Fade,
+    Collapse,
 } from '@material-ui/core';
 import {
-    AddRounded as AddIcon,
     PublicRounded as WebSiteIcon,
 } from '@material-ui/icons';
 import {AbortController} from "@/utils/xhrPromise";
@@ -30,9 +24,15 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(2),
         marginTop: theme.spacing(2),
         maxWidth: 1044,
+        position: 'relative',
+        minHeight: 52,
     },
     search: {
         padding: theme.spacing(2),
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
     },
     avatar: {
         minWidth: theme.spacing(4.5),
@@ -53,7 +53,7 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
     const [timer, setTimer] = useState(undefined);
     const [globalResults, setGlobalResults] = React.useState([]);
     const [straightResults, setStraightResults] = React.useState(null);
-    const [loading, setLoading] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
     const [controller, setController] = React.useState(null);
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -137,9 +137,9 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
     }, [searchRequest]);
 
     return (
-        <React.Fragment>
-            <Fade in={!loading && isOpen} unmountOnExit>
-                <Card className={classes.root} elevation={8} onMouseDown={onClick}>
+        <Fade in={loading || isOpen} unmountExit>
+            <Card elevation={8} className={classes.root} onMouseDown={onClick}>
+                <Collapse in={!loading && isOpen}>
                     <List disablePadding>
                         <ListSubheader>Поиск в сети</ListSubheader>
                         {globalResults && globalResults.map((option) => (
@@ -210,14 +210,14 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                             </ListItem>
                         )}
                     </List>
-                </Card>
-            </Fade>
-            <Fade in={loading} unmountOnExit>
-                <Card className={clsx(classes.root, classes.search)} elevation={8} onMouseDown={onClick}>
-                    Поиск...
-                </Card>
-            </Fade>
-        </React.Fragment>
+                </Collapse>
+                <Fade in={loading}>
+                    <Card className={clsx(classes.search)} elevation={8} onMouseDown={onClick}>
+                        Поиск...
+                    </Card>
+                </Fade>
+            </Card>
+        </Fade>
     );
 }
 
