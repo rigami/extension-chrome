@@ -22,7 +22,6 @@ import clsx from 'clsx';
 const useStyles = makeStyles((theme) => ({
     root: {
         marginBottom: theme.spacing(2),
-        marginTop: theme.spacing(2),
         maxWidth: 1044,
         position: 'relative',
         minHeight: 52,
@@ -53,7 +52,8 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
     const [timer, setTimer] = useState(undefined);
     const [globalResults, setGlobalResults] = React.useState([]);
     const [straightResults, setStraightResults] = React.useState(null);
-    const [loading, setLoading] = React.useState(true);
+    const [globalLoading, setGlobalLoading] = React.useState(true);
+    const [straightLoading, setStraightLoading] = React.useState(true);
     const [controller, setController] = React.useState(null);
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -65,7 +65,8 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
     };
 
     useEffect(() => {
-        setLoading(true);
+        setStraightLoading(true);
+        setGlobalLoading(true);
         if (controller) {
             controller.abort();
             setController(null);
@@ -77,7 +78,8 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
         if (searchRequest.trim() === '') {
             setGlobalResults([]);
             setStraightResults(null);
-            setLoading(false);
+            setStraightLoading(false);
+            setGlobalLoading(false);
             setIsOpen(false);
             return;
         }
@@ -87,62 +89,43 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
             const controller = new AbortController();
             setController(controller);
 
-            const results = {
-                straight: 'pending',
-                global: 'pending',
-            };
-
-            const checkResults = () => {
-                if (results.straight === 'pending' || results.global === 'pending') return;
-
-                setLoading(false);
-                setIsOpen(true);
-            };
-
             getSiteInfo(searchRequest.trim(), controller)
                 .then((siteData) => {
-                    results.straight = 'done';
                     setStraightResults({
                         ...siteData,
                         title: siteData.name,
                         url: searchRequest.trim(),
                     });
-                    setIsOpen(true);
                 })
                 .catch(() => {
-                    results.straight = 'failed';
                     setStraightResults(null);
                 })
-                .finally(checkResults);
+                .finally(() => {
+                    setIsOpen(true);
+                    setStraightLoading(false);
+                });
 
             search(searchRequest, controller)
                 .then((foundResults) => {
-                    results.global = 'done';
-                    if (foundResults.length !== 0) {
-                        setGlobalResults(foundResults.map((result, index) => ({
-                            ...result,
-                            id: `global-result-${index}`,
-                        })).reverse());
-                    } else {
-                        setGlobalResults([]);
-                    }
-                    setIsOpen(true);
+                    setGlobalResults(foundResults.reverse());
                 })
                 .catch(() => {
-                    results.global = 'failed';
                     setGlobalResults([]);
                 })
-                .finally(checkResults);
+                .finally(() => {
+                    setIsOpen(true);
+                    setGlobalLoading(false);
+                });
         }, 1300));
     }, [searchRequest]);
 
     return (
-        <Fade in={loading || isOpen} unmountExit>
+        <Fade in={straightLoading || globalLoading || isOpen} unmountOnExit>
             <Card elevation={8} className={classes.root} onMouseDown={onClick}>
-                <Collapse in={!loading && isOpen}>
+                <Collapse in={!globalLoading || !straightLoading}>
                     <List disablePadding>
                         <ListSubheader>Поиск в сети</ListSubheader>
-                        {globalResults && globalResults.map((option) => (
+                        {!globalLoading && globalResults && globalResults.map((option) => (
                             <ListItem
                                 className={classes.row}
                                 divider
@@ -169,13 +152,18 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                                 />
                             </ListItem>
                         ))}
-                        {globalResults && globalResults.length === 0 && (
+                        {!globalLoading && globalResults && globalResults.length === 0 && (
                             <ListItem>
                                 Ничего не нейдено
                             </ListItem>
                         )}
+                        {globalLoading && (
+                            <ListItem>
+                                Поиск...
+                            </ListItem>
+                        )}
                         <ListSubheader>Прямой поиск</ListSubheader>
-                        {straightResults && (
+                        {!straightLoading && straightResults && (
                             <ListItem
                                 className={classes.row}
                                 button
@@ -201,7 +189,7 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                                 />
                             </ListItem>
                         )}
-                        {!straightResults && (
+                        {!straightLoading && !straightResults && (
                             <ListItem>
                                 Адрес не распознан
                                 <Button>
@@ -209,9 +197,14 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                                 </Button>
                             </ListItem>
                         )}
+                        {straightLoading && (
+                            <ListItem>
+                                Поиск...
+                            </ListItem>
+                        )}
                     </List>
                 </Collapse>
-                <Fade in={loading}>
+                <Fade in={straightLoading && globalLoading}>
                     <Card className={clsx(classes.search)} elevation={8} onMouseDown={onClick}>
                         Поиск...
                     </Card>

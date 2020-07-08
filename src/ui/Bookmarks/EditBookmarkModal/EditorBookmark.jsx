@@ -31,8 +31,7 @@ const { global: localeGlobal } = locale;
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        marginBottom: theme.spacing(3),
-        marginTop: theme.spacing(3),
+        padding: theme.spacing(3),
         maxWidth: 1044,
         minHeight: '100vh',
         display: 'flex',
@@ -179,12 +178,17 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     return useObserver(() => (
         <Scrollbar
             refScroll={(ref) => {
-                console.log("REF", ref)
-                if (ref && store.requireScrollToBottom) {
-                    store.requireScrollToBottom = false;
+                //console.log("REF", ref)
+                if (ref) {
+                    console.log("SCROLL TO BOTTOm")
+                    //store.requireScrollToBottom = false;
                     ref.scrollToBottom();
                 }
             }}
+            onScroll={() => {
+                console.log("scroll")
+            }}
+            reverse
         >
             <Container
                 maxWidth={false}

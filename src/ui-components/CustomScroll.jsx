@@ -15,6 +15,10 @@ const exportClasses = (theme) => ({
         bottom: 0,
         transform: 'translate3d(0,0,0)',
     },
+    scroller: {
+        display: 'flex',
+        flexDirection: 'column-reverse',
+    },
     scrollBar: {
         position: 'absolute',
         right: 4,
@@ -36,13 +40,19 @@ const exportClasses = (theme) => ({
 
 const useStyles = makeStyles(exportClasses);
 
-function CustomScroll({ children, refScroll, ...other }) {
+function CustomScroll({ children, refScroll, reverse, ...other }) {
     const classes = useStyles();
 
     return (
         <Scrollbar
             className={classes.root}
             noDefaultStyles
+            scrollerProps={{
+                renderer: (props) => {
+                    const { elementRef, ...restProps } = props;
+                    return <div {...restProps} ref={elementRef} className={classes.scroller} />;
+                },
+            }}
             wrapperProps={{
                 renderer: (props) => {
                     const { elementRef, ...restProps } = props;
