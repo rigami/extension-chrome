@@ -159,6 +159,8 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
 
             store.imageURL = siteData.bestIcon?.url;
             store.icoVariant = siteData.bestIcon?.type;
+            store.url = siteData.url;
+            store.searchRequest = siteData.url;
             store.images = siteData.icons;
         })
             .then(() => setState(FETCH.DONE))

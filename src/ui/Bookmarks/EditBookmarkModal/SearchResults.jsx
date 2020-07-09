@@ -94,7 +94,7 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                     setStraightResults({
                         ...siteData,
                         title: siteData.name,
-                        url: searchRequest.trim(),
+                        url: siteData.url,
                     });
                 })
                 .catch(() => {
