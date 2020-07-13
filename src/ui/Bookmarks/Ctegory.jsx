@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import {
     ListItem,
     ListItemText,
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 function CategoryHeader({ id, color, name, children }) {
     const classes = useStyles();
     const bookmarksStore = useBookmarksService();
-    const [isEdit, setIsEdit] = useState(false);
+    const anchorEl = useRef(null);
 
     const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'category' && fav.id === id);
 
@@ -98,7 +98,7 @@ function CategoryHeader({ id, color, name, children }) {
                         }}
                         primary={name || 'Неизвестная категория'}
                     />
-                    {id !== 'best' && !isEdit && (
+                    {id !== 'best' && (
                         <ListItemSecondaryAction className={classes.actions}>
                             <Tooltip
                                 title={
@@ -112,12 +112,23 @@ function CategoryHeader({ id, color, name, children }) {
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Изменить">
-                                <IconButton onClick={() => setIsEdit(true)}>
+                                <IconButton
+                                    buttonRef={anchorEl}
+                                    onClick={() => bookmarksStore.eventBus.dispatch(
+                                        `editcategory`,
+                                        { id, anchorEl: anchorEl.current },
+                                    )}
+                                >
                                     <EditIcon />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Удалить">
-                                <IconButton>
+                                <IconButton
+                                    onClick={() => bookmarksStore.eventBus.dispatch(
+                                        `removecategory`,
+                                        { id },
+                                        )}
+                                >
                                     <RemoveIcon />
                                 </IconButton>
                             </Tooltip>
