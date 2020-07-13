@@ -45,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
     },
+    forceAdd: {
+        marginLeft: theme.spacing(2),
+    },
 }));
 
 function SearchResults({ searchRequest = "", onSelect, onClick }) {
@@ -122,7 +125,7 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
     return (
         <Fade in={straightLoading || globalLoading || isOpen} unmountOnExit>
             <Card elevation={8} className={classes.root} onMouseDown={onClick}>
-                <Collapse in={!globalLoading || !straightLoading}>
+                <Collapse in={(!globalLoading || !straightLoading) && isOpen}>
                     <List disablePadding>
                         <ListSubheader>Поиск в сети</ListSubheader>
                         {!globalLoading && globalResults && globalResults.map((option) => (
@@ -192,7 +195,13 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                         {!straightLoading && !straightResults && (
                             <ListItem>
                                 Адрес не распознан
-                                <Button>
+                                <Button
+                                    className={classes.forceAdd}
+                                    onClick={() => onSelect({
+                                        url: searchRequest,
+                                        title: '',
+                                    }, true)}
+                                >
                                     Все равно добавить
                                 </Button>
                             </ListItem>

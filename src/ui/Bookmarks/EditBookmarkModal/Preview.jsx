@@ -102,7 +102,7 @@ function Preview(props) {
 
     let pendingState;
 
-    if (name && (imageUrl || icoVariant === BKMS_VARIANT.SYMBOL)) {
+    if (name && (state === FETCH.DONE || icoVariant === BKMS_VARIANT.SYMBOL)) {
         pendingState = "DONE";
     } else if (!url) {
         pendingState = "FAILED_URL";

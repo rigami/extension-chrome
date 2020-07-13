@@ -211,12 +211,17 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                 </Collapse>
                 <SearchResults
                     searchRequest={(store.url === store.searchRequest) ? "" : store.searchRequest}
-                    onSelect={({ url, title, description}) => {
-                        console.log("SEARCH", { url, title, description});
+                    onSelect={({ url, title, description}, forceAdd) => {
                         store.url = url;
                         store.searchRequest = url;
-                        store.name = title || '';
+                        store.name = title || store.name || '';
                         store.description = description || '';
+                        if (forceAdd) {
+                            store.imageURL = null;
+                            store.icoVariant = BKMS_VARIANT.SYMBOL;
+                        } else {
+                            store.icoVariant = BKMS_VARIANT.SMALL;
+                        }
                     }}
                     onClick={() => {
                         store.blockResetSearch = true;

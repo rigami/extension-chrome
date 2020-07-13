@@ -101,7 +101,7 @@ const useStyles = makeStyles((theme) => ({
 function CardLink(props) {
     const {
         id,
-        name,
+        name = '',
         url,
         categories,
         icoVariant,
@@ -174,7 +174,7 @@ function CardLink(props) {
                             <Image
                                 variant={BKMS_VARIANT.SMALL}
                                 src={imageUrl}
-                                alternativeIcon={icoVariant === BKMS_VARIANT.SYMBOL ? name[0].toUpperCase() : undefined}
+                                alternativeIcon={icoVariant === BKMS_VARIANT.SYMBOL ? name[0]?.toUpperCase() : undefined}
                                 className={clsx(classes.icon, classes.borderIcon)}
                             />
                         </Box>
