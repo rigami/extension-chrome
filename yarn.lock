@@ -3604,6 +3604,7 @@ __metadata:
     prop-types: ^15.7.2
     react: ^16.13.1
     react-dom: ^16.13.1
+    react-i18next: ^11.7.0
     react-indiana-drag-scroll: ^1.6.1
     react-resize-detector: ^5.0.6
     react-scrollbars-custom: ^4.0.25
@@ -6071,6 +6072,15 @@ fsevents@^1.2.7:
   bin:
     html-minifier-terser: cli.js
   checksum: f279499f2d214172299ad44c901790d46bac0526f8d04f46b1e3eaeb1ef1b70f4a4913aa41e42e4968b77a3fdcefec506c571ea3d016ff4d8f46d1d6c12b04ec
+  languageName: node
+  linkType: hard
+
+"html-parse-stringify2@npm:2.0.1":
+  version: 2.0.1
+  resolution: "html-parse-stringify2@npm:2.0.1"
+  dependencies:
+    void-elements: ^2.0.1
+  checksum: 71159c76d54e7e8c1dad808b7ed3f3410e7846b496e3910f0c14f78ade875477b3f6b320ee1259ba5a7689a7ba61bee0b23f9f50ae1d33189de73bf436fb2a52
   languageName: node
   linkType: hard
 
@@ -8839,6 +8849,19 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"react-i18next@npm:^11.7.0":
+  version: 11.7.0
+  resolution: "react-i18next@npm:11.7.0"
+  dependencies:
+    "@babel/runtime": ^7.3.1
+    html-parse-stringify2: 2.0.1
+  peerDependencies:
+    i18next: ">= 19.0.0"
+    react: ">= 16.8.0"
+  checksum: 3559428ecf9753062814560b38926c2262642e7d99b9fadb0800173eca48264fb1f787970277aa0410bce7a1258d2e021ea78da373cc30e128792b25b9e0767e
+  languageName: node
+  linkType: hard
+
 "react-indiana-drag-scroll@npm:^1.6.1":
   version: 1.6.1
   resolution: "react-indiana-drag-scroll@npm:1.6.1"
@@ -10687,6 +10710,13 @@ fsevents@^1.2.7:
   version: 1.1.2
   resolution: "vm-browserify@npm:1.1.2"
   checksum: fc571a62d2cf797ae8773ebb3cb0d2bea50ed02059e128dd9087975929fce4c80a6485ce1aaf7d44ef69db99dfdcde50b6be5d5eb73b296660d761c32fb544fe
+  languageName: node
+  linkType: hard
+
+"void-elements@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "void-elements@npm:2.0.1"
+  checksum: 768d7e08534922455d0e87c66426123920f4d26d88e9c3dc430469e4ce1c11920ca8e2aea7794e52916524d55c3c7820efc20d3f5ce6b749036d989adef1cdd9
   languageName: node
   linkType: hard
 
