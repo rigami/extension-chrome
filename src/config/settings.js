@@ -6,8 +6,7 @@ import {
     BKMS_FAP_STYLE,
     BKMS_FAP_POSITION,
 } from '@/enum';
-
-import locale from '@/i18n/RU';
+import i18n from 'i18next';
 
 export default {
     backgrounds: {
@@ -32,6 +31,6 @@ export default {
         backdropTheme: THEME.DARK,
         theme: THEME.LIGHT,
         useSystemFont: true,
-        tabName: locale.global.tab_name.default,
+        tabName: i18n.t("tabName.default"),
     },
 };

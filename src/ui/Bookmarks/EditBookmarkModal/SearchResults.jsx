@@ -18,6 +18,7 @@ import {AbortController} from "@/utils/xhrPromise";
 import {getFaviconUrl, getSiteInfo, search} from "@/utils/siteSearch";
 import {makeStyles} from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -52,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SearchResults({ searchRequest = "", onSelect, onClick }) {
     const classes = useStyles();
+    const { t } = useTranslation();
     const [timer, setTimer] = useState(undefined);
     const [globalResults, setGlobalResults] = React.useState([]);
     const [straightResults, setStraightResults] = React.useState(null);
@@ -127,7 +129,7 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
             <Card elevation={8} className={classes.root} onMouseDown={onClick}>
                 <Collapse in={(!globalLoading || !straightLoading) && isOpen}>
                     <List disablePadding>
-                        <ListSubheader>Поиск в сети</ListSubheader>
+                        <ListSubheader>{t("bookmark.editor.searchInWEBTitle")}</ListSubheader>
                         {!globalLoading && globalResults && globalResults.map((option) => (
                             <ListItem
                                 className={classes.row}
@@ -157,15 +159,15 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                         ))}
                         {!globalLoading && globalResults && globalResults.length === 0 && (
                             <ListItem>
-                                Ничего не нейдено
+                                {t("bookmark.editor.notFound")}
                             </ListItem>
                         )}
                         {globalLoading && (
                             <ListItem>
-                                Поиск...
+                                {t("search")}...
                             </ListItem>
                         )}
-                        <ListSubheader>Прямой поиск</ListSubheader>
+                        <ListSubheader>{t("bookmark.editor.searchURLTitle")}</ListSubheader>
                         {!straightLoading && straightResults && (
                             <ListItem
                                 className={classes.row}
@@ -194,7 +196,7 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                         )}
                         {!straightLoading && !straightResults && (
                             <ListItem>
-                                Адрес не распознан
+                                {t("bookmark.editor.URLNotRecognize")}
                                 <Button
                                     className={classes.forceAdd}
                                     onClick={() => onSelect({
@@ -202,20 +204,20 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                                         title: '',
                                     }, true)}
                                 >
-                                    Все равно добавить
+                                    {t("bookmark.editor.forceAddURL")}
                                 </Button>
                             </ListItem>
                         )}
                         {straightLoading && (
                             <ListItem>
-                                Поиск...
+                                {t("search")}...
                             </ListItem>
                         )}
                     </List>
                 </Collapse>
                 <Fade in={straightLoading && globalLoading}>
                     <Card className={clsx(classes.search)} elevation={8} onMouseDown={onClick}>
-                        Поиск...
+                        {t("search")}...
                     </Card>
                 </Fade>
             </Card>

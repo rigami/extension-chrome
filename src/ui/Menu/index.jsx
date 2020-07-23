@@ -16,6 +16,7 @@ import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import Header from '@/ui/Menu/PageHeader';
 import HomePage, { header as homePageHeader } from './Settings';
 import FabMenu from './FabMenu';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Menu({ }) {
     const backgroundsStore = useBackgroundsService();
+    const { t } = useTranslation();
 
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
@@ -69,10 +71,9 @@ function Menu({ }) {
                     {
                         tooltip: (
                             <React.Fragment>
-                                <b>Остановить видео</b>
+                                <b>{t("bg.pauseVideo")}</b>
                                 <Divider className={classes.divider} />
-                                Живые обой это красиво, но они потребляют больше энергии чем статическое изображения.
-                                Для сбережения энергии можно остановить видео
+                                {t("bg.pauseVideoDescription")}
                             </React.Fragment>
                         ),
                         onClick: () => backgroundsStore.pause(),
@@ -82,7 +83,7 @@ function Menu({ }) {
             } else {
                 setFastSettings([
                     {
-                        tooltip: 'Воспроизвести видео',
+                        tooltip: t("playVideo"),
                         onClick: () => backgroundsStore.play(),
                         icon: <PlayIcon />,
                     },

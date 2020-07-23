@@ -18,7 +18,7 @@ import {
 } from '@material-ui/icons';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import FSConnector from '@/utils/fsConnector';
-import locale from '@/i18n/RU';
+import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
@@ -89,16 +89,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const headerProps = {
-    title: locale.settings.backgrounds.general.library.title,
+    title: "settings.bg.general.library.title",
     actions: (<HeaderActions />),
     style: { width: 960 },
 };
 
 function HeaderActions() {
+    const { t } = useTranslation();
+    
     return (
         <React.Fragment>
             <LoadBGFromLocalButton />
-            <Tooltip title="Пока недоступно">
+            <Tooltip title={t("notAvailableYet")}>
                 <div>
                     <Button
                         variant="outlined"
@@ -106,7 +108,7 @@ function HeaderActions() {
                         startIcon={<GetFromLibraryIcon />}
                         disabled
                     >
-                        {locale.settings.backgrounds.general.library.get_from_library}
+                        {t("settings.bg.general.library.getFromLibrary")}
                     </Button>
                 </div>
             </Tooltip>
@@ -116,6 +118,7 @@ function HeaderActions() {
 
 function BGCard({ fileName, onSet, onRemove }) {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     return (
         <div className={classes.bgCardWrapper}>
@@ -127,13 +130,13 @@ function BGCard({ fileName, onSet, onRemove }) {
                     <WallpaperIcon fontSize="large" />
                 </Avatar>
                 <Box className={classes.bgActionsWrapper}>
-                    <Tooltip title={locale.settings.backgrounds.general.library.set_bg}>
+                    <Tooltip title={t("bg.apply")}>
                         <IconButton className={classes.setIcon} onClick={onSet}>
                             <SetIcon />
                         </IconButton>
                     </Tooltip>
                     <Divider orientation="vertical" variant="middle" className={classes.bgActionDivider} />
-                    <Tooltip title={locale.settings.backgrounds.general.library.remove_bg}>
+                    <Tooltip title={t("bg.remove")}>
                         <IconButton className={classes.deleteIcon} onClick={onRemove}>
                             <DeleteIcon />
                         </IconButton>
@@ -148,7 +151,7 @@ const MemoBGCard = memo(BGCard);
 
 function LibraryMenu() {
     const backgroundsStore = useBackgroundsService();
-
+    const { t } = useTranslation();
     const classes = useStyles();
 
     const [bgs, setBgs] = useState(null);
@@ -179,7 +182,7 @@ function LibraryMenu() {
                     .filter((BGType) => bgs.filter(({ type }) => type === BG_TYPE[BGType]).length > 0)
                     .map((BGType) => (
                         <React.Fragment key={BGType}>
-                            <SectionHeader title={locale.settings.backgrounds.general.library[BG_TYPE[BGType]]} />
+                            <SectionHeader title={t(`settings.bg.general.library.type.${BG_TYPE[BGType]}`)} />
                             <Box className={classes.bgWrapper}>
                                 {bgs.filter(({ type }) => type === BG_TYPE[BGType]).map((bg) => (
                                     <MemoBGCard
@@ -194,12 +197,12 @@ function LibraryMenu() {
                     ))
             }
             {state === 'done' && bgs.length === 0 && (
-                <FullscreenStub message="У вас еще нет ни одного фона" />
+                <FullscreenStub message={t("bg.notFound")} />
             )}
             {state === 'failed' && (
                 <Box className={classes.centerPage}>
-                    <Typography variant="h5" color="error">Ошибка</Typography>
-                    <Typography variant="body1" gutterBottom>Не удалось загрузить фоны</Typography>
+                    <Typography variant="h5" color="error">{t('error')}</Typography>
+                    <Typography variant="body1" gutterBottom>{t('bg.loadFailed')}</Typography>
                 </Box>
             )}
         </React.Fragment>

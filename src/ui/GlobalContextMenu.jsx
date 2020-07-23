@@ -15,7 +15,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import { observer } from 'mobx-react-lite';
 import {useService as useBackgroundsService} from "@/stores/backgrounds";
-import locale from "@/i18n/RU";
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(() => ({ menu: { width: 230 } }));
 
@@ -24,6 +24,7 @@ function ContextMenu({ className: externalClassName, isOpen, onClose, position }
     const bookmarksStore = useBookmarksService();
     const backgroundsStore = useBackgroundsService();
     const { enqueueSnackbar } = useSnackbar();
+    const { t } = useTranslation();
 
     const handleNextBG = () => {
         backgroundsStore.nextBG();
@@ -42,7 +43,7 @@ function ContextMenu({ className: externalClassName, isOpen, onClose, position }
 
             backgroundsStore.addToUploadQueue(form.files)
                 .catch((e) => enqueueSnackbar({
-                    ...locale.settings.backgrounds.general.library[e],
+                    ...t("locale.settings.backgrounds.general.library[e]"),
                     variant: 'error',
                 }))
                 .finally(() => {
@@ -71,19 +72,19 @@ function ContextMenu({ className: externalClassName, isOpen, onClose, position }
                     <ListItemIcon>
                         <RefreshIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Следующий фон" />
+                    <ListItemText primary={t("bg.next")} />
                 </ListItem>
                 <ListItem button dense onClick={handleAddBG}>
                     <ListItemIcon>
                         <UploadFromComputerIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Добавить фон" />
+                    <ListItemText primary={t("bg.add")} />
                 </ListItem>
                 <ListItem button dense onClick={handleAddBookmark}>
                     <ListItemIcon>
                         <AddBookmarkIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Добавить закладку" />
+                    <ListItemText primary={t("bookmark.add")} />
                 </ListItem>
             </Menu>
         </React.Fragment>

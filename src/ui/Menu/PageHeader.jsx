@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
     title: {
         fontSize: '22px',
         fontWeight: 800,
+        flexShrink: 0,
     },
     actions: {
         marginLeft: theme.spacing(4),

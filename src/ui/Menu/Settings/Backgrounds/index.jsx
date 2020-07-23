@@ -10,14 +10,14 @@ import {
     MoreHorizRounded as MoreIcon,
     BrokenImageRounded as BrokenIcon,
 } from '@material-ui/icons';
-import locale from '@/i18n/RU';
+import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import FSConnector from '@/utils/fsConnector';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import { content as LibraryPageContent, header as LibraryPageHeader } from './Library';
 
-const headerProps = { title: locale.settings.backgrounds.title };
+const headerProps = { title: "settings.bg.title" };
 
 function BGCard({ src }) {
     return (
@@ -36,10 +36,12 @@ function BGCard({ src }) {
 const MemoBGCard = memo(BGCard);
 
 function LibraryRow({ bgs, onSelect }) {
+    const { t } = useTranslation();
+
     return (
         <MenuRow
-            title={locale.settings.backgrounds.general.library.title}
-            description={locale.settings.backgrounds.general.library.description(bgs && bgs.length)}
+            title={t("settings.bg.general.library.title")}
+            description={t("settings.bg.general.library.description", bgs && bgs.length)}
             action={{
                 type: ROWS_TYPE.LINK,
                 onClick: () => onSelect({
@@ -70,6 +72,7 @@ const MemoLibraryRow = memo(LibraryRow);
 
 function BackgroundsSection({ onSelect }) {
     const backgroundsStore = useBackgroundsService();
+    const { t } = useTranslation();
     const [bgs, setBgs] = useState(null);
 
     useEffect(() => {
@@ -82,11 +85,11 @@ function BackgroundsSection({ onSelect }) {
 
     return (
         <React.Fragment>
-            <SectionHeader title={locale.settings.backgrounds.general.title} />
+            <SectionHeader title={t("settings.bg.general.title")} />
             <MemoLibraryRow bgs={bgs} onSelect={onSelect} />
             <MenuRow
-                title={locale.settings.backgrounds.general.dimming_power.title}
-                description={locale.settings.backgrounds.general.dimming_power.description}
+                title={t("settings.bg.general.dimmingPower.title")}
+                description={t("settings.bg.general.dimmingPower.description")}
                 action={{
                     type: ROWS_TYPE.SLIDER,
                     value: typeof backgroundsStore.dimmingPower === 'number' ? backgroundsStore.dimmingPower : 0,
@@ -109,16 +112,17 @@ const MemoBackgroundsSection = memo(observer(BackgroundsSection));
 
 function SchedulerSection({ onSelect }) {
     const backgroundsStore = useBackgroundsService();
+    const { t } = useTranslation();
 
     return useObserver(() => (
         <React.Fragment>
-            <SectionHeader title={locale.settings.backgrounds.scheduler.title} />
+            <SectionHeader title={t("settings.bg.scheduler.title")} />
             <MenuRow
-                title={locale.settings.backgrounds.scheduler.selection_method.title}
-                description={locale.settings.backgrounds.scheduler.selection_method.description}
+                title={t("settings.bg.scheduler.selectionMethod.title")}
+                description={t("settings.bg.scheduler.selectionMethod.description")}
                 action={{
                     type: ROWS_TYPE.SELECT,
-                    locale: locale.settings.backgrounds.scheduler.selection_method,
+                    format: (value) => t(`settings.bg.scheduler.selectionMethod.method.${value}`),
                     value: backgroundsStore.selectionMethod,
                     onChange: (event) => backgroundsStore.setSelectionMethod(event.target.value),
                     values: [BG_SELECT_MODE.RANDOM, BG_SELECT_MODE.SPECIFIC],
@@ -126,8 +130,8 @@ function SchedulerSection({ onSelect }) {
             />
             <Collapse in={backgroundsStore.selectionMethod === BG_SELECT_MODE.SPECIFIC}>
                 <MenuRow
-                    title="Фон рабочего стола"
-                    description="Измените фон рабочего стола"
+                    title={t("bg.title")}
+                    description={t("bg.change")}
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => onSelect({
@@ -155,11 +159,11 @@ function SchedulerSection({ onSelect }) {
             </Collapse>
             <Collapse in={backgroundsStore.selectionMethod === BG_SELECT_MODE.RANDOM}>
                 <MenuRow
-                    title={locale.settings.backgrounds.scheduler.change_interval.title}
-                    description={locale.settings.backgrounds.scheduler.change_interval.description}
+                    title={t("settings.bg.scheduler.changeInterval.title")}
+                    description={t("settings.bg.scheduler.changeInterval.description")}
                     action={{
                         type: ROWS_TYPE.SELECT,
-                        locale: locale.settings.backgrounds.scheduler.change_interval,
+                        format: (value) => t(`settings.bg.scheduler.changeInterval.interval.${value}`),
                         value: backgroundsStore.changeInterval,
                         onChange: (event) => backgroundsStore.setChangeInterval(event.target.value),
                         values: [
@@ -173,11 +177,11 @@ function SchedulerSection({ onSelect }) {
                     }}
                 />
                 <MenuRow
-                    title={locale.settings.backgrounds.scheduler.bg_type.title}
-                    description={locale.settings.backgrounds.scheduler.bg_type.description}
+                    title={t("settings.bg.scheduler.BGType.title")}
+                    description={t("settings.bg.scheduler.BGType.description")}
                     action={{
                         type: ROWS_TYPE.MULTISELECT,
-                        locale: locale.settings.backgrounds.scheduler.bg_type,
+                        format: (value) => t(`settings.bg.scheduler.BGType.type.${value}`),
                         value: backgroundsStore.bgType || [],
                         onChange: (event) => backgroundsStore.setBgType(event.target.value),
                         values: [

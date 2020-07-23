@@ -24,16 +24,11 @@ import {
     AddPhotoAlternateRounded as DropIcon,
     CloseRounded as CloseIcon,
 } from '@material-ui/icons';
-import locale from '@/i18n/RU';
+import { useTranslation } from 'react-i18next';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import Scrollbar from "@/ui-components/CustomScroll";
 import BeautifulFileSize from "@/utils/beautifulFileSize";
-
-const {
-    global: localeGlobal,
-    settings: { backgrounds: { general: { library: localeLibrary } } },
-} = locale;
 
 const useStyles = makeStyles((theme) => ({
     preview: {
@@ -115,6 +110,7 @@ function BGCard(props) {
         onDone,
         ...other
     } = props;
+    const { t } = useTranslation();
     const classes = useStyles();
     const theme = useTheme();
 
@@ -137,25 +133,25 @@ function BGCard(props) {
             <div className={classes.details}>
                 <CardContent className={classes.content}>
                     <Typography component="h5" variant="h5">
-                        {type.map((t) => localeGlobal.bg_type[t]).join('/')}
+                        {type.map((type) => t(`bg.type.${type}`)).join('/')}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
-                        Файл:
+                        {t("uploadBG.labelFile")}:
                         {' '}
                         {name}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
-                        Размер:
+                        {t("uploadBG.labelSize")}:
                         {' '}
                         {BeautifulFileSize(size)[0]}
                         {BeautifulFileSize(size)[1]}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
-                        Тип:
+                        {t("uploadBG.labelFileType")}:
                         {' '}
                         {format}
                     </Typography>
-                    <Tooltip title={localeLibrary.upload_form.anti_aliasing.tooltip}>
+                    <Tooltip title={t("uploadBG.antiAliasing.tooltip")}>
                         <FormControlLabel
                             control={(
                                 <Switch
@@ -165,7 +161,7 @@ function BGCard(props) {
                                     defaultChecked
                                 />
                             )}
-                            label={localeLibrary.upload_form.anti_aliasing.label}
+                            label={t("uploadBG.antiAliasing.label")}
                         />
                     </Tooltip>
                 </CardContent>
@@ -178,7 +174,7 @@ function BGCard(props) {
                         className={classes.button}
                         onClick={onRemove}
                     >
-                        {localeGlobal.cancel}
+                        {t("cancel")}
                     </Button>
                     <div className={classes.button}>
                         <Button
@@ -191,7 +187,7 @@ function BGCard(props) {
                                 onDone({ antiAliasing });
                             }}
                         >
-                            {localeLibrary.upload_form.add_to_library}
+                            {t("uploadBG.addToLibrary")}
                         </Button>
                         {save && <CircularProgress size={24} className={classes.buttonProgress} />}
                     </div>
@@ -206,6 +202,7 @@ const MemoBGCard = memo(BGCard);
 function UploadBGForm({ children }) {
     const backgroundsStore = useBackgroundsService();
     const { enqueueSnackbar } = useSnackbar();
+    const { t } = useTranslation();
 
     const classes = useStyles();
     const theme = useTheme();
@@ -243,7 +240,7 @@ function UploadBGForm({ children }) {
             setDragFiles(null);
             backgroundsStore.addToUploadQueue(event.dataTransfer.files)
                 .catch((e) => enqueueSnackbar({
-                    ...localeLibrary[e],
+                    ...t(e),
                     variant: 'error',
                 }));
         };
@@ -267,8 +264,8 @@ function UploadBGForm({ children }) {
                     }}
                     />
                     <Typography variant="h6">
-                        {dragFiles.length === 1 && localeLibrary.upload_form.drop_to_add_bg}
-                        {dragFiles.length > 1 && localeLibrary.upload_form.drop_to_add_bgs}
+                        {dragFiles.length === 1 && t("uploadBG.dropToAddBG")}
+                        {dragFiles.length > 1 && t("uploadBG.dropToAddBGs")}
                     </Typography>
                 </Box>
             )}
@@ -318,7 +315,7 @@ function UploadBGForm({ children }) {
                 </Scrollbar>
             </Drawer>
             {(backgroundsStore.uploadQueue.length !== 0) && (
-                <Tooltip title="Отменить все загрузки">
+                <Tooltip title={t("uploadBG.discardAll")}>
                     <IconButton
                         className={classes.closeIcon}
                         onClick={() => backgroundsStore.resetUploadQueue()}

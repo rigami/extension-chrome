@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     Card,
     CardHeader,
-    Avatar,
     List,
     ListItem,
     ListItemAvatar,
@@ -13,7 +12,6 @@ import {
     Typography,
 } from '@material-ui/core';
 import {
-    LinkRounded as LinkIcon,
     LabelRounded as LabelIcon,
     MoreVertRounded as MoreIcon,
 } from '@material-ui/icons';
@@ -24,6 +22,7 @@ import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import EditMenu from '@/ui/Bookmarks/ContextEditMenu'
 import Image from "@/ui-components/Image";
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -126,6 +125,7 @@ function Link({ name, url, imageUrl, id, description, icoVariant }) {
 function Folder({ id }) {
     const classes = useStyles();
     const bookmarksStore = useBookmarksService();
+    const { t } = useTranslation();
 
     const [category] = useState(bookmarksStore.getCategory(id));
     const [isSearching, setIsSearching] = useState(true);
@@ -186,8 +186,8 @@ function Folder({ id }) {
                     {!isSearching && findBookmarks.length === 0 && (
                         <FullScreenStub
                             style={{ height: 300 }}
-                            message="Здесть пока пусто"
-                            description="В этой категории еще нет закладок"
+                            message={t("fap.folder.emptyTitle")}
+                            description={t("fap.folder.emptyDescription")}
                         />
                     )}
                     {findBookmarks && findBookmarks.map((bookmark, index) => (

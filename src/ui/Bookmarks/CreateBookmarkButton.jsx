@@ -8,6 +8,7 @@ import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useService as useAppService } from '@/stores/app';
 import { useService as useBookmarksService } from '@/stores/bookmarks'
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     fab: {
@@ -21,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 function CreateBookmarkButton() {
     const theme = useTheme();
     const classes = useStyles();
+    const { t } = useTranslation();
     const bookmarksStore = useBookmarksService();
     const appService = useAppService();
 
@@ -48,7 +50,7 @@ function CreateBookmarkButton() {
                     onClick={handleOpen}
                 >
                     <AddIcon className={classes.fabIcon} />
-                    Добавить закладку
+                    {t("bookmark.addShort")}
                 </Fab>
             </Zoom>
         </React.Fragment>

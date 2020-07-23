@@ -8,7 +8,6 @@ import {
 import FSConnector from '@/utils/fsConnector';
 import { BG_TYPE, THEME } from '@/enum';
 import clsx from 'clsx';
-import locale from '@/i18n/RU';
 import { Fade, Box } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useSnackbar } from 'notistack';
@@ -16,6 +15,7 @@ import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import { useService as useAppConfigService } from '@/stores/app';
 import Menu from '@/ui/Menu';
 import GlobalContextMenu from "@/ui/GlobalContextMenu";
+import { useTranslation } from 'react-i18next';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -57,6 +57,7 @@ function Desktop() {
     const { enqueueSnackbar } = useSnackbar();
     const backgroundsStore = useBackgroundsService();
     const appConfigStore = useAppConfigService();
+    const { t } = useTranslation();
 
     const bgRef = useRef(null);
     const [bg, setBg] = useState(null);
@@ -204,20 +205,20 @@ function Desktop() {
                     {state === 'failed' && (
                         <FullscreenStub
                             iconRender={(props) => (<BrokenIcon {...props} />)}
-                            message="Ошибка загрузка фона"
+                            message={t("bg.errorLoad")}
                             description={
-                                (bg && locale.settings.backgrounds.desktop.error_load_bg_unknown_reason)
-                                || locale.settings.backgrounds.desktop.not_found_bg
+                                (bg && t("bg.errorLoadUnknownReason"))
+                                || t("bg.notFoundBG")
                             }
                             style={{ height: '100vh' }}
                             actions={bg && [
                                 {
-                                    title: 'Удалить фон',
+                                    title: t("bg.remove"),
                                     onClick: () => {
                                         backgroundsStore.removeFromStore(bg.id)
                                             .then(() => backgroundsStore.nextBG())
                                             .then(() => enqueueSnackbar({
-                                                message: 'Битый фон удален',
+                                                message: t("bg.brokenRemovedSuccess"),
                                                 variant: 'warning',
                                             }));
                                     },

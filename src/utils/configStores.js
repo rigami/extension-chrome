@@ -4,6 +4,11 @@ import defaultSettings from '@/config/settings';
 import DBConnector, { open as openDB } from './dbConnector';
 import FSConnector from './fsConnector';
 import StorageConnector from './storageConnector';
+import i18n from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import { initReactI18next } from 'react-i18next';
+import Backend from 'i18next-http-backend';
+
 
 class ConfigStores {
     static setup(progressCallBack) {
@@ -28,9 +33,24 @@ class ConfigStores {
             .then(() => progressCallBack(100));
     }
 
-    static config() {
-        return StorageConnector.getItem('last_setup_timestamp')
-            .then(() => ConfigStores.configDB());
+    static async config() {
+        await i18n
+            .use(LanguageDetector)
+            .use(initReactI18next)
+            .use(Backend)
+            .init({
+                fallbackLng: localStorage.getItem('mode') !== 'development' ? 'en' : 'dev',
+                debug: true,
+                interpolation: {
+                    escapeValue: false,
+                },
+                backend: {
+                    loadPath: '/i18n/{{lng}}.json'
+                }
+            });
+
+        await StorageConnector.getItem('last_setup_timestamp');
+        await ConfigStores.configDB();
     }
 
     static async configUserData() {

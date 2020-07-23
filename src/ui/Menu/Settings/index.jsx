@@ -13,7 +13,7 @@ import {
     HelpRounded as AboutIcon,
     BackupRounded as BackupIcon,
 } from '@material-ui/icons';
-import locale from '@/i18n/RU';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { content as BackgroundsPageContent, header as backgroundsPageHeader } from './Backgrounds';
 import { content as AboutPageContent, header as aboutPageHeader } from './About';
@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
 
 const general = [
     {
-        title: locale.settings.backgrounds.title,
-        description: locale.settings.backgrounds.description,
+        title: "settings.bg.title",
+        description: "settings.bg.description",
         icon: <BackgroundsIcon />,
         id: 'backgrounds',
         header: backgroundsPageHeader,
@@ -38,8 +38,8 @@ const general = [
         color: '#2675F0',
     },
     {
-        title: locale.settings.bookmarks.title,
-        description: locale.settings.bookmarks.description,
+        title: "settings.bookmarks.title",
+        description: "settings.bookmarks.description",
         icon: <BookmarksIcon />,
         id: 'bookmarks',
         header: bookmarksPageHeader,
@@ -47,8 +47,8 @@ const general = [
         color: '#ff4f88',
     },
     {
-        title: locale.settings.app.title,
-        description: locale.settings.app.description,
+        title: "settings.app.title",
+        description: "settings.app.description",
         icon: <SettingsIcon />,
         id: 'app',
         header: appSettingsPageHeader,
@@ -56,8 +56,8 @@ const general = [
         color: '#F88317',
     },
     {
-        title: locale.settings.backup.title,
-        description: locale.settings.backup.description,
+        title: "settings.backup.title",
+        description: "settings.backup.description",
         icon: <BackupIcon />,
         id: 'backup',
         color: '#0f9d58',
@@ -65,8 +65,8 @@ const general = [
 ];
 const additional = [
     {
-        title: locale.settings.about.title,
-        description: locale.settings.about.description,
+        title: "settings.about.title",
+        description: "settings.about.description",
         icon: <AboutIcon />,
         id: 'about',
         header: aboutPageHeader,
@@ -75,7 +75,7 @@ const additional = [
     },
 ];
 
-const headerProps = { title: locale.settings.title };
+const headerProps = { title: "settings.title" };
 
 function Row(props) {
     const {
@@ -87,6 +87,7 @@ function Row(props) {
         icon: Icon,
         onSelect,
     } = props;
+    const { t } = useTranslation();
 
     return (
         <ListItem
@@ -103,7 +104,7 @@ function Row(props) {
                     {Icon}
                 </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={title} secondary={description} />
+            <ListItemText primary={t(title)} secondary={t(description)} />
         </ListItem>
     );
 }

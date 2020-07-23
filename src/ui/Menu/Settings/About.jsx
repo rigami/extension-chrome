@@ -19,7 +19,7 @@ import {
     EmailRounded as EmailIcon,
     PolicyRounded as PolicyIcon,
 } from '@material-ui/icons';
-import locale from '@/i18n/RU';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -41,10 +41,11 @@ const useStyles = makeStyles((theme) => ({
     row: { width: 520 },
 }));
 
-const headerProps = { title: locale.settings.about.title };
+const headerProps = { title: "settings.about.title" };
 
 function About() {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     return (
         <React.Fragment>
@@ -70,7 +71,7 @@ function About() {
                 <ListItemIcon>
                     <HomeIcon />
                 </ListItemIcon>
-                <ListItemText primary={locale.settings.about.home_page} />
+                <ListItemText primary={t("settings.about.homePage")} />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
                         <ArrowRightIcon />
@@ -82,8 +83,8 @@ function About() {
                     <ReviewIcon />
                 </ListItemIcon>
                 <ListItemText
-                    primary={locale.settings.about.review.title}
-                    secondary={locale.settings.about.review.description}
+                    primary={t("settings.about.review.title")}
+                    secondary={t("settings.about.review.description")}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
@@ -96,8 +97,8 @@ function About() {
                     <BugIcon />
                 </ListItemIcon>
                 <ListItemText
-                    primary={locale.settings.about.bug_report.title}
-                    secondary={locale.settings.about.bug_report.description}
+                    primary={t("settings.about.bugReport.title")}
+                    secondary={t("settings.about.bugReport.description")}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
@@ -110,8 +111,8 @@ function About() {
                     <EmailIcon />
                 </ListItemIcon>
                 <ListItemText
-                    primary={locale.settings.about.contact.title}
-                    secondary={locale.settings.about.contact.description}
+                    primary={t("settings.about.contact.title")}
+                    secondary={t("settings.about.contact.description")}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
@@ -124,7 +125,7 @@ function About() {
                     <PolicyIcon />
                 </ListItemIcon>
                 <ListItemText
-                    primary={locale.settings.about.policy}
+                    primary={t("settings.about.policy")}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">

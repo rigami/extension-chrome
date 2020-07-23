@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { LinearProgress, Fade } from '@material-ui/core';
 import ConfigStores from '@/utils/configStores';
 import FullscreenStub from '@/ui-components/FullscreenStub';
-import locale from '@/i18n/RU';
+import { useTranslation } from 'react-i18next';
 
 function ConfigurationApp({ children }) {
+    const { t } = useTranslation();
     const [isConfig, setIsConfig] = useState(false);
     const [isFirstContact, setIsFirstContact] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -15,7 +16,7 @@ function ConfigurationApp({ children }) {
                 setIsConfig(true);
             })
             .catch(() => {
-                document.title = locale.global.tab_name.prepare;
+                document.title = t("tabName.prepare");
                 console.error('Error config app. Perhaps first start. Setup data');
                 setIsFirstContact(true);
 
@@ -40,8 +41,8 @@ function ConfigurationApp({ children }) {
                 <React.Fragment>
                     <Fade in={!isConfig}>
                         <FullscreenStub
-                            message="Идет подготовка расширения"
-                            description="Подождите пожалуйста..."
+                            message={t("firstView.prepareApp")}
+                            description={t("firstView.pleaseWait")}
                             style={{ height: '100vh' }}
                         >
                             <LinearProgress variant="determinate" style={{ width: 240 }} value={progress} />
@@ -49,8 +50,8 @@ function ConfigurationApp({ children }) {
                     </Fade>
                     <Fade in={isConfig}>
                         <FullscreenStub
-                            message="Все готово!"
-                            description="Расширение готово к работе"
+                            message={t("firstView.allDone")}
+                            description={t("firstView.prepareAppDoneDescription")}
                             style={{
                                 position: 'absolute',
                                 top: 0,
@@ -61,7 +62,7 @@ function ConfigurationApp({ children }) {
                             }}
                             actions={[
                                 {
-                                    title: 'Продолжить',
+                                    title: t("firstView.continue"),
                                     color: 'primary',
                                     variant: 'contained',
                                     onClick: () => setIsFirstContact(false),

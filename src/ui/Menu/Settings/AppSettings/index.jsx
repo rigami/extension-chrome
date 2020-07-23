@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Typography } from '@material-ui/core';
-import locale from '@/i18n/RU';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { useObserver } from 'mobx-react-lite';
@@ -16,10 +16,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const headerProps = { title: locale.settings.app.title };
+const headerProps = { title: "settings.app.title" };
 
 function AppSettings({ onSelect }) {
     const classes = useStyles();
+    const { t } = useTranslation();
     const appConfigStore = useAppConfigService();
     const [, setForceUpdate] = useState(0);
     const [defaultFontValue] = useState(appConfigStore.useSystemFont);
@@ -27,7 +28,7 @@ function AppSettings({ onSelect }) {
     return useObserver(() => (
         <React.Fragment>
             <MenuRow
-                title="Тёмная тема подложки"
+                title={t("settings.app.darkThemeBackdrop")}
                 width={520}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
@@ -38,7 +39,7 @@ function AppSettings({ onSelect }) {
                 }}
             />
             <MenuRow
-                title="Тёмная тема оформления приложения"
+                title={t("settings.app.darkThemeApp")}
                 width={520}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
@@ -52,7 +53,7 @@ function AppSettings({ onSelect }) {
                 }}
             />
             <MenuRow
-                title="Использовать шрифты системы"
+                title={t("settings.app.useSystemFont")}
                 width={520}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
@@ -64,11 +65,11 @@ function AppSettings({ onSelect }) {
             />
             <MenuInfo
                 show={defaultFontValue !== appConfigStore.useSystemFont}
-                message="Это изменение вступит в силу после перезагрузки стараницы"
+                message={t("changeTakeEffectAfterReload")}
                 width={520}
             />
             <MenuRow
-                title={locale.settings.app.tab_name}
+                title={t("settings.app.tabName.title")}
                 width={520}
                 action={{
                     type: ROWS_TYPE.LINK,
@@ -78,7 +79,7 @@ function AppSettings({ onSelect }) {
                     }),
                     component: (
                         <Typography className={(!appConfigStore.tabName && classes.defaultTabValue) || ''}>
-                            {appConfigStore.tabName || 'По умолчанию'}
+                            {appConfigStore.tabName || t("default")}
                         </Typography>
                     ),
                 }}

@@ -4,7 +4,7 @@ import {
     Box,
     Typography,
 } from '@material-ui/core';
-import locale from '@/i18n/RU';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { useObserver } from 'mobx-react-lite';
 import TabNameExampleImage from '@/images/tabName.svg';
@@ -29,10 +29,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const headerProps = { title: locale.settings.app.tab_name };
+const headerProps = { title: "settings.app.tabName.title" };
 
 function TabName() {
     const appConfigStore = useAppConfigService();
+    const { t } = useTranslation();
     const classes = useStyles();
 
     return useObserver(() => (
@@ -60,14 +61,14 @@ function TabName() {
             </Box>
             <Box className={classes.row}>
                 <Typography>
-                    Отображаемое название вкладки
+                    {t("settings.app.tabName.description")}
                 </Typography>
             </Box>
             <Box className={classes.row}>
                 <TextField
                     variant="outlined"
                     fullWidth
-                    placeholder="Пустое название вкладки"
+                    placeholder={t("settings.app.tabName.emptyName")}
                     defaultValue={appConfigStore.tabName}
                     onChange={(event) => appConfigStore.setTabName(event.target.value)}
                 />

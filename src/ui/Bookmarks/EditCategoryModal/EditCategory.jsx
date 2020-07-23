@@ -7,6 +7,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -24,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 function EditCategory({ onSave, onError, editCategoryId }) {
     const classes = useStyles();
+    const { t } = useTranslation();
     const [categoryName, setCategoryName] = useState('');
     const [error, setError] = useState(null);
     const bookmarksStore = useBookmarksService();
@@ -46,7 +48,7 @@ function EditCategory({ onSave, onError, editCategoryId }) {
             <form onSubmit={handlerSubmit}>
                 <InputBase
                     className={classes.input}
-                    placeholder="Категория"
+                    placeholder={t("category.createPlaceholder")}
                     variant="outlined"
                     autoFocus
                     defaultValue={categoryStore?.name}
@@ -63,12 +65,12 @@ function EditCategory({ onSave, onError, editCategoryId }) {
                     color="primary"
                     type="submit"
                 >
-                    Сохранить
+                    {t("save")}
                 </Button>
             </form>
             {error && error === 'category_already_exist' && (
                 <Typography className={classes.errorMessage} variant="body2" color="error">
-                    Такая категория уже существует
+                    {t("category.categoryAlreadyExist")}
                 </Typography>
             )}
         </Card>

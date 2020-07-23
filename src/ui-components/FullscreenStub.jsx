@@ -19,8 +19,16 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '56px',
         marginBottom: theme.spacing(1),
     },
-    title: { color: theme.palette.text.primary },
-    description: { color: theme.palette.text.secondary },
+    title: {
+        color: theme.palette.text.primary,
+        wordBreak: 'break-word',
+        textAlign: 'center',
+    },
+    description: {
+        color: theme.palette.text.secondary,
+        wordBreak: 'break-word',
+        textAlign: 'center',
+    },
 }));
 
 

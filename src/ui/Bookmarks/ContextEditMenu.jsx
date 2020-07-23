@@ -14,12 +14,14 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import { observer } from 'mobx-react-lite';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(() => ({ menu: { width: 230 } }));
 
 function ContextEditMenu({ className: externalClassName, id, type, isOpen, onClose, position, onEdit }) {
     const classes = useStyles();
     const bookmarksStore = useBookmarksService();
+    const { t } = useTranslation();
 
     const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === type && fav.id === id);
 
@@ -63,7 +65,7 @@ function ContextEditMenu({ className: externalClassName, id, type, isOpen, onClo
                     </ListItemIcon>
                     <ListItemText
                         primary={
-                            isPin() ? 'Открепить от панели быстрого доступа' : 'Закрепить на панели быстрого доступа'
+                            isPin() ? t("fap.unpin") : t("fap.pin")
                         }
                     />
                 </ListItem>
@@ -71,13 +73,13 @@ function ContextEditMenu({ className: externalClassName, id, type, isOpen, onClo
                     <ListItemIcon>
                         <EditIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Изменить" />
+                    <ListItemText primary={t("edit")} />
                 </ListItem>
                 <ListItem button dense onClick={handleRemove}>
                     <ListItemIcon>
                         <RemoveIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Удалить" />
+                    <ListItemText primary={t("remove")} />
                 </ListItem>
             </Menu>
         </React.Fragment>

@@ -16,7 +16,7 @@ import {
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import locale from '@/i18n/RU';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -81,6 +81,7 @@ function MenuRow(props) {
         width = 750,
         children,
     } = props;
+    const { t } = useTranslation();
 
     const [value, setValue] = useState(
         (actionType === TYPE.CHECKBOX && actionProps.checked)
@@ -133,7 +134,7 @@ function MenuRow(props) {
                             >
                                 {actionProps.values.map((actionValue) => (
                                     <MenuItem key={actionValue} value={actionValue}>
-                                        {(actionProps.locale && actionProps.locale[actionValue]) || actionValue}
+                                        {actionProps.format?.(actionValue) || actionValue}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -148,18 +149,15 @@ function MenuRow(props) {
                                 displayEmpty
                                 renderValue={(selected) => {
                                     if (actionProps.value && (actionProps.value.length === 0)) {
-                                        return locale.global.nothing_selected;
+                                        return t("nothingSelected");
                                     } else if (
                                         actionProps.values && actionProps.value
                                         && (actionProps.values.length === actionProps.value.length)
                                     ) {
-                                        return locale.global.all;
+                                        return t("all");
                                     } else {
                                         return selected && selected
-                                            .map((actionValue) => (
-                                                (actionProps.locale && actionProps.locale[actionValue])
-                                                || actionValue
-                                            ))
+                                            .map((actionValue) => (actionProps.format?.(actionValue)|| actionValue))
                                             .join(', ');
                                     }
                                 }}
@@ -171,9 +169,7 @@ function MenuRow(props) {
                                             checked={actionProps.value && actionProps.value.indexOf(actionValue) > -1}
                                         />
                                         <ListItemText
-                                            primary={
-                                                (actionProps.locale && actionProps.locale[actionValue]) || actionValue
-                                            }
+                                            primary={actionProps.format?.(actionValue) || actionValue}
                                         />
                                     </MenuItem>
                                 ))}

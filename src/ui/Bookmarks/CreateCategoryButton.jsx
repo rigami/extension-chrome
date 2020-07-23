@@ -6,6 +6,7 @@ import {
 import { AddRounded as AddIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import EditCategoryModal from './EditCategoryModal';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     addCategory: {
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 function CreateCategoryButton({ isShowTitle, onCreate }) {
     const classes = useStyles();
+    const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
@@ -48,7 +50,7 @@ function CreateCategoryButton({ isShowTitle, onCreate }) {
                     setIsOpen(false);
                 }}
             />
-            <Tooltip title="Добавить новую категорию">
+            <Tooltip title={t("category.add")}>
                 <Chip
                     onMouseDown={() => {
                         if (!isOpen) setIsBlockEvent(true);
@@ -65,7 +67,7 @@ function CreateCategoryButton({ isShowTitle, onCreate }) {
                     }}
                     icon={<AddIcon />}
                     variant="outlined"
-                    label={isShowTitle && 'Добавить категорию'}
+                    label={isShowTitle && t("category.addShort")}
                 />
             </Tooltip>
         </React.Fragment>

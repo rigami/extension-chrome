@@ -11,8 +11,10 @@ import {
 import { useService as useBookmarksService } from '@/stores/bookmarks'
 import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal'
 import EditCategoryModal from "@/ui/Bookmarks/EditCategoryModal";
+import { useTranslation } from 'react-i18next';
 
 function GlobalModals () {
+    const { t } = useTranslation();
     const bookmarksStore = useBookmarksService();
     const [edit, setEdit] = useState(null)
 
@@ -69,16 +71,16 @@ function GlobalModals () {
                 onClose={() => setEdit(null)}
             >
                 <DialogTitle>
-                    Удалить закладку?
+                    {t("bookmark.remove.title")}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Она пропадет безвозратно. Вы уверены?
+                        {t("bookmark.remove.description")}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setEdit(null)} color="primary">
-                        Отмена
+                        {t("cancel")}
                     </Button>
                     <Button
                         onClick={() => {
@@ -88,7 +90,7 @@ function GlobalModals () {
                         color="primary"
                         autoFocus
                     >
-                        Удалить?
+                        {t("remove")}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -97,16 +99,16 @@ function GlobalModals () {
                 onClose={() => setEdit(null)}
             >
                 <DialogTitle>
-                    Удалить категорию?
+                    {t("category.remove.title")}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Она удалится из всех закладок где указана и пропадет безвозратно. Вы уверены?
+                        {t("category.remove.description")}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setEdit(null)} color="primary">
-                        Отмена
+                        {t("cancel")}
                     </Button>
                     <Button
                         onClick={() => {
@@ -116,7 +118,7 @@ function GlobalModals () {
                         color="primary"
                         autoFocus
                     >
-                        Удалить?
+                        {t("remove")}
                     </Button>
                 </DialogActions>
             </Dialog>

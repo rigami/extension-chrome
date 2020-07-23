@@ -16,7 +16,7 @@ import {
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub';
-import { AbortController, getSiteInfo } from "@/utils/siteSearch";
+import { useTranslation } from 'react-i18next';
 import {BKMS_VARIANT, FETCH} from "@/enum";
 
 const useStyles = makeStyles((theme) => ({
@@ -80,6 +80,7 @@ function Preview(props) {
         onChangeType,
     } = props;
     const classes = useStyles();
+    const { t } = useTranslation();
     const theme = useTheme();
     const [state, setState] = useState(FETCH.PENDING);
 
@@ -129,7 +130,7 @@ function Preview(props) {
                                 startIcon={isOpen ? (<CloseIcon />) : (<OpenIcon />)}
                                 fullWidth
                             >
-                                Ещё варианты
+                                {t("bookmark.editor.alternativeIcons")}
                             </Button>
                             <CardLink
                                 name={name}
@@ -144,19 +145,19 @@ function Preview(props) {
                     {pendingState === "FAILED_URL" && (
                         <FullScreenStub
                             iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
-                            description="Укажите адрес"
+                            description={t("bookmark.editor.helper.writeURL")}
                         />
                     )}
                     {pendingState === "FAILED_NAME" && (
                         <FullScreenStub
                             iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
-                            description="Дайте закладке имя"
+                            description={t("bookmark.editor.helper.writeName")}
                         />
                     )}
                     {state === FETCH.FAILED && (
                         <Box className={classes.warnMessage}>
                             <WarnIcon  className={classes.warnIcon} />
-                            Не удалось загрузить иконку, попробуйте другую
+                            {t("bookmark.editor.errorLoadIcon")}
                         </Box>
                     )}
                 </React.Fragment>

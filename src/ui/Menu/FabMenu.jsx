@@ -12,6 +12,7 @@ import {
 } from '@material-ui/icons';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG }) {
     const classes = useStyles();
     const theme = useTheme();
+    const { t } = useTranslation();
     const rootAl = useRef();
     const fastAl = useRef();
     const mainAl = useRef();
@@ -85,7 +87,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                 elevation={12}
                 ref={mainAl}
             >
-                <Tooltip title="Настройки" placement="left">
+                <Tooltip title={t("settings.title")} placement="left">
                     <IconButton size="small" className={classes.button} onClick={() => onOpenMenu()}>
                         <SettingsIcon />
                     </IconButton>
@@ -93,7 +95,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                 {useChangeBG && (
                     <React.Fragment>
                         <Divider />
-                        <Tooltip title="Обновить фон" placement="left">
+                        <Tooltip title={t("bg.next")} placement="left">
                             <IconButton size="small" className={classes.button} onClick={() => onRefreshBackground()}>
                                 <RefreshIcon />
                             </IconButton>

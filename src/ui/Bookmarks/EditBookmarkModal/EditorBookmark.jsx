@@ -8,14 +8,13 @@ import {
     TextField,
     Collapse,
     CircularProgress,
-    Fade,
 } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
 } from '@material-ui/icons';
 import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import locale from '@/i18n/RU';
+import { useTranslation } from 'react-i18next';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import Categories from '../Ctegories';
 import { useSnackbar } from 'notistack';
@@ -26,8 +25,6 @@ import { getSiteInfo, getImageRecalc } from "@/utils/siteSearch";
 import { FETCH, BKMS_VARIANT } from '@/enum';
 import asyncAction from "@/utils/asyncAction";
 import Scrollbar from "@/ui-components/CustomScroll";
-
-const { global: localeGlobal } = locale;
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -63,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
 
 function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     const classes = useStyles();
+    const { t } = useTranslation();
     const { enqueueSnackbar } = useSnackbar();
 
     const bookmarksStore = useBookmarksService();
@@ -118,7 +116,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                 console.error(e);
                 onCancel();
                 enqueueSnackbar({
-                    message: 'Ошибка загрузки данных закладки',
+                    message: t("bookmark.errorLoad"),
                     variant: 'error',
                 });
             });
@@ -242,10 +240,10 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                     <div className={classes.details}>
                         <CardContent className={classes.content}>
                             <Typography component="h5" variant="h5">
-                                {!store.editBookmarkId ? 'Добавление закладки' : 'Редактирование закладки'}
+                                {!store.editBookmarkId ? t("bookmark.editor.addTitle") : t("bookmark.editor.editTitle")}
                             </Typography>
                             <TextField
-                                label="Запрос или URL адрес"
+                                label={t("bookmark.editor.urlFieldLabel")}
                                 variant="outlined"
                                 fullWidth
                                 value={store.searchRequest}
@@ -262,7 +260,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                                 }}
                             />
                             <TextField
-                                label="Название"
+                                label={t("bookmark.editor.nameFieldLabel")}
                                 variant="outlined"
                                 disabled={store.url === ''}
                                 fullWidth
@@ -279,7 +277,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                             />
                             {store.useDescription && (
                                 <TextField
-                                    label="Описание"
+                                    label={t("bookmark.editor.descriptionFieldLabel")}
                                     variant="outlined"
                                     fullWidth
                                     value={store.description}
@@ -297,7 +295,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                                     className={classes.addDescriptionButton}
                                     onClick={() => { store.useDescription = true; }}
                                 >
-                                    Добавить описание
+                                    {t("bookmark.editor.addDescription")}
                                 </Button>
                             )}
                         </CardContent>
@@ -308,7 +306,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                                 className={classes.button}
                                 onClick={onCancel}
                             >
-                                {localeGlobal.cancel}
+                                {t("cancel")}
                             </Button>
                             <div className={classes.button}>
                                 <Button
@@ -317,7 +315,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                                     disabled={!store.url || !store.name.trim()}
                                     onClick={handlerSave}
                                 >
-                                    Сохранить
+                                    {t("save")}
                                 </Button>
                             </div>
                         </div>

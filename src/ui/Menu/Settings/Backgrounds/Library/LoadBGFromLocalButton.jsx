@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import { Button } from '@material-ui/core';
 import { Add as UploadFromComputerIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import locale from '@/i18n/RU';
+import { useTranslation } from 'react-i18next';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 
 const useStyles = makeStyles(() => ({ input: { display: 'none' } }));
@@ -13,6 +13,7 @@ function LoadBGFromLocalButton() {
     const backgroundsStore = useBackgroundsService();
     const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
+    const { t } = useTranslation();
 
     return useObserver(() => (
         <React.Fragment>
@@ -28,7 +29,7 @@ function LoadBGFromLocalButton() {
 
                     backgroundsStore.addToUploadQueue(form.files)
                         .catch((e) => enqueueSnackbar({
-                            ...locale.settings.backgrounds.general.library[e],
+                            ...t("settings.bg.general.library[e]"),
                             variant: 'error',
                         }))
                         .finally(() => {
@@ -45,7 +46,7 @@ function LoadBGFromLocalButton() {
                     startIcon={<UploadFromComputerIcon />}
                     style={{ marginRight: 16 }}
                 >
-                    {locale.settings.backgrounds.general.library.upload_from_computer}
+                    {t("settings.bg.general.library.uploadFromComputer")}
                 </Button>
             </label>
         </React.Fragment>

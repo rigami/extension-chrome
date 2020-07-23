@@ -1730,6 +1730,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.10.1":
+  version: 7.10.5
+  resolution: "@babel/runtime@npm:7.10.5"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: 222bc7c75b83f73802c8c93c59281085d36ff4efebf58a81fb631af587ebaa0d0eaa187e30587448e65e8f50a4b8719fc13aa5214c02c2562e95be4c8230627e
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:^7.10.2":
   version: 7.10.3
   resolution: "@babel/runtime@npm:7.10.3"
@@ -3596,6 +3605,9 @@ __metadata:
     eslint-plugin-sonarjs: ^0.5.0
     file-loader: ^6.0.0
     html-webpack-plugin: ^4.3.0
+    i18next: ^19.6.2
+    i18next-browser-languagedetector: ^5.0.0
+    i18next-http-backend: ^1.0.17
     idb: ^5.0.4
     mobx: ^5.15.4
     mobx-react-lite: ^2.0.7
@@ -6210,6 +6222,33 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"i18next-browser-languagedetector@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "i18next-browser-languagedetector@npm:5.0.0"
+  dependencies:
+    "@babel/runtime": ^7.5.5
+  checksum: 0304f0469d795f11d4615e45d804a04a5ac41bfaac18a8354862f9ee7f27b9b5457d5e6037bd6e0ebf7c3349fcff6333e530674cc93cfd618799e9ec36d0db93
+  languageName: node
+  linkType: hard
+
+"i18next-http-backend@npm:^1.0.17":
+  version: 1.0.17
+  resolution: "i18next-http-backend@npm:1.0.17"
+  dependencies:
+    node-fetch: 2.6.0
+  checksum: fde2058a181f3f8e07b584896dbcf7021572690367a12c3d134654fe16818ef5fa9c8c6b7e3efdc878604a303fb1eeca6ba0158b250c3971eb061b48803c0bf2
+  languageName: node
+  linkType: hard
+
+"i18next@npm:^19.6.2":
+  version: 19.6.2
+  resolution: "i18next@npm:19.6.2"
+  dependencies:
+    "@babel/runtime": ^7.10.1
+  checksum: 50bef70b0e83893701e8a4d233c7a80d84b462fa64d5747b14d7d4f849c4d4d5f3c9a3c5686f9b9942b8dac76b1cba37d6bf7bb5eb23d4d0d72b03658d7bfd15
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:0.4.24, iconv-lite@npm:^0.4.4":
   version: 0.4.24
   resolution: "iconv-lite@npm:0.4.24"
@@ -7657,6 +7696,13 @@ fsevents@^1.2.7:
     lower-case: ^2.0.1
     tslib: ^1.10.0
   checksum: 619e0bd00a3ef0fa6ad9442d32c88adcf47339c5b0d9bdfaaab19380709dad5ba71f865ae584531988ba85a6083e1f0ea0b851bcc49c67aee40a5100104e84b9
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:2.6.0":
+  version: 2.6.0
+  resolution: "node-fetch@npm:2.6.0"
+  checksum: dd9f586a9f7ddb7dd94d2aba9cb693d32f5001e9850098512fbc8a4cbdd56838afa08ed0a6725b9fce9b01ec12b713e622cbfc16d92762d8b937b238330a632a
   languageName: node
   linkType: hard
 

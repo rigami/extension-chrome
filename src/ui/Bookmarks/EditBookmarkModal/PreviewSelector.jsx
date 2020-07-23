@@ -1,21 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
     Card,
     CardHeader,
     CardContent,
-    CircularProgress,
     Box,
     Typography,
 } from '@material-ui/core';
-import {
-    ToggleButtonGroup,
-    ToggleButton,
-} from '@material-ui/lab';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import { getImageRecalc } from "@/utils/siteSearch"
 import { BKMS_VARIANT } from "@/enum";
-import FullScreenStub from "@/ui-components/FullscreenStub";
 import { useLocalStore, useObserver } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
@@ -68,6 +63,7 @@ function PreviewSelector(props) {
         images: defaultImages = [],
     } = props;
     const classes = useStyles();
+    const { t } = useTranslation();
     const store = useLocalStore(() => ({
         loadedImages: [],
         size: defaultImages.length,
@@ -98,7 +94,7 @@ function PreviewSelector(props) {
     return useObserver(() => (
         <Card className={classes.root} elevation={8}>
             <CardHeader
-                title="Другие варианты карточек"
+                title={t("bookmark.editor.alternativeIconsTitle")}
                 classes={{
                     action: classes.headerActions,
                 }}
@@ -134,7 +130,7 @@ function PreviewSelector(props) {
             {store.size !== store.loadedImages.length && (
                 <Box className={classes.loadStatus}>
                     <Typography variant="caption">
-                        Загрузка {store.loadedImages.length} из {store.size}...
+                        {t("loading")} {store.loadedImages.length} {t("from")} {store.size}...
                     </Typography>
                 </Box>
             )}
