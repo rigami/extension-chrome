@@ -28,7 +28,12 @@ const theme = {
         h6: { fontWeight: 700 },
     },
     overrides: {
-        MuiButton: { label: { fontWeight: 700 } },
+        MuiButton: {
+            label: {
+                fontWeight: 700,
+                wordBreak: 'break-word',
+            },
+        },
         MuiTypography: { gutterBottom: { marginBottom: '0.8em' } },
         MuiTooltip: {
             tooltip: {

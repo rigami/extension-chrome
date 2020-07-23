@@ -1,3 +1,100 @@
 {
-
+  "settings": {
+    "title": "Настройки",
+    "bg": {
+      "title": "Фоны",
+      "apply": "Применить фон",
+      "change": "Изменить фон",
+      "description": "Выбрать фоны",
+      "general": {
+        "title": "Общие",
+        "library": {
+          "title": "Библиотека",
+          "description": "У вас в библиотеке",
+          "type": {
+            "IMAGE": "Изображение",
+            "VIDEO": "Видео"
+          },
+          "uploadFromComputer": "Загрузить с компьютера",
+          "getFromLibrary": "Получить из библиотеки"
+        },
+        "dimmingPower": {
+          "title": "Затеменение фонов",
+          "description": "Уровень затемнения фона"
+        }
+      },
+      "scheduler": {
+        "title": "Режим переключения",
+        "selectionMethod": {
+          "title": "Метод выбора фона",
+          "description": "Выбрать метод измения фона",
+          "method": {
+            "RANDOM": "Случайный выбор",
+            "SPECIFIC": "Определеный фон"
+          }
+        }
+      }
+    },
+    "bookmarks": {
+      "title": "Закладки",
+      "description": "Изменить закладки"
+    },
+    "app": {
+      "title": "Настройки приложения",
+      "description": "Изменить параметры приложения"
+    },
+    "backup": {
+      "title": "Синхронизация и бекап",
+      "description": "Сохранить данные приложения"
+    },
+    "about": {
+      "title": "О приложений",
+      "description": "Написать разработчику, отпавить баг репорт"
+    }
+  },
+  "bg": {
+    "next": "Следущий фон",
+    "addShort": "Добавить фон",
+    "add": "Добавить новый фон",
+    "remove": "Удалить фон"
+  },
+  "bookmark": {
+    "addShort": "Добавить закладки",
+    "add": "Добавить новую закладку",
+    "editor": {
+      "addTitle": "Добавление новой закладки",
+      "editTitle": "Изменение закладки",
+      "urlFieldLabel": "URL или запрос",
+      "nameFieldLabel": "Имя закладки",
+      "addDescription": "Добавить описание",
+      "descriptionFieldLabel": "Описание",
+      "forceAddURL": "Все равно добавить",
+      "URLNotRecognize": "Адрес не распознан",
+      "searchURLTitle": "Поиск по адресу",
+      "notFound": "Ничего не нейдено",
+      "searchInWEBTitle": "Поиск в сети",
+      "alternativeIcons": "Другие варианты",
+      "alternativeIconsTitle": "Другие варианты иконок",
+      "helper": {
+        "writeURL": "Введите адрес",
+        "writeName": "Введите название закладки"
+      }
+    }
+  },
+  "category": {
+    "add": "Добавить категорию",
+    "createPlaceholder": "Название категории"
+  },
+  "fap": {
+    "pin": "Закрепить",
+    "unpin": "Открепить"
+  },
+  "save": "Сохранить",
+  "cancel": "Отменить",
+  "remove": "Удалить",
+  "edit": "Изменить",
+  "search": "Поиск",
+  "from": "из",
+  "loading": "Загрузка",
+  "notAvailableYet": "Пока не доступно"
 }

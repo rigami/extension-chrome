@@ -130,7 +130,7 @@ function BGCard({ fileName, onSet, onRemove }) {
                     <WallpaperIcon fontSize="large" />
                 </Avatar>
                 <Box className={classes.bgActionsWrapper}>
-                    <Tooltip title={t("bg.apply")}>
+                    <Tooltip title={t("settings.bg.apply")}>
                         <IconButton className={classes.setIcon} onClick={onSet}>
                             <SetIcon />
                         </IconButton>

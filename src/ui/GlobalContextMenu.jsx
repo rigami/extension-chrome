@@ -78,13 +78,13 @@ function ContextMenu({ className: externalClassName, isOpen, onClose, position }
                     <ListItemIcon>
                         <UploadFromComputerIcon />
                     </ListItemIcon>
-                    <ListItemText primary={t("bg.add")} />
+                    <ListItemText primary={t("bg.addShort")} />
                 </ListItem>
                 <ListItem button dense onClick={handleAddBookmark}>
                     <ListItemIcon>
                         <AddBookmarkIcon />
                     </ListItemIcon>
-                    <ListItemText primary={t("bookmark.add")} />
+                    <ListItemText primary={t("bookmark.addShort")} />
                 </ListItem>
             </Menu>
         </React.Fragment>

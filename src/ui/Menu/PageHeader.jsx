@@ -8,6 +8,7 @@ import {
 import { ArrowBackRounded as BackIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: { backgroundColor: fade(theme.palette.background.paper, 0.8) },
@@ -27,6 +28,8 @@ const useStyles = makeStyles((theme) => ({
     },
     actions: {
         marginLeft: theme.spacing(4),
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
         display: 'flex',
         flexDirection: 'row',
     },
@@ -35,8 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 function PageHeader({ title, onBack, actions, ...other }) {
     const classes = useStyles();
-
-    console.log('RENDER SECTION');
+    const { t } = useTranslation();
 
     return (
         <AppBar
@@ -50,7 +52,7 @@ function PageHeader({ title, onBack, actions, ...other }) {
                 >
                     <BackIcon />
                 </IconButton>
-                <Typography className={classes.title} variant="h6" noWrap>{title}</Typography>
+                <Typography className={classes.title} variant="h6" noWrap>{t(title)}</Typography>
                 <div className={classes.actions}>
                     {actions}
                 </div>
