@@ -177,7 +177,7 @@ function FAP() {
     }, [bookmarksStore.favorites.length]);
 
     return (
-        <Fade in={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN && !isLoading} unmountOnExit>
+        <Fade in={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN && !isLoading && favorites.length !== 0} unmountOnExit>
             <div
                 className={clsx(
                     classes.root,
@@ -205,11 +205,6 @@ function FAP() {
                         )}
                         ref={scrollRef}
                     >
-                        {favorites.length === 0 && (
-                            <Typography className={classes.emptyTitle}>
-                                Быстрых закладок еще нет
-                            </Typography>
-                        )}
                         <IconButton
                             className={clsx(
                                 classes.arrowButton,

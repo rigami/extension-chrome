@@ -5,6 +5,7 @@ import { Collapse } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
+import MenuInfo from "@/ui/Menu/MenuInfo";
 
 const headerProps = { title: "settings.bookmarks.title" };
 
@@ -23,6 +24,10 @@ function BookmarksSettings() {
                         bookmarksStore.setFAPStyle(value ? BKMS_FAP_STYLE.CONTAINED : BKMS_FAP_STYLE.HIDDEN);
                     },
                 }}
+            />
+            <MenuInfo
+                show={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN && bookmarksStore.favorites.length === 0}
+                message={t("settings.bookmarks.fapEmptyWarningMessage")}
             />
             <Collapse in={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN}>
                 <MenuRow
