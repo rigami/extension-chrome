@@ -16,7 +16,8 @@ function BookmarksSettings() {
     return useObserver(() => (
         <React.Fragment>
             <MenuRow
-                title={t("settings.bookmarks.useFAP")}
+                title={t("settings.bookmarks.useFAP.title")}
+                description={t("settings.bookmarks.useFAP.description")}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     value: bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN,
@@ -26,6 +27,7 @@ function BookmarksSettings() {
                 }}
             />
             <MenuInfo
+                width={750}
                 show={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN && bookmarksStore.favorites.length === 0}
                 message={t("settings.bookmarks.fapEmptyWarningMessage")}
             />

@@ -149,12 +149,12 @@ function MenuRow(props) {
                                 displayEmpty
                                 renderValue={(selected) => {
                                     if (actionProps.value && (actionProps.value.length === 0)) {
-                                        return t("nothingSelected");
+                                        return actionProps.format?.("nothingSelected") || t("nothingSelected");
                                     } else if (
                                         actionProps.values && actionProps.value
                                         && (actionProps.values.length === actionProps.value.length)
                                     ) {
-                                        return t("all");
+                                        return actionProps.format?.("all") || t("all");
                                     } else {
                                         return selected && selected
                                             .map((actionValue) => (actionProps.format?.(actionValue)|| actionValue))
