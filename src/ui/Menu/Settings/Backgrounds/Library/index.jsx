@@ -65,8 +65,26 @@ const useStyles = makeStyles((theme) => ({
         }),
         '&:hover': { opacity: 1 },
     },
-    setIcon: { color: theme.palette.primary.main },
-    deleteIcon: { color: theme.palette.error.main },
+    setIcon: {
+        color: theme.palette.primary.main,
+        width: '100%',
+        height: '100%',
+        '& svg': {
+            width: 36,
+            height: 36,
+        },
+    },
+    deleteIcon: {
+        color: theme.palette.common.white,
+        opacity: 0.7,
+        position: 'absolute',
+        top: theme.spacing(1),
+        right: theme.spacing(1),
+        '&:hover': {
+            opacity: 1,
+            color: theme.palette.error.main,
+        },
+    },
     bgActionDivider: {
         backgroundColor: fade(theme.palette.common.white, 0.5),
         height: 30,
@@ -131,11 +149,10 @@ function BGCard({ fileName, onSet, onRemove }) {
                 </Avatar>
                 <Box className={classes.bgActionsWrapper}>
                     <Tooltip title={t("settings.bg.apply")}>
-                        <IconButton className={classes.setIcon} onClick={onSet}>
+                        <Button className={classes.setIcon} onClick={onSet}>
                             <SetIcon />
-                        </IconButton>
+                        </Button>
                     </Tooltip>
-                    <Divider orientation="vertical" variant="middle" className={classes.bgActionDivider} />
                     <Tooltip title={t("bg.remove")}>
                         <IconButton className={classes.deleteIcon} onClick={onRemove}>
                             <DeleteIcon />
