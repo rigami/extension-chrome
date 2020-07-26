@@ -45,7 +45,7 @@ class ConfigStores {
                     escapeValue: false,
                 },
                 backend: {
-                    loadPath: '/i18n/{{lng}}.json'
+                    loadPath: 'resource/i18n/{{lng}}.json'
                 }
             });
 
