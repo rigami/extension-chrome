@@ -1,14 +1,14 @@
 {
-    "name": "clock-tab",
+    "name": "rigami",
     "version": "2.0.00",
-    "description": "<h1>ClockTab</h1>",
+    "description": "Rigami",
     "main": "index.js",
     "scripts": {
         "build": "webpack --mode production",
         "start": "webpack-dev-server --mode development",
         "lint": "eslint --fix --ext .jsx,.js,.json --ignore-path .gitignore ./src"
     },
-    "repository": "git+https://github.com/Danilkinkin/ClockTab.git",
+    "repository": "git@github.com:rigami-org/extension-chrome.git",
     "author": "Danilkinkin <Danilkinkin@gmail.com>",
     "license": "ISC",
     "bugs": {
