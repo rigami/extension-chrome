@@ -3563,75 +3563,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clock-tab@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "clock-tab@workspace:."
-  dependencies:
-    "@babel/core": ^7.10.3
-    "@babel/plugin-proposal-class-properties": ^7.10.1
-    "@babel/plugin-proposal-decorators": ^7.10.3
-    "@babel/plugin-syntax-throw-expressions": ^7.10.1
-    "@babel/plugin-transform-react-jsx": ^7.10.3
-    "@babel/preset-env": ^7.10.3
-    "@babel/preset-react": ^7.10.1
-    "@babel/traverse": ^7.10.3
-    "@babel/types": ^7.10.3
-    "@material-ui/core": ^4.10.2
-    "@material-ui/icons": ^4.9.1
-    "@material-ui/lab": ^4.0.0-alpha.56
-    "@material-ui/styles": ^4.10.0
-    babel-eslint: ^10.1.0
-    babel-loader: ^8.1.0
-    babel-plugin-module-resolver: ^4.0.0
-    babel-plugin-transform-decorators: ^6.24.1
-    clean-webpack-plugin: ^3.0.0
-    clsx: ^1.1.1
-    copy-webpack-plugin: ^5.1.1
-    css-loader: ^3.6.0
-    eslint: ^7.3.0
-    eslint-config-airbnb: ^18.2.0
-    eslint-import-resolver-alias: ^1.1.2
-    eslint-import-resolver-node: ^0.3.4
-    eslint-import-resolver-webpack: ^0.12.2
-    eslint-plugin-compat: ^3.7.0
-    eslint-plugin-import: ^2.21.2
-    eslint-plugin-jest: ^23.16.0
-    eslint-plugin-json: ^2.1.1
-    eslint-plugin-jsx-a11y: ^6.3.1
-    eslint-plugin-no-use-extend-native: ^0.5.0
-    eslint-plugin-promise: ^4.2.1
-    eslint-plugin-react: ^7.20.0
-    eslint-plugin-react-hooks: ^4.0.4
-    eslint-plugin-sonarjs: ^0.5.0
-    file-loader: ^6.0.0
-    html-webpack-plugin: ^4.3.0
-    i18next: ^19.6.2
-    i18next-browser-languagedetector: ^5.0.0
-    i18next-http-backend: ^1.0.17
-    idb: ^5.0.4
-    mobx: ^5.15.4
-    mobx-react-lite: ^2.0.7
-    notistack: ^0.9.17
-    pnp-webpack-plugin: ^1.6.4
-    prop-types: ^15.7.2
-    react: ^16.13.1
-    react-dom: ^16.13.1
-    react-i18next: ^11.7.0
-    react-indiana-drag-scroll: ^1.6.1
-    react-resize-detector: ^5.0.6
-    react-scrollbars-custom: ^4.0.25
-    react-svg-loader: ^3.0.3
-    smooth-scrollbar: ^8.5.2
-    style-loader: ^1.2.1
-    tiny-warning: ^1.0.3
-    webpack: ^4.43.0
-    webpack-bundle-analyzer: ^3.8.0
-    webpack-cli: ^3.3.12
-    webpack-dev-server: ^3.11.0
-    yargs-parser: ^18.1.3
-  languageName: unknown
-  linkType: soft
-
 "clsx@npm:^1.0.4, clsx@npm:^1.1.0":
   version: 1.1.0
   resolution: "clsx@npm:1.1.0"
@@ -9343,6 +9274,75 @@ fsevents@^1.2.7:
   checksum: 51f2fddddb2f157a0738c53c515682813a881df566da36992f3cf0a975ea84a19434c5abbc682056e97351540bcc7ea38fce2622d0b191c3b5cc1020b71ea0f2
   languageName: node
   linkType: hard
+
+"rigami@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "rigami@workspace:."
+  dependencies:
+    "@babel/core": ^7.10.3
+    "@babel/plugin-proposal-class-properties": ^7.10.1
+    "@babel/plugin-proposal-decorators": ^7.10.3
+    "@babel/plugin-syntax-throw-expressions": ^7.10.1
+    "@babel/plugin-transform-react-jsx": ^7.10.3
+    "@babel/preset-env": ^7.10.3
+    "@babel/preset-react": ^7.10.1
+    "@babel/traverse": ^7.10.3
+    "@babel/types": ^7.10.3
+    "@material-ui/core": ^4.10.2
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": ^4.0.0-alpha.56
+    "@material-ui/styles": ^4.10.0
+    babel-eslint: ^10.1.0
+    babel-loader: ^8.1.0
+    babel-plugin-module-resolver: ^4.0.0
+    babel-plugin-transform-decorators: ^6.24.1
+    clean-webpack-plugin: ^3.0.0
+    clsx: ^1.1.1
+    copy-webpack-plugin: ^5.1.1
+    css-loader: ^3.6.0
+    eslint: ^7.3.0
+    eslint-config-airbnb: ^18.2.0
+    eslint-import-resolver-alias: ^1.1.2
+    eslint-import-resolver-node: ^0.3.4
+    eslint-import-resolver-webpack: ^0.12.2
+    eslint-plugin-compat: ^3.7.0
+    eslint-plugin-import: ^2.21.2
+    eslint-plugin-jest: ^23.16.0
+    eslint-plugin-json: ^2.1.1
+    eslint-plugin-jsx-a11y: ^6.3.1
+    eslint-plugin-no-use-extend-native: ^0.5.0
+    eslint-plugin-promise: ^4.2.1
+    eslint-plugin-react: ^7.20.0
+    eslint-plugin-react-hooks: ^4.0.4
+    eslint-plugin-sonarjs: ^0.5.0
+    file-loader: ^6.0.0
+    html-webpack-plugin: ^4.3.0
+    i18next: ^19.6.2
+    i18next-browser-languagedetector: ^5.0.0
+    i18next-http-backend: ^1.0.17
+    idb: ^5.0.4
+    mobx: ^5.15.4
+    mobx-react-lite: ^2.0.7
+    notistack: ^0.9.17
+    pnp-webpack-plugin: ^1.6.4
+    prop-types: ^15.7.2
+    react: ^16.13.1
+    react-dom: ^16.13.1
+    react-i18next: ^11.7.0
+    react-indiana-drag-scroll: ^1.6.1
+    react-resize-detector: ^5.0.6
+    react-scrollbars-custom: ^4.0.25
+    react-svg-loader: ^3.0.3
+    smooth-scrollbar: ^8.5.2
+    style-loader: ^1.2.1
+    tiny-warning: ^1.0.3
+    webpack: ^4.43.0
+    webpack-bundle-analyzer: ^3.8.0
+    webpack-cli: ^3.3.12
+    webpack-dev-server: ^3.11.0
+    yargs-parser: ^18.1.3
+  languageName: unknown
+  linkType: soft
 
 "rimraf@npm:2.6.3":
   version: 2.6.3

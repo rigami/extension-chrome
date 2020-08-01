@@ -39,7 +39,7 @@ class ConfigStores {
             .use(initReactI18next)
             .use(Backend)
             .init({
-                fallbackLng: localStorage.getItem('mode') !== 'development' ? 'en' : 'dev',
+                fallbackLng: PRODUCTION_MODE ? 'en' : 'dev',
                 debug: true,
                 interpolation: {
                     escapeValue: false,

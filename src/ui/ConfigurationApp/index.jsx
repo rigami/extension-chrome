@@ -24,8 +24,7 @@ function ConfigurationApp({ children }) {
                     });
             });
 
-
-        if (localStorage.getItem('mode') !== 'development') {
+        if (PRODUCTION_MODE) {
             window.oncontextmenu = (event) => {
                 event.preventDefault();
             };
