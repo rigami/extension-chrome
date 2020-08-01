@@ -21,6 +21,8 @@ import {
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
+import LogoIcon from '@/images/logo-icon.svg';
+import LogoText from '@/images/logo-text.svg';
 
 const useStyles = makeStyles((theme) => ({
     splash: {
@@ -31,10 +33,16 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    appIcon: {
+    appLogoIcon: {
         width: 64,
         height: 64,
         marginBottom: theme.spacing(1),
+    },
+    appLogoText: {
+        marginBottom: theme.spacing(1),
+        width: 100,
+        height: 'auto',
+
     },
     appVersion: { color: theme.palette.text.secondary },
     row: { width: 520 },
@@ -49,9 +57,8 @@ function About() {
     return (
         <React.Fragment>
             <Box className={classes.splash}>
-                <Avatar className={classes.appIcon} variant="rounded" src="resource/128x128.png">
-                    <SettingsIcon fontSize="large" />
-                </Avatar>
+                <LogoIcon className={classes.appLogoIcon} />
+                <LogoText className={classes.appLogoText} />
                 <Typography className={classes.appVersion} variant="body2">
                     v{chrome?.runtime?.getManifest?.().version || '-'}
                 </Typography>

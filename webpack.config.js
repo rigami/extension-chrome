@@ -73,6 +73,13 @@ module.exports = (env, args) => ({
             {
                 test: /\.svg$/,
                 loader: require.resolve('react-svg-loader'),
+                options: {
+                    svgo: {
+                        plugins: [
+                            { removeViewBox: false }
+                        ],
+                    }
+                }
             },
             {
                 test: /\.(js|jsx)$/,
