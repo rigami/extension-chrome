@@ -76,15 +76,15 @@ function Menu({ }) {
                                 {t("bg.pauseVideoDescription")}
                             </React.Fragment>
                         ),
-                        onClick: () => backgroundsStore.pause(),
+                        onClick: () => backgroundsStore.eventBus.dispatch('pausebg'),
                         icon: <PauseIcon />,
                     },
                 ]);
             } else {
                 setFastSettings([
                     {
-                        tooltip: t("playVideo"),
-                        onClick: () => backgroundsStore.play(),
+                        tooltip: t("bg.playVideo"),
+                        onClick: () => backgroundsStore.eventBus.dispatch('playbg'),
                         icon: <PlayIcon />,
                     },
                 ]);

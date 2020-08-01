@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalStore } from 'mobx-react-lite';
 import {
     BrokenImageRounded as BrokenIcon,
     DeleteRounded as DeleteIcon,
@@ -16,6 +16,7 @@ import { useService as useAppConfigService } from '@/stores/app';
 import Menu from '@/ui/Menu';
 import GlobalContextMenu from "@/ui/GlobalContextMenu";
 import { useTranslation } from 'react-i18next';
+import {useService as useBookmarksService} from "@/stores/bookmarks";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -58,128 +59,135 @@ function Desktop() {
     const backgroundsStore = useBackgroundsService();
     const appConfigStore = useAppConfigService();
     const { t } = useTranslation();
+    const store = useLocalStore(() => ({
+        currentBg: null,
+        nextBg: null,
+        state: 'pending',
+        captureFrameTimer: null,
+        bgId: null,
+        isOpenMenu: false,
+        position: null,
+    }));
 
     const bgRef = useRef(null);
-    const [bg, setBg] = useState(null);
-    const [nextBg, setNextBg] = useState(null);
-    const [state, setState] = useState('pending');
-    const [captureFrameTimer, setCaptureFrameTimer] = useState(null);
-    const [bgId, setBgId] = useState(null);
-    const [isOpenMenu, setIsOpenMenu] = useState(false);
-    const [position, setPosition] = useState(null);
 
     const handlerContextMenu = (event) => {
         event.preventDefault();
-        setPosition({
+        store.position = {
             top: event.nativeEvent.clientY,
             left: event.nativeEvent.clientX,
-        });
-        setIsOpenMenu(true);
+        };
+        store.isOpenMenu = true;
     };
 
     const handleCloseMenu = () => {
-        setIsOpenMenu(false);
+        store.isOpenMenu = false;
     };
 
     useEffect(() => {
-        if (backgroundsStore.currentBGId === bgId) return;
+        const listeners = [
+            backgroundsStore.eventBus.on('pausebg', () => {
+                bgRef.current.onpause = async () => {
+                    const pauseTimestamp = bgRef.current.currentTime;
+                    const captureBGId = store.currentBg.id;
+                    let temporaryBG;
 
-        const currentBg = backgroundsStore.getCurrentBG();
+                    try {
+                        temporaryBG = await backgroundsStore.pause(captureBGId, pauseTimestamp);
+                    } catch (e) {
+                        console.log(e)
+                        return;
+                    }
 
-        setBgId(backgroundsStore.currentBGId);
+                    store.captureFrameTimer = setTimeout(() => {
+                        if (pauseTimestamp !== bgRef.current.currentTime) return;
 
-        if (backgroundsStore.bgState === 'pending') return;
+                        store.nextBg = {
+                            ...temporaryBG,
+                            src: FSConnector.getBGURL('temporaryVideoFrame'),
+                        };
+                        store.state = 'pending';
+                    }, 5000);
+                };
 
-        if (!currentBg) {
-            setState('failed');
-            setBg(null);
-            setNextBg(null);
-            return;
+                bgRef.current.play().then(() => bgRef.current.pause());
+            }),
+            backgroundsStore.eventBus.on('playbg', async () => {
+                console.log('playbg')
+                if (typeof store.captureFrameTimer === 'number') clearTimeout(+store.captureFrameTimer);
+                store.captureFrameTimer = null;
+
+                let currentBg;
+
+                try {
+                    currentBg = await backgroundsStore.play();
+                } catch (e) {
+                    console.log(e);
+                    return;
+                }
+
+                if (bgRef.current.play) {
+                    bgRef.current.play();
+                    bgRef.current.onpause = null;
+                }
+                else {
+                    store.nextBg ={
+                        ...currentBg,
+                        src: FSConnector.getBGURL(currentBg.fileName),
+                    };
+                    store.state = 'pending';
+                }
+            }),
+        ];
+
+        return () => {
+            listeners.forEach((listenerId) => backgroundsStore.eventBus.removeListener(listenerId));
         }
+    }, []);
+
+    useEffect(() => {
+        if (!backgroundsStore.currentBGId) return;
+        const currentBg = backgroundsStore.getCurrentBG();
 
         const fileName = typeof currentBg.pause === 'number' ? 'temporaryVideoFrame' : currentBg.fileName;
         const src = FSConnector.getBGURL(fileName);
 
-        if (!bg && !nextBg) {
-            setBg({
+        store.state = 'pending';
+
+        if (!store.currentBg) {
+            store.currentBg = {
                 ...currentBg,
                 src,
-            });
+            };
         } else {
-            if (bg && nextBg && state === 'pending') {
-                setBg({
-                    ...currentBg,
-                    src,
-                });
-                setNextBg(null);
-            } else {
-                setNextBg({
-                    ...currentBg,
-                    src,
-                });
-            }
-            setState('pending');
+            store.nextBg = {
+                ...currentBg,
+                src,
+            };
         }
+
+        return () => {
+            if (typeof store.captureFrameTimer === 'number') clearTimeout(+store.captureFrameTimer);
+            store.captureFrameTimer = null;
+        };
     }, [backgroundsStore.currentBGId]);
 
     useEffect(() => {
-        if (bgRef.current && bg && bg.type === BG_TYPE.VIDEO) {
-            if (backgroundsStore.bgState === 'pause') {
-                if (typeof bg.pause === 'number') {
-                    bgRef.current.currentTime = bg.pause;
-                } else {
-                    bgRef.current.onpause = () => {
-                        const captureBGId = bg.id;
-                        setCaptureFrameTimer(setTimeout(() => {
-                            backgroundsStore.saveTemporaryVideoFrame(captureBGId, bgRef.current.currentTime)
-                                .then((temporaryBG) => {
-                                    setNextBg({
-                                        ...temporaryBG,
-                                        src: FSConnector.getBGURL('temporaryVideoFrame'),
-                                    });
-                                    setState('pending');
-                                })
-                                .catch((e) => console.log(e));
-                        }, 5000));
-                    };
+        if (store.currentBg || !store.nextBg) return;
 
-                    bgRef.current.play()
-                        .then(() => {
-                            bgRef.current.pause();
-                        });
-                }
-            } else {
-                const currentBg = backgroundsStore.getCurrentBG();
-
-                if (currentBg.id !== bg.id) {
-                    if (bgRef.current.play) bgRef.current.play();
-
-                    setNextBg({
-                        ...currentBg,
-                        src: FSConnector.getBGURL(currentBg.fileName),
-                    });
-                    setState('pending');
-                }
-            }
-        }
-
-
-        return () => {
-            if (typeof captureFrameTimer === 'number') clearTimeout(+captureFrameTimer);
-            setCaptureFrameTimer(null);
-        };
-    }, [backgroundsStore.bgState]);
-
+        store.currentBg = { ...store.nextBg };
+        store.nextBg = null;
+    }, [store.currentBg]);
 
     return (
         <Box className={classes.root} onContextMenu={handlerContextMenu}>
             <GlobalContextMenu
                 onClose={handleCloseMenu}
-                isOpen={isOpenMenu}
-                position={position}
+                isOpen={store.isOpenMenu}
+                position={store.position}
             />
             <Fade
-                in={state === 'done' || state === 'failed'}
+                in={store.state === 'done' || store.state === 'failed'}
                 onExit={() => {
                     if (appConfigStore.backdropTheme === THEME.DARK) {
                         document.documentElement.style.backgroundColor = '#000';
@@ -188,30 +196,27 @@ function Desktop() {
                     }
                 }}
                 onExited={() => {
-                    if (nextBg) {
-                        setBg(nextBg);
-                        setNextBg(null);
-                        setState('pending');
-                    }
+                    console.log("Reset current bg");
+                    store.currentBg = null;
                 }}
             >
                 <div className={classes.root}>
-                    {state !== 'failed' && (
+                    {store.state !== 'failed' && (
                         <div
                             className={classes.dimmingSurface}
                             style={{ opacity: backgroundsStore.dimmingPower / 100 || 0 }}
                         />
                     )}
-                    {state === 'failed' && (
+                    {store.state === 'failed' && (
                         <FullscreenStub
                             iconRender={(props) => (<BrokenIcon {...props} />)}
                             message={t("bg.errorLoad")}
                             description={
-                                (bg && t("bg.errorLoadUnknownReason"))
+                                (store.bg && t("bg.errorLoadUnknownReason"))
                                 || t("bg.notFoundBG")
                             }
                             style={{ height: '100vh' }}
-                            actions={bg && [
+                            actions={store.bg && [
                                 {
                                     title: t("bg.remove"),
                                     onClick: () => {
@@ -230,35 +235,69 @@ function Desktop() {
                         />
                     )}
                     {(
-                        bg
-                        && (bg.type === BG_TYPE.IMAGE
-                            || bg.type === BG_TYPE.ANIMATION
-                            || (bg.type === BG_TYPE.VIDEO && typeof bg.pause === 'number')
+                        store.currentBg
+                        && (store.currentBg.type === BG_TYPE.IMAGE
+                            || store.currentBg.type === BG_TYPE.ANIMATION
+                            || (
+                                store.currentBg.type === BG_TYPE.VIDEO
+                                && !store.currentBg.forceLoadAsVideo
+                                && typeof store.currentBg.pause === 'number'
+                            )
                         )
                     ) && (
                         <img
-                            alt={bg.fileName}
+                            alt={store.currentBg.fileName}
                             className={clsx(classes.bg, classes.image)}
-                            src={bg.src}
-                            style={{ imageRendering: bg.antiAliasing ? 'auto' : 'pixelated' }}
-                            onLoad={() => setState('done')}
-                            onError={() => setState('failed')}
+                            src={store.currentBg.src}
+                            style={{ imageRendering: store.currentBg.antiAliasing ? 'auto' : 'pixelated' }}
+                            onLoad={() => {
+                                console.log("load done")
+                                store.state = 'done';
+                            }}
+                            onError={() => {
+                                if (store.currentBg.type === BG_TYPE.VIDEO) {
+                                    store.nextBg ={
+                                        ...store.currentBg,
+                                        forceLoadAsVideo: true,
+                                        src: FSConnector.getBGURL(store.currentBg.fileName),
+                                    };
+                                    store.state = 'pending';
+                                    store.currentBg = null;
+                                } else {
+                                    store.state = 'failed';
+                                }
+                            }}
                             ref={bgRef}
                         />
                     )}
-                    {bg && bg.type === BG_TYPE.VIDEO && typeof bg.pause !== 'number' && (
-                        <video
-                            autoPlay={!bg.pause}
-                            loop
-                            muted
-                            src={bg.src}
-                            className={clsx(classes.bg, classes.video)}
-                            style={{ imageRendering: bg.antiAliasing ? 'auto' : 'pixelated' }}
-                            onPlay={() => setState('done')}
-                            onError={() => setState('failed')}
-                            ref={bgRef}
-                        />
-                    )}
+                    {
+                        store.currentBg
+                        && store.currentBg.type === BG_TYPE.VIDEO
+                        && (
+                            typeof store.currentBg.pause !== 'number'
+                            || store.currentBg.forceLoadAsVideo
+                        )
+                        && (
+                            <video
+                                autoPlay={!store.currentBg.pause}
+                                loop
+                                muted
+                                src={store.currentBg.src}
+                                className={clsx(classes.bg, classes.video)}
+                                style={{ imageRendering: store.currentBg.antiAliasing ? 'auto' : 'pixelated' }}
+                                onPlay={() => { store.state = 'done'; }}
+                                onLoadedMetadata={() => {
+                                    console.log(store.currentBg)
+                                    if (typeof store.currentBg.pause === 'number') {
+                                        bgRef.current.currentTime = store.currentBg.pause;
+                                        backgroundsStore.eventBus.dispatch('pausebg');
+                                    }
+                                }}
+                                onError={() => { store.state = 'failed'; }}
+                                ref={bgRef}
+                            />
+                        )
+                    }
                 </div>
             </Fade>
             <Menu />

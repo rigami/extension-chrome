@@ -128,6 +128,8 @@
     "errorLoad": "Ошибка загрузки фона",
     "errorLoadUnknownReason": "Неудалось загрузить фон по неизвестным причинам",
     "brokenRemovedSuccess": "Сломаный фон удален",
+    "playVideo": "Воспроизвести видео",
+    "pauseVideo": "Остановить видео",
     "type": {
       "IMAGE": "Изображение",
       "ANIMATION": "Анимация",
@@ -136,7 +138,7 @@
     }
   },
   "bookmark": {
-    "addShort": "Добавить закладки",
+    "addShort": "Добавить закладку",
     "add": "Добавить новую закладку",
     "editor": {
       "addTitle": "Добавление новой закладки",
@@ -152,6 +154,7 @@
       "searchInWEBTitle": "Поиск в сети",
       "alternativeIcons": "Другие варианты",
       "alternativeIconsTitle": "Другие варианты иконок",
+      "errorLoadIcon": "Не удалось загрузить иконку, попробуйте другую",
       "helper": {
         "writeURL": "Введите адрес",
         "writeName": "Введите название закладки"
@@ -192,5 +195,5 @@
   "notAvailableYet": "Пока не доступно",
   "all": "Всё",
   "nothingSelected": "Ничего не выбрано",
-  "changeTakeEffectAfterReload": "Изменения вступят в силу после обновления страницы"
+  "changeTakeEffectAfterReload": "Изменения вступят в силу после обновления страницы",
 }

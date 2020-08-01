@@ -5,6 +5,7 @@ import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
 import StorageConnector from '@/utils/storageConnector';
 import getPreview from '@/utils/createPreview';
+import EventBus from "@/utils/eventBus";
 
 export const ERRORS = {
     TOO_MANY_FILES: 'TOO_MANY_FILES',
@@ -23,10 +24,13 @@ class BackgroundsStore {
     @observable dimmingPower;
     _currentBG;
     _FULL_PATH = '/backgrounds/full';
+    eventBus;
 
     // _getPreview = queuingDecorator(getPreview);
 
     constructor() {
+        this.eventBus = new EventBus();
+
         StorageConnector.getItem('bg_dimming_power')
             .then((value) => { this.dimmingPower = +value; })
             .catch((e) => console.error(e));
@@ -109,55 +113,40 @@ class BackgroundsStore {
 
     @action('play bg')
     play() {
-        this.bgState = 'play';
-
         this._currentBG = {
             ...this._currentBG,
             pause: false,
         };
+        this.bgState = 'play';
 
         return StorageConnector.setJSONItem('bg_current', this._currentBG)
-            .then(() => FSConnector.removeFile(this._FULL_PATH, 'temporaryVideoFrame'));
+            .then(() => FSConnector.removeFile(this._FULL_PATH, 'temporaryVideoFrame').catch(() => {}))
+            .then(() => this._currentBG);
     }
 
     @action('pause bg')
-    pause() {
+    pause(captureBgId, timestamp) {
+        if (captureBgId !== this.currentBGId) return Promise.reject(ERRORS.ID_BG_IS_CHANGED);
+
+        this._currentBG = {
+            ...this._currentBG,
+            pause: timestamp,
+        };
         this.bgState = 'pause';
 
-        return StorageConnector.setJSONItem('bg_current', {
-            ...this._currentBG,
-            pause: true,
-        });
-    }
-
-    @action('pause bg')
-    saveTemporaryVideoFrame(captureBgId, timestamp) {
-        if (captureBgId !== this.currentBGId || this.bgState !== 'pause') {
-            return Promise.reject(ERRORS.ID_BG_IS_CHANGED);
-        }
-
-        return getPreview(
-            FSConnector.getBGURL(this._currentBG.fileName),
-            this._currentBG.type,
-            {
-                size: 'full',
-                timeStamp: timestamp,
-            },
-        )
+        return StorageConnector.setJSONItem('bg_current', this._currentBG)
+            .then(() => getPreview(
+                FSConnector.getBGURL(this._currentBG.fileName),
+                this._currentBG.type,
+                {
+                    size: 'full',
+                    timeStamp: timestamp,
+                },
+            ))
             .then((frame) => {
-                if (captureBgId !== this.currentBGId || this.bgState !== 'pause') throw ERRORS.ID_BG_IS_CHANGED;
+                if (captureBgId !== this.currentBGId) throw ERRORS.ID_BG_IS_CHANGED;
 
                 return FSConnector.saveFile(this._FULL_PATH, frame, 'temporaryVideoFrame');
-            })
-            .then(() => {
-                if (captureBgId !== this.currentBGId || this.bgState !== 'pause') throw ERRORS.ID_BG_IS_CHANGED;
-
-                this._currentBG = {
-                    ...this._currentBG,
-                    pause: timestamp,
-                };
-
-                return StorageConnector.setJSONItem('bg_current', this._currentBG);
             })
             .then(() => this._currentBG);
     }
@@ -193,7 +182,6 @@ class BackgroundsStore {
         if (!currentBGId) {
             this._currentBG = null;
             this.currentBGId = null;
-            this.bgState = 'play';
 
             return StorageConnector.setJSONItem('bg_current', null);
         }
@@ -202,7 +190,6 @@ class BackgroundsStore {
             .then((bg) => {
                 this._currentBG = bg;
                 this.currentBGId = this._currentBG.id;
-                this.bgState = 'play';
 
                 return bg;
             })
