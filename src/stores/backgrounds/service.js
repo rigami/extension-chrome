@@ -1,6 +1,6 @@
 import { observable, action } from 'mobx';
 import appVariables from '@/config/appVariables';
-import { BG_TYPE, BG_CHANGE_INTERVAL_MILLISECONDS } from '@/enum';
+import {BG_TYPE, BG_CHANGE_INTERVAL_MILLISECONDS, BG_SELECT_MODE} from '@/enum';
 import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
 import StorageConnector from '@/utils/storageConnector';
@@ -49,7 +49,7 @@ class BackgroundsStore {
 
         StorageConnector.getJSONItem('bg_next_switch_timestamp')
             .then((value) => {
-                if (value > Date.now()) return true;
+                if (value > Date.now() || this.selectionMethod === BG_SELECT_MODE.SPECIFIC) return true;
 
                 this.nextBG();
                 return false;
