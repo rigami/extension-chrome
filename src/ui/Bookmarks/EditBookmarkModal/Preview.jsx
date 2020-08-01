@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1, 0),
         color: theme.palette.warning.main,
         marginTop: 'auto',
+        wordBreak: 'break-word',
     },
     warnIcon: {
         marginRight: theme.spacing(1),
@@ -122,25 +123,25 @@ function Preview(props) {
             )}
             {state !== FETCH.PENDING && globalState !== FETCH.PENDING && (
                 <React.Fragment>
+                    {(pendingState === 'DONE' || state === FETCH.FAILED) && (
+                        <Button
+                            className={classes.typeSwitcher}
+                            onClick={onChangeType}
+                            startIcon={isOpen ? (<CloseIcon />) : (<OpenIcon />)}
+                            fullWidth
+                        >
+                            {t("bookmark.editor.alternativeIcons")}
+                        </Button>
+                    )}
                     {pendingState === 'DONE' && (
-                        <React.Fragment>
-                            <Button
-                                className={classes.typeSwitcher}
-                                onClick={onChangeType}
-                                startIcon={isOpen ? (<CloseIcon />) : (<OpenIcon />)}
-                                fullWidth
-                            >
-                                {t("bookmark.editor.alternativeIcons")}
-                            </Button>
-                            <CardLink
-                                name={name}
-                                description={description}
-                                categories={categories}
-                                icoVariant={icoVariant}
-                                imageUrl={imageUrl}
-                                preview
-                            />
-                        </React.Fragment>
+                        <CardLink
+                            name={name}
+                            description={description}
+                            categories={categories}
+                            icoVariant={icoVariant}
+                            imageUrl={imageUrl}
+                            preview
+                        />
                     )}
                     {pendingState === "FAILED_URL" && (
                         <FullScreenStub

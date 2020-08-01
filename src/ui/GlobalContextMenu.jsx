@@ -60,34 +60,32 @@ function ContextMenu({ className: externalClassName, isOpen, onClose, position }
     }
 
     return (
-        <React.Fragment>
-            <Menu
-                open={isOpen}
-                onClose={onClose}
-                anchorReference="anchorPosition"
-                anchorPosition={position}
-                classes={{ list: classes.menu }}
-            >
-                <ListItem button dense onClick={handleNextBG}>
-                    <ListItemIcon>
-                        <RefreshIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={t("bg.next")} />
-                </ListItem>
-                <ListItem button dense onClick={handleAddBG}>
-                    <ListItemIcon>
-                        <UploadFromComputerIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={t("bg.addShort")} />
-                </ListItem>
-                <ListItem button dense onClick={handleAddBookmark}>
-                    <ListItemIcon>
-                        <AddBookmarkIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={t("bookmark.addShort")} />
-                </ListItem>
-            </Menu>
-        </React.Fragment>
+        <Menu
+            open={isOpen}
+            onClose={onClose}
+            anchorReference="anchorPosition"
+            anchorPosition={position}
+            classes={{ list: classes.menu }}
+        >
+            <ListItem button dense onClick={handleNextBG}>
+                <ListItemIcon>
+                    <RefreshIcon />
+                </ListItemIcon>
+                <ListItemText primary={t("bg.next")} />
+            </ListItem>
+            <ListItem button dense onClick={handleAddBG}>
+                <ListItemIcon>
+                    <UploadFromComputerIcon />
+                </ListItemIcon>
+                <ListItemText primary={t("bg.addShort")} />
+            </ListItem>
+            <ListItem button dense onClick={handleAddBookmark}>
+                <ListItemIcon>
+                    <AddBookmarkIcon />
+                </ListItemIcon>
+                <ListItemText primary={t("bookmark.addShort")} />
+            </ListItem>
+        </Menu>
     );
 }
 
