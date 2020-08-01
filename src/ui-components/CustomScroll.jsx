@@ -1,7 +1,7 @@
 import React from 'react';
-
 import { makeStyles } from '@material-ui/core/styles';
 import Scrollbar from 'react-scrollbars-custom';
+import clsx from 'clsx';
 
 const exportClasses = (theme) => ({
     root: {
@@ -15,7 +15,7 @@ const exportClasses = (theme) => ({
         bottom: 0,
         transform: 'translate3d(0,0,0)',
     },
-    scroller: {
+    reverse: {
         display: 'flex',
         flexDirection: 'column-reverse',
     },
@@ -50,7 +50,13 @@ function CustomScroll({ children, refScroll, reverse, ...other }) {
             scrollerProps={{
                 renderer: (props) => {
                     const { elementRef, ...restProps } = props;
-                    return <div {...restProps} ref={elementRef} className={classes.scroller} />;
+                    return (
+                        <div
+                            {...restProps}
+                            ref={elementRef}
+                            className={clsx(reverse && classes.reverse)}
+                        />
+                    );
                 },
             }}
             wrapperProps={{
