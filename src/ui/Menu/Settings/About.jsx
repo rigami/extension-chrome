@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
         width: 64,
         height: 64,
         marginBottom: theme.spacing(1),
-        backgroundColor: theme.palette.primary.main,
     },
     appVersion: { color: theme.palette.text.secondary },
     row: { width: 520 },
@@ -50,20 +49,11 @@ function About() {
     return (
         <React.Fragment>
             <Box className={classes.splash}>
-                <Avatar className={classes.appIcon} variant="rounded">
+                <Avatar className={classes.appIcon} variant="rounded" src="resource/128x128.png">
                     <SettingsIcon fontSize="large" />
                 </Avatar>
                 <Typography className={classes.appVersion} variant="body2">
-                    v
-                    {
-                        (
-                            chrome
-                            && chrome.runtime
-                            && chrome.runtime.getManifest
-                            && chrome.runtime.getManifest().version
-                        )
-                        || '-'
-                    }
+                    v{chrome?.runtime?.getManifest?.().version || '-'}
                 </Typography>
             </Box>
             <Divider />

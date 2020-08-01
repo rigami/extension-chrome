@@ -9,11 +9,11 @@ export default createMuiTheme(merge(
         palette: {
             type: 'dark',
             primary: {
-                main: '#2675F0',
+                main: '#3386E4',
                 contrastText: '#fff',
             },
             secondary: {
-                main: '#8526D0',
+                main: '#F9C440',
                 contrastText: '#fff',
             },
             snackbar: { default: fade('#fff', 0.95) },

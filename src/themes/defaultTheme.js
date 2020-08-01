@@ -5,11 +5,11 @@ const theme = {
     palette: {
         type: 'light',
         primary: {
-            main: '#2675F0',
+            main: '#3386E4',
             contrastText: '#fff',
         },
         secondary: {
-            main: '#8526D0',
+            main: '#F9C440',
             contrastText: '#fff',
         },
         warning: {
