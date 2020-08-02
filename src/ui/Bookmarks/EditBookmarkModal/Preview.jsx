@@ -118,7 +118,7 @@ function Preview(props) {
         >
             {(state === FETCH.PENDING || globalState === FETCH.PENDING) && (
                 <FullScreenStub>
-                    <CircularProgress style={{ color: theme.palette.common.white }} />
+                    <CircularProgress color="primary" />
                 </FullScreenStub>
             )}
             {state !== FETCH.PENDING && globalState !== FETCH.PENDING && (

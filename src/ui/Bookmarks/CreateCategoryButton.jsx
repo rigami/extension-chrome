@@ -7,23 +7,27 @@ import { AddRounded as AddIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import EditCategoryModal from './EditCategoryModal';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
+    chip: {
+        boxShadow: 'none !important',
+    },
     addCategory: {
         marginLeft: '3px !important',
         marginRight: 3,
     },
     addCategoryTitle: { display: 'none' },
     chipActive: {
-        backgroundColor: '#616161',
-        borderColor: '#616161',
+        backgroundColor: theme.palette.action.selected,
+        borderColor: theme.palette.divider,
         '&:focus': {
-            backgroundColor: '#616161 !important',
-            borderColor: '#616161',
+            backgroundColor: `${theme.palette.action.focus} !important`,
+            borderColor: theme.palette.divider,
         },
         '&:hover': {
-            backgroundColor: '#888888 !important',
-            borderColor: '#888888',
+            backgroundColor: `${theme.palette.action.hover} !important`,
+            borderColor: theme.palette.divider,
         },
     },
 }));
@@ -61,7 +65,7 @@ function CreateCategoryButton({ isShowTitle, onCreate }) {
                         setIsBlockEvent(false);
                     }}
                     classes={{
-                        root: isOpen && classes.chipActive,
+                        root: clsx(classes.chip, isOpen && classes.chipActive),
                         icon: !isShowTitle && classes.addCategory,
                         label: !isShowTitle && classes.addCategoryTitle,
                     }}

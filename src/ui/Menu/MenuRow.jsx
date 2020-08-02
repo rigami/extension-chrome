@@ -179,6 +179,7 @@ function MenuRow(props) {
                             <Switch
                                 edge="end"
                                 checked={value}
+                                color="primary"
                                 {...actionProps}
                             />
                         )}

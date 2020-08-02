@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(1),
         width: 100,
         height: 'auto',
-
+        fill: theme.palette.type === 'dark' ? theme.palette.common.white : theme.palette.common.black,
     },
     appVersion: { color: theme.palette.text.secondary },
     row: { width: 520 },

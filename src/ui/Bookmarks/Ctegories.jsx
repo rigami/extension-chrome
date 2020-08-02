@@ -4,7 +4,7 @@ import {
     Chip,
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme, fade } from '@material-ui/core/styles';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import clsx from 'clsx';
 import CreateCategoryButton from './CreateCategoryButton';
@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
     },
     chip: {
         maxWidth: 290,
+        boxShadow: 'none !important',
     },
     chipIcon: {
         width: theme.spacing(2),
@@ -29,22 +30,11 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: `${theme.spacing(1)}px !important`,
         flexShrink: 0,
     },
-    chipActive: {
-        backgroundColor: '#616161',
-        borderColor: '#616161',
-        '&:focus': {
-            backgroundColor: '#616161 !important',
-            borderColor: '#616161',
-        },
-        '&:hover': {
-            backgroundColor: '#888888 !important',
-            borderColor: '#888888',
-        },
-    },
 }));
 
 function Category({ id, name, color, onClick, isSelect }) {
     const classes = useStyles();
+    const theme = useTheme();
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const [position, setPosition] = useState(null);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -80,6 +70,10 @@ function Category({ id, name, color, onClick, isSelect }) {
                 icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
                 label={name}
                 className={clsx(classes.chip, isSelect && classes.chipActive)}
+                style={{
+                    backgroundColor: isSelect && fade(color, 0.14),
+                    borderColor: isSelect && color,
+                }}
                 variant="outlined"
                 onClick={onClick}
                 onContextMenu={(event) => {
