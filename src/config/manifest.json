@@ -25,5 +25,9 @@
     ],
     "chrome_url_overrides": {
         "newtab": "index.html"
+    },
+    "browser_action":{
+        "default_title":"Добавить в Rigami",
+        "default_popup": "popup.html"
     }
 }

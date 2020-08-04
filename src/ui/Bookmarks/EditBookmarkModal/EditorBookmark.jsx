@@ -1,30 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Button,
-    Card,
-    CardContent,
     Container,
-    Typography,
-    TextField,
     Collapse,
     CircularProgress,
 } from '@material-ui/core';
-import {
-    AddRounded as AddIcon,
-} from '@material-ui/icons';
 import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
-import Categories from '../Ctegories';
-import { useSnackbar } from 'notistack';
 import PreviewSelector from "./PreviewSelector";
 import SearchResults from "./SearchResults";
-import Preview from "./Preview";
 import { getSiteInfo, getImageRecalc } from "@/utils/siteSearch";
 import { FETCH, BKMS_VARIANT } from '@/enum';
 import asyncAction from "@/utils/asyncAction";
 import Scrollbar from "@/ui-components/CustomScroll";
+import clsx from 'clsx';
+import Editor from "@/ui/Bookmarks/EditBookmarkModal/Editor";
+import ReactResizeDetector from 'react-resize-detector';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -35,33 +26,15 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         justifyContent: 'flex-end',
     },
-    bgCardRoot: { display: 'flex' },
     content: { flex: '1 0 auto' },
-    controls: {
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: theme.spacing(2),
-        paddingBottom: theme.spacing(2),
-        justifyContent: 'flex-end',
-    },
     button: {
         marginRight: theme.spacing(2),
         position: 'relative',
     },
-    details: {
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-    },
-    input: { marginTop: theme.spacing(2) },
-    chipContainer: { marginTop: theme.spacing(2) },
-    addDescriptionButton: { marginTop: theme.spacing(2) },
 }));
 
-function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
+function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, className: externalClassName, bringToEditorHeight = false }) {
     const classes = useStyles();
-    const { t } = useTranslation();
-    const { enqueueSnackbar } = useSnackbar();
 
     const bookmarksStore = useBookmarksService();
     const [controller, setController] = useState(null);
@@ -80,8 +53,8 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
         images: [],
         isOpenSelectPreview: false,
         searchRequest: '',
-        requireScrollToBottom: true,
         blockResetSearch: false,
+        editorHeight: 0,
     }));
 
     const handlerSave = () => {
@@ -114,11 +87,7 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
             })
             .catch((e) => {
                 console.error(e);
-                onCancel();
-                enqueueSnackbar({
-                    message: t("bookmark.errorLoad"),
-                    variant: 'error',
-                });
+                onErrorLoad(e);
             });
     }, []);
 
@@ -176,23 +145,10 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
     }
 
     return useObserver(() => (
-        <Scrollbar
-            refScroll={(ref) => {
-                //console.log("REF", ref)
-                if (ref) {
-                    console.log("SCROLL TO BOTTOm")
-                    //store.requireScrollToBottom = false;
-                    ref.scrollToBottom();
-                }
-            }}
-            onScroll={() => {
-                console.log("scroll")
-            }}
-            reverse
-        >
+        <Scrollbar reverse style={{ height: bringToEditorHeight && store.editorHeight }}>
             <Container
                 maxWidth={false}
-                className={classes.container}
+                className={clsx(classes.container, externalClassName)}
             >
                 <Collapse in={store.isOpenSelectPreview} unmountOnExit>
                     <PreviewSelector
@@ -225,102 +181,19 @@ function EditorBookmark({ onSave, onCancel, editBookmarkId }) {
                         store.blockResetSearch = true;
                     }}
                 />
-                <Card className={classes.bgCardRoot} elevation={8}>
-                    <Preview
-                        isOpen={store.isOpenSelectPreview}
+                <ReactResizeDetector
+                    handleHeight
+                    onResize={(width, height) => {
+                        store.editorHeight = height;
+                    }}
+                >
+                    <Editor
+                        editBookmarkId={editBookmarkId}
                         state={state}
-                        url={store.url}
-                        imageUrl={store.imageURL}
-                        name={store.name.trim()}
-                        icoVariant={store.icoVariant}
-                        description={store.useDescription && store.description?.trim()}
-                        categories={store.fullCategories}
-                        onChangeType={() => { store.isOpenSelectPreview = !store.isOpenSelectPreview; }}
+                        onSave={handlerSave}
+                        onCancel={onCancel}
                     />
-                    <div className={classes.details}>
-                        <CardContent className={classes.content}>
-                            <Typography component="h5" variant="h5">
-                                {!store.editBookmarkId ? t("bookmark.editor.addTitle") : t("bookmark.editor.editTitle")}
-                            </Typography>
-                            <TextField
-                                label={t("bookmark.editor.urlFieldLabel")}
-                                variant="outlined"
-                                fullWidth
-                                value={store.searchRequest}
-                                className={classes.input}
-                                onChange={(event) => {
-                                    store.searchRequest = event.target.value;
-                                }}
-                                onBlur={() => {
-                                    if (store.blockResetSearch) {
-                                        store.blockResetSearch = false;
-                                    } else {
-                                        store.searchRequest = store.url;
-                                    }
-                                }}
-                            />
-                            <TextField
-                                label={t("bookmark.editor.nameFieldLabel")}
-                                variant="outlined"
-                                disabled={store.url === ''}
-                                fullWidth
-                                value={store.name}
-                                className={classes.input}
-                                onChange={(event) => { store.name = event.target.value; }}
-                            />
-                            <Categories
-                                className={classes.chipContainer}
-                                sortByPopular
-                                value={store.categories}
-                                onChange={(newCategories) => { store.categories = newCategories; }}
-                                autoSelect
-                            />
-                            {store.useDescription && (
-                                <TextField
-                                    label={t("bookmark.editor.descriptionFieldLabel")}
-                                    variant="outlined"
-                                    fullWidth
-                                    value={store.description}
-                                    className={classes.input}
-                                    disabled={store.url === ''}
-                                    multiline
-                                    rows={3}
-                                    rowsMax={3}
-                                    onChange={(event) => { store.description = event.target.value; }}
-                                />
-                            )}
-                            {!store.useDescription && (
-                                <Button
-                                    startIcon={<AddIcon />}
-                                    className={classes.addDescriptionButton}
-                                    onClick={() => { store.useDescription = true; }}
-                                >
-                                    {t("bookmark.editor.addDescription")}
-                                </Button>
-                            )}
-                        </CardContent>
-                        <div className={classes.controls}>
-                            <Button
-                                variant="text"
-                                color="default"
-                                className={classes.button}
-                                onClick={onCancel}
-                            >
-                                {t("cancel")}
-                            </Button>
-                            <div className={classes.button}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    disabled={!store.url || !store.name.trim()}
-                                    onClick={handlerSave}
-                                >
-                                    {t("save")}
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
+                </ReactResizeDetector>
             </Container>
         </Scrollbar>
     ));

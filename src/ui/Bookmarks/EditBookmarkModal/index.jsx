@@ -1,8 +1,11 @@
 import React from 'react';
 import { Drawer } from '@material-ui/core';
 import EditorBookmark from './EditorBookmark';
+import { useSnackbar } from 'notistack';
 
 function EditBookmarkModal({ isOpen, onClose, ...other }) {
+    const { enqueueSnackbar } = useSnackbar();
+
     return (
         <Drawer
             anchor="bottom"
@@ -13,7 +16,18 @@ function EditBookmarkModal({ isOpen, onClose, ...other }) {
             }}
             disableEnforceFocus
         >
-            <EditorBookmark onSave={onClose} onCancel={onClose} {...other} />
+            <EditorBookmark
+                onSave={onClose}
+                onCancel={onClose}
+                onErrorLoad={() => {
+                    enqueueSnackbar({
+                        message: t("bookmark.errorLoad"),
+                        variant: 'error',
+                    });
+                    onClose();
+                }}
+                {...other}
+            />
         </Drawer>
     );
 }
