@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, className: externalClassName, bringToEditorHeight = false }) {
+function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUrl, className: externalClassName, classes: externalClasses = {}, bringToEditorHeight = false }) {
     const classes = useStyles();
 
     const bookmarksStore = useBookmarksService();
@@ -42,7 +42,7 @@ function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, classNa
     const [state, setState] = useState(FETCH.PENDING);
     const store = useLocalStore(() => ({
         editBookmarkId,
-        url: '',
+        url: defaultUrl || '',
         name: '',
         description: '',
         useDescription: false,
@@ -52,30 +52,36 @@ function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, classNa
         imageURL: null,
         images: [],
         isOpenSelectPreview: false,
-        searchRequest: '',
+        searchRequest: defaultUrl || '',
         blockResetSearch: false,
         editorHeight: 0,
+        isSave: false,
+        isSaving: false,
     }));
 
     const handlerSave = () => {
+        store.isSaving  = true;
         bookmarksStore.saveBookmark({
             ...store,
             image_url: store.imageURL,
             name: store.name.trim(),
             description: (store.useDescription && store.description?.trim()) || '',
             id: store.editBookmarkId,
+        }).then((saveBookmarkId) => {
+            store.isSave = true;
+            store.isSaving = false;
+            store.editBookmarkId = saveBookmarkId;
         });
 
         onSave();
     };
 
     useEffect(() => {
-        if (!editBookmarkId) return;
+        if (!store.editBookmarkId) return;
         setIsLoading(true);
 
         bookmarksStore.getBookmark(editBookmarkId)
             .then((bookmark) => {
-                console.log("Bookmark", bookmark)
                 store.url = bookmark.url;
                 store.name = bookmark.name;
                 store.imageURL = bookmark.imageUrl;
@@ -92,7 +98,7 @@ function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, classNa
     }, []);
 
     useEffect(() => {
-        if (!editBookmarkId) {
+        if (!store.editBookmarkId) {
             store.imageURL = null;
         }
         setState(FETCH.PENDING);
@@ -110,7 +116,7 @@ function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, classNa
         asyncAction(async () => {
             const siteData = await getSiteInfo(store.url, controller);
 
-            if (editBookmarkId) {
+            if (store.editBookmarkId) {
                 setState(FETCH.DONE);
                 store.images = siteData.icons;
                 return;
@@ -145,7 +151,11 @@ function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, classNa
     }
 
     return useObserver(() => (
-        <Scrollbar reverse style={{ height: bringToEditorHeight && store.editorHeight }}>
+        <Scrollbar
+            reverse
+            style={{ height: bringToEditorHeight && store.editorHeight }}
+            className={externalClasses.scrollWrapper}
+        >
             <Container
                 maxWidth={false}
                 className={clsx(classes.container, externalClassName)}
@@ -188,10 +198,32 @@ function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, classNa
                     }}
                 >
                     <Editor
-                        editBookmarkId={editBookmarkId}
-                        state={state}
+                        className={classes.editor}
+                        isEdit={!!store.editBookmarkId}
+                        previewState={state}
+                        searchRequest={store.searchRequest}
+                        url={store.url}
+                        name={store.name}
+                        description={store.description}
+                        useDescription={store.useDescription}
+                        categories={store.categories}
+                        isOpenSelectPreview={store.isOpenSelectPreview}
+                        imageURL={store.imageURL}
+                        icoVariant={store.icoVariant}
+                        fullCategories={store.fullCategories}
+                        isSave={store.isSave}
+                        isSaving={store.isSaving}
                         onSave={handlerSave}
                         onCancel={onCancel}
+                        onChange={(value) => {
+                            for (const keyValue in value) {
+                                if (!value.hasOwnProperty(keyValue)) continue;
+                                store[keyValue] = value[keyValue];
+                            }
+                            store.isSave = false;
+                            store.isSaving = false;
+                        }}
+                        onChangeType={() => { store.isOpenSelectPreview = !store.isOpenSelectPreview; }}
                     />
                 </ReactResizeDetector>
             </Container>

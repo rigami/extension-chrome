@@ -92,6 +92,7 @@ function Categories(props) {
         className: externalClassName,
         onCreate,
         autoSelect = false,
+        maxRows,
     } = props;
     const classes = useStyles();
     const bookmarksStore = useBookmarksService();

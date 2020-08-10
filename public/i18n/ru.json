@@ -1,199 +1,199 @@
 {
-  "settings": {
-    "title": "Настройки",
-    "bg": {
-      "title": "Фоны",
-      "apply": "Применить фон",
-      "change": "Изменить фон",
-      "description": "Выбрать фоны",
-      "general": {
-        "title": "Общие",
-        "library": {
-          "title": "Библиотека",
-          "description": "У вас в библиотеке",
-          "type": {
-            "IMAGE": "Изображение",
-            "VIDEO": "Видео",
-            "ANIMATION": "Анимация",
-            "FILL_COLOR": "Сплошной цвет"
+  "settings":{
+    "title":"Настройки",
+    "bg":{
+      "title":"Фоны",
+      "apply":"Применить фон",
+      "change":"Изменить фон",
+      "description":"Выбрать фоны",
+      "general":{
+        "title":"Общие",
+        "library":{
+          "title":"Библиотека",
+          "description":"У вас в библиотеке",
+          "type":{
+            "IMAGE":"Изображение",
+            "VIDEO":"Видео",
+            "ANIMATION":"Анимация",
+            "FILL_COLOR":"Сплошной цвет"
           },
-          "uploadFromComputer": "Загрузить с компьютера",
-          "getFromLibrary": "Получить из библиотеки"
+          "uploadFromComputer":"Загрузить с компьютера",
+          "getFromLibrary":"Получить из библиотеки"
         },
-        "dimmingPower": {
-          "title": "Затеменение фонов",
-          "description": "Уровень затемнения фона"
+        "dimmingPower":{
+          "title":"Затеменение фонов",
+          "description":"Уровень затемнения фона"
         }
       },
-      "scheduler": {
-        "title": "Режим переключения",
-        "selectionMethod": {
-          "title": "Метод выбора фона",
-          "description": "Выбрать метод измения фона",
-          "method": {
-            "RANDOM": "Случайный выбор",
-            "SPECIFIC": "Определеный фон"
+      "scheduler":{
+        "title":"Режим переключения",
+        "selectionMethod":{
+          "title":"Метод выбора фона",
+          "description":"Выбрать метод измения фона",
+          "method":{
+            "RANDOM":"Случайный выбор",
+            "SPECIFIC":"Определеный фон"
           }
         },
-        "changeInterval": {
-          "title": "Период изменения",
-          "description": "Выбрать пероид измения фона",
-          "interval": {
-            "OPEN_TAB": "При открытии",
-            "MINUTES_30": "30 мин",
-            "HOURS_1": "1 час",
-            "HOURS_6": "6 часов",
-            "HOURS_12": "12 часов",
-            "DAY_1": "1 день"
+        "changeInterval":{
+          "title":"Период изменения",
+          "description":"Выбрать пероид измения фона",
+          "interval":{
+            "OPEN_TAB":"При открытии",
+            "MINUTES_30":"30 мин",
+            "HOURS_1":"1 час",
+            "HOURS_6":"6 часов",
+            "HOURS_12":"12 часов",
+            "DAY_1":"1 день"
           }
         },
-        "BGType": {
-          "title": "Типы фонов",
-          "description": "Выбрать тип фона",
-          "type": {
-            "IMAGE": "Изображение",
-            "ANIMATION": "Анимация",
-            "VIDEO": "Видео",
-            "FILL_COLOR": "Сплошной цвет",
-            "all": "Все типы",
-            "nothingSelected": "Ничего не выбрано"
+        "BGType":{
+          "title":"Типы фонов",
+          "description":"Выбрать тип фона",
+          "type":{
+            "IMAGE":"Изображение",
+            "ANIMATION":"Анимация",
+            "VIDEO":"Видео",
+            "FILL_COLOR":"Сплошной цвет",
+            "all":"Все типы",
+            "nothingSelected":"Ничего не выбрано"
           }
         }
       }
     },
-    "bookmarks": {
-      "title": "Закладки",
-      "description": "Изменить закладки",
-      "useFAP": {
-        "title": "Использовать панель быстрого доступа",
-        "description": "Закрепите ваши самы важные закладки и категории, что бы всегда иметь быстрый доступ к ним"
+    "bookmarks":{
+      "title":"Закладки",
+      "description":"Изменить закладки",
+      "useFAP":{
+        "title":"Использовать панель быстрого доступа",
+        "description":"Закрепите ваши самы важные закладки и категории, что бы всегда иметь быстрый доступ к ним"
       },
-      "fapEmptyWarningMessage": "Панель не отображается, потому что в нее ничего не закреплено. Закрепите закладку, либо категорию",
-      "fapStyle": {
-        "title": "Стиль панели",
-        "style": {
-          "CONTAINED": "С подложкой",
-          "TRANSPARENT": "Прозрачная"
+      "fapEmptyWarningMessage":"Панель не отображается, потому что в нее ничего не закреплено. Закрепите закладку, либо категорию",
+      "fapStyle":{
+        "title":"Стиль панели",
+        "style":{
+          "CONTAINED":"С подложкой",
+          "TRANSPARENT":"Прозрачная"
         }
       },
-      "fapPosition": {
-        "title": "Позиция панели",
-        "position": {
-          "TOP": "Сверху",
-          "BOTTOM": "Снизу"
+      "fapPosition":{
+        "title":"Позиция панели",
+        "position":{
+          "TOP":"Сверху",
+          "BOTTOM":"Снизу"
         }
       }
     },
-    "app": {
-      "title": "Настройки приложения",
-      "description": "Изменить параметры приложения",
-      "darkThemeBackdrop": "Темная подложка фона",
-      "darkThemeApp": "Темная тема приложения",
-      "useSystemFont": "Использовать системный шрифт",
-      "tabName": {
-        "title": "Имя вкладки",
-        "description": "Укажите свое имя вкладки"
+    "app":{
+      "title":"Настройки приложения",
+      "description":"Изменить параметры приложения",
+      "darkThemeBackdrop":"Темная подложка фона",
+      "darkThemeApp":"Темная тема приложения",
+      "useSystemFont":"Использовать системный шрифт",
+      "tabName":{
+        "title":"Имя вкладки",
+        "description":"Укажите свое имя вкладки"
       }
     },
-    "backup": {
-      "title": "Синхронизация и бекап",
-      "description": "Сохранить данные приложения"
+    "backup":{
+      "title":"Синхронизация и бекап",
+      "description":"Сохранить данные приложения"
     },
-    "about": {
-      "title": "О приложений",
-      "description": "Написать разработчику, отпавить баг репорт",
-      "homePage": "Домашняя страница проекта",
-      "review": {
-        "title": "Напишите отзыв",
-        "description": "Раскажите, что вы хотите видеть в приложении, что вам нравится или не нравится"
+    "about":{
+      "title":"О приложений",
+      "description":"Написать разработчику, отпавить баг репорт",
+      "homePage":"Домашняя страница проекта",
+      "review":{
+        "title":"Напишите отзыв",
+        "description":"Раскажите, что вы хотите видеть в приложении, что вам нравится или не нравится"
       },
-      "bugReport": {
-        "title": "Сообщите о ошибках",
-        "description": "Скажите какие проблемы в работе приложения встречаются, я постараюсь их поправить как можно быстрее"
+      "bugReport":{
+        "title":"Сообщите о ошибках",
+        "description":"Скажите какие проблемы в работе приложения встречаются, я постараюсь их поправить как можно быстрее"
       },
-      "contact": {
-        "title": "Свяжитесь о мной",
-        "description": "Свяжитесь с разработчиком на прямую"
+      "contact":{
+        "title":"Свяжитесь о мной",
+        "description":"Свяжитесь с разработчиком на прямую"
       },
-      "policy": "Политика конфиденциальности"
+      "policy":"Политика конфиденциальности"
     }
   },
-  "bg": {
-    "title": "Фон",
-    "change": "Изменить",
-    "next": "Следущий фон",
-    "addShort": "Добавить фон",
-    "add": "Добавить новый фон",
-    "remove": "Удалить фон",
-    "errorLoad": "Ошибка загрузки фона",
-    "errorLoadUnknownReason": "Неудалось загрузить фон по неизвестным причинам",
-    "brokenRemovedSuccess": "Сломаный фон удален",
-    "playVideo": "Воспроизвести видео",
-    "pauseVideo": "Остановить видео",
-    "type": {
-      "IMAGE": "Изображение",
-      "ANIMATION": "Анимация",
-      "VIDEO": "Видео",
-      "FILL_COLOR": "Сплошной цвет"
+  "bg":{
+    "title":"Фон",
+    "change":"Изменить",
+    "next":"Следущий фон",
+    "addShort":"Добавить фон",
+    "add":"Добавить новый фон",
+    "remove":"Удалить фон",
+    "errorLoad":"Ошибка загрузки фона",
+    "errorLoadUnknownReason":"Неудалось загрузить фон по неизвестным причинам",
+    "brokenRemovedSuccess":"Сломаный фон удален",
+    "playVideo":"Воспроизвести видео",
+    "pauseVideo":"Остановить видео",
+    "type":{
+      "IMAGE":"Изображение",
+      "ANIMATION":"Анимация",
+      "VIDEO":"Видео",
+      "FILL_COLOR":"Сплошной цвет"
     }
   },
-  "bookmark": {
-    "addShort": "Добавить закладку",
-    "add": "Добавить новую закладку",
-    "editor": {
-      "addTitle": "Добавление новой закладки",
-      "editTitle": "Изменение закладки",
-      "urlFieldLabel": "URL или запрос",
-      "nameFieldLabel": "Имя закладки",
-      "addDescription": "Добавить описание",
-      "descriptionFieldLabel": "Описание",
-      "forceAddURL": "Все равно добавить",
-      "URLNotRecognize": "Адрес не распознан",
-      "searchURLTitle": "Поиск по адресу",
-      "notFound": "Ничего не нейдено",
-      "searchInWEBTitle": "Поиск в сети",
-      "alternativeIcons": "Другие варианты",
-      "alternativeIconsTitle": "Другие варианты иконок",
-      "errorLoadIcon": "Не удалось загрузить иконку, попробуйте другую",
-      "helper": {
-        "writeURL": "Введите адрес",
-        "writeName": "Введите название закладки"
+  "bookmark":{
+    "addShort":"Добавить закладку",
+    "add":"Добавить новую закладку",
+    "editor":{
+      "addTitle":"Добавление новой закладки",
+      "editTitle":"Изменение закладки",
+      "urlFieldLabel":"URL или запрос",
+      "nameFieldLabel":"Имя закладки",
+      "addDescription":"Добавить описание",
+      "descriptionFieldLabel":"Описание",
+      "forceAddURL":"Все равно добавить",
+      "URLNotRecognize":"Адрес не распознан",
+      "searchURLTitle":"Поиск по адресу",
+      "notFound":"Ничего не нейдено",
+      "searchInWEBTitle":"Поиск в сети",
+      "alternativeIcons":"Другие варианты",
+      "alternativeIconsTitle":"Другие варианты иконок",
+      "errorLoadIcon":"Не удалось загрузить иконку, попробуйте другую",
+      "helper":{
+        "writeURL":"Введите адрес",
+        "writeName":"Введите название закладки"
       }
     }
   },
-  "category": {
-    "add": "Добавить категорию",
-    "createPlaceholder": "Название категории"
+  "category":{
+    "add":"Добавить категорию",
+    "createPlaceholder":"Название категории"
   },
-  "fap": {
-    "pin": "Закрепить",
-    "unpin": "Открепить"
+  "fap":{
+    "pin":"Закрепить",
+    "unpin":"Открепить"
   },
-  "tabName": {
-    "prepare": "Подготовка..."
+  "tabName":{
+    "prepare":"Подготовка..."
   },
-  "uploadBG": {
-    "labelFile": "Название файла",
-    "labelSize": "Размер",
-    "labelFileType": "Тип файла",
-    "addToLibrary": "Добавить в библиотеку",
-    "discardAll": "Отменить всё",
-    "dropToAddBG": "Отпустите чтобы добавить фон",
-    "dropToAddBGs": "Отпустите чтобы добавить фоны",
-    "antiAliasing": {
-      "label": "Сглаживание",
-      "tooltip": "Отключите эту опцию, если вы хотите загрузить пиксельный фон"
+  "uploadBG":{
+    "labelFile":"Название файла",
+    "labelSize":"Размер",
+    "labelFileType":"Тип файла",
+    "addToLibrary":"Добавить в библиотеку",
+    "discardAll":"Отменить всё",
+    "dropToAddBG":"Отпустите чтобы добавить фон",
+    "dropToAddBGs":"Отпустите чтобы добавить фоны",
+    "antiAliasing":{
+      "label":"Сглаживание",
+      "tooltip":"Отключите эту опцию, если вы хотите загрузить пиксельный фон"
     }
   },
-  "save": "Сохранить",
-  "cancel": "Отменить",
-  "remove": "Удалить",
-  "edit": "Изменить",
-  "search": "Поиск",
-  "from": "из",
-  "loading": "Загрузка",
-  "notAvailableYet": "Пока не доступно",
-  "all": "Всё",
-  "nothingSelected": "Ничего не выбрано",
-  "changeTakeEffectAfterReload": "Изменения вступят в силу после обновления страницы",
+  "save":"Сохранить",
+  "cancel":"Отменить",
+  "remove":"Удалить",
+  "edit":"Изменить",
+  "search":"Поиск",
+  "from":"из",
+  "loading":"Загрузка",
+  "notAvailableYet":"Пока не доступно",
+  "all":"Всё",
+  "nothingSelected":"Ничего не выбрано",
+  "changeTakeEffectAfterReload":"Изменения вступят в силу после обновления страницы"
 }

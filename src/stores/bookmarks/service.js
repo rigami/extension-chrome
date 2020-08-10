@@ -373,6 +373,8 @@ class BookmarksStore {
         }
 
         this.lastTruthSearchTimestamp = Date.now();
+
+        return saveBookmarkId;
     }
 
     @action('remove bookmark')
