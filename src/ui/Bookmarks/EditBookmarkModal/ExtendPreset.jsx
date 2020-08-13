@@ -3,12 +3,12 @@ import {
     Container,
     Collapse,
     CircularProgress,
+    Card,
 } from '@material-ui/core';
 import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
-import PreviewSelector from "./PreviewSelector";
-import SearchResults from "./SearchResults";
+import PreviewSelector from "./Preview/Selector";
 import { getSiteInfo, getImageRecalc } from "@/utils/siteSearch";
 import { FETCH, BKMS_VARIANT } from '@/enum';
 import asyncAction from "@/utils/asyncAction";
@@ -16,6 +16,7 @@ import Scrollbar from "@/ui-components/CustomScroll";
 import clsx from 'clsx';
 import Editor from "@/ui/Bookmarks/EditBookmarkModal/Editor";
 import ReactResizeDetector from 'react-resize-detector';
+import Preview, {STAGE} from "@/ui/Bookmarks/EditBookmarkModal/Preview";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -31,9 +32,12 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
         position: 'relative',
     },
+    editor: {
+        display: 'flex',
+    },
 }));
 
-function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUrl, className: externalClassName, classes: externalClasses = {}, bringToEditorHeight = false }) {
+function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUrl, className: externalClassName, classes: externalClasses = {}, bringToEditorHeight = false }) {
     const classes = useStyles();
 
     const bookmarksStore = useBookmarksService();
@@ -41,7 +45,7 @@ function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, default
     const [isLoading, setIsLoading] = useState(false);
     const [state, setState] = useState(FETCH.PENDING);
     const store = useLocalStore(() => ({
-        editBookmarkId,
+        /* editBookmarkId,
         url: defaultUrl || '',
         name: '',
         description: '',
@@ -56,10 +60,13 @@ function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, default
         blockResetSearch: false,
         editorHeight: 0,
         isSave: false,
-        isSaving: false,
+        isSaving: false, */
+        editBookmarkId,
+        stage: STAGE.WAIT_REQUEST,
+        saveStage: FETCH.WAIT,
     }));
 
-    const handlerSave = () => {
+    /* const handlerSave = () => {
         store.isSaving  = true;
         bookmarksStore.saveBookmark({
             ...store,
@@ -142,13 +149,13 @@ function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, default
 
     useEffect(() => {
         store.fullCategories = store.categories.map((categoryId) => bookmarksStore.getCategory(categoryId));
-    }, [store.categories.length]);
+    }, [store.categories.length]); */
 
-    if (isLoading) {
+    /* if (isLoading) {
         return useObserver(() => (
             <CircularProgress />
         ));
-    }
+    } */
 
     return useObserver(() => (
         <Scrollbar
@@ -160,75 +167,49 @@ function EditorBookmark({ onSave, onCancel, onErrorLoad, editBookmarkId, default
                 maxWidth={false}
                 className={clsx(classes.container, externalClassName)}
             >
-                <Collapse in={store.isOpenSelectPreview} unmountOnExit>
-                    <PreviewSelector
-                        name={store.name.trim()}
-                        images={store.images}
-                        description={store.useDescription && store.description?.trim()}
-                        categories={store.fullCategories}
-                        onChange={(imageUrl, icoVariant) => {
-                            store.isOpenSelectPreview = false;
-                            store.imageURL = imageUrl;
-                            store.icoVariant = icoVariant;
-                        }}
-                    />
-                </Collapse>
-                <SearchResults
-                    searchRequest={(store.url === store.searchRequest) ? "" : store.searchRequest}
-                    onSelect={({ url, title, description}, forceAdd) => {
-                        store.url = url;
-                        store.searchRequest = url;
-                        store.name = title || store.name || '';
-                        store.description = description || '';
-                        if (forceAdd) {
-                            store.imageURL = null;
-                            store.icoVariant = BKMS_VARIANT.SYMBOL;
-                        } else {
-                            store.icoVariant = BKMS_VARIANT.SMALL;
-                        }
-                    }}
-                    onClick={() => {
-                        store.blockResetSearch = true;
-                    }}
-                />
+
                 <ReactResizeDetector
                     handleHeight
                     onResize={(width, height) => {
                         store.editorHeight = height;
                     }}
                 >
-                    <Editor
-                        className={classes.editor}
-                        isEdit={!!store.editBookmarkId}
-                        previewState={state}
-                        searchRequest={store.searchRequest}
-                        url={store.url}
-                        name={store.name}
-                        description={store.description}
-                        useDescription={store.useDescription}
-                        categories={store.categories}
-                        isOpenSelectPreview={store.isOpenSelectPreview}
-                        imageURL={store.imageURL}
-                        icoVariant={store.icoVariant}
-                        fullCategories={store.fullCategories}
-                        isSave={store.isSave}
-                        isSaving={store.isSaving}
-                        onSave={handlerSave}
-                        onCancel={onCancel}
-                        onChange={(value) => {
-                            for (const keyValue in value) {
-                                if (!value.hasOwnProperty(keyValue)) continue;
-                                store[keyValue] = value[keyValue];
-                            }
-                            store.isSave = false;
-                            store.isSaving = false;
-                        }}
-                        onChangeType={() => { store.isOpenSelectPreview = !store.isOpenSelectPreview; }}
-                    />
+                    <Card className={classes.editor}>
+                        <Preview
+                            stage={store.stage}
+                        />
+                        <Editor
+                            isEdit={!!store.editBookmarkId}
+                            searchRequest={store.searchRequest}
+                            name={store.name}
+                            description={store.description}
+                            useDescription={store.useDescription}
+                            categories={[]}
+                            saveState={store.saveStage}
+                            onChangeFields={(value) => {
+                                if ('searchRequest' in value) {
+                                    store.searchRequest = value.searchRequest;
+                                    store.stage = value.searchRequest ? STAGE.WAIT_RESULT : STAGE.WAIT_REQUEST;
+                                }
+                                if ('name' in value) {
+                                    store.name = value.name;
+                                }
+                                if ('description' in value) {
+                                    store.description = value.description;
+                                }
+                                if ('useDescription' in value) {
+                                    store.useDescription = value.useDescription;
+                                }
+                                store.saveStage = FETCH.WAIT;
+                            }}
+                            onSave={() => {}}
+                            onCance={onCancel}
+                        />
+                    </Card>
                 </ReactResizeDetector>
             </Container>
         </Scrollbar>
     ));
 }
 
-export default observer(EditorBookmark);
+export default observer(ExtendPreset);

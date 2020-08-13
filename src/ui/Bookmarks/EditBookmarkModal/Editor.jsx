@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
     Button,
-    Card,
+    Box,
     CardContent,
     Typography,
     TextField,
+    CircularProgess,
 } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
+    DoneRounded as DoneIcon,
 } from '@material-ui/icons';
-import Preview from "@/ui/Bookmarks/EditBookmarkModal/Preview";
 import Categories from "@/ui/Bookmarks/Ctegories";
 import { useTranslation } from 'react-i18next';
-import {BKMS_VARIANT} from "@/enum";
 import { makeStyles } from '@material-ui/core/styles';
 import { useObserver, useLocalStore } from 'mobx-react-lite';
+import {FETCH} from "@/enum";
+import SearchField from './SearchField';
 
 const useStyles = makeStyles((theme) => ({
-    bgCardRoot: { display: 'flex' },
     content: { flex: '1 0 auto' },
     controls: {
         display: 'flex',
@@ -36,132 +37,157 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     input: { marginTop: theme.spacing(2) },
+    inputDescription: { marginTop: theme.spacing(1) },
     chipContainer: { marginTop: theme.spacing(2) },
-    addDescriptionButton: { marginTop: theme.spacing(2) },
+    addDescriptionButton: { marginTop: theme.spacing(1) },
 }));
 
 function Editor(props) {
     const {
         isEdit,
-        previewState,
-        searchRequest,
-        url,
-        name,
-        description,
-        useDescription,
+        searchRequest ='',
+        name = '',
+        description = '',
+        useDescription = false,
         categories,
-        isOpenSelectPreview,
-        imageURL,
-        icoVariant,
-        fullCategories,
-        isSave,
-        isSaving,
-        onChange,
+        saveState = FETCH.WAIT,
+        onChangeFields = () => {},
         onSave,
         onCancel,
-        onChangeType,
     } = props;
     const classes = useStyles();
     const { t } = useTranslation();
 
+    const store = useLocalStore(() => ({
+        searchRequest,
+        name,
+        description,
+        useDescription,
+    }));
+
+    useEffect(() => {
+        store.searchRequest = searchRequest;
+    }, [searchRequest]);
+
+    useEffect(() => {
+        store.name = name;
+    }, [name]);
+
+    useEffect(() => {
+        store.description = description;
+    }, [description]);
+
+    useEffect(() => {
+        store.useDescription = useDescription;
+    }, [useDescription]);
+
     return useObserver(() => (
-        <Card className={classes.bgCardRoot} elevation={8}>
-            <Preview
-                isOpen={isOpenSelectPreview}
-                state={previewState}
-                url={url}
-                imageUrl={imageURL}
-                name={name.trim()}
-                icoVariant={icoVariant}
-                description={useDescription && description?.trim()}
-                categories={fullCategories}
-                onChangeType={() => onChangeType()}
-            />
-            <div className={classes.details}>
-                <CardContent className={classes.content}>
-                    <Typography component="h5" variant="h5">
-                        {!isEdit ? t("bookmark.editor.addTitle") : t("bookmark.editor.editTitle")}
-                    </Typography>
+        <div className={classes.details}>
+            <CardContent className={classes.content}>
+                <Typography variant="h5">
+                    {isEdit ? t("bookmark.editor.editTitle") : t("bookmark.editor.addTitle")}
+                </Typography>
+                <SearchField
+                    label={t("bookmark.editor.urlFieldLabel")}
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    value={store.searchRequest}
+                    className={classes.input}
+                    onChange={(event) => {
+                        store.searchRequest = event.target.value;
+                        onChangeFields({ searchRequest: event.target.value });
+                    }}
+                />
+                <TextField
+                    label={t("bookmark.editor.nameFieldLabel")}
+                    variant="outlined"
+                    size="small"
+                    disabled={store.searchRequest === ''}
+                    fullWidth
+                    value={store.name}
+                    className={classes.input}
+                    onChange={(event) => {
+                        store.name = event.target.value;
+                        onChangeFields({name: event.target.value});
+                    }}
+                />
+                <Categories
+                    className={classes.chipContainer}
+                    sortByPopular
+                    value={categories}
+                    onChange={(newCategories) => onChangeFields({ categories: newCategories })}
+                    autoSelect
+                    maxRows={4}
+                />
+                {store.useDescription && (
                     <TextField
-                        label={t("bookmark.editor.urlFieldLabel")}
+                        label={t("bookmark.editor.descriptionFieldLabel")}
                         variant="outlined"
                         size="small"
                         fullWidth
-                        value={searchRequest}
-                        className={classes.input}
-                        onChange={(event) => onChange({ searchRequest: event.target.value })}
+                        value={store.description}
+                        className={classes.inputDescription}
+                        disabled={store.searchRequest === ''}
+                        multiline
+                        rows={3}
+                        rowsMax={6}
+                        onChange={(event) => {
+                            store.description = event.target.value;
+                            onChangeFields({ description: event.target.value });
+                        }}
                     />
-                    <TextField
-                        label={t("bookmark.editor.nameFieldLabel")}
-                        variant="outlined"
-                        size="small"
-                        disabled={searchRequest === ''}
-                        fullWidth
-                        value={name}
-                        className={classes.input}
-                        onChange={(event) => onChange({ name: event.target.value })}
-                    />
-                    <Categories
-                        className={classes.chipContainer}
-                        sortByPopular
-                        value={categories}
-                        onChange={(newCategories) => onChange({ categories: newCategories })}
-                        autoSelect
-                        maxRows={4}
-                    />
-                    {useDescription && (
-                        <TextField
-                            label={t("bookmark.editor.descriptionFieldLabel")}
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            value={description}
-                            className={classes.input}
-                            disabled={searchRequest === ''}
-                            multiline
-                            rows={3}
-                            rowsMax={3}
-                            onChange={(event) => onChange({ description: event.target.value })}
-                        />
-                    )}
-                    {!useDescription && (
+                )}
+                {!store.useDescription && (
+                    <Button
+                        startIcon={<AddIcon />}
+                        className={classes.addDescriptionButton}
+                        onClick={() => {
+                            store.useDescription = true;
+                            onChangeFields({ useDescription: true });
+                        }}
+                    >
+                        {t("bookmark.editor.addDescription")}
+                    </Button>
+                )}
+            </CardContent>
+            <div className={classes.controls}>
+                {onCancel && (
+                    <Button
+                        variant="text"
+                        color="default"
+                        className={classes.button}
+                        onClick={onCancel}
+                    >
+                        {t("cancel")}
+                    </Button>
+                )}
+                <div className={classes.button}>
+                    {saveState === FETCH.WAIT && (
                         <Button
-                            startIcon={<AddIcon />}
-                            className={classes.addDescriptionButton}
-                            onClick={() => onChange({ useDescription: true })}
+                            variant="contained"
+                            color="primary"
+                            disabled={!searchRequest || !name.trim()}
+                            onClick={onSave}
                         >
-                            {t("bookmark.editor.addDescription")}
+                            {t("save")}
                         </Button>
                     )}
-                </CardContent>
-                <div className={classes.controls}>
-                    {onCancel && (
-                        <Button
-                            variant="text"
-                            color="default"
-                            className={classes.button}
-                            onClick={onCancel}
-                        >
-                            {t("cancel")}
-                        </Button>
+                    {saveState === FETCH.PENDING && (
+                        <Box display="flex" alignItems="center">
+                            <CircularProgess size={24} color="primary" />
+                            {t("bookmark.editor.saving")}...
+                        </Box>
                     )}
-                    <div className={classes.button}>
-                        {!isSaving && !isSave && (
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                disabled={!searchRequest || !name.trim()}
-                                onClick={onSave}
-                            >
-                                {t("save")}
-                            </Button>
-                        )}
-                        {isSaving && !isSave && t("bookmark.editor.saving")}
-                        {isSave && !isSaving && t("bookmark.editor.saveSuccess")}
-                    </div>
+                    {saveState === FETCH.DONE && (
+                        <Box display="flex" alignItems="center">
+                            <DoneIcon color="primary" />
+                            {t("bookmark.editor.saveSuccess")}
+                        </Box>
+                    )}
                 </div>
             </div>
-        </Card>
+        </div>
     ));
 }
 

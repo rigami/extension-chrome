@@ -9,9 +9,9 @@ import {
     Button,
 } from '@material-ui/core';
 import { useService as useBookmarksService } from '@/stores/bookmarks'
-import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal'
 import EditCategoryModal from "@/ui/Bookmarks/EditCategoryModal";
 import { useTranslation } from 'react-i18next';
+import EditBookmarkModal from "@/ui/Bookmarks/EditBookmarkModal";
 
 function GlobalModals () {
     const { t } = useTranslation();

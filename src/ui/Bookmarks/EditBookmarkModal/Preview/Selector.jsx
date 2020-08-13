@@ -61,6 +61,7 @@ function PreviewSelector(props) {
         categories,
         onChange,
         images: defaultImages = [],
+        ...other
     } = props;
     const classes = useStyles();
     const { t } = useTranslation();
@@ -92,12 +93,10 @@ function PreviewSelector(props) {
     }, [defaultImages.length]);
 
     return useObserver(() => (
-        <Card className={classes.root} elevation={8}>
+        <Card className={classes.root} elevation={8} {...other}>
             <CardHeader
                 title={t("bookmark.editor.alternativeIconsTitle")}
-                classes={{
-                    action: classes.headerActions,
-                }}
+                classes={{ action: classes.headerActions }}
             />
             <CardContent className={classes.content}>
                 {store.loadedImages.map(({ url, type, score }) => (

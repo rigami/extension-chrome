@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
     Button,
-    Card,
     Avatar,
     List,
     ListSubheader,
@@ -10,6 +9,7 @@ import {
     ListItemAvatar,
     Fade,
     Collapse,
+    Box
 } from '@material-ui/core';
 import {
     PublicRounded as WebSiteIcon,
@@ -22,8 +22,6 @@ import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginBottom: theme.spacing(2),
-        maxWidth: 1044,
         position: 'relative',
         minHeight: 52,
     },
@@ -49,27 +47,32 @@ const useStyles = makeStyles((theme) => ({
     forceAdd: {
         marginLeft: theme.spacing(2),
     },
+    subheader: {
+        backgroundColor: theme.palette.common.white,
+        top: 72,
+    },
 }));
 
-function SearchResults({ searchRequest = "", onSelect, onClick }) {
+function Search({ query = "", onSelect }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const [timer, setTimer] = useState(undefined);
     const [globalResults, setGlobalResults] = React.useState([]);
     const [straightResults, setStraightResults] = React.useState(null);
-    const [globalLoading, setGlobalLoading] = React.useState(true);
-    const [straightLoading, setStraightLoading] = React.useState(true);
+    const [globalLoading, setGlobalLoading] = React.useState(false);
+    const [straightLoading, setStraightLoading] = React.useState(false);
     const [controller, setController] = React.useState(null);
     const [isOpen, setIsOpen] = React.useState(false);
 
     const handleSelect = (option) => {
-        setStraightResults(null);
-        setGlobalResults([]);
+        // setStraightResults(null);
+        // setGlobalResults([]);
         onSelect(option);
-        setIsOpen(false);
+        // setIsOpen(false);
     };
 
     useEffect(() => {
+        console.log('query', query)
         setStraightLoading(true);
         setGlobalLoading(true);
         if (controller) {
@@ -80,7 +83,7 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
             clearTimeout(timer);
         }
 
-        if (searchRequest.trim() === '') {
+        if (query.trim() === '') {
             setGlobalResults([]);
             setStraightResults(null);
             setStraightLoading(false);
@@ -94,7 +97,7 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
             const controller = new AbortController();
             setController(controller);
 
-            getSiteInfo(searchRequest.trim(), controller)
+            getSiteInfo(query.trim(), controller)
                 .then((siteData) => {
                     setStraightResults({
                         ...siteData,
@@ -110,9 +113,9 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                     setStraightLoading(false);
                 });
 
-            search(searchRequest, controller)
+            search(query, controller)
                 .then((foundResults) => {
-                    setGlobalResults(foundResults.reverse());
+                    setGlobalResults(foundResults);
                 })
                 .catch(() => {
                     setGlobalResults([]);
@@ -122,14 +125,67 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                     setGlobalLoading(false);
                 });
         }, 1300));
-    }, [searchRequest]);
+    }, [query]);
+
+    console.log(straightLoading, globalLoading, isOpen)
 
     return (
         <Fade in={straightLoading || globalLoading || isOpen} unmountOnExit>
-            <Card elevation={8} className={classes.root} onMouseDown={onClick}>
+            <Box className={classes.root}>
+                <Fade in={straightLoading && globalLoading}>
+                    <Box className={clsx(classes.search)}>
+                        {t("search")}...
+                    </Box>
+                </Fade>
                 <Collapse in={(!globalLoading || !straightLoading) && isOpen}>
                     <List disablePadding>
-                        <ListSubheader>{t("bookmark.editor.searchInWEBTitle")}</ListSubheader>
+                        <ListSubheader className={classes.subheader}>{t("bookmark.editor.searchURLTitle")}</ListSubheader>
+                        {!straightLoading && straightResults && (
+                            <ListItem
+                                className={classes.row}
+                                button
+                                onClick={() => handleSelect(straightResults)}
+                            >
+                                <ListItemAvatar className={classes.avatar}>
+                                    <Avatar
+                                        variant="rounded"
+                                        key={straightResults.url}
+                                        src={getFaviconUrl(straightResults.url)}
+                                        className={classes.favicon}
+                                    >
+                                        <WebSiteIcon/>
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    classes={{
+                                        primary: classes.overflowText,
+                                        secondary: classes.overflowText,
+                                    }}
+                                    primary={straightResults.title}
+                                    secondary={straightResults.url}
+                                />
+                            </ListItem>
+                        )}
+                        {!straightLoading && !straightResults && (
+                            <ListItem>
+                                {t("bookmark.editor.URLNotRecognize")}
+                                <Button
+                                    className={classes.forceAdd}
+                                    onClick={() => onSelect({
+                                        url: query,
+                                        title: '',
+                                    }, true)}
+                                >
+                                    {t("bookmark.editor.forceAddURL")}
+                                </Button>
+                            </ListItem>
+                        )}
+                        {straightLoading && (
+                            <ListItem>
+                                {t("search")}...
+                            </ListItem>
+                        )}
+                        <ListSubheader className={classes.subheader}>{t("bookmark.editor.searchInWEBTitle")}</ListSubheader>
                         {!globalLoading && globalResults && globalResults.map((option) => (
                             <ListItem
                                 className={classes.row}
@@ -167,62 +223,11 @@ function SearchResults({ searchRequest = "", onSelect, onClick }) {
                                 {t("search")}...
                             </ListItem>
                         )}
-                        <ListSubheader>{t("bookmark.editor.searchURLTitle")}</ListSubheader>
-                        {!straightLoading && straightResults && (
-                            <ListItem
-                                className={classes.row}
-                                button
-                                onClick={() => handleSelect(straightResults)}
-                            >
-                                <ListItemAvatar className={classes.avatar}>
-                                    <Avatar
-                                        variant="rounded"
-                                        key={straightResults.url}
-                                        src={getFaviconUrl(straightResults.url)}
-                                        className={classes.favicon}
-                                    >
-                                        <WebSiteIcon/>
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    classes={{
-                                        primary: classes.overflowText,
-                                        secondary: classes.overflowText,
-                                    }}
-                                    primary={straightResults.title}
-                                    secondary={straightResults.url}
-                                />
-                            </ListItem>
-                        )}
-                        {!straightLoading && !straightResults && (
-                            <ListItem>
-                                {t("bookmark.editor.URLNotRecognize")}
-                                <Button
-                                    className={classes.forceAdd}
-                                    onClick={() => onSelect({
-                                        url: searchRequest,
-                                        title: '',
-                                    }, true)}
-                                >
-                                    {t("bookmark.editor.forceAddURL")}
-                                </Button>
-                            </ListItem>
-                        )}
-                        {straightLoading && (
-                            <ListItem>
-                                {t("search")}...
-                            </ListItem>
-                        )}
                     </List>
                 </Collapse>
-                <Fade in={straightLoading && globalLoading}>
-                    <Card className={clsx(classes.search)} elevation={8} onMouseDown={onClick}>
-                        {t("search")}...
-                    </Card>
-                </Fade>
-            </Card>
+            </Box>
         </Fade>
     );
 }
 
-export default SearchResults;
+export default Search;

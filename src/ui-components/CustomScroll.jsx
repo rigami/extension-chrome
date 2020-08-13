@@ -40,12 +40,12 @@ const exportClasses = (theme) => ({
 
 const useStyles = makeStyles(exportClasses);
 
-function CustomScroll({ children, refScroll, reverse, ...other }) {
+function CustomScroll({ children, refScroll, reverse, className: externalClassName, ...other }) {
     const classes = useStyles();
 
     return (
         <Scrollbar
-            className={classes.root}
+            className={clsx(classes.root, externalClassName)}
             noDefaultStyles
             scrollerProps={{
                 renderer: (props) => {
