@@ -44,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
     warnIcon: {
         marginRight: theme.spacing(1),
     },
+    card: {
+        marginTop: theme.spacing(2),
+    },
 }));
 
 const STAGE = {
@@ -124,6 +127,7 @@ function Preview(props) {
                     icoVariant={icoVariant}
                     imageUrl={imageUrl}
                     preview
+                    className={classes.card}
                 />
             )}
             {stage === STAGE.DONE && stateImageLoad === FETCH.FAILED && (

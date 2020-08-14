@@ -1,54 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, createRef, useEffect } from 'react';
 import {
-    Button,
     Box,
-    CardContent,
-    Typography,
     TextField,
-    CircularProgess,
-    Popper,
     ClickAwayListener,
     Paper,
     Popover,
     Fade,
 } from '@material-ui/core';
-import {
-    AddRounded as AddIcon,
-    DoneRounded as DoneIcon,
-} from '@material-ui/icons';
-import Categories from "@/ui/Bookmarks/Ctegories";
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { useObserver, useLocalStore } from 'mobx-react-lite';
-import {FETCH} from "@/enum";
-import EditCategory from "@/ui/Bookmarks/EditCategoryModal/EditCategory";
-import {useService as useAppService} from "@/stores/app";
 import Search from "@/ui/Bookmarks/EditBookmarkModal/Search";
 import ReactResizeDetector from 'react-resize-detector';
 import Scrollbar from "@/ui-components/CustomScroll";
 
 const useStyles = makeStyles((theme) => ({
-    content: { flex: '1 0 auto' },
-    controls: {
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: theme.spacing(2),
-        paddingBottom: theme.spacing(2),
-        justifyContent: 'flex-end',
-    },
-    button: {
-        marginRight: theme.spacing(2),
-        position: 'relative',
-    },
-    details: {
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-    },
     input: { marginTop: theme.spacing(2) },
-    chipContainer: { marginTop: theme.spacing(2) },
-    addDescriptionButton: { marginTop: theme.spacing(2) },
-    popper: { zIndex: theme.zIndex.modal },
     paper: {
 
     },
@@ -57,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: 0,
         position: 'sticky',
         top: 0,
-        backgroundColor: theme.palette.common.white,
+        backgroundColor: theme.palette.background.paper,
         zIndex: 1,
         borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
     },
@@ -74,16 +41,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function SearchField(props) {
-    const {
-        label,
-        searchRequest ='',
-    } = props;
+function SearchField({ searchRequest = '', onSelect, onChange }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
+    const secondInput = createRef();
 
     const store = useLocalStore(() => ({
         searchRequest,
@@ -91,7 +55,9 @@ function SearchField(props) {
         filedWidth: 0,
     }));
 
-    console.log(anchorEl);
+    useEffect(() => {
+        store.searchRequest = searchRequest;
+    }, [searchRequest]);
 
     return useObserver(() => (
         <React.Fragment>
@@ -102,7 +68,7 @@ function SearchField(props) {
                 }}
             >
                 <TextField
-                    label={label}
+                    label={t("bookmark.editor.urlFieldLabel")}
                     variant="outlined"
                     size="small"
                     fullWidth
@@ -110,18 +76,16 @@ function SearchField(props) {
                     className={classes.input}
                     onChange={(event) => {
                         store.searchRequest = event.target.value;
+                        onChange(store.searchRequest);
                         if (store.searchRequest) {
                             setIsOpen(true);
                         } else {
                             setIsOpen(false);
                         }
                     }}
-                    onMouseDown={() => {
-                        /* if (!isOpen) */ setIsBlockEvent(true);
-                    }}
+                    onMouseDown={() => setIsBlockEvent(true)}
                     onClick={(event) => {
                         setAnchorEl(event.currentTarget);
-                        /*if (isBlockEvent)*/
                         if (store.searchRequest) setIsOpen(true);
                         setIsBlockEvent(false);
                     }}
@@ -145,6 +109,7 @@ function SearchField(props) {
                     horizontal: 'left',
                 }}
                 TransitionComponent={Fade}
+                disableEnforceFocus
             >
                 <Scrollbar>
                     <Box
@@ -154,7 +119,6 @@ function SearchField(props) {
                             paddingLeft: anchorEl?.getBoundingClientRect?.()?.left - 16,
                         }}
                     >
-
                         <ClickAwayListener
                             onClickAway={() => {
                                 if (isBlockEvent) return;
@@ -165,25 +129,25 @@ function SearchField(props) {
                             <Paper elevation={8} style={{ width: store.filedWidth + 32 }} className={classes.paper}>
                                 <Box className={classes.inputWrapper}>
                                     <TextField
-                                        label={label}
+                                        label={t("bookmark.editor.urlFieldLabel")}
                                         variant="outlined"
                                         size="small"
                                         fullWidth
-                                        value={store.searchRequest}
+                                        autoFocus
+                                        ref={secondInput}
+                                        value={store.searchRequest || ' '}
                                         className={classes.input}
                                         onChange={(event) => {
                                             store.searchRequest = event.target.value;
+                                            onChange(store.searchRequest);
                                             if (store.searchRequest) {
                                                 setIsOpen(true);
                                             } else {
                                                 setIsOpen(false);
                                             }
                                         }}
-                                        onMouseDown={() => {
-                                            /* if (!isOpen) */ setIsBlockEvent(true);
-                                        }}
-                                        onClick={(event) => {
-                                            /*if (isBlockEvent)*/
+                                        onMouseDown={() => setIsBlockEvent(true)}
+                                        onClick={() => {
                                             if (store.searchRequest) setIsOpen(true);
                                             setIsBlockEvent(false);
                                         }}
@@ -191,7 +155,10 @@ function SearchField(props) {
                                 </Box>
                                 <Search
                                     query={store.searchRequest}
-                                    onSelect={console.log}
+                                    onSelect={(result) => {
+                                        onSelect(result);
+                                        setIsOpen(false);
+                                    }}
                                 />
                             </Paper>
                         </ClickAwayListener>

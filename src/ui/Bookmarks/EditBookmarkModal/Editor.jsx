@@ -20,6 +20,9 @@ import SearchField from './SearchField';
 
 const useStyles = makeStyles((theme) => ({
     content: { flex: '1 0 auto' },
+    header: {
+        marginBottom: theme.spacing(1),
+    },
     controls: {
         display: 'flex',
         alignItems: 'center',
@@ -45,7 +48,8 @@ const useStyles = makeStyles((theme) => ({
 function Editor(props) {
     const {
         isEdit,
-        searchRequest ='',
+        searchRequest = '',
+        url = '',
         name = '',
         description = '',
         useDescription = false,
@@ -60,6 +64,7 @@ function Editor(props) {
 
     const store = useLocalStore(() => ({
         searchRequest,
+        url,
         name,
         description,
         useDescription,
@@ -68,6 +73,10 @@ function Editor(props) {
     useEffect(() => {
         store.searchRequest = searchRequest;
     }, [searchRequest]);
+
+    useEffect(() => {
+        store.url = url;
+    }, [url]);
 
     useEffect(() => {
         store.name = name;
@@ -84,19 +93,19 @@ function Editor(props) {
     return useObserver(() => (
         <div className={classes.details}>
             <CardContent className={classes.content}>
-                <Typography variant="h5">
+                <Typography variant="h5" className={classes.header}>
                     {isEdit ? t("bookmark.editor.editTitle") : t("bookmark.editor.addTitle")}
                 </Typography>
                 <SearchField
-                    label={t("bookmark.editor.urlFieldLabel")}
-                    variant="outlined"
-                    size="small"
-                    fullWidth
-                    value={store.searchRequest}
-                    className={classes.input}
-                    onChange={(event) => {
-                        store.searchRequest = event.target.value;
-                        onChangeFields({ searchRequest: event.target.value });
+                    searchRequest={store.searchRequest}
+                    onChange={(value) => {
+                        store.searchRequest = value;
+                        onChangeFields({ searchRequest: value });
+                    }}
+                    onSelect={({ title, url }) => {
+                        store.searchRequest = url;
+                        store.name = title;
+                        onChangeFields({ url, name: title });
                     }}
                 />
                 <TextField
@@ -109,7 +118,7 @@ function Editor(props) {
                     className={classes.input}
                     onChange={(event) => {
                         store.name = event.target.value;
-                        onChangeFields({name: event.target.value});
+                        onChangeFields({ name: event.target.value});
                     }}
                 />
                 <Categories

@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(2),
     },
     subheader: {
-        backgroundColor: theme.palette.common.white,
+        backgroundColor: theme.palette.background.paper,
         top: 72,
     },
 }));
@@ -65,14 +65,10 @@ function Search({ query = "", onSelect }) {
     const [isOpen, setIsOpen] = React.useState(false);
 
     const handleSelect = (option) => {
-        // setStraightResults(null);
-        // setGlobalResults([]);
         onSelect(option);
-        // setIsOpen(false);
     };
 
     useEffect(() => {
-        console.log('query', query)
         setStraightLoading(true);
         setGlobalLoading(true);
         if (controller) {
@@ -126,8 +122,6 @@ function Search({ query = "", onSelect }) {
                 });
         }, 1300));
     }, [query]);
-
-    console.log(straightLoading, globalLoading, isOpen)
 
     return (
         <Fade in={straightLoading || globalLoading || isOpen} unmountOnExit>

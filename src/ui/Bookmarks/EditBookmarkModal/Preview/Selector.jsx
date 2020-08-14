@@ -5,6 +5,7 @@ import {
     CardContent,
     Box,
     Typography,
+    Button,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,7 +16,6 @@ import { useLocalStore, useObserver } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginBottom: theme.spacing(2),
         position: 'relative',
     },
     headerActions: {
@@ -52,6 +52,17 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(2),
     },
 }));
+
+function PreviewSelectorToggleButton({ isOpen, onOpen, onClose }) {
+    const { t } = useTranslation();
+
+    return (
+        <Button onClick={() => isOpen ? onClose() : onOpen()} fullWidth>
+            {!isOpen && t("bookmark.editor.alternativeIconsMore")}
+            {isOpen && t("bookmark.editor.alternativeIconsLess")}
+        </Button>
+    );
+}
 
 
 function PreviewSelector(props) {
@@ -138,3 +149,4 @@ function PreviewSelector(props) {
 }
 
 export default PreviewSelector;
+export { PreviewSelectorToggleButton };

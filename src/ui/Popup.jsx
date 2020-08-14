@@ -10,7 +10,7 @@ import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
 import { Provider as AppConfigProvider } from '@/stores/app';
 import { Provider as BookmarksProvider } from '@/stores/bookmarks';
-import EditorBookmark from "@/ui/Bookmarks/EditBookmarkModal";
+import EditorBookmark from "@/ui/Bookmarks/EditBookmarkModal/ExtendPreset";
 
 const useStyles = makeStyles((theme) => ({
     editor: {
