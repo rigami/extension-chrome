@@ -13,7 +13,7 @@ import EditMenu from "@/ui/Bookmarks/ContextEditMenu";
 const useStyles = makeStyles((theme) => ({
     root: {
         overflow: 'auto',
-        height: 130,
+        maxHeight: 130,
         display: 'flex',
         flexWrap: 'wrap',
         '& > *': {

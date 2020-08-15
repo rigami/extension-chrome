@@ -49,6 +49,7 @@ function Editor(props) {
         onSave,
         onCancel,
         onErrorLoad,
+        onStage = () => {},
     } = props;
     const classes = useStyles();
 
@@ -161,6 +162,8 @@ function Editor(props) {
     useEffect(() => {
         store.fullCategories = store.categories.map((categoryId) => bookmarksStore.getCategory(categoryId));
     }, [store.categories.length]);
+
+    useEffect(() => onStage(store.stage), [store.stage]);
 
     if (isLoading) {
         return useObserver(() => (

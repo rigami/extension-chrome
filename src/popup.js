@@ -1,2 +1,2 @@
-import '@/ui/Popup';
+import '@/ui/Popup/index';
 import '@/themes/index.css';
