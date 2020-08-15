@@ -30,6 +30,8 @@ function Popup() {
                 return;
             }
 
+            console.log('Found tab', tab);
+
             setTabName(tab.title);
             setTabUrl(tab.url);
             setIsLoading(false);
