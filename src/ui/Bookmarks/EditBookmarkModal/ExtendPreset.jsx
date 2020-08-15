@@ -22,7 +22,6 @@ import SelectorWrapper from "@/ui/Bookmarks/EditBookmarkModal/Preview/SelectorWr
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        padding: theme.spacing(3),
         maxWidth: 1062,
         minHeight: '100vh',
         display: 'flex',
@@ -39,25 +38,30 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUrl, className: externalClassName, classes: externalClasses = {}, bringToEditorHeight = false }) {
+function ExtendPreset(props) {
+    const {
+        editBookmarkId,
+        defaultUrl,
+        defaultName,
+        bringToEditorHeight = false,
+        marginThreshold = 24,
+        className: externalClassName,
+        classes: externalClasses = {},
+        onSave,
+        onCancel,
+        onErrorLoad,
+    } = props;
     const classes = useStyles();
 
     const bookmarksStore = useBookmarksService();
     const [controller, setController] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [state, setState] = useState(FETCH.PENDING);
     const store = useLocalStore(() => ({
-        /*
-        images: [],
-        searchRequest: defaultUrl || '',
-        blockResetSearch: false,
-        editorHeight: 0,
-        isSave: false,
-        isSaving: false, */
         editBookmarkId,
+        editorHeight: 0,
         icoVariant: BKMS_VARIANT.SMALL,
         imageURL: null,
-        name: '',
+        name: defaultName || '',
         description: '',
         useDescription: false,
         categories: [],
@@ -66,10 +70,11 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
         stage: STAGE.WAIT_REQUEST,
         saveStage: FETCH.WAIT,
         isOpenSelectorPreview: false,
+        images: [],
     }));
 
-    /* const handlerSave = () => {
-        store.isSaving  = true;
+    const handlerSave = () => {
+        store.saveStage  = FETCH.PENDING;
         bookmarksStore.saveBookmark({
             ...store,
             image_url: store.imageURL,
@@ -77,8 +82,7 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
             description: (store.useDescription && store.description?.trim()) || '',
             id: store.editBookmarkId,
         }).then((saveBookmarkId) => {
-            store.isSave = true;
-            store.isSaving = false;
+            store.saveStage  = FETCH.DONE;
             store.editBookmarkId = saveBookmarkId;
         });
 
@@ -107,16 +111,6 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
     }, []);
 
     useEffect(() => {
-        store.fullCategories = store.categories.map((categoryId) => bookmarksStore.getCategory(categoryId));
-    }, [store.categories.length]); */
-
-    /* if (isLoading) {
-        return useObserver(() => (
-            <CircularProgress />
-        ));
-    } */
-
-    useEffect(() => {
         if (!store.editBookmarkId) {
             store.imageURL = null;
         }
@@ -132,11 +126,14 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
 
         store.stage = STAGE.PARSING_SITE;
 
+        console.log('START PARSE SITE', store.url);
+
+        const parseUrl = store.url;
+
         asyncAction(async () => {
             const siteData = await getSiteInfo(store.url, controller);
 
             if (store.editBookmarkId) {
-                store.stage = STAGE.DONE;
                 store.images = siteData.icons;
                 return;
             }
@@ -145,9 +142,10 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
                 try {
                     siteData.bestIcon = await getImageRecalc(siteData.bestIcon.name)
                 } catch (e) {
-                    store.stage = STAGE.DONE;
                 }
             }
+
+            console.log('PARSE SITE SUCCESS');
 
             store.imageURL = siteData.bestIcon?.url;
             store.icoVariant = siteData.bestIcon?.type;
@@ -158,7 +156,7 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
             store.description = store.description || siteData.description;
         })
             .then(() => {
-                store.stage = STAGE.DONE;
+                if (parseUrl === store.url) store.stage = STAGE.DONE;
             })
             .catch(() => {
 
@@ -169,6 +167,14 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
         store.fullCategories = store.categories.map((categoryId) => bookmarksStore.getCategory(categoryId));
     }, [store.categories.length]);
 
+    console.log('store.images', [...store.images]);
+
+    if (isLoading) {
+        return useObserver(() => (
+            <CircularProgress />
+        ));
+    }
+
     return useObserver(() => (
         <Scrollbar
             reverse
@@ -178,6 +184,7 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
             <Container
                 maxWidth={false}
                 className={clsx(classes.container, externalClassName)}
+                style={{ padding: marginThreshold }}
             >
 
                 <ReactResizeDetector
@@ -199,7 +206,32 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
                                     onClose={() => { store.isOpenSelectorPreview = false; }}
                                 />
                             )}
-                            // onErrorLoadImage={() => {}}
+                            getNextValidImage={() => {
+                                console.log('Broken image. Find next')
+                                store.images = store.images.filter(({ url }) => url !== store.imageURL);
+
+                                if(store.images.length === 0) {
+                                    store.imageURL = null;
+                                    store.icoVariant = BKMS_VARIANT.SYMBOL;
+
+                                    console.log('Next image', { url: store.imageURL, type: store.icoVariant })
+
+                                    return { url: store.imageURL, type: store.icoVariant };
+                                }
+
+                                let maxScoreId = 0;
+
+                                store.images.forEach(({ score }, id) => {
+                                    if (store.images[maxScoreId].score < score) maxScoreId = id;
+                                });
+
+                                store.imageURL = store.images[maxScoreId].url;
+                                store.icoVariant = store.images[maxScoreId].type;
+
+                                console.log('Next image', store.images[maxScoreId])
+
+                                return store.images[maxScoreId];
+                            }}
                         />
                         <Box display="flex" flexDirection="column">
                             <SelectorWrapper
@@ -209,9 +241,13 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
                                 categories={store.fullCategories}
                                 images={store.images}
                                 minHeight={store.editorHeight}
-                                onChange={console.log}
+                                marginThreshold={marginThreshold}
+                                onSelect={(url, type) => {
+                                    store.imageURL = url;
+                                    store.icoVariant = type;
+                                    store.isOpenSelectorPreview = false;
+                                }}
                                 onClose={() => {
-                                    console.log("CLOSE !");
                                     store.isOpenSelectorPreview = false;
                                 }}
                             />
@@ -223,6 +259,7 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
                                 useDescription={store.useDescription}
                                 categories={[]}
                                 saveState={store.saveStage}
+                                marginThreshold={marginThreshold}
                                 onChangeFields={(value) => {
                                     if ('searchRequest' in value) {
                                         store.searchRequest = value.searchRequest;
@@ -249,7 +286,7 @@ function ExtendPreset({ onSave, onCancel, onErrorLoad, editBookmarkId, defaultUr
                                     }
                                     store.saveStage = FETCH.WAIT;
                                 }}
-                                onSave={() => {}}
+                                onSave={handlerSave}
                                 onCancel={onCancel}
                             />
                         </Box>

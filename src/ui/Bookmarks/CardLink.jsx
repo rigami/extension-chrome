@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
     Card,
     Typography,
@@ -147,6 +147,10 @@ function CardLink(props) {
             window.open(url, "_self");
         }
     };
+
+    useEffect(() => console.log('NEW IMAGE:', { imageUrl, icoVariant }), [imageUrl, icoVariant]);
+
+    console.log('RENDER CARD');
 
     return (
         <Tooltip

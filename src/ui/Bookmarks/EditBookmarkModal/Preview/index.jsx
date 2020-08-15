@@ -18,6 +18,7 @@ import CardLink from '@/ui/Bookmarks/CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import {BKMS_VARIANT, FETCH} from "@/enum";
+import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     cover: {
@@ -67,31 +68,55 @@ function Preview(props) {
         description,
         categories,
         header,
-        onErrorLoadImage = () => {},
+        getNextValidImage = () => {},
     } = props;
     const classes = useStyles();
     const { t } = useTranslation();
-    const [stateImageLoad, setStateImageLoad] = useState(FETCH.PENDING);
+
+    const store = useLocalStore(() => ({
+        stateImageLoad: FETCH.WAIT,
+        loadUrl: '',
+    }));
 
     useEffect(() => {
-        setStateImageLoad(FETCH.PENDING);
+        if(stage !== STAGE.DONE) {
+            store.stateImageLoad = FETCH.WAIT;
+            store.loadUrl = '';
+            return;
+        }
+        console.log('EFFECT IMAGE', 'stage:', stage, 'stateImageLoad:', store.stateImageLoad, 'imageUrl:', imageUrl, 'loadUrl:', store.loadUrl);
+
+        store.stateImageLoad = FETCH.PENDING;
         if (!imageUrl || icoVariant === BKMS_VARIANT.SYMBOL) {
-            setStateImageLoad(FETCH.DONE);
+            console.log('SYMBOL ICON', stage);
+            store.stateImageLoad = FETCH.DONE;
             return;
         }
 
         const imgCache = document.createElement('img');
         imgCache.onload = () => {
-            setStateImageLoad(FETCH.DONE);
+            console.log('onLoad success', { url: imgCache.src, loadUrl: store.loadUrl });
+            if(imgCache.src !== store.loadUrl) return;
+            store.stateImageLoad = FETCH.DONE;
         };
         imgCache.onerror = () => {
-            setStateImageLoad(FETCH.FAILED);
-            onErrorLoadImage();
+            console.log('onError failed', { url: imgCache.src, loadUrl: store.loadUrl });
+            if(imgCache.src !== store.loadUrl) return;
+            const nextImage = getNextValidImage();
+            console.log('nextImage', nextImage);
+            if (nextImage === null) {
+                store.stateImageLoad = FETCH.FAILED;
+            } else {
+                store.stateImageLoad = FETCH.WAIT;
+            }
         };
         imgCache.src = imageUrl;
-    }, [imageUrl]);
+        store.loadUrl = imgCache.src;
+    }, [imageUrl, stage]);
 
-    return (
+    useEffect(() => console.log('stateImageLoad', store.stateImageLoad), [store.stateImageLoad]);
+
+    return useObserver(() => (
         <CardMedia
             className={classes.cover}
         >
@@ -114,12 +139,17 @@ function Preview(props) {
                 />
             )}
             {stage === STAGE.DONE && header}
-            {(stage === STAGE.PARSING_SITE || stateImageLoad === FETCH.PENDING) && (
-                <FullScreenStub>
-                    <CircularProgress color="primary" />
-                </FullScreenStub>
-            )}
-            {stage === STAGE.DONE && stateImageLoad === FETCH.DONE && (
+            {
+                (
+                    stage === STAGE.PARSING_SITE
+                    || (stage === STAGE.DONE&& (store.stateImageLoad === FETCH.PENDING || store.stateImageLoad === FETCH.WAIT))
+                ) && (
+                    <FullScreenStub>
+                        <CircularProgress color="primary" />
+                    </FullScreenStub>
+                )
+            }
+            {stage === STAGE.DONE && store.stateImageLoad === FETCH.DONE && (
                 <CardLink
                     name={name}
                     description={description}
@@ -130,14 +160,14 @@ function Preview(props) {
                     className={classes.card}
                 />
             )}
-            {stage === STAGE.DONE && stateImageLoad === FETCH.FAILED && (
+            {stage === STAGE.DONE && store.stateImageLoad === FETCH.FAILED && (
                 <Box className={classes.warnMessage}>
                     <WarnIcon  className={classes.warnIcon} />
                     {t("bookmark.editor.errorLoadIcon")}
                 </Box>
             )}
         </CardMedia>
-    );
+    ));
 }
 
 export default Preview;

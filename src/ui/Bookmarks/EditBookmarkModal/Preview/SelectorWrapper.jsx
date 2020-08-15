@@ -12,19 +12,6 @@ import Scrollbar from "@/ui-components/CustomScroll";
 import PreviewSelector from "@/ui/Bookmarks/EditBookmarkModal/Preview/Selector";
 
 const useStyles = makeStyles((theme) => ({
-    input: { marginTop: theme.spacing(2) },
-    paper: {
-
-    },
-    inputWrapper: {
-        padding: theme.spacing(2),
-        paddingTop: 0,
-        position: 'sticky',
-        top: 0,
-        backgroundColor: theme.palette.background.paper,
-        zIndex: 1,
-        borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
-    },
     popoverContent: {
         height: '100%',
         maxHeight: '100%',
@@ -33,12 +20,9 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 0,
         background: 'none',
     },
-    scrollContent: {
-        padding: theme.spacing(3, 0),
-    },
 }));
 
-function SelectorWrapper({ isOpen, onClose, minHeight, ...other }) {
+function SelectorWrapper({ isOpen, onClose, minHeight, marginThreshold = 24, ...other }) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -52,7 +36,6 @@ function SelectorWrapper({ isOpen, onClose, minHeight, ...other }) {
             <ReactResizeDetector
                 handleHeight
                 onResize={(width) => {
-                    console.log('width', width)
                     store.filedWidth = width;
                 }}
             >
@@ -77,35 +60,23 @@ function SelectorWrapper({ isOpen, onClose, minHeight, ...other }) {
                 }}
                 TransitionComponent={Fade}
                 disableEnforceFocus
-                onClose={() => {
-                    console.log("CLOSE POPOVER");
-                }}
             >
                 <Scrollbar>
                     <Box
-                        className={classes.scrollContent}
                         style={{
-                            paddingTop: anchorEl?.getBoundingClientRect?.()?.top,
+                            paddingTop: Math.max(anchorEl?.getBoundingClientRect?.()?.top, marginThreshold),
                             paddingLeft: anchorEl?.getBoundingClientRect?.()?.left,
-                        }}
-                        onClick={() => {
-                            console.log("CLICK BACKDROP");
+                            paddingBottom: marginThreshold,
                         }}
                     >
                         <ClickAwayListener
-                            onClickAway={() => {
-                                console.log("CLOSE");
-                                onClose();
-                            }}
+                            onClickAway={() => onClose()}
                             mouseEvent="onMouseDown"
                         >
                             <Box>
                                 <PreviewSelector
                                     {...other}
                                     style={{ width: store.filedWidth, minHeight, }}
-                                    onClick={() => {
-                                        console.log("CLICK PAPER");
-                                    }}
                                 />
                             </Box>
                         </ClickAwayListener>

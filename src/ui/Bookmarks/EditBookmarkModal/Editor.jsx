@@ -5,7 +5,7 @@ import {
     CardContent,
     Typography,
     TextField,
-    CircularProgess,
+    CircularProgress,
 } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
@@ -43,6 +43,9 @@ const useStyles = makeStyles((theme) => ({
     inputDescription: { marginTop: theme.spacing(1) },
     chipContainer: { marginTop: theme.spacing(2) },
     addDescriptionButton: { marginTop: theme.spacing(1) },
+    saveIcon: {
+        marginLeft: theme.spacing(1),
+    },
 }));
 
 function Editor(props) {
@@ -55,6 +58,7 @@ function Editor(props) {
         useDescription = false,
         categories,
         saveState = FETCH.WAIT,
+        marginThreshold = 24,
         onChangeFields = () => {},
         onSave,
         onCancel,
@@ -98,6 +102,7 @@ function Editor(props) {
                 </Typography>
                 <SearchField
                     searchRequest={store.searchRequest}
+                    marginThreshold={marginThreshold}
                     onChange={(value) => {
                         store.searchRequest = value;
                         onChangeFields({ searchRequest: value });
@@ -184,13 +189,13 @@ function Editor(props) {
                     )}
                     {saveState === FETCH.PENDING && (
                         <Box display="flex" alignItems="center">
-                            <CircularProgess size={24} color="primary" />
+                            <CircularProgress size={24} color="primary" className={classes.saveIcon} />
                             {t("bookmark.editor.saving")}...
                         </Box>
                     )}
                     {saveState === FETCH.DONE && (
                         <Box display="flex" alignItems="center">
-                            <DoneIcon color="primary" />
+                            <DoneIcon color="primary" className={classes.saveIcon} />
                             {t("bookmark.editor.saveSuccess")}
                         </Box>
                     )}

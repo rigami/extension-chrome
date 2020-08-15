@@ -18,6 +18,9 @@ const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
     },
+    headerTitle: {
+        wordBreak: 'break-word',
+    },
     headerActions: {
         marginRight: 0,
         marginTop: 0,
@@ -58,8 +61,8 @@ function PreviewSelectorToggleButton({ isOpen, onOpen, onClose }) {
 
     return (
         <Button onClick={() => isOpen ? onClose() : onOpen()} fullWidth>
-            {!isOpen && t("bookmark.editor.alternativeIconsMore")}
-            {isOpen && t("bookmark.editor.alternativeIconsLess")}
+            {!isOpen && t("bookmark.editor.alternativeIconsOpen")}
+            {isOpen && t("bookmark.editor.alternativeIconsClose")}
         </Button>
     );
 }
@@ -70,7 +73,7 @@ function PreviewSelector(props) {
         name,
         description,
         categories,
-        onChange,
+        onSelect,
         images: defaultImages = [],
         ...other
     } = props;
@@ -107,7 +110,10 @@ function PreviewSelector(props) {
         <Card className={classes.root} elevation={8} {...other}>
             <CardHeader
                 title={t("bookmark.editor.alternativeIconsTitle")}
-                classes={{ action: classes.headerActions }}
+                classes={{
+                    title: classes.headerTitle,
+                    action: classes.headerActions,
+                }}
             />
             <CardContent className={classes.content}>
                 {store.loadedImages.map(({ url, type, score }) => (
@@ -120,10 +126,7 @@ function PreviewSelector(props) {
                         imageUrl={url}
                         preview
                         className={classes.card}
-                        onClick={() => {
-                            console.log("onClick")
-                            onChange(url, type);
-                        }}
+                        onClick={() => onSelect(url, type)}
                     />
                 ))}
                 <CardLink
@@ -134,7 +137,7 @@ function PreviewSelector(props) {
                     icoVariant={BKMS_VARIANT.SYMBOL}
                     preview
                     className={classes.card}
-                    onClick={() => onChange(null, BKMS_VARIANT.SYMBOL)}
+                    onClick={() => onSelect(null, BKMS_VARIANT.SYMBOL)}
                 />
             </CardContent>
             {store.size !== store.loadedImages.length && (

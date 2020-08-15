@@ -152,8 +152,8 @@
       "searchURLTitle":"Поиск по адресу",
       "notFound":"Ничего не нейдено",
       "searchInWEBTitle":"Поиск в сети",
-      "alternativeIconsMore":"Больше вариантов",
-      "alternativeIconsLess":"Меньше вариантов",
+      "alternativeIconsOpen":"Другие вариантов",
+      "alternativeIconsClose":"К редактору",
       "alternativeIconsTitle":"Другие варианты иконок",
       "errorLoadIcon":"Не удалось загрузить иконку, попробуйте другую",
       "helper":{

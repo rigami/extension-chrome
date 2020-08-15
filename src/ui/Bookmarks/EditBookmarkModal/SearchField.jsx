@@ -36,12 +36,9 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 0,
         background: 'none',
     },
-    scrollContent: {
-        padding: theme.spacing(3, 0),
-    },
 }));
 
-function SearchField({ searchRequest = '', onSelect, onChange }) {
+function SearchField({ searchRequest = '', marginThreshold = 24, onSelect, onChange }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -113,10 +110,10 @@ function SearchField({ searchRequest = '', onSelect, onChange }) {
             >
                 <Scrollbar>
                     <Box
-                        className={classes.scrollContent}
                         style={{
-                            paddingTop: anchorEl?.getBoundingClientRect?.()?.top - 16,
+                            paddingTop: Math.max(anchorEl?.getBoundingClientRect?.()?.top - 16, marginThreshold),
                             paddingLeft: anchorEl?.getBoundingClientRect?.()?.left - 16,
+                            paddingBottom: marginThreshold,
                         }}
                     >
                         <ClickAwayListener

@@ -11,6 +11,8 @@ import Nest from '@/utils/Nest';
 import { Provider as AppConfigProvider } from '@/stores/app';
 import { Provider as BookmarksProvider } from '@/stores/bookmarks';
 import EditorBookmark from "@/ui/Bookmarks/EditBookmarkModal/ExtendPreset";
+import {STAGE} from "@/ui/Bookmarks/EditBookmarkModal/Preview";
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     editor: {
@@ -18,6 +20,10 @@ const useStyles = makeStyles((theme) => ({
     },
     editorWrapper: {
         maxHeight: 600,
+    },
+    hideEditor: {
+        visible: 'hidden',
+        pointerEvents: 'none',
     },
 }));
 
@@ -62,29 +68,21 @@ function Popup() {
             >
                 <Box style={{ width: 680 }}>
                     {isChecking && "Проверка..."}
-                    {!isChecking && (
-                        <EditorBookmark
-                            className={classes.editor}
-                            classes={{ scrollWrapper: classes.editorWrapper }}
-                            bringToEditorHeight
-                            name={defaultName}
-                            defaultUrl={defaultUrl}
-                            /* isEdit={}
-                            previewState={}
-                            searchRequest={}
-                            url={}
-                            name={}
-                            description={}
-                            useDescription={}
-                            categories={}
-                            isOpenSelectPreview={}
-                            imageURL={}
-                            icoVariant={}
-                            fullCategories={}
-                            onChange={} */
-                            onSave={() => {}}
-                        />
-                    )}
+                    <EditorBookmark
+                        className={clsx(classes.editor, isChecking && classes.hideEditor)}
+                        classes={{ scrollWrapper: classes.editorWrapper }}
+                        bringToEditorHeight
+                        defaultName={defaultName}
+                        defaultUrl={defaultUrl}
+                        marginThreshold={0}
+                        onSave={() => {}}
+                        onStage={(stage) => {
+                            console.log('stage', stage)
+                            if (isChecking && (stage === STAGE.DONE || stage === STAGE.WAIT_NAME)) {
+                                setIsChecking(false);
+                            }
+                        }}
+                    />
                 </Box>
             </Nest>
         </ThemeProvider>
