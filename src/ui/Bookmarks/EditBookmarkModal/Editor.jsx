@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     chipContainer: { marginTop: theme.spacing(2) },
     addDescriptionButton: { marginTop: theme.spacing(1) },
     saveIcon: {
-        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
     },
 }));
 

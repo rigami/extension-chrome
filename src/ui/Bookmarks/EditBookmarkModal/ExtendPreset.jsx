@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
     Container,
-    Collapse,
     CircularProgress,
     Card,
     Box,
@@ -9,7 +8,7 @@ import {
 import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
-import PreviewSelector, {PreviewSelectorToggleButton} from "./Preview/Selector";
+import {PreviewSelectorToggleButton} from "./Preview/Selector";
 import { getSiteInfo, getImageRecalc } from "@/utils/siteSearch";
 import { FETCH, BKMS_VARIANT } from '@/enum';
 import asyncAction from "@/utils/asyncAction";
@@ -126,8 +125,6 @@ function ExtendPreset(props) {
 
         store.stage = STAGE.PARSING_SITE;
 
-        console.log('START PARSE SITE', store.url);
-
         const parseUrl = store.url;
 
         asyncAction(async () => {
@@ -144,8 +141,6 @@ function ExtendPreset(props) {
                 } catch (e) {
                 }
             }
-
-            console.log('PARSE SITE SUCCESS');
 
             store.imageURL = siteData.bestIcon?.url;
             store.icoVariant = siteData.bestIcon?.type;
@@ -166,8 +161,6 @@ function ExtendPreset(props) {
     useEffect(() => {
         store.fullCategories = store.categories.map((categoryId) => bookmarksStore.getCategory(categoryId));
     }, [store.categories.length]);
-
-    console.log('store.images', [...store.images]);
 
     if (isLoading) {
         return useObserver(() => (
@@ -207,14 +200,11 @@ function ExtendPreset(props) {
                                 />
                             )}
                             getNextValidImage={() => {
-                                console.log('Broken image. Find next')
                                 store.images = store.images.filter(({ url }) => url !== store.imageURL);
 
                                 if(store.images.length === 0) {
                                     store.imageURL = null;
                                     store.icoVariant = BKMS_VARIANT.SYMBOL;
-
-                                    console.log('Next image', { url: store.imageURL, type: store.icoVariant })
 
                                     return { url: store.imageURL, type: store.icoVariant };
                                 }
@@ -257,7 +247,7 @@ function ExtendPreset(props) {
                                 name={store.name}
                                 description={store.description}
                                 useDescription={store.useDescription}
-                                categories={[]}
+                                categories={store.categories}
                                 saveState={store.saveStage}
                                 marginThreshold={marginThreshold}
                                 onChangeFields={(value) => {

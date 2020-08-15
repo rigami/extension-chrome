@@ -84,26 +84,21 @@ function Preview(props) {
             store.loadUrl = '';
             return;
         }
-        console.log('EFFECT IMAGE', 'stage:', stage, 'stateImageLoad:', store.stateImageLoad, 'imageUrl:', imageUrl, 'loadUrl:', store.loadUrl);
 
         store.stateImageLoad = FETCH.PENDING;
         if (!imageUrl || icoVariant === BKMS_VARIANT.SYMBOL) {
-            console.log('SYMBOL ICON', stage);
             store.stateImageLoad = FETCH.DONE;
             return;
         }
 
         const imgCache = document.createElement('img');
         imgCache.onload = () => {
-            console.log('onLoad success', { url: imgCache.src, loadUrl: store.loadUrl });
             if(imgCache.src !== store.loadUrl) return;
             store.stateImageLoad = FETCH.DONE;
         };
         imgCache.onerror = () => {
-            console.log('onError failed', { url: imgCache.src, loadUrl: store.loadUrl });
             if(imgCache.src !== store.loadUrl) return;
             const nextImage = getNextValidImage();
-            console.log('nextImage', nextImage);
             if (nextImage === null) {
                 store.stateImageLoad = FETCH.FAILED;
             } else {
@@ -113,8 +108,6 @@ function Preview(props) {
         imgCache.src = imageUrl;
         store.loadUrl = imgCache.src;
     }, [imageUrl, stage]);
-
-    useEffect(() => console.log('stateImageLoad', store.stateImageLoad), [store.stateImageLoad]);
 
     return useObserver(() => (
         <CardMedia

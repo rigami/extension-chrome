@@ -148,10 +148,6 @@ function CardLink(props) {
         }
     };
 
-    useEffect(() => console.log('NEW IMAGE:', { imageUrl, icoVariant }), [imageUrl, icoVariant]);
-
-    console.log('RENDER CARD');
-
     return (
         <Tooltip
             title={(
