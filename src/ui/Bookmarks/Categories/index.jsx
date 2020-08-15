@@ -4,7 +4,7 @@ import {
     Chip,
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
-import { makeStyles, useTheme, fade } from '@material-ui/core/styles';
+import { makeStyles, fade } from '@material-ui/core/styles';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import clsx from 'clsx';
 import AddButton from './AddButton';
@@ -12,6 +12,8 @@ import EditMenu from "@/ui/Bookmarks/ContextEditMenu";
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        overflow: 'auto',
+        height: 130,
         display: 'flex',
         flexWrap: 'wrap',
         '& > *': {
@@ -34,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
 
 function Category({ id, name, color, onClick, isSelect }) {
     const classes = useStyles();
-    const theme = useTheme();
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const [position, setPosition] = useState(null);
     const [anchorEl, setAnchorEl] = useState(null);
