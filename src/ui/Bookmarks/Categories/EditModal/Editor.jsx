@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function EditCategory({ onSave, onError, editCategoryId }) {
+function Editor({ onSave, onError, editCategoryId }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const [categoryName, setCategoryName] = useState('');
@@ -77,4 +77,4 @@ function EditCategory({ onSave, onError, editCategoryId }) {
     );
 }
 
-export default EditCategory;
+export default Editor;

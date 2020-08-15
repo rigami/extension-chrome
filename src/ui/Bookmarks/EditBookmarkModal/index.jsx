@@ -1,6 +1,6 @@
 import React from 'react';
 import { Drawer } from '@material-ui/core';
-import ExtendPreset from './ExtendPreset';
+import Editor from './Editor';
 import { useSnackbar } from 'notistack';
 
 function EditBookmarkModal({ isOpen, onClose, ...other }) {
@@ -16,7 +16,7 @@ function EditBookmarkModal({ isOpen, onClose, ...other }) {
             }}
             disableEnforceFocus
         >
-            <ExtendPreset
+            <Editor
                 onSave={onClose}
                 onCancel={onClose}
                 onErrorLoad={() => {

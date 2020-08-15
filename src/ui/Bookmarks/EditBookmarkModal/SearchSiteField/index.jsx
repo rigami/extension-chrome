@@ -10,7 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { useObserver, useLocalStore } from 'mobx-react-lite';
-import Search from "@/ui/Bookmarks/EditBookmarkModal/Search";
+import Search from "./Search";
 import ReactResizeDetector from 'react-resize-detector';
 import Scrollbar from "@/ui-components/CustomScroll";
 
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function SearchField({ searchRequest = '', marginThreshold = 24, onSelect, onChange }) {
+function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, onChange }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -166,4 +166,4 @@ function SearchField({ searchRequest = '', marginThreshold = 24, onSelect, onCha
     ));
 }
 
-export default SearchField;
+export default SearchSiteField;

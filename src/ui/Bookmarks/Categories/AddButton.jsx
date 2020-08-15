@@ -5,7 +5,7 @@ import {
 } from '@material-ui/core';
 import { AddRounded as AddIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import EditCategoryModal from './EditCategoryModal';
+import EditCategoryModal from './EditModal';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function CreateCategoryButton({ isShowTitle, onCreate }) {
+function AddCategoryButton({ isShowTitle, onCreate }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -78,4 +78,4 @@ function CreateCategoryButton({ isShowTitle, onCreate }) {
     );
 }
 
-export default CreateCategoryButton;
+export default AddCategoryButton;

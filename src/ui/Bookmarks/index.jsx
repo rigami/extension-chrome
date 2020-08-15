@@ -10,10 +10,10 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import ReactResizeDetector from 'react-resize-detector';
 import { useService as useAppService } from '@/stores/app';
-import Categories from '@/ui/Bookmarks/Ctegories';
+import Categories from '@/ui/Bookmarks/Categories';
 import FullScreenStub from '@/ui-components/FullscreenStub';
-import Category from '@/ui/Bookmarks/Ctegory';
-import CreateBookmarkButton from './CreateBookmarkButton';
+import Category from './Categories/CtegoryWrapper';
+import AddBookmarkButton from './EditBookmarkModal/AddButton';
 import CardLink from './CardLink';
 
 const useStyles = makeStyles((theme) => ({
@@ -174,7 +174,7 @@ function Bookmarks() {
                 </Container>
                 <ReactResizeDetector handleWidth onResize={() => setColumnsCount(maxColumnCalc())} />
             </Box>
-            <CreateBookmarkButton />
+            <AddBookmarkButton />
         </React.Fragment>
     );
 }

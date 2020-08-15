@@ -9,7 +9,7 @@ import {
     Button,
 } from '@material-ui/core';
 import { useService as useBookmarksService } from '@/stores/bookmarks'
-import EditCategoryModal from "@/ui/Bookmarks/EditCategoryModal";
+import EditCategoryModal from "@/ui/Bookmarks/Categories/EditModal";
 import { useTranslation } from 'react-i18next';
 import EditBookmarkModal from "@/ui/Bookmarks/EditBookmarkModal";
 

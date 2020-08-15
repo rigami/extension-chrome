@@ -4,7 +4,7 @@ import {
     ClickAwayListener,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import EditCategory from "@/ui/Bookmarks/EditCategoryModal/EditCategory";
+import Editor from "./Editor";
 import { useLocalStore } from 'mobx-react-lite';
 import {useService as useAppService} from "@/stores/app";
 
@@ -51,7 +51,7 @@ function EditCategoryModal({ anchorEl, isOpen, onSave, onClose, ...other }) {
                     },
                 }}
             >
-                <EditCategory
+                <Editor
                     onSave={(categoryId) => onSave && onSave(categoryId)}
                     onError={() => store.popperRef.update()}
                     {...other}

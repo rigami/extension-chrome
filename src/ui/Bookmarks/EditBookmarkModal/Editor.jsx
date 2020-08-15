@@ -1,208 +1,290 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Button,
-    Box,
-    CardContent,
-    Typography,
-    TextField,
+    Container,
     CircularProgress,
+    Card,
+    Box,
 } from '@material-ui/core';
-import {
-    AddRounded as AddIcon,
-    DoneRounded as DoneIcon,
-} from '@material-ui/icons';
-import Categories from "@/ui/Bookmarks/Ctegories";
-import { useTranslation } from 'react-i18next';
+import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import { useObserver, useLocalStore } from 'mobx-react-lite';
-import {FETCH} from "@/enum";
-import SearchField from './SearchField';
+import { useService as useBookmarksService } from '@/stores/bookmarks';
+import {PreviewSelectorToggleButton} from "./Preview/Selector";
+import { getSiteInfo, getImageRecalc } from "@/utils/siteSearch";
+import { FETCH, BKMS_VARIANT } from '@/enum';
+import asyncAction from "@/utils/asyncAction";
+import Scrollbar from "@/ui-components/CustomScroll";
+import clsx from 'clsx';
+import FieldsEditor from "./FieldsEditor";
+import ReactResizeDetector from 'react-resize-detector';
+import Preview, {STAGE} from "./Preview";
+import SelectorWrapper from "./Preview/SelectorWrapper";
 
 const useStyles = makeStyles((theme) => ({
-    content: { flex: '1 0 auto' },
-    header: {
-        marginBottom: theme.spacing(1),
-    },
-    controls: {
+    container: {
+        maxWidth: 1062,
+        minHeight: '100vh',
         display: 'flex',
-        alignItems: 'center',
-        paddingLeft: theme.spacing(2),
-        paddingBottom: theme.spacing(2),
+        flexDirection: 'column',
         justifyContent: 'flex-end',
     },
+    content: { flex: '1 0 auto' },
     button: {
         marginRight: theme.spacing(2),
         position: 'relative',
     },
-    details: {
+    editor: {
         display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-    },
-    input: { marginTop: theme.spacing(2) },
-    inputDescription: { marginTop: theme.spacing(1) },
-    chipContainer: { marginTop: theme.spacing(2) },
-    addDescriptionButton: { marginTop: theme.spacing(1) },
-    saveIcon: {
-        marginRight: theme.spacing(1),
     },
 }));
 
 function Editor(props) {
     const {
-        isEdit,
-        searchRequest = '',
-        url = '',
-        name = '',
-        description = '',
-        useDescription = false,
-        categories,
-        saveState = FETCH.WAIT,
+        editBookmarkId,
+        defaultUrl,
+        defaultName,
+        bringToEditorHeight = false,
         marginThreshold = 24,
-        onChangeFields = () => {},
+        className: externalClassName,
+        classes: externalClasses = {},
         onSave,
         onCancel,
+        onErrorLoad,
     } = props;
     const classes = useStyles();
-    const { t } = useTranslation();
 
+    const bookmarksStore = useBookmarksService();
+    const [controller, setController] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const store = useLocalStore(() => ({
-        searchRequest,
-        url,
-        name,
-        description,
-        useDescription,
+        editBookmarkId,
+        editorHeight: 0,
+        icoVariant: BKMS_VARIANT.SMALL,
+        imageURL: null,
+        name: defaultName || '',
+        description: '',
+        useDescription: false,
+        categories: [],
+        fullCategories: [],
+        url: defaultUrl || '',
+        stage: STAGE.WAIT_REQUEST,
+        saveStage: FETCH.WAIT,
+        isOpenSelectorPreview: false,
+        images: [],
     }));
 
-    useEffect(() => {
-        store.searchRequest = searchRequest;
-    }, [searchRequest]);
+    const handlerSave = () => {
+        store.saveStage  = FETCH.PENDING;
+        bookmarksStore.saveBookmark({
+            ...store,
+            image_url: store.imageURL,
+            name: store.name.trim(),
+            description: (store.useDescription && store.description?.trim()) || '',
+            id: store.editBookmarkId,
+        }).then((saveBookmarkId) => {
+            store.saveStage  = FETCH.DONE;
+            store.editBookmarkId = saveBookmarkId;
+        });
+
+        onSave();
+    };
 
     useEffect(() => {
-        store.url = url;
-    }, [url]);
+        if (!store.editBookmarkId) return;
+        setIsLoading(true);
+
+        bookmarksStore.getBookmark(editBookmarkId)
+            .then((bookmark) => {
+                store.url = bookmark.url;
+                store.name = bookmark.name;
+                store.imageURL = bookmark.imageUrl;
+                store.useDescription = !!bookmark.description?.trim();
+                if (store.useDescription) store.description = bookmark.description;
+                store.icoVariant = bookmark.icoVariant;
+                store.categories = (bookmark.categories || []).map((category) => category.id);
+                setIsLoading(false);
+            })
+            .catch((e) => {
+                console.error(e);
+                onErrorLoad(e);
+            });
+    }, []);
 
     useEffect(() => {
-        store.name = name;
-    }, [name]);
+        if (!store.editBookmarkId) {
+            store.imageURL = null;
+        }
+
+        if (controller) {
+            controller.abort();
+            setController(null);
+        }
+
+        if (store.url === '') {
+            return;
+        }
+
+        store.stage = STAGE.PARSING_SITE;
+
+        const parseUrl = store.url;
+
+        asyncAction(async () => {
+            const siteData = await getSiteInfo(store.url, controller);
+
+            if (store.editBookmarkId) {
+                store.images = siteData.icons;
+                return;
+            }
+
+            if (siteData.bestIcon?.score === 0) {
+                try {
+                    siteData.bestIcon = await getImageRecalc(siteData.bestIcon.name)
+                } catch (e) {
+                }
+            }
+
+            store.imageURL = siteData.bestIcon?.url;
+            store.icoVariant = siteData.bestIcon?.type;
+            store.url = siteData.url;
+            store.searchRequest = siteData.url;
+            store.images = siteData.icons;
+            store.name = store.name || siteData.name;
+            store.description = store.description || siteData.description;
+        })
+            .then(() => {
+                if (parseUrl === store.url) store.stage = STAGE.DONE;
+            })
+            .catch(() => {
+
+            });
+    }, [store.url]);
 
     useEffect(() => {
-        store.description = description;
-    }, [description]);
+        store.fullCategories = store.categories.map((categoryId) => bookmarksStore.getCategory(categoryId));
+    }, [store.categories.length]);
 
-    useEffect(() => {
-        store.useDescription = useDescription;
-    }, [useDescription]);
+    if (isLoading) {
+        return useObserver(() => (
+            <CircularProgress />
+        ));
+    }
 
     return useObserver(() => (
-        <div className={classes.details}>
-            <CardContent className={classes.content}>
-                <Typography variant="h5" className={classes.header}>
-                    {isEdit ? t("bookmark.editor.editTitle") : t("bookmark.editor.addTitle")}
-                </Typography>
-                <SearchField
-                    searchRequest={store.searchRequest}
-                    marginThreshold={marginThreshold}
-                    onChange={(value) => {
-                        store.searchRequest = value;
-                        onChangeFields({ searchRequest: value });
-                    }}
-                    onSelect={({ title, url }) => {
-                        store.searchRequest = url;
-                        store.name = title;
-                        onChangeFields({ url, name: title });
-                    }}
-                />
-                <TextField
-                    label={t("bookmark.editor.nameFieldLabel")}
-                    variant="outlined"
-                    size="small"
-                    disabled={store.searchRequest === ''}
-                    fullWidth
-                    value={store.name}
-                    className={classes.input}
-                    onChange={(event) => {
-                        store.name = event.target.value;
-                        onChangeFields({ name: event.target.value});
-                    }}
-                />
-                <Categories
-                    className={classes.chipContainer}
-                    sortByPopular
-                    value={categories}
-                    onChange={(newCategories) => onChangeFields({ categories: newCategories })}
-                    autoSelect
-                    maxRows={4}
-                />
-                {store.useDescription && (
-                    <TextField
-                        label={t("bookmark.editor.descriptionFieldLabel")}
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        value={store.description}
-                        className={classes.inputDescription}
-                        disabled={store.searchRequest === ''}
-                        multiline
-                        rows={3}
-                        rowsMax={6}
-                        onChange={(event) => {
-                            store.description = event.target.value;
-                            onChangeFields({ description: event.target.value });
-                        }}
-                    />
-                )}
-                {!store.useDescription && (
-                    <Button
-                        startIcon={<AddIcon />}
-                        className={classes.addDescriptionButton}
-                        onClick={() => {
-                            store.useDescription = true;
-                            onChangeFields({ useDescription: true });
-                        }}
-                    >
-                        {t("bookmark.editor.addDescription")}
-                    </Button>
-                )}
-            </CardContent>
-            <div className={classes.controls}>
-                {onCancel && (
-                    <Button
-                        variant="text"
-                        color="default"
-                        className={classes.button}
-                        onClick={onCancel}
-                    >
-                        {t("cancel")}
-                    </Button>
-                )}
-                <div className={classes.button}>
-                    {saveState === FETCH.WAIT && (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={!searchRequest || !name.trim()}
-                            onClick={onSave}
-                        >
-                            {t("save")}
-                        </Button>
-                    )}
-                    {saveState === FETCH.PENDING && (
-                        <Box display="flex" alignItems="center">
-                            <CircularProgress size={24} color="primary" className={classes.saveIcon} />
-                            {t("bookmark.editor.saving")}...
+        <Scrollbar
+            reverse
+            style={{ height: bringToEditorHeight && store.editorHeight }}
+            className={externalClasses.scrollWrapper}
+        >
+            <Container
+                maxWidth={false}
+                className={clsx(classes.container, externalClassName)}
+                style={{ padding: marginThreshold }}
+            >
+
+                <ReactResizeDetector
+                    handleHeight
+                    onResize={(width, height) => { store.editorHeight = height; }}
+                >
+                    <Card className={classes.editor}>
+                        <Preview
+                            stage={store.stage}
+                            name={store.name}
+                            imageUrl={store.imageURL}
+                            icoVariant={store.icoVariant}
+                            description={store.useDescription && store.description}
+                            categories={store.fullCategories}
+                            header={(
+                                <PreviewSelectorToggleButton
+                                    isOpen={store.isOpenSelectorPreview}
+                                    onOpen={() => { store.isOpenSelectorPreview = true; }}
+                                    onClose={() => { store.isOpenSelectorPreview = false; }}
+                                />
+                            )}
+                            getNextValidImage={() => {
+                                store.images = store.images.filter(({ url }) => url !== store.imageURL);
+
+                                if(store.images.length === 0) {
+                                    store.imageURL = null;
+                                    store.icoVariant = BKMS_VARIANT.SYMBOL;
+
+                                    return { url: store.imageURL, type: store.icoVariant };
+                                }
+
+                                let maxScoreId = 0;
+
+                                store.images.forEach(({ score }, id) => {
+                                    if (store.images[maxScoreId].score < score) maxScoreId = id;
+                                });
+
+                                store.imageURL = store.images[maxScoreId].url;
+                                store.icoVariant = store.images[maxScoreId].type;
+
+                                console.log('Next image', store.images[maxScoreId])
+
+                                return store.images[maxScoreId];
+                            }}
+                        />
+                        <Box display="flex" flexDirection="column">
+                            <SelectorWrapper
+                                isOpen={store.isOpenSelectorPreview}
+                                name={store.name}
+                                description={store.useDescription && store.description}
+                                categories={store.fullCategories}
+                                images={store.images}
+                                minHeight={store.editorHeight}
+                                marginThreshold={marginThreshold}
+                                onSelect={(url, type) => {
+                                    store.imageURL = url;
+                                    store.icoVariant = type;
+                                    store.isOpenSelectorPreview = false;
+                                }}
+                                onClose={() => {
+                                    store.isOpenSelectorPreview = false;
+                                }}
+                            />
+                            <FieldsEditor
+                                isEdit={!!store.editBookmarkId}
+                                searchRequest={store.searchRequest}
+                                name={store.name}
+                                description={store.description}
+                                useDescription={store.useDescription}
+                                categories={store.categories}
+                                saveState={store.saveStage}
+                                marginThreshold={marginThreshold}
+                                onChangeFields={(value) => {
+                                    if ('searchRequest' in value) {
+                                        store.searchRequest = value.searchRequest;
+                                        store.stage = value.searchRequest ? STAGE.WAIT_RESULT : STAGE.WAIT_REQUEST;
+                                    }
+                                    if ('url' in value) {
+                                        store.searchRequest = value.url;
+                                        store.url = value.url;
+                                        store.stage = STAGE.WAIT_NAME;
+                                    }
+                                    if ('name' in value) {
+                                        store.name = value.name;
+                                        store.stage = value.name ? STAGE.DONE : STAGE.WAIT_NAME;
+                                    }
+                                    if ('description' in value) {
+                                        store.description = value.description;
+                                    }
+                                    if ('useDescription' in value) {
+                                        store.useDescription = value.useDescription;
+                                    }
+
+                                    if ('categories' in value) {
+                                        store.categories = value.categories;
+                                    }
+                                    store.saveStage = FETCH.WAIT;
+                                }}
+                                onSave={handlerSave}
+                                onCancel={onCancel}
+                            />
                         </Box>
-                    )}
-                    {saveState === FETCH.DONE && (
-                        <Box display="flex" alignItems="center">
-                            <DoneIcon color="primary" className={classes.saveIcon} />
-                            {t("bookmark.editor.saveSuccess")}
-                        </Box>
-                    )}
-                </div>
-            </div>
-        </div>
+                    </Card>
+                </ReactResizeDetector>
+            </Container>
+        </Scrollbar>
     ));
 }
 
-export default Editor;
+export default observer(Editor);

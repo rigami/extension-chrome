@@ -10,7 +10,7 @@ import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
 import { Provider as AppConfigProvider } from '@/stores/app';
 import { Provider as BookmarksProvider } from '@/stores/bookmarks';
-import EditorBookmark from "@/ui/Bookmarks/EditBookmarkModal/ExtendPreset";
+import EditorBookmark from "@/ui/Bookmarks/EditBookmarkModal/Editor";
 import {STAGE} from "@/ui/Bookmarks/EditBookmarkModal/Preview";
 import clsx from 'clsx';
 
@@ -77,7 +77,6 @@ function Popup() {
                         marginThreshold={0}
                         onSave={() => {}}
                         onStage={(stage) => {
-                            console.log('stage', stage)
                             if (isChecking && (stage === STAGE.DONE || stage === STAGE.WAIT_NAME)) {
                                 setIsChecking(false);
                             }

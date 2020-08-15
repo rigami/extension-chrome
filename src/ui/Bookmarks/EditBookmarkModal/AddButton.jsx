@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     fabIcon: { marginRight: theme.spacing(1) },
 }));
 
-function CreateBookmarkButton() {
+function AddBookmarkButton() {
     const theme = useTheme();
     const classes = useStyles();
     const { t } = useTranslation();
@@ -57,4 +57,4 @@ function CreateBookmarkButton() {
     );
 }
 
-export default observer(CreateBookmarkButton);
+export default observer(AddBookmarkButton);

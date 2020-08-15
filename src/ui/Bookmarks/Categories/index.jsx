@@ -7,7 +7,7 @@ import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme, fade } from '@material-ui/core/styles';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import clsx from 'clsx';
-import CreateCategoryButton from './CreateCategoryButton';
+import AddButton from './AddButton';
 import EditMenu from "@/ui/Bookmarks/ContextEditMenu";
 
 const useStyles = makeStyles((theme) => ({
@@ -132,7 +132,7 @@ function Categories(props) {
                     }}
                 />
             ))}
-            <CreateCategoryButton
+            <AddButton
                 isShowTitle={bookmarksStore.categories.length === 0}
                 onCreate={(newId) => {
                     if (autoSelect) setSelectedCategories([...selectedCategories, newId]);

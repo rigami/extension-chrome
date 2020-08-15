@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
-    Button,
     CardMedia,
     Box,
     CircularProgress,
 } from '@material-ui/core';
 import {
-    ExpandLessRounded as OpenIcon,
-    ExpandMoreRounded as CloseIcon,
     WarningRounded as WarnIcon,
 } from '@material-ui/icons';
 import {
@@ -18,7 +15,7 @@ import CardLink from '@/ui/Bookmarks/CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import {BKMS_VARIANT, FETCH} from "@/enum";
-import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
+import { useObserver, useLocalStore } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     cover: {

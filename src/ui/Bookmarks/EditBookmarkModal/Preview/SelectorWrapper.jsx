@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useObserver, useLocalStore } from 'mobx-react-lite';
 import ReactResizeDetector from 'react-resize-detector';
 import Scrollbar from "@/ui-components/CustomScroll";
-import PreviewSelector from "@/ui/Bookmarks/EditBookmarkModal/Preview/Selector";
+import PreviewSelector from "./Selector";
 
 const useStyles = makeStyles((theme) => ({
     popoverContent: {
