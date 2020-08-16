@@ -75,7 +75,7 @@ function Editor(props) {
 
     const handlerSave = () => {
         store.saveStage  = FETCH.PENDING;
-        bookmarksStore.saveBookmark({
+        bookmarksStore.bookmarks.save({
             ...store,
             image_url: store.imageURL,
             name: store.name.trim(),
@@ -93,7 +93,7 @@ function Editor(props) {
         if (!store.editBookmarkId) return;
         setIsLoading(true);
 
-        bookmarksStore.getBookmark(editBookmarkId)
+        bookmarksStore.bookmarks.get(editBookmarkId)
             .then((bookmark) => {
                 store.url = bookmark.url;
                 store.name = bookmark.name;
@@ -160,7 +160,7 @@ function Editor(props) {
     }, [store.url]);
 
     useEffect(() => {
-        store.fullCategories = store.categories.map((categoryId) => bookmarksStore.getCategory(categoryId));
+        store.fullCategories = store.categories.map((categoryId) => bookmarksStore.categories.get(categoryId));
     }, [store.categories.length]);
 
     useEffect(() => onStage(store.stage), [store.stage]);

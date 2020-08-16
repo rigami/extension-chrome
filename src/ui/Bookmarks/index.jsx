@@ -46,8 +46,8 @@ function Bookmarks() {
 
     let columnStabilizer = null;
 
-    const handleSearch = (categories = []) => {
-        bookmarksStore.search({ categories })
+    const handleSearch = (query = {}) => {
+        bookmarksStore.bookmarks.query({ ...query }, false)
             .then((searchResult) => {
                 setLastTruthSearchTimestamp(bookmarksStore.lastTruthSearchTimestamp);
                 setFindBookmarks(searchResult);
@@ -64,10 +64,10 @@ function Bookmarks() {
         if (appService.activity === 'bookmarks') {
             if (!findBookmarks) {
                 setIsSearching(true);
-                handleSearch(bookmarksStore.lastSearch?.categories);
+                handleSearch(bookmarksStore.lastSearch);
             }
 
-            setSearchCategories(bookmarksStore.lastSearch?.categories);
+            setSearchCategories(bookmarksStore.lastSearch?.categories?.match || []);
         }
     }, [appService.activity]);
 
@@ -79,7 +79,7 @@ function Bookmarks() {
 
         if (bookmarksStore.lastTruthSearchTimestamp !== lastTruthSearchTimestamp && !isSearching) {
             setIsSearching(true);
-            handleSearch(bookmarksStore.lastSearch?.categories);
+            handleSearch(bookmarksStore.lastSearch);
         }
     }, [bookmarksStore.lastTruthSearchTimestamp]);
 
@@ -99,7 +99,7 @@ function Bookmarks() {
                         in={!isSearching}
                         onExited={() => {
                             // setFindBookmarks(null);
-                            if (searchCategories) handleSearch(searchCategories);
+                            if (searchCategories) handleSearch({ categories: { match: searchCategories } });
                         }}
                     >
                         <div>

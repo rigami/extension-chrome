@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalStore } from 'mobx-react-lite';
 import {
@@ -6,7 +6,7 @@ import {
     DeleteRounded as DeleteIcon,
 } from '@material-ui/icons';
 import FSConnector from '@/utils/fsConnector';
-import { BG_TYPE, THEME } from '@/enum';
+import {BG_TYPE, THEME} from '@/enum';
 import clsx from 'clsx';
 import { Fade, Box } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
@@ -16,7 +16,6 @@ import { useService as useAppConfigService } from '@/stores/app';
 import Menu from '@/ui/Menu';
 import GlobalContextMenu from "@/ui/GlobalContextMenu";
 import { useTranslation } from 'react-i18next';
-import {useService as useBookmarksService} from "@/stores/bookmarks";
 
 
 const useStyles = makeStyles((theme) => ({

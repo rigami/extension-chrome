@@ -25,6 +25,7 @@
         "i18next-browser-languagedetector": "^5.0.0",
         "i18next-http-backend": "^1.0.17",
         "idb": "^5.0.4",
+        "lodash": "^4.17.20",
         "mobx": "^5.15.4",
         "mobx-react-lite": "^2.0.7",
         "notistack": "^0.9.17",

@@ -9,7 +9,7 @@ const paths = require('./alias.config.js');
 
 module.exports = (env, args) => ({
     context: path.resolve(__dirname, 'src'),
-    entry: { app: './index.js', popup: './popup.js' },
+    entry: { app: './index.js', popup: './popup.js', background: './background.js' },
     mode: args.mode || 'development',
     output: {
         filename: '[name].[hash].bundle.js',
@@ -36,6 +36,7 @@ module.exports = (env, args) => ({
                 '!fastInitialization.js',
                 '!index.html',
                 '!popup.html',
+                '!background.html',
             ],
         }),
         new HtmlWebpackPlugin({
@@ -49,6 +50,12 @@ module.exports = (env, args) => ({
             chunks: ['popup'],
             template: './popup.html',
             filename: 'popup.html',
+        }),
+        new HtmlWebpackPlugin({
+            inject: true,
+            chunks: ['background'],
+            template: './background.html',
+            filename: 'background.html',
         }),
         new CopyWebpackPlugin([
             {

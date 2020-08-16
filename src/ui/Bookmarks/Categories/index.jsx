@@ -115,9 +115,11 @@ function Categories(props) {
         if (value) setSelectedCategories(value || []);
     }, [value && value.length]);
 
+    console.log('selectedCategories', selectedCategories)
+
     return (
         <Box className={clsx(classes.root, externalClassName)}>
-            {bookmarksStore.categories.map(({ id, name, color }) => (
+            {bookmarksStore.categories.all.map(({ id, name, color }) => (
                 <Category
                     key={id}
                     id={id}

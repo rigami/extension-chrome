@@ -7,6 +7,7 @@ import BKMS_FAP_STYLE from "@/enum/BKMS/BKMS_FAP_STYLE";
 import BKMS_VARIANT from "@/enum/BKMS/BKMS_VARIANT";
 import THEME from "@/enum/THEME";
 import FETCH from "@/enum/FETCH";
+import DESTINATION from "@/enum/DESTINATION";
 
 export {
     BG_CHANGE_INTERVAL,
@@ -18,4 +19,5 @@ export {
     BKMS_VARIANT,
     THEME,
     FETCH,
+    DESTINATION,
 }

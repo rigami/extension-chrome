@@ -3,7 +3,7 @@ import { BG_TYPE } from '@/enum';
 export default {
     db: {
         name: 'clock_tab',
-        version: 2,
+        version: 1,
     },
     fs: { root: chrome.runtime.id && `chrome-extension://${chrome.runtime.id}/persistent/` },
     maxUploadFiles: 15,

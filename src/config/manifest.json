@@ -21,8 +21,13 @@
         "unlimitedStorage",
         "*://*/*",
         "http://danilkinkin.com/",
-        "notifications"
+        "notifications",
+        "bookmarks"
     ],
+    "background": {
+        "page": "background.html",
+        "persistent": false
+    },
     "chrome_url_overrides": {
         "newtab": "index.html"
     },

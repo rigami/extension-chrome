@@ -29,6 +29,8 @@ class ConfigStores {
             .then(() => StorageConnector.setItem('bkms_fap_position', defaultSettings.bookmarks.fapPosition))
             .then(() => StorageConnector.setItem('bkms_open_on_startup', defaultSettings.bookmarks.openOnStartup))
             .then(() => StorageConnector.setJSONItem('bkms_favorites', defaultSettings.bookmarks.favorites))
+            .then(() => StorageConnector.setJSONItem('bkms_sync_with_system', defaultSettings.bookmarks.syncWithSystem))
+            .then(() => StorageConnector.setJSONItem('bkms_favorites', defaultSettings.bookmarks.favorites))
             .then(() => StorageConnector.setItem('last_setup_timestamp', Date.now().toString()))
             .then(() => progressCallBack(100));
     }

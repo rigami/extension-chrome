@@ -145,7 +145,7 @@ function Folder({ id }) {
     };
 
     useEffect(() => {
-        bookmarksStore.search({ categories: [id] }, true)
+        bookmarksStore.query({ categories: { match: [id] } })
             .then((searchResult) => {
                 setFindBookmarks(searchResult[0]?.bookmarks || []);
                 setIsSearching(false);
