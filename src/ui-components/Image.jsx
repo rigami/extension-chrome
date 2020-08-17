@@ -28,6 +28,11 @@ function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        if (variant === BKMS_VARIANT.SYMBOL) {
+            setIsLoading(false);
+            return;
+        }
+
         const imgCache = document.createElement('img');
         imgCache.onload = imgCache.onerror = () => {
             setIsLoading(false);
@@ -65,7 +70,11 @@ function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName
                     />
                 )}
                 {!isLoading && (
-                    <Avatar className={clsx(classes.roundedIcon, externalClassName)} src={src || undefined} variant={"rounded"}>
+                    <Avatar
+                        className={clsx(classes.roundedIcon, externalClassName)}
+                        src={(variant !== BKMS_VARIANT.SYMBOL && src) || undefined}
+                        variant={"rounded"}
+                    >
                         {alternativeIcon || (<LinkIcon />)}
                     </Avatar>
                 )}

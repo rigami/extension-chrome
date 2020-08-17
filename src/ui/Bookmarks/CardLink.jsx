@@ -211,7 +211,7 @@ function CardLink(props) {
                     {icoVariant !== BKMS_VARIANT.POSTER && (
                         <Box className={classes.banner}>
                             <Image
-                                variant={BKMS_VARIANT.SMALL}
+                                variant={icoVariant}
                                 src={imageUrl}
                                 alternativeIcon={icoVariant === BKMS_VARIANT.SYMBOL ? name[0]?.toUpperCase() : undefined}
                                 className={clsx(classes.icon, classes.borderIcon)}
