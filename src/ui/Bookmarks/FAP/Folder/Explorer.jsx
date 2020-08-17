@@ -13,6 +13,10 @@ import {
 } from '@material-ui/core';
 import {
     LabelRounded as LabelIcon,
+    BookmarkBorderRounded as PinnedFavoriteIcon,
+    BookmarkRounded as UnpinnedFavoriteIcon,
+    EditRounded as EditIcon,
+    DeleteRounded as RemoveIcon,
     MoreVertRounded as MoreIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -20,9 +24,9 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
-import EditMenu from '@/ui/Bookmarks/ContextEditMenu'
 import Image from "@/ui-components/Image";
 import { useTranslation } from 'react-i18next';
+import {useService as useAppService} from "@/stores/app";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -55,8 +59,55 @@ const useStyles = makeStyles((theme) => ({
 
 function Link({ name, url, imageUrl, id, description, icoVariant }) {
     const classes = useStyles();
-    const [isOpen, setIsOpen] = useState(false);
-    const [position, setPosition] = useState(null);
+    const appStore = useAppService();
+    const bookmarksStore = useBookmarksService();
+    const { t } = useTranslation();
+
+    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
+
+    const handlerContextMenu = (event) => {
+        event.preventDefault();
+        openMenu({
+            top: event.nativeEvent.clientY,
+            left: event.nativeEvent.clientX,
+        });
+    };
+
+    const openMenu = (position) => {
+        appStore.eventBus.dispatch('contextMenu', {
+            actions: [
+                {
+                    type: 'button',
+                    title: isPin() ? t("fap.unpin") : t("fap.pin"),
+                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
+                    onClick: () => {
+                        if (isPin()) {
+                            bookmarksStore.removeFromFavorites({ type: 'bookmark', id });
+                        } else {
+                            bookmarksStore.addToFavorites({ type: 'bookmark', id });
+                        }
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("edit"),
+                    icon: EditIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`editbookmark`, { id });
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("remove"),
+                    icon: RemoveIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`removebookmark`, { id });
+                    }
+                }
+            ],
+            position,
+        });
+    };
 
     const handleClick = (event) => {
         if (event.button === 1) {
@@ -66,59 +117,37 @@ function Link({ name, url, imageUrl, id, description, icoVariant }) {
         }
     };
 
-    const handlerContextMenu = (event) => {
-        event.preventDefault();
-        setPosition({
-            top: event.nativeEvent.clientY,
-            left: event.nativeEvent.clientX,
-        });
-        setIsOpen(true);
-    };
-
-    const handleCloseMenu = () => {
-        setIsOpen(false);
-    };
-
     return (
-        <React.Fragment>
-            <EditMenu
-                id={id}
-                type="bookmark"
-                isOpen={isOpen}
-                onClose={handleCloseMenu}
-                position={position}
-            />
-            <Tooltip
-                title={(
-                    <React.Fragment>
-                        {name}
-                        <br />
-                        <Typography variant="caption">{url}</Typography>
-                    </React.Fragment>
-                )}
-                enterDelay={400}
-                enterNextDelay={400}
+        <Tooltip
+            title={(
+                <React.Fragment>
+                    {name}
+                    <br />
+                    <Typography variant="caption">{url}</Typography>
+                </React.Fragment>
+            )}
+            enterDelay={400}
+            enterNextDelay={400}
+        >
+            <ListItem
+                button
+                key={id}
+                onMouseUp={handleClick}
+                onContextMenu={handlerContextMenu}
             >
-                <ListItem
-                    button
-                    key={id}
-                    onMouseUp={handleClick}
-                    onContextMenu={handlerContextMenu}
-                >
-                    <ListItemAvatar>
-                        <Image variant={icoVariant === 'poster' ? 'small' : icoVariant} src={imageUrl} />
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary={name}
-                        secondary={description}
-                        classes={{
-                            primary: classes.primaryText,
-                            secondary: classes.secondaryText,
-                        }}
-                    />
-                </ListItem>
-            </Tooltip>
-        </React.Fragment>
+                <ListItemAvatar>
+                    <Image variant={icoVariant === 'poster' ? 'small' : icoVariant} src={imageUrl} />
+                </ListItemAvatar>
+                <ListItemText
+                    primary={name}
+                    secondary={description}
+                    classes={{
+                        primary: classes.primaryText,
+                        secondary: classes.secondaryText,
+                    }}
+                />
+            </ListItem>
+        </Tooltip>
     );
 }
 
@@ -127,25 +156,53 @@ function Folder({ id }) {
     const bookmarksStore = useBookmarksService();
     const { t } = useTranslation();
 
-    const [category] = useState(bookmarksStore.getCategory(id));
+    const [category] = useState(bookmarksStore.categories.get(id));
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
-    const [isOpen, setIsOpen] = useState(false);
-    const [position, setPosition] = useState(null);
     const buttonRef = useRef(null);
+    const appStore = useAppService();
 
-    const handleOpen = () => {
+    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'category' && fav.id === id);
+
+    const handlerContextMenu = (anchorEl) => {
         const { top, left } = buttonRef.current.getBoundingClientRect();
-        setPosition({ top, left });
-        setIsOpen(true);
-    };
-
-    const handleCloseMenu = () => {
-        setIsOpen(false);
+        appStore.eventBus.dispatch('contextMenu', {
+            actions: [
+                {
+                    type: 'button',
+                    title: isPin() ? t("fap.unpin") : t("fap.pin"),
+                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
+                    onClick: () => {
+                        if (isPin()) {
+                            bookmarksStore.removeFromFavorites({ type: 'category', id });
+                        } else {
+                            bookmarksStore.addToFavorites({ type: 'category', id });
+                        }
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("edit"),
+                    icon: EditIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`editcategory`, { id, anchorEl });
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("remove"),
+                    icon: RemoveIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`removecategory`, { id });
+                    }
+                }
+            ],
+            position: { top, left },
+        });
     };
 
     useEffect(() => {
-        bookmarksStore.query({ categories: { match: [id] } })
+        bookmarksStore.bookmarks.query({ categories: { match: [id] } })
             .then((searchResult) => {
                 setFindBookmarks(searchResult[0]?.bookmarks || []);
                 setIsSearching(false);
@@ -154,13 +211,6 @@ function Folder({ id }) {
 
     return (
         <Card className={classes.root} elevation={16}>
-            <EditMenu
-                id={id}
-                type="category"
-                isOpen={isOpen}
-                onClose={handleCloseMenu}
-                position={position}
-            />
             <CardHeader
                 avatar={(
                     <LabelIcon style={{ color: category.color }} />
@@ -169,7 +219,7 @@ function Folder({ id }) {
                 classes={{ avatar: classes.avatar }}
                 action={(
                     <IconButton
-                        onClick={handleOpen}
+                        onClick={(event) => handlerContextMenu(event.currentTarget)}
                         ref={buttonRef}
                     >
                         <MoreIcon />

@@ -29,12 +29,12 @@ function Editor({ onSave, onError, editCategoryId }) {
     const [categoryName, setCategoryName] = useState('');
     const [error, setError] = useState(null);
     const bookmarksStore = useBookmarksService();
-    const categoryStore = bookmarksStore.getCategory(editCategoryId);
+    const categoryStore = bookmarksStore.categories.get(editCategoryId);
 
     const handlerSubmit = (event) => {
         event.preventDefault();
         if (categoryName.trim() !== '') {
-            bookmarksStore.saveCategory(categoryName, editCategoryId)
+            bookmarksStore.categories.save(categoryName, editCategoryId)
                 .then((categoryId) => onSave(categoryId))
                 .catch((e) => {
                     onError(e.message);

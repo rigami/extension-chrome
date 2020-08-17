@@ -8,13 +8,19 @@ import {
     IconButton,
 } from '@material-ui/core';
 import {
+    BookmarkBorderRounded as PinnedFavoriteIcon,
+    BookmarkRounded as UnpinnedFavoriteIcon,
+    EditRounded as EditIcon,
+    DeleteRounded as RemoveIcon,
     MoreVertRounded as MoreIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import EditMenu from './ContextEditMenu';
 import clsx from 'clsx';
 import Image from "@/ui-components/Image";
 import {BKMS_VARIANT} from "@/enum";
+import {useService as useAppService} from "@/stores/app";
+import {useService as useBookmarksService} from "@/stores/bookmarks";
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -113,27 +119,60 @@ function CardLink(props) {
         ...other
     } = props;
     const classes = useStyles();
+    const appStore = useAppService();
+    const bookmarksStore = useBookmarksService();
     const buttonRef = useRef(null);
-    const [isOpenMenu, setIsOpenMenu] = useState(false);
-    const [position, setPosition] = useState(null);
+    const { t } = useTranslation();
+
+    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
 
     const handlerContextMenu = (event) => {
         event.preventDefault();
-        setPosition({
+        openMenu({
             top: event.nativeEvent.clientY,
             left: event.nativeEvent.clientX,
         });
-        setIsOpenMenu(true);
     };
 
     const handleOpenMenu = () => {
         const { top, left } = buttonRef.current.getBoundingClientRect();
-        setPosition({ top, left });
-        setIsOpenMenu(true);
+        openMenu({ top, left });
     };
 
-    const handleCloseMenu = () => {
-        setIsOpenMenu(false);
+    const openMenu = (position) => {
+        appStore.eventBus.dispatch('contextMenu', {
+            actions: [
+                {
+                    type: 'button',
+                    title: isPin() ? t("fap.unpin") : t("fap.pin"),
+                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
+                    onClick: () => {
+                        if (isPin()) {
+                            bookmarksStore.removeFromFavorites({ type: 'bookmark', id });
+                        } else {
+                            bookmarksStore.addToFavorites({ type: 'bookmark', id });
+                        }
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("edit"),
+                    icon: EditIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`editbookmark`, { id });
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("remove"),
+                    icon: RemoveIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`removebookmark`, { id });
+                    }
+                }
+            ],
+            position,
+        });
     };
 
     const handleClick = (event) => {
@@ -195,13 +234,6 @@ function CardLink(props) {
                 </CardActionArea>
                 {!preview && (
                     <React.Fragment>
-                        <EditMenu
-                            id={id}
-                            type="bookmark"
-                            isOpen={isOpenMenu}
-                            onClose={handleCloseMenu}
-                            position={position}
-                        />
                         <IconButton
                             className={classes.menuIcon}
                             onClick={handleOpenMenu}

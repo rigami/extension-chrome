@@ -5,10 +5,17 @@ import {
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, fade } from '@material-ui/core/styles';
+import {
+    BookmarkBorderRounded as PinnedFavoriteIcon,
+    BookmarkRounded as UnpinnedFavoriteIcon,
+    EditRounded as EditIcon,
+    DeleteRounded as RemoveIcon,
+} from '@material-ui/icons';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import clsx from 'clsx';
 import AddButton from './AddButton';
-import EditMenu from "@/ui/Bookmarks/ContextEditMenu";
+import {useService as useAppService} from "@/stores/app";
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -36,53 +43,70 @@ const useStyles = makeStyles((theme) => ({
 
 function Category({ id, name, color, onClick, isSelect }) {
     const classes = useStyles();
-    const [isOpenMenu, setIsOpenMenu] = useState(false);
-    const [position, setPosition] = useState(null);
-    const [anchorEl, setAnchorEl] = useState(null);
+    const appStore = useAppService();
+    const bookmarksStore = useBookmarksService();
+    const { t } = useTranslation();
 
-    const handlerContextMenu = (event) => {
+    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'category' && fav.id === id);
+
+    const handlerContextMenu = (event, anchorEl) => {
         event.preventDefault();
-        setPosition({
-            top: event.nativeEvent.clientY,
-            left: event.nativeEvent.clientX,
+        appStore.eventBus.dispatch('contextMenu', {
+            actions: [
+                {
+                    type: 'button',
+                    title: isPin() ? t("fap.unpin") : t("fap.pin"),
+                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
+                    onClick: () => {
+                        if (isPin()) {
+                            bookmarksStore.removeFromFavorites({ type: 'category', id });
+                        } else {
+                            bookmarksStore.addToFavorites({ type: 'category', id });
+                        }
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("edit"),
+                    icon: EditIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`editcategory`, { id, anchorEl });
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("remove"),
+                    icon: RemoveIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`removecategory`, { id });
+                    }
+                }
+            ],
+            position: {
+                top: event.nativeEvent.clientY,
+                left: event.nativeEvent.clientX,
+            },
         });
-        setIsOpenMenu(true);
     };
 
-    const handleCloseMenu = () => {
-        setIsOpenMenu(false);
+    const openMenu = (position) => {
+
     };
 
     return (
-        <React.Fragment>
-            <EditMenu
-                id={id}
-                type="category"
-                isOpen={isOpenMenu}
-                onClose={handleCloseMenu}
-                position={position}
-                onEdit={(edit) => {
-                    edit({ anchorEl });
-                }}
-            />
-            <Chip
-                key={id}
-                ref={anchorEl}
-                icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
-                label={name}
-                className={clsx(classes.chip, isSelect && classes.chipActive)}
-                style={{
-                    backgroundColor: isSelect && fade(color, 0.14),
-                    borderColor: isSelect && color,
-                }}
-                variant="outlined"
-                onClick={onClick}
-                onContextMenu={(event) => {
-                    setAnchorEl(event.currentTarget);
-                    handlerContextMenu(event);
-                }}
-            />
-        </React.Fragment>
+        <Chip
+            key={id}
+            icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
+            label={name}
+            className={clsx(classes.chip, isSelect && classes.chipActive)}
+            style={{
+                backgroundColor: isSelect && fade(color, 0.14),
+                borderColor: isSelect && color,
+            }}
+            variant="outlined"
+            onClick={onClick}
+            onContextMenu={(event) => handlerContextMenu(event, event.currentTarget)}
+        />
     );
 }
 

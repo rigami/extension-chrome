@@ -156,9 +156,9 @@ function FAP() {
         Promise.all(
             bookmarksStore.favorites.map((fav) => {
                 if (fav.type === 'bookmark') {
-                    return bookmarksStore.getBookmark(fav.id);
+                    return bookmarksStore.bookmarks.get(fav.id);
                 } else {
-                    return bookmarksStore.getCategory(fav.id);
+                    return bookmarksStore.bookmarks.get(fav.id);
                 }
             })
         )

@@ -5,12 +5,19 @@ import {
     Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
-import EditMenu from '@/ui/Bookmarks/ContextEditMenu'
+import {
+    BookmarkBorderRounded as PinnedFavoriteIcon,
+    BookmarkRounded as UnpinnedFavoriteIcon,
+    EditRounded as EditIcon,
+    DeleteRounded as RemoveIcon,
+} from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import Image from "@/ui-components/Image";
 import {BKMS_VARIANT} from "@/enum";
+import {useService as useAppService} from "@/stores/app";
+import {useService as useBookmarksService} from "@/stores/bookmarks";
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,20 +36,54 @@ const useStyles = makeStyles((theme) => ({
 
 function LinkButton({ id, name, url, imageUrl, icoVariant, isBlurBackdrop }) {
     const classes = useStyles();
-    const [isOpen, setIsOpen] = useState(false);
-    const [position, setPosition] = useState(null);
+    const appStore = useAppService();
+    const bookmarksStore = useBookmarksService();
+    const { t } = useTranslation();
+
+    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
 
     const handlerContextMenu = (event) => {
         event.preventDefault();
-        setPosition({
+        openMenu({
             top: event.nativeEvent.clientY,
             left: event.nativeEvent.clientX,
         });
-        setIsOpen(true);
     };
 
-    const handleCloseMenu = () => {
-        setIsOpen(false);
+    const openMenu = (position) => {
+        appStore.eventBus.dispatch('contextMenu', {
+            actions: [
+                {
+                    type: 'button',
+                    title: isPin() ? t("fap.unpin") : t("fap.pin"),
+                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
+                    onClick: () => {
+                        if (isPin()) {
+                            bookmarksStore.removeFromFavorites({ type: 'bookmark', id });
+                        } else {
+                            bookmarksStore.addToFavorites({ type: 'bookmark', id });
+                        }
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("edit"),
+                    icon: EditIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`editbookmark`, { id });
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("remove"),
+                    icon: RemoveIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`removebookmark`, { id });
+                    }
+                }
+            ],
+            position,
+        });
     };
 
     const handleClick = (event) => {
@@ -56,42 +97,33 @@ function LinkButton({ id, name, url, imageUrl, icoVariant, isBlurBackdrop }) {
     };
 
     return (
-        <React.Fragment>
-            <EditMenu
-                id={id}
-                type="bookmark"
-                isOpen={isOpen}
-                onClose={handleCloseMenu}
-                position={position}
-            />
-            <Tooltip
-                title={(
-                    <React.Fragment>
-                        {name}
-                        <br />
-                        <Typography variant="caption">{url}</Typography>
-                    </React.Fragment>
+        <Tooltip
+            title={(
+                <React.Fragment>
+                    {name}
+                    <br />
+                    <Typography variant="caption">{url}</Typography>
+                </React.Fragment>
+            )}
+            enterDelay={400}
+            enterNextDelay={400}
+        >
+            <ButtonBase
+                className={clsx(
+                    classes.root,
+                    isBlurBackdrop && classes.rootBlur,
+                    classes.roundedIcon,
                 )}
-                enterDelay={400}
-                enterNextDelay={400}
+                onMouseUp={handleClick}
+                onContextMenu={handlerContextMenu}
             >
-                <ButtonBase
-                    className={clsx(
-                        classes.root,
-                        isBlurBackdrop && classes.rootBlur,
-                        classes.roundedIcon,
-                    )}
-                    onMouseUp={handleClick}
-                    onContextMenu={handlerContextMenu}
-                >
-                    <Image
-                        src={imageUrl}
-                        className={classes.icon}
-                        alternativeIcon={icoVariant === BKMS_VARIANT.SYMBOL ? name[0].toUpperCase() : undefined}
-                    />
-                </ButtonBase>
-            </Tooltip>
-        </React.Fragment>
+                <Image
+                    src={imageUrl}
+                    className={classes.icon}
+                    alternativeIcon={icoVariant === BKMS_VARIANT.SYMBOL ? name[0].toUpperCase() : undefined}
+                />
+            </ButtonBase>
+        </Tooltip>
     );
 }
 

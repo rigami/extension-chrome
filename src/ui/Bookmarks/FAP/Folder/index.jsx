@@ -5,14 +5,21 @@ import {
     ClickAwayListener,
     Tooltip,
 } from '@material-ui/core';
-import { FolderRounded as FolderIcon } from '@material-ui/icons';
+import {
+    FolderRounded as FolderIcon,
+    BookmarkBorderRounded as PinnedFavoriteIcon,
+    BookmarkRounded as UnpinnedFavoriteIcon,
+    EditRounded as EditIcon,
+    DeleteRounded as RemoveIcon,
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import Explorer from './Explorer';
-import EditMenu from '@/ui/Bookmarks/ContextEditMenu'
 import {useService as useAppService} from "@/stores/app";
 import { useLocalStore } from 'mobx-react-lite';
+import {useService as useBookmarksService} from "@/stores/bookmarks";
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -55,24 +62,54 @@ function Folder({ id, name, color, isBlurBackdrop }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
-    const [isOpenMenu, setIsOpenMenu] = useState(false);
-    const [position, setPosition] = useState(null);
     const [listenId, setListenId] = useState(null);
     const store = useLocalStore(() => ({
         popperRef: null,
     }));
+    const appStore = useAppService();
+    const bookmarksStore = useBookmarksService();
+    const { t } = useTranslation();
 
-    const handlerContextMenu = (event) => {
+    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'category' && fav.id === id);
+
+    const handlerContextMenu = (event, anchorEl) => {
         event.preventDefault();
-        setPosition({
-            top: event.nativeEvent.clientY,
-            left: event.nativeEvent.clientX,
+        appStore.eventBus.dispatch('contextMenu', {
+            actions: [
+                {
+                    type: 'button',
+                    title: isPin() ? t("fap.unpin") : t("fap.pin"),
+                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
+                    onClick: () => {
+                        if (isPin()) {
+                            bookmarksStore.removeFromFavorites({ type: 'category', id });
+                        } else {
+                            bookmarksStore.addToFavorites({ type: 'category', id });
+                        }
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("edit"),
+                    icon: EditIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`editcategory`, { id, anchorEl });
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("remove"),
+                    icon: RemoveIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`removecategory`, { id });
+                    }
+                }
+            ],
+            position: {
+                top: event.nativeEvent.clientY,
+                left: event.nativeEvent.clientX,
+            },
         });
-        setIsOpenMenu(true);
-    };
-
-    const handleCloseMenu = () => {
-        setIsOpenMenu(false);
     };
 
     useEffect(() => {
@@ -105,13 +142,6 @@ function Folder({ id, name, color, isBlurBackdrop }) {
                     <Explorer id={id} />
                 </Popper>
             </ClickAwayListener>
-            <EditMenu
-                id={id}
-                type="category"
-                isOpen={isOpenMenu}
-                onClose={handleCloseMenu}
-                position={position}
-            />
             <Tooltip
                 title={name}
                 enterDelay={400}
@@ -128,7 +158,7 @@ function Folder({ id, name, color, isBlurBackdrop }) {
                         if (isBlockEvent) setIsOpen(true);
                         setIsBlockEvent(false);
                     }}
-                    onContextMenu={handlerContextMenu}
+                    onContextMenu={(event) => handlerContextMenu(event, event.currentTarget)}
                 >
                     <FolderIcon style={{ color }} className={classes.icon} />
                 </ButtonBase>

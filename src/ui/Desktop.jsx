@@ -4,6 +4,9 @@ import { observer, useLocalStore } from 'mobx-react-lite';
 import {
     BrokenImageRounded as BrokenIcon,
     DeleteRounded as DeleteIcon,
+    Refresh as RefreshIcon,
+    AddPhotoAlternateRounded as UploadFromComputerIcon,
+    Add as AddBookmarkIcon,
 } from '@material-ui/icons';
 import FSConnector from '@/utils/fsConnector';
 import {BG_TYPE, THEME} from '@/enum';
@@ -14,8 +17,8 @@ import { useSnackbar } from 'notistack';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import { useService as useAppConfigService } from '@/stores/app';
 import Menu from '@/ui/Menu';
-import GlobalContextMenu from "@/ui/GlobalContextMenu";
 import { useTranslation } from 'react-i18next';
+import {useService as useBookmarksService} from "@/stores/bookmarks";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -57,6 +60,7 @@ function Desktop() {
     const { enqueueSnackbar } = useSnackbar();
     const backgroundsStore = useBackgroundsService();
     const appConfigStore = useAppConfigService();
+    const bookmarksStore = useBookmarksService();
     const { t } = useTranslation();
     const store = useLocalStore(() => ({
         currentBg: null,
@@ -72,15 +76,60 @@ function Desktop() {
 
     const handlerContextMenu = (event) => {
         event.preventDefault();
-        store.position = {
+        openMenu({
             top: event.nativeEvent.clientY,
             left: event.nativeEvent.clientX,
-        };
-        store.isOpenMenu = true;
+        });
     };
 
-    const handleCloseMenu = () => {
-        store.isOpenMenu = false;
+    const openMenu = (position) => {
+        appConfigStore.eventBus.dispatch('contextMenu', {
+            actions: [
+                {
+                    type: 'button',
+                    title: t("bg.next"),
+                    icon: RefreshIcon,
+                    onClick: () => {
+                        backgroundsStore.nextBG();
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("bg.addShort"),
+                    icon: UploadFromComputerIcon,
+                    onClick: () => {
+                        const shadowInput = document.createElement("input");
+                        shadowInput.setAttribute('multiple', 'true');
+                        shadowInput.setAttribute('type', 'file');
+                        shadowInput.setAttribute('accept', 'video/*,image/*');
+                        shadowInput.onchange = (event) => {
+                            console.log("EVENT", event)
+                            const form = event.target;
+                            if (form.files.length === 0) return;
+
+                            backgroundsStore.addToUploadQueue(form.files)
+                                .catch((e) => enqueueSnackbar({
+                                    ...t("locale.settings.backgrounds.general.library[e]"),
+                                    variant: 'error',
+                                }))
+                                .finally(() => {
+                                    form.value = '';
+                                });
+                        };
+                        shadowInput.click();
+                    }
+                },
+                {
+                    type: 'button',
+                    title: t("bookmark.addShort"),
+                    icon: AddBookmarkIcon,
+                    onClick: () => {
+                        bookmarksStore.eventBus.dispatch(`createbookmark`, );
+                    }
+                }
+            ],
+            position,
+        });
     };
 
     useEffect(() => {
@@ -179,12 +228,7 @@ function Desktop() {
     }, [store.currentBg]);
 
     return (
-        <Box className={classes.root} onContextMenu={handlerContextMenu}>
-            <GlobalContextMenu
-                onClose={handleCloseMenu}
-                isOpen={store.isOpenMenu}
-                position={store.position}
-            />
+        <Box className={classes.root}>
             <Fade
                 in={store.state === 'done' || store.state === 'failed'}
                 onExit={() => {
@@ -198,6 +242,7 @@ function Desktop() {
                     console.log("Reset current bg");
                     store.currentBg = null;
                 }}
+                onContextMenu={handlerContextMenu}
             >
                 <div className={classes.root}>
                     {store.state !== 'failed' && (

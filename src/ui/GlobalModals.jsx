@@ -9,17 +9,28 @@ import {
     Button,
 } from '@material-ui/core';
 import { useService as useBookmarksService } from '@/stores/bookmarks'
+import { useService as useAppService } from '@/stores/app'
 import EditCategoryModal from "@/ui/Bookmarks/Categories/EditModal";
 import { useTranslation } from 'react-i18next';
 import EditBookmarkModal from "@/ui/Bookmarks/EditBookmarkModal";
+import ContextMenu from "@/ui/ContextMenu";
 
 function GlobalModals () {
     const { t } = useTranslation();
     const bookmarksStore = useBookmarksService();
-    const [edit, setEdit] = useState(null)
+    const appStore = useAppService();
+    const [edit, setEdit] = useState(null);
+    const [contextMenuPosition, setContextMenuPosition] = useState(null);
+    const [contextMenuActions, setContextMenuActions] = useState([])
 
     useEffect(() => {
-        const listeners = [
+        const listenersAppStore = [
+            appStore.eventBus.on('contextMenu', ({ actions, position }) => {
+                setContextMenuPosition(position);
+                setContextMenuActions(actions);
+            }),
+        ];
+        const listenersBookmarksStore = [
             bookmarksStore.eventBus.on('createbookmark', () => setEdit({
                 type: 'bookmark',
                 action: 'create',
@@ -48,12 +59,19 @@ function GlobalModals () {
         ];
 
         return () => {
-            listeners.forEach((listenerId) => bookmarksStore.eventBus.removeListener(listenerId));
+            listenersAppStore.forEach((listenerId) => appStore.eventBus.removeListener(listenerId));
+            listenersBookmarksStore.forEach((listenerId) => bookmarksStore.eventBus.removeListener(listenerId));
         }
     }, []);
 
     return (
         <React.Fragment>
+            <ContextMenu
+                isOpen={contextMenuPosition !== null}
+                position={contextMenuPosition}
+                actions={contextMenuActions}
+                onClose={() => setContextMenuPosition(null)}
+            />
             <EditBookmarkModal
                 isOpen={edit && edit.type === 'bookmark' && edit.action !== 'remove'}
                 editBookmarkId={edit && edit.id}
