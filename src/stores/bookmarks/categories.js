@@ -8,11 +8,11 @@ import {DESTINATION} from "@/enum";
 class CategoriesStore {
     @observable _categories = [];
     eventBus;
-    globalBus;
+    bus;
 
     constructor() {
         this.eventBus = new EventBus();
-        this.globalBus = new BusApp(DESTINATION.APP);
+        this.bus = BusApp();
     }
 
     @action('sync categories with db')
@@ -62,7 +62,7 @@ class CategoriesStore {
             });
         }
 
-        this.globalBus.call('category/new', DESTINATION.APP, { categoryId: newCategoryId });
+        this.bus.call('category/new', DESTINATION.APP, { categoryId: newCategoryId });
 
         return newCategoryId;
     }
@@ -79,7 +79,7 @@ class CategoriesStore {
 
         await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
 
-        this.globalBus.call('category/remove', DESTINATION.APP, { categoryId });
+        this.bus.call('category/remove', DESTINATION.APP, { categoryId });
     }
 }
 

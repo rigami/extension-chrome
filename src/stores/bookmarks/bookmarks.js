@@ -13,11 +13,11 @@ import asyncAction from "@/utils/asyncAction";
 
 class BookmarksStore {
     eventBus;
-    @observable globalBus;
+    @observable bus;
 
     constructor() {
         this.eventBus = new EventBus();
-        this.globalBus = new BusApp(DESTINATION.APP);
+        this.bus = BusApp();
 
         console.log("Bookmark store is init!");
     }
@@ -354,7 +354,7 @@ class BookmarksStore {
             }
         }
 
-        this.globalBus.call('bookmark/new', DESTINATION.APP, { bookmarkId: saveBookmarkId });
+        this.bus.call('bookmark/new', DESTINATION.APP, { bookmarkId: saveBookmarkId });
 
         return saveBookmarkId;
     }
@@ -374,7 +374,7 @@ class BookmarksStore {
 
         await FSConnector.removeFile('/bookmarksIcons', oldBookmark.icoFileName);
 
-        this.globalBus.call('bookmark/remove', DESTINATION.APP, { bookmarkId: bookmarkId });
+        this.bus.call('bookmark/remove', DESTINATION.APP, { bookmarkId: bookmarkId });
     }
 }
 

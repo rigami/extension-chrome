@@ -17,13 +17,13 @@ class BookmarksService {
     @observable favorites = [];
     @observable syncWithSystem;
     eventBus;
-    globalBus;
+    bus;
 
     constructor() {
         this.eventBus = new EventBus();
         this.categories = new CategoriesStore();
         this.bookmarks = new BookmarksStore();
-        this.globalBus = new BusApp(DESTINATION.APP);
+        this.bus = BusApp();
 
         StorageConnector.getItem('bkms_fap_style')
             .then((value) => { this.fapStyle = value; })
@@ -49,10 +49,10 @@ class BookmarksService {
                 .then((value) => { this.favorites = value; })
                 .catch((e) => console.error(e)));
 
-        this.globalBus.on('bookmark/new', () => {
+        this.bus.on('bookmark/new', () => {
             this.lastTruthSearchTimestamp = Date.now();
         });
-        this.globalBus.on('category/new', () => {
+        this.bus.on('category/new', () => {
             this.categories.sync();
         });
     }
@@ -85,7 +85,7 @@ class BookmarksService {
         await StorageConnector.setItem('bkms_sync_with_system', isSync);
 
         if (isSync) {
-            this.globalBus.call('system/parseSystemBookmarks', DESTINATION.BACKGROUND);
+            this.bus.call('system/parseSystemBookmarks', DESTINATION.BACKGROUND);
         } else {
         }
     }

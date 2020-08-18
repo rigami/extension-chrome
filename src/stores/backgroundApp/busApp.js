@@ -1,5 +1,8 @@
 import EventBus from "@/utils/eventBus";
 import { observable } from 'mobx';
+import {DESTINATION} from "@/enum";
+
+let bus = null;
 
 class BusApp {
     _eventBus = new EventBus();
@@ -32,4 +35,21 @@ class BusApp {
     }
 }
 
-export default BusApp;
+function initBus(destination) {
+    bus = new BusApp(destination);
+}
+
+function eventToApp(event, data) {
+    bus.call(event, DESTINATION.APP, data);
+}
+
+function eventToBackground(event, data) {
+    bus.call(event, DESTINATION.BACKGROUND, data);
+}
+
+function eventToPopup(event, data) {
+    bus.call(event, DESTINATION.POPUP, data);
+}
+
+export default () => bus;
+export { initBus, eventToApp, eventToBackground, eventToPopup };

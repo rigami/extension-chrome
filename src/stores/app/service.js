@@ -2,7 +2,6 @@ import { action, observable } from 'mobx';
 import StorageConnector from '@/utils/storageConnector';
 import EventBus from "@/utils/eventBus";
 import BusApp from "@/stores/backgroundApp/busApp";
-import { DESTINATION } from "@/enum";
 
 class AppConfigStore {
     @observable theme;
@@ -11,11 +10,11 @@ class AppConfigStore {
     @observable tabName;
     @observable activity = 'desktop';
     eventBus;
-    globalBus;
+    bus;
 
     constructor() {
         this.eventBus = new EventBus();
-        this.globalBus = new BusApp(DESTINATION.APP);
+        this.bus = BusApp();
 
         StorageConnector.getItem('app_theme')
             .then((value) => { this.theme = value; })

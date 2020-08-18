@@ -1,4 +1,3 @@
-import StorageConnector from "@/utils/storageConnector";
 import {BKMS_VARIANT, DESTINATION} from "@/enum";
 import BusApp from "./busApp";
 import Category from "@/stores/bookmarks/entities/category";
@@ -10,7 +9,7 @@ class Background {
 
     constructor({ bookmarksService }) {
         this.bookmarksService = bookmarksService;
-        this.bus = new BusApp(DESTINATION.BACKGROUND);
+        this.bus = BusApp();
 
         if (!chrome?.bookmarks) {
             console.error("Not find bookmarks module");
