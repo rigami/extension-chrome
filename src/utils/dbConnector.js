@@ -24,7 +24,6 @@ const open = () => openDB(appVariables.db.name, appVariables.db.version, {
         bookmarksStore.createIndex('name', 'name', { unique: false });
         bookmarksStore.createIndex('description', 'description', { unique: false });
         bookmarksStore.createIndex('count_clicks', 'countClicks', { unique: false });
-        bookmarksStore.createIndex('source', 'source', { unique: false });
 
         const bByCStore = db.createObjectStore('bookmarks_by_categories', {
             keyPath: 'id',

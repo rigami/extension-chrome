@@ -16,7 +16,7 @@ function BookmarksSettings() {
 
     return useObserver(() => (
         <React.Fragment>
-            <SectionHeader title={t("settings.bookmarks.FAP.title")} />
+            {/* <SectionHeader title={t("settings.bookmarks.FAP.title")} /> */}
             <MenuRow
                 title={t("settings.bookmarks.FAP.useFAP.title")}
                 description={t("settings.bookmarks.FAP.useFAP.description")}
@@ -55,7 +55,7 @@ function BookmarksSettings() {
                     }}
                 />
             </Collapse>
-            <SectionHeader title={t("settings.bookmarks.systemBookmarks.title")} />
+            {/* <SectionHeader title={t("settings.bookmarks.systemBookmarks.title")} />
             <MenuRow
                 title={t("settings.bookmarks.systemBookmarks.syncSystemBookmarks.title")}
                 description={t("settings.bookmarks.systemBookmarks.syncSystemBookmarks.description")}
@@ -66,7 +66,7 @@ function BookmarksSettings() {
                         bookmarksStore.setSyncWithSystem(value);
                     },
                 }}
-            />
+            /> */}
         </React.Fragment>
     ));
 }
