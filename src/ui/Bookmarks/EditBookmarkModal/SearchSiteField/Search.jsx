@@ -9,14 +9,12 @@ import {
     ListItemAvatar,
     Fade,
     Collapse,
-    Box
+    Box,
 } from '@material-ui/core';
-import {
-    PublicRounded as WebSiteIcon,
-} from '@material-ui/icons';
-import {AbortController} from "@/utils/xhrPromise";
-import {getFaviconUrl, getSiteInfo, search} from "@/utils/siteSearch";
-import {makeStyles} from '@material-ui/core/styles';
+import { PublicRounded as WebSiteIcon } from '@material-ui/icons';
+import { AbortController } from '@/utils/xhrPromise';
+import { getFaviconUrl, getSiteInfo, search } from '@/utils/siteSearch';
+import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
@@ -32,9 +30,7 @@ const useStyles = makeStyles((theme) => ({
         left: 0,
         right: 0,
     },
-    avatar: {
-        minWidth: theme.spacing(4.5),
-    },
+    avatar: { minWidth: theme.spacing(4.5) },
     favicon: {
         width: theme.spacing(2),
         height: theme.spacing(2),
@@ -44,16 +40,14 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
     },
-    forceAdd: {
-        marginLeft: theme.spacing(2),
-    },
+    forceAdd: { marginLeft: theme.spacing(2) },
     subheader: {
         backgroundColor: theme.palette.background.paper,
         top: 72,
     },
 }));
 
-function Search({ query = "", onSelect }) {
+function Search({ query = '', onSelect }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const [timer, setTimer] = useState(undefined);
@@ -128,12 +122,13 @@ function Search({ query = "", onSelect }) {
             <Box className={classes.root}>
                 <Fade in={straightLoading && globalLoading}>
                     <Box className={clsx(classes.search)}>
-                        {t("search")}...
+                        {t('search')}
+                        ...
                     </Box>
                 </Fade>
                 <Collapse in={(!globalLoading || !straightLoading) && isOpen}>
                     <List disablePadding>
-                        <ListSubheader className={classes.subheader}>{t("bookmark.editor.searchURLTitle")}</ListSubheader>
+                        <ListSubheader className={classes.subheader}>{t('bookmark.editor.searchURLTitle')}</ListSubheader>
                         {!straightLoading && straightResults && (
                             <ListItem
                                 className={classes.row}
@@ -147,7 +142,7 @@ function Search({ query = "", onSelect }) {
                                         src={getFaviconUrl(straightResults.url)}
                                         className={classes.favicon}
                                     >
-                                        <WebSiteIcon/>
+                                        <WebSiteIcon />
                                     </Avatar>
                                 </ListItemAvatar>
                                 <ListItemText
@@ -162,7 +157,7 @@ function Search({ query = "", onSelect }) {
                         )}
                         {!straightLoading && !straightResults && (
                             <ListItem>
-                                {t("bookmark.editor.URLNotRecognize")}
+                                {t('bookmark.editor.URLNotRecognize')}
                                 <Button
                                     className={classes.forceAdd}
                                     onClick={() => onSelect({
@@ -170,16 +165,17 @@ function Search({ query = "", onSelect }) {
                                         title: '',
                                     }, true)}
                                 >
-                                    {t("bookmark.editor.forceAddURL")}
+                                    {t('bookmark.editor.forceAddURL')}
                                 </Button>
                             </ListItem>
                         )}
                         {straightLoading && (
                             <ListItem>
-                                {t("search")}...
+                                {t('search')}
+                                ...
                             </ListItem>
                         )}
-                        <ListSubheader className={classes.subheader}>{t("bookmark.editor.searchInWEBTitle")}</ListSubheader>
+                        <ListSubheader className={classes.subheader}>{t('bookmark.editor.searchInWEBTitle')}</ListSubheader>
                         {!globalLoading && globalResults && globalResults.map((option) => (
                             <ListItem
                                 className={classes.row}
@@ -194,7 +190,7 @@ function Search({ query = "", onSelect }) {
                                         src={getFaviconUrl(option.url)}
                                         className={classes.favicon}
                                     >
-                                        <WebSiteIcon/>
+                                        <WebSiteIcon />
                                     </Avatar>
                                 </ListItemAvatar>
                                 <ListItemText
@@ -209,12 +205,13 @@ function Search({ query = "", onSelect }) {
                         ))}
                         {!globalLoading && globalResults && globalResults.length === 0 && (
                             <ListItem>
-                                {t("bookmark.editor.notFound")}
+                                {t('bookmark.editor.notFound')}
                             </ListItem>
                         )}
                         {globalLoading && (
                             <ListItem>
-                                {t("search")}...
+                                {t('search')}
+                                ...
                             </ListItem>
                         )}
                     </List>

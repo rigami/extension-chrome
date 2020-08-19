@@ -8,16 +8,16 @@ import {
 import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
-import {PreviewSelectorToggleButton} from "./Preview/Selector";
-import { getSiteInfo, getImageRecalc } from "@/utils/siteSearch";
+import { getSiteInfo, getImageRecalc } from '@/utils/siteSearch';
 import { FETCH, BKMS_VARIANT } from '@/enum';
-import asyncAction from "@/utils/asyncAction";
-import Scrollbar from "@/ui-components/CustomScroll";
+import asyncAction from '@/utils/asyncAction';
+import Scrollbar from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
-import FieldsEditor from "./FieldsEditor";
 import ReactResizeDetector from 'react-resize-detector';
-import Preview, {STAGE} from "./Preview";
-import SelectorWrapper from "./Preview/SelectorWrapper";
+import FieldsEditor from './FieldsEditor';
+import { PreviewSelectorToggleButton } from './Preview/Selector';
+import Preview, { STAGE } from './Preview';
+import SelectorWrapper from './Preview/SelectorWrapper';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -32,9 +32,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
         position: 'relative',
     },
-    editor: {
-        display: 'flex',
-    },
+    editor: { display: 'flex' },
 }));
 
 function Editor(props) {
@@ -74,7 +72,7 @@ function Editor(props) {
     }));
 
     const handlerSave = () => {
-        store.saveStage  = FETCH.PENDING;
+        store.saveStage = FETCH.PENDING;
         bookmarksStore.bookmarks.save({
             ...store,
             image_url: store.imageURL,
@@ -82,7 +80,7 @@ function Editor(props) {
             description: (store.useDescription && store.description?.trim()) || '',
             id: store.editBookmarkId,
         }).then((saveBookmarkId) => {
-            store.saveStage  = FETCH.DONE;
+            store.saveStage = FETCH.DONE;
             store.editBookmarkId = saveBookmarkId;
         });
 
@@ -138,7 +136,7 @@ function Editor(props) {
 
             if (siteData.bestIcon?.score === 0) {
                 try {
-                    siteData.bestIcon = await getImageRecalc(siteData.bestIcon.name)
+                    siteData.bestIcon = await getImageRecalc(siteData.bestIcon.name);
                 } catch (e) {
                 }
             }
@@ -205,11 +203,14 @@ function Editor(props) {
                             getNextValidImage={() => {
                                 store.images = store.images.filter(({ url }) => url !== store.imageURL);
 
-                                if(store.images.length === 0) {
+                                if (store.images.length === 0) {
                                     store.imageURL = null;
                                     store.icoVariant = BKMS_VARIANT.SYMBOL;
 
-                                    return { url: store.imageURL, type: store.icoVariant };
+                                    return {
+                                        url: store.imageURL,
+                                        type: store.icoVariant,
+                                    };
                                 }
 
                                 let maxScoreId = 0;
@@ -221,7 +222,7 @@ function Editor(props) {
                                 store.imageURL = store.images[maxScoreId].url;
                                 store.icoVariant = store.images[maxScoreId].type;
 
-                                console.log('Next image', store.images[maxScoreId])
+                                console.log('Next image', store.images[maxScoreId]);
 
                                 return store.images[maxScoreId];
                             }}

@@ -4,17 +4,13 @@ import {
     Box,
     CircularProgress,
 } from '@material-ui/core';
-import {
-    WarningRounded as WarnIcon,
-} from '@material-ui/icons';
-import {
-    LinkRounded as URLIcon,
-} from '@material-ui/icons';
+import { WarningRounded as WarnIcon, LinkRounded as URLIcon } from '@material-ui/icons';
+
 import { makeStyles } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
-import {BKMS_VARIANT, FETCH} from "@/enum";
+import { BKMS_VARIANT, FETCH } from '@/enum';
 import { useObserver, useLocalStore } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
@@ -39,12 +35,8 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 'auto',
         wordBreak: 'break-word',
     },
-    warnIcon: {
-        marginRight: theme.spacing(1),
-    },
-    card: {
-        marginTop: theme.spacing(2),
-    },
+    warnIcon: { marginRight: theme.spacing(1) },
+    card: { marginTop: theme.spacing(2) },
 }));
 
 const STAGE = {
@@ -54,7 +46,6 @@ const STAGE = {
     WAIT_NAME: 'WAIT_NAME',
     DONE: 'DONE',
 };
-
 
 function Preview(props) {
     const {
@@ -76,7 +67,7 @@ function Preview(props) {
     }));
 
     useEffect(() => {
-        if(stage !== STAGE.DONE) {
+        if (stage !== STAGE.DONE) {
             store.stateImageLoad = FETCH.WAIT;
             store.loadUrl = '';
             return;
@@ -90,11 +81,11 @@ function Preview(props) {
 
         const imgCache = document.createElement('img');
         imgCache.onload = () => {
-            if(imgCache.src !== store.loadUrl) return;
+            if (imgCache.src !== store.loadUrl) return;
             store.stateImageLoad = FETCH.DONE;
         };
         imgCache.onerror = () => {
-            if(imgCache.src !== store.loadUrl) return;
+            if (imgCache.src !== store.loadUrl) return;
             const nextImage = getNextValidImage();
             if (nextImage === null) {
                 store.stateImageLoad = FETCH.FAILED;
@@ -113,26 +104,26 @@ function Preview(props) {
             {stage === STAGE.WAIT_REQUEST && (
                 <FullScreenStub
                     iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
-                    description={t("bookmark.editor.helper.writeURL")}
+                    description={t('bookmark.editor.helper.writeURL')}
                 />
             )}
             {stage === STAGE.WAIT_RESULT && (
                 <FullScreenStub
                     iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
-                    description={t("bookmark.editor.helper.selectResult")}
+                    description={t('bookmark.editor.helper.selectResult')}
                 />
             )}
             {stage === STAGE.WAIT_NAME && (
                 <FullScreenStub
                     iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
-                    description={t("bookmark.editor.helper.writeName")}
+                    description={t('bookmark.editor.helper.writeName')}
                 />
             )}
             {stage === STAGE.DONE && header}
             {
                 (
                     stage === STAGE.PARSING_SITE
-                    || (stage === STAGE.DONE&& (store.stateImageLoad === FETCH.PENDING || store.stateImageLoad === FETCH.WAIT))
+                    || (stage === STAGE.DONE && (store.stateImageLoad === FETCH.PENDING || store.stateImageLoad === FETCH.WAIT))
                 ) && (
                     <FullScreenStub>
                         <CircularProgress color="primary" />
@@ -152,8 +143,8 @@ function Preview(props) {
             )}
             {stage === STAGE.DONE && store.stateImageLoad === FETCH.FAILED && (
                 <Box className={classes.warnMessage}>
-                    <WarnIcon  className={classes.warnIcon} />
-                    {t("bookmark.editor.errorLoadIcon")}
+                    <WarnIcon className={classes.warnIcon} />
+                    {t('bookmark.editor.errorLoadIcon')}
                 </Box>
             )}
         </CardMedia>

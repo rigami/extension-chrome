@@ -1,15 +1,15 @@
 import createPreview from '@/utils/createPreview';
 import appVariables from '@/config/appVariables';
 import defaultSettings from '@/config/settings';
-import DBConnector, { open as openDB } from './dbConnector';
-import FSConnector from './fsConnector';
-import StorageConnector from './storageConnector';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
-import { initBus } from "@/stores/backgroundApp/busApp";
-import { DESTINATION } from "@/enum";
+import { initBus } from '@/stores/backgroundApp/busApp';
+import { DESTINATION } from '@/enum';
+import StorageConnector from './storageConnector';
+import FSConnector from './fsConnector';
+import DBConnector, { open as openDB } from './dbConnector';
 
 class ConfigStores {
     static setup(progressCallBack) {
@@ -46,12 +46,8 @@ class ConfigStores {
             .init({
                 fallbackLng: PRODUCTION_MODE ? 'en' : 'dev',
                 debug: true,
-                interpolation: {
-                    escapeValue: false,
-                },
-                backend: {
-                    loadPath: 'resource/i18n/{{lng}}.json'
-                }
+                interpolation: { escapeValue: false },
+                backend: { loadPath: 'resource/i18n/{{lng}}.json' },
             });
 
         await StorageConnector.getItem('last_setup_timestamp');

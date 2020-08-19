@@ -32,6 +32,6 @@ export default {
         backdropTheme: THEME.DARK,
         theme: THEME.LIGHT,
         useSystemFont: true,
-        tabName: i18n.t("tabName.default"),
+        tabName: i18n.t('tabName.default'),
     },
 };

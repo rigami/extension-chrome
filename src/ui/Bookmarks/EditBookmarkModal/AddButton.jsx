@@ -7,7 +7,7 @@ import { AddRounded as AddIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useService as useAppService } from '@/stores/app';
-import { useService as useBookmarksService } from '@/stores/bookmarks'
+import { useService as useBookmarksService } from '@/stores/bookmarks';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +32,7 @@ function AddBookmarkButton() {
     };
 
     const handleOpen = () => {
-        bookmarksStore.eventBus.dispatch(`createbookmark`);
+        bookmarksStore.eventBus.dispatch('createbookmark');
     };
 
     return (
@@ -50,7 +50,7 @@ function AddBookmarkButton() {
                     onClick={handleOpen}
                 >
                     <AddIcon className={classes.fabIcon} />
-                    {t("bookmark.addShort")}
+                    {t('bookmark.addShort')}
                 </Fab>
             </Zoom>
         </React.Fragment>

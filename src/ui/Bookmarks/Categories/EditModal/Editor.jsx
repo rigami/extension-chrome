@@ -18,9 +18,7 @@ const useStyles = makeStyles((theme) => ({
     },
     input: { padding: theme.spacing(2) },
     saveButton: { marginRight: theme.spacing(2) },
-    errorMessage: {
-        padding: theme.spacing(1, 2),
-    },
+    errorMessage: { padding: theme.spacing(1, 2) },
 }));
 
 function Editor({ onSave, onError, editCategoryId }) {
@@ -48,7 +46,7 @@ function Editor({ onSave, onError, editCategoryId }) {
             <form onSubmit={handlerSubmit}>
                 <InputBase
                     className={classes.input}
-                    placeholder={t("category.createPlaceholder")}
+                    placeholder={t('category.createPlaceholder')}
                     variant="outlined"
                     autoFocus
                     defaultValue={categoryStore?.name}
@@ -65,12 +63,12 @@ function Editor({ onSave, onError, editCategoryId }) {
                     color="primary"
                     type="submit"
                 >
-                    {t("save")}
+                    {t('save')}
                 </Button>
             </form>
             {error && error === 'category_already_exist' && (
                 <Typography className={classes.errorMessage} variant="body2" color="error">
-                    {t("category.categoryAlreadyExist")}
+                    {t('category.categoryAlreadyExist')}
                 </Typography>
             )}
         </Card>

@@ -26,9 +26,7 @@ class ViewScrollPlugin extends ScrollbarPlugin {
         }));
         this._reverseBreakpoints = [...this._breakpoints].reverse();
 
-        this._breakpointAim = this._reverseBreakpoints.find((breakpoint) => {
-            return this.scrollbar.offset.y >= breakpoint.value - this.options.detectOffset;
-        });
+        this._breakpointAim = this._reverseBreakpoints.find((breakpoint) => this.scrollbar.offset.y >= breakpoint.value - this.options.detectOffset);
     }
 
     onRender(remainMomentum) {
@@ -45,13 +43,9 @@ class ViewScrollPlugin extends ScrollbarPlugin {
         this._remain = remainMomentum.y;
 
         if (this._direction === 'up') {
-            this._breakpointAim = this._reverseBreakpoints.find((breakpoint) => {
-                return this.scrollbar.offset.y >= breakpoint.value - this.options.detectOffset;
-            });
+            this._breakpointAim = this._reverseBreakpoints.find((breakpoint) => this.scrollbar.offset.y >= breakpoint.value - this.options.detectOffset);
         } else if (this._direction === 'down') {
-            this._breakpointAim = this._breakpoints.find((breakpoint) => {
-                return this.scrollbar.offset.y <= breakpoint.value + this.options.detectOffset;
-            });
+            this._breakpointAim = this._breakpoints.find((breakpoint) => this.scrollbar.offset.y <= breakpoint.value + this.options.detectOffset);
         }
 
         if (this._breakpointCurrent?.value !== this._breakpointAim?.value) {
@@ -59,7 +53,7 @@ class ViewScrollPlugin extends ScrollbarPlugin {
             this.options.onBreakpoint(this._breakpointAim);
         }
 
-        if(
+        if (
             this._speed === 0
             && (
                 (
@@ -75,12 +69,12 @@ class ViewScrollPlugin extends ScrollbarPlugin {
         ) {
             clearTimeout(this._scrollToTimeout);
             this._scrollToTimeout = setTimeout(() => {
-                this.scrollbar.scrollTo(0, this._breakpointAim?.value ,700, {
+                this.scrollbar.scrollTo(0, this._breakpointAim?.value, 700, {
                     easing: (t) => {
                         t *= 2;
-                        if (t < 1) return 0.5*t*t*t*t;
+                        if (t < 1) return 0.5 * t * t * t * t;
                         t -= 2;
-                        return -0.5 * (t*t*t*t - 2);
+                        return -0.5 * (t * t * t * t - 2);
                     },
                     callback: () => { this._scrollToTimeout = null; },
                 });

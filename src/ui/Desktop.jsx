@@ -9,7 +9,7 @@ import {
     Add as AddBookmarkIcon,
 } from '@material-ui/icons';
 import FSConnector from '@/utils/fsConnector';
-import {BG_TYPE, THEME} from '@/enum';
+import { BG_TYPE, THEME } from '@/enum';
 import clsx from 'clsx';
 import { Fade, Box } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
@@ -18,8 +18,7 @@ import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import { useService as useAppConfigService } from '@/stores/app';
 import Menu from '@/ui/Menu';
 import { useTranslation } from 'react-i18next';
-import {useService as useBookmarksService} from "@/stores/bookmarks";
-
+import { useService as useBookmarksService } from '@/stores/bookmarks';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -87,29 +86,29 @@ function Desktop() {
             actions: [
                 {
                     type: 'button',
-                    title: t("bg.next"),
+                    title: t('bg.next'),
                     icon: RefreshIcon,
                     onClick: () => {
                         backgroundsStore.nextBG();
-                    }
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("bg.addShort"),
+                    title: t('bg.addShort'),
                     icon: UploadFromComputerIcon,
                     onClick: () => {
-                        const shadowInput = document.createElement("input");
+                        const shadowInput = document.createElement('input');
                         shadowInput.setAttribute('multiple', 'true');
                         shadowInput.setAttribute('type', 'file');
                         shadowInput.setAttribute('accept', 'video/*,image/*');
                         shadowInput.onchange = (event) => {
-                            console.log("EVENT", event)
+                            console.log('EVENT', event);
                             const form = event.target;
                             if (form.files.length === 0) return;
 
                             backgroundsStore.addToUploadQueue(form.files)
                                 .catch((e) => enqueueSnackbar({
-                                    ...t("locale.settings.backgrounds.general.library[e]"),
+                                    ...t('locale.settings.backgrounds.general.library[e]'),
                                     variant: 'error',
                                 }))
                                 .finally(() => {
@@ -117,16 +116,16 @@ function Desktop() {
                                 });
                         };
                         shadowInput.click();
-                    }
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("bookmark.addShort"),
+                    title: t('bookmark.addShort'),
                     icon: AddBookmarkIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch(`createbookmark`, );
-                    }
-                }
+                        bookmarksStore.eventBus.dispatch('createbookmark');
+                    },
+                },
             ],
             position,
         });
@@ -143,7 +142,7 @@ function Desktop() {
                     try {
                         temporaryBG = await backgroundsStore.pause(captureBGId, pauseTimestamp);
                     } catch (e) {
-                        console.log(e)
+                        console.log(e);
                         return;
                     }
 
@@ -161,7 +160,7 @@ function Desktop() {
                 bgRef.current.play().then(() => bgRef.current.pause());
             }),
             backgroundsStore.eventBus.on('playbg', async () => {
-                console.log('playbg')
+                console.log('playbg');
                 if (typeof store.captureFrameTimer === 'number') clearTimeout(+store.captureFrameTimer);
                 store.captureFrameTimer = null;
 
@@ -177,9 +176,8 @@ function Desktop() {
                 if (bgRef.current.play) {
                     bgRef.current.play();
                     bgRef.current.onpause = null;
-                }
-                else {
-                    store.nextBg ={
+                } else {
+                    store.nextBg = {
                         ...currentBg,
                         src: FSConnector.getBGURL(currentBg.fileName),
                     };
@@ -190,7 +188,7 @@ function Desktop() {
 
         return () => {
             listeners.forEach((listenerId) => backgroundsStore.eventBus.removeListener(listenerId));
-        }
+        };
     }, []);
 
     useEffect(() => {
@@ -239,7 +237,7 @@ function Desktop() {
                     }
                 }}
                 onExited={() => {
-                    console.log("Reset current bg");
+                    console.log('Reset current bg');
                     store.currentBg = null;
                 }}
                 onContextMenu={handlerContextMenu}
@@ -254,20 +252,20 @@ function Desktop() {
                     {store.state === 'failed' && (
                         <FullscreenStub
                             iconRender={(props) => (<BrokenIcon {...props} />)}
-                            message={t("bg.errorLoad")}
+                            message={t('bg.errorLoad')}
                             description={
-                                (store.bg && t("bg.errorLoadUnknownReason"))
-                                || t("bg.notFoundBG")
+                                (store.bg && t('bg.errorLoadUnknownReason'))
+                                || t('bg.notFoundBG')
                             }
                             style={{ height: '100vh' }}
                             actions={store.bg && [
                                 {
-                                    title: t("bg.remove"),
+                                    title: t('bg.remove'),
                                     onClick: () => {
                                         backgroundsStore.removeFromStore(bg.id)
                                             .then(() => backgroundsStore.nextBG())
                                             .then(() => enqueueSnackbar({
-                                                message: t("bg.brokenRemovedSuccess"),
+                                                message: t('bg.brokenRemovedSuccess'),
                                                 variant: 'warning',
                                             }));
                                     },
@@ -295,12 +293,12 @@ function Desktop() {
                             src={store.currentBg.src}
                             style={{ imageRendering: store.currentBg.antiAliasing ? 'auto' : 'pixelated' }}
                             onLoad={() => {
-                                console.log("load done")
+                                console.log('load done');
                                 store.state = 'done';
                             }}
                             onError={() => {
                                 if (store.currentBg.type === BG_TYPE.VIDEO) {
-                                    store.nextBg ={
+                                    store.nextBg = {
                                         ...store.currentBg,
                                         forceLoadAsVideo: true,
                                         src: FSConnector.getBGURL(store.currentBg.fileName),
@@ -331,7 +329,7 @@ function Desktop() {
                                 style={{ imageRendering: store.currentBg.antiAliasing ? 'auto' : 'pixelated' }}
                                 onPlay={() => { store.state = 'done'; }}
                                 onLoadedMetadata={() => {
-                                    console.log(store.currentBg)
+                                    console.log(store.currentBg);
                                     if (typeof store.currentBg.pause === 'number') {
                                         bgRef.current.currentTime = store.currentBg.pause;
                                         backgroundsStore.eventBus.dispatch('pausebg');

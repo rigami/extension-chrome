@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
 
 const general = [
     {
-        title: "settings.bg.title",
-        description: "settings.bg.description",
+        title: 'settings.bg.title',
+        description: 'settings.bg.description',
         icon: <BackgroundsIcon />,
         id: 'backgrounds',
         header: backgroundsPageHeader,
@@ -38,8 +38,8 @@ const general = [
         color: '#2675F0',
     },
     {
-        title: "settings.bookmarks.title",
-        description: "settings.bookmarks.description",
+        title: 'settings.bookmarks.title',
+        description: 'settings.bookmarks.description',
         icon: <BookmarksIcon />,
         id: 'bookmarks',
         header: bookmarksPageHeader,
@@ -47,8 +47,8 @@ const general = [
         color: '#ff4f88',
     },
     {
-        title: "settings.app.title",
-        description: "settings.app.description",
+        title: 'settings.app.title',
+        description: 'settings.app.description',
         icon: <SettingsIcon />,
         id: 'app',
         header: appSettingsPageHeader,
@@ -56,8 +56,8 @@ const general = [
         color: '#F88317',
     },
     {
-        title: "settings.backup.title",
-        description: "settings.backup.description",
+        title: 'settings.backup.title',
+        description: 'settings.backup.description',
         icon: <BackupIcon />,
         id: 'backup',
         color: '#0f9d58',
@@ -65,8 +65,8 @@ const general = [
 ];
 const additional = [
     {
-        title: "settings.about.title",
-        description: "settings.about.description",
+        title: 'settings.about.title',
+        description: 'settings.about.description',
         icon: <AboutIcon />,
         id: 'about',
         header: aboutPageHeader,
@@ -75,7 +75,7 @@ const additional = [
     },
 ];
 
-const headerProps = { title: "settings.title" };
+const headerProps = { title: 'settings.title' };
 
 function Row(props) {
     const {

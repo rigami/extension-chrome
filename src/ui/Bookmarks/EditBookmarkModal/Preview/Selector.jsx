@@ -10,17 +10,13 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
-import { getImageRecalc } from "@/utils/siteSearch"
-import { BKMS_VARIANT } from "@/enum";
+import { getImageRecalc } from '@/utils/siteSearch';
+import { BKMS_VARIANT } from '@/enum';
 import { useLocalStore, useObserver } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        position: 'relative',
-    },
-    headerTitle: {
-        wordBreak: 'break-word',
-    },
+    root: { position: 'relative' },
+    headerTitle: { wordBreak: 'break-word' },
     headerActions: {
         marginRight: 0,
         marginTop: 0,
@@ -60,13 +56,12 @@ function PreviewSelectorToggleButton({ isOpen, onOpen, onClose }) {
     const { t } = useTranslation();
 
     return (
-        <Button onClick={() => isOpen ? onClose() : onOpen()} fullWidth>
-            {!isOpen && t("bookmark.editor.alternativeIconsOpen")}
-            {isOpen && t("bookmark.editor.alternativeIconsClose")}
+        <Button onClick={() => (isOpen ? onClose() : onOpen())} fullWidth>
+            {!isOpen && t('bookmark.editor.alternativeIconsOpen')}
+            {isOpen && t('bookmark.editor.alternativeIconsClose')}
         </Button>
     );
 }
-
 
 function PreviewSelector(props) {
     const {
@@ -86,30 +81,30 @@ function PreviewSelector(props) {
 
     useEffect(() => {
         store.loadedImages = defaultImages
-                .filter(({ score }) => score !== 0)
-                .sort(({ score: scoreA }, { score: scoreB }) => {
-                    if (scoreA < scoreB) return 1;
-                    if (scoreA > scoreB) return -1;
-                    return 0;
-                });
+            .filter(({ score }) => score !== 0)
+            .sort(({ score: scoreA }, { score: scoreB }) => {
+                if (scoreA < scoreB) return 1;
+                if (scoreA > scoreB) return -1;
+                return 0;
+            });
         store.size = defaultImages.length;
 
         defaultImages.filter(({ score }) => score === 0).forEach((image) => {
             getImageRecalc(image.name)
                 .then((newData) => {
-                    const insertIndex = store.loadedImages.findIndex(({score}) => score < newData.score);
-                    store.loadedImages.splice(insertIndex === -1 ? store.loadedImages.length : insertIndex, 0, newData)
+                    const insertIndex = store.loadedImages.findIndex(({ score }) => score < newData.score);
+                    store.loadedImages.splice(insertIndex === -1 ? store.loadedImages.length : insertIndex, 0, newData);
                 })
                 .catch(() => {
                     store.size -= 1;
-                })
-        })
+                });
+        });
     }, [defaultImages.length]);
 
     return useObserver(() => (
         <Card className={classes.root} elevation={8} {...other}>
             <CardHeader
-                title={t("bookmark.editor.alternativeIconsTitle")}
+                title={t('bookmark.editor.alternativeIconsTitle')}
                 classes={{
                     title: classes.headerTitle,
                     action: classes.headerActions,
@@ -119,7 +114,7 @@ function PreviewSelector(props) {
                 {store.loadedImages.map(({ url, type, score }) => (
                     <CardLink
                         key={url}
-                        name={"["+score+"] "+name}
+                        name={`[${score}] ${name}`}
                         description={description}
                         categories={categories}
                         icoVariant={type}
@@ -143,7 +138,14 @@ function PreviewSelector(props) {
             {store.size !== store.loadedImages.length && (
                 <Box className={classes.loadStatus}>
                     <Typography variant="caption">
-                        {t("loading")} {store.loadedImages.length} {t("from")} {store.size}...
+                        {t('loading')}
+                        {' '}
+                        {store.loadedImages.length}
+                        {' '}
+                        {t('from')}
+                        {' '}
+                        {store.size}
+                        ...
                     </Typography>
                 </Box>
             )}

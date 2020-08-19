@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     row: { width: 520 },
 }));
 
-const headerProps = { title: "settings.about.title" };
+const headerProps = { title: 'settings.about.title' };
 
 function About() {
     const classes = useStyles();
@@ -60,7 +60,8 @@ function About() {
                 <LogoIcon className={classes.appLogoIcon} />
                 <LogoText className={classes.appLogoText} />
                 <Typography className={classes.appVersion} variant="body2">
-                    v{chrome?.runtime?.getManifest?.().version || '-'}
+                    v
+                    {chrome?.runtime?.getManifest?.().version || '-'}
                 </Typography>
             </Box>
             <Divider />
@@ -68,7 +69,7 @@ function About() {
                 <ListItemIcon>
                     <HomeIcon />
                 </ListItemIcon>
-                <ListItemText primary={t("settings.about.homePage")} />
+                <ListItemText primary={t('settings.about.homePage')} />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
                         <ArrowRightIcon />
@@ -80,8 +81,8 @@ function About() {
                     <ReviewIcon />
                 </ListItemIcon>
                 <ListItemText
-                    primary={t("settings.about.review.title")}
-                    secondary={t("settings.about.review.description")}
+                    primary={t('settings.about.review.title')}
+                    secondary={t('settings.about.review.description')}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
@@ -94,8 +95,8 @@ function About() {
                     <BugIcon />
                 </ListItemIcon>
                 <ListItemText
-                    primary={t("settings.about.bugReport.title")}
-                    secondary={t("settings.about.bugReport.description")}
+                    primary={t('settings.about.bugReport.title')}
+                    secondary={t('settings.about.bugReport.description')}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
@@ -108,8 +109,8 @@ function About() {
                     <EmailIcon />
                 </ListItemIcon>
                 <ListItemText
-                    primary={t("settings.about.contact.title")}
-                    secondary={t("settings.about.contact.description")}
+                    primary={t('settings.about.contact.title')}
+                    secondary={t('settings.about.contact.description')}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">
@@ -122,7 +123,7 @@ function About() {
                     <PolicyIcon />
                 </ListItemIcon>
                 <ListItemText
-                    primary={t("settings.about.policy")}
+                    primary={t('settings.about.policy')}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end">

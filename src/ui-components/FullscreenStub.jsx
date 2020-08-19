@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 function FullScreenStub(props) {
     const {
         iconRender,

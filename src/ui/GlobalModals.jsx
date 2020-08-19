@@ -8,20 +8,20 @@ import {
     DialogActions,
     Button,
 } from '@material-ui/core';
-import { useService as useBookmarksService } from '@/stores/bookmarks'
-import { useService as useAppService } from '@/stores/app'
-import EditCategoryModal from "@/ui/Bookmarks/Categories/EditModal";
+import { useService as useBookmarksService } from '@/stores/bookmarks';
+import { useService as useAppService } from '@/stores/app';
+import EditCategoryModal from '@/ui/Bookmarks/Categories/EditModal';
 import { useTranslation } from 'react-i18next';
-import EditBookmarkModal from "@/ui/Bookmarks/EditBookmarkModal";
-import ContextMenu from "@/ui/ContextMenu";
+import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
+import ContextMenu from '@/ui/ContextMenu';
 
-function GlobalModals () {
+function GlobalModals() {
     const { t } = useTranslation();
     const bookmarksStore = useBookmarksService();
     const appStore = useAppService();
     const [edit, setEdit] = useState(null);
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
-    const [contextMenuActions, setContextMenuActions] = useState([])
+    const [contextMenuActions, setContextMenuActions] = useState([]);
 
     useEffect(() => {
         const listenersAppStore = [
@@ -61,7 +61,7 @@ function GlobalModals () {
         return () => {
             listenersAppStore.forEach((listenerId) => appStore.eventBus.removeListener(listenerId));
             listenersBookmarksStore.forEach((listenerId) => bookmarksStore.eventBus.removeListener(listenerId));
-        }
+        };
     }, []);
 
     return (
@@ -89,16 +89,16 @@ function GlobalModals () {
                 onClose={() => setEdit(null)}
             >
                 <DialogTitle>
-                    {t("bookmark.remove.title")}
+                    {t('bookmark.remove.title')}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {t("bookmark.remove.description")}
+                        {t('bookmark.remove.description')}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setEdit(null)} color="primary">
-                        {t("cancel")}
+                        {t('cancel')}
                     </Button>
                     <Button
                         onClick={() => {
@@ -108,7 +108,7 @@ function GlobalModals () {
                         color="primary"
                         autoFocus
                     >
-                        {t("remove")}
+                        {t('remove')}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -117,16 +117,16 @@ function GlobalModals () {
                 onClose={() => setEdit(null)}
             >
                 <DialogTitle>
-                    {t("category.remove.title")}
+                    {t('category.remove.title')}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {t("category.remove.description")}
+                        {t('category.remove.description')}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setEdit(null)} color="primary">
-                        {t("cancel")}
+                        {t('cancel')}
                     </Button>
                     <Button
                         onClick={() => {
@@ -136,7 +136,7 @@ function GlobalModals () {
                         color="primary"
                         autoFocus
                     >
-                        {t("remove")}
+                        {t('remove')}
                     </Button>
                 </DialogActions>
             </Dialog>

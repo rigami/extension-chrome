@@ -15,11 +15,11 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
-import Explorer from './Explorer';
-import {useService as useAppService} from "@/stores/app";
+import { useService as useAppService } from '@/stores/app';
 import { useLocalStore } from 'mobx-react-lite';
-import {useService as useBookmarksService} from "@/stores/bookmarks";
+import { useService as useBookmarksService } from '@/stores/bookmarks';
 import { useTranslation } from 'react-i18next';
+import Explorer from './Explorer';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -63,9 +63,7 @@ function Folder({ id, name, color, isBlurBackdrop }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
     const [listenId, setListenId] = useState(null);
-    const store = useLocalStore(() => ({
-        popperRef: null,
-    }));
+    const store = useLocalStore(() => ({ popperRef: null }));
     const appStore = useAppService();
     const bookmarksStore = useBookmarksService();
     const { t } = useTranslation();
@@ -78,32 +76,41 @@ function Folder({ id, name, color, isBlurBackdrop }) {
             actions: [
                 {
                     type: 'button',
-                    title: isPin() ? t("fap.unpin") : t("fap.pin"),
+                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksStore.removeFromFavorites({ type: 'category', id });
+                            bookmarksStore.removeFromFavorites({
+                                type: 'category',
+                                id,
+                            });
                         } else {
-                            bookmarksStore.addToFavorites({ type: 'category', id });
+                            bookmarksStore.addToFavorites({
+                                type: 'category',
+                                id,
+                            });
                         }
-                    }
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("edit"),
+                    title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch(`editcategory`, { id, anchorEl });
-                    }
+                        bookmarksStore.eventBus.dispatch('editcategory', {
+                            id,
+                            anchorEl,
+                        });
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("remove"),
+                    title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch(`removecategory`, { id });
-                    }
-                }
+                        bookmarksStore.eventBus.dispatch('removecategory', { id });
+                    },
+                },
             ],
             position: {
                 top: event.nativeEvent.clientY,

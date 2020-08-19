@@ -1,6 +1,6 @@
-import EventBus from "@/utils/eventBus";
+import EventBus from '@/utils/eventBus';
 import { observable } from 'mobx';
-import {DESTINATION} from "@/enum";
+import { DESTINATION } from '@/enum';
 
 let bus = null;
 
@@ -12,21 +12,25 @@ class BusApp {
         this._destination = destination;
 
         if (!chrome?.runtime?.onMessage) {
-            console.error("Not find runtime onMessage module");
+            console.error('Not find runtime onMessage module');
             return;
         }
 
         chrome.runtime.onMessage.addListener(({ event, destination, data }) => {
             if (destination !== this._destination) return;
 
-            this._eventBus.dispatch(event, data)
+            this._eventBus.dispatch(event, data);
         });
     }
 
     call(event, destination, data) {
         chrome.runtime.sendMessage(
             null,
-            { destination, event, data },
+            {
+                destination,
+                event,
+                data,
+            },
         );
     }
 
@@ -52,4 +56,6 @@ function eventToPopup(event, data) {
 }
 
 export default () => bus;
-export { initBus, eventToApp, eventToBackground, eventToPopup };
+export {
+    initBus, eventToApp, eventToBackground, eventToPopup,
+};

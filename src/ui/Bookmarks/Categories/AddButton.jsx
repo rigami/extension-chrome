@@ -5,14 +5,12 @@ import {
 } from '@material-ui/core';
 import { AddRounded as AddIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import EditCategoryModal from './EditModal';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import EditCategoryModal from './EditModal';
 
 const useStyles = makeStyles((theme) => ({
-    chip: {
-        boxShadow: 'none !important',
-    },
+    chip: { boxShadow: 'none !important' },
     addCategory: {
         marginLeft: '3px !important',
         marginRight: 3,
@@ -31,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 }));
-
 
 function AddCategoryButton({ isShowTitle, onCreate }) {
     const classes = useStyles();
@@ -54,7 +51,7 @@ function AddCategoryButton({ isShowTitle, onCreate }) {
                     setIsOpen(false);
                 }}
             />
-            <Tooltip title={t("category.add")}>
+            <Tooltip title={t('category.add')}>
                 <Chip
                     onMouseDown={() => {
                         if (!isOpen) setIsBlockEvent(true);
@@ -71,7 +68,7 @@ function AddCategoryButton({ isShowTitle, onCreate }) {
                     }}
                     icon={<AddIcon />}
                     variant="outlined"
-                    label={isShowTitle && t("category.addShort")}
+                    label={isShowTitle && t('category.addShort')}
                 />
             </Tooltip>
         </React.Fragment>

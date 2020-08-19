@@ -11,7 +11,6 @@ import { Provider as AppConfigProvider } from '@/stores/app';
 import { Provider as BookmarksProvider } from '@/stores/bookmarks';
 import PopupContent from './PopupEditor';
 
-
 function Popup() {
     const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
     const [tabName, setTabName] = useState();

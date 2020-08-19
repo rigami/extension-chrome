@@ -4,17 +4,13 @@ import {
     CardMedia,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import {
-    LinkRounded as LinkIcon,
-} from '@material-ui/icons';
+import { LinkRounded as LinkIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import {BKMS_VARIANT} from "@/enum";
+import { BKMS_VARIANT } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
-    roundedIconStub: {
-        borderRadius: theme.shape.borderRadiusBold,
-    },
+    roundedIconStub: { borderRadius: theme.shape.borderRadiusBold },
     roundedIcon: {
         borderRadius: theme.shape.borderRadiusBold,
         backgroundColor: theme.palette.common.white,
@@ -40,7 +36,7 @@ function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName
         imgCache.src = src;
     }, []);
 
-    if (variant === BKMS_VARIANT.POSTER){
+    if (variant === BKMS_VARIANT.POSTER) {
         return (
             <React.Fragment>
                 {isLoading && (
@@ -73,7 +69,7 @@ function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName
                     <Avatar
                         className={clsx(classes.roundedIcon, externalClassName)}
                         src={(variant !== BKMS_VARIANT.SYMBOL && src) || undefined}
-                        variant={"rounded"}
+                        variant="rounded"
                     >
                         {alternativeIcon || (<LinkIcon />)}
                     </Avatar>

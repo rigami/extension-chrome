@@ -5,9 +5,9 @@ import { observer, useLocalStore } from 'mobx-react-lite';
 import { useService as useAppService } from '@/stores/app';
 // import Scrollbar, { classes as scrollbarClasses } from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
-import Scrollbar  from 'smooth-scrollbar';
+import Scrollbar from 'smooth-scrollbar';
 import OverscrollPlugin from 'smooth-scrollbar/plugins/overscroll';
-import ViewScrollPlugin from "@/utils/ViewScrollPlugin";
+import ViewScrollPlugin from '@/utils/ViewScrollPlugin';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -46,7 +46,7 @@ function GlobalScroll({ children }) {
                         },
                         {
                             id: 'bookmarks',
-                            value: document.documentElement.clientHeight
+                            value: document.documentElement.clientHeight,
                         },
                     ],
                     detectOffset: 70,
@@ -69,9 +69,8 @@ function GlobalScroll({ children }) {
             appService.eventBus.dispatch('scroll', offset);
         });
 
-        console.log("scrollbar", scrollbar)
+        console.log('scrollbar', scrollbar);
     }, []);
-
 
     return (
         <Box

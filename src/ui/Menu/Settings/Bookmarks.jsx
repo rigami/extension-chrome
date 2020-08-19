@@ -5,10 +5,10 @@ import { Collapse } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
-import MenuInfo from "@/ui/Menu/MenuInfo";
-import SectionHeader from "@/ui/Menu/SectionHeader";
+import MenuInfo from '@/ui/Menu/MenuInfo';
+// import SectionHeader from '@/ui/Menu/SectionHeader';
 
-const headerProps = { title: "settings.bookmarks.title" };
+const headerProps = { title: 'settings.bookmarks.title' };
 
 function BookmarksSettings() {
     const bookmarksStore = useBookmarksService();
@@ -18,24 +18,23 @@ function BookmarksSettings() {
         <React.Fragment>
             {/* <SectionHeader title={t("settings.bookmarks.FAP.title")} /> */}
             <MenuRow
-                title={t("settings.bookmarks.FAP.useFAP.title")}
-                description={t("settings.bookmarks.FAP.useFAP.description")}
+                title={t('settings.bookmarks.FAP.useFAP.title')}
+                description={t('settings.bookmarks.FAP.useFAP.description')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     value: bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN,
-                    onChange: (event, value) => {
-                        bookmarksStore.setFAPStyle(value ? BKMS_FAP_STYLE.CONTAINED : BKMS_FAP_STYLE.HIDDEN);
-                    },
+                    onChange: (event, value) => bookmarksStore
+                        .setFAPStyle(value ? BKMS_FAP_STYLE.CONTAINED : BKMS_FAP_STYLE.HIDDEN),
                 }}
             />
             <MenuInfo
                 width={750}
                 show={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN && bookmarksStore.favorites.length === 0}
-                message={t("settings.bookmarks.FAP.fapEmptyWarningMessage")}
+                message={t('settings.bookmarks.FAP.fapEmptyWarningMessage')}
             />
             <Collapse in={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN}>
                 <MenuRow
-                    title={t("settings.bookmarks.FAP.fapStyle.title")}
+                    title={t('settings.bookmarks.FAP.fapStyle.title')}
                     action={{
                         type: ROWS_TYPE.SELECT,
                         format: (value) => t(`settings.bookmarks.FAP.fapStyle.style.${value}`),
@@ -45,7 +44,7 @@ function BookmarksSettings() {
                     }}
                 />
                 <MenuRow
-                    title={t("settings.bookmarks.FAP.fapPosition.title")}
+                    title={t('settings.bookmarks.FAP.fapPosition.title')}
                     action={{
                         type: ROWS_TYPE.SELECT,
                         format: (value) => t(`settings.bookmarks.FAP.fapPosition.position.${value}`),

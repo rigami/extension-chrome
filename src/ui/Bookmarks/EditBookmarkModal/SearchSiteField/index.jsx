@@ -10,15 +10,13 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { useObserver, useLocalStore } from 'mobx-react-lite';
-import Search from "./Search";
 import ReactResizeDetector from 'react-resize-detector';
-import Scrollbar from "@/ui-components/CustomScroll";
+import Scrollbar from '@/ui-components/CustomScroll';
+import Search from './Search';
 
 const useStyles = makeStyles((theme) => ({
     input: { marginTop: theme.spacing(2) },
-    paper: {
-
-    },
+    paper: {},
     inputWrapper: {
         padding: theme.spacing(2),
         paddingTop: 0,
@@ -65,7 +63,7 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
                 }}
             >
                 <TextField
-                    label={t("bookmark.editor.urlFieldLabel")}
+                    label={t('bookmark.editor.urlFieldLabel')}
                     variant="outlined"
                     size="small"
                     fullWidth
@@ -91,12 +89,13 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
             <Popover
                 open={isOpen}
                 anchorReference="anchorPosition"
-                anchorPosition={{ top: 0, left: 0 }}
+                anchorPosition={{
+                    top: 0,
+                    left: 0,
+                }}
                 marginThreshold={0}
                 elevation={0}
-                classes={{
-                    paper: classes.popoverContent,
-                }}
+                classes={{ paper: classes.popoverContent }}
                 anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'left',
@@ -126,7 +125,7 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
                             <Paper elevation={8} style={{ width: store.filedWidth + 32 }} className={classes.paper}>
                                 <Box className={classes.inputWrapper}>
                                     <TextField
-                                        label={t("bookmark.editor.urlFieldLabel")}
+                                        label={t('bookmark.editor.urlFieldLabel')}
                                         variant="outlined"
                                         size="small"
                                         fullWidth

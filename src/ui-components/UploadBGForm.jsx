@@ -27,8 +27,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
-import Scrollbar from "@/ui-components/CustomScroll";
-import BeautifulFileSize from "@/utils/beautifulFileSize";
+import Scrollbar from '@/ui-components/CustomScroll';
+import BeautifulFileSize from '@/utils/beautifulFileSize';
 
 const useStyles = makeStyles((theme) => ({
     preview: {
@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
         top: theme.spacing(2),
         right: theme.spacing(2),
         color: theme.palette.common.white,
-        zIndex: theme.zIndex.modal+1,
+        zIndex: theme.zIndex.modal + 1,
     },
 }));
 
@@ -136,22 +136,25 @@ function BGCard(props) {
                         {type.map((type) => t(`bg.type.${type}`)).join('/')}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
-                        {t("uploadBG.labelFile")}:
+                        {t('uploadBG.labelFile')}
+                        :
                         {' '}
                         {name}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
-                        {t("uploadBG.labelSize")}:
+                        {t('uploadBG.labelSize')}
+                        :
                         {' '}
                         {BeautifulFileSize(size)[0]}
                         {BeautifulFileSize(size)[1]}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
-                        {t("uploadBG.labelFileType")}:
+                        {t('uploadBG.labelFileType')}
+                        :
                         {' '}
                         {format}
                     </Typography>
-                    <Tooltip title={t("uploadBG.antiAliasing.tooltip")}>
+                    <Tooltip title={t('uploadBG.antiAliasing.tooltip')}>
                         <FormControlLabel
                             control={(
                                 <Switch
@@ -161,7 +164,7 @@ function BGCard(props) {
                                     defaultChecked
                                 />
                             )}
-                            label={t("uploadBG.antiAliasing.label")}
+                            label={t('uploadBG.antiAliasing.label')}
                         />
                     </Tooltip>
                 </CardContent>
@@ -174,7 +177,7 @@ function BGCard(props) {
                         className={classes.button}
                         onClick={onRemove}
                     >
-                        {t("cancel")}
+                        {t('cancel')}
                     </Button>
                     <div className={classes.button}>
                         <Button
@@ -187,7 +190,7 @@ function BGCard(props) {
                                 onDone({ antiAliasing });
                             }}
                         >
-                            {t("uploadBG.addToLibrary")}
+                            {t('uploadBG.addToLibrary')}
                         </Button>
                         {save && <CircularProgress size={24} className={classes.buttonProgress} />}
                     </div>
@@ -213,7 +216,6 @@ function UploadBGForm({ children }) {
         requireScrollToBottom: false,
         uploadQueueSize: 0,
     }));
-
 
     useEffect(() => {
         addEventListener('dragenter', (event) => {
@@ -264,8 +266,8 @@ function UploadBGForm({ children }) {
                     }}
                     />
                     <Typography variant="h6">
-                        {dragFiles.length === 1 && t("uploadBG.dropToAddBG")}
-                        {dragFiles.length > 1 && t("uploadBG.dropToAddBGs")}
+                        {dragFiles.length === 1 && t('uploadBG.dropToAddBG')}
+                        {dragFiles.length > 1 && t('uploadBG.dropToAddBGs')}
                     </Typography>
                 </Box>
             )}
@@ -274,7 +276,10 @@ function UploadBGForm({ children }) {
                 open={backgroundsStore.uploadQueue.length !== 0}
                 PaperProps={{
                     elevation: 0,
-                    style: { background: 'none', height: '100%' },
+                    style: {
+                        background: 'none',
+                        height: '100%',
+                    },
                 }}
                 disableEnforceFocus
             >
@@ -315,7 +320,7 @@ function UploadBGForm({ children }) {
                 </Scrollbar>
             </Drawer>
             {(backgroundsStore.uploadQueue.length !== 0) && (
-                <Tooltip title={t("uploadBG.discardAll")}>
+                <Tooltip title={t('uploadBG.discardAll')}>
                     <IconButton
                         className={classes.closeIcon}
                         onClick={() => backgroundsStore.resetUploadQueue()}

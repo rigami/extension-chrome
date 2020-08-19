@@ -25,6 +25,7 @@ module.exports = {
         'webkitRequestFileSystem': true,
         'PERSISTENT': true,
         'addEventListener': true,
+        'PRODUCTION_MODE': 'readonly',
     },
     'parser': 'babel-eslint',
     'parserOptions': {

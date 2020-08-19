@@ -4,21 +4,19 @@ import {
     ClickAwayListener,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Editor from "./Editor";
 import { useLocalStore } from 'mobx-react-lite';
-import {useService as useAppService} from "@/stores/app";
+import { useService as useAppService } from '@/stores/app';
+import Editor from './Editor';
 
-const useStyles = makeStyles((theme) => ({
-    popper: { zIndex: theme.zIndex.modal },
-}));
+const useStyles = makeStyles((theme) => ({ popper: { zIndex: theme.zIndex.modal } }));
 
-function EditCategoryModal({ anchorEl, isOpen, onSave, onClose, ...other }) {
+function EditCategoryModal({
+    anchorEl, isOpen, onSave, onClose, ...other
+}) {
     const classes = useStyles();
     const appService = useAppService();
     const [listenId, setListenId] = useState(null);
-    const store = useLocalStore(() => ({
-        popperRef: null,
-    }));
+    const store = useLocalStore(() => ({ popperRef: null }));
 
     useEffect(() => {
         if (isOpen) {
@@ -42,9 +40,7 @@ function EditCategoryModal({ anchorEl, isOpen, onSave, onClose, ...other }) {
                 placement="bottom"
                 className={classes.popper}
                 modifiers={{
-                    flip: {
-                        enabled: true,
-                    },
+                    flip: { enabled: true },
                     preventOverflow: {
                         enabled: true,
                         boundariesElement: 'viewport',

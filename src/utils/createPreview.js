@@ -76,7 +76,6 @@ const getPreview = (fileOrSrc, type, { size = 'preview', antiAliasing = true, ti
         });
     }
 
-
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');

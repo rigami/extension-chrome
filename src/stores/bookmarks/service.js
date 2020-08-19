@@ -1,10 +1,10 @@
 import { action, observable } from 'mobx';
 import StorageConnector from '@/utils/storageConnector';
 import EventBus from '@/utils/eventBus';
-import CategoriesStore from "./categories";
-import BookmarksStore from "./bookmarks";
-import BusApp from "@/stores/backgroundApp/busApp";
-import {DESTINATION} from "@/enum";
+import BusApp from '@/stores/backgroundApp/busApp';
+import { DESTINATION } from '@/enum';
+import CategoriesStore from './categories';
+import BookmarksStore from './bookmarks';
 
 class BookmarksService {
     @observable fapStyle;

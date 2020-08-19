@@ -87,7 +87,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                 elevation={12}
                 ref={mainAl}
             >
-                <Tooltip title={t("settings.title")} placement="left">
+                <Tooltip title={t('settings.title')} placement="left">
                     <IconButton size="small" className={classes.button} onClick={() => onOpenMenu()}>
                         <SettingsIcon />
                     </IconButton>
@@ -95,7 +95,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                 {useChangeBG && (
                     <React.Fragment>
                         <Divider />
-                        <Tooltip title={t("bg.next")} placement="left">
+                        <Tooltip title={t('bg.next')} placement="left">
                             <IconButton size="small" className={classes.button} onClick={() => onRefreshBackground()}>
                                 <RefreshIcon />
                             </IconButton>
@@ -106,6 +106,5 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
         </Box>
     );
 }
-
 
 export default memo(FabMenu);

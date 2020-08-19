@@ -14,7 +14,7 @@ function ConfigurationApp({ children }) {
                 setIsConfig(true);
             })
             .catch(() => {
-                document.title = i18n.t("tabName.prepare");
+                document.title = i18n.t('tabName.prepare');
                 console.error('Error config app. Perhaps first start. Setup data');
                 setIsFirstContact(true);
 

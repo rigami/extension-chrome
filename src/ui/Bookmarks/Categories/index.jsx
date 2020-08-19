@@ -13,9 +13,9 @@ import {
 } from '@material-ui/icons';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import clsx from 'clsx';
-import AddButton from './AddButton';
-import {useService as useAppService} from "@/stores/app";
+import { useService as useAppService } from '@/stores/app';
 import { useTranslation } from 'react-i18next';
+import AddButton from './AddButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -41,7 +41,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Category({ id, name, color, onClick, isSelect }) {
+function Category({
+    id, name, color, onClick, isSelect,
+}) {
     const classes = useStyles();
     const appStore = useAppService();
     const bookmarksStore = useBookmarksService();
@@ -55,32 +57,41 @@ function Category({ id, name, color, onClick, isSelect }) {
             actions: [
                 {
                     type: 'button',
-                    title: isPin() ? t("fap.unpin") : t("fap.pin"),
+                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksStore.removeFromFavorites({ type: 'category', id });
+                            bookmarksStore.removeFromFavorites({
+                                type: 'category',
+                                id,
+                            });
                         } else {
-                            bookmarksStore.addToFavorites({ type: 'category', id });
+                            bookmarksStore.addToFavorites({
+                                type: 'category',
+                                id,
+                            });
                         }
-                    }
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("edit"),
+                    title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch(`editcategory`, { id, anchorEl });
-                    }
+                        bookmarksStore.eventBus.dispatch('editcategory', {
+                            id,
+                            anchorEl,
+                        });
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("remove"),
+                    title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch(`removecategory`, { id });
-                    }
-                }
+                        bookmarksStore.eventBus.dispatch('removecategory', { id });
+                    },
+                },
             ],
             position: {
                 top: event.nativeEvent.clientY,
@@ -139,7 +150,7 @@ function Categories(props) {
         if (value) setSelectedCategories(value || []);
     }, [value && value.length]);
 
-    console.log('selectedCategories', selectedCategories)
+    console.log('selectedCategories', selectedCategories);
 
     return (
         <Box className={clsx(classes.root, externalClassName)}>

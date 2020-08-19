@@ -29,7 +29,7 @@ function LoadBGFromLocalButton() {
 
                     backgroundsStore.addToUploadQueue(form.files)
                         .catch((e) => enqueueSnackbar({
-                            ...t("settings.bg.general.library[e]"),
+                            ...t('settings.bg.general.library[e]'),
                             variant: 'error',
                         }))
                         .finally(() => {
@@ -46,7 +46,7 @@ function LoadBGFromLocalButton() {
                     startIcon={<UploadFromComputerIcon />}
                     style={{ marginRight: 16 }}
                 >
-                    {t("settings.bg.general.library.uploadFromComputer")}
+                    {t('settings.bg.general.library.uploadFromComputer')}
                 </Button>
             </label>
         </React.Fragment>

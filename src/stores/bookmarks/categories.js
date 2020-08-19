@@ -1,9 +1,9 @@
 import { action, observable, computed } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
 import EventBus from '@/utils/eventBus';
-import getUniqueColor from "@/utils/uniqueColor";
-import BusApp from "@/stores/backgroundApp/busApp";
-import {DESTINATION} from "@/enum";
+import getUniqueColor from '@/utils/uniqueColor';
+import BusApp from '@/stores/backgroundApp/busApp';
+import { DESTINATION } from '@/enum';
 
 class CategoriesStore {
     @observable _categories = [];
@@ -35,7 +35,7 @@ class CategoriesStore {
         let newColor;
 
         if (!id) {
-            const countCategories = await DBConnector().count('categories')
+            const countCategories = await DBConnector().count('categories');
             newColor = color || getUniqueColor(countCategories);
         } else {
             newColor = color || this.get(id).color;

@@ -1,4 +1,6 @@
-import React, { useState, createRef, useEffect, useRef } from 'react';
+import React, {
+    useState, createRef, useEffect, useRef,
+} from 'react';
 import {
     Card,
     IconButton,
@@ -160,7 +162,7 @@ function FAP() {
                 } else {
                     return bookmarksStore.bookmarks.get(fav.id);
                 }
-            })
+            }),
         )
             .then((favorites) => {
                 setFavorites(favorites.map((fav, index) => ({
@@ -170,10 +172,9 @@ function FAP() {
                 setIsLoading(false);
             })
             .catch((e) => {
-                console.error("Failed load favorites", e);
+                console.error('Failed load favorites', e);
                 setIsLoading(false);
             });
-
     }, [bookmarksStore.favorites.length]);
 
     return (

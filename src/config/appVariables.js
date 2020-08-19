@@ -14,7 +14,5 @@ export default {
         description: 'Unsplash photo',
         sourceLink: 'https://unsplash.com/photos/S4QAzzXPaRs',
     },
-    rest: {
-        url: "http://localhost:8080",
-    }
+    rest: { url: 'http://localhost:8080' },
 };

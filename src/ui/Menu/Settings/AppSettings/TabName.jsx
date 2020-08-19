@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const headerProps = { title: "settings.app.tabName.title" };
+const headerProps = { title: 'settings.app.tabName.title' };
 
 function TabName() {
     const appConfigStore = useAppConfigService();
@@ -61,14 +61,14 @@ function TabName() {
             </Box>
             <Box className={classes.row}>
                 <Typography>
-                    {t("settings.app.tabName.description")}
+                    {t('settings.app.tabName.description')}
                 </Typography>
             </Box>
             <Box className={classes.row}>
                 <TextField
                     variant="outlined"
                     fullWidth
-                    placeholder={t("settings.app.tabName.emptyName")}
+                    placeholder={t('settings.app.tabName.emptyName')}
                     defaultValue={appConfigStore.tabName}
                     onChange={(event) => appConfigStore.setTabName(event.target.value)}
                 />

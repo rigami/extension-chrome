@@ -10,8 +10,8 @@ function FirstLookScreen({ isConfig, progress, onStart }) {
         <React.Fragment>
             <Fade in={!isConfig}>
                 <FullscreenStub
-                    message={t("firstView.prepareApp")}
-                    description={t("firstView.pleaseWait")}
+                    message={t('firstView.prepareApp')}
+                    description={t('firstView.pleaseWait')}
                     style={{ height: '100vh' }}
                 >
                     <LinearProgress variant="determinate" style={{ width: 240 }} value={progress} />
@@ -19,8 +19,8 @@ function FirstLookScreen({ isConfig, progress, onStart }) {
             </Fade>
             <Fade in={isConfig}>
                 <FullscreenStub
-                    message={t("firstView.allDone")}
-                    description={t("firstView.prepareAppDoneDescription")}
+                    message={t('firstView.allDone')}
+                    description={t('firstView.prepareAppDoneDescription')}
                     style={{
                         position: 'absolute',
                         top: 0,
@@ -31,7 +31,7 @@ function FirstLookScreen({ isConfig, progress, onStart }) {
                     }}
                     actions={[
                         {
-                            title: t("firstView.continue"),
+                            title: t('firstView.continue'),
                             color: 'primary',
                             variant: 'contained',
                             onClick: () => onStart(),

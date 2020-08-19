@@ -16,10 +16,10 @@ import {
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import Image from "@/ui-components/Image";
-import {BKMS_VARIANT} from "@/enum";
-import {useService as useAppService} from "@/stores/app";
-import {useService as useBookmarksService} from "@/stores/bookmarks";
+import Image from '@/ui-components/Image';
+import { BKMS_VARIANT } from '@/enum';
+import { useService as useAppService } from '@/stores/app';
+import { useService as useBookmarksService } from '@/stores/bookmarks';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
@@ -99,9 +99,7 @@ const useStyles = makeStyles((theme) => ({
         opacity: 0,
         pointerEvents: 'none',
     },
-    borderIcon: {
-        boxShadow: `0 0 0 1px #e0e0e0`,
-    },
+    borderIcon: { boxShadow: '0 0 0 1px #e0e0e0' },
 }));
 
 function CardLink(props) {
@@ -136,7 +134,10 @@ function CardLink(props) {
 
     const handleOpenMenu = () => {
         const { top, left } = buttonRef.current.getBoundingClientRect();
-        openMenu({ top, left });
+        openMenu({
+            top,
+            left,
+        });
     };
 
     const openMenu = (position) => {
@@ -144,32 +145,38 @@ function CardLink(props) {
             actions: [
                 {
                     type: 'button',
-                    title: isPin() ? t("fap.unpin") : t("fap.pin"),
+                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksStore.removeFromFavorites({ type: 'bookmark', id });
+                            bookmarksStore.removeFromFavorites({
+                                type: 'bookmark',
+                                id,
+                            });
                         } else {
-                            bookmarksStore.addToFavorites({ type: 'bookmark', id });
+                            bookmarksStore.addToFavorites({
+                                type: 'bookmark',
+                                id,
+                            });
                         }
-                    }
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("edit"),
+                    title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch(`editbookmark`, { id });
-                    }
+                        bookmarksStore.eventBus.dispatch('editbookmark', { id });
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("remove"),
+                    title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch(`removebookmark`, { id });
-                    }
-                }
+                        bookmarksStore.eventBus.dispatch('removebookmark', { id });
+                    },
+                },
             ],
             position,
         });
@@ -183,7 +190,7 @@ function CardLink(props) {
         if (event.button === 1) {
             window.open(url);
         } else if (event.button === 0) {
-            window.open(url, "_self");
+            window.open(url, '_self');
         }
     };
 

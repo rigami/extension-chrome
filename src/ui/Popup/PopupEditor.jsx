@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import EditorBookmark from "@/ui/Bookmarks/EditBookmarkModal/Editor";
-import {STAGE} from "@/ui/Bookmarks/EditBookmarkModal/Preview";
+import EditorBookmark from '@/ui/Bookmarks/EditBookmarkModal/Editor';
+import { STAGE } from '@/ui/Bookmarks/EditBookmarkModal/Preview';
 import clsx from 'clsx';
-import FullScreenStub from "@/ui-components/FullscreenStub";
+import FullScreenStub from '@/ui-components/FullscreenStub';
 
 const useStyles = makeStyles((theme) => ({
-    editor: {
-        padding: 0,
-    },
+    editor: { padding: 0 },
     editorWrapper: {
         maxHeight: 600,
         minHeight: 300,
@@ -34,7 +32,11 @@ function Popup({ tabName, tabUrl }) {
     const [isChecking, setIsChecking] = useState(true);
 
     return (
-        <Box style={{ width: 680, minHeight: 300 }}>
+        <Box style={{
+            width: 680,
+            minHeight: 300,
+        }}
+        >
             <Fade in={isChecking}>
                 <FullScreenStub
                     className={classes.stub}
@@ -50,7 +52,7 @@ function Popup({ tabName, tabUrl }) {
                 marginThreshold={0}
                 onSave={() => {}}
                 onStage={(stage) => {
-                    console.log("stage", stage)
+                    console.log('stage', stage);
                     if (isChecking) {
                         setIsChecking(false);
                     }
@@ -61,4 +63,3 @@ function Popup({ tabName, tabUrl }) {
 }
 
 export default Popup;
-

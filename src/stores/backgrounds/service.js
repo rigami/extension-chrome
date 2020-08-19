@@ -1,11 +1,11 @@
 import { observable, action } from 'mobx';
 import appVariables from '@/config/appVariables';
-import {BG_TYPE, BG_CHANGE_INTERVAL_MILLISECONDS, BG_SELECT_MODE} from '@/enum';
+import { BG_TYPE, BG_CHANGE_INTERVAL_MILLISECONDS, BG_SELECT_MODE } from '@/enum';
 import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
 import StorageConnector from '@/utils/storageConnector';
 import getPreview from '@/utils/createPreview';
-import EventBus from "@/utils/eventBus";
+import EventBus from '@/utils/eventBus';
 
 export const ERRORS = {
     TOO_MANY_FILES: 'TOO_MANY_FILES',
@@ -310,7 +310,6 @@ class BackgroundsStore {
         return DBConnector().getAll('backgrounds')
             .then((values) => values.map(({ fileName }) => FSConnector.getBGURL(fileName, options.type || 'preview')));
     }
-
 
     @action('get all')
     getAll() {

@@ -11,18 +11,16 @@ import {
     AddRounded as AddIcon,
     DoneRounded as DoneIcon,
 } from '@material-ui/icons';
-import Categories from "@/ui/Bookmarks/Categories";
+import Categories from '@/ui/Bookmarks/Categories';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { useObserver, useLocalStore } from 'mobx-react-lite';
-import {FETCH} from "@/enum";
+import { FETCH } from '@/enum';
 import SearchSiteField from './SearchSiteField';
 
 const useStyles = makeStyles((theme) => ({
     content: { flex: '1 0 auto' },
-    header: {
-        marginBottom: theme.spacing(1),
-    },
+    header: { marginBottom: theme.spacing(1) },
     controls: {
         display: 'flex',
         alignItems: 'center',
@@ -43,9 +41,7 @@ const useStyles = makeStyles((theme) => ({
     inputDescription: { marginTop: theme.spacing(1) },
     chipContainer: { marginTop: theme.spacing(2) },
     addDescriptionButton: { marginTop: theme.spacing(1) },
-    saveIcon: {
-        marginRight: theme.spacing(1),
-    },
+    saveIcon: { marginRight: theme.spacing(1) },
 }));
 
 function FieldsEditor(props) {
@@ -98,7 +94,7 @@ function FieldsEditor(props) {
         <div className={classes.details}>
             <CardContent className={classes.content}>
                 <Typography variant="h5" className={classes.header}>
-                    {isEdit ? t("bookmark.editor.editTitle") : t("bookmark.editor.addTitle")}
+                    {isEdit ? t('bookmark.editor.editTitle') : t('bookmark.editor.addTitle')}
                 </Typography>
                 <SearchSiteField
                     searchRequest={store.searchRequest}
@@ -110,11 +106,14 @@ function FieldsEditor(props) {
                     onSelect={({ title, url }) => {
                         store.searchRequest = url;
                         store.name = title;
-                        onChangeFields({ url, name: title });
+                        onChangeFields({
+                            url,
+                            name: title,
+                        });
                     }}
                 />
                 <TextField
-                    label={t("bookmark.editor.nameFieldLabel")}
+                    label={t('bookmark.editor.nameFieldLabel')}
                     variant="outlined"
                     size="small"
                     disabled={store.searchRequest === ''}
@@ -123,7 +122,7 @@ function FieldsEditor(props) {
                     className={classes.input}
                     onChange={(event) => {
                         store.name = event.target.value;
-                        onChangeFields({ name: event.target.value});
+                        onChangeFields({ name: event.target.value });
                     }}
                 />
                 <Categories
@@ -136,7 +135,7 @@ function FieldsEditor(props) {
                 />
                 {store.useDescription && (
                     <TextField
-                        label={t("bookmark.editor.descriptionFieldLabel")}
+                        label={t('bookmark.editor.descriptionFieldLabel')}
                         variant="outlined"
                         size="small"
                         fullWidth
@@ -161,7 +160,7 @@ function FieldsEditor(props) {
                             onChangeFields({ useDescription: true });
                         }}
                     >
-                        {t("bookmark.editor.addDescription")}
+                        {t('bookmark.editor.addDescription')}
                     </Button>
                 )}
             </CardContent>
@@ -173,7 +172,7 @@ function FieldsEditor(props) {
                         className={classes.button}
                         onClick={onCancel}
                     >
-                        {t("cancel")}
+                        {t('cancel')}
                     </Button>
                 )}
                 <div className={classes.button}>
@@ -184,19 +183,20 @@ function FieldsEditor(props) {
                             disabled={!searchRequest || !name.trim()}
                             onClick={onSave}
                         >
-                            {t("save")}
+                            {t('save')}
                         </Button>
                     )}
                     {saveState === FETCH.PENDING && (
                         <Box display="flex" alignItems="center">
                             <CircularProgress size={24} color="primary" className={classes.saveIcon} />
-                            {t("bookmark.editor.saving")}...
+                            {t('bookmark.editor.saving')}
+                            ...
                         </Box>
                     )}
                     {saveState === FETCH.DONE && (
                         <Box display="flex" alignItems="center">
                             <DoneIcon color="primary" className={classes.saveIcon} />
-                            {t("bookmark.editor.saveSuccess")}
+                            {t('bookmark.editor.saveSuccess')}
                         </Box>
                     )}
                 </div>

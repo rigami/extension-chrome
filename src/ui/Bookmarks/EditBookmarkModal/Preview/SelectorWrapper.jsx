@@ -8,8 +8,8 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { useObserver, useLocalStore } from 'mobx-react-lite';
 import ReactResizeDetector from 'react-resize-detector';
-import Scrollbar from "@/ui-components/CustomScroll";
-import PreviewSelector from "./Selector";
+import Scrollbar from '@/ui-components/CustomScroll';
+import PreviewSelector from './Selector';
 
 const useStyles = makeStyles((theme) => ({
     popoverContent: {
@@ -22,7 +22,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function SelectorWrapper({ isOpen, onClose, minHeight, marginThreshold = 24, ...other }) {
+function SelectorWrapper({
+    isOpen, onClose, minHeight, marginThreshold = 24, ...other
+}) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -44,12 +46,13 @@ function SelectorWrapper({ isOpen, onClose, minHeight, marginThreshold = 24, ...
             <Popover
                 open={isOpen}
                 anchorReference="anchorPosition"
-                anchorPosition={{ top: 0, left: 0 }}
+                anchorPosition={{
+                    top: 0,
+                    left: 0,
+                }}
                 marginThreshold={0}
                 elevation={0}
-                classes={{
-                    paper: classes.popoverContent,
-                }}
+                classes={{ paper: classes.popoverContent }}
                 anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'left',
@@ -76,7 +79,10 @@ function SelectorWrapper({ isOpen, onClose, minHeight, marginThreshold = 24, ...
                             <Box>
                                 <PreviewSelector
                                     {...other}
-                                    style={{ width: store.filedWidth, minHeight, }}
+                                    style={{
+                                        width: store.filedWidth,
+                                        minHeight,
+                                    }}
                                 />
                             </Box>
                         </ClickAwayListener>

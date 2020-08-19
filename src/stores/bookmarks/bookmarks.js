@@ -3,13 +3,13 @@ import StorageConnector from '@/utils/storageConnector';
 import DBConnector from '@/utils/dbConnector';
 import { cachingDecorator } from '@/utils/decorators';
 import EventBus from '@/utils/eventBus';
-import FSConnector from "@/utils/fsConnector";
-import BusApp from "@/stores/backgroundApp/busApp";
-import {DESTINATION} from "@/enum";
-import Bookmark from "@/stores/bookmarks/entities/bookmark";
-import Category from "@/stores/bookmarks/entities/category";
+import FSConnector from '@/utils/fsConnector';
+import BusApp from '@/stores/backgroundApp/busApp';
+import { DESTINATION } from '@/enum';
+import Bookmark from '@/stores/bookmarks/entities/bookmark';
+import Category from '@/stores/bookmarks/entities/category';
 import { difference } from 'lodash';
-import asyncAction from "@/utils/asyncAction";
+import asyncAction from '@/utils/asyncAction';
 
 class BookmarksStore {
     eventBus;
@@ -19,7 +19,7 @@ class BookmarksStore {
         this.eventBus = new EventBus();
         this.bus = BusApp();
 
-        console.log("Bookmark store is init!");
+        console.log('Bookmark store is init!');
     }
 
     @action('get bookmark')
@@ -88,10 +88,10 @@ class BookmarksStore {
                 fullMatch: false,
                 match: '',
                 ...searchQuery.description,
-            }
+            },
         };
 
-        console.log('query', query)
+        console.log('query', query);
 
         const storesName = ['bookmarks_by_categories', 'bookmarks', 'categories'];
         const tx = DBConnector().transaction(storesName, 'readonly');
@@ -106,12 +106,11 @@ class BookmarksStore {
             return new Category(category);
         }));
 
-        const checkQuery = (bookmark) => {
-            return !(
-                (
-                    query.categories.fullMatch
+        const checkQuery = (bookmark) => !(
+            (
+                query.categories.fullMatch
                     && difference(query.categories.match, bookmark.categories).length !== 0
-                )
+            )
                 || (
                     query.url.fullMatch
                     && bookmark.url !== query.url.match
@@ -136,8 +135,7 @@ class BookmarksStore {
                     !query.description.fullMatch
                     && bookmark.description.indexOf(query.description.match) === -1
                 )
-            );
-        };
+        );
 
         const findBookmarks = {};
         const findCategories = {};
@@ -181,10 +179,7 @@ class BookmarksStore {
                     findCategories[cursorCategoryId] = await getCategory(cursorCategoryId);
                 }
                 if (checkQuery(findBookmarks[cursorBookmarkId])) {
-                    findBookmarksByCategories[cursorCategoryId] = [
-                        ...(findBookmarksByCategories[cursorCategoryId] || []),
-                        findBookmarks[cursorBookmarkId],
-                    ];
+                    findBookmarksByCategories[cursorCategoryId] = [...(findBookmarksByCategories[cursorCategoryId] || []), findBookmarks[cursorBookmarkId]];
                 }
             }
             cursor = await cursor.continue();
@@ -209,7 +204,7 @@ class BookmarksStore {
 
                 allBookmarks.push(findBookmarks[bookmarkId]);
             } else {
-                delete findBookmarks[bookmarkId]
+                delete findBookmarks[bookmarkId];
             }
         }
 
@@ -219,7 +214,7 @@ class BookmarksStore {
             findBookmarks,
             findCategories,
             findBookmarksByCategories,
-        })
+        });
 
         if (
             query.categories.match.length !== 0
@@ -297,14 +292,14 @@ class BookmarksStore {
                     icoFileName: icoName,
                 });
             } catch (e) {
-                throw new Error("Similar bookmark already exist");
+                throw new Error('Similar bookmark already exist');
             }
         }
 
         const categoriesNow = await DBConnector().getAllFromIndex(
             'bookmarks_by_categories',
             'bookmark_id',
-            saveBookmarkId
+            saveBookmarkId,
         );
 
         await Promise.all(
@@ -319,18 +314,21 @@ class BookmarksStore {
             categories.map((categoryId) => {
                 if (~oldCategories.indexOf(categoryId)) return;
 
-                return DBConnector().add('bookmarks_by_categories', { categoryId, bookmarkId: saveBookmarkId });
+                return DBConnector().add('bookmarks_by_categories', {
+                    categoryId,
+                    bookmarkId: saveBookmarkId,
+                });
             }),
         );
 
-        if (image_url && image_url.substring(0, 11) !== "filesystem:") {
+        if (image_url && image_url.substring(0, 11) !== 'filesystem:') {
             const img = await new Promise((resolve, reject) => {
-                const imgLoad = document.createElement("img");
-                imgLoad.crossOrigin = "anonymous";
+                const imgLoad = document.createElement('img');
+                imgLoad.crossOrigin = 'anonymous';
                 imgLoad.src = image_url;
 
                 imgLoad.onload = () => resolve(imgLoad);
-                imgLoad.onerror = reject
+                imgLoad.onerror = reject;
             });
 
             const canvas = document.createElement('canvas');
@@ -367,14 +365,14 @@ class BookmarksStore {
         const removeBinds = await DBConnector().getAllFromIndex(
             'bookmarks_by_categories',
             'bookmark_id',
-            bookmarkId
+            bookmarkId,
         );
 
         await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
 
         await FSConnector.removeFile('/bookmarksIcons', oldBookmark.icoFileName);
 
-        this.bus.call('bookmark/remove', DESTINATION.APP, { bookmarkId: bookmarkId });
+        this.bus.call('bookmark/remove', DESTINATION.APP, { bookmarkId });
     }
 }
 

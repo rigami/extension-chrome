@@ -17,7 +17,7 @@ import FSConnector from '@/utils/fsConnector';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import { content as LibraryPageContent, header as LibraryPageHeader } from './Library';
 
-const headerProps = { title: "settings.bg.title" };
+const headerProps = { title: 'settings.bg.title' };
 
 function BGCard({ src }) {
     return (
@@ -40,8 +40,8 @@ function LibraryRow({ bgs, onSelect }) {
 
     return (
         <MenuRow
-            title={t("settings.bg.general.library.title")}
-            description={t("settings.bg.general.library.description", bgs && bgs.length)}
+            title={t('settings.bg.general.library.title')}
+            description={t('settings.bg.general.library.description', bgs && bgs.length)}
             action={{
                 type: ROWS_TYPE.LINK,
                 onClick: () => onSelect({
@@ -85,11 +85,11 @@ function BackgroundsSection({ onSelect }) {
 
     return (
         <React.Fragment>
-            <SectionHeader title={t("settings.bg.general.title")} />
+            <SectionHeader title={t('settings.bg.general.title')} />
             <MemoLibraryRow bgs={bgs} onSelect={onSelect} />
             <MenuRow
-                title={t("settings.bg.general.dimmingPower.title")}
-                description={t("settings.bg.general.dimmingPower.description")}
+                title={t('settings.bg.general.dimmingPower.title')}
+                description={t('settings.bg.general.dimmingPower.description')}
                 action={{
                     type: ROWS_TYPE.SLIDER,
                     value: typeof backgroundsStore.dimmingPower === 'number' ? backgroundsStore.dimmingPower : 0,
@@ -116,10 +116,10 @@ function SchedulerSection({ onSelect }) {
 
     return useObserver(() => (
         <React.Fragment>
-            <SectionHeader title={t("settings.bg.scheduler.title")} />
+            <SectionHeader title={t('settings.bg.scheduler.title')} />
             <MenuRow
-                title={t("settings.bg.scheduler.selectionMethod.title")}
-                description={t("settings.bg.scheduler.selectionMethod.description")}
+                title={t('settings.bg.scheduler.selectionMethod.title')}
+                description={t('settings.bg.scheduler.selectionMethod.description')}
                 action={{
                     type: ROWS_TYPE.SELECT,
                     format: (value) => t(`settings.bg.scheduler.selectionMethod.method.${value}`),
@@ -130,8 +130,8 @@ function SchedulerSection({ onSelect }) {
             />
             <Collapse in={backgroundsStore.selectionMethod === BG_SELECT_MODE.SPECIFIC}>
                 <MenuRow
-                    title={t("bg.title")}
-                    description={t("bg.change")}
+                    title={t('bg.title')}
+                    description={t('bg.change')}
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => onSelect({
@@ -159,8 +159,8 @@ function SchedulerSection({ onSelect }) {
             </Collapse>
             <Collapse in={backgroundsStore.selectionMethod === BG_SELECT_MODE.RANDOM}>
                 <MenuRow
-                    title={t("settings.bg.scheduler.changeInterval.title")}
-                    description={t("settings.bg.scheduler.changeInterval.description")}
+                    title={t('settings.bg.scheduler.changeInterval.title')}
+                    description={t('settings.bg.scheduler.changeInterval.description')}
                     action={{
                         type: ROWS_TYPE.SELECT,
                         format: (value) => t(`settings.bg.scheduler.changeInterval.interval.${value}`),
@@ -177,8 +177,8 @@ function SchedulerSection({ onSelect }) {
                     }}
                 />
                 <MenuRow
-                    title={t("settings.bg.scheduler.BGType.title")}
-                    description={t("settings.bg.scheduler.BGType.description")}
+                    title={t('settings.bg.scheduler.BGType.title')}
+                    description={t('settings.bg.scheduler.BGType.description')}
                     action={{
                         type: ROWS_TYPE.MULTISELECT,
                         format: (value) => t(`settings.bg.scheduler.BGType.type.${value}`),

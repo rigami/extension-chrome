@@ -1,13 +1,13 @@
-import BG_CHANGE_INTERVAL from "@/enum/BG/BG_CHANGE_INTERVAL";
-import BG_SELECT_MODE from "@/enum/BG/BG_SELECT_MODE";
-import BG_CHANGE_INTERVAL_MILLISECONDS from "@/enum/BG/BG_CHANGE_INTERVAL_MILLISECONDS";
-import BG_TYPE from "@/enum/BG/BG_TYPE";
-import BKMS_FAP_POSITION from "@/enum/BKMS/BKMS_FAP_POSITION";
-import BKMS_FAP_STYLE from "@/enum/BKMS/BKMS_FAP_STYLE";
-import BKMS_VARIANT from "@/enum/BKMS/BKMS_VARIANT";
-import THEME from "@/enum/THEME";
-import FETCH from "@/enum/FETCH";
-import DESTINATION from "@/enum/DESTINATION";
+import BG_CHANGE_INTERVAL from '@/enum/BG/BG_CHANGE_INTERVAL';
+import BG_SELECT_MODE from '@/enum/BG/BG_SELECT_MODE';
+import BG_CHANGE_INTERVAL_MILLISECONDS from '@/enum/BG/BG_CHANGE_INTERVAL_MILLISECONDS';
+import BG_TYPE from '@/enum/BG/BG_TYPE';
+import BKMS_FAP_POSITION from '@/enum/BKMS/BKMS_FAP_POSITION';
+import BKMS_FAP_STYLE from '@/enum/BKMS/BKMS_FAP_STYLE';
+import BKMS_VARIANT from '@/enum/BKMS/BKMS_VARIANT';
+import THEME from '@/enum/THEME';
+import FETCH from '@/enum/FETCH';
+import DESTINATION from '@/enum/DESTINATION';
 
 export {
     BG_CHANGE_INTERVAL,
@@ -20,4 +20,4 @@ export {
     THEME,
     FETCH,
     DESTINATION,
-}
+};

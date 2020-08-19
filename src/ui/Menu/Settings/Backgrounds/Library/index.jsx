@@ -107,18 +107,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const headerProps = {
-    title: "settings.bg.general.library.title",
+    title: 'settings.bg.general.library.title',
     actions: (<HeaderActions />),
     style: { width: 960 },
 };
 
 function HeaderActions() {
     const { t } = useTranslation();
-    
+
     return (
         <React.Fragment>
             <LoadBGFromLocalButton />
-            <Tooltip title={t("notAvailableYet")}>
+            <Tooltip title={t('notAvailableYet')}>
                 <div>
                     <Button
                         variant="outlined"
@@ -126,7 +126,7 @@ function HeaderActions() {
                         startIcon={<GetFromLibraryIcon />}
                         disabled
                     >
-                        {t("settings.bg.general.library.getFromLibrary")}
+                        {t('settings.bg.general.library.getFromLibrary')}
                     </Button>
                 </div>
             </Tooltip>
@@ -148,12 +148,12 @@ function BGCard({ fileName, onSet, onRemove }) {
                     <WallpaperIcon fontSize="large" />
                 </Avatar>
                 <Box className={classes.bgActionsWrapper}>
-                    <Tooltip title={t("settings.bg.apply")}>
+                    <Tooltip title={t('settings.bg.apply')}>
                         <Button className={classes.setIcon} onClick={onSet}>
                             <SetIcon />
                         </Button>
                     </Tooltip>
-                    <Tooltip title={t("bg.remove")}>
+                    <Tooltip title={t('bg.remove')}>
                         <IconButton className={classes.deleteIcon} onClick={onRemove}>
                             <DeleteIcon />
                         </IconButton>
@@ -173,7 +173,6 @@ function LibraryMenu() {
 
     const [bgs, setBgs] = useState(null);
     const [state, setState] = useState('pending');
-
 
     useEffect(() => {
         backgroundsStore.getAll()
@@ -214,7 +213,7 @@ function LibraryMenu() {
                     ))
             }
             {state === 'done' && bgs.length === 0 && (
-                <FullscreenStub message={t("bg.notFound")} />
+                <FullscreenStub message={t('bg.notFound')} />
             )}
             {state === 'failed' && (
                 <Box className={classes.centerPage}>

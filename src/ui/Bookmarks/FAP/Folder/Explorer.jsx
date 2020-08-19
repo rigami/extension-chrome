@@ -24,9 +24,9 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useService as useBookmarksService } from '@/stores/bookmarks';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
-import Image from "@/ui-components/Image";
+import Image from '@/ui-components/Image';
 import { useTranslation } from 'react-i18next';
-import {useService as useAppService} from "@/stores/app";
+import { useService as useAppService } from '@/stores/app';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -57,7 +57,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Link({ name, url, imageUrl, id, description, icoVariant }) {
+function Link({
+    name, url, imageUrl, id, description, icoVariant,
+}) {
     const classes = useStyles();
     const appStore = useAppService();
     const bookmarksStore = useBookmarksService();
@@ -78,32 +80,38 @@ function Link({ name, url, imageUrl, id, description, icoVariant }) {
             actions: [
                 {
                     type: 'button',
-                    title: isPin() ? t("fap.unpin") : t("fap.pin"),
+                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksStore.removeFromFavorites({ type: 'bookmark', id });
+                            bookmarksStore.removeFromFavorites({
+                                type: 'bookmark',
+                                id,
+                            });
                         } else {
-                            bookmarksStore.addToFavorites({ type: 'bookmark', id });
+                            bookmarksStore.addToFavorites({
+                                type: 'bookmark',
+                                id,
+                            });
                         }
-                    }
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("edit"),
+                    title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch(`editbookmark`, { id });
-                    }
+                        bookmarksStore.eventBus.dispatch('editbookmark', { id });
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("remove"),
+                    title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch(`removebookmark`, { id });
-                    }
-                }
+                        bookmarksStore.eventBus.dispatch('removebookmark', { id });
+                    },
+                },
             ],
             position,
         });
@@ -113,7 +121,7 @@ function Link({ name, url, imageUrl, id, description, icoVariant }) {
         if (event.button === 1) {
             window.open(url);
         } else if (event.button === 0) {
-            window.open(url, "_self");
+            window.open(url, '_self');
         }
     };
 
@@ -170,34 +178,46 @@ function Folder({ id }) {
             actions: [
                 {
                     type: 'button',
-                    title: isPin() ? t("fap.unpin") : t("fap.pin"),
+                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksStore.removeFromFavorites({ type: 'category', id });
+                            bookmarksStore.removeFromFavorites({
+                                type: 'category',
+                                id,
+                            });
                         } else {
-                            bookmarksStore.addToFavorites({ type: 'category', id });
+                            bookmarksStore.addToFavorites({
+                                type: 'category',
+                                id,
+                            });
                         }
-                    }
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("edit"),
+                    title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch(`editcategory`, { id, anchorEl });
-                    }
+                        bookmarksStore.eventBus.dispatch('editcategory', {
+                            id,
+                            anchorEl,
+                        });
+                    },
                 },
                 {
                     type: 'button',
-                    title: t("remove"),
+                    title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch(`removecategory`, { id });
-                    }
-                }
+                        bookmarksStore.eventBus.dispatch('removecategory', { id });
+                    },
+                },
             ],
-            position: { top, left },
+            position: {
+                top,
+                left,
+            },
         });
     };
 
@@ -236,8 +256,8 @@ function Folder({ id }) {
                     {!isSearching && findBookmarks.length === 0 && (
                         <FullScreenStub
                             style={{ height: 300 }}
-                            message={t("fap.folder.emptyTitle")}
-                            description={t("fap.folder.emptyDescription")}
+                            message={t('fap.folder.emptyTitle')}
+                            description={t('fap.folder.emptyDescription')}
                         />
                     )}
                     {findBookmarks && findBookmarks.map((bookmark, index) => (

@@ -11,9 +11,7 @@ const useStyles = makeStyles((theme) => ({
         pointerEvents: 'none',
         top: 0,
     },
-    desktop: {
-        height: '100vh',
-    },
+    desktop: { height: '100vh' },
 }));
 
 function FakeScroll({ children }) {
@@ -34,9 +32,9 @@ function FakeScroll({ children }) {
             className={classes.root}
             ref={rootRef}
         >
-            <Box className={classes.desktop}/>
+            <Box className={classes.desktop} />
             {children}
-            <Box className={classes.desktop}/>
+            <Box className={classes.desktop} />
         </Box>
     );
 }

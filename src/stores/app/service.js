@@ -1,7 +1,7 @@
 import { action, observable } from 'mobx';
 import StorageConnector from '@/utils/storageConnector';
-import EventBus from "@/utils/eventBus";
-import BusApp from "@/stores/backgroundApp/busApp";
+import EventBus from '@/utils/eventBus';
+import BusApp from '@/stores/backgroundApp/busApp';
 
 class AppConfigStore {
     @observable theme;

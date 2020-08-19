@@ -25,9 +25,7 @@ class Bookmark {
 
     @action
     update(bookmark = {}) {
-        assign(this, pick(bookmark, [
-            'clickCounts',
-        ]));
+        assign(this, pick(bookmark, ['clickCounts']));
     }
 }
 

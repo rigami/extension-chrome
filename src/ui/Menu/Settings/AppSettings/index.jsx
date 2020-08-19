@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const headerProps = { title: "settings.app.title" };
+const headerProps = { title: 'settings.app.title' };
 
 function AppSettings({ onSelect }) {
     const classes = useStyles();
@@ -28,7 +28,7 @@ function AppSettings({ onSelect }) {
     return useObserver(() => (
         <React.Fragment>
             <MenuRow
-                title={t("settings.app.darkThemeBackdrop")}
+                title={t('settings.app.darkThemeBackdrop')}
                 width={520}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
@@ -39,7 +39,7 @@ function AppSettings({ onSelect }) {
                 }}
             />
             <MenuRow
-                title={t("settings.app.darkThemeApp")}
+                title={t('settings.app.darkThemeApp')}
                 width={520}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
@@ -53,7 +53,7 @@ function AppSettings({ onSelect }) {
                 }}
             />
             <MenuRow
-                title={t("settings.app.useSystemFont")}
+                title={t('settings.app.useSystemFont')}
                 width={520}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
@@ -65,11 +65,11 @@ function AppSettings({ onSelect }) {
             />
             <MenuInfo
                 show={defaultFontValue !== appConfigStore.useSystemFont}
-                message={t("changeTakeEffectAfterReload")}
+                message={t('changeTakeEffectAfterReload')}
                 width={520}
             />
             <MenuRow
-                title={t("settings.app.tabName.title")}
+                title={t('settings.app.tabName.title')}
                 width={520}
                 action={{
                     type: ROWS_TYPE.LINK,
@@ -79,7 +79,7 @@ function AppSettings({ onSelect }) {
                     }),
                     component: (
                         <Typography className={(!appConfigStore.tabName && classes.defaultTabValue) || ''}>
-                            {appConfigStore.tabName || t("default")}
+                            {appConfigStore.tabName || t('default')}
                         </Typography>
                     ),
                 }}

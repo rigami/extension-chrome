@@ -149,15 +149,15 @@ function MenuRow(props) {
                                 displayEmpty
                                 renderValue={(selected) => {
                                     if (actionProps.value && (actionProps.value.length === 0)) {
-                                        return actionProps.format?.("nothingSelected") || t("nothingSelected");
+                                        return actionProps.format?.('nothingSelected') || t('nothingSelected');
                                     } else if (
                                         actionProps.values && actionProps.value
                                         && (actionProps.values.length === actionProps.value.length)
                                     ) {
-                                        return actionProps.format?.("all") || t("all");
+                                        return actionProps.format?.('all') || t('all');
                                     } else {
                                         return selected && selected
-                                            .map((actionValue) => (actionProps.format?.(actionValue)|| actionValue))
+                                            .map((actionValue) => (actionProps.format?.(actionValue) || actionValue))
                                             .join(', ');
                                     }
                                 }}
@@ -195,7 +195,6 @@ function MenuRow(props) {
         </ListItem>
     );
 }
-
 
 export const ROWS_TYPE = TYPE;
 export default MenuRow;

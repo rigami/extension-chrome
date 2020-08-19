@@ -12,7 +12,7 @@ function getUniqueColor(key) {
         h: 330,
         s: 80,
         l: 60,
-    }
+    };
 
     const angle = computeKey % 12;
     const stage = Math.floor(computeKey / 12);
@@ -20,14 +20,14 @@ function getUniqueColor(key) {
     color.h = color.h - Math.max(stepH - stepReductionH * stage, 7) * angle - shiftH * stage;
 
     while (color.h < 0) {
-        color.h = color.h + 360;
+        color.h += 360;
     }
 
-    color.l = color.l - stage * stepL;
+    color.l -= stage * stepL;
 
     if (color.l <= 15) {
         color.l = 15;
-        color.s = color.s - stage * stepS;
+        color.s -= stage * stepS;
     }
 
     return hslToRgb(recomposeColor({

@@ -52,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 function CategoryHeader({ id, color, name, children }) {
     const classes = useStyles();
     const bookmarksStore = useBookmarksService();
@@ -115,8 +114,11 @@ function CategoryHeader({ id, color, name, children }) {
                                 <IconButton
                                     buttonRef={anchorEl}
                                     onClick={() => bookmarksStore.eventBus.dispatch(
-                                        `editcategory`,
-                                        { id, anchorEl: anchorEl.current },
+                                        'editcategory',
+                                        {
+                                            id,
+                                            anchorEl: anchorEl.current,
+                                        },
                                     )}
                                 >
                                     <EditIcon />
@@ -125,9 +127,9 @@ function CategoryHeader({ id, color, name, children }) {
                             <Tooltip title="Удалить">
                                 <IconButton
                                     onClick={() => bookmarksStore.eventBus.dispatch(
-                                        `removecategory`,
+                                        'removecategory',
                                         { id },
-                                        )}
+                                    )}
                                 >
                                     <RemoveIcon />
                                 </IconButton>

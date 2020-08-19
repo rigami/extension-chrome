@@ -1,7 +1,7 @@
-import {BKMS_VARIANT, DESTINATION} from "@/enum";
-import BusApp from "./busApp";
-import Category from "@/stores/bookmarks/entities/category";
-import Bookmark from "@/stores/bookmarks/entities/bookmark";
+import { BKMS_VARIANT, DESTINATION } from '@/enum';
+import Category from '@/stores/bookmarks/entities/category';
+import Bookmark from '@/stores/bookmarks/entities/bookmark';
+import BusApp from './busApp';
 
 class Background {
     bookmarksService;
@@ -12,11 +12,11 @@ class Background {
         this.bus = BusApp();
 
         if (!chrome?.bookmarks) {
-            console.error("Not find bookmarks module");
+            console.error('Not find bookmarks module');
             return;
         }
 
-        this.bus.on("system/parseSystemBookmarks", () => this.parseSystemBookmarks());
+        this.bus.on('system/parseSystemBookmarks', () => this.parseSystemBookmarks());
 
         chrome.bookmarks.onCreated.addListener(async (id, createInfo) => {
             console.log('onCreated bookmark', id, createInfo);
@@ -40,7 +40,10 @@ class Background {
 
     async saveBookmark(bookmark) {
         const similarBookmarks = await this.bookmarksService.bookmarks.query({
-            url: { fullMatch: true, match: bookmark.url },
+            url: {
+                fullMatch: true,
+                match: bookmark.url,
+            },
         });
 
         console.log('similarBookmarks', similarBookmarks);
@@ -55,7 +58,7 @@ class Background {
             ...similarBookmark,
             // id: bookmark.title === similarBookmark.name ? similarBookmark.id : null,
             name: bookmark.name || similarBookmark.name,
-            categories: [ ...(similarBookmark.categories?.map(({ id }) => id) || []), ...bookmark.categories ],
+            categories: [...(similarBookmark.categories?.map(({ id }) => id) || []), ...bookmark.categories],
         });
 
         this.bus.call('bookmark/new', DESTINATION.APP, { bookmarkId: newBookmarkId });
@@ -72,14 +75,19 @@ class Background {
             console.log('bookmark', saveBookmark);
 
             return await this.saveBookmark(saveBookmark);
-        }
+        };
 
         const parseNode = async (node, path) => {
-            if (!node.children) return await parseBookmark({ ...node, path });
+            if (!node.children) {
+                return await parseBookmark({
+                    ...node,
+                    path,
+                });
+            }
 
-            let category = new Category();
+            const category = new Category();
 
-            if (node.id === "0" || node.title === "") {
+            if (node.id === '0' || node.title === '') {
                 category.name = 'Root category';
             } else {
                 category.name = node.title;
@@ -92,7 +100,7 @@ class Background {
             for (let i = 0; i < node.children.length; i++) {
                 await parseNode(node.children[i], [...path, newCategoryId]);
             }
-        }
+        };
 
         chrome.bookmarks.getTree(async (nodes) => {
             for (let i = 0; i < nodes.length; i++) {

@@ -13,13 +13,13 @@ import Nest from '@/utils/Nest';
 import { Provider as BackgroundsProvider } from '@/stores/backgrounds';
 import { Provider as AppConfigProvider } from '@/stores/app';
 import { Provider as BookmarksProvider } from '@/stores/bookmarks';
+import FakeScroll from '@/ui/FakeScroll';
+import FAPStub from '@/ui/Bookmarks/FAP/Stub';
 import FAP from './Bookmarks/FAP';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
 import GlobalScroll from './GlobalScroll';
 import GlobalModals from './GlobalModals';
-import FakeScroll from "@/ui/FakeScroll";
-import FAPStub from "@/ui/Bookmarks/FAP/Stub";
 
 function App() {
     const [theme, setTheme] = useState(localStorage.getItem('app_theme'));

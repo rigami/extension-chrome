@@ -14,9 +14,9 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import { BG_SELECT_MODE, BG_TYPE } from '@/enum';
 import { useService as useBackgroundsService } from '@/stores/backgrounds';
 import Header from '@/ui/Menu/PageHeader';
+import { useTranslation } from 'react-i18next';
 import HomePage, { header as homePageHeader } from './Settings';
 import FabMenu from './FabMenu';
-import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -71,9 +71,9 @@ function Menu({ }) {
                     {
                         tooltip: (
                             <React.Fragment>
-                                <b>{t("bg.pauseVideo")}</b>
+                                <b>{t('bg.pauseVideo')}</b>
                                 <Divider className={classes.divider} />
-                                {t("bg.pauseVideoDescription")}
+                                {t('bg.pauseVideoDescription')}
                             </React.Fragment>
                         ),
                         onClick: () => backgroundsStore.eventBus.dispatch('pausebg'),
@@ -83,7 +83,7 @@ function Menu({ }) {
             } else {
                 setFastSettings([
                     {
-                        tooltip: t("bg.playVideo"),
+                        tooltip: t('bg.playVideo'),
                         onClick: () => backgroundsStore.eventBus.dispatch('playbg'),
                         icon: <PlayIcon />,
                     },
