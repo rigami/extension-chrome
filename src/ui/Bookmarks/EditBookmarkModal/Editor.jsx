@@ -227,7 +227,7 @@ function Editor(props) {
                                 return store.images[maxScoreId];
                             }}
                         />
-                        <Box display="flex" flexDirection="column">
+                        <Box display="flex" flexDirection="column" flexGrow={1}>
                             <SelectorWrapper
                                 isOpen={store.isOpenSelectorPreview}
                                 name={store.name}

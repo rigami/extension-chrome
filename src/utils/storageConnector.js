@@ -23,10 +23,7 @@ class StorageConnector {
     }
 
     static setItem(key, value) {
-        return new Promise((resolve) => {
-            localStorage.setItem(key, value);
-            resolve(value);
-        });
+        localStorage.setItem(key, value);
     }
 
     static removeItem(key) {

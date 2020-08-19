@@ -12,28 +12,37 @@ import FSConnector from './fsConnector';
 import DBConnector, { open as openDB } from './dbConnector';
 
 class ConfigStores {
-    static setup(progressCallBack) {
-        return ConfigStores.configDB()
-            .then(() => progressCallBack(5))
-            .then(() => ConfigStores.configFS())
-            .then(() => progressCallBack(10))
-            .then(() => ConfigStores.configUserData((progressValue) => progressCallBack(10 + progressValue * 0.8)))
-            .then(() => StorageConnector.setItem('bg_selection_method', defaultSettings.backgrounds.selection_method))
-            .then(() => StorageConnector.setJSONItem('bg_type', defaultSettings.backgrounds.bg_type))
-            .then(() => StorageConnector.setItem('bg_change_interval', defaultSettings.backgrounds.change_interval))
-            .then(() => StorageConnector.setItem('bg_dimming_power', defaultSettings.backgrounds.dimming_power))
-            .then(() => StorageConnector.setItem('app_theme', defaultSettings.app.theme))
-            .then(() => StorageConnector.setItem('app_backdrop_theme', defaultSettings.app.backdropTheme))
-            .then(() => StorageConnector.setJSONItem('app_use_system_font', defaultSettings.app.useSystemFont))
-            .then(() => StorageConnector.setItem('app_tab_name', defaultSettings.app.tabName))
-            .then(() => StorageConnector.setItem('bkms_fap_style', defaultSettings.bookmarks.fapStyle))
-            .then(() => StorageConnector.setItem('bkms_fap_position', defaultSettings.bookmarks.fapPosition))
-            .then(() => StorageConnector.setItem('bkms_open_on_startup', defaultSettings.bookmarks.openOnStartup))
-            .then(() => StorageConnector.setJSONItem('bkms_favorites', defaultSettings.bookmarks.favorites))
-            .then(() => StorageConnector.setJSONItem('bkms_sync_with_system', defaultSettings.bookmarks.syncWithSystem))
-            .then(() => StorageConnector.setJSONItem('bkms_favorites', defaultSettings.bookmarks.favorites))
-            .then(() => StorageConnector.setItem('last_setup_timestamp', Date.now().toString()))
-            .then(() => progressCallBack(100));
+    static async setup(progressCallBack) {
+        await ConfigStores.configDB();
+        progressCallBack(5);
+        await ConfigStores.configFS();
+        progressCallBack(10);
+        await ConfigStores.configUserData((progressValue) => progressCallBack(10 + progressValue * 0.8));
+
+        [
+            ['bg_selection_method', defaultSettings.backgrounds.selection_method],
+            ['bg_type', defaultSettings.backgrounds.bg_type, 'json'],
+            ['bg_change_interval', defaultSettings.backgrounds.change_interval],
+            ['bg_dimming_power', defaultSettings.backgrounds.dimming_power],
+            ['app_theme', defaultSettings.app.theme],
+            ['app_backdrop_theme', defaultSettings.app.backdropTheme],
+            ['app_use_system_font', defaultSettings.app.useSystemFont, 'json'],
+            ['app_tab_name', defaultSettings.app.tabName],
+            ['bkms_fap_style', defaultSettings.bookmarks.fapStyle],
+            ['bkms_fap_position', defaultSettings.bookmarks.fapPosition],
+            ['bkms_open_on_startup', defaultSettings.bookmarks.openOnStartup],
+            ['bkms_favorites', defaultSettings.bookmarks.favorites, 'json'],
+            ['bkms_sync_with_system', defaultSettings.bookmarks.syncWithSystem, 'json'],
+            ['last_setup_timestamp', Date.now().toString()],
+        ].forEach(([key, value, type = 'string']) => {
+            if (type === 'json') {
+                StorageConnector.setJSONItem(key, value);
+            } else {
+                StorageConnector.setItem(key, value);
+            }
+        });
+
+        progressCallBack(100);
     }
 
     static async config() {
