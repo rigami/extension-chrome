@@ -1,23 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { LinearProgress, Fade } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
+import useService from '@/stores/BaseStateProvider';
+import asyncAction from '@/utils/asyncAction';
+import { PREPARE_PROGRESS } from '@/stores/core';
 
-function FirstLookScreen({ isConfig, progress, onStart }) {
+function FirstLookScreen({ onStart }) {
     const { t } = useTranslation();
+    const service = useService();
+    const [progress, setProgress] = useState(0);
+    const [stage, setStage] = useState('WAIT');
+
+    useEffect(() => {
+        document.title = i18n.t('tabName.prepare') || 'Rigami';
+
+        asyncAction(async () => {
+            await service.setDefaultState((progressValue, stageValue) => {
+                setProgress(progressValue);
+                setStage(stageValue);
+            });
+        }).catch(console.error);
+    }, []);
 
     return (
         <React.Fragment>
-            <Fade in={!isConfig}>
+            <Fade in={stage !== PREPARE_PROGRESS.DONE}>
                 <FullscreenStub
                     message={t('firstView.prepareApp')}
-                    description={t('firstView.pleaseWait')}
+                    description={`${t('firstView.pleaseWait')} ${stage}`}
                     style={{ height: '100vh' }}
                 >
                     <LinearProgress variant="determinate" style={{ width: 240 }} value={progress} />
                 </FullscreenStub>
             </Fade>
-            <Fade in={isConfig}>
+            <Fade in={stage === PREPARE_PROGRESS.DONE}>
                 <FullscreenStub
                     message={t('firstView.allDone')}
                     description={t('firstView.prepareAppDoneDescription')}
@@ -34,7 +52,7 @@ function FirstLookScreen({ isConfig, progress, onStart }) {
                             title: t('firstView.continue'),
                             color: 'primary',
                             variant: 'contained',
-                            onClick: () => onStart(),
+                            onClick: onStart,
                         },
                     ]}
                 />

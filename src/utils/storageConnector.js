@@ -1,3 +1,5 @@
+import { eventToBackground } from '@/stores/backgroundApp/busApp';
+
 class StorageConnector {
     static getItem(key) {
         return new Promise((resolve, reject) => {
@@ -24,13 +26,17 @@ class StorageConnector {
 
     static setItem(key, value) {
         localStorage.setItem(key, value);
+
+        eventToBackground('system/syncSettings/set', {
+            key,
+            value,
+        });
     }
 
     static removeItem(key) {
-        return new Promise((resolve) => {
-            localStorage.removeItem(key);
-            resolve();
-        });
+        localStorage.removeItem(key);
+
+        eventToBackground('system/syncSettings/remove', { key });
     }
 }
 

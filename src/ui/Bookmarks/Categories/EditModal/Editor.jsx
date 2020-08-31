@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     Card,
     InputBase,
@@ -6,7 +6,7 @@ import {
     Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
+import useBookmarksService from '@/stores/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
@@ -26,13 +26,16 @@ function Editor({ onSave, onError, editCategoryId }) {
     const { t } = useTranslation();
     const [categoryName, setCategoryName] = useState('');
     const [error, setError] = useState(null);
-    const bookmarksStore = useBookmarksService();
-    const categoryStore = bookmarksStore.categories.get(editCategoryId);
+    const bookmarksService = useBookmarksService();
+    const categoryStore = bookmarksService.categories.get(editCategoryId);
 
     const handlerSubmit = (event) => {
         event.preventDefault();
         if (categoryName.trim() !== '') {
-            bookmarksStore.categories.save(categoryName, editCategoryId)
+            bookmarksService.categories.save({
+                name: categoryName,
+                id: editCategoryId,
+            })
                 .then((categoryId) => onSave(categoryId))
                 .catch((e) => {
                     onError(e.message);

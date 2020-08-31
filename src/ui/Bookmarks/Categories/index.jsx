@@ -11,9 +11,9 @@ import {
     EditRounded as EditIcon,
     DeleteRounded as RemoveIcon,
 } from '@material-ui/icons';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
+import useBookmarksService from '@/stores/BookmarksProvider';
 import clsx from 'clsx';
-import { useService as useAppService } from '@/stores/app';
+import useCoreService from '@/stores/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import AddButton from './AddButton';
 
@@ -41,19 +41,24 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Category({
-    id, name, color, onClick, isSelect,
-}) {
+function Category(props) {
+    const {
+        id,
+        name,
+        color,
+        onClick,
+        isSelect,
+    } = props;
     const classes = useStyles();
-    const appStore = useAppService();
-    const bookmarksStore = useBookmarksService();
+    const coreService = useCoreService();
+    const bookmarksService = useBookmarksService();
     const { t } = useTranslation();
 
-    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'category' && fav.id === id);
+    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'category' && fav.id === id);
 
     const handlerContextMenu = (event, anchorEl) => {
         event.preventDefault();
-        appStore.eventBus.dispatch('contextMenu', {
+        coreService.localEventBus.call('system/contextMenu', {
             actions: [
                 {
                     type: 'button',
@@ -61,12 +66,12 @@ function Category({
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksStore.removeFromFavorites({
+                            bookmarksService.removeFromFavorites({
                                 type: 'category',
                                 id,
                             });
                         } else {
-                            bookmarksStore.addToFavorites({
+                            bookmarksService.addToFavorites({
                                 type: 'category',
                                 id,
                             });
@@ -78,7 +83,7 @@ function Category({
                     title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch('editcategory', {
+                        bookmarksService.localEventBus.call('category/edit', {
                             id,
                             anchorEl,
                         });
@@ -89,7 +94,7 @@ function Category({
                     title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch('removecategory', { id });
+                        bookmarksService.localEventBus.call('category/remove', { id });
                     },
                 },
             ],
@@ -98,10 +103,6 @@ function Category({
                 left: event.nativeEvent.clientX,
             },
         });
-    };
-
-    const openMenu = (position) => {
-
     };
 
     return (
@@ -131,7 +132,7 @@ function Categories(props) {
         maxRows,
     } = props;
     const classes = useStyles();
-    const bookmarksStore = useBookmarksService();
+    const bookmarksService = useBookmarksService();
     const [selectedCategories, setSelectedCategories] = useState([]);
     const isFirstRun = useRef(true);
 
@@ -154,7 +155,7 @@ function Categories(props) {
 
     return (
         <Box className={clsx(classes.root, externalClassName)}>
-            {bookmarksStore.categories.all.map(({ id, name, color }) => (
+            {bookmarksService.categories.all.map(({ id, name, color }) => (
                 <Category
                     key={id}
                     id={id}
@@ -171,7 +172,7 @@ function Categories(props) {
                 />
             ))}
             <AddButton
-                isShowTitle={bookmarksStore.categories.length === 0}
+                isShowTitle={bookmarksService.categories.length === 0}
                 onCreate={(newId) => {
                     if (autoSelect) setSelectedCategories([...selectedCategories, newId]);
                     if (onCreate) onCreate(newId);

@@ -16,7 +16,8 @@ import {
     EditRounded as EditIcon,
     DeleteRounded as RemoveIcon,
 } from '@material-ui/icons';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
+import useBookmarksService from '@/stores/BookmarksProvider';
+import useCoreService from '@/stores/BaseStateProvider';
 import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
@@ -55,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
 function CategoryHeader({ id, color, name, children }) {
     const classes = useStyles();
     const bookmarksStore = useBookmarksService();
+    const coreService = useCoreService();
     const anchorEl = useRef(null);
 
     const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'category' && fav.id === id);
@@ -113,8 +115,8 @@ function CategoryHeader({ id, color, name, children }) {
                             <Tooltip title="Изменить">
                                 <IconButton
                                     buttonRef={anchorEl}
-                                    onClick={() => bookmarksStore.eventBus.dispatch(
-                                        'editcategory',
+                                    onClick={() => coreService.localEventBus.call(
+                                        'category/edit',
                                         {
                                             id,
                                             anchorEl: anchorEl.current,
@@ -126,8 +128,8 @@ function CategoryHeader({ id, color, name, children }) {
                             </Tooltip>
                             <Tooltip title="Удалить">
                                 <IconButton
-                                    onClick={() => bookmarksStore.eventBus.dispatch(
-                                        'removecategory',
+                                    onClick={() => coreService.localEventBus.call(
+                                        'category/remove',
                                         { id },
                                     )}
                                 >

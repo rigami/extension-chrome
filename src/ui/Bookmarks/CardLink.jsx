@@ -18,8 +18,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
-import { useService as useAppService } from '@/stores/app';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
+import useCoreService from '@/stores/BaseStateProvider';
+import useBookmarksService from '@/stores/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
@@ -117,12 +117,12 @@ function CardLink(props) {
         ...other
     } = props;
     const classes = useStyles();
-    const appStore = useAppService();
-    const bookmarksStore = useBookmarksService();
+    const coreService = useCoreService();
+    const bookmarksService = useBookmarksService();
     const buttonRef = useRef(null);
     const { t } = useTranslation();
 
-    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
+    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
 
     const handlerContextMenu = (event) => {
         event.preventDefault();
@@ -141,7 +141,7 @@ function CardLink(props) {
     };
 
     const openMenu = (position) => {
-        appStore.eventBus.dispatch('contextMenu', {
+        coreService.localEventBus.call('system/contextMenu', {
             actions: [
                 {
                     type: 'button',
@@ -149,12 +149,12 @@ function CardLink(props) {
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksStore.removeFromFavorites({
+                            bookmarksService.removeFromFavorites({
                                 type: 'bookmark',
                                 id,
                             });
                         } else {
-                            bookmarksStore.addToFavorites({
+                            bookmarksService.addToFavorites({
                                 type: 'bookmark',
                                 id,
                             });
@@ -166,7 +166,7 @@ function CardLink(props) {
                     title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch('editbookmark', { id });
+                        coreService.localEventBus.call('bookmark/edit', { id });
                     },
                 },
                 {
@@ -174,7 +174,7 @@ function CardLink(props) {
                     title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch('removebookmark', { id });
+                        coreService.localEventBus.call('bookmark/remove', { id });
                     },
                 },
             ],

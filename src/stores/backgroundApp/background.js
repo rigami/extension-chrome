@@ -1,15 +1,22 @@
 import { BKMS_VARIANT, DESTINATION } from '@/enum';
 import Category from '@/stores/bookmarks/entities/category';
 import Bookmark from '@/stores/bookmarks/entities/bookmark';
+import SyncSettings from '@/stores/backgroundApp/syncSettings';
+import BookmarksService from '@/stores/bookmarks';
+import SyncStorage from '@/stores/backgroundApp/syncStorage';
 import BusApp from './busApp';
 
 class Background {
     bookmarksService;
     bus;
+    settingsService;
+    storageService;
 
-    constructor({ bookmarksService }) {
-        this.bookmarksService = bookmarksService;
+    constructor() {
         this.bus = BusApp();
+        this.bookmarksService = new BookmarksService({ globalEventBus: this.bus });
+        this.settingsService = new SyncSettings();
+        this.storageService = new SyncStorage();
 
         if (!chrome?.bookmarks) {
             console.error('Not find bookmarks module');
@@ -97,13 +104,15 @@ class Background {
 
             const newCategoryId = await this.bookmarksService.categories.save({ ...category });
 
-            for (let i = 0; i < node.children.length; i++) {
+            for (let i = 0; i < node.children.length; i += 1) {
                 await parseNode(node.children[i], [...path, newCategoryId]);
             }
+
+            return Promise.resolve();
         };
 
         chrome.bookmarks.getTree(async (nodes) => {
-            for (let i = 0; i < nodes.length; i++) {
+            for (let i = 0; i < nodes.length; i += 1) {
                 await parseNode(nodes[i], []);
             }
             console.log('finish sync!');

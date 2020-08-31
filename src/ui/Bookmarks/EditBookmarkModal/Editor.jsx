@@ -5,9 +5,9 @@ import {
     Card,
     Box,
 } from '@material-ui/core';
-import { observer, useObserver, useLocalStore } from 'mobx-react-lite';
+import { observer, useLocalStore } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
+import useBookmarksService from '@/stores/BookmarksProvider';
 import { getSiteInfo, getImageRecalc } from '@/utils/siteSearch';
 import { FETCH, BKMS_VARIANT } from '@/enum';
 import asyncAction from '@/utils/asyncAction';
@@ -51,7 +51,7 @@ function Editor(props) {
     } = props;
     const classes = useStyles();
 
-    const bookmarksStore = useBookmarksService();
+    const bookmarksService = useBookmarksService();
     const [controller, setController] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const store = useLocalStore(() => ({
@@ -73,7 +73,7 @@ function Editor(props) {
 
     const handlerSave = () => {
         store.saveStage = FETCH.PENDING;
-        bookmarksStore.bookmarks.save({
+        bookmarksService.bookmarks.save({
             ...store,
             image_url: store.imageURL,
             name: store.name.trim(),
@@ -91,7 +91,7 @@ function Editor(props) {
         if (!store.editBookmarkId) return;
         setIsLoading(true);
 
-        bookmarksStore.bookmarks.get(editBookmarkId)
+        bookmarksService.bookmarks.get(editBookmarkId)
             .then((bookmark) => {
                 store.url = bookmark.url;
                 store.name = bookmark.name;
@@ -138,6 +138,7 @@ function Editor(props) {
                 try {
                     siteData.bestIcon = await getImageRecalc(siteData.bestIcon.name);
                 } catch (e) {
+                    console.error(e);
                 }
             }
 
@@ -158,18 +159,18 @@ function Editor(props) {
     }, [store.url]);
 
     useEffect(() => {
-        store.fullCategories = store.categories.map((categoryId) => bookmarksStore.categories.get(categoryId));
+        store.fullCategories = store.categories.map((categoryId) => bookmarksService.categories.get(categoryId));
     }, [store.categories.length]);
 
     useEffect(() => onStage(store.stage), [store.stage]);
 
     if (isLoading) {
-        return useObserver(() => (
+        return (
             <CircularProgress />
-        ));
+        );
     }
 
-    return useObserver(() => (
+    return (
         <Scrollbar
             reverse
             style={{ height: bringToEditorHeight && store.editorHeight }}
@@ -288,7 +289,7 @@ function Editor(props) {
                 </ReactResizeDetector>
             </Container>
         </Scrollbar>
-    ));
+    );
 }
 
 export default observer(Editor);

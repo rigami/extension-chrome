@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { observer, useLocalStore } from 'mobx-react-lite';
-import { useService as useAppService } from '@/stores/app';
-// import Scrollbar, { classes as scrollbarClasses } from '@/ui-components/CustomScroll';
-import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
+import useCoreService from '@/stores/BaseStateProvider';
+import usAppService from '@/stores/AppStateProvider';
 import Scrollbar from 'smooth-scrollbar';
 import OverscrollPlugin from 'smooth-scrollbar/plugins/overscroll';
 import ViewScrollPlugin from '@/utils/ViewScrollPlugin';
@@ -21,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
 
 function GlobalScroll({ children }) {
     const classes = useStyles();
-    const appService = useAppService();
+    const coreService = useCoreService();
+    const appService = usAppService();
     const rootRef = useRef(null);
 
     useEffect(() => {
@@ -66,7 +66,7 @@ function GlobalScroll({ children }) {
         scrollbar.track.xAxis.element.remove();
 
         scrollbar.addListener(({ offset }) => {
-            appService.eventBus.dispatch('scroll', offset);
+            coreService.localEventBus.call('system/scroll', offset);
         });
 
         console.log('scrollbar', scrollbar);

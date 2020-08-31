@@ -21,6 +21,15 @@ class FSConnector {
         this._fs = fs;
     }
 
+    static async createFS() {
+        const rootFS = await FSConnector.getPath('/');
+        await rootFS.createPath('temp');
+        await rootFS.createPath('bookmarksIcons');
+        const backgroundsFS = await rootFS.createPath('backgrounds');
+        await backgroundsFS.createPath('full');
+        await backgroundsFS.createPath('preview');
+    }
+
     getPath(path) {
         return new Promise((resolve, reject) => {
             this._fs.root.getDirectory(
@@ -143,6 +152,23 @@ class FSConnector {
                     reject(e);
                 });
             }));
+    }
+
+    getFileAsText(name, options) {
+        return FSConnector.getFileAsText(this, name, options);
+    }
+
+    static async getFileAsText(pathOrFSConnector, name, options) {
+        const file = await FSConnector.getFile(pathOrFSConnector, name, options);
+
+        return new Promise(((resolve, reject) => {
+            file.file((readFile) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsText(readFile);
+            });
+        }));
     }
 
     static getBGURL(path, type = 'full') {

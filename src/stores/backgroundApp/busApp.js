@@ -1,8 +1,10 @@
 import EventBus from '@/utils/eventBus';
 import { observable } from 'mobx';
 import { DESTINATION } from '@/enum';
+import appVariables from '@/config/appVariables';
 
 let bus = null;
+const instanceId = Date.now();
 
 class BusApp {
     _eventBus = new EventBus();
@@ -16,21 +18,33 @@ class BusApp {
             return;
         }
 
-        chrome.runtime.onMessage.addListener(({ event, destination, data }) => {
-            if (destination !== this._destination) return;
+        chrome.runtime.onMessage.addListener((props, info, callback) => {
+            const { event, destination: eventDestination, data, initiatorId } = props;
+            if (eventDestination !== this._destination || instanceId === initiatorId) return;
 
-            this._eventBus.dispatch(event, data);
+            this._eventBus.call(event, data, props, callback);
         });
     }
 
-    call(event, destination, data) {
+    call(event, destination, data, callback) {
+        console.log('Call', event, destination, data, callback);
+
+        this._eventBus.call(event, data, {
+            event,
+            destination,
+            data,
+            initiatorId: instanceId,
+        }, callback);
+
         chrome.runtime.sendMessage(
-            null,
+            appVariables.extensionId,
             {
                 destination,
                 event,
                 data,
+                initiatorId: instanceId,
             },
+            callback,
         );
     }
 
@@ -41,21 +55,27 @@ class BusApp {
 
 function initBus(destination) {
     bus = new BusApp(destination);
+
+    return bus;
 }
 
-function eventToApp(event, data) {
-    bus.call(event, DESTINATION.APP, data);
+function eventToApp(event, data, callback) {
+    bus.call(event, DESTINATION.APP, data, callback);
 }
 
-function eventToBackground(event, data) {
-    bus.call(event, DESTINATION.BACKGROUND, data);
+function eventToBackground(event, data, callback) {
+    bus.call(event, DESTINATION.BACKGROUND, data, callback);
 }
 
-function eventToPopup(event, data) {
-    bus.call(event, DESTINATION.POPUP, data);
+function eventToPopup(event, data, callback) {
+    bus.call(event, DESTINATION.POPUP, data, callback);
 }
 
 export default () => bus;
 export {
-    initBus, eventToApp, eventToBackground, eventToPopup,
+    initBus,
+    eventToApp,
+    eventToBackground,
+    eventToPopup,
+    instanceId,
 };

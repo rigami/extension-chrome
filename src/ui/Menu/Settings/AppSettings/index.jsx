@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { useObserver } from 'mobx-react-lite';
 import { THEME } from '@/enum';
-import { useService as useAppConfigService } from '@/stores/app';
+import useAppService from '@/stores/AppStateProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import { content as TabNamePageContent, header as tabNamePageHeader } from './TabName';
 
@@ -21,9 +21,8 @@ const headerProps = { title: 'settings.app.title' };
 function AppSettings({ onSelect }) {
     const classes = useStyles();
     const { t } = useTranslation();
-    const appConfigStore = useAppConfigService();
-    const [, setForceUpdate] = useState(0);
-    const [defaultFontValue] = useState(appConfigStore.useSystemFont);
+    const appService = useAppService();
+    const [defaultFontValue] = useState(appService.settings.useSystemFont);
 
     return useObserver(() => (
         <React.Fragment>
@@ -33,9 +32,9 @@ function AppSettings({ onSelect }) {
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     width: 72,
-                    checked: appConfigStore.backdropTheme === THEME.DARK,
+                    checked: appService.settings.backdropTheme === THEME.DARK,
                     color: 'primary',
-                    onChange: (event, value) => appConfigStore.setBackdropTheme(value ? THEME.DARK : THEME.LIGHT),
+                    onChange: (event, value) => appService.settings.update({ backdropTheme: value ? THEME.DARK : THEME.LIGHT }),
                 }}
             />
             <MenuRow
@@ -44,12 +43,9 @@ function AppSettings({ onSelect }) {
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     width: 72,
-                    checked: appConfigStore.theme === THEME.DARK,
+                    checked: appService.settings.theme === THEME.DARK,
                     color: 'primary',
-                    onChange: (event, value) => {
-                        appConfigStore.setTheme(value ? THEME.DARK : THEME.LIGHT)
-                            .then(() => setForceUpdate((old) => old + 1));
-                    },
+                    onChange: (event, value) => appService.settings.update({ theme: value ? THEME.DARK : THEME.LIGHT }),
                 }}
             />
             <MenuRow
@@ -58,13 +54,13 @@ function AppSettings({ onSelect }) {
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     width: 72,
-                    checked: appConfigStore.useSystemFont,
+                    checked: appService.settings.useSystemFont,
                     color: 'primary',
-                    onChange: (event, value) => appConfigStore.setUsedSystemFont(value),
+                    onChange: (event, value) => appService.settings.update({ useSystemFont: value }),
                 }}
             />
             <MenuInfo
-                show={defaultFontValue !== appConfigStore.useSystemFont}
+                show={defaultFontValue !== appService.settings.useSystemFont}
                 message={t('changeTakeEffectAfterReload')}
                 width={520}
             />
@@ -78,8 +74,8 @@ function AppSettings({ onSelect }) {
                         header: tabNamePageHeader,
                     }),
                     component: (
-                        <Typography className={(!appConfigStore.tabName && classes.defaultTabValue) || ''}>
-                            {appConfigStore.tabName || t('default')}
+                        <Typography className={(!appService.settings.tabName && classes.defaultTabValue) || ''}>
+                            {appService.settings.tabName || t('default')}
                         </Typography>
                     ),
                 }}

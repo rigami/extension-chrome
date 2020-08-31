@@ -15,9 +15,9 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
-import { useService as useAppService } from '@/stores/app';
+import useCoreService from '@/stores/BaseStateProvider';
 import { useLocalStore } from 'mobx-react-lite';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
+import useBookmarksService from '@/stores/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 import Explorer from './Explorer';
 
@@ -58,21 +58,20 @@ const useStyles = makeStyles((theme) => ({
 
 function Folder({ id, name, color, isBlurBackdrop }) {
     const classes = useStyles();
-    const appService = useAppService();
+    const coreService = useCoreService();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
     const [listenId, setListenId] = useState(null);
     const store = useLocalStore(() => ({ popperRef: null }));
-    const appStore = useAppService();
-    const bookmarksStore = useBookmarksService();
+    const bookmarksService = useBookmarksService();
     const { t } = useTranslation();
 
-    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'category' && fav.id === id);
+    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'category' && fav.id === id);
 
     const handlerContextMenu = (event, anchorEl) => {
         event.preventDefault();
-        appStore.eventBus.dispatch('contextMenu', {
+        coreService.localEventBus.call('system/contextMenu', {
             actions: [
                 {
                     type: 'button',
@@ -80,12 +79,12 @@ function Folder({ id, name, color, isBlurBackdrop }) {
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksStore.removeFromFavorites({
+                            bookmarksService.removeFromFavorites({
                                 type: 'category',
                                 id,
                             });
                         } else {
-                            bookmarksStore.addToFavorites({
+                            bookmarksService.addToFavorites({
                                 type: 'category',
                                 id,
                             });
@@ -97,7 +96,7 @@ function Folder({ id, name, color, isBlurBackdrop }) {
                     title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch('editcategory', {
+                        coreService.localEventBus.call('category/edit', {
                             id,
                             anchorEl,
                         });
@@ -108,7 +107,7 @@ function Folder({ id, name, color, isBlurBackdrop }) {
                     title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch('removecategory', { id });
+                        coreService.localEventBus.call('category/remove', { id });
                     },
                 },
             ],
@@ -121,11 +120,11 @@ function Folder({ id, name, color, isBlurBackdrop }) {
 
     useEffect(() => {
         if (isOpen) {
-            setListenId(appService.eventBus.on('scroll', () => {
+            setListenId(coreService.localEventBus.on('system/scroll', () => {
                 store.popperRef.update();
             }));
         } else {
-            appService.eventBus.removeListener(listenId);
+            coreService.localEventBus.removeListener(listenId);
         }
     }, [isOpen]);
 

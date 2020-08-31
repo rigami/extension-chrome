@@ -11,7 +11,7 @@ import i18n from 'i18next';
 export default {
     backgrounds: {
         change_interval: BG_CHANGE_INTERVAL.HOURS_1,
-        bg_type: [
+        type: [
             BG_TYPE.IMAGE,
             BG_TYPE.VIDEO,
             BG_TYPE.ANIMATION,
@@ -22,16 +22,16 @@ export default {
         dimming_power: 25,
     },
     bookmarks: {
-        fapStyle: BKMS_FAP_STYLE.CONTAINED,
-        fapPosition: BKMS_FAP_POSITION.BOTTOM,
-        openOnStartup: false,
+        fap_style: BKMS_FAP_STYLE.CONTAINED,
+        fap_position: BKMS_FAP_POSITION.BOTTOM,
+        open_on_startup: false,
         favorites: [],
-        syncWithSystem: false,
+        sync_with_system: false,
     },
     app: {
-        backdropTheme: THEME.DARK,
+        backdrop_theme: THEME.DARK,
         theme: THEME.LIGHT,
-        useSystemFont: true,
-        tabName: i18n.t('tabName.default'),
+        use_system_font: true,
+        tab_name: i18n.t('tabName.default'),
     },
 };

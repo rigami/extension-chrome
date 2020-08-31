@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import EditorBookmark from '@/ui/Bookmarks/EditBookmarkModal/Editor';
-import { STAGE } from '@/ui/Bookmarks/EditBookmarkModal/Preview';
 import clsx from 'clsx';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 

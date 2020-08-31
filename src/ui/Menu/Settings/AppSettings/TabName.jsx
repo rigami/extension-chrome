@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { useObserver } from 'mobx-react-lite';
 import TabNameExampleImage from '@/images/tabName.svg';
-import { useService as useAppConfigService } from '@/stores/app';
+import useAppService from '@/stores/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     row: {
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 const headerProps = { title: 'settings.app.tabName.title' };
 
 function TabName() {
-    const appConfigStore = useAppConfigService();
+    const appService = useAppService();
     const { t } = useTranslation();
     const classes = useStyles();
 
@@ -56,7 +56,7 @@ function TabName() {
                     }}
                     className={classes.siteName}
                 >
-                    {appConfigStore.tabName}
+                    {appService.settings.tabName}
                 </span>
             </Box>
             <Box className={classes.row}>
@@ -69,8 +69,8 @@ function TabName() {
                     variant="outlined"
                     fullWidth
                     placeholder={t('settings.app.tabName.emptyName')}
-                    defaultValue={appConfigStore.tabName}
-                    onChange={(event) => appConfigStore.setTabName(event.target.value)}
+                    defaultValue={appService.settings.tabName}
+                    onChange={(event) => appService.settings.update({ tabName: event.target.value })}
                 />
             </Box>
         </React.Fragment>

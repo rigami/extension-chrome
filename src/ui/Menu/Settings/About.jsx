@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     Box,
-    Avatar,
     IconButton,
     Divider,
     Typography,
@@ -11,7 +10,6 @@ import {
     ListItemSecondaryAction,
 } from '@material-ui/core';
 import {
-    SettingsRounded as SettingsIcon,
     NavigateNextRounded as ArrowRightIcon,
     HomeRounded as HomeIcon,
     BugReportRounded as BugIcon,

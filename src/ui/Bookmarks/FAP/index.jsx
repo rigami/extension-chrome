@@ -5,7 +5,6 @@ import {
     Card,
     IconButton,
     Fade,
-    Typography,
 } from '@material-ui/core';
 import {
     NavigateBeforeRounded as LeftIcon,
@@ -16,7 +15,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
+import useBookmarksService from '@/stores/BookmarksProvider';
 import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import ScrollContainer from 'react-indiana-drag-scroll';
 import Link from './Link';
@@ -108,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
 function FAP() {
     const classes = useStyles();
     const theme = useTheme();
-    const bookmarksStore = useBookmarksService();
+    const bookmarksService = useBookmarksService();
     const scrollRef = createRef();
     const rootRef = useRef(null);
     const [isLeft, setIsLeft] = useState(false);
@@ -156,18 +155,18 @@ function FAP() {
 
     useEffect(() => {
         Promise.all(
-            bookmarksStore.favorites.map((fav) => {
+            bookmarksService.favorites.map((fav) => {
                 if (fav.type === 'bookmark') {
-                    return bookmarksStore.bookmarks.get(fav.id);
+                    return bookmarksService.bookmarks.get(fav.id);
                 } else {
-                    return bookmarksStore.bookmarks.get(fav.id);
+                    return bookmarksService.categories.get(fav.id);
                 }
             }),
         )
             .then((favorites) => {
                 setFavorites(favorites.map((fav, index) => ({
                     ...fav,
-                    type: bookmarksStore.favorites[index].type,
+                    type: bookmarksService.favorites[index].type,
                 })));
                 setIsLoading(false);
             })
@@ -175,24 +174,24 @@ function FAP() {
                 console.error('Failed load favorites', e);
                 setIsLoading(false);
             });
-    }, [bookmarksStore.favorites.length]);
+    }, [bookmarksService.favorites.length]);
 
     return (
-        <Fade in={bookmarksStore.fapStyle !== BKMS_FAP_STYLE.HIDDEN && !isLoading && favorites.length !== 0} unmountOnExit>
+        <Fade in={bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && !isLoading && favorites.length !== 0} unmountOnExit>
             <div
                 className={clsx(
                     classes.root,
-                    bookmarksStore.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
+                    bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
                 )}
                 ref={rootRef}
-                style={{ height: 40 + theme.spacing(3 + (bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 3)) }}
+                style={{ height: 40 + theme.spacing(3 + (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 3)) }}
             >
                 <Card
                     elevation={12}
                     className={clsx(
                         classes.card,
-                        bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.cardTransparent,
-                        bookmarksStore.fapPosition === BKMS_FAP_POSITION.TOP && classes.absoluteCard,
+                        bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.cardTransparent,
+                        bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP && classes.absoluteCard,
                     )}
                 >
                     <ScrollContainer
@@ -202,7 +201,7 @@ function FAP() {
                         onScroll={scrollHandle}
                         className={clsx(
                             classes.panel,
-                            bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.disablePadding,
+                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.disablePadding,
                         )}
                         ref={scrollRef}
                     >
@@ -221,13 +220,13 @@ function FAP() {
                                 <Link
                                     {...fav}
                                     key={`${fav.type}-${fav.id}`}
-                                    isBlurBackdrop={bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
+                                    isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
                                 />
                             ) : (
                                 <Folder
                                     {...fav}
                                     key={`${fav.type}-${fav.id}`}
-                                    isBlurBackdrop={bookmarksStore.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
+                                    isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
                                 />
                             )
                         ))}

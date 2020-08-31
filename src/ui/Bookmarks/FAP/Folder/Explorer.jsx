@@ -21,12 +21,12 @@ import {
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
+import useCoreService from '@/stores/BaseStateProvider';
+import useBookmarksService from '@/stores/BookmarksProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import Image from '@/ui-components/Image';
 import { useTranslation } from 'react-i18next';
-import { useService as useAppService } from '@/stores/app';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -61,22 +61,14 @@ function Link({
     name, url, imageUrl, id, description, icoVariant,
 }) {
     const classes = useStyles();
-    const appStore = useAppService();
-    const bookmarksStore = useBookmarksService();
+    const coreService = useCoreService();
+    const bookmarksService = useBookmarksService();
     const { t } = useTranslation();
 
-    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
-
-    const handlerContextMenu = (event) => {
-        event.preventDefault();
-        openMenu({
-            top: event.nativeEvent.clientY,
-            left: event.nativeEvent.clientX,
-        });
-    };
+    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
 
     const openMenu = (position) => {
-        appStore.eventBus.dispatch('contextMenu', {
+        coreService.localEventBus.call('system/contextMenu', {
             actions: [
                 {
                     type: 'button',
@@ -84,12 +76,12 @@ function Link({
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksStore.removeFromFavorites({
+                            bookmarksService.removeFromFavorites({
                                 type: 'bookmark',
                                 id,
                             });
                         } else {
-                            bookmarksStore.addToFavorites({
+                            bookmarksService.addToFavorites({
                                 type: 'bookmark',
                                 id,
                             });
@@ -101,7 +93,7 @@ function Link({
                     title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch('editbookmark', { id });
+                        coreService.localEventBus.call('bookmark/edit', { id });
                     },
                 },
                 {
@@ -109,11 +101,19 @@ function Link({
                     title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch('removebookmark', { id });
+                        coreService.localEventBus.call('bookmark/remove', { id });
                     },
                 },
             ],
             position,
+        });
+    };
+
+    const handlerContextMenu = (event) => {
+        event.preventDefault();
+        openMenu({
+            top: event.nativeEvent.clientY,
+            left: event.nativeEvent.clientX,
         });
     };
 
@@ -161,20 +161,20 @@ function Link({
 
 function Folder({ id }) {
     const classes = useStyles();
-    const bookmarksStore = useBookmarksService();
+    const bookmarksService = useBookmarksService();
+    const coreService = useCoreService();
     const { t } = useTranslation();
 
-    const [category] = useState(bookmarksStore.categories.get(id));
+    const [category] = useState(bookmarksService.categories.get(id));
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
     const buttonRef = useRef(null);
-    const appStore = useAppService();
 
-    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'category' && fav.id === id);
+    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'category' && fav.id === id);
 
     const handlerContextMenu = (anchorEl) => {
         const { top, left } = buttonRef.current.getBoundingClientRect();
-        appStore.eventBus.dispatch('contextMenu', {
+        coreService.localEventBus.call('system/contextMenu', {
             actions: [
                 {
                     type: 'button',
@@ -182,12 +182,12 @@ function Folder({ id }) {
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksStore.removeFromFavorites({
+                            bookmarksService.removeFromFavorites({
                                 type: 'category',
                                 id,
                             });
                         } else {
-                            bookmarksStore.addToFavorites({
+                            bookmarksService.addToFavorites({
                                 type: 'category',
                                 id,
                             });
@@ -199,7 +199,7 @@ function Folder({ id }) {
                     title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch('editcategory', {
+                        coreService.localEventBus.call('category/edit', {
                             id,
                             anchorEl,
                         });
@@ -210,7 +210,7 @@ function Folder({ id }) {
                     title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch('removecategory', { id });
+                        coreService.localEventBus.call('category/remove', { id });
                     },
                 },
             ],
@@ -222,7 +222,7 @@ function Folder({ id }) {
     };
 
     useEffect(() => {
-        bookmarksStore.bookmarks.query({ categories: { match: [id] } })
+        bookmarksService.bookmarks.query({ categories: { match: [id] } })
             .then((searchResult) => {
                 setFindBookmarks(searchResult[0]?.bookmarks || []);
                 setIsSearching(false);

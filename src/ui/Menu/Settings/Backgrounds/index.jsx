@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import FSConnector from '@/utils/fsConnector';
-import { useService as useBackgroundsService } from '@/stores/backgrounds';
+import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import { content as LibraryPageContent, header as LibraryPageHeader } from './Library';
 
 const headerProps = { title: 'settings.bg.title' };
@@ -92,12 +92,14 @@ function BackgroundsSection({ onSelect }) {
                 description={t('settings.bg.general.dimmingPower.description')}
                 action={{
                     type: ROWS_TYPE.SLIDER,
-                    value: typeof backgroundsStore.dimmingPower === 'number' ? backgroundsStore.dimmingPower : 0,
+                    value: typeof backgroundsStore.settings.dimmingPower === 'number'
+                        ? backgroundsStore.settings.dimmingPower
+                        : 0,
                     onChange: (event, value) => {
-                        backgroundsStore.setDimmingPower(value, false);
+                        backgroundsStore.settings.update({ dimmingPower: value });
                     },
                     onChangeCommitted: (event, value) => {
-                        backgroundsStore.setDimmingPower(value, true);
+                        backgroundsStore.settings.update({ dimmingPower: value });
                     },
                     min: 0,
                     max: 90,
@@ -123,12 +125,12 @@ function SchedulerSection({ onSelect }) {
                 action={{
                     type: ROWS_TYPE.SELECT,
                     format: (value) => t(`settings.bg.scheduler.selectionMethod.method.${value}`),
-                    value: backgroundsStore.selectionMethod,
-                    onChange: (event) => backgroundsStore.setSelectionMethod(event.target.value),
+                    value: backgroundsStore.settings.selectionMethod,
+                    onChange: (event) => backgroundsStore.settings.update({ selectionMethod: event.target.value }),
                     values: [BG_SELECT_MODE.RANDOM, BG_SELECT_MODE.SPECIFIC],
                 }}
             />
-            <Collapse in={backgroundsStore.selectionMethod === BG_SELECT_MODE.SPECIFIC}>
+            <Collapse in={backgroundsStore.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC}>
                 <MenuRow
                     title={t('bg.title')}
                     description={t('bg.change')}
@@ -157,15 +159,15 @@ function SchedulerSection({ onSelect }) {
                     }}
                 />
             </Collapse>
-            <Collapse in={backgroundsStore.selectionMethod === BG_SELECT_MODE.RANDOM}>
+            <Collapse in={backgroundsStore.settings.selectionMethod === BG_SELECT_MODE.RANDOM}>
                 <MenuRow
                     title={t('settings.bg.scheduler.changeInterval.title')}
                     description={t('settings.bg.scheduler.changeInterval.description')}
                     action={{
                         type: ROWS_TYPE.SELECT,
                         format: (value) => t(`settings.bg.scheduler.changeInterval.interval.${value}`),
-                        value: backgroundsStore.changeInterval,
-                        onChange: (event) => backgroundsStore.setChangeInterval(event.target.value),
+                        value: backgroundsStore.settings.changeInterval,
+                        onChange: (event) => backgroundsStore.settings.update({ changeInterval: event.target.value }),
                         values: [
                             BG_CHANGE_INTERVAL.OPEN_TAB,
                             BG_CHANGE_INTERVAL.MINUTES_30,
@@ -182,8 +184,8 @@ function SchedulerSection({ onSelect }) {
                     action={{
                         type: ROWS_TYPE.MULTISELECT,
                         format: (value) => t(`settings.bg.scheduler.BGType.type.${value}`),
-                        value: backgroundsStore.bgType || [],
-                        onChange: (event) => backgroundsStore.setBgType(event.target.value),
+                        value: backgroundsStore.settings.type || [],
+                        onChange: (event) => backgroundsStore.settings.update({ type: event.target.value }),
                         values: [
                             BG_TYPE.IMAGE,
                             BG_TYPE.ANIMATION,

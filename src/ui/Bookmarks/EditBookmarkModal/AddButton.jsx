@@ -6,8 +6,8 @@ import {
 import { AddRounded as AddIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { useService as useAppService } from '@/stores/app';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
+import useAppService from '@/stores/AppStateProvider';
+import useCoreService from '@/stores/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,7 +23,7 @@ function AddBookmarkButton() {
     const theme = useTheme();
     const classes = useStyles();
     const { t } = useTranslation();
-    const bookmarksStore = useBookmarksService();
+    const coreService = useCoreService();
     const appService = useAppService();
 
     const transitionDuration = {
@@ -32,7 +32,7 @@ function AddBookmarkButton() {
     };
 
     const handleOpen = () => {
-        bookmarksStore.eventBus.dispatch('createbookmark');
+        coreService.localEventBus.call('bookmark/create');
     };
 
     return (

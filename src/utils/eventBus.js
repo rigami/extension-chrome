@@ -3,11 +3,11 @@ class EventBus {
     byEvents = {};
     nextListenerId = 0;
 
-    dispatch(event, props) {
+    call(event, ...props) {
         if (!(event in this.byEvents)) return;
 
         this.byEvents[event].forEach((listenerId) => {
-            this.listeners[listenerId]?.callback(props);
+            this.listeners[listenerId]?.callback(...props);
         });
     }
 
@@ -16,7 +16,7 @@ class EventBus {
         if (typeof callback !== 'function') throw new Error('callback should be indicated and must be a function');
 
         const currentListenerId = `$-${event}-${this.nextListenerId}`;
-        this.nextListenerId++;
+        this.nextListenerId += 1;
 
         this.listeners[currentListenerId] = {
             event,

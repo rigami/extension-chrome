@@ -1,10 +1,12 @@
 import React from 'react';
 import { Drawer } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import Editor from './Editor';
 
 function EditBookmarkModal({ isOpen, onClose, ...other }) {
     const { enqueueSnackbar } = useSnackbar();
+    const { t } = useTranslation();
 
     return (
         <Drawer

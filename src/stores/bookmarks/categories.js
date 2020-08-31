@@ -1,18 +1,13 @@
 import { action, observable, computed } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
-import EventBus from '@/utils/eventBus';
 import getUniqueColor from '@/utils/uniqueColor';
-import BusApp from '@/stores/backgroundApp/busApp';
 import { DESTINATION } from '@/enum';
 
 class CategoriesStore {
     @observable _categories = [];
-    eventBus;
-    bus;
 
-    constructor() {
-        this.eventBus = new EventBus();
-        this.bus = BusApp();
+    constructor(coreService) {
+        this._coreService = coreService;
     }
 
     @action('sync categories with db')
@@ -62,7 +57,7 @@ class CategoriesStore {
             });
         }
 
-        this.bus.call('category/new', DESTINATION.APP, { categoryId: newCategoryId });
+        this._coreService.globalEventBus.call('category/new', DESTINATION.APP, { categoryId: newCategoryId });
 
         return newCategoryId;
     }
@@ -79,7 +74,7 @@ class CategoriesStore {
 
         await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
 
-        this.bus.call('category/remove', DESTINATION.APP, { categoryId });
+        this._coreService.globalEventBus.call('category/remove', DESTINATION.APP, { categoryId });
     }
 }
 

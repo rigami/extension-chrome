@@ -12,7 +12,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { BG_SELECT_MODE, BG_TYPE } from '@/enum';
-import { useService as useBackgroundsService } from '@/stores/backgrounds';
+import useBackgroundsService from '@/stores/BackgroundsStateProvider';
+import useCoreService from '@/stores/BaseStateProvider';
 import Header from '@/ui/Menu/PageHeader';
 import { useTranslation } from 'react-i18next';
 import HomePage, { header as homePageHeader } from './Settings';
@@ -33,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Menu({ }) {
-    const backgroundsStore = useBackgroundsService();
+    const backgroundsService = useBackgroundsService();
+    const coreService = useCoreService();
     const { t } = useTranslation();
 
     const classes = useStyles();
@@ -65,8 +67,8 @@ function Menu({ }) {
     };
 
     useEffect(() => {
-        if (backgroundsStore.currentBGId && backgroundsStore.getCurrentBG().type === BG_TYPE.VIDEO) {
-            if (backgroundsStore.bgState === 'play') {
+        if (backgroundsService.currentBGId && backgroundsService.getCurrentBG().type === BG_TYPE.VIDEO) {
+            if (backgroundsService.bgState === 'play') {
                 setFastSettings([
                     {
                         tooltip: (
@@ -76,7 +78,7 @@ function Menu({ }) {
                                 {t('bg.pauseVideoDescription')}
                             </React.Fragment>
                         ),
-                        onClick: () => backgroundsStore.eventBus.dispatch('pausebg'),
+                        onClick: () => coreService.localEventBus.call('background/pause'),
                         icon: <PauseIcon />,
                     },
                 ]);
@@ -84,7 +86,7 @@ function Menu({ }) {
                 setFastSettings([
                     {
                         tooltip: t('bg.playVideo'),
-                        onClick: () => backgroundsStore.eventBus.dispatch('playbg'),
+                        onClick: () => coreService.localEventBus.call('background/play'),
                         icon: <PlayIcon />,
                     },
                 ]);
@@ -92,7 +94,7 @@ function Menu({ }) {
         } else {
             setFastSettings([]);
         }
-    }, [backgroundsStore.currentBGId, backgroundsStore.bgState]);
+    }, [backgroundsService.currentBGId, backgroundsService.bgState]);
 
     const Page = stack[stack.length - 1].content;
     const headerProps = stack[stack.length - 1] && stack[stack.length - 1].header;
@@ -102,10 +104,10 @@ function Menu({ }) {
             <FabMenu
                 onOpenMenu={() => setIsOpen(true)}
                 onRefreshBackground={() => {
-                    backgroundsStore.nextBG();
+                    backgroundsService.nextBG();
                 }}
                 fastSettings={fastSettings}
-                useChangeBG={backgroundsStore.selectionMethod === BG_SELECT_MODE.RANDOM}
+                useChangeBG={backgroundsService.settings.selectionMethod === BG_SELECT_MODE.RANDOM}
             />
             <Drawer
                 anchor="right"

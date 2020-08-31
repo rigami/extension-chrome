@@ -5,26 +5,31 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLocalStore } from 'mobx-react-lite';
-import { useService as useAppService } from '@/stores/app';
+import useCoreService from '@/stores/BaseStateProvider';
 import Editor from './Editor';
 
 const useStyles = makeStyles((theme) => ({ popper: { zIndex: theme.zIndex.modal } }));
 
-function EditCategoryModal({
-    anchorEl, isOpen, onSave, onClose, ...other
-}) {
+function EditCategoryModal(props) {
+    const {
+        anchorEl,
+        isOpen,
+        onSave,
+        onClose,
+        ...other
+    } = props;
     const classes = useStyles();
-    const appService = useAppService();
+    const coreService = useCoreService();
     const [listenId, setListenId] = useState(null);
     const store = useLocalStore(() => ({ popperRef: null }));
 
     useEffect(() => {
         if (isOpen) {
-            setListenId(appService.eventBus.on('scroll', () => {
+            setListenId(coreService.localEventBus.on('system/scroll', () => {
                 store.popperRef.update();
             }));
         } else {
-            appService.eventBus.removeListener(listenId);
+            coreService.localEventBus.removeListener(listenId);
         }
     }, [isOpen]);
 

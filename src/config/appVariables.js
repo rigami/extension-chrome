@@ -1,6 +1,7 @@
 import { BG_TYPE } from '@/enum';
 
 export default {
+    extensionId: 'kiifdbgcimcikhiiapbhadcdcijdbhck',
     db: {
         name: 'clock_tab',
         version: 1,
@@ -8,11 +9,11 @@ export default {
     fs: { root: chrome.runtime.id && `chrome-extension://${chrome.runtime.id}/persistent/` },
     maxUploadFiles: 15,
     defaultBG: {
-        src: 'https://images.unsplash.com/photo-1455463640095-c56c5f258548?ixlib=rb-1.2.1&auto=format&fit=crop&w=1349&q=80',
-        author: 'Tim Gouw',
+        src: 'http://localhost:8080/jeremy-bishop-hVkDaLkoiec-unsplash.jpg',
+        author: 'Jeremy Bishop',
         type: BG_TYPE.IMAGE,
         description: 'Unsplash photo',
-        sourceLink: 'https://unsplash.com/photos/S4QAzzXPaRs',
+        sourceLink: 'https://unsplash.com/photos/hVkDaLkoiec',
     },
     rest: { url: 'http://localhost:8080' },
 };

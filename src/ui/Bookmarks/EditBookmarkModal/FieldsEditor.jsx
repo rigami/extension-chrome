@@ -103,8 +103,8 @@ function FieldsEditor(props) {
                         store.searchRequest = value;
                         onChangeFields({ searchRequest: value });
                     }}
-                    onSelect={({ title, url }) => {
-                        store.searchRequest = url;
+                    onSelect={({ title, url: requestUrl }) => {
+                        store.searchRequest = requestUrl;
                         store.name = title;
                         onChangeFields({
                             url,

@@ -1,5 +1,6 @@
 import { observable, action } from 'mobx';
 import { assign, pick } from 'lodash';
+import FSConnector from '@/utils/fsConnector';
 
 class Bookmark {
     id;
@@ -8,6 +9,7 @@ class Bookmark {
     description;
     icoVariant;
     imageUrl;
+    icoFileName;
     @observable categories;
     @observable clickCounts = 0;
 
@@ -17,8 +19,9 @@ class Bookmark {
         this.name = bookmark.name;
         this.description = bookmark.description;
         this.icoVariant = bookmark.icoVariant;
-        this.imageUrl = bookmark.imageUrl;
+        this.imageUrl = bookmark.imageUrl || FSConnector.getIconURL(bookmark.icoFileName);
         this.categories = bookmark.categories;
+        this.icoFileName = bookmark.icoFileName;
 
         this.update(bookmark);
     }

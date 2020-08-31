@@ -14,11 +14,10 @@ import clsx from 'clsx';
 import { Fade, Box } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useSnackbar } from 'notistack';
-import { useService as useBackgroundsService } from '@/stores/backgrounds';
-import { useService as useAppConfigService } from '@/stores/app';
+import useBackgroundsService from '@/stores/BackgroundsStateProvider';
+import useCoreService from '@/stores/BaseStateProvider';
 import Menu from '@/ui/Menu';
 import { useTranslation } from 'react-i18next';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -58,8 +57,7 @@ function Desktop() {
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
     const backgroundsStore = useBackgroundsService();
-    const appConfigStore = useAppConfigService();
-    const bookmarksStore = useBookmarksService();
+    const coreService = useCoreService();
     const { t } = useTranslation();
     const store = useLocalStore(() => ({
         currentBg: null,
@@ -82,7 +80,7 @@ function Desktop() {
     };
 
     const openMenu = (position) => {
-        appConfigStore.eventBus.dispatch('contextMenu', {
+        coreService.localEventBus.call('system/contextMenu', {
             actions: [
                 {
                     type: 'button',
@@ -123,7 +121,7 @@ function Desktop() {
                     title: t('bookmark.addShort'),
                     icon: AddBookmarkIcon,
                     onClick: () => {
-                        bookmarksStore.eventBus.dispatch('createbookmark');
+                        coreService.localEventBus.call('bookmark/create');
                     },
                 },
             ],
@@ -133,7 +131,7 @@ function Desktop() {
 
     useEffect(() => {
         const listeners = [
-            backgroundsStore.eventBus.on('pausebg', () => {
+            coreService.localEventBus.on('background/pause', () => {
                 bgRef.current.onpause = async () => {
                     const pauseTimestamp = bgRef.current.currentTime;
                     const captureBGId = store.currentBg.id;
@@ -159,8 +157,8 @@ function Desktop() {
 
                 bgRef.current.play().then(() => bgRef.current.pause());
             }),
-            backgroundsStore.eventBus.on('playbg', async () => {
-                console.log('playbg');
+            coreService.localEventBus.on('background/play', async () => {
+                console.log('background/play');
                 if (typeof store.captureFrameTimer === 'number') clearTimeout(+store.captureFrameTimer);
                 store.captureFrameTimer = null;
 
@@ -187,7 +185,7 @@ function Desktop() {
         ];
 
         return () => {
-            listeners.forEach((listenerId) => backgroundsStore.eventBus.removeListener(listenerId));
+            listeners.forEach((listenerId) => coreService.localEventBus.removeListener(listenerId));
         };
     }, []);
 
@@ -230,7 +228,7 @@ function Desktop() {
             <Fade
                 in={store.state === 'done' || store.state === 'failed'}
                 onExit={() => {
-                    if (appConfigStore.backdropTheme === THEME.DARK) {
+                    if (coreService.backdropTheme === THEME.DARK) {
                         document.documentElement.style.backgroundColor = '#000';
                     } else {
                         document.documentElement.style.backgroundColor = '#fff';
@@ -246,7 +244,7 @@ function Desktop() {
                     {store.state !== 'failed' && (
                         <div
                             className={classes.dimmingSurface}
-                            style={{ opacity: backgroundsStore.dimmingPower / 100 || 0 }}
+                            style={{ opacity: backgroundsStore.settings.dimmingPower / 100 || 0 }}
                         />
                     )}
                     {store.state === 'failed' && (
@@ -262,7 +260,7 @@ function Desktop() {
                                 {
                                     title: t('bg.remove'),
                                     onClick: () => {
-                                        backgroundsStore.removeFromStore(bg.id)
+                                        backgroundsStore.removeFromStore(ctore.currentBg.id)
                                             .then(() => backgroundsStore.nextBG())
                                             .then(() => enqueueSnackbar({
                                                 message: t('bg.brokenRemovedSuccess'),
@@ -332,7 +330,7 @@ function Desktop() {
                                     console.log(store.currentBg);
                                     if (typeof store.currentBg.pause === 'number') {
                                         bgRef.current.currentTime = store.currentBg.pause;
-                                        backgroundsStore.eventBus.dispatch('pausebg');
+                                        coreService.localEventBus.call('background/pause');
                                     }
                                 }}
                                 onError={() => { store.state = 'failed'; }}

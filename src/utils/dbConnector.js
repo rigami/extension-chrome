@@ -40,6 +40,13 @@ const open = () => openDB(appVariables.db.name, appVariables.db.version, {
         categoriesStore.createIndex('color', 'color', { unique: true });
         categoriesStore.createIndex('source', 'source', { unique: false });
         categoriesStore.createIndex('source_id', 'sourceId', { unique: false });
+
+        const favoritesStore = db.createObjectStore('favorites', {
+            keyPath: 'id',
+            autoIncrement: true,
+        });
+        favoritesStore.createIndex('favorite_id', 'favoriteId', { unique: false });
+        favoritesStore.createIndex('type', 'type', { unique: false });
     },
     blocked() {},
     blocking() {},

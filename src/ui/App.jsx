@@ -5,16 +5,17 @@ import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
 import Snackbar from '@/ui-components/Snackbar';
 import UploadBGForm from '@/ui-components/UploadBGForm';
-import ConfigurationApp from '@/ui/ConfigurationApp';
-import { THEME } from '@/enum';
+import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
-import { Provider as BackgroundsProvider } from '@/stores/backgrounds';
-import { Provider as AppConfigProvider } from '@/stores/app';
-import { Provider as BookmarksProvider } from '@/stores/bookmarks';
+import { Provider as BaseStateProvider } from '@/stores/BaseStateProvider';
+import { Provider as AppStateProvider } from '@/stores/AppStateProvider';
+import { Provider as BookmarksProvider } from '@/stores/BookmarksProvider';
+import { Provider as BackgroundsProvider } from '@/stores/BackgroundsStateProvider';
 import FakeScroll from '@/ui/FakeScroll';
 import FAPStub from '@/ui/Bookmarks/FAP/Stub';
+import InitAppProvider from '@/stores/InitApp';
 import FAP from './Bookmarks/FAP';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
@@ -22,31 +23,33 @@ import GlobalScroll from './GlobalScroll';
 import GlobalModals from './GlobalModals';
 
 function App() {
-    const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
+    const [theme, setTheme] = useState(localStorage.getItem('theme') === THEME.LIGHT ? lightTheme : darkTheme);
 
     return (
-        <ThemeProvider theme={theme === THEME.DARK ? darkTheme : lightTheme}>
+        <ThemeProvider theme={theme}>
             <CssBaseline />
             <Nest components={[
-                ConfigurationApp,
+                ({ children }) => (<BaseStateProvider side={DESTINATION.APP}>{children}</BaseStateProvider>),
+                InitAppProvider,
                 ({ children }) => (
-                    <AppConfigProvider onTheme={() => setTheme(localStorage.getItem('app_theme'))}>
+                    <AppStateProvider
+                        onChangeTheme={(newTheme) => setTheme(newTheme === THEME.LIGHT ? lightTheme : darkTheme)}
+                    >
                         {children}
-                    </AppConfigProvider>
+                    </AppStateProvider>
                 ),
-                BackgroundsProvider,
                 BookmarksProvider,
+                BackgroundsProvider,
                 ({ children }) => (
                     <SnackbarProvider
                         maxSnack={4}
-                        content={(key, options) => (
-                            <Snackbar id={key} {...options} />
-                        )}
+                        content={(key, options) => (<Snackbar id={key} {...options} />)}
                     >
                         {children}
                     </SnackbarProvider>
                 ),
                 UploadBGForm,
+                GlobalModals,
             ]}
             >
                 <GlobalScroll>
@@ -57,7 +60,6 @@ function App() {
                 <FakeScroll>
                     <FAP />
                 </FakeScroll>
-                <GlobalModals />
             </Nest>
         </ThemeProvider>
     );

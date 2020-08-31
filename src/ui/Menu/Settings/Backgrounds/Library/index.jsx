@@ -5,7 +5,6 @@ import {
     Avatar,
     Button,
     IconButton,
-    Divider,
     Tooltip,
     CircularProgress,
     Typography,
@@ -23,7 +22,7 @@ import SectionHeader from '@/ui/Menu/SectionHeader';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import FullscreenStub from '@/ui-components/FullscreenStub';
-import { useService as useBackgroundsService } from '@/stores/backgrounds';
+import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 
 const useStyles = makeStyles((theme) => ({
@@ -167,7 +166,7 @@ function BGCard({ fileName, onSet, onRemove }) {
 const MemoBGCard = memo(BGCard);
 
 function LibraryMenu() {
-    const backgroundsStore = useBackgroundsService();
+    const backgroundsService = useBackgroundsService();
     const { t } = useTranslation();
     const classes = useStyles();
 
@@ -175,7 +174,7 @@ function LibraryMenu() {
     const [state, setState] = useState('pending');
 
     useEffect(() => {
-        backgroundsStore.getAll()
+        backgroundsService.getAll()
             .then((values) => {
                 setBgs(values);
                 setState('done');
@@ -184,7 +183,7 @@ function LibraryMenu() {
                 setState('failed');
                 console.error('Failed load bg`s from db:', e);
             });
-    }, [backgroundsStore.count]);
+    }, [backgroundsService.count]);
 
     return (
         <React.Fragment>
@@ -204,8 +203,8 @@ function LibraryMenu() {
                                     <MemoBGCard
                                         {...bg}
                                         key={bg.id}
-                                        onSet={() => backgroundsStore.setCurrentBG(bg.id)}
-                                        onRemove={() => backgroundsStore.removeFromStore(bg.id)}
+                                        onSet={() => backgroundsService.setCurrentBG(bg.id)}
+                                        onRemove={() => backgroundsService.removeFromStore(bg.id)}
                                     />
                                 ))}
                             </Box>

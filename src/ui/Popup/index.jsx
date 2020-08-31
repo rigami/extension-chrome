@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
-import { CssBaseline, Box } from '@material-ui/core';
+import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
-import ConfigurationApp from '@/ui/ConfigurationApp';
-import { THEME } from '@/enum';
+import InitAppProvider from '@/stores/InitApp';
+import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
-import { Provider as AppConfigProvider } from '@/stores/app';
-import { Provider as BookmarksProvider } from '@/stores/bookmarks';
+import { Provider as BaseStateProvider } from '@/stores/BaseStateProvider';
+import { Provider as BookmarksProvider } from '@/stores/BookmarksProvider';
+import { Provider as AppStateProvider } from '@/stores/AppStateProvider';
 import PopupContent from './PopupEditor';
 
 function Popup() {
-    const [theme, setTheme] = useState(localStorage.getItem('app_theme'));
     const [tabName, setTabName] = useState();
     const [tabUrl, setTabUrl] = useState();
     const [isLoading, setIsLoading] = useState(true);
+    const [theme] = useState(localStorage.getItem('theme') === THEME.LIGHT ? lightTheme : darkTheme);
 
     useEffect(() => {
         if (!chrome?.tabs) {
@@ -38,21 +39,17 @@ function Popup() {
     }, []);
 
     return (
-        <ThemeProvider theme={theme === THEME.DARK ? darkTheme : lightTheme}>
+        <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Nest components={[
-                ConfigurationApp,
-                ({ children }) => (
-                    <AppConfigProvider onTheme={() => setTheme(localStorage.getItem('app_theme'))}>
-                        {children}
-                    </AppConfigProvider>
-                ),
-                BookmarksProvider,
-            ]}
+            <Nest
+                components={[
+                    ({ children }) => (<BaseStateProvider side={DESTINATION.POPUP}>{children}</BaseStateProvider>),
+                    InitAppProvider,
+                    AppStateProvider,
+                    BookmarksProvider,
+                ]}
             >
-                {!isLoading && (
-                    <PopupContent tabName={tabName} tabUrl={tabUrl} />
-                )}
+                {!isLoading && (<PopupContent tabName={tabName} tabUrl={tabUrl} />)}
             </Nest>
         </ThemeProvider>
     );

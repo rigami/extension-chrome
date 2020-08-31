@@ -11,7 +11,7 @@ import ReactResizeDetector from 'react-resize-detector';
 import Scrollbar from '@/ui-components/CustomScroll';
 import PreviewSelector from './Selector';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     popoverContent: {
         height: '100%',
         maxHeight: '100%',
@@ -22,9 +22,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function SelectorWrapper({
-    isOpen, onClose, minHeight, marginThreshold = 24, ...other
-}) {
+function SelectorWrapper(props) {
+    const {
+        isOpen,
+        onClose,
+        minHeight,
+        marginThreshold = 24,
+        ...other
+    } = props;
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
 

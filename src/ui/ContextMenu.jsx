@@ -11,9 +11,7 @@ import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles(() => ({ menu: { width: 230 } }));
 
-function ContextMenu({
-    className: externalClassName, isOpen, onClose, position, actions = [],
-}) {
+function ContextMenu({ isOpen, onClose, position, actions = [] }) {
     const classes = useStyles();
 
     return (

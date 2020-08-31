@@ -7,9 +7,9 @@ import {
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
 import ReactResizeDetector from 'react-resize-detector';
-import { useService as useAppService } from '@/stores/app';
+import useBookmarksService from '@/stores/BookmarksProvider';
+import useAppService from '@/stores/AppStateProvider';
 import Categories from '@/ui/Bookmarks/Categories';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import Category from './Categories/CtegoryWrapper';
@@ -35,21 +35,21 @@ const maxColumnCalc = () => Math.min(
 function Bookmarks() {
     const classes = useStyles();
     const theme = useTheme();
-    const bookmarksStore = useBookmarksService();
+    const bookmarksService = useBookmarksService();
     const appService = useAppService();
     const isFirstRun = useRef(true);
     const [columnsCount, setColumnsCount] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
     const [findBookmarks, setFindBookmarks] = useState(null);
     const [searchCategories, setSearchCategories] = useState(null);
-    const [lastTruthSearchTimestamp, setLastTruthSearchTimestamp] = useState(bookmarksStore.lastTruthSearchTimestamp);
+    const [lastTruthSearchTimestamp, setLastTruthSearchTimestamp] = useState(bookmarksService.lastTruthSearchTimestamp);
 
     let columnStabilizer = null;
 
     const handleSearch = (query = {}) => {
-        bookmarksStore.bookmarks.query({ ...query }, false)
+        bookmarksService.bookmarks.query({ ...query }, false)
             .then((searchResult) => {
-                setLastTruthSearchTimestamp(bookmarksStore.lastTruthSearchTimestamp);
+                setLastTruthSearchTimestamp(bookmarksService.lastTruthSearchTimestamp);
                 setFindBookmarks(searchResult);
                 setIsSearching(false);
                 setSearchCategories(null);
@@ -64,10 +64,10 @@ function Bookmarks() {
         if (appService.activity === 'bookmarks') {
             if (!findBookmarks) {
                 setIsSearching(true);
-                handleSearch(bookmarksStore.lastSearch);
+                handleSearch(bookmarksService.lastSearch);
             }
 
-            setSearchCategories(bookmarksStore.lastSearch?.categories?.match || []);
+            setSearchCategories(bookmarksService.lastSearch?.categories?.match || []);
         }
     }, [appService.activity]);
 
@@ -77,11 +77,11 @@ function Bookmarks() {
             return;
         }
 
-        if (bookmarksStore.lastTruthSearchTimestamp !== lastTruthSearchTimestamp && !isSearching) {
+        if (bookmarksService.lastTruthSearchTimestamp !== lastTruthSearchTimestamp && !isSearching) {
             setIsSearching(true);
-            handleSearch(bookmarksStore.lastSearch);
+            handleSearch(bookmarksService.lastSearch);
         }
-    }, [bookmarksStore.lastTruthSearchTimestamp]);
+    }, [bookmarksService.lastTruthSearchTimestamp]);
 
     return (
         <React.Fragment>

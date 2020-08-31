@@ -26,7 +26,7 @@ import {
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { useService as useBackgroundsService } from '@/stores/backgrounds';
+import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
 import BeautifulFileSize from '@/utils/beautifulFileSize';
 
@@ -133,7 +133,7 @@ function BGCard(props) {
             <div className={classes.details}>
                 <CardContent className={classes.content}>
                     <Typography component="h5" variant="h5">
-                        {type.map((type) => t(`bg.type.${type}`)).join('/')}
+                        {type.map((fileType) => t(`bg.type.${fileType}`)).join('/')}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
                         {t('uploadBG.labelFile')}
@@ -203,7 +203,7 @@ function BGCard(props) {
 const MemoBGCard = memo(BGCard);
 
 function UploadBGForm({ children }) {
-    const backgroundsStore = useBackgroundsService();
+    const backgroundsService = useBackgroundsService();
     const { enqueueSnackbar } = useSnackbar();
     const { t } = useTranslation();
 
@@ -240,7 +240,7 @@ function UploadBGForm({ children }) {
         dragRef.current.ondrop = (event) => {
             event.preventDefault();
             setDragFiles(null);
-            backgroundsStore.addToUploadQueue(event.dataTransfer.files)
+            backgroundsService.addToUploadQueue(event.dataTransfer.files)
                 .catch((e) => enqueueSnackbar({
                     ...t(e),
                     variant: 'error',
@@ -252,8 +252,8 @@ function UploadBGForm({ children }) {
         if (store.uploadQueueSize === 0) {
             store.requireScrollToBottom = true;
         }
-        store.uploadQueueSize = backgroundsStore.uploadQueue.length;
-    }, [backgroundsStore.uploadQueue.length]);
+        store.uploadQueueSize = backgroundsService.uploadQueue.length;
+    }, [backgroundsService.uploadQueue.length]);
 
     return useObserver(() => (
         <React.Fragment>
@@ -273,7 +273,7 @@ function UploadBGForm({ children }) {
             )}
             <Drawer
                 anchor="bottom"
-                open={backgroundsStore.uploadQueue.length !== 0}
+                open={backgroundsService.uploadQueue.length !== 0}
                 PaperProps={{
                     elevation: 0,
                     style: {
@@ -285,7 +285,6 @@ function UploadBGForm({ children }) {
             >
                 <Scrollbar
                     refScroll={(ref) => {
-                        // console.log("ref", ref)
                         if (ref && store.requireScrollToBottom) {
                             store.requireScrollToBottom = false;
                             ref.scrollToBottom();
@@ -303,27 +302,23 @@ function UploadBGForm({ children }) {
                             justifyContent: 'flex-end',
                         }}
                     >
-                        {backgroundsStore.uploadQueue.map((row, index) => (
+                        {backgroundsService.uploadQueue.map((row, index) => (
                             <MemoBGCard
                                 key={row.id}
                                 {...row}
                                 style={{ marginTop: index === 0 ? 0 : theme.spacing(3) }}
-                                onRemove={() => {
-                                    backgroundsStore.removeFromUploadQueue(row.id);
-                                }}
-                                onDone={(options) => {
-                                    backgroundsStore.saveFromUploadQueue(row.id, options);
-                                }}
+                                onRemove={() => backgroundsService.removeFromUploadQueue(row.id)}
+                                onDone={(options) => backgroundsService.saveFromUploadQueue(row.id, options)}
                             />
                         ))}
                     </Container>
                 </Scrollbar>
             </Drawer>
-            {(backgroundsStore.uploadQueue.length !== 0) && (
+            {(backgroundsService.uploadQueue.length !== 0) && (
                 <Tooltip title={t('uploadBG.discardAll')}>
                     <IconButton
                         className={classes.closeIcon}
-                        onClick={() => backgroundsStore.resetUploadQueue()}
+                        onClick={() => backgroundsService.resetUploadQueue()}
                     >
                         <CloseIcon />
                     </IconButton>

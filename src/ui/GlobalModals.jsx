@@ -8,50 +8,48 @@ import {
     DialogActions,
     Button,
 } from '@material-ui/core';
-import { useService as useBookmarksService } from '@/stores/bookmarks';
-import { useService as useAppService } from '@/stores/app';
+import useBookmarksService from '@/stores/BookmarksProvider';
+import useCoreService from '@/stores/BaseStateProvider';
 import EditCategoryModal from '@/ui/Bookmarks/Categories/EditModal';
 import { useTranslation } from 'react-i18next';
 import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
 import ContextMenu from '@/ui/ContextMenu';
 
-function GlobalModals() {
+function GlobalModals({ children }) {
     const { t } = useTranslation();
     const bookmarksStore = useBookmarksService();
-    const appStore = useAppService();
+    const coreService = useCoreService();
     const [edit, setEdit] = useState(null);
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
     const [contextMenuActions, setContextMenuActions] = useState([]);
 
     useEffect(() => {
-        const listenersAppStore = [
-            appStore.eventBus.on('contextMenu', ({ actions, position }) => {
+        const listeners = [
+            coreService.localEventBus.on('system/contextMenu', ({ actions, position }) => {
                 setContextMenuPosition(position);
                 setContextMenuActions(actions);
             }),
-        ];
-        const listenersBookmarksStore = [
-            bookmarksStore.eventBus.on('createbookmark', () => setEdit({
+            coreService.localEventBus.on('bookmark/create', () => setEdit({
                 type: 'bookmark',
                 action: 'create',
             })),
-            bookmarksStore.eventBus.on('editbookmark', ({ id }) => setEdit({
+            coreService.localEventBus.on('bookmark/edit', ({ id }) => setEdit({
                 type: 'bookmark',
                 action: 'edit',
                 id,
             })),
-            bookmarksStore.eventBus.on('removebookmark', ({ id }) => setEdit({
+            coreService.localEventBus.on('bookmark/remove', ({ id }) => setEdit({
                 type: 'bookmark',
                 action: 'remove',
                 id,
             })),
-            bookmarksStore.eventBus.on('editcategory', ({ id, anchorEl }) => setEdit({
+            coreService.localEventBus.on('category/edit', ({ id, anchorEl }) => setEdit({
                 type: 'category',
                 action: 'edit',
                 id,
                 anchorEl,
             })),
-            bookmarksStore.eventBus.on('removecategory', ({ id }) => setEdit({
+            coreService.localEventBus.on('category/remove', ({ id }) => setEdit({
                 type: 'category',
                 action: 'remove',
                 id,
@@ -59,13 +57,13 @@ function GlobalModals() {
         ];
 
         return () => {
-            listenersAppStore.forEach((listenerId) => appStore.eventBus.removeListener(listenerId));
-            listenersBookmarksStore.forEach((listenerId) => bookmarksStore.eventBus.removeListener(listenerId));
+            listeners.forEach((listenerId) => coreService.localEventBus.removeListener(listenerId));
         };
     }, []);
 
     return (
         <React.Fragment>
+            {children}
             <ContextMenu
                 isOpen={contextMenuPosition !== null}
                 position={contextMenuPosition}
