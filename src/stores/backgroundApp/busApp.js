@@ -29,12 +29,14 @@ class BusApp {
     call(event, destination, data, callback) {
         console.log('Call', event, destination, data, callback);
 
-        this._eventBus.call(event, data, {
-            event,
-            destination,
-            data,
-            initiatorId: instanceId,
-        }, callback);
+        if (this._destination !== DESTINATION.BACKGROUND) {
+            this._eventBus.call(event, data, {
+                event,
+                destination,
+                data,
+                initiatorId: instanceId,
+            }, callback);
+        }
 
         chrome.runtime.sendMessage(
             appVariables.extensionId,
