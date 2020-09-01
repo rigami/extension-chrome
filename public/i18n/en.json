@@ -1,0 +1,229 @@
+{
+  "settings":{
+    "title":"Settings",
+    "bg":{
+      "title":"Backgrounds",
+      "apply":"Apply background",
+      "change":"Change background",
+      "description":"Select, add, remove backgrounds. Configure switching",
+      "general":{
+        "title":"General",
+        "library":{
+          "title":"Library",
+          "description":"In you library",
+          "type":{
+            "IMAGE":"Picture",
+            "VIDEO":"Video",
+            "ANIMATION":"Animation",
+            "FILL_COLOR":"Solid color"
+          },
+          "uploadFromComputer":"Upload from computer",
+          "getFromLibrary":"Get from library"
+        },
+        "dimmingPower":{
+          "title":"Darkening backgrounds",
+          "description":"Background shade level"
+        }
+      },
+      "scheduler":{
+        "title":"Switch mode",
+        "selectionMethod":{
+          "title":"Background selection method",
+          "description":"Select a method for changing the background",
+          "method":{
+            "RANDOM":"Random selection",
+            "SPECIFIC":"Specific background"
+          }
+        },
+        "changeInterval":{
+          "title":"Change period",
+          "description":"Select background change period",
+          "interval":{
+            "OPEN_TAB":"On opening",
+            "MINUTES_30":"30 min",
+            "HOURS_1":"1 hour",
+            "HOURS_6":"6 hours",
+            "HOURS_12":"12 hours",
+            "DAY_1":"1 day"
+          }
+        },
+        "BGType":{
+          "title":"Types of backgrounds",
+          "description":"Select background type",
+          "type":{
+            "IMAGE":"Picture",
+            "ANIMATION":"Animation",
+            "VIDEO":"Video",
+            "FILL_COLOR":"Solid color",
+            "all":"All types",
+            "nothingSelected":"Nothing selected"
+          }
+        }
+      }
+    },
+    "bookmarks":{
+      "title":"Fast access",
+      "description":"Change favorites bar",
+      "FAP": {
+        "title": "Quick Access Toolbar",
+        "useFAP":{
+          "title":"Use Quick Access Toolbar",
+          "description":"Pin your most important bookmarks and categories to always have quick access to them"
+        },
+        "fapEmptyWarningMessage":"The panel is not displayed because nothing is pinned to it. Pin a bookmark or a category",
+        "fapStyle":{
+          "title":"Panel Style",
+          "style":{
+            "CONTAINED":"With backing",
+            "TRANSPARENT":"Transparent"
+          }
+        },
+        "fapPosition":{
+          "title":"Panel position",
+          "position":{
+            "TOP":"From above",
+            "BOTTOM":"From below"
+          }
+        }
+      },
+      "systemBookmarks": {
+        "title": "Synchronization with browser bookmarks",
+        "syncSystemBookmarks": {
+          "title": "Sync bookmarks of this browser",
+          "description": "All bookmarks of this browser will be marked with the category 'Google chrome bookmarks'"
+        }
+      }
+    },
+    "app":{
+      "title":"Application settings",
+      "description":"Enable dark theme. Change fonts and tab name",
+      "darkThemeBackdrop":"Dark matte background",
+      "darkThemeApp":"Application dark theme",
+      "useSystemFont":"Use system font",
+      "tabName":{
+        "title":"Tab name",
+        "description":"Enter your tab name"
+      }
+    },
+    "backup":{
+      "title":"Synchronization and backup",
+      "description":"Soon"
+    },
+    "about":{
+      "title":"About Applications",
+      "description":"Write to the developer, send a bug report",
+      "homePage":"Project home page",
+      "review":{
+        "title":"Write a review",
+        "description":"Tell us what you want to see in the application, what you like or dislike"
+      },
+      "bugReport":{
+        "title":"Report bugs",
+        "description":"Tell me what problems in the application are encountered, I will try to fix them as soon as possible"
+      },
+      "contact":{
+        "title":"Get into contact with me",
+        "description":"Contact the developer directly"
+      },
+      "policy":"privacy policy"
+    }
+  },
+  "bg":{
+    "title":"Background",
+    "change":"Change",
+    "next":"Next background",
+    "addShort":"Add background",
+    "add":"Add new background",
+    "remove":"Remove background",
+    "errorLoad":"Error load background",
+    "errorLoadUnknownReason":"Failed to load background for unknown reasons",
+    "brokenRemovedSuccess":"Broken background removed",
+    "playVideo":"Play video",
+    "pauseVideo":"Stop video",
+    "type":{
+      "IMAGE":"Picture",
+      "ANIMATION":"Animation",
+      "VIDEO":"Video",
+      "FILL_COLOR":"Solid color"
+    }
+  },
+  "bookmark":{
+    "addShort":"Add bookmark",
+    "add":"Add new bookmark",
+    "editor":{
+      "addTitle":"Adding a new bookmark",
+      "editTitle":"Changing a bookmark",
+      "urlFieldLabel":"URL or request",
+      "nameFieldLabel":"Bookmark name",
+      "addDescription":"add description",
+      "descriptionFieldLabel":"Description",
+      "forceAddURL":"Add anyway",
+      "URLNotRecognize":"Address not recognized",
+      "searchURLTitle":"Search by address",
+      "notFound":"Nothing found",
+      "searchInWEBTitle":"Search the web",
+      "alternativeIconsOpen":"Other options",
+      "alternativeIconsClose":"To the editor",
+      "alternativeIconsTitle":"Other icon options",
+      "errorLoadIcon":"Failed to load icon, try another",
+      "helper":{
+        "writeURL":"Enter the address",
+        "writeName":"Enter the name of the bookmark"
+      }
+    },
+    "remove": {
+      "title": "Delete bookmark?",
+      "description": "The bookmark will be deleted forever, are you sure?"
+    }
+  },
+  "category":{
+    "add":"Add category",
+    "createPlaceholder":"name of category",
+    "remove": {
+      "title": "Delete category?",
+      "description": "The category will be removed from all linked bookmarks, are you sure?"
+    }
+  },
+  "fap":{
+    "pin":"Pin",
+    "unpin":"Unpin",
+    "folder": {
+      "emptyTitle": "Category is empty",
+      "emptyDescription": "There are no tabs associated with this category."
+    }
+  },
+  "tabName":{
+    "prepare":"Prepare..."
+  },
+  "uploadBG":{
+    "labelFile":"File name",
+    "labelSize":"Size",
+    "labelFileType":"File type",
+    "addToLibrary":"Add to library",
+    "discardAll":"Cancel all",
+    "dropToAddBG":"Release to add background",
+    "dropToAddBGs":"Release to add backgrounds",
+    "antiAliasing":{
+      "label":"Smoothing",
+      "tooltip":"Disable this option if you want to load a pixelated background"
+    }
+  },
+  "firstView": {
+    "prepareApp": "Preparing the application",
+    "pleaseWait": "Preparing the application...",
+    "allDone": "All is ready",
+    "prepareAppDoneDescription": "The application is ready to work",
+    "continue": "Continue"
+  },
+  "save":"Save",
+  "cancel":"Cancel",
+  "remove":"Remove",
+  "edit":"Edit",
+  "search":"Search",
+  "from":"from",
+  "loading":"Loading",
+  "notAvailableYet":"Not available yet",
+  "all":"All",
+  "nothingSelected":"Nothing selected",
+  "changeTakeEffectAfterReload":"Changes will take effect after page refresh"
+}
