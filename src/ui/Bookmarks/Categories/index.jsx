@@ -83,7 +83,7 @@ function Category(props) {
                     title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        bookmarksService.localEventBus.call('category/edit', {
+                        coreService.localEventBus.call('category/edit', {
                             id,
                             anchorEl,
                         });
@@ -94,7 +94,7 @@ function Category(props) {
                     title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        bookmarksService.localEventBus.call('category/remove', { id });
+                        coreService.localEventBus.call('category/remove', { id });
                     },
                 },
             ],

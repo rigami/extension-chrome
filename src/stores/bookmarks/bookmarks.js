@@ -366,7 +366,11 @@ class BookmarksStore {
 
         await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
 
-        await FSConnector.removeFile('/bookmarksIcons', oldBookmark.icoFileName);
+        try {
+            await FSConnector.removeFile('/bookmarksIcons', oldBookmark.icoFileName);
+        } catch (e) {
+            console.log('Failed remove bookmark icon', e);
+        }
 
         this._coreService.globalEventBus.call('bookmark/remove', DESTINATION.APP, { bookmarkId });
     }

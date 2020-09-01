@@ -23,7 +23,9 @@ class BookmarksService {
         this.syncFavorites();
 
         this._coreService.globalEventBus.on('bookmark/new', () => { this.lastTruthSearchTimestamp = Date.now(); });
+        this._coreService.globalEventBus.on('bookmark/remove', () => { this.lastTruthSearchTimestamp = Date.now(); });
         this._coreService.globalEventBus.on('category/new', () => this.categories.sync());
+        this._coreService.globalEventBus.on('category/remove', () => this.categories.sync());
         this._coreService.globalEventBus.on('favorite/new', () => this.syncFavorites());
         this._coreService.globalEventBus.on('favorite/remove', () => this.syncFavorites());
 

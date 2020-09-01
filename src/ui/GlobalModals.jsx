@@ -100,7 +100,7 @@ function GlobalModals({ children }) {
                     </Button>
                     <Button
                         onClick={() => {
-                            bookmarksStore.removeBookmark(edit.id);
+                            bookmarksStore.bookmarks.remove(edit.id);
                             setEdit(null);
                         }}
                         color="primary"
@@ -128,7 +128,7 @@ function GlobalModals({ children }) {
                     </Button>
                     <Button
                         onClick={() => {
-                            bookmarksStore.removeCategory(edit.id);
+                            bookmarksStore.categories.remove(edit.id);
                             setEdit(null);
                         }}
                         color="primary"
