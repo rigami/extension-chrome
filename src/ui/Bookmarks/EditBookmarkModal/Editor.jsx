@@ -276,7 +276,7 @@ function Editor(props) {
                                         store.forceAdded = value.forceAdded;
                                     }
                                     if ('name' in value) {
-                                        store.name = store.name || value.name;
+                                        store.name = value.name || store.name;
                                         store.stage = store.name ? STAGE.DONE : STAGE.WAIT_NAME;
                                     }
                                     if ('description' in value) {
