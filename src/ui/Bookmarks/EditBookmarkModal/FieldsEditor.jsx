@@ -55,7 +55,7 @@ function FieldsEditor(props) {
         categories,
         saveState = FETCH.WAIT,
         marginThreshold = 24,
-        onChangeFields = () => {},
+        onChangeFields = (value) => {},
         onSave,
         onCancel,
     } = props;
@@ -75,11 +75,11 @@ function FieldsEditor(props) {
     }, [searchRequest]);
 
     useEffect(() => {
-        store.url = url;
+        store.url = url || '';
     }, [url]);
 
     useEffect(() => {
-        store.name = name;
+        store.name = name || '';
     }, [name]);
 
     useEffect(() => {
@@ -103,11 +103,12 @@ function FieldsEditor(props) {
                         store.searchRequest = value;
                         onChangeFields({ searchRequest: value });
                     }}
-                    onSelect={({ title, url: requestUrl }) => {
+                    onSelect={({ title, url: requestUrl, forceAdded }) => {
                         store.searchRequest = requestUrl;
-                        store.name = title;
+                        store.name = title || store.name || '';
                         onChangeFields({
-                            url,
+                            forceAdded,
+                            url: requestUrl,
                             name: title,
                         });
                     }}
@@ -118,6 +119,7 @@ function FieldsEditor(props) {
                     size="small"
                     disabled={store.searchRequest === ''}
                     fullWidth
+                    InputLabelProps={{ shrink: store.name }}
                     value={store.name}
                     className={classes.input}
                     onChange={(event) => {
@@ -180,7 +182,7 @@ function FieldsEditor(props) {
                         <Button
                             variant="contained"
                             color="primary"
-                            disabled={!searchRequest || !name.trim()}
+                            disabled={!searchRequest || !store.name.trim()}
                             onClick={onSave}
                         >
                             {t('save')}

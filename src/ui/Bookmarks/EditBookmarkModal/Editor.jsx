@@ -65,6 +65,7 @@ function Editor(props) {
         categories: [],
         fullCategories: [],
         url: defaultUrl || '',
+        forceAdded: false,
         stage: STAGE.WAIT_REQUEST,
         saveStage: FETCH.WAIT,
         isOpenSelectorPreview: false,
@@ -144,17 +145,24 @@ function Editor(props) {
 
             store.imageURL = siteData.bestIcon?.url;
             store.icoVariant = siteData.bestIcon?.type;
-            store.url = siteData.url;
-            store.searchRequest = siteData.url;
+            if (!store.forceAdded) store.url = siteData.url;
             store.images = siteData.icons;
-            store.name = store.name || siteData.name;
+            console.log('UPD name value', store.name || siteData.name, siteData);
+            if (!store.forceAdded) store.name = store.name || siteData.name;
             store.description = store.description || siteData.description;
         })
             .then(() => {
                 if (parseUrl === store.url) store.stage = STAGE.DONE;
             })
-            .catch(() => {
-
+            .catch((e) => {
+                if (e.code === 404) {
+                    store.stage = STAGE.FAILED_PARSE_SITE;
+                    store.imageURL = '';
+                    store.icoVariant = BKMS_VARIANT.SYMBOL;
+                    store.images = [];
+                    // store.name = store.name || '';
+                    store.stage = store.name ? STAGE.FAILED_PARSE_SITE : STAGE.WAIT_NAME;
+                }
             });
     }, [store.url]);
 
@@ -248,7 +256,7 @@ function Editor(props) {
                             />
                             <FieldsEditor
                                 isEdit={!!store.editBookmarkId}
-                                searchRequest={store.searchRequest}
+                                searchRequest={store.url}
                                 name={store.name}
                                 description={store.description}
                                 useDescription={store.useDescription}
@@ -256,18 +264,20 @@ function Editor(props) {
                                 saveState={store.saveStage}
                                 marginThreshold={marginThreshold}
                                 onChangeFields={(value) => {
+                                    console.log('onChangeFields', value);
                                     if ('searchRequest' in value) {
-                                        store.searchRequest = value.searchRequest;
                                         store.stage = value.searchRequest ? STAGE.WAIT_RESULT : STAGE.WAIT_REQUEST;
                                     }
                                     if ('url' in value) {
-                                        store.searchRequest = value.url;
                                         store.url = value.url;
                                         store.stage = STAGE.WAIT_NAME;
                                     }
+                                    if ('forceAdded' in value) {
+                                        store.forceAdded = value.forceAdded;
+                                    }
                                     if ('name' in value) {
-                                        store.name = value.name;
-                                        store.stage = value.name ? STAGE.DONE : STAGE.WAIT_NAME;
+                                        store.name = store.name || value.name;
+                                        store.stage = store.name ? STAGE.DONE : STAGE.WAIT_NAME;
                                     }
                                     if ('description' in value) {
                                         store.description = value.description;

@@ -29,5 +29,9 @@ const getFaviconUrl = (url = '') => {
 };
 
 export {
-    search, getFaviconUrl, AbortController, getSiteInfo, getImageRecalc,
+    search,
+    getFaviconUrl,
+    AbortController,
+    getSiteInfo,
+    getImageRecalc,
 };

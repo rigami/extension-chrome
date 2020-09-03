@@ -50,7 +50,18 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
         filedWidth: 0,
     }));
 
+    const handleChange = (event) => {
+        store.searchRequest = event.target.value;
+        onChange(store.searchRequest);
+        if (store.searchRequest) {
+            setIsOpen(true);
+        } else {
+            setIsOpen(false);
+        }
+    };
+
     useEffect(() => {
+        console.log('searchRequest', searchRequest);
         store.searchRequest = searchRequest;
     }, [searchRequest]);
 
@@ -69,15 +80,7 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
                     fullWidth
                     value={store.searchRequest}
                     className={classes.input}
-                    onChange={(event) => {
-                        store.searchRequest = event.target.value;
-                        onChange(store.searchRequest);
-                        if (store.searchRequest) {
-                            setIsOpen(true);
-                        } else {
-                            setIsOpen(false);
-                        }
-                    }}
+                    onChange={handleChange}
                     onMouseDown={() => setIsBlockEvent(true)}
                     onClick={(event) => {
                         setAnchorEl(event.currentTarget);
@@ -133,19 +136,20 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
                                         ref={secondInput}
                                         value={store.searchRequest || ' '}
                                         className={classes.input}
-                                        onChange={(event) => {
-                                            store.searchRequest = event.target.value;
-                                            onChange(store.searchRequest);
-                                            if (store.searchRequest) {
-                                                setIsOpen(true);
-                                            } else {
-                                                setIsOpen(false);
-                                            }
-                                        }}
+                                        onChange={handleChange}
                                         onMouseDown={() => setIsBlockEvent(true)}
                                         onClick={() => {
                                             if (store.searchRequest) setIsOpen(true);
                                             setIsBlockEvent(false);
+                                        }}
+                                        onKeyDown={(event) => {
+                                            if (event.nativeEvent.code === 'Enter') {
+                                                onSelect({
+                                                    url: store.searchRequest,
+                                                    forceAdded: true,
+                                                });
+                                                setIsOpen(false);
+                                            }
                                         }}
                                     />
                                 </Box>

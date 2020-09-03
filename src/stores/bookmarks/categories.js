@@ -2,6 +2,7 @@ import { action, observable, computed } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
 import getUniqueColor from '@/utils/uniqueColor';
 import { DESTINATION } from '@/enum';
+import Category from '@/stores/bookmarks/entities/category';
 
 class CategoriesStore {
     @observable _categories = [];
@@ -22,7 +23,7 @@ class CategoriesStore {
 
     @action('get category by id')
     get(categoryId) {
-        return this._categories.find(({ id }) => id === categoryId);
+        return new Category(this._categories.find(({ id }) => id === categoryId));
     }
 
     @action('save category')

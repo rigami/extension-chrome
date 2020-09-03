@@ -58,8 +58,11 @@ function Search({ query = '', onSelect }) {
     const [controller, setController] = React.useState(null);
     const [isOpen, setIsOpen] = React.useState(false);
 
-    const handleSelect = (option) => {
-        onSelect(option);
+    const handleSelect = (option, forceAdded = false) => {
+        onSelect({
+            ...option,
+            forceAdded,
+        });
     };
 
     useEffect(() => {
@@ -133,7 +136,7 @@ function Search({ query = '', onSelect }) {
                             <ListItem
                                 className={classes.row}
                                 button
-                                onClick={() => handleSelect(straightResults)}
+                                onClick={() => handleSelect(straightResults, true)}
                             >
                                 <ListItemAvatar className={classes.avatar}>
                                     <Avatar

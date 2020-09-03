@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const STAGE = {
+    FAILED_PARSE_SITE: 'FAILED_PARSE_SITE',
     PARSING_SITE: 'PARSING_SITE',
     WAIT_REQUEST: 'WAIT_REQUEST',
     WAIT_RESULT: 'WAIT_RESULT',
@@ -67,7 +68,7 @@ function Preview(props) {
     }));
 
     useEffect(() => {
-        if (stage !== STAGE.DONE) {
+        if (stage !== STAGE.DONE && stage !== STAGE.FAILED_PARSE_SITE) {
             store.stateImageLoad = FETCH.WAIT;
             store.loadUrl = '';
             return;
@@ -119,18 +120,21 @@ function Preview(props) {
                     description={t('bookmark.editor.helper.writeName')}
                 />
             )}
-            {stage === STAGE.DONE && header}
+            {(stage === STAGE.DONE || stage === STAGE.FAILED_PARSE_SITE) && header}
             {
                 (
                     stage === STAGE.PARSING_SITE
-                    || (stage === STAGE.DONE && (store.stateImageLoad === FETCH.PENDING || store.stateImageLoad === FETCH.WAIT))
+                    || (
+                        (stage === STAGE.DONE || stage === STAGE.FAILED_PARSE_SITE)
+                        && (store.stateImageLoad === FETCH.PENDING || store.stateImageLoad === FETCH.WAIT)
+                    )
                 ) && (
                     <FullScreenStub>
                         <CircularProgress color="primary" />
                     </FullScreenStub>
                 )
             }
-            {stage === STAGE.DONE && store.stateImageLoad === FETCH.DONE && (
+            {(stage === STAGE.DONE || stage === STAGE.FAILED_PARSE_SITE) && store.stateImageLoad === FETCH.DONE && (
                 <CardLink
                     name={name}
                     description={description}
@@ -141,7 +145,7 @@ function Preview(props) {
                     className={classes.card}
                 />
             )}
-            {stage === STAGE.DONE && store.stateImageLoad === FETCH.FAILED && (
+            {(stage === STAGE.DONE || stage === STAGE.FAILED_PARSE_SITE) && store.stateImageLoad === FETCH.FAILED && (
                 <Box className={classes.warnMessage}>
                     <WarnIcon className={classes.warnIcon} />
                     {t('bookmark.editor.errorLoadIcon')}

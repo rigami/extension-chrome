@@ -36,8 +36,6 @@ class Storage {
         this.temp = {};
         this.persistent = {};
         try {
-            console.log('STR', localStorage.getItem('storage'));
-            console.log('STR PARSE', JSON.parse(localStorage.getItem('storage')));
             this.updatePersistent(JSON.parse(localStorage.getItem('storage')), false);
             this.isSync = true;
         } catch (e) {
@@ -60,7 +58,6 @@ class Storage {
 
     @action
     updatePersistent(props = {}, sync = true) {
-        console.log('UPD STORAGE', props);
         assign(this.persistent, props);
 
         if (sync) eventToBackground('system/syncStorage', props);
@@ -81,10 +78,7 @@ class Core {
         this.storage = new Storage();
 
         const init = () => {
-            console.log('Change storage status', this.storage.isSync);
             if (!this.storage.isSync) return;
-
-            console.log(this.storage.persistent, this.storage);
 
             this.initialization()
                 .then(() => {
@@ -104,12 +98,18 @@ class Core {
 
     async initialization() {
         await i18n
-            .use(LanguageDetector)
-            .use(initReactI18next)
-            .use(Backend)
+            .use(initReactI18next);
+
+        if (PRODUCTION_MODE) {
+            await i18n
+                .use(LanguageDetector)
+                .use(Backend);
+        }
+
+        await i18n
             .init({
                 fallbackLng: PRODUCTION_MODE ? 'en' : 'dev',
-                debug: true,
+                // debug: true,
                 interpolation: { escapeValue: false },
                 backend: { loadPath: 'resource/i18n/{{lng}}.json' },
             });

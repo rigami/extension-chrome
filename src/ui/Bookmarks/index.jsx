@@ -18,7 +18,6 @@ import CardLink from './CardLink';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        minHeight: '100vh',
         width: '100vw',
         backgroundColor: theme.palette.background.paper,
         transform: 'translate3d(0,0,0)',

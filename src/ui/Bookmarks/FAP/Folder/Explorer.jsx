@@ -170,6 +170,8 @@ function Folder({ id }) {
     const [findBookmarks, setFindBookmarks] = useState(null);
     const buttonRef = useRef(null);
 
+    console.log('category', category, id);
+
     const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'category' && fav.id === id);
 
     const handlerContextMenu = (anchorEl) => {

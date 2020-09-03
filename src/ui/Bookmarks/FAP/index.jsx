@@ -163,8 +163,8 @@ function FAP() {
                 }
             }),
         )
-            .then((favorites) => {
-                setFavorites(favorites.map((fav, index) => ({
+            .then((findFavorites) => {
+                setFavorites(findFavorites.map((fav, index) => ({
                     ...fav,
                     type: bookmarksService.favorites[index].type,
                 })));
