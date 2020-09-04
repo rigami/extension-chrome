@@ -50,7 +50,6 @@ class BackgroundSettingsStore {
 class BookmarksSettingsStore {
     @observable fapStyle;
     @observable fapPosition;
-    @observable openOnStartup;
     @observable favorites;
     @observable syncWithSystem;
     @observable isSync = false;
@@ -58,7 +57,6 @@ class BookmarksSettingsStore {
     constructor() {
         this.fapStyle = defaultSettings.bookmarks.fap_style;
         this.fapPosition = defaultSettings.bookmarks.fap_position;
-        this.openOnStartup = defaultSettings.bookmarks.open_on_startup;
         this.favorites = defaultSettings.bookmarks.favorites;
         this.syncWithSystem = defaultSettings.bookmarks.sync_with_system;
 
@@ -83,7 +81,6 @@ class BookmarksSettingsStore {
         const updProps = pick(props, [
             'fapStyle',
             'fapPosition',
-            'openOnStartup',
             'favorites',
             'syncWithSystem',
         ]);
@@ -97,6 +94,7 @@ class BookmarksSettingsStore {
 class AppSettingsStore {
     @observable theme;
     @observable tabName;
+    @observable defaultActivity;
     @observable useSystemFont;
     @observable backdropTheme;
     @observable lastUsageVersion;
@@ -107,6 +105,7 @@ class AppSettingsStore {
         this.tabName = defaultSettings.app.tab_name;
         this.useSystemFont = defaultSettings.app.use_system_font;
         this.backdropTheme = defaultSettings.app.backdrop_theme;
+        this.defaultActivity = defaultSettings.app.default_activity;
         this.lastUsageVersion = null;
 
         try {
@@ -133,6 +132,7 @@ class AppSettingsStore {
             'useSystemFont',
             'backdropTheme',
             'lastUsageVersion',
+            'defaultActivity',
         ]);
 
         assign(this, updProps);

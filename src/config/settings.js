@@ -5,6 +5,7 @@ import {
     BG_SELECT_MODE,
     BKMS_FAP_STYLE,
     BKMS_FAP_POSITION,
+    ACTIVITY,
 } from '@/enum';
 import i18n from 'i18next';
 
@@ -33,5 +34,6 @@ export default {
         theme: THEME.LIGHT,
         use_system_font: true,
         tab_name: i18n.t('tabName.default'),
+        default_activity: ACTIVITY.DESKTOP,
     },
 };

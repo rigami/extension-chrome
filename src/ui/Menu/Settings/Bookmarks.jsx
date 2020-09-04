@@ -1,29 +1,43 @@
 import React from 'react';
 import { useObserver } from 'mobx-react-lite';
-import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
+import { ACTIVITY, BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import { Collapse } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
-// import SectionHeader from '@/ui/Menu/SectionHeader';
+import SectionHeader from '@/ui/Menu/SectionHeader';
+import usAppService from '@/stores/AppStateProvider';
 
 const headerProps = { title: 'settings.bookmarks.title' };
 
 function BookmarksSettings() {
     const bookmarksService = useBookmarksService();
+    const appService = usAppService();
     const { t } = useTranslation();
 
     return useObserver(() => (
         <React.Fragment>
-            {/* <SectionHeader title={t("settings.bookmarks.FAP.title")} /> */}
+            <SectionHeader title={t('settings.bookmarks.general.title')} />
+            <MenuRow
+                title={t('settings.bookmarks.general.openOnStartup.title')}
+                description={t('settings.bookmarks.general.openOnStartup.description')}
+                action={{
+                    type: ROWS_TYPE.CHECKBOX,
+                    value: appService.settings.defaultActivity === ACTIVITY.BOOKMARKS,
+                    onChange: (event, value) => appService.settings
+                        .update({ defaultActivity: value ? ACTIVITY.BOOKMARKS : ACTIVITY.DESKTOP }),
+                }}
+            />
+            <SectionHeader title={t('settings.bookmarks.FAP.title')} />
             <MenuRow
                 title={t('settings.bookmarks.FAP.useFAP.title')}
                 description={t('settings.bookmarks.FAP.useFAP.description')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     value: bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN,
-                    onChange: (event, value) => bookmarksService.settings.update({ fapStyle: value ? BKMS_FAP_STYLE.CONTAINED : BKMS_FAP_STYLE.HIDDEN }),
+                    onChange: (event, value) => bookmarksService.settings
+                        .update({ fapStyle: value ? BKMS_FAP_STYLE.CONTAINED : BKMS_FAP_STYLE.HIDDEN }),
                 }}
             />
             <MenuInfo

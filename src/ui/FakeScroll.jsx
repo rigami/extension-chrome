@@ -20,6 +20,8 @@ function FakeScroll({ children }) {
     const coreService = useCoreService();
 
     useEffect(() => {
+        rootRef.current.style.top = `${-coreService.storage.temp.activityScrollOffset}px`;
+
         const listenId = coreService.localEventBus.on('system/scroll', ({ y: offsetY }) => {
             if (rootRef.current) rootRef.current.style.top = `${-offsetY}px`;
         });

@@ -7,6 +7,7 @@ import usAppService from '@/stores/AppStateProvider';
 import Scrollbar from 'smooth-scrollbar';
 import OverscrollPlugin from 'smooth-scrollbar/plugins/overscroll';
 import ViewScrollPlugin from '@/utils/ViewScrollPlugin';
+import { ACTIVITY } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -67,7 +68,13 @@ function GlobalScroll({ children }) {
 
         scrollbar.addListener(({ offset }) => {
             coreService.localEventBus.call('system/scroll', offset);
+            // coreService.storage.updateTemp({ activityScrollOffset: offset });
         });
+
+        if (appService.settings.defaultActivity === ACTIVITY.BOOKMARKS) {
+            scrollbar.setPosition(0, document.documentElement.clientHeight);
+            coreService.storage.updateTemp({ activityScrollOffset: document.documentElement.clientHeight });
+        }
 
         console.log('scrollbar', scrollbar);
     }, []);
