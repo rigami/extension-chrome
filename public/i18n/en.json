@@ -107,7 +107,12 @@
     },
     "backup":{
       "title":"Synchronization and backup",
-      "description":"Soon"
+      "description":"Soon",
+      "localBackup": {
+        "title": "Create backup",
+        "description": "Save application settings and bookmarks on your computer",
+        "create": "Create backup"
+      }
     },
     "about":{
       "title":"About Applications",

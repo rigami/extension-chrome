@@ -14,17 +14,20 @@ import EditCategoryModal from '@/ui/Bookmarks/Categories/EditModal';
 import { useTranslation } from 'react-i18next';
 import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
 import ContextMenu from '@/ui/ContextMenu';
+import { useSnackbar } from 'notistack';
+import FSConnector from '@/utils/fsConnector';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation();
     const bookmarksStore = useBookmarksService();
+    const { enqueueSnackbar } = useSnackbar();
     const coreService = useCoreService();
     const [edit, setEdit] = useState(null);
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
     const [contextMenuActions, setContextMenuActions] = useState([]);
 
     useEffect(() => {
-        const listeners = [
+        const localListeners = [
             coreService.localEventBus.on('system/contextMenu', ({ actions, position }) => {
                 setContextMenuPosition(position);
                 setContextMenuActions(actions);
@@ -56,8 +59,34 @@ function GlobalModals({ children }) {
             })),
         ];
 
+        const globalListeners = [
+            coreService.globalEventBus.on('system/backup/local/create/progress', (data) => {
+                console.log('system/backup/local/progress', data);
+
+                console.log(FSConnector.getURL(data.path));
+
+                const link = document.createElement('a');
+                link.href = FSConnector.getURL(data.path);
+                link.download = 'Rigmai backup';
+
+                link.click();
+
+                enqueueSnackbar({
+                    message: t('settings.backup.localBackup.noty.success'),
+                    variant: 'success',
+                });
+            }),
+            coreService.globalEventBus.on('system/backup/local/restore/progress', (data) => {
+                enqueueSnackbar({
+                    message: t(data.message || 'settings.backup.localBackup.noty.success'),
+                    variant: data.result,
+                });
+            }),
+        ];
+
         return () => {
-            listeners.forEach((listenerId) => coreService.localEventBus.removeListener(listenerId));
+            localListeners.forEach((listenerId) => coreService.localEventBus.removeListener(listenerId));
+            globalListeners.forEach((listenerId) => coreService.localEventBus.removeListener(listenerId));
         };
     }, []);
 

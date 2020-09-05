@@ -19,6 +19,7 @@ import { content as BackgroundsPageContent, header as backgroundsPageHeader } fr
 import { content as AboutPageContent, header as aboutPageHeader } from './About';
 import { content as AppSettingsPageContent, header as appSettingsPageHeader } from './AppSettings';
 import { content as BookmarksPageContent, header as bookmarksPageHeader } from './Bookmarks';
+import { content as BackupPageContent, header as backupPageHeader } from './Backup';
 
 const useStyles = makeStyles((theme) => ({
     divider: {
@@ -60,6 +61,8 @@ const general = [
         description: 'settings.backup.description',
         icon: <BackupIcon />,
         id: 'backup',
+        header: backupPageHeader,
+        content: BackupPageContent,
         color: '#0f9d58',
     },
 ];

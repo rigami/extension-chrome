@@ -104,7 +104,17 @@ class FSConnector {
         return pathOrFSConnector.getFile(name, { create: true })
             .then((fileEntry) => new Promise((resolve, reject) => {
                 fileEntry.createWriter((fileWriter) => {
-                    fileWriter.onwriteend = () => resolve(fileEntry.fullPath);
+                    let truncated = false;
+                    fileWriter.onwriteend = () => {
+                        if (!truncated) {
+                            truncated = true;
+                            fileWriter.truncate(fileWriter.position);
+                            return;
+                        }
+
+                        resolve(fileEntry.fullPath);
+                    };
+
                     fileWriter.onerror = reject;
 
                     fileWriter.write(file);
@@ -167,6 +177,19 @@ class FSConnector {
                 reader.onloadend = () => resolve(reader.result);
                 reader.onerror = reject;
                 reader.readAsText(readFile);
+            });
+        }));
+    }
+
+    static async getFileAsBase64(pathOrFSConnector, name, options) {
+        const file = await FSConnector.getFile(pathOrFSConnector, name, options);
+
+        return new Promise(((resolve, reject) => {
+            file.file((readFile) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(readFile);
             });
         }));
     }

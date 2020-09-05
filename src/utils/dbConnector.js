@@ -38,8 +38,6 @@ const open = () => openDB(appVariables.db.name, appVariables.db.version, {
         });
         categoriesStore.createIndex('name', 'name', { unique: false });
         categoriesStore.createIndex('color', 'color', { unique: true });
-        categoriesStore.createIndex('source', 'source', { unique: false });
-        categoriesStore.createIndex('source_id', 'sourceId', { unique: false });
 
         const favoritesStore = db.createObjectStore('favorites', {
             keyPath: 'id',
