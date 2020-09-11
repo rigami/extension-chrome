@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "0.0.00",
+    "version": "0.0.1001",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
@@ -36,8 +36,7 @@
         "react-indiana-drag-scroll": "^1.6.1",
         "react-resize-detector": "^5.0.7",
         "react-scrollbars-custom": "^4.0.25",
-        "smooth-scrollbar": "^8.5.2",
-        "tiny-warning": "^1.0.3"
+        "smooth-scrollbar": "^8.5.2"
     },
     "devDependencies": {
         "@babel/core": "^7.11.1",
@@ -79,7 +78,6 @@
         "webpack": "^4.44.1",
         "webpack-bundle-analyzer": "^3.8.0",
         "webpack-cli": "^3.3.12",
-        "webpack-dev-server": "^3.11.0",
-        "yargs-parser": "^19.0.1"
+        "webpack-dev-server": "^3.11.0"
     }
 }

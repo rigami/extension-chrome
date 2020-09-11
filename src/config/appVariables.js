@@ -9,11 +9,11 @@ export default {
     fs: { root: chrome.runtime.id && `chrome-extension://${chrome.runtime.id}/persistent/` },
     maxUploadFiles: 15,
     defaultBG: {
-        src: 'http://localhost:8080/jeremy-bishop-hVkDaLkoiec-unsplash.jpg',
+        src: `http://${PRODUCTION_MODE ? 'danilkinkin.com' : 'localhost'}:8080/jeremy-bishop-hVkDaLkoiec-unsplash.jpg`,
         author: 'Jeremy Bishop',
         type: BG_TYPE.IMAGE,
         description: 'Unsplash photo',
         sourceLink: 'https://unsplash.com/photos/hVkDaLkoiec',
     },
-    rest: { url: 'http://localhost:8080' },
+    rest: { url: `http://${PRODUCTION_MODE ? 'danilkinkin.com' : 'localhost'}:8080` },
 };

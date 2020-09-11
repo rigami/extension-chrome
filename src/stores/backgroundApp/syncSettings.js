@@ -37,7 +37,12 @@ class SyncSettings {
 
             FSConnector.getFileAsText('/settings.json')
                 .then((props) => {
-                    this.settings = { ...JSON.parse(props) };
+                    this.settings = {
+                        app: {},
+                        bookmarks: {},
+                        backgrounds: {},
+                        ...JSON.parse(props),
+                    };
                     fastSyncSettings();
                 })
                 .catch(console.error);
@@ -79,23 +84,23 @@ class SyncSettings {
     fastSync({ backgrounds = false, settings = false, bookmarks = false }, initiatorId) {
         console.log('Save fast cache settings', this.settings);
         localStorage.setItem('settings', JSON.stringify(this.settings));
-        localStorage.setItem('theme', this.settings.app.theme || defaultSettings.app.theme);
+        localStorage.setItem('theme', this.settings.app?.theme || defaultSettings.app.theme);
 
         if (settings) {
             eventToApp('system/syncSettings/app', {
-                settings: this.settings.app,
+                settings: this.settings.app || {},
                 changeInitiatorId: initiatorId,
             });
         }
         if (bookmarks) {
             eventToApp('system/syncSettings/bookmarks', {
-                settings: this.settings.bookmarks,
+                settings: this.settings.bookmarks || {},
                 changeInitiatorId: initiatorId,
             });
         }
         if (backgrounds) {
             eventToApp('system/syncSettings/backgrounds', {
-                settings: this.settings.backgrounds,
+                settings: this.settings.backgrounds || {},
                 changeInitiatorId: initiatorId,
             });
         }

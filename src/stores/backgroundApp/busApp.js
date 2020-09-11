@@ -20,6 +20,7 @@ class BusApp {
 
         chrome.runtime.onMessage.addListener((props, info, callback) => {
             const { event, destination: eventDestination, data, initiatorId } = props;
+            console.log('event from', eventDestination, props, info);
             if (eventDestination !== this._destination || instanceId === initiatorId) return;
 
             this._eventBus.call(event, data, props, callback);
@@ -60,14 +61,17 @@ function initBus(destination) {
 }
 
 function eventToApp(event, data, callback) {
+    console.log('eventToApp', event, data);
     bus.call(event, DESTINATION.APP, data, callback);
 }
 
 function eventToBackground(event, data, callback) {
+    console.log('eventToBackground', event, data);
     bus.call(event, DESTINATION.BACKGROUND, data, callback);
 }
 
 function eventToPopup(event, data, callback) {
+    console.log('eventToPopup', event, data);
     bus.call(event, DESTINATION.POPUP, data, callback);
 }
 

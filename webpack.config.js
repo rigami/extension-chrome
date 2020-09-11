@@ -9,7 +9,11 @@ const paths = require('./alias.config.js');
 
 module.exports = (env, args) => ({
     context: path.resolve(__dirname, 'src'),
-    entry: { app: './index.js', popup: './popup.js', background: './background.js' },
+    entry: {
+        app: './index.js',
+        popup: './popup.js',
+        background: './background.js',
+    },
     mode: args.mode || 'development',
     output: {
         filename: '[name].[hash].bundle.js',
@@ -80,22 +84,14 @@ module.exports = (env, args) => ({
                 },
             },
         ]),
-        new webpack.DefinePlugin({
-            PRODUCTION_MODE: JSON.stringify(args.mode === 'production'),
-        }),
+        new webpack.DefinePlugin({ PRODUCTION_MODE: JSON.stringify(args.mode === 'production') }),
     ],
     module: {
         rules: [
             {
                 test: /\.svg$/,
                 loader: require.resolve('react-svg-loader'),
-                options: {
-                    svgo: {
-                        plugins: [
-                            { removeViewBox: false }
-                        ],
-                    }
-                }
+                options: { svgo: { plugins: [{ removeViewBox: false }] } },
             },
             {
                 test: /\.(js|jsx)$/,
