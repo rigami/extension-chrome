@@ -1,12 +1,12 @@
 import { BG_TYPE } from '@/enum';
 
 export default {
-    extensionId: 'kiifdbgcimcikhiiapbhadcdcijdbhck',
+    extensionId: chrome.runtime.id,
     db: {
-        name: 'clock_tab',
+        name: 'rigami',
         version: 1,
     },
-    fs: { root: chrome.runtime.id && `chrome-extension://${chrome.runtime.id}/persistent/` },
+    fs: { root: `chrome-extension://${chrome.runtime.id}/persistent/` },
     maxUploadFiles: 15,
     defaultBG: {
         src: `http://${PRODUCTION_MODE ? 'danilkinkin.com' : 'localhost'}:8080/jeremy-bishop-hVkDaLkoiec-unsplash.jpg`,
