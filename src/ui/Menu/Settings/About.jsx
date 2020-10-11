@@ -1,13 +1,13 @@
 import React from 'react';
 import {
     Box,
-    IconButton,
     Divider,
     Typography,
     ListItem,
     ListItemIcon,
     ListItemText,
     ListItemSecondaryAction,
+    Link,
 } from '@material-ui/core';
 import {
     NavigateNextRounded as ArrowRightIcon,
@@ -63,18 +63,30 @@ function About() {
                 </Typography>
             </Box>
             <Divider />
-            <ListItem button className={classes.row}>
+            <ListItem
+                button
+                className={classes.row}
+                component={Link}
+                href="https://rigami.io/"
+                target="_blank"
+                color="initial"
+            >
                 <ListItemIcon>
                     <HomeIcon />
                 </ListItemIcon>
                 <ListItemText primary={t('settings.about.homePage')} />
                 <ListItemSecondaryAction>
-                    <IconButton edge="end">
-                        <ArrowRightIcon />
-                    </IconButton>
+                    <ArrowRightIcon />
                 </ListItemSecondaryAction>
             </ListItem>
-            <ListItem button className={classes.row}>
+            <ListItem
+                button
+                className={classes.row}
+                component={Link}
+                href="https://rigami.io/review?service=chrome-extension"
+                target="_blank"
+                color="initial"
+            >
                 <ListItemIcon>
                     <ReviewIcon />
                 </ListItemIcon>
@@ -83,12 +95,17 @@ function About() {
                     secondary={t('settings.about.review.description')}
                 />
                 <ListItemSecondaryAction>
-                    <IconButton edge="end">
-                        <ArrowRightIcon />
-                    </IconButton>
+                    <ArrowRightIcon />
                 </ListItemSecondaryAction>
             </ListItem>
-            <ListItem button className={classes.row}>
+            <ListItem
+                button
+                className={classes.row}
+                component={Link}
+                href="https://rigami.io/bugReport?service=chrome-extension"
+                target="_blank"
+                color="initial"
+            >
                 <ListItemIcon>
                     <BugIcon />
                 </ListItemIcon>
@@ -97,12 +114,14 @@ function About() {
                     secondary={t('settings.about.bugReport.description')}
                 />
                 <ListItemSecondaryAction>
-                    <IconButton edge="end">
-                        <ArrowRightIcon />
-                    </IconButton>
+                    <ArrowRightIcon />
                 </ListItemSecondaryAction>
             </ListItem>
-            <ListItem button className={classes.row}>
+            <ListItem
+                button
+                className={classes.row}
+                disabled
+            >
                 <ListItemIcon>
                     <EmailIcon />
                 </ListItemIcon>
@@ -111,12 +130,17 @@ function About() {
                     secondary={t('settings.about.contact.description')}
                 />
                 <ListItemSecondaryAction>
-                    <IconButton edge="end">
-                        <ArrowRightIcon />
-                    </IconButton>
+                    <ArrowRightIcon />
                 </ListItemSecondaryAction>
             </ListItem>
-            <ListItem button className={classes.row}>
+            <ListItem
+                button
+                className={classes.row}
+                component={Link}
+                href="https://rigami.io/policy"
+                target="_blank"
+                color="initial"
+            >
                 <ListItemIcon>
                     <PolicyIcon />
                 </ListItemIcon>
@@ -124,9 +148,7 @@ function About() {
                     primary={t('settings.about.policy')}
                 />
                 <ListItemSecondaryAction>
-                    <IconButton edge="end">
-                        <ArrowRightIcon />
-                    </IconButton>
+                    <ArrowRightIcon />
                 </ListItemSecondaryAction>
             </ListItem>
             <ListItem className={classes.row}>
