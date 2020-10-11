@@ -108,6 +108,7 @@ class Core {
 
         await i18n
             .init({
+                load: 'languageOnly',
                 fallbackLng: PRODUCTION_MODE ? 'en' : 'dev',
                 // debug: true,
                 interpolation: { escapeValue: false },
