@@ -29,7 +29,7 @@ class SyncSettings {
 
         try {
             console.log('Getting settings from fast cache');
-            this.settings = { ...JSON.parse(localStorage.getItem('settings')) };
+            this.settings = { ...this.settings, ...JSON.parse(localStorage.getItem('settings')) };
 
             fastSyncSettings();
         } catch (e) {
@@ -82,7 +82,7 @@ class SyncSettings {
     }
 
     fastSync({ backgrounds = false, settings = false, bookmarks = false }, initiatorId) {
-        console.log('Save fast cache settings', this.settings);
+        console.log('Save fast cache settings', this, this.settings);
         localStorage.setItem('settings', JSON.stringify(this.settings));
         localStorage.setItem('theme', this.settings.app?.theme || defaultSettings.app.theme);
 
