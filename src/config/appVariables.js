@@ -15,5 +15,5 @@ export default {
         description: 'Unsplash photo',
         sourceLink: 'https://unsplash.com/photos/hVkDaLkoiec',
     },
-    rest: { url: `http://${PRODUCTION_MODE ? 'danilkinkin.com' : 'localhost'}:8080` },
+    rest: { url: `http://${PRODUCTION_MODE ? 'api.rigami.io' : 'localhost:8080'}` },
 };
