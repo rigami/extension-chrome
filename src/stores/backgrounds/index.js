@@ -122,6 +122,7 @@ class BackgroundsStore {
         let bg;
 
         while (cursor) {
+            if (index === 0) bg = cursor.value;
             if (cursor.key !== this.currentBGId) index += 1;
             if (bgPos === index) {
                 bg = cursor.value;
