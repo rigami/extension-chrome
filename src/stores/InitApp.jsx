@@ -14,6 +14,14 @@ function InitApp({ children }) {
         console.log('INIT APP STATE', service.appState);
         if (service.appState === APP_STATE.WORK) {
             setIsConfig(true);
+            if (service.storage.temp.lastUsageVersion !== packageJson.version) {
+                service.storage.updateTemp({
+                    newVersion: true,
+                });
+                service.storage.updatePersistent({
+                    lastUsageVersion: packageJson.version,
+                });
+            }
         } else if (service.appState === APP_STATE.REQUIRE_SETUP) {
             setIsFirstContact(true);
         }

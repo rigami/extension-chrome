@@ -226,6 +226,9 @@
     "prepareAppDoneDescription": "Приложение готов к роботе",
     "continue": "Продолжить"
   },
+  "newVersion": {
+    "title": "Новая версия {{version}}!"
+  },
   "save":"Сохранить",
   "cancel":"Отменить",
   "remove":"Удалить",

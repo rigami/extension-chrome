@@ -40,6 +40,14 @@ function App() {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Nest components={[
+                ({ children }) => (
+                    <SnackbarProvider
+                        maxSnack={4}
+                        content={(key, options) => (<Snackbar id={key} {...options} />)}
+                    >
+                        {children}
+                    </SnackbarProvider>
+                ),
                 ({ children }) => (<BaseStateProvider side={DESTINATION.APP}>{children}</BaseStateProvider>),
                 InitAppProvider,
                 ({ children }) => (
@@ -51,14 +59,6 @@ function App() {
                 ),
                 BookmarksProvider,
                 BackgroundsProvider,
-                ({ children }) => (
-                    <SnackbarProvider
-                        maxSnack={4}
-                        content={(key, options) => (<Snackbar id={key} {...options} />)}
-                    >
-                        {children}
-                    </SnackbarProvider>
-                ),
                 UploadBGForm,
                 GlobalModals,
             ]}

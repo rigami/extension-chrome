@@ -220,6 +220,9 @@
     "prepareAppDoneDescription": "The application is ready to work",
     "continue": "Continue"
   },
+  "newVersion": {
+    "title": "New version {{version}}!"
+  },
   "save":"Save",
   "cancel":"Cancel",
   "remove":"Remove",
