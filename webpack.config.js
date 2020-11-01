@@ -16,7 +16,7 @@ module.exports = (env, args) => ({
     },
     mode: args.mode || 'development',
     output: {
-        filename: '[name].[hash].bundle.js',
+        filename: '[name].[contenthash].bundle.js',
         path: path.resolve(__dirname, 'build'),
     },
     devtool: args.mode === 'production' ? false : 'eval-source-map',
@@ -30,7 +30,7 @@ module.exports = (env, args) => ({
         port: 3000,
     },
     plugins: [
-        args.mode === 'production' ? new BundleAnalyzerPlugin() : () => {},
+        process.env.ANALYZE === 'true' ? new BundleAnalyzerPlugin() : () => {},
         new CleanWebpackPlugin({
             cleanAfterEveryBuildPatterns: [
                 '*.bundle.js',
@@ -61,33 +61,32 @@ module.exports = (env, args) => ({
             template: './background.html',
             filename: 'background.html',
         }),
-        new CopyWebpackPlugin([
-            {
-                from: './config/manifest.json',
-                to: './manifest.json',
-                transform(content) {
-                    return content;
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: './config/manifest.json',
+                    to: './manifest.json',
                 },
-            },
-            {
-                from: path.resolve(__dirname, 'public/'),
-                to: './resource/',
-                transform(content) {
-                    return content;
+                {
+                    from: path.resolve(__dirname, 'public/'),
+                    to: './resource/',
                 },
-            },
-            {
-                from: './fastInitialization.js',
-                to: './fastInitialization.js',
-                transform(content) {
-                    return content;
+                {
+                    from: './fastInitialization.js',
+                    to: './fastInitialization.js',
                 },
-            },
-        ]),
+            ]
+        }),
         new webpack.DefinePlugin({ PRODUCTION_MODE: JSON.stringify(args.mode === 'production') }),
     ],
     module: {
         rules: [
+            {
+                test: /\.m?js/,
+                resolve: {
+                    fullySpecified: false,
+                }
+            },
             {
                 test: /\.svg$/,
                 loader: require.resolve('react-svg-loader'),
@@ -95,11 +94,19 @@ module.exports = (env, args) => ({
             },
             {
                 test: /\.(js|jsx)$/,
+                exclude: /node_modules/,
                 loader: require.resolve('babel-loader'),
             },
             {
                 test: /\.css$/i,
-                loader: [require.resolve('style-loader'), require.resolve('css-loader')],
+                use: [
+                    {
+                        loader: require.resolve('style-loader'),
+                    },
+                    {
+                        loader: require.resolve('css-loader'),
+                    },
+                ],
             },
             {
                 test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
