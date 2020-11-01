@@ -8,13 +8,13 @@
         "start": "webpack-dev-server --mode development",
         "lint": "eslint --fix --ext .jsx,.js,.json --ignore-path .gitignore ./src"
     },
-    "repository": "git@github.com:rigami-org/extension-chrome.git",
+    "repository": "https://github.com/rigami/extension-chrome",
     "author": "Danilkinkin <Danilkinkin@gmail.com>",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/Danilkinkin/ClockTab/issues"
+        "url": "https://github.com/rigami/readme/issues"
     },
-    "homepage": "https://github.com/Danilkinkin/ClockTab#readme",
+    "homepage": "https://rigami.io",
     "dependencies": {
         "@material-ui/core": "^4.11.0",
         "@material-ui/icons": "^4.9.1",
@@ -56,7 +56,7 @@
         "copy-webpack-plugin": "^5.1.1",
         "css-loader": "^4.2.1",
         "eslint": "^7.7.0",
-        "eslint-config-rigami": "../eslint-config-rigami/",
+        "eslint-config-rigami": "rigami-org/eslint-config-rigami",
         "eslint-import-resolver-alias": "^1.1.2",
         "eslint-import-resolver-webpack": "^0.12.2",
         "file-loader": "^6.0.0",
