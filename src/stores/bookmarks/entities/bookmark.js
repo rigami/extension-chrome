@@ -1,6 +1,7 @@
 import { action, makeAutoObservable } from 'mobx';
 import { assign, pick } from 'lodash';
 import FSConnector from '@/utils/fsConnector';
+import { BKMS_VARIANT } from '@/enum';
 
 class Bookmark {
     id;
@@ -19,9 +20,9 @@ class Bookmark {
         this.url = bookmark.url;
         this.name = bookmark.name;
         this.description = bookmark.description;
-        this.icoVariant = bookmark.icoVariant;
+        this.icoVariant = bookmark.icoVariant || BKMS_VARIANT.SYMBOL;
         this.imageUrl = bookmark.imageUrl || FSConnector.getIconURL(bookmark.icoFileName);
-        this.categories = bookmark.categories;
+        this.categories = bookmark.categories || [];
         this.icoFileName = bookmark.icoFileName;
 
         this.update(bookmark);

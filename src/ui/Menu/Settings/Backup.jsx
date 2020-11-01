@@ -170,6 +170,7 @@ function BackupSettings() {
         reader.onload = () => {
             try {
                 const file = JSON.parse(reader.result);
+                console.log('file', file)
                 eventToBackground('system/backup/local/restore', { backup: file });
             } catch (e) {
                 enqueueSnackbar({
@@ -202,7 +203,7 @@ function BackupSettings() {
                                 className={classes.input}
                                 id="upload-from-system"
                                 type="file"
-                                accept=".json"
+                                accept=".json,.ctbup"
                                 onChange={handleLocalRestore}
                             />
                             <label htmlFor="upload-from-system">

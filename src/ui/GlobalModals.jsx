@@ -16,6 +16,8 @@ import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
 import ContextMenu from '@/ui/ContextMenu';
 import { useSnackbar } from 'notistack';
 import FSConnector from '@/utils/fsConnector';
+import { eventToBackground } from '@/stores/backgroundApp/busApp';
+import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation();
@@ -77,10 +79,21 @@ function GlobalModals({ children }) {
                 });
             }),
             coreService.globalEventBus.on('system/backup/local/restore/progress', (data) => {
-                enqueueSnackbar({
-                    message: t(data.message || 'settings.backup.localBackup.noty.success'),
-                    variant: data.result,
-                });
+
+                if (data.type === 'oldAppBackupFile') {
+                    console.log(data.file);
+
+                    setEdit({
+                        type: 'oldAppBackupFile',
+                        action: 'prompt',
+                        file: data.file,
+                    })
+                } else {
+                    enqueueSnackbar({
+                        message: t(data.message || 'settings.backup.localBackup.noty.success'),
+                        variant: data.result,
+                    });
+                }
             }),
         ];
 
@@ -169,6 +182,36 @@ function GlobalModals({ children }) {
                         autoFocus
                     >
                         {t('remove')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={(edit && edit.action === 'prompt' && edit.type === 'oldAppBackupFile') || false}
+                onClose={() => setEdit(null)}
+            >
+                <DialogTitle>
+                    {t('settings.backup.localBackup.oldAppBackupFile.title')}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {t('settings.backup.localBackup.oldAppBackupFile.description')}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setEdit(null)} color="primary">
+                        {t('cancel')}
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            eventToBackground('system/backup/local/restore', {
+                                backup: convertClockTabToRigami(edit.file),
+                            });
+                            setEdit(null);
+                        }}
+                        color="primary"
+                        autoFocus
+                    >
+                        {t('settings.backup.localBackup.oldAppBackupFile.continue')}
                     </Button>
                 </DialogActions>
             </Dialog>

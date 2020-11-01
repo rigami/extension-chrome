@@ -49,16 +49,34 @@ class LocalBackup {
         this.bus.on('system/backup/local/restore', ({ backup }) => {
             console.log('restore backup', backup);
 
-            if (backup.meta.version !== 1) {
+            try {
+                if (backup.product === 'ClockTab') {
+                    eventToApp('system/backup/local/restore/progress', {
+                        action: 'prompt',
+                        type: 'oldAppBackupFile',
+                        file: backup,
+                    });
+
+                    return;
+                }
+
+                if (backup.meta.version !== 1) {
+                    eventToApp('system/backup/local/restore/progress', {
+                        result: 'error',
+                        message: 'settings.backup.localBackup.noty.failed.wrongVersion',
+                    });
+                }
+
+                if (backup.settings) this.settingsSyncService.restore(backup.settings);
+                // if (backup.bookmarks) this.settingsSyncService.restore(backup.bookmarks);
+
+                eventToApp('system/backup/local/restore/progress', { result: 'done' });
+            } catch (e) {
                 eventToApp('system/backup/local/restore/progress', {
-                    result: 'failed',
-                    message: 'settings.backup.localBackup.noty.failed.wrongVersion',
+                    result: 'error',
+                    message: 'settings.backup.localBackup.noty.failed.wrongSchema',
                 });
             }
-
-            if (backup.settings) this.settingsSyncService.restore(backup.settings);
-
-            eventToApp('system/backup/local/restore/progress', { result: 'done' });
         });
     }
 

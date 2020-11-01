@@ -111,7 +111,18 @@
       "localBackup": {
         "title": "Create backup",
         "description": "Save application settings and bookmarks on your computer",
-        "create": "Create backup"
+        "create": "Create backup",
+        "item": {
+          "settings": "Settings",
+          "bookmarks": "Bookmarks"
+        },
+        "save": "Save",
+        "restore": "Restore data",
+        "oldAppBackupFile": {
+          "title": "This is the legacy extension save file",
+          "description": "These are saves from the ClockTab application. Not all settings can be appliedь",
+          "continue": "Apply this save"
+        }
       }
     },
     "about":{
