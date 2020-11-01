@@ -29,7 +29,10 @@ class SyncSettings {
 
         try {
             console.log('Getting settings from fast cache');
-            this.settings = { ...this.settings, ...JSON.parse(localStorage.getItem('settings')) };
+            this.settings = {
+                ...this.settings,
+                ...JSON.parse(localStorage.getItem('settings')),
+            };
 
             fastSyncSettings();
         } catch (e) {

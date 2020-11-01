@@ -1,4 +1,4 @@
-import { observable, action, reaction } from 'mobx';
+import { action, reaction, makeAutoObservable } from 'mobx';
 import appVariables from '@/config/appVariables';
 import { BG_TYPE, BG_CHANGE_INTERVAL_MILLISECONDS, BG_SELECT_MODE } from '@/enum';
 import DBConnector from '@/utils/dbConnector';
@@ -13,16 +13,17 @@ export const ERRORS = {
 };
 
 class BackgroundsStore {
-    @observable currentBGId;
-    @observable uploadQueue = [];
-    @observable bgState = 'pending';
-    @observable count;
-    @observable settings;
+    currentBGId;
+    uploadQueue = [];
+    bgState = 'pending';
+    count;
+    settings;
     _currentBG;
     _FULL_PATH = '/backgrounds/full';
-    @observable _coreService;
+    _coreService;
 
     constructor(coreService) {
+        makeAutoObservable(this);
         this._coreService = coreService;
         this.settings = new BackgroundSettingsStore();
 

@@ -12,7 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import { getImageRecalc } from '@/utils/siteSearch';
 import { BKMS_VARIANT } from '@/enum';
-import { useLocalStore, useObserver } from 'mobx-react-lite';
+import { useLocalObservable, useObserver } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: { position: 'relative' },
@@ -74,7 +74,7 @@ function PreviewSelector(props) {
     } = props;
     const classes = useStyles();
     const { t } = useTranslation();
-    const store = useLocalStore(() => ({
+    const store = useLocalObservable(() => ({
         loadedImages: [],
         size: defaultImages.length,
     }));

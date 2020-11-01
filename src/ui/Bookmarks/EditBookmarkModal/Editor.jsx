@@ -5,7 +5,7 @@ import {
     Card,
     Box,
 } from '@material-ui/core';
-import { observer, useLocalStore } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import { getSiteInfo, getImageRecalc } from '@/utils/siteSearch';
@@ -54,7 +54,7 @@ function Editor(props) {
     const bookmarksService = useBookmarksService();
     const [controller, setController] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const store = useLocalStore(() => ({
+    const store = useLocalObservable(() => ({
         editBookmarkId,
         editorHeight: 0,
         icoVariant: BKMS_VARIANT.SMALL,

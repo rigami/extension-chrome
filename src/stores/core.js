@@ -1,6 +1,6 @@
 import BusApp, { eventToBackground, initBus, instanceId } from '@/stores/backgroundApp/busApp';
 import { DESTINATION } from '@/enum';
-import { observable, reaction, action } from 'mobx';
+import { reaction, action, makeAutoObservable } from 'mobx';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
@@ -28,11 +28,12 @@ const PREPARE_PROGRESS = {
 };
 
 class Storage {
-    @observable temp;
-    @observable persistent;
-    @observable isSync = false;
+    temp;
+    persistent;
+    isSync = false;
 
     constructor() {
+        makeAutoObservable(this);
         this.temp = {};
         this.persistent = {};
         try {
@@ -67,10 +68,11 @@ class Storage {
 class Core {
     globalEventBus;
     localEventBus;
-    @observable storage;
-    @observable appState = APP_STATE.WAIT_INIT;
+    storage;
+    appState = APP_STATE.WAIT_INIT;
 
     constructor({ side }) {
+        makeAutoObservable(this);
         this.appState = APP_STATE.INIT;
         initBus(side || DESTINATION.APP);
         this.globalEventBus = BusApp();

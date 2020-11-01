@@ -6,7 +6,7 @@ import {
     Fade,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useObserver, useLocalStore } from 'mobx-react-lite';
+import { useObserver, useLocalObservable } from 'mobx-react-lite';
 import ReactResizeDetector from 'react-resize-detector';
 import Scrollbar from '@/ui-components/CustomScroll';
 import PreviewSelector from './Selector';
@@ -33,7 +33,7 @@ function SelectorWrapper(props) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const store = useLocalStore(() => ({
+    const store = useLocalObservable(() => ({
         popperRef: null,
         filedWidth: 0,
     }));

@@ -16,7 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import useCoreService from '@/stores/BaseStateProvider';
-import { useLocalStore } from 'mobx-react-lite';
+import { useLocalObservable } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 import Explorer from './Explorer';
@@ -63,7 +63,7 @@ function Folder({ id, name, color, isBlurBackdrop }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
     const [listenId, setListenId] = useState(null);
-    const store = useLocalStore(() => ({ popperRef: null }));
+    const store = useLocalObservable(() => ({ popperRef: null }));
     const bookmarksService = useBookmarksService();
     const { t } = useTranslation();
 

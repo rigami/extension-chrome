@@ -70,6 +70,7 @@ function About() {
                 href="https://rigami.io/"
                 target="_blank"
                 color="initial"
+                underline="none"
             >
                 <ListItemIcon>
                     <HomeIcon />
@@ -86,6 +87,7 @@ function About() {
                 href="https://rigami.io/review?service=chrome-extension"
                 target="_blank"
                 color="initial"
+                underline="none"
             >
                 <ListItemIcon>
                     <ReviewIcon />
@@ -105,6 +107,7 @@ function About() {
                 href="https://rigami.io/bugReport?service=chrome-extension"
                 target="_blank"
                 color="initial"
+                underline="none"
             >
                 <ListItemIcon>
                     <BugIcon />
@@ -137,9 +140,10 @@ function About() {
                 button
                 className={classes.row}
                 component={Link}
-                href="https://rigami.io/policy"
+                href="https://github.com/rigami/readme/blob/main/POLICY.md"
                 target="_blank"
                 color="initial"
+                underline="none"
             >
                 <ListItemIcon>
                     <PolicyIcon />

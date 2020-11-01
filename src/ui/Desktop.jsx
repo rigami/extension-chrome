@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { observer, useLocalStore } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     BrokenImageRounded as BrokenIcon,
     DeleteRounded as DeleteIcon,
@@ -59,7 +59,7 @@ function Desktop() {
     const backgroundsStore = useBackgroundsService();
     const coreService = useCoreService();
     const { t } = useTranslation();
-    const store = useLocalStore(() => ({
+    const store = useLocalObservable(() => ({
         currentBg: null,
         nextBg: null,
         state: 'pending',

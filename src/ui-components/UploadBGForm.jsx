@@ -16,7 +16,7 @@ import {
     Box,
     IconButton,
 } from '@material-ui/core';
-import { observer, useLocalStore, useObserver } from 'mobx-react-lite';
+import { observer, useLocalObservable, useObserver } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import {
@@ -212,7 +212,7 @@ function UploadBGForm({ children }) {
 
     const dragRef = useRef(null);
     const [dragFiles, setDragFiles] = useState(null);
-    const store = useLocalStore(() => ({
+    const store = useLocalObservable(() => ({
         requireScrollToBottom: false,
         uploadQueueSize: 0,
     }));

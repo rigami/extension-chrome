@@ -4,7 +4,7 @@ import {
     ClickAwayListener,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useLocalStore } from 'mobx-react-lite';
+import { useLocalObservable } from 'mobx-react-lite';
 import useCoreService from '@/stores/BaseStateProvider';
 import Editor from './Editor';
 
@@ -21,7 +21,7 @@ function EditCategoryModal(props) {
     const classes = useStyles();
     const coreService = useCoreService();
     const [listenId, setListenId] = useState(null);
-    const store = useLocalStore(() => ({ popperRef: null }));
+    const store = useLocalObservable(() => ({ popperRef: null }));
 
     useEffect(() => {
         if (isOpen) {

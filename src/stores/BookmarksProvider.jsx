@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { observer, useLocalStore } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import BookmarksService from '@/stores/bookmarks';
 import useCoreService from '@/stores/BaseStateProvider';
 
@@ -7,7 +7,7 @@ const context = createContext({});
 
 function BookmarksStateProvider({ children }) {
     const coreService = useCoreService();
-    const store = useLocalStore(() => new BookmarksService(coreService));
+    const store = useLocalObservable(() => new BookmarksService(coreService));
     const Context = context;
 
     return store.settings.isSync && (

@@ -85,9 +85,7 @@ function GlobalModals({ children }) {
         ];
 
         if (coreService.storage.temp.newVersion) {
-            enqueueSnackbar({
-                message: t('newVersion.title', { version: coreService.storage.persistent.lastUsageVersion }),
-            });
+            enqueueSnackbar({ message: t('newVersion.title', { version: coreService.storage.persistent.lastUsageVersion }) });
             coreService.storage.updateTemp({ newVersion: false });
         }
 

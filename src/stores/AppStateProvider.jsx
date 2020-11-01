@@ -4,13 +4,13 @@ import React, {
     useEffect,
     useRef,
 } from 'react';
-import { observer, useLocalStore } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import AppService from '@/stores/app';
 
 const context = createContext({});
 
 function AppStateProvider({ children, onChangeTheme }) {
-    const store = useLocalStore(() => new AppService());
+    const store = useLocalObservable(() => new AppService());
     const Context = context;
     const isFirstRender = useRef(true);
 

@@ -11,7 +11,7 @@ import CardLink from '@/ui/Bookmarks/CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import { BKMS_VARIANT, FETCH } from '@/enum';
-import { useObserver, useLocalStore } from 'mobx-react-lite';
+import { useObserver, useLocalObservable } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     cover: {
@@ -62,7 +62,7 @@ function Preview(props) {
     const classes = useStyles();
     const { t } = useTranslation();
 
-    const store = useLocalStore(() => ({
+    const store = useLocalObservable(() => ({
         stateImageLoad: FETCH.WAIT,
         loadUrl: '',
     }));

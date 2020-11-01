@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { action, makeAutoObservable } from 'mobx';
 import { assign, pick } from 'lodash';
 import FSConnector from '@/utils/fsConnector';
 
@@ -10,10 +10,11 @@ class Bookmark {
     icoVariant;
     imageUrl;
     icoFileName;
-    @observable categories;
-    @observable clickCounts = 0;
+    categories;
+    clickCounts = 0;
 
     constructor(bookmark = {}) {
+        makeAutoObservable(this);
         this.id = bookmark.id;
         this.url = bookmark.url;
         this.name = bookmark.name;

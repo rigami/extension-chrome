@@ -1,16 +1,17 @@
-import { observable, action } from 'mobx';
+import { action, makeAutoObservable } from 'mobx';
 import defaultSettings from '@/config/settings';
 import { assign, pick, size } from 'lodash';
 import BusApp, { eventToBackground, instanceId } from '@/stores/backgroundApp/busApp';
 
 class BackgroundSettingsStore {
-    @observable selectionMethod;
-    @observable type;
-    @observable changeInterval;
-    @observable dimmingPower;
-    @observable isSync = false;
+    selectionMethod;
+    type;
+    changeInterval;
+    dimmingPower;
+    isSync = false;
 
     constructor() {
+        makeAutoObservable(this);
         this.selectionMethod = defaultSettings.backgrounds.selection_method;
         this.type = defaultSettings.backgrounds.type;
         this.changeInterval = defaultSettings.backgrounds.change_interval;
@@ -48,13 +49,14 @@ class BackgroundSettingsStore {
 }
 
 class BookmarksSettingsStore {
-    @observable fapStyle;
-    @observable fapPosition;
-    @observable favorites;
-    @observable syncWithSystem;
-    @observable isSync = false;
+    fapStyle;
+    fapPosition;
+    favorites;
+    syncWithSystem;
+    isSync = false;
 
     constructor() {
+        makeAutoObservable(this);
         this.fapStyle = defaultSettings.bookmarks.fap_style;
         this.fapPosition = defaultSettings.bookmarks.fap_position;
         this.favorites = defaultSettings.bookmarks.favorites;
@@ -92,15 +94,16 @@ class BookmarksSettingsStore {
 }
 
 class AppSettingsStore {
-    @observable theme;
-    @observable tabName;
-    @observable defaultActivity;
-    @observable useSystemFont;
-    @observable backdropTheme;
-    @observable lastUsageVersion;
-    @observable isSync = false;
+    theme;
+    tabName;
+    defaultActivity;
+    useSystemFont;
+    backdropTheme;
+    lastUsageVersion;
+    isSync = false;
 
     constructor() {
+        makeAutoObservable(this);
         this.theme = defaultSettings.app.theme;
         this.tabName = defaultSettings.app.tab_name;
         this.useSystemFont = defaultSettings.app.use_system_font;

@@ -1,13 +1,14 @@
-import { action, observable, computed } from 'mobx';
+import { action, computed, makeAutoObservable } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
 import getUniqueColor from '@/utils/uniqueColor';
 import { DESTINATION } from '@/enum';
 import Category from '@/stores/bookmarks/entities/category';
 
 class CategoriesStore {
-    @observable _categories = [];
+    _categories = [];
 
     constructor(coreService) {
+        makeAutoObservable(this);
         this._coreService = coreService;
     }
 

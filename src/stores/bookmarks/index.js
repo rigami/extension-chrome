@@ -1,4 +1,4 @@
-import { action, observable, reaction } from 'mobx';
+import { action, makeAutoObservable, reaction } from 'mobx';
 import { DESTINATION } from '@/enum';
 import { BookmarksSettingsStore } from '@/stores/app/settings';
 import DBConnector from '@/utils/dbConnector';
@@ -6,14 +6,15 @@ import CategoriesStore from './categories';
 import BookmarksStore from './bookmarks';
 
 class BookmarksService {
-    @observable categories;
-    @observable bookmarks;
-    @observable lastSearch = null;
-    @observable lastTruthSearchTimestamp = null;
-    @observable favorites = [];
+    categories;
+    bookmarks;
+    lastSearch = null;
+    lastTruthSearchTimestamp = null;
+    favorites = [];
     _coreService;
 
     constructor(coreService) {
+        makeAutoObservable(this);
         this._coreService = coreService;
         this.categories = new CategoriesStore(coreService);
         this.bookmarks = new BookmarksStore(coreService);

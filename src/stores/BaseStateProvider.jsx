@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { observer, useLocalStore } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import CoreAppService from '@/stores/core';
 
 const context = createContext({});
 
 function BaseStateProvider({ side, children }) {
-    const store = useLocalStore(() => new CoreAppService({ side }));
+    const store = useLocalObservable(() => new CoreAppService({ side }));
     const Context = context;
 
     useEffect(() => {

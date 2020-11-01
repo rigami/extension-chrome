@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import { useObserver, useLocalStore } from 'mobx-react-lite';
+import { useObserver, useLocalObservable } from 'mobx-react-lite';
 import ReactResizeDetector from 'react-resize-detector';
 import Scrollbar from '@/ui-components/CustomScroll';
 import Search from './Search';
@@ -44,7 +44,7 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
     const [isBlockEvent, setIsBlockEvent] = useState(false);
     const secondInput = createRef();
 
-    const store = useLocalStore(() => ({
+    const store = useLocalObservable(() => ({
         searchRequest,
         popperRef: null,
         filedWidth: 0,

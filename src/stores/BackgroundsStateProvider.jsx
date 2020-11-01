@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { observer, useLocalStore } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import BackgroundsService from '@/stores/backgrounds';
 import useCoreService from '@/stores/BaseStateProvider';
 
@@ -7,7 +7,7 @@ const context = createContext({});
 
 function BackgroundsStateProvider({ children }) {
     const coreService = useCoreService();
-    const store = useLocalStore(() => new BackgroundsService(coreService));
+    const store = useLocalObservable(() => new BackgroundsService(coreService));
     const Context = context;
 
     return store.settings.isSync && (

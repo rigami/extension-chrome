@@ -1,11 +1,12 @@
-import { action, observable } from 'mobx';
+import { action, makeAutoObservable } from 'mobx';
 import { AppSettingsStore } from '@/stores/app/settings';
 
 class AppStateStore {
-    @observable activity = 'desktop';
-    @observable settings;
+    activity = 'desktop';
+    settings;
 
     constructor() {
+        makeAutoObservable(this);
         this.settings = new AppSettingsStore();
     }
 

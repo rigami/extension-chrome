@@ -14,7 +14,7 @@ import {
 import Categories from '@/ui/Bookmarks/Categories';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import { useObserver, useLocalStore } from 'mobx-react-lite';
+import { useObserver, useLocalObservable } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import SearchSiteField from './SearchSiteField';
 
@@ -62,7 +62,7 @@ function FieldsEditor(props) {
     const classes = useStyles();
     const { t } = useTranslation();
 
-    const store = useLocalStore(() => ({
+    const store = useLocalObservable(() => ({
         searchRequest,
         url,
         name,
