@@ -35,6 +35,10 @@ module.exports = {
                 // Use "transform: '@material-ui/icons/${member}'," if your bundler does not support ES modules
                 'transform': '@material-ui/icons/esm/${member}',
                 'preventFullImport': true
+            },
+            'lodash': {
+                'transform': 'lodash/${member}',
+                'preventFullImport': true
             }
         }]
     ]
