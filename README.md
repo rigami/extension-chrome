@@ -4,6 +4,7 @@
 
 
 Simple and beautiful new tab for chrome Transform your start page in your browser with live wallpapers.
+## Build & Develop
 
 ### Develop build
 ```bash
@@ -17,3 +18,11 @@ $ yarn build
 $ zip -r release/rigami-{CURRENT_VERSION}.zip build
 ```
 2. Upload to dev panel
+
+## Screenshots
+
+![screenshot 1](docs/screenshot_1.png)
+![screenshot 2](docs/screenshot_2.png)
+![screenshot 3](docs/screenshot_3.png)
+![screenshot 4](docs/screenshot_4.png)
+![screenshot 5](docs/screenshot_5.png)
