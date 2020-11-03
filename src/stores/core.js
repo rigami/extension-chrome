@@ -21,6 +21,7 @@ const APP_STATE = {
 };
 
 const PREPARE_PROGRESS = {
+    WAIT: 'WAIT',
     CREATE_FS: 'CREATE_FS',
     FETCH_BG: 'FETCH_BG',
     SAVE_BG: 'SAVE_BG',

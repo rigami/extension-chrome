@@ -228,8 +228,15 @@
     "prepareApp": "Preparing the application",
     "pleaseWait": "Preparing the application...",
     "allDone": "All is ready",
-    "prepareAppDoneDescription": "The application is ready to work",
-    "continue": "Continue"
+    "prepareAppDoneDescription": "The application is under testing and active development, I would like to hear about all the problems you face, as well as all your ideas for development. You can tell in the application settings in the \"about application\" tab. Thank you very much)",
+    "continue": "Continue",
+    "stage": {
+      "WAIT": "Waiting...",
+      "CREATE_FS": "Create file system",
+      "FETCH_BG": "Fetching first background",
+      "SAVE_BG": "Save background",
+      "DONE": "Done!"
+    }
   },
   "newVersion": {
     "title": "New version {{version}}!"

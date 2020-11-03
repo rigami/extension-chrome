@@ -11,7 +11,7 @@ function FirstLookScreen({ onStart }) {
     const { t } = useTranslation();
     const service = useService();
     const [progress, setProgress] = useState(0);
-    const [stage, setStage] = useState('WAIT');
+    const [stage, setStage] = useState(PREPARE_PROGRESS.WAIT);
 
     useEffect(() => {
         document.title = i18n.t('tabName.prepare') || 'Rigami';
@@ -29,7 +29,7 @@ function FirstLookScreen({ onStart }) {
             <Fade in={stage !== PREPARE_PROGRESS.DONE}>
                 <FullscreenStub
                     message={t('firstView.prepareApp')}
-                    description={`${t('firstView.pleaseWait')} ${stage}`}
+                    description={`${t('firstView.pleaseWait')} ${t(`firstView.stage.${stage}`)}`}
                     style={{ height: '100vh' }}
                 >
                     <LinearProgress variant="determinate" style={{ width: 240 }} value={progress} />
