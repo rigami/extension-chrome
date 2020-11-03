@@ -1,8 +1,9 @@
-import BookmarksStore from '@/stores/bookmarks/bookmarks';
+import BookmarksService from '@/stores/bookmarks';
 import BusApp from '@/stores/backgroundApp/busApp';
 import SyncSettings from './syncSettings';
 import SyncStorage from './syncStorage';
 import SyncSystemBookmarks from './syncSystemBookmarks';
+import SyncBookmarks from './syncBookmarks';
 import LocalBackup from './localBackup';
 
 class Background {
@@ -12,13 +13,17 @@ class Background {
     systemBookmarksService;
     localBackup;
     bookmarks;
+    bookmarksSyncService;
+    bookmarksService;
 
     constructor() {
         this.bus = BusApp();
-        this.bookmarks = new BookmarksStore(this.bus);
+        this.bookmarksService = new BookmarksService();
+        this.bookmarks = this.bookmarksService.bookmarks;
+        this.bookmarksSyncService = new SyncBookmarks(this.bookmarksService);
         this.settingsService = new SyncSettings();
         this.storageService = new SyncStorage();
-        this.localBackup = new LocalBackup(this.bookmarks, this.settingsService);
+        this.localBackup = new LocalBackup(this.bookmarks, this.settingsService, this.bookmarksSyncService);
         this.systemBookmarksService = new SyncSystemBookmarks();
     }
 }

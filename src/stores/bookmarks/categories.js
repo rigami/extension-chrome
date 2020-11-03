@@ -15,6 +15,8 @@ class CategoriesStore {
     @action('sync categories with db')
     async sync() {
         this._categories = await DBConnector().getAll('categories');
+
+        return this._categories;
     }
 
     @computed
@@ -40,7 +42,7 @@ class CategoriesStore {
 
         const similarCategory = await DBConnector().getFromIndex('categories', 'name', name.trim());
 
-        if (similarCategory?.id !== id) {
+        if (similarCategory && similarCategory.id !== id) {
             return similarCategory?.id;
         }
 
@@ -59,7 +61,7 @@ class CategoriesStore {
             });
         }
 
-        this._coreService.globalEventBus.call('category/new', DESTINATION.APP, { categoryId: newCategoryId });
+        if (this._coreService) this._coreService.globalEventBus.call('category/new', DESTINATION.APP, { categoryId: newCategoryId });
 
         return newCategoryId;
     }
@@ -76,7 +78,7 @@ class CategoriesStore {
 
         await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
 
-        this._coreService.globalEventBus.call('category/remove', DESTINATION.APP, { categoryId });
+        if (this._coreService) this._coreService.globalEventBus.call('category/remove', DESTINATION.APP, { categoryId });
     }
 }
 

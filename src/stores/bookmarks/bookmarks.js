@@ -103,32 +103,32 @@ class BookmarksStore {
         const checkQuery = (bookmark) => !(
             (
                 query.categories.fullMatch
-                    && difference(query.categories.match, bookmark.categories).length !== 0
+                && difference(query.categories.match, bookmark.categories).length !== 0
             )
-                || (
-                    query.url.fullMatch
-                    && bookmark.url !== query.url.match
-                )
-                || (
-                    !query.url.fullMatch
-                    && bookmark.url.indexOf(query.url.match) === -1
-                )
-                || (
-                    query.name.fullMatch
-                    && bookmark.name !== query.name.match
-                )
-                || (
-                    !query.name.fullMatch
-                    && bookmark.name.indexOf(query.name.match) === -1
-                )
-                || (
-                    query.description.fullMatch
-                    && bookmark.description !== query.description.match
-                )
-                || (
-                    !query.description.fullMatch
-                    && bookmark.description.indexOf(query.description.match) === -1
-                )
+            || (
+                query.url.fullMatch
+                && bookmark.url !== query.url.match
+            )
+            || (
+                !query.url.fullMatch
+                && bookmark.url.indexOf(query.url.match) === -1
+            )
+            || (
+                query.name.fullMatch
+                && bookmark.name !== query.name.match
+            )
+            || (
+                !query.name.fullMatch
+                && bookmark.name.indexOf(query.name.match) === -1
+            )
+            || (
+                query.description.fullMatch
+                && (bookmark.description || '') !== query.description.match
+            )
+            || (
+                !query.description.fullMatch
+                && ((bookmark.description || '').indexOf(query.description.match) === -1)
+            )
         );
 
         const findBookmarks = {};
@@ -348,7 +348,7 @@ class BookmarksStore {
             }
         }
 
-        this._coreService.globalEventBus.call('bookmark/new', DESTINATION.APP, { bookmarkId: saveBookmarkId });
+        if (this._coreService) this._coreService.globalEventBus.call('bookmark/new', DESTINATION.APP, { bookmarkId: saveBookmarkId });
 
         return saveBookmarkId;
     }
@@ -372,7 +372,7 @@ class BookmarksStore {
             console.log('Failed remove bookmark icon', e);
         }
 
-        this._coreService.globalEventBus.call('bookmark/remove', DESTINATION.APP, { bookmarkId });
+        if (this._coreService) this._coreService.globalEventBus.call('bookmark/remove', DESTINATION.APP, { bookmarkId });
     }
 }
 

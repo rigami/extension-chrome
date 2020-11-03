@@ -20,6 +20,8 @@ class BookmarksService {
         this.bookmarks = new BookmarksStore(coreService);
         this.settings = new BookmarksSettingsStore();
 
+        if (!this._coreService) return;
+
         this.categories.sync();
         this.syncFavorites();
 
@@ -44,6 +46,8 @@ class BookmarksService {
             id: favoriteId,
             type,
         }));
+
+        return this.favorites;
     }
 
     @action('add to favorites')
@@ -53,7 +57,7 @@ class BookmarksService {
             favoriteId: id,
         });
 
-        this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: id });
+        if (this._coreService) this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: id });
 
         return favoriteId;
     }
@@ -72,7 +76,7 @@ class BookmarksService {
 
         await DBConnector().delete('favorites', favorite.id);
 
-        this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId: id });
+        if (this._coreService) this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId: id });
 
         return favorite.id;
     }

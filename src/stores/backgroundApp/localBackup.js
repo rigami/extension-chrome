@@ -7,11 +7,13 @@ class LocalBackup {
     bus;
     bookmarksService;
     settingsSyncService;
+    bookmarksSyncService;
 
-    constructor(bookmarksService, settingsSyncService) {
+    constructor(bookmarksService, settingsSyncService, bookmarksSyncService) {
         this.bus = BusApp();
         this.bookmarksService = bookmarksService;
         this.settingsSyncService = settingsSyncService;
+        this.bookmarksSyncService = bookmarksSyncService;
 
         this.bus.on('system/backup/local/create', async ({ settings, bookmarks }) => {
             const backup = {};
@@ -46,7 +48,7 @@ class LocalBackup {
             });
         });
 
-        this.bus.on('system/backup/local/restore', ({ backup }) => {
+        this.bus.on('system/backup/local/restore', async ({ backup }) => {
             console.log('restore backup', backup);
 
             try {
@@ -67,8 +69,8 @@ class LocalBackup {
                     });
                 }
 
-                if (backup.settings) this.settingsSyncService.restore(backup.settings);
-                // if (backup.bookmarks) this.settingsSyncService.restore(backup.bookmarks);
+                if (backup.settings) await this.settingsSyncService.restore(backup.settings);
+                if (backup.bookmarks) await this.bookmarksSyncService.restore(backup.bookmarks);
 
                 eventToApp('system/backup/local/restore/progress', { result: 'done' });
             } catch (e) {
