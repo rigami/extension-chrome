@@ -1,4 +1,4 @@
-import { action } from 'mobx';
+import { action, makeAutoObservable } from 'mobx';
 import StorageConnector from '@/utils/storageConnector';
 import DBConnector from '@/utils/dbConnector';
 import { cachingDecorator } from '@/utils/decorators';
@@ -11,9 +11,12 @@ import asyncAction from '@/utils/asyncAction';
 
 class BookmarksStore {
     _coreService;
+    _globalService;
 
-    constructor(coreService) {
+    constructor(coreService, globalService) {
+        makeAutoObservable(this);
         this._coreService = coreService;
+        this._globalService = globalService;
     }
 
     @action('get bookmark')
@@ -204,12 +207,6 @@ class BookmarksStore {
 
         await tx.done;
 
-        console.log({
-            findBookmarks,
-            findCategories,
-            findBookmarksByCategories,
-        });
-
         if (
             query.categories.match.length !== 0
             || query.url.match !== ''
@@ -355,6 +352,8 @@ class BookmarksStore {
 
     @action('remove bookmark')
     async remove(bookmarkId) {
+        await this._globalService.removeFromFavorites({ type: 'bookmark', id: bookmarkId });
+
         const oldBookmark = await DBConnector().get('bookmarks', bookmarkId);
         await DBConnector().delete('bookmarks', bookmarkId);
 

@@ -6,10 +6,13 @@ import Category from '@/stores/bookmarks/entities/category';
 
 class CategoriesStore {
     _categories = [];
+    _coreService;
+    _globalService;
 
-    constructor(coreService) {
+    constructor(coreService, globalService) {
         makeAutoObservable(this);
         this._coreService = coreService;
+        this._globalService = globalService;
     }
 
     @action('sync categories with db')
@@ -68,6 +71,8 @@ class CategoriesStore {
 
     @action('remove category')
     async remove(categoryId) {
+        await this._globalService.removeFromFavorites({ type: 'bookmark', id: bookmarkId });
+
         await DBConnector().delete('categories', categoryId);
 
         const removeBinds = await DBConnector().getAllFromIndex(

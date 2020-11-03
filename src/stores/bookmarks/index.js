@@ -16,8 +16,8 @@ class BookmarksService {
     constructor(coreService) {
         makeAutoObservable(this);
         this._coreService = coreService;
-        this.categories = new CategoriesStore(coreService);
-        this.bookmarks = new BookmarksStore(coreService);
+        this.categories = new CategoriesStore(coreService, this);
+        this.bookmarks = new BookmarksStore(coreService, this);
         this.settings = new BookmarksSettingsStore();
 
         if (!this._coreService) return;
