@@ -4,16 +4,20 @@ import {
     Typography,
     Box,
     Button,
+    Container,
 } from '@material-ui/core';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
+    },
+    container: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'column',
+        height: '100%',
     },
     icon: {
         fontSize: '56px',
@@ -45,17 +49,19 @@ function FullScreenStub(props) {
 
     return (
         <Box className={clsx(classes.root, externalClassName)} {...other}>
-            {iconRender && iconRender({ className: classes.icon })}
-            {message && (
-                <Typography variant="h6" className={classes.title}>{message}</Typography>
-            )}
-            {description && (
-                <Typography variant="body1" className={classes.description} gutterBottom>{description}</Typography>
-            )}
-            {children}
-            {actions && actions.map(({ title, ...actionProps }) => (
-                <Button {...actionProps} key={title}>{title}</Button>
-            ))}
+            <Container className={classes.container} maxWidth="md">
+                {iconRender && iconRender({ className: classes.icon })}
+                {message && (
+                    <Typography variant="h6" className={classes.title}>{message}</Typography>
+                )}
+                {description && (
+                    <Typography variant="body1" className={classes.description} gutterBottom>{description}</Typography>
+                )}
+                {children}
+                {actions && actions.map(({ title, ...actionProps }) => (
+                    <Button {...actionProps} key={title}>{title}</Button>
+                ))}
+            </Container>
         </Box>
     );
 }

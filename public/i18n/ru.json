@@ -109,7 +109,8 @@
       "useSystemFont":"Использовать системный шрифт",
       "tabName":{
         "title":"Имя вкладки",
-        "description":"Укажите свое имя вкладки"
+        "description":"Укажите свое имя вкладки",
+        "emptyName": "Пустая вкладка без имени"
       }
     },
     "backup":{
@@ -216,7 +217,8 @@
     }
   },
   "tabName":{
-    "prepare":"Подготовка..."
+    "prepare":"Подготовка...",
+    "default": "Вкладка Rigami"
   },
   "uploadBG":{
     "labelFile":"Название файла",

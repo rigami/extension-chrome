@@ -138,6 +138,10 @@ class AppSettingsStore {
             'defaultActivity',
         ]);
 
+        if ('tabName' in props) {
+            localStorage.setItem('app_tab_name', props.tabName);
+        }
+
         assign(this, updProps);
 
         if (sync && size(updProps) !== 0) eventToBackground('system/syncSettings/app', updProps);

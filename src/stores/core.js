@@ -7,6 +7,7 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import DBConnector, { open as openDB } from '@/utils/dbConnector';
 import appVariables from '@/config/appVariables';
+import defaultSettings from '@/config/settings';
 import createPreview from '@/utils/createPreview';
 import FSConnector from '@/utils/fsConnector';
 import EventBus from '@/utils/eventBus';
@@ -150,6 +151,7 @@ class Core {
         });
 
         this.appState = APP_STATE.WORK;
+
 
         console.log('DONE');
         progressCallback(100, PREPARE_PROGRESS.DONE);

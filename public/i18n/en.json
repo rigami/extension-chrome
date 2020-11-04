@@ -109,7 +109,8 @@
       "useSystemFont":"Use system font",
       "tabName":{
         "title":"Tab name",
-        "description":"Enter your tab name"
+        "description":"Enter your tab name",
+        "emptyName": "Blank tab with no name"
       }
     },
     "backup":{
@@ -216,7 +217,8 @@
     }
   },
   "tabName":{
-    "prepare":"Prepare..."
+    "prepare":"Prepare...",
+    "default": "Rigami tab"
   },
   "uploadBG":{
     "labelFile":"File name",

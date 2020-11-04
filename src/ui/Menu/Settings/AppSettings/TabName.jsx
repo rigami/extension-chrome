@@ -70,7 +70,10 @@ function TabName() {
                     fullWidth
                     placeholder={t('settings.app.tabName.emptyName')}
                     defaultValue={appService.settings.tabName}
-                    onChange={(event) => appService.settings.update({ tabName: event.target.value })}
+                    onChange={(event) => {
+                        document.title = event.target.value || '\u200E';
+                        appService.settings.update({ tabName: event.target.value });
+                    }}
                 />
             </Box>
         </React.Fragment>

@@ -20,6 +20,11 @@ function FirstLookScreen({ onStart }) {
             await service.setDefaultState((progressValue, stageValue) => {
                 setProgress(progressValue);
                 setStage(stageValue);
+
+                if (stageValue === PREPARE_PROGRESS.DONE) {
+                    document.title = i18n.t('tabName.default') || 'Rigami';
+                    localStorage.setItem('app_tab_name', document.title);
+                }
             });
         }).catch(console.error);
     }, []);
