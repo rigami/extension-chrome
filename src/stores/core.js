@@ -101,19 +101,13 @@ class Core {
 
     async initialization() {
         await i18n
-            .use(initReactI18next);
-
-        if (PRODUCTION_MODE) {
-            await i18n
-                .use(LanguageDetector)
-                .use(Backend);
-        }
-
-        await i18n
+            .use(initReactI18next)
+            .use(LanguageDetector)
+            .use(Backend)
             .init({
                 load: 'languageOnly',
                 fallbackLng: PRODUCTION_MODE ? 'en' : 'dev',
-                // debug: true,
+                debug: !PRODUCTION_MODE,
                 interpolation: { escapeValue: false },
                 backend: { loadPath: 'resource/i18n/{{lng}}.json' },
             });
