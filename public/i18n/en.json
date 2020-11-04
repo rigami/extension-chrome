@@ -64,6 +64,13 @@
     "bookmarks":{
       "title":"Fast access",
       "description":"Change favorites bar",
+      "general": {
+        "title": "General",
+        "openOnStartup": {
+          "title": "Open bookmarks panel at startup",
+          "description": "Bookmarks panel will open when opening a new tab"
+        }
+      },
       "FAP": {
         "title": "Quick Access Toolbar",
         "useFAP":{
