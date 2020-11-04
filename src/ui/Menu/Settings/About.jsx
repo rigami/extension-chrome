@@ -104,7 +104,7 @@ function About() {
                 button
                 className={classes.row}
                 component={Link}
-                href="https://rigami.io/bugReport?service=chrome-extension"
+                href="https://rigami.io/bug-report?service=chrome-extension"
                 target="_blank"
                 color="initial"
                 underline="none"
