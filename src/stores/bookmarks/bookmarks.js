@@ -249,6 +249,7 @@ class BookmarksStore {
             name,
             description,
             imageURL,
+            imageBase64,
             categories = [],
             icoVariant,
             id,
@@ -314,27 +315,34 @@ class BookmarksStore {
             }),
         );
 
-        if (imageURL && imageURL.substring(0, 11) !== 'filesystem:') {
-            const img = await new Promise((resolve, reject) => {
-                const imgLoad = document.createElement('img');
-                imgLoad.crossOrigin = 'anonymous';
-                imgLoad.src = imageURL;
+        if (imageBase64 || (imageURL && imageURL.substring(0, 11) !== 'filesystem:')) {
+            let blob;
 
-                imgLoad.onload = () => resolve(imgLoad);
-                imgLoad.onerror = reject;
-            });
+            if (imageBase64) {
+                const base64Response = await fetch(imageBase64);
+                blob = await base64Response.blob();
+            } else {
+                const img = await new Promise((resolve, reject) => {
+                    const imgLoad = document.createElement('img');
+                    imgLoad.crossOrigin = 'anonymous';
+                    imgLoad.src = imageURL;
 
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
+                    imgLoad.onload = () => resolve(imgLoad);
+                    imgLoad.onerror = reject;
+                });
 
-            const context = canvas.getContext('2d');
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
 
-            context.drawImage(img, 0, 0);
+                const context = canvas.getContext('2d');
 
-            const blob = await new Promise((resolve) => {
-                canvas.toBlob(resolve, 'image/png');
-            });
+                context.drawImage(img, 0, 0);
+
+                blob = await new Promise((resolve) => {
+                    canvas.toBlob(resolve, 'image/png');
+                });
+            }
 
             await FSConnector.saveFile('/bookmarksIcons', blob, icoName);
         } else if (!imageURL && id) {

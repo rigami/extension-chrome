@@ -213,7 +213,7 @@ function BackupSettings() {
                                     color="primary"
                                     className={classes.backupButton}
                                 >
-                                    {t('settings.backup.localeBackup.restore')}
+                                    {t('settings.backup.localBackup.restore')}
                                 </Button>
                             </label>
                         </React.Fragment>

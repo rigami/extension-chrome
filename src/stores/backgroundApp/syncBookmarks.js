@@ -59,6 +59,7 @@ class SyncBookmarks {
                 await this.bookmarksService.bookmarks.save({
                     ...findBookmark,
                     ...bookmark,
+                    imageBase64: bookmark.image,
                     categories: uniq([
                         ...findBookmark.categories,
                         ...bookmark.categories.map((id) => replaceCategoryId[id] || id),
@@ -70,6 +71,7 @@ class SyncBookmarks {
                 console.log(`Bookmark '${bookmark.name}' not find in local store. Save as new`)
                 replaceBookmarkId[bookmark.id] = await this.bookmarksService.bookmarks.save({
                     ...bookmark,
+                    imageBase64: bookmark.image,
                     categories: bookmark.categories.map((id) => replaceCategoryId[id] || id),
                     id: null,
                 });
