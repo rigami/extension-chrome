@@ -79,7 +79,6 @@ function GlobalModals({ children }) {
                 });
             }),
             coreService.globalEventBus.on('system/backup/local/restore/progress', (data) => {
-
                 if (data.type === 'oldAppBackupFile') {
                     console.log(data.file);
 
@@ -87,7 +86,7 @@ function GlobalModals({ children }) {
                         type: 'oldAppBackupFile',
                         action: 'prompt',
                         file: data.file,
-                    })
+                    });
                 } else {
                     enqueueSnackbar({
                         message: t(data.message || 'settings.backup.localBackup.noty.success'),
@@ -203,9 +202,7 @@ function GlobalModals({ children }) {
                     </Button>
                     <Button
                         onClick={() => {
-                            eventToBackground('system/backup/local/restore', {
-                                backup: convertClockTabToRigami(edit.file),
-                            });
+                            eventToBackground('system/backup/local/restore', { backup: convertClockTabToRigami(edit.file) });
                             setEdit(null);
                         }}
                         color="primary"

@@ -195,6 +195,15 @@
         "writeName":"Enter the name of the bookmark"
       }
     },
+    "noMatchingItems": "No matching items",
+    "nothingFound": {
+      "title": "Nothing found",
+      "description": "Try changing your request"
+    },
+    "noBookmarks": {
+      "title": "You don't have any bookmarks yet",
+      "description": "Create your first bookmark"
+    },
     "remove": {
       "title": "Delete bookmark?",
       "description": "The bookmark will be deleted forever, are you sure?"
@@ -203,6 +212,7 @@
   "category":{
     "add":"Add category",
     "createPlaceholder":"name of category",
+    "createFirstHelper": "Create the first category",
     "remove": {
       "title": "Delete category?",
       "description": "The category will be removed from all linked bookmarks, are you sure?"

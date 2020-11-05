@@ -19,7 +19,7 @@ class Bookmark {
         this.id = bookmark.id;
         this.url = bookmark.url;
         this.name = bookmark.name;
-        this.description = bookmark.description || "";
+        this.description = bookmark.description || '';
         this.icoVariant = bookmark.icoVariant || BKMS_VARIANT.SYMBOL;
         this.imageUrl = bookmark.imageUrl || FSConnector.getIconURL(bookmark.icoFileName);
         this.categories = bookmark.categories || [];

@@ -5,6 +5,7 @@ import {
     Typography,
     Fade,
 } from '@material-ui/core';
+import { FindReplaceRounded as ReFoundIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ReactResizeDetector from 'react-resize-detector';
@@ -12,6 +13,7 @@ import useBookmarksService from '@/stores/BookmarksProvider';
 import useAppService from '@/stores/AppStateProvider';
 import Categories from '@/ui/Bookmarks/Categories';
 import FullScreenStub from '@/ui-components/FullscreenStub';
+import { useTranslation } from 'react-i18next';
 import Category from './Categories/CtegoryWrapper';
 import AddBookmarkButton from './EditBookmarkModal/AddButton';
 import CardLink from './CardLink';
@@ -21,9 +23,24 @@ const useStyles = makeStyles((theme) => ({
         width: '100vw',
         backgroundColor: theme.palette.background.paper,
         transform: 'translate3d(0,0,0)',
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
     },
     chipContainer: { marginBottom: theme.spacing(3) },
-    container: { paddingTop: theme.spacing(3) },
+    container: {
+        paddingTop: theme.spacing(3),
+        height: '100%',
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    fadeWrapper: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+    },
 }));
 
 const maxColumnCalc = () => Math.min(
@@ -31,7 +48,15 @@ const maxColumnCalc = () => Math.min(
     6,
 );
 
+const SEARCH_STATUS = {
+    WAIT: 'WAIT',
+    NOTHING_FOUND: 'NOTHING_FOUND',
+    NO_BOOKMARKS: 'NO_BOOKMARKS',
+    DONE: 'DONE',
+};
+
 function Bookmarks() {
+    const { t } = useTranslation();
     const classes = useStyles();
     const theme = useTheme();
     const bookmarksService = useBookmarksService();
@@ -40,6 +65,7 @@ function Bookmarks() {
     const [columnsCount, setColumnsCount] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
     const [findBookmarks, setFindBookmarks] = useState(null);
+    const [statusSearch, setStatusSearch] = useState(SEARCH_STATUS.WAIT);
     const [searchCategories, setSearchCategories] = useState(null);
     const [lastTruthSearchTimestamp, setLastTruthSearchTimestamp] = useState(bookmarksService.lastTruthSearchTimestamp);
 
@@ -52,6 +78,17 @@ function Bookmarks() {
                 setFindBookmarks(searchResult);
                 setIsSearching(false);
                 setSearchCategories(null);
+                if (searchResult.length === 0) {
+                    setStatusSearch(SEARCH_STATUS.NOTHING_FOUND);
+                } else if (
+                    searchResult.length === 1
+                    && searchResult[0].category.id === 'all'
+                    && searchResult[0].bookmarks.length === 0
+                ) {
+                    setStatusSearch(SEARCH_STATUS.NO_BOOKMARKS);
+                } else {
+                    setStatusSearch(SEARCH_STATUS.DONE);
+                }
             });
     };
 
@@ -82,6 +119,8 @@ function Bookmarks() {
         }
     }, [bookmarksService.lastTruthSearchTimestamp]);
 
+    console.log('findBookmarks', findBookmarks, statusSearch);
+
     return (
         <React.Fragment>
             <Box id="bookmarks-container" className={classes.root}>
@@ -101,11 +140,21 @@ function Bookmarks() {
                             if (searchCategories) handleSearch({ categories: { match: searchCategories } });
                         }}
                     >
-                        <div>
-                            {findBookmarks !== null && findBookmarks.length === 0 && (
-                                <FullScreenStub message="Ничего не найдено (" />
+                        <div className={classes.fadeWrapper}>
+                            {statusSearch === SEARCH_STATUS.NOTHING_FOUND && (
+                                <FullScreenStub
+                                    iconRender={ReFoundIcon}
+                                    message={t('bookmark.nothingFound.title')}
+                                    description={t('bookmark.nothingFound.description')}
+                                />
                             )}
-                            {findBookmarks !== null && findBookmarks.map(({ category, bookmarks }) => {
+                            {statusSearch === SEARCH_STATUS.NO_BOOKMARKS && (
+                                <FullScreenStub
+                                    message={t('bookmark.noBookmarks.title')}
+                                    description={t('bookmark.noBookmarks.description')}
+                                />
+                            )}
+                            {statusSearch === SEARCH_STATUS.DONE && findBookmarks.map(({ category, bookmarks }) => {
                                 columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
 
                                 return (
@@ -115,7 +164,7 @@ function Bookmarks() {
                                                 variant="body1"
                                                 style={{ color: theme.palette.text.secondary }}
                                             >
-                                                Нет подходящих элементов
+                                                {t('bookmark.noMatchingItems')}
                                             </Typography>
                                         )}
                                         {bookmarks.reduce((acc, curr) => {

@@ -10,6 +10,7 @@ import {
     BookmarkRounded as UnpinnedFavoriteIcon,
     EditRounded as EditIcon,
     DeleteRounded as RemoveIcon,
+    ArrowBackRounded as ArrowIcon,
 } from '@material-ui/icons';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import clsx from 'clsx';
@@ -38,6 +39,16 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '50%',
         marginLeft: `${theme.spacing(1)}px !important`,
         flexShrink: 0,
+    },
+    arrowBlock: {
+        marginLeft: theme.spacing(2),
+        display: 'flex',
+        alignItems: 'center',
+        color: theme.palette.text.secondary,
+        '& svg': {
+            verticalAlign: 'middle',
+            marginRight: theme.spacing(1),
+        },
     },
 }));
 
@@ -131,6 +142,7 @@ function Categories(props) {
         autoSelect = false,
         maxRows,
     } = props;
+    const { t } = useTranslation();
     const classes = useStyles();
     const bookmarksService = useBookmarksService();
     const [selectedCategories, setSelectedCategories] = useState([]);
@@ -176,6 +188,12 @@ function Categories(props) {
                     if (onCreate) onCreate(newId);
                 }}
             />
+            {bookmarksService.categories.all.length === 0 && (
+                <Box className={classes.arrowBlock}>
+                    <ArrowIcon />
+                    {t('category.createFirstHelper')}
+                </Box>
+            )}
         </Box>
     );
 }

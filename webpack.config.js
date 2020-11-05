@@ -75,7 +75,7 @@ module.exports = (env, args) => ({
                     from: './fastInitialization.js',
                     to: './fastInitialization.js',
                 },
-            ]
+            ],
         }),
         new webpack.DefinePlugin({ PRODUCTION_MODE: JSON.stringify(args.mode === 'production') }),
     ],
@@ -83,9 +83,7 @@ module.exports = (env, args) => ({
         rules: [
             {
                 test: /\.m?js/,
-                resolve: {
-                    fullySpecified: false,
-                }
+                resolve: { fullySpecified: false },
             },
             {
                 test: /\.svg$/,
@@ -99,14 +97,7 @@ module.exports = (env, args) => ({
             },
             {
                 test: /\.css$/i,
-                use: [
-                    {
-                        loader: require.resolve('style-loader'),
-                    },
-                    {
-                        loader: require.resolve('css-loader'),
-                    },
-                ],
+                use: [{ loader: require.resolve('style-loader') }, { loader: require.resolve('css-loader') }],
             },
             {
                 test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,

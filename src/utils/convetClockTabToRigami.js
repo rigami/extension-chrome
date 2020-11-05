@@ -5,13 +5,13 @@ import {
     BG_TYPE,
     BKMS_FAP_POSITION,
     BKMS_FAP_STYLE,
-    THEME
+    THEME,
 } from '@/enum';
 import Category from '@/stores/bookmarks/entities/category';
 import Bookmark from '@/stores/bookmarks/entities/bookmark';
 
 function convert(clockTabFile = {}) {
-    console.log('clockTabFile', clockTabFile)
+    console.log('clockTabFile', clockTabFile);
 
     const types = [BG_TYPE.ANIMATION];
 
@@ -26,7 +26,7 @@ function convert(clockTabFile = {}) {
             clockTabFile.data.settings.switching_background_in_special.random_selection.period >= 2
                 ? clockTabFile.data.settings.switching_background_in_special.random_selection.period - 1
                 : clockTabFile.data.settings.switching_background_in_special.random_selection.period
-            ];
+        ];
     }
 
     const bookmarks = [];
@@ -34,7 +34,10 @@ function convert(clockTabFile = {}) {
     const favorites = [];
 
     clockTabFile.data.sites.all.forEach((group) => {
-        const category = new Category({ id: categories.length, name: group.name_group });
+        const category = new Category({
+            id: categories.length,
+            name: group.name_group,
+        });
         categories.push(category);
 
         group.sites.forEach((bookmark) => {
@@ -45,7 +48,7 @@ function convert(clockTabFile = {}) {
                     name: bookmark.name,
                     description: bookmark.description,
                     categories: [category.id],
-                })
+                }),
             );
         });
     });
@@ -64,7 +67,10 @@ function convert(clockTabFile = {}) {
             bookmarks.push(favBookmark);
         }
 
-        favorites.push({id: favBookmark.id, type: "bookmark"});
+        favorites.push({
+            id: favBookmark.id,
+            type: 'bookmark',
+        });
     });
 
     return {
@@ -75,7 +81,7 @@ function convert(clockTabFile = {}) {
                 theme: clockTabFile.data.settings.dark_theme ? THEME.DARK : THEME.LIGHT,
             },
             backgrounds: {
-                dimmingPower: clockTabFile.data.settings.background_dimming_level * (100/3),
+                dimmingPower: clockTabFile.data.settings.background_dimming_level * (100 / 3),
                 selectionMethod: clockTabFile.data.settings.switching_background_in_special.background_selection === 0
                     ? BG_SELECT_MODE.RANDOM
                     : BG_SELECT_MODE.SPECIFIC,
@@ -93,17 +99,17 @@ function convert(clockTabFile = {}) {
                         : BKMS_FAP_STYLE.TRANSPARENT,
             },
         },
-        bookmarks:{
+        bookmarks: {
             bookmarks,
             favorites,
             categories,
         },
-        meta:{
+        meta: {
             date: new Date(clockTabFile?.createTime).toISOString(),
-            appVersion: "ClockTab",
-            appType: "extension.chrome",
-            version: 1
-        }
+            appVersion: 'ClockTab',
+            appType: 'extension.chrome',
+            version: 1,
+        },
     };
 }
 

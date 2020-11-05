@@ -360,7 +360,10 @@ class BookmarksStore {
 
     @action('remove bookmark')
     async remove(bookmarkId) {
-        await this._globalService.removeFromFavorites({ type: 'bookmark', id: bookmarkId });
+        await this._globalService.removeFromFavorites({
+            type: 'bookmark',
+            id: bookmarkId,
+        });
 
         const oldBookmark = await DBConnector().get('bookmarks', bookmarkId);
         await DBConnector().delete('bookmarks', bookmarkId);

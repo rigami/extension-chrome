@@ -11,6 +11,9 @@ import clsx from 'clsx';
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
     },
     container: {
         display: 'flex',
@@ -47,10 +50,12 @@ function FullScreenStub(props) {
     } = props;
     const classes = useStyles();
 
+    const IconRender = iconRender;
+
     return (
         <Box className={clsx(classes.root, externalClassName)} {...other}>
             <Container className={classes.container} maxWidth="md">
-                {iconRender && iconRender({ className: classes.icon })}
+                {IconRender && (<IconRender className={classes.icon} />)}
                 {message && (
                     <Typography variant="h6" className={classes.title}>{message}</Typography>
                 )}

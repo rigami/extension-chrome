@@ -152,7 +152,6 @@ class Core {
 
         this.appState = APP_STATE.WORK;
 
-
         console.log('DONE');
         progressCallback(100, PREPARE_PROGRESS.DONE);
 

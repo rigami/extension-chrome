@@ -170,7 +170,7 @@ function BackupSettings() {
         reader.onload = () => {
             try {
                 const file = JSON.parse(reader.result);
-                console.log('file', file)
+                console.log('file', file);
                 eventToBackground('system/backup/local/restore', { backup: file });
             } catch (e) {
                 enqueueSnackbar({

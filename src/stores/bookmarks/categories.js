@@ -71,7 +71,10 @@ class CategoriesStore {
 
     @action('remove category')
     async remove(categoryId) {
-        await this._globalService.removeFromFavorites({ type: 'bookmark', id: bookmarkId });
+        await this._globalService.removeFromFavorites({
+            type: 'bookmark',
+            id: bookmarkId,
+        });
 
         await DBConnector().delete('categories', categoryId);
 
