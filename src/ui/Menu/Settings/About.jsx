@@ -60,6 +60,8 @@ function About() {
                 <Typography className={classes.appVersion} variant="body2">
                     v
                     {chrome?.runtime?.getManifest?.().version || '-'}
+                    {' '}
+                    (BETA)
                 </Typography>
             </Box>
             <Divider />

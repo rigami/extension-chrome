@@ -5,6 +5,7 @@ import {
     Divider,
     ListItemAvatar,
     Avatar,
+    Box,
 } from '@material-ui/core';
 import {
     SettingsRounded as SettingsIcon,
@@ -15,6 +16,7 @@ import {
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
+import MenuInfo from '@/ui/Menu/MenuInfo';
 import { content as BackgroundsPageContent, header as backgroundsPageHeader } from './Backgrounds';
 import { content as AboutPageContent, header as aboutPageHeader } from './About';
 import { content as AppSettingsPageContent, header as appSettingsPageHeader } from './AppSettings';
@@ -26,6 +28,11 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
+    bannerWrapper: {
+        height: '100%',
+        display: 'contents',
+    },
+    betaBanner: { marginTop: 'auto' },
 }));
 
 const general = [
@@ -113,6 +120,7 @@ function Row(props) {
 }
 
 function GeneralMenu({ onSelect }) {
+    const { t } = useTranslation();
     const classes = useStyles();
 
     return (
@@ -124,6 +132,15 @@ function GeneralMenu({ onSelect }) {
             {additional.map((row) => (
                 <Row key={row.id} onSelect={onSelect} {...row} />
             ))}
+            <Box className={classes.bannerWrapper}>
+                <MenuInfo
+                    classes={{ wrapper: classes.betaBanner }}
+                    show
+                    width={520}
+                    message={t('settings.betaBanner.title')}
+                    description={t('settings.betaBanner.description')}
+                />
+            </Box>
         </React.Fragment>
     );
 }

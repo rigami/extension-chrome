@@ -21,7 +21,7 @@ import FabMenu from './FabMenu';
 
 const useStyles = makeStyles((theme) => ({
     list: {
-        minHeight: '100%',
+        flexGrow: 1,
         display: 'flex',
         flexDirection: 'column',
     },

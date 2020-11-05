@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import {
     ListItem,
@@ -8,7 +7,6 @@ import {
     Collapse,
 } from '@material-ui/core';
 import { InfoRounded as InfoIcon } from '@material-ui/icons';
-// import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -18,11 +16,18 @@ const useStyles = makeStyles((theme) => ({
     descriptionText: { color: fade(theme.palette.warning.contrastText, 0.8) },
 }));
 
-function MenuInfo({ show, message, description, width }) {
+function MenuInfo(props) {
+    const {
+        show,
+        message,
+        description,
+        width,
+        classes: externalClasses = {},
+    } = props;
     const classes = useStyles();
 
     return (
-        <Collapse in={show}>
+        <Collapse in={show} className={externalClasses.wrapper}>
             <ListItem className={classes.root} style={{ width }}>
                 <ListItemIcon>
                     <InfoIcon className={classes.icon} />
@@ -39,14 +44,5 @@ function MenuInfo({ show, message, description, width }) {
         </Collapse>
     );
 }
-
-/* MenuInfo.propTypes = {
-    show: PropTypes.bool.isRequired,
-    message: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    width: PropTypes.number.isRequired,
-};
-
-MenuInfo.defaultProps = { description: null }; */
 
 export default MenuInfo;

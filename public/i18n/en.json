@@ -150,6 +150,10 @@
         "description":"Contact the developer directly"
       },
       "policy":"privacy policy"
+    },
+    "betaBanner": {
+      "title": "The extension is in beta testing",
+      "description": "Help us become better, if you have ideas or you notice a problem, please let us know on the \"About page\""
     }
   },
   "bg":{
