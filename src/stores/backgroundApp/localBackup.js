@@ -74,6 +74,7 @@ class LocalBackup {
 
                 eventToApp('system/backup/local/restore/progress', { result: 'done' });
             } catch (e) {
+                console.log('Failed restore backup:', e);
                 eventToApp('system/backup/local/restore/progress', {
                     result: 'error',
                     message: 'settings.backup.localBackup.noty.failed.wrongSchema',

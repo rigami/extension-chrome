@@ -36,6 +36,7 @@ class SyncBookmarks {
                 await this.bookmarksService.categories.save({
                     ...findCategory,
                     ...category,
+                    color: findCategory.color,
                 });
 
                 replaceCategoryId[category.id] = findCategory.id;
@@ -43,6 +44,7 @@ class SyncBookmarks {
                 console.log(`Category '${category.name}' not find in local store. Save as new`);
                 replaceCategoryId[category.id] = await this.bookmarksService.categories.save({
                     ...category,
+                    color: null,
                     id: null,
                 });
                 console.log('Category id', replaceCategoryId[category.id]);
