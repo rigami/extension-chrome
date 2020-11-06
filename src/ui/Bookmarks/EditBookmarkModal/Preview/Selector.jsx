@@ -51,9 +51,7 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(4),
         marginLeft: theme.spacing(2),
     },
-    badgeButton: {
-        width: '100%',
-    },
+    badgeButton: { width: '100%' },
 }));
 
 function PreviewSelectorToggleButton({ isOpen, onOpen, onClose, imagesCount }) {

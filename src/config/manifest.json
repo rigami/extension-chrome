@@ -1,7 +1,9 @@
 {
     "manifest_version": 2,
 
-    "name": "Rigami - Новая вкладка",
+    "name": "__MSG_appName__",
+    "description":"__MSG_appDesc__",
+    "default_locale": "en",
     "short_name": "Rigami",
     "version": "0.0.1012",
     "homepage_url": "http://rigami.org/",
@@ -14,7 +16,6 @@
         "128":"resource/128x128.png"
     },
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-    "description":"Простая и красивая новая вкладка для chrome",
     "permissions":[
         "activeTab",
         "storage",

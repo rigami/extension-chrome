@@ -68,6 +68,10 @@ module.exports = (env, args) => ({
                     to: './manifest.json',
                 },
                 {
+                    from: './config/manifestLocales/',
+                    to: './_locales/'
+                },
+                {
                     from: path.resolve(__dirname, 'public/'),
                     to: './resource/',
                 },
