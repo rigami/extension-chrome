@@ -21,8 +21,8 @@ $ zip -r release/rigami-{CURRENT_VERSION}.zip build
 
 ## Screenshots
 
-![screenshot 1](docs/screenshot_1.png)
-![screenshot 2](docs/screenshot_2.png)
-![screenshot 3](docs/screenshot_3.png)
-![screenshot 4](docs/screenshot_4.png)
-![screenshot 5](docs/screenshot_5.png)
+![screenshot 1](docs/en/screenshot_1.png)
+![screenshot 2](docs/en/screenshot_2.png)
+![screenshot 3](docs/en/screenshot_3.png)
+![screenshot 4](docs/en/screenshot_4.png)
+![screenshot 5](docs/en/screenshot_5.png)
