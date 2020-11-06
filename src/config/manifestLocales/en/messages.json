@@ -4,5 +4,8 @@
   },
   "appDesc": {
     "message": "Simple and beautiful new chrome browser tab"
+  },
+  "appAction": {
+    "message": "Add to Rigami"
   }
 }

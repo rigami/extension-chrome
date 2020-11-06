@@ -4,5 +4,8 @@
   },
   "appDesc": {
     "message": "Простая и красивая новая вкладка для браузера chrome"
+  },
+  "appAction": {
+    "message": "Добавить в Rigami"
   }
 }
