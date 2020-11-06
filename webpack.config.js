@@ -14,7 +14,7 @@ module.exports = (env, args) => ({
         popup: './popup.js',
         background: './background.js',
     },
-    mode: args.mode || 'development',
+    mode: process.env.NODE_ENV || 'development',
     output: {
         filename: '[name].[contenthash].bundle.js',
         path: path.resolve(__dirname, 'build'),
@@ -77,7 +77,7 @@ module.exports = (env, args) => ({
                 },
             ],
         }),
-        new webpack.DefinePlugin({ PRODUCTION_MODE: JSON.stringify(args.mode === 'production') }),
+        new webpack.DefinePlugin({ PRODUCTION_MODE: JSON.stringify(process.env.NODE_ENV === 'production') }),
     ],
     module: {
         rules: [

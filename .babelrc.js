@@ -1,6 +1,6 @@
 const paths = require('./alias.config.js');
 
-module.exports = {
+module.exports = (api) => ({
     "presets": [
         ["@babel/preset-env", {
             "targets": {
@@ -14,6 +14,7 @@ module.exports = {
         "@babel/preset-react",
     ],
     "plugins": [
+        ...(api.env() === 'development' ? [] : [['transform-remove-console']]),
         ["@babel/plugin-syntax-throw-expressions"],
         ["@babel/plugin-proposal-decorators", { "legacy": true }],
         ["@babel/plugin-proposal-class-properties", { "loose": true }],
@@ -40,6 +41,6 @@ module.exports = {
                 'transform': 'lodash/${member}',
                 'preventFullImport': true
             }
-        }]
+        }],
     ]
-};
+});
