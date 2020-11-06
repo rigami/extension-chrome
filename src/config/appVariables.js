@@ -9,7 +9,7 @@ export default {
     fs: { root: `chrome-extension://${chrome.runtime.id}/persistent/` },
     maxUploadFiles: 15,
     defaultBG: {
-        src: `${PRODUCTION_MODE ? 'https://api.rigami.io' : 'http://localhost'}/jeremy-bishop-hVkDaLkoiec-unsplash.jpg`,
+        src: `${PRODUCTION_MODE ? 'https://api.rigami.io' : 'http://localhost:8080'}/jeremy-bishop-hVkDaLkoiec-unsplash.jpg`,
         author: 'Jeremy Bishop',
         type: BG_TYPE.IMAGE,
         description: 'Unsplash photo',
