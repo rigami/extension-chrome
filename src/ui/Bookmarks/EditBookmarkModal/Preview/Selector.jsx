@@ -6,6 +6,7 @@ import {
     Box,
     Typography,
     Button,
+    Badge,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
@@ -50,16 +51,22 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(4),
         marginLeft: theme.spacing(2),
     },
+    badgeButton: {
+        width: '100%',
+    },
 }));
 
-function PreviewSelectorToggleButton({ isOpen, onOpen, onClose }) {
+function PreviewSelectorToggleButton({ isOpen, onOpen, onClose, imagesCount }) {
     const { t } = useTranslation();
+    const classes = useStyles();
 
     return (
-        <Button onClick={() => (isOpen ? onClose() : onOpen())} fullWidth>
-            {!isOpen && t('bookmark.editor.alternativeIconsOpen')}
-            {isOpen && t('bookmark.editor.alternativeIconsClose')}
-        </Button>
+        <Badge badgeContent={imagesCount} color="primary" className={classes.badgeButton}>
+            <Button onClick={() => (isOpen ? onClose() : onOpen())} fullWidth variant="outlined">
+                {!isOpen && t('bookmark.editor.alternativeIconsOpen')}
+                {isOpen && t('bookmark.editor.alternativeIconsClose')}
+            </Button>
+        </Badge>
     );
 }
 
@@ -114,7 +121,7 @@ function PreviewSelector(props) {
                 {store.loadedImages.map(({ url, type, score }) => (
                     <CardLink
                         key={url}
-                        name={`[${score}] ${name}`}
+                        name={PRODUCTION_MODE ? name : `[${score}] ${name}`}
                         description={description}
                         categories={categories}
                         icoVariant={type}

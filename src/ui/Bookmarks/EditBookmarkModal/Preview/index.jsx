@@ -58,6 +58,7 @@ function Preview(props) {
         categories,
         header,
         getNextValidImage = () => {},
+        onClickPreview,
     } = props;
     const classes = useStyles();
     const { t } = useTranslation();
@@ -143,6 +144,7 @@ function Preview(props) {
                     imageUrl={imageUrl}
                     preview
                     className={classes.card}
+                    onClick={onClickPreview}
                 />
             )}
             {(stage === STAGE.DONE || stage === STAGE.FAILED_PARSE_SITE) && store.stateImageLoad === FETCH.FAILED && (

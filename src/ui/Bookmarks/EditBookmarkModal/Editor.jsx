@@ -204,11 +204,13 @@ function Editor(props) {
                             categories={store.fullCategories}
                             header={(
                                 <PreviewSelectorToggleButton
+                                    imagesCount={store.images.length}
                                     isOpen={store.isOpenSelectorPreview}
                                     onOpen={() => { store.isOpenSelectorPreview = true; }}
                                     onClose={() => { store.isOpenSelectorPreview = false; }}
                                 />
                             )}
+                            onClickPreview={() => { store.isOpenSelectorPreview = true; }}
                             getNextValidImage={() => {
                                 store.images = store.images.filter(({ url }) => url !== store.imageURL);
 
