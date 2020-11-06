@@ -7,7 +7,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const paths = require('./alias.config.js');
 
-module.exports = (env, args) => ({
+module.exports = () => ({
     context: path.resolve(__dirname, 'src'),
     entry: {
         app: './index.js',
@@ -19,7 +19,7 @@ module.exports = (env, args) => ({
         filename: '[name].[contenthash].bundle.js',
         path: path.resolve(__dirname, 'build'),
     },
-    devtool: args.mode === 'production' ? false : 'eval-source-map',
+    devtool: process.env.NODE_ENV === 'production' ? false : 'eval-source-map',
     devServer: {
         contentBase: path.resolve(__dirname, 'public'),
         hot: true,
