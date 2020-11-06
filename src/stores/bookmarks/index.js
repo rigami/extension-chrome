@@ -74,6 +74,8 @@ class BookmarksService {
 
         const favorite = favoriteIds.find((checkFavorite) => checkFavorite.type === type);
 
+        if (!favorite) return;
+
         await DBConnector().delete('favorites', favorite.id);
 
         if (this._coreService) this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId: id });

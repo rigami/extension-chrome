@@ -131,7 +131,7 @@ function LocalBackup() {
                                         </ListItemIcon>
                                         <ListItemText
                                             classes={{ primary: classes.optionLabel }}
-                                            primary={t('settings.backup.localBackup.item.bookmark')}
+                                            primary={t('settings.backup.localBackup.item.bookmarks')}
                                         />
                                     </MenuItem>
                                     <MenuItem
