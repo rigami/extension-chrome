@@ -124,6 +124,13 @@
           "settings": "Settings",
           "bookmarks": "Bookmarks"
         },
+        "noty": {
+          "success": "Save successfully restored",
+          "failed": {
+            "wrongVersion": "Mistake. Saving this version is not supported",
+            "wrongSchema": "Mistake. Invalid save file structure"
+          }
+        },
         "save": "Save",
         "restore": "Restore data",
         "oldAppBackupFile": {
