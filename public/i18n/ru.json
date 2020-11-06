@@ -201,6 +201,8 @@
       "alternativeIconsClose":"К редактору",
       "alternativeIconsTitle":"Другие варианты иконок",
       "errorLoadIcon":"Не удалось загрузить иконку, попробуйте другую",
+      "saveSuccess": "Закладка успешно сохранена",
+      "saving": "Сохранение...",
       "helper":{
         "writeURL":"Введите адрес",
         "writeName":"Введите название закладки"

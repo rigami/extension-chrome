@@ -201,6 +201,8 @@
       "alternativeIconsClose":"To the editor",
       "alternativeIconsTitle":"Other icon options",
       "errorLoadIcon":"Failed to load icon, try another",
+      "saveSuccess": "Bookmark saved successfully",
+      "saving": "Saving...",
       "helper":{
         "writeURL":"Enter the address",
         "writeName":"Enter the name of the bookmark"
