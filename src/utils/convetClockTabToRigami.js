@@ -4,7 +4,7 @@ import {
     BG_SELECT_MODE,
     BG_TYPE,
     BKMS_FAP_POSITION,
-    BKMS_FAP_STYLE,
+    BKMS_FAP_STYLE, BKMS_VARIANT,
     THEME,
 } from '@/enum';
 import Category from '@/stores/bookmarks/entities/category';
@@ -13,68 +13,26 @@ import Bookmark from '@/stores/bookmarks/entities/bookmark';
 function convert(clockTabFile = {}) {
     console.log('clockTabFile', clockTabFile);
 
-    const types = [BG_TYPE.ANIMATION];
+    let settings = {};
 
-    if (clockTabFile.data.settings.switching_background_in_special.random_selection.type[0]) types.push(BG_TYPE.VIDEO);
-    if (clockTabFile.data.settings.switching_background_in_special.random_selection.type[1]) types.push(BG_TYPE.IMAGE);
-    if (clockTabFile.data.settings.switching_background_in_special.random_selection.type[2]) types.push(BG_TYPE.FILL_COLOR);
+    if (clockTabFile.typeData.settings) {
+        const types = [BG_TYPE.ANIMATION];
 
-    let changeInterval = BG_CHANGE_INTERVAL.OPEN_TAB;
+        if (clockTabFile.data.settings.switching_background_in_special.random_selection.type[0]) types.push(BG_TYPE.VIDEO);
+        if (clockTabFile.data.settings.switching_background_in_special.random_selection.type[1]) types.push(BG_TYPE.IMAGE);
+        if (clockTabFile.data.settings.switching_background_in_special.random_selection.type[2]) types.push(BG_TYPE.FILL_COLOR);
 
-    if (clockTabFile.data.settings.switching_background_in_special.background_selection === 0) {
-        changeInterval = Object.keys(BG_CHANGE_INTERVAL)[
-            clockTabFile.data.settings.switching_background_in_special.random_selection.period >= 2
-                ? clockTabFile.data.settings.switching_background_in_special.random_selection.period - 1
-                : clockTabFile.data.settings.switching_background_in_special.random_selection.period
-        ];
-    }
+        let changeInterval = BG_CHANGE_INTERVAL.OPEN_TAB;
 
-    const bookmarks = [];
-    const categories = [];
-    const favorites = [];
-
-    clockTabFile.data.sites.all.forEach((group) => {
-        const category = new Category({
-            id: categories.length,
-            name: group.name_group,
-        });
-        categories.push(category);
-
-        group.sites.forEach((bookmark) => {
-            bookmarks.push(
-                new Bookmark({
-                    id: bookmarks.length,
-                    url: bookmark.url,
-                    name: bookmark.name,
-                    description: bookmark.description,
-                    categories: [category.id],
-                }),
-            );
-        });
-    });
-
-    clockTabFile.data.sites.favorites.forEach((bookmark) => {
-        let favBookmark = bookmarks.find(({ url }) => url === bookmark.url);
-
-        if (!favBookmark) {
-            favBookmark = new Bookmark({
-                id: bookmarks.length,
-                url: bookmark.url,
-                name: bookmark.name,
-                description: bookmark.description,
-            });
-
-            bookmarks.push(favBookmark);
+        if (clockTabFile.data.settings.switching_background_in_special.background_selection === 0) {
+            changeInterval = Object.keys(BG_CHANGE_INTERVAL)[
+                clockTabFile.data.settings.switching_background_in_special.random_selection.period >= 2
+                    ? clockTabFile.data.settings.switching_background_in_special.random_selection.period - 1
+                    : clockTabFile.data.settings.switching_background_in_special.random_selection.period
+                ];
         }
 
-        favorites.push({
-            id: favBookmark.id,
-            type: 'bookmark',
-        });
-    });
-
-    return {
-        settings: {
+        settings = {
             app: {
                 backdropTheme: THEME.DARK,
                 defaultActivity: clockTabFile.data.settings.open_site_panel_start ? ACTIVITY.BOOKMARKS : ACTIVITY.DESKTOP,
@@ -98,12 +56,74 @@ function convert(clockTabFile = {}) {
                         ? BKMS_FAP_STYLE.CONTAINED
                         : BKMS_FAP_STYLE.TRANSPARENT,
             },
-        },
-        bookmarks: {
+        };
+    }
+
+    let bookmarksData = {};
+
+    if (clockTabFile.typeData.sites) {
+        const bookmarks = [];
+        const categories = [];
+        const favorites = [];
+
+        clockTabFile.data.sites.all.forEach((group) => {
+            const category = new Category({
+                id: categories.length,
+                name: group.name_group,
+            });
+            categories.push(category);
+
+            group.sites.forEach((bookmark) => {
+                const imageBase64 = clockTabFile.data.sitesIcons?.find(({ name }) => bookmark.image.indexOf(name) !== -1)?.file
+
+                bookmarks.push(
+                    new Bookmark({
+                        id: bookmarks.length,
+                        url: bookmark.url,
+                        name: bookmark.name,
+                        description: bookmark.description,
+                        categories: [category.id],
+                        icoVariant: imageBase64 ? BKMS_VARIANT.SMALL : BKMS_VARIANT.SYMBOL,
+                        imageBase64,
+                    }),
+                );
+            });
+        });
+
+        clockTabFile.data.sites.favorites.forEach((bookmark) => {
+            let favBookmark = bookmarks.find(({ url }) => url === bookmark.url);
+
+            if (!favBookmark) {
+                const imageBase64 = clockTabFile.data.sitesIcons?.find(({ name }) => bookmark.image.indexOf(name) !== -1)?.file
+
+                favBookmark = new Bookmark({
+                    id: bookmarks.length,
+                    url: bookmark.url,
+                    name: bookmark.name,
+                    description: bookmark.description,
+                    icoVariant: imageBase64 ? BKMS_VARIANT.SMALL : BKMS_VARIANT.SYMBOL,
+                    imageBase64,
+                });
+
+                bookmarks.push(favBookmark);
+            }
+
+            favorites.push({
+                id: favBookmark.id,
+                type: 'bookmark',
+            });
+        });
+
+        bookmarksData = {
             bookmarks,
             favorites,
             categories,
-        },
+        };
+    }
+
+    return {
+        settings,
+        bookmarks: bookmarksData,
         meta: {
             date: new Date(clockTabFile?.createTime).toISOString(),
             appVersion: 'ClockTab',

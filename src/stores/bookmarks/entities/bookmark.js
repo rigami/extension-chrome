@@ -10,6 +10,7 @@ class Bookmark {
     description;
     icoVariant;
     imageUrl;
+    imageBase64;
     icoFileName;
     categories;
     clickCounts = 0;
@@ -22,6 +23,7 @@ class Bookmark {
         this.description = bookmark.description || '';
         this.icoVariant = bookmark.icoVariant || BKMS_VARIANT.SYMBOL;
         this.imageUrl = bookmark.imageUrl || FSConnector.getIconURL(bookmark.icoFileName);
+        this.imageBase64 = bookmark.imageBase64;
         this.categories = bookmark.categories || [];
         this.icoFileName = bookmark.icoFileName;
 
