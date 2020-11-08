@@ -22,6 +22,7 @@ import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
 import GlobalScroll from './GlobalScroll';
 import GlobalModals from './GlobalModals';
+import AddBookmarkButton from '@/ui/Bookmarks/EditBookmarkModal/AddButton';
 
 const useStyles = makeStyles(() => ({
     bookmarkWrapper: {
@@ -72,6 +73,7 @@ function App() {
                 </GlobalScroll>
                 <FakeScroll>
                     <FAP />
+                    <AddBookmarkButton />
                 </FakeScroll>
             </Nest>
         </ThemeProvider>

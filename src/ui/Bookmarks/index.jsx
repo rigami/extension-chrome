@@ -222,7 +222,6 @@ function Bookmarks() {
                 </Container>
                 <ReactResizeDetector handleWidth onResize={() => setColumnsCount(maxColumnCalc())} />
             </Box>
-            <AddBookmarkButton />
         </React.Fragment>
     );
 }
