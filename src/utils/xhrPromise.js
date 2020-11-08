@@ -17,16 +17,17 @@ const xhrPromise = (url, options = {}) => new Promise((resolve, reject) => {
             });
             return;
         }
+
         switch (options.responseType) {
-        case 'json':
-            resolve(xhr.response);
-            break;
-        case 'document':
-            resolve(xhr.responseXML);
-            break;
-        default:
-            resolve(xhr.response);
-            break;
+            case 'json':
+                resolve({ response: xhr.response, xhr });
+                break;
+            case 'document':
+                resolve({ response: xhr.responseXML, xhr });
+                break;
+            default:
+                resolve({ response: xhr.response, xhr });
+                break;
         }
     };
 

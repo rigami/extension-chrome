@@ -70,6 +70,7 @@ function Editor(props) {
         saveStage: FETCH.WAIT,
         isOpenSelectorPreview: false,
         images: [],
+        preFetchSiteData: null,
     }));
 
     const handlerSave = () => {
@@ -128,7 +129,9 @@ function Editor(props) {
         const parseUrl = store.url;
 
         asyncAction(async () => {
-            const siteData = await getSiteInfo(store.url, controller);
+            const siteData = store.preFetchSiteData || await getSiteInfo(store.url, controller);
+
+            console.log('siteData', siteData)
 
             if (store.editBookmarkId) {
                 store.images = siteData.icons;
@@ -137,7 +140,8 @@ function Editor(props) {
 
             if (siteData.bestIcon?.score === 0) {
                 try {
-                    siteData.bestIcon = await getImageRecalc(siteData.bestIcon.name);
+                    console.log('siteData.bestIcon.url', siteData.bestIcon.url)
+                    siteData.bestIcon = await getImageRecalc(siteData.bestIcon.url);
                 } catch (e) {
                     console.error(e);
                 }
@@ -147,7 +151,6 @@ function Editor(props) {
             store.icoVariant = siteData.bestIcon?.type;
             if (!store.forceAdded) store.url = siteData.url;
             store.images = siteData.icons;
-            console.log('UPD name value', store.name || siteData.name, siteData);
             if (!store.forceAdded) store.name = store.name || siteData.name;
             store.description = store.description || siteData.description;
         })
@@ -267,6 +270,7 @@ function Editor(props) {
                                 marginThreshold={marginThreshold}
                                 onChangeFields={(value) => {
                                     console.log('onChangeFields', value);
+
                                     if ('searchRequest' in value) {
                                         store.stage = value.searchRequest ? STAGE.WAIT_RESULT : STAGE.WAIT_REQUEST;
                                     }
@@ -290,6 +294,10 @@ function Editor(props) {
 
                                     if ('categories' in value) {
                                         store.categories = value.categories;
+                                    }
+
+                                    if ('icons' in value && 'bestIcon' in value) {
+                                        store.preFetchSiteData = value;
                                     }
                                     store.saveStage = FETCH.WAIT;
                                 }}

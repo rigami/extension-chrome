@@ -61,7 +61,6 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
     };
 
     useEffect(() => {
-        console.log('searchRequest', searchRequest);
         store.searchRequest = searchRequest;
     }, [searchRequest]);
 
