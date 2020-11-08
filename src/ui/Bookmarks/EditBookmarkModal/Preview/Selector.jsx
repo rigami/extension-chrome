@@ -95,7 +95,7 @@ function PreviewSelector(props) {
         store.size = defaultImages.length;
 
         defaultImages.filter(({ score }) => score === 0).forEach((image) => {
-            getImageRecalc(image.name)
+            getImageRecalc(image.url)
                 .then((newData) => {
                     const insertIndex = store.loadedImages.findIndex(({ score }) => score < newData.score);
                     store.loadedImages.splice(insertIndex === -1 ? store.loadedImages.length : insertIndex, 0, newData);
