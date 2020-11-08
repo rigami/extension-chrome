@@ -36,6 +36,7 @@ class SyncBookmarks {
                 await this.bookmarksService.categories.save({
                     ...findCategory,
                     ...category,
+                    id: findCategory.id,
                     color: findCategory.color,
                 });
 
@@ -65,6 +66,7 @@ class SyncBookmarks {
                 await this.bookmarksService.bookmarks.save({
                     ...findBookmark,
                     ...bookmark,
+                    id: findBookmark.id,
                     imageBase64: bookmark.image || bookmark.imageBase64,
                     categories: uniq([
                         ...findBookmark.categories.map(({ id }) => id),

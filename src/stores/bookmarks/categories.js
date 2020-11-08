@@ -3,6 +3,7 @@ import DBConnector from '@/utils/dbConnector';
 import getUniqueColor from '@/utils/uniqueColor';
 import { DESTINATION } from '@/enum';
 import Category from '@/stores/bookmarks/entities/category';
+import { last } from 'lodash';
 
 class CategoriesStore {
     _categories = [];
@@ -37,8 +38,8 @@ class CategoriesStore {
         let newColor;
 
         if (!id) {
-            const countCategories = await DBConnector().count('categories');
-            newColor = color || getUniqueColor(countCategories);
+            const allIds = await DBConnector().getAllKeys('categories');
+            newColor = color || getUniqueColor(last(allIds));
         } else {
             newColor = color || this.get(id).color;
         }
@@ -72,7 +73,7 @@ class CategoriesStore {
     @action('remove category')
     async remove(categoryId) {
         await this._globalService.removeFromFavorites({
-            type: 'bookmark',
+            type: 'category',
             id: categoryId,
         });
 

@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, reaction } from 'mobx';
+import { action, get, makeAutoObservable, reaction } from 'mobx';
 import { DESTINATION } from '@/enum';
 import { BookmarksSettingsStore } from '@/stores/app/settings';
 import DBConnector from '@/utils/dbConnector';
@@ -8,8 +8,6 @@ import BookmarksStore from './bookmarks';
 class BookmarksService {
     categories;
     bookmarks;
-    lastSearch = null;
-    lastTruthSearchTimestamp = null;
     favorites = [];
     _coreService;
 
@@ -25,10 +23,38 @@ class BookmarksService {
         this.categories.sync();
         this.syncFavorites();
 
-        this._coreService.globalEventBus.on('bookmark/new', () => { this.lastTruthSearchTimestamp = Date.now(); });
-        this._coreService.globalEventBus.on('bookmark/remove', () => { this.lastTruthSearchTimestamp = Date.now(); });
-        this._coreService.globalEventBus.on('category/new', () => this.categories.sync());
-        this._coreService.globalEventBus.on('category/remove', () => this.categories.sync());
+        this._coreService.globalEventBus.on('bookmark/new', () => {
+            this._coreService.storage.updatePersistent({
+                bkmsLastTruthSearchTimestamp: Date.now(),
+            });
+        });
+        this._coreService.globalEventBus.on('bookmark/remove', () => {
+            this._coreService.storage.updatePersistent({
+                bkmsLastTruthSearchTimestamp: Date.now(),
+            });
+        });
+        this._coreService.globalEventBus.on('category/new', async () => {
+            await this.categories.sync();
+
+            this._coreService.storage.updatePersistent({
+                bkmsLastTruthSearchTimestamp: Date.now(),
+            });
+        });
+        this._coreService.globalEventBus.on('category/remove', async ({ categoryId }) => {
+            await this.categories.sync();
+
+            this._coreService.storage.updatePersistent({
+                bkmsLastSearch: {
+                    ...(this._coreService.storage.persistent.categories || {}),
+                    categories: {
+                        match: (this._coreService.storage.persistent.categories || []).filter((id) => id !== categoryId),
+                    }
+                },
+                bkmsLastTruthSearchTimestamp: Date.now(),
+            });
+
+            await this.syncFavorites();
+        });
         this._coreService.globalEventBus.on('favorite/new', () => this.syncFavorites());
         this._coreService.globalEventBus.on('favorite/remove', () => this.syncFavorites());
 
@@ -38,8 +64,17 @@ class BookmarksService {
         );
     }
 
+    get lastSearch() {
+        return this._coreService.storage.persistent.bkmsLastSearch;
+    }
+
+    get lastTruthSearchTimestamp() {
+        return this._coreService.storage.persistent.bkmsLastTruthSearchTimestamp;
+    }
+
     @action('sync favorites')
     async syncFavorites() {
+        console.log("Sync fav")
         const favorites = await DBConnector().getAll('favorites');
 
         this.favorites = favorites.map(({ favoriteId, type }) => ({
