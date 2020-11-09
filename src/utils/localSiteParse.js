@@ -76,7 +76,7 @@ function parseSite(xml, urlOrigin) {
     ].forEach((url) => { icons.push({ url, score: 0, type: BKMS_VARIANT.SMALL, name: `ic${icons.length}` }) });
 
     icons = icons.map((icon) => {
-        let absoluteUrl;
+        let absoluteUrl = icon.url;
 
         if ("//" === icon.url.substring(0, 2)) {
             absoluteUrl = `http:${icon.url}`
@@ -86,7 +86,7 @@ function parseSite(xml, urlOrigin) {
 
         return {
             ...icon,
-            url: `${appVariables.rest.url}/icon_parse/recalc?url=${absoluteUrl}`,
+            url: absoluteUrl,
         };
     })
 
@@ -96,7 +96,7 @@ function parseSite(xml, urlOrigin) {
         if (!bestIcon || bestIcon?.score < icon.score) bestIcon = icon;
     });
 
-    return { name: title, description, icons, bestIcon };
+    return { title, description, icons, bestIcon };
 }
 
 export default parseSite;

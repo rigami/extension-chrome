@@ -47,14 +47,25 @@ const getSiteInfoLocal = async (url, signal) => {
 
     const urlOrigin = xhr.responseURL.substring(0, xhr.responseURL.indexOf('/', 'http://'.length+1));
 
-    const parseResult = parseSite(response, urlOrigin);
-
-    return {
-        ...parseResult,
-        title: parseResult.name,
+    const parseResult = {
+        ...parseSite(response, urlOrigin),
         url: xhr.responseURL,
         urlOrigin,
     };
+
+    const { response: result } = await xhrPromise(
+        `${appVariables.rest.url}/site_parse/add_data`,
+        {
+            body: JSON.stringify(parseResult),
+            method: 'POST',
+            headers: [
+                { name: "Content-type", value: "application/json" },
+            ],
+            responseType: 'json',
+        },
+    )
+
+    return result;
 }
 
 const getFaviconUrl = (url = '') => {
