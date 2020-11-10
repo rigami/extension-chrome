@@ -89,28 +89,7 @@ function Editor(props) {
         onSave();
     };
 
-    useEffect(() => {
-        if (!store.editBookmarkId) return;
-        setIsLoading(true);
-
-        bookmarksService.bookmarks.get(editBookmarkId)
-            .then((bookmark) => {
-                store.url = bookmark.url;
-                store.name = bookmark.name;
-                store.imageURL = bookmark.imageUrl;
-                store.useDescription = !!bookmark.description?.trim();
-                if (store.useDescription) store.description = bookmark.description;
-                store.icoVariant = bookmark.icoVariant;
-                store.categories = (bookmark.categories || []).map((category) => category.id);
-                setIsLoading(false);
-            })
-            .catch((e) => {
-                console.error(e);
-                onErrorLoad(e);
-            });
-    }, []);
-
-    useEffect(() => {
+    const handleGetSiteInfo = () => {
         if (!store.editBookmarkId) {
             store.imageURL = null;
         }
@@ -167,6 +146,31 @@ function Editor(props) {
                     store.stage = store.name ? STAGE.FAILED_PARSE_SITE : STAGE.WAIT_NAME;
                 }
             });
+    };
+
+    useEffect(() => {
+        if (!store.editBookmarkId) return;
+        setIsLoading(true);
+
+        bookmarksService.bookmarks.get(editBookmarkId)
+            .then((bookmark) => {
+                store.url = bookmark.url;
+                store.name = bookmark.name;
+                store.imageURL = bookmark.imageUrl;
+                store.useDescription = !!bookmark.description?.trim();
+                if (store.useDescription) store.description = bookmark.description;
+                store.icoVariant = bookmark.icoVariant;
+                store.categories = (bookmark.categories || []).map((category) => category.id);
+                setIsLoading(false);
+            })
+            .catch((e) => {
+                console.error(e);
+                onErrorLoad(e);
+            });
+    }, []);
+
+    useEffect(() => {
+        handleGetSiteInfo();
     }, [store.url]);
 
     useEffect(() => {
@@ -207,7 +211,7 @@ function Editor(props) {
                             categories={store.fullCategories}
                             header={(
                                 <PreviewSelectorToggleButton
-                                    imagesCount={store.images.length}
+                                    imagesCount={store.images.filter(({ failedLoad }) => !failedLoad).length}
                                     isOpen={store.isOpenSelectorPreview}
                                     onOpen={() => { store.isOpenSelectorPreview = true; }}
                                     onClose={() => { store.isOpenSelectorPreview = false; }}
@@ -258,6 +262,26 @@ function Editor(props) {
                                 onClose={() => {
                                     store.isOpenSelectorPreview = false;
                                 }}
+                                onFailedLoadImage={(imageUrl) => {
+                                    console.log('onFailedLoadImage', imageUrl)
+                                    store.images = store.images.map(({ url, ...other }) => {
+                                        if (url === imageUrl) {
+                                            return { url, ...other, failedLoad: true };
+                                        }
+
+                                        return { url, ...other };
+                                    });
+                                }}
+                                onLoadImage={(imageUrl, data) => {
+                                    console.log('onLoadImage', imageUrl, data)
+                                    store.images = store.images.map(({ url, ...other }) => {
+                                        if (url === imageUrl) {
+                                            return { ...other, ...data, url: imageUrl };
+                                        }
+
+                                        return { url, ...other };
+                                    });
+                                }}
                             />
                             <FieldsEditor
                                 isEdit={!!store.editBookmarkId}
@@ -295,11 +319,12 @@ function Editor(props) {
                                     if ('categories' in value) {
                                         store.categories = value.categories;
                                     }
+                                    store.saveStage = FETCH.WAIT;
 
                                     if ('icons' in value && 'bestIcon' in value) {
                                         store.preFetchSiteData = value;
+                                        handleGetSiteInfo();
                                     }
-                                    store.saveStage = FETCH.WAIT;
                                 }}
                                 onSave={handlerSave}
                                 onCancel={onCancel}
