@@ -13,12 +13,10 @@ import {
 } from '@material-ui/core';
 import { PublicRounded as WebSiteIcon } from '@material-ui/icons';
 import { AbortController } from '@/utils/xhrPromise';
-import { getFaviconUrl, getSiteInfo, search, getSiteInfoLocal } from '@/utils/siteSearch';
+import { getFaviconUrl, getSiteInfo, search } from '@/utils/siteSearch';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import parseSite from '@/utils/localSiteParse';
-import { last } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -92,7 +90,7 @@ function Search({ query = '', onSelect }) {
             const controller = new AbortController();
             setController(controller);
 
-            getSiteInfoLocal(query.trim(), controller)
+            getSiteInfo(query.trim(), controller)
                 .then((siteData) => {
                     setStraightResults({...siteData});
                 })

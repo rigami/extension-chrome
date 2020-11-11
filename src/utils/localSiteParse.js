@@ -1,12 +1,12 @@
 import { BKMS_VARIANT } from '@/enum';
-import appVariables from '@/config/appVariables';
 
 function parseSite(xml, urlOrigin) {
+    console.log({ xml });
     const head = xml.querySelector('head');
 
-    const title = head.querySelector('title').innerText;
-    const description = head.querySelector(`meta[name='description']`)?.innerText;
-    const elements = head.querySelectorAll(`
+    const title = head.querySelector('title')?.innerText;
+    const description = xml.querySelector(`meta[name='description']`)?.innerText;
+    const elements = xml.querySelectorAll(`
             [rel='shortcut icon'],
             [rel='shortcut'],
             [rel='shortcut'],

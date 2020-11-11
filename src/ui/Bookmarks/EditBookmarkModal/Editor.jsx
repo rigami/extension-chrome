@@ -108,7 +108,7 @@ function Editor(props) {
         const parseUrl = store.url;
 
         asyncAction(async () => {
-            const siteData = store.preFetchSiteData || await getSiteInfo(store.url, controller);
+            const siteData = await getSiteInfo(store.url, controller);
 
             console.log('siteData', siteData)
 

@@ -1,6 +1,5 @@
 import appVariables from '@/config/appVariables';
 import xhrPromise, { AbortController } from '@/utils/xhrPromise';
-import { last } from 'lodash';
 import parseSite from '@/utils/localSiteParse';
 
 const search = async (query, signal) => {
@@ -27,13 +26,7 @@ const getImageRecalc = (imageUrl, signal) => xhrPromise(
     { signal },
 ).then(({ response }) => response);
 
-const getSiteInfo = (url, signal) => xhrPromise(
-    `${appVariables.rest.url}/site_parse/get_data?url=${url}`,
-    { signal },
-).then(({ response }) => response);
-
-
-const getSiteInfoLocal = async (url, signal) => {
+const getSiteInfo = async (url, signal) => {
     let localSearchUrl = url;
 
     if (localSearchUrl.indexOf('http') !== 0) {
@@ -47,8 +40,16 @@ const getSiteInfoLocal = async (url, signal) => {
 
     const urlOrigin = xhr.responseURL.substring(0, xhr.responseURL.indexOf('/', 'http://'.length+1));
 
+    let parseData = {};
+
+    try {
+        parseData = { ...parseSite(response, urlOrigin) };
+    } catch (e) {
+        console.log("Failed parse site", e)
+    }
+
     const parseResult = {
-        ...parseSite(response, urlOrigin),
+        ...parseData,
         url: xhr.responseURL,
         urlOrigin,
     };
@@ -66,6 +67,28 @@ const getSiteInfoLocal = async (url, signal) => {
     )
 
     return result;
+};
+
+
+const getSiteInfoLocal = async (url, signal) => {
+    let localSearchUrl = url;
+
+    if (localSearchUrl.indexOf('http') !== 0) {
+        localSearchUrl = `http://${localSearchUrl}`
+    }
+
+    const { response, xhr } = await xhrPromise(
+        localSearchUrl,
+        { signal, responseType: 'document' },
+    );
+
+    const urlOrigin = xhr.responseURL.substring(0, xhr.responseURL.indexOf('/', 'http://'.length+1));
+
+    return {
+        ...parseSite(response, urlOrigin),
+        url: xhr.responseURL,
+        urlOrigin,
+    };
 }
 
 const getFaviconUrl = (url = '') => {
