@@ -5,7 +5,7 @@
     "description":"__MSG_appDesc__",
     "default_locale": "en",
     "short_name": "Rigami",
-    "version": "0.0.1023",
+    "version": "0.0.1030",
     "homepage_url": "https://rigami.io/",
     "minimum_chrome_version": "48",
     "offline_enabled": true,
