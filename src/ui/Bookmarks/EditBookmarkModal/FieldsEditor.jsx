@@ -103,14 +103,18 @@ function FieldsEditor(props) {
                         store.searchRequest = value;
                         onChangeFields({ searchRequest: value });
                     }}
-                    onSelect={({ title, url: requestUrl, forceAdded }) => {
+                    onSelect={({ title, url: requestUrl, icons, forceAdded, ...other }) => {
                         store.searchRequest = requestUrl;
                         store.name = title || store.name || '';
-                        onChangeFields({
+
+                        let result = {
                             forceAdded,
                             url: requestUrl,
                             name: title,
-                        });
+                        };
+
+                        if (icons) result = { ...result, icons, ...other };
+                        onChangeFields(result);
                     }}
                 />
                 <TextField

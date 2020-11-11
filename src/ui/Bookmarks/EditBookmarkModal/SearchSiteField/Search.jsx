@@ -92,11 +92,7 @@ function Search({ query = '', onSelect }) {
 
             getSiteInfo(query.trim(), controller)
                 .then((siteData) => {
-                    setStraightResults({
-                        ...siteData,
-                        title: siteData.name,
-                        url: siteData.url,
-                    });
+                    setStraightResults({...siteData});
                 })
                 .catch(() => {
                     setStraightResults(null);
@@ -106,7 +102,7 @@ function Search({ query = '', onSelect }) {
                     setStraightLoading(false);
                 });
 
-            search(query, controller)
+            search(query.trim(), controller)
                 .then((foundResults) => {
                     setGlobalResults(foundResults);
                 })
@@ -117,7 +113,7 @@ function Search({ query = '', onSelect }) {
                     setIsOpen(true);
                     setGlobalLoading(false);
                 });
-        }, 1300));
+        }, 700));
     }, [query]);
 
     return (

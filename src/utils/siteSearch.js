@@ -1,5 +1,6 @@
 import appVariables from '@/config/appVariables';
 import xhrPromise, { AbortController } from '@/utils/xhrPromise';
+import parseSite from '@/utils/localSiteParse';
 
 const search = async (query, signal) => {
     const response = await xhrPromise(
@@ -12,7 +13,7 @@ const search = async (query, signal) => {
             responseType: 'document',
             signal,
         },
-    );
+    ).then(({ response }) => response);
 
     return Array.from(response.body.querySelectorAll('.result-link')).map((link) => ({
         url: link.href,
@@ -20,15 +21,75 @@ const search = async (query, signal) => {
     }));
 };
 
-const getImageRecalc = (imageName, signal) => xhrPromise(
-    `${appVariables.rest.url}/icon_parse/recalc/${imageName}`,
+const getImageRecalc = (imageUrl, signal) => xhrPromise(
+    imageUrl,
     { signal },
-);
+).then(({ response }) => response);
 
-const getSiteInfo = (url, signal) => xhrPromise(
-    `${appVariables.rest.url}/site_parse/get_data?url=${url}`,
-    { signal },
-);
+const getSiteInfo = async (url, signal) => {
+    let localSearchUrl = url;
+
+    if (localSearchUrl.indexOf('http') !== 0) {
+        localSearchUrl = `http://${localSearchUrl}`
+    }
+
+    const { response, xhr } = await xhrPromise(
+        localSearchUrl,
+        { signal, responseType: 'document' },
+    );
+
+    const urlOrigin = xhr.responseURL.substring(0, xhr.responseURL.indexOf('/', 'http://'.length+1));
+
+    let parseData = {};
+
+    try {
+        parseData = { ...parseSite(response, urlOrigin) };
+    } catch (e) {
+        console.log("Failed parse site", e)
+    }
+
+    const parseResult = {
+        ...parseData,
+        url: xhr.responseURL,
+        urlOrigin,
+    };
+
+    const { response: result } = await xhrPromise(
+        `${appVariables.rest.url}/site_parse/add_data`,
+        {
+            body: JSON.stringify(parseResult),
+            method: 'POST',
+            headers: [
+                { name: "Content-type", value: "application/json" },
+            ],
+            responseType: 'json',
+        },
+    )
+
+    return result;
+};
+
+
+const getSiteInfoLocal = async (url, signal) => {
+    let localSearchUrl = url;
+
+    if (localSearchUrl.indexOf('http') !== 0) {
+        localSearchUrl = `http://${localSearchUrl}`
+    }
+
+    const { response, xhr } = await xhrPromise(
+        localSearchUrl,
+        { signal, responseType: 'document' },
+    );
+
+    const urlOrigin = xhr.responseURL.substring(0, xhr.responseURL.indexOf('/', 'http://'.length+1));
+
+    return {
+        ...parseSite(response, urlOrigin),
+        url: xhr.responseURL,
+        urlOrigin,
+    };
+}
 
 const getFaviconUrl = (url = '') => {
     let origin;
@@ -47,4 +108,5 @@ export {
     AbortController,
     getSiteInfo,
     getImageRecalc,
+    getSiteInfoLocal,
 };

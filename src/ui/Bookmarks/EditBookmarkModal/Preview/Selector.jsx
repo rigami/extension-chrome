@@ -75,6 +75,8 @@ function PreviewSelector(props) {
         categories,
         onSelect,
         images: defaultImages = [],
+        onFailedLoadImage = () => {},
+        onLoadImage = () => {},
         ...other
     } = props;
     const classes = useStyles();
@@ -92,16 +94,18 @@ function PreviewSelector(props) {
                 if (scoreA > scoreB) return -1;
                 return 0;
             });
-        store.size = defaultImages.length;
+        store.size = defaultImages.filter(({ failedLoad }) => !failedLoad).length;
 
-        defaultImages.filter(({ score }) => score === 0).forEach((image) => {
-            getImageRecalc(image.name)
+        defaultImages.filter(({ score, failedLoad }) => score === 0 && !failedLoad).forEach((image) => {
+            getImageRecalc(image.url)
                 .then((newData) => {
                     const insertIndex = store.loadedImages.findIndex(({ score }) => score < newData.score);
                     store.loadedImages.splice(insertIndex === -1 ? store.loadedImages.length : insertIndex, 0, newData);
+                    onLoadImage(image.url, newData);
                 })
                 .catch(() => {
                     store.size -= 1;
+                    onFailedLoadImage(image.url);
                 });
         });
     }, [defaultImages.length]);

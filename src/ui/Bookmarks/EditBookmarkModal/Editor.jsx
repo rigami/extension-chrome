@@ -70,6 +70,7 @@ function Editor(props) {
         saveStage: FETCH.WAIT,
         isOpenSelectorPreview: false,
         images: [],
+        preFetchSiteData: null,
     }));
 
     const handlerSave = () => {
@@ -86,6 +87,65 @@ function Editor(props) {
         });
 
         onSave();
+    };
+
+    const handleGetSiteInfo = () => {
+        if (!store.editBookmarkId) {
+            store.imageURL = null;
+        }
+
+        if (controller) {
+            controller.abort();
+            setController(null);
+        }
+
+        if (store.url === '') {
+            return;
+        }
+
+        store.stage = STAGE.PARSING_SITE;
+
+        const parseUrl = store.url;
+
+        asyncAction(async () => {
+            const siteData = await getSiteInfo(store.url, controller);
+
+            console.log('siteData', siteData)
+
+            if (store.editBookmarkId) {
+                store.images = siteData.icons;
+                return;
+            }
+
+            if (siteData.bestIcon?.score === 0) {
+                try {
+                    console.log('siteData.bestIcon.url', siteData.bestIcon.url)
+                    siteData.bestIcon = await getImageRecalc(siteData.bestIcon.url);
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+
+            store.imageURL = siteData.bestIcon?.url;
+            store.icoVariant = siteData.bestIcon?.type;
+            if (!store.forceAdded) store.url = siteData.url;
+            store.images = siteData.icons;
+            if (!store.forceAdded) store.name = store.name || siteData.name;
+            store.description = store.description || siteData.description;
+        })
+            .then(() => {
+                if (parseUrl === store.url) store.stage = STAGE.DONE;
+            })
+            .catch((e) => {
+                if (e.code === 404) {
+                    store.stage = STAGE.FAILED_PARSE_SITE;
+                    store.imageURL = '';
+                    store.icoVariant = BKMS_VARIANT.SYMBOL;
+                    store.images = [];
+                    // store.name = store.name || '';
+                    store.stage = store.name ? STAGE.FAILED_PARSE_SITE : STAGE.WAIT_NAME;
+                }
+            });
     };
 
     useEffect(() => {
@@ -110,60 +170,7 @@ function Editor(props) {
     }, []);
 
     useEffect(() => {
-        if (!store.editBookmarkId) {
-            store.imageURL = null;
-        }
-
-        if (controller) {
-            controller.abort();
-            setController(null);
-        }
-
-        if (store.url === '') {
-            return;
-        }
-
-        store.stage = STAGE.PARSING_SITE;
-
-        const parseUrl = store.url;
-
-        asyncAction(async () => {
-            const siteData = await getSiteInfo(store.url, controller);
-
-            if (store.editBookmarkId) {
-                store.images = siteData.icons;
-                return;
-            }
-
-            if (siteData.bestIcon?.score === 0) {
-                try {
-                    siteData.bestIcon = await getImageRecalc(siteData.bestIcon.name);
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-
-            store.imageURL = siteData.bestIcon?.url;
-            store.icoVariant = siteData.bestIcon?.type;
-            if (!store.forceAdded) store.url = siteData.url;
-            store.images = siteData.icons;
-            console.log('UPD name value', store.name || siteData.name, siteData);
-            if (!store.forceAdded) store.name = store.name || siteData.name;
-            store.description = store.description || siteData.description;
-        })
-            .then(() => {
-                if (parseUrl === store.url) store.stage = STAGE.DONE;
-            })
-            .catch((e) => {
-                if (e.code === 404) {
-                    store.stage = STAGE.FAILED_PARSE_SITE;
-                    store.imageURL = '';
-                    store.icoVariant = BKMS_VARIANT.SYMBOL;
-                    store.images = [];
-                    // store.name = store.name || '';
-                    store.stage = store.name ? STAGE.FAILED_PARSE_SITE : STAGE.WAIT_NAME;
-                }
-            });
+        handleGetSiteInfo();
     }, [store.url]);
 
     useEffect(() => {
@@ -204,7 +211,7 @@ function Editor(props) {
                             categories={store.fullCategories}
                             header={(
                                 <PreviewSelectorToggleButton
-                                    imagesCount={store.images.length}
+                                    imagesCount={store.images.filter(({ failedLoad }) => !failedLoad).length}
                                     isOpen={store.isOpenSelectorPreview}
                                     onOpen={() => { store.isOpenSelectorPreview = true; }}
                                     onClose={() => { store.isOpenSelectorPreview = false; }}
@@ -255,6 +262,26 @@ function Editor(props) {
                                 onClose={() => {
                                     store.isOpenSelectorPreview = false;
                                 }}
+                                onFailedLoadImage={(imageUrl) => {
+                                    console.log('onFailedLoadImage', imageUrl)
+                                    store.images = store.images.map(({ url, ...other }) => {
+                                        if (url === imageUrl) {
+                                            return { url, ...other, failedLoad: true };
+                                        }
+
+                                        return { url, ...other };
+                                    });
+                                }}
+                                onLoadImage={(imageUrl, data) => {
+                                    console.log('onLoadImage', imageUrl, data)
+                                    store.images = store.images.map(({ url, ...other }) => {
+                                        if (url === imageUrl) {
+                                            return { ...other, ...data, url: imageUrl };
+                                        }
+
+                                        return { url, ...other };
+                                    });
+                                }}
                             />
                             <FieldsEditor
                                 isEdit={!!store.editBookmarkId}
@@ -267,6 +294,7 @@ function Editor(props) {
                                 marginThreshold={marginThreshold}
                                 onChangeFields={(value) => {
                                     console.log('onChangeFields', value);
+
                                     if ('searchRequest' in value) {
                                         store.stage = value.searchRequest ? STAGE.WAIT_RESULT : STAGE.WAIT_REQUEST;
                                     }
@@ -292,6 +320,11 @@ function Editor(props) {
                                         store.categories = value.categories;
                                     }
                                     store.saveStage = FETCH.WAIT;
+
+                                    if ('icons' in value && 'bestIcon' in value) {
+                                        store.preFetchSiteData = value;
+                                        handleGetSiteInfo();
+                                    }
                                 }}
                                 onSave={handlerSave}
                                 onCancel={onCancel}

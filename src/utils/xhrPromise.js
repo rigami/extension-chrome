@@ -1,8 +1,11 @@
 const xhrPromise = (url, options = {}) => new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
+    xhr.open(options.method || 'GET', url, true);
     xhr.timeout = 30000;
     xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+    if (options.headers) options.headers.forEach(({ name, value }) => {
+        xhr.setRequestHeader(name, value);
+    });
     xhr.responseType = options.responseType || 'json';
 
     if (options.signal) {
@@ -17,16 +20,17 @@ const xhrPromise = (url, options = {}) => new Promise((resolve, reject) => {
             });
             return;
         }
+
         switch (options.responseType) {
-        case 'json':
-            resolve(xhr.response);
-            break;
-        case 'document':
-            resolve(xhr.responseXML);
-            break;
-        default:
-            resolve(xhr.response);
-            break;
+            case 'json':
+                resolve({ response: xhr.response, xhr });
+                break;
+            case 'document':
+                resolve({ response: xhr.responseXML, xhr });
+                break;
+            default:
+                resolve({ response: xhr.response, xhr });
+                break;
         }
     };
 
@@ -34,7 +38,7 @@ const xhrPromise = (url, options = {}) => new Promise((resolve, reject) => {
         reject(e);
     };
 
-    xhr.send();
+    xhr.send(options.body);
 });
 
 function AbortController() {
