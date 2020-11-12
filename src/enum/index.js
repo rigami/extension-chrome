@@ -1,14 +1,16 @@
-import BG_CHANGE_INTERVAL from '@/enum/BG/BG_CHANGE_INTERVAL';
-import BG_SELECT_MODE from '@/enum/BG/BG_SELECT_MODE';
-import BG_CHANGE_INTERVAL_MILLISECONDS from '@/enum/BG/BG_CHANGE_INTERVAL_MILLISECONDS';
-import BG_TYPE from '@/enum/BG/BG_TYPE';
-import BKMS_FAP_POSITION from '@/enum/BKMS/BKMS_FAP_POSITION';
-import BKMS_FAP_STYLE from '@/enum/BKMS/BKMS_FAP_STYLE';
-import BKMS_VARIANT from '@/enum/BKMS/BKMS_VARIANT';
-import THEME from '@/enum/THEME';
-import FETCH from '@/enum/FETCH';
-import DESTINATION from '@/enum/DESTINATION';
-import ACTIVITY from '@/enum/ACTIVITY';
+import BG_CHANGE_INTERVAL from './BG/CHANGE_INTERVAL';
+import BG_SELECT_MODE from './BG/SELECT_MODE';
+import BG_CHANGE_INTERVAL_MILLISECONDS from './BG/CHANGE_INTERVAL_MILLISECONDS';
+import BG_TYPE from './BG/TYPE';
+import BKMS_FAP_POSITION from './BKMS/FAP_POSITION';
+import BKMS_FAP_STYLE from './BKMS/FAP_STYLE';
+import BKMS_VARIANT from './BKMS/VARIANT';
+import THEME from './THEME';
+import FETCH from './FETCH';
+import DESTINATION from './DESTINATION';
+import ACTIVITY from './ACTIVITY';
+import WIDGET_DTW_POSITION from './WIDGET/DTW_POSITION';
+import WIDGET_DTW_SIZE from './WIDGET/DTW_SIZE';
 
 export {
     BG_CHANGE_INTERVAL,
@@ -22,4 +24,6 @@ export {
     FETCH,
     DESTINATION,
     ACTIVITY,
+    WIDGET_DTW_POSITION,
+    WIDGET_DTW_SIZE,
 };

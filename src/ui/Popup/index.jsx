@@ -45,7 +45,7 @@ function Popup() {
                 components={[
                     ({ children }) => (<BaseStateProvider side={DESTINATION.POPUP}>{children}</BaseStateProvider>),
                     InitAppProvider,
-                    AppStateProvider,
+                    // AppStateProvider,
                     BookmarksProvider,
                 ]}
             >

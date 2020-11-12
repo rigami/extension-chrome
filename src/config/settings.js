@@ -6,6 +6,8 @@ import {
     BKMS_FAP_STYLE,
     BKMS_FAP_POSITION,
     ACTIVITY,
+    WIDGET_DTW_POSITION,
+    WIDGET_DTW_SIZE,
 } from '@/enum';
 import i18n from 'i18next';
 
@@ -29,11 +31,27 @@ export default {
         favorites: [],
         sync_with_system: false,
     },
+    widgets: {
+        use_widgets: true,
+        dtw: {
+            place: WIDGET_DTW_POSITION.LEFT_BOTTOM,
+            size: WIDGET_DTW_SIZE.MIDDLE,
+            date: {
+                use_date: true,
+            },
+            time: {
+                use_time: true,
+            },
+            weather: {
+                use_weather: false,
+            },
+        }
+    },
     app: {
         backdrop_theme: THEME.DARK,
         theme: THEME.LIGHT,
         use_system_font: true,
         tab_name: i18n.t('tabName.default'),
         default_activity: ACTIVITY.DESKTOP,
-    },
+    }
 };

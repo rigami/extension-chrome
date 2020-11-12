@@ -1,0 +1,5 @@
+export default {
+    LEFT_BOTTOM: 'LEFT_BOTTOM',
+    CENTER_TOP: 'CENTER_TOP',
+    LEFT_MIDDLE: 'LEFT_MIDDLE',
+};

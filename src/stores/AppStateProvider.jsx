@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import AppService from '@/stores/app';
+import WidgetsService from '@/stores/widgets';
 
 const context = createContext({});
 

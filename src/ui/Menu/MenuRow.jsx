@@ -123,7 +123,7 @@ function MenuRow(props) {
                             </React.Fragment>
                         )}
                         {actionType === TYPE.SLIDER && (
-                            <Slider {...actionProps} valueLabelDisplay="auto" />
+                            <Slider valueLabelDisplay="auto" {...actionProps} />
                         )}
                         {actionType === TYPE.SELECT && (
                             <Select

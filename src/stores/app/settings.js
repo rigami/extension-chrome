@@ -48,6 +48,58 @@ class BackgroundSettingsStore {
     }
 }
 
+class WidgetsSettingsStore {
+    useWidgets;
+    dtwPosition;
+    dtwSize;
+    dtwUseTime;
+    dtwUseDate;
+    dtwUseWeather;
+    isSync = false;
+
+    constructor() {
+        makeAutoObservable(this);
+        this.useWidgets = defaultSettings.widgets.use_widgets;
+        this.dtwPosition = defaultSettings.widgets.dtw.place;
+        this.dtwSize = defaultSettings.widgets.dtw.size;
+        this.dtwUseTime = defaultSettings.widgets.dtw.time.use_time;
+        this.dtwUseDate = defaultSettings.widgets.dtw.date.use_date;
+        this.dtwUseWeather = defaultSettings.widgets.dtw.weather.use_weather;
+
+        try {
+            this.update(JSON.parse(localStorage.getItem('settings')).widgets, false);
+            this.isSync = true;
+        } catch (e) {
+            console.warn('Failed get widgets settings from cache. Request form background...');
+            eventToBackground('system/getSettings/widgets', null, (settings) => {
+                this.update(settings, false);
+                this.isSync = true;
+            });
+        }
+
+        BusApp().on('system/syncSettings/widgets', ({ settings, changeInitiatorId }) => {
+            if (changeInitiatorId !== instanceId) this.update(settings, false);
+        });
+    }
+
+    @action
+    update(props = {}, sync = true) {
+        console.log('upd', props)
+        const updProps = pick(props, [
+            'useWidgets',
+            'dtwPosition',
+            'dtwSize',
+            'dtwUseTime',
+            'dtwUseDate',
+            'dtwUseWeather',
+        ]);
+
+        assign(this, updProps);
+
+        if (sync && size(updProps) !== 0) eventToBackground('system/syncSettings/widgets', updProps);
+    }
+}
+
 class BookmarksSettingsStore {
     fapStyle;
     fapPosition;
@@ -148,4 +200,9 @@ class AppSettingsStore {
     }
 }
 
-export { AppSettingsStore, BookmarksSettingsStore, BackgroundSettingsStore };
+export {
+    AppSettingsStore,
+    BookmarksSettingsStore,
+    BackgroundSettingsStore,
+    WidgetsSettingsStore,
+};

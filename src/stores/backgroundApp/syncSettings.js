@@ -13,17 +13,20 @@ class SyncSettings {
             app: {},
             bookmarks: {},
             backgrounds: {},
+            widgets: {},
         };
         const changed = {
             backgrounds: false,
             bookmarks: false,
             settings: false,
+            widgets: false,
         };
         const fastSyncSettings = throttle((initiatorId) => {
             this.fastSync(changed, initiatorId);
             changed.backgrounds = false;
             changed.bookmarks = false;
             changed.settings = false;
+            changed.widgets = false;
         }, 1000);
         const syncSettings = throttle(() => this.sync(), 10000);
 
@@ -44,6 +47,7 @@ class SyncSettings {
                         app: {},
                         bookmarks: {},
                         backgrounds: {},
+                        widgets: {},
                         ...JSON.parse(props),
                     };
                     fastSyncSettings();
@@ -69,6 +73,12 @@ class SyncSettings {
             syncSettings();
             fastSyncSettings(initiatorId);
         });
+        this.bus.on('system/syncSettings/widgets', (settings, { initiatorId }) => {
+            assign(this.settings.widgets, settings);
+            changed.widgets = true;
+            syncSettings();
+            fastSyncSettings(initiatorId);
+        });
 
         this.bus.on('system/getSettings/app', (settings, props, callback) => {
             callback(this.settings.app);
@@ -82,9 +92,13 @@ class SyncSettings {
             callback(this.settings.backgrounds);
             fastSyncSettings();
         });
+        this.bus.on('system/getSettings/widgets', (settings, props, callback) => {
+            callback(this.settings.widgets);
+            fastSyncSettings();
+        });
     }
 
-    fastSync({ backgrounds = false, settings = false, bookmarks = false }, initiatorId) {
+    fastSync({ backgrounds = false, settings = false, bookmarks = false, widgets = false }, initiatorId) {
         console.log('Save fast cache settings', this, this.settings);
         localStorage.setItem('settings', JSON.stringify(this.settings));
         localStorage.setItem('theme', this.settings.app?.theme || defaultSettings.app.theme);
@@ -107,6 +121,12 @@ class SyncSettings {
                 changeInitiatorId: initiatorId,
             });
         }
+        if (widgets) {
+            eventToApp('system/syncSettings/widgets', {
+                settings: this.settings.widgets || {},
+                changeInitiatorId: initiatorId,
+            });
+        }
     }
 
     sync() {
@@ -125,12 +145,14 @@ class SyncSettings {
             app: {},
             bookmarks: {},
             backgrounds: {},
+            widgets: {},
             ...settings,
         };
         this.fastSync({
             backgrounds: true,
             bookmarks: true,
             settings: true,
+            widgets: true,
         });
         this.sync();
     }

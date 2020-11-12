@@ -13,6 +13,7 @@ import {
     CollectionsBookmarkRounded as BookmarksIcon,
     HelpRounded as AboutIcon,
     BackupRounded as BackupIcon,
+    WidgetsRounded as WidgetsIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
@@ -22,6 +23,7 @@ import { content as AboutPageContent, header as aboutPageHeader } from './About'
 import { content as AppSettingsPageContent, header as appSettingsPageHeader } from './AppSettings';
 import { content as BookmarksPageContent, header as bookmarksPageHeader } from './Bookmarks';
 import { content as BackupPageContent, header as backupPageHeader } from './Backup';
+import { content as WidgetsPageContent, header as widgetsPageHeader } from './Widgets';
 
 const useStyles = makeStyles((theme) => ({
     divider: {
@@ -53,6 +55,15 @@ const general = [
         header: bookmarksPageHeader,
         content: BookmarksPageContent,
         color: '#ff4f88',
+    },
+    {
+        title: 'settings.widgets.title',
+        description: 'settings.widgets.description',
+        icon: <WidgetsIcon />,
+        id: 'widgets',
+        header: widgetsPageHeader,
+        content: WidgetsPageContent,
+        color: '#596dff',
     },
     {
         title: 'settings.app.title',
