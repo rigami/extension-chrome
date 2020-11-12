@@ -23,14 +23,14 @@ const theme = {
         borderRadiusBold: 8,
     },
     typography: {
-        fontFamily: localStorage.getItem('app_use_system_font') === 'true' ? 'system-ui' : 'Roboto, sans-serif',
-        h5: { fontWeight: 700 },
-        h6: { fontWeight: 700 },
+        fontFamily: localStorage.getItem('app_use_system_font') === 'true' ? 'system-ui' : 'Manrope, "Open Sans", sans-serif',
+        // h5: { fontWeight: 700 },
+        // h6: { fontWeight: 700 },
     },
     overrides: {
         MuiButton: {
             label: {
-                fontWeight: 700,
+                // fontWeight: 700,
                 wordBreak: 'break-word',
             },
         },
