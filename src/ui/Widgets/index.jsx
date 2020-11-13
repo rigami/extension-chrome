@@ -8,6 +8,7 @@ import useBookmarksService from '@/stores/BookmarksProvider';
 import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
+import Time from '@/ui/Widgets/Time';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -45,13 +46,10 @@ const useStyles = makeStyles((theme) => ({
             bottom: '24%',
         },
     },
-    time: {},
     row: {
         display: 'flex',
         alignItems: 'center',
     },
-    date: {},
-    weather: {},
     divider: {
         margin: theme.spacing(0, 2),
         backgroundColor: theme.palette.common.white,
@@ -93,9 +91,7 @@ function Widgets() {
           )}
       >
           {widgets.settings.dtwUseTime && (
-              <Typography className={classes.time} variant={calcFontSize(widgets.settings.dtwSize, timeFontSize)}>
-                  22:42
-              </Typography>
+              <Time size={calcFontSize(widgets.settings.dtwSize, timeFontSize)} />
           )}
           {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) &&(
               <Box className={classes.row}>

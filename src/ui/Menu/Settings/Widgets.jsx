@@ -131,9 +131,9 @@ function Widgets() {
                         valueLabelDisplay: 'off',
                     }}
                 />
+                <SectionHeader title={t('settings.widgets.dtw.time.title')} />
                 <MenuRow
-                    title={t('settings.widgets.dtw.time.title')}
-                    description={t('settings.widgets.dtw.time.description')}
+                    title={t('settings.widgets.dtw.time.useTime')}
                     action={{
                         type: ROWS_TYPE.CHECKBOX,
                         value: widgets.settings.dtwUseTime,
@@ -142,9 +142,21 @@ function Widgets() {
                         },
                     }}
                 />
+                <Collapse in={widgets.settings.dtwUseTime}>
+                    <MenuRow
+                        title={t('settings.widgets.dtw.time.format12')}
+                        action={{
+                            type: ROWS_TYPE.CHECKBOX,
+                            value: widgets.settings.dtwTimeFormat12,
+                            onChange: (event, value) => {
+                                widgets.settings.update({ dtwTimeFormat12: value });
+                            },
+                        }}
+                    />
+                </Collapse>
+                <SectionHeader title={t('settings.widgets.dtw.date.title')} />
                 <MenuRow
-                    title={t('settings.widgets.dtw.date.title')}
-                    description={t('settings.widgets.dtw.date.description')}
+                    title={t('settings.widgets.dtw.date.useDate')}
                     action={{
                         type: ROWS_TYPE.CHECKBOX,
                         value: widgets.settings.dtwUseDate,
@@ -153,9 +165,9 @@ function Widgets() {
                         },
                     }}
                 />
+                <SectionHeader title={t('settings.widgets.dtw.weather.title')} />
                 <MenuRow
-                    title={t('settings.widgets.dtw.weather.title')}
-                    description={t('settings.widgets.dtw.weather.description')}
+                    title={t('settings.widgets.dtw.weather.useWeather')}
                     action={{
                         type: ROWS_TYPE.CHECKBOX,
                         value: widgets.settings.dtwUseWeather,

@@ -41,6 +41,7 @@ export default {
             },
             time: {
                 use_time: true,
+                format12: false,
             },
             weather: {
                 use_weather: false,

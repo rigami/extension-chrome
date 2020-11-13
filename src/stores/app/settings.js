@@ -53,6 +53,7 @@ class WidgetsSettingsStore {
     dtwPosition;
     dtwSize;
     dtwUseTime;
+    dtwTimeFormat12;
     dtwUseDate;
     dtwUseWeather;
     isSync = false;
@@ -63,6 +64,7 @@ class WidgetsSettingsStore {
         this.dtwPosition = defaultSettings.widgets.dtw.place;
         this.dtwSize = defaultSettings.widgets.dtw.size;
         this.dtwUseTime = defaultSettings.widgets.dtw.time.use_time;
+        this.dtwTimeFormat12 = defaultSettings.widgets.dtw.time.format12;
         this.dtwUseDate = defaultSettings.widgets.dtw.date.use_date;
         this.dtwUseWeather = defaultSettings.widgets.dtw.weather.use_weather;
 
@@ -90,6 +92,7 @@ class WidgetsSettingsStore {
             'dtwPosition',
             'dtwSize',
             'dtwUseTime',
+            'dtwTimeFormat12',
             'dtwUseDate',
             'dtwUseWeather',
         ]);
