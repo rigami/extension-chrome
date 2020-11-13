@@ -137,8 +137,8 @@ function Widgets() {
                     action={{
                         type: ROWS_TYPE.CHECKBOX,
                         value: widgets.settings.dtwUseTime,
-                        onChange: (event) => {
-                            widgets.settings.update({ dtwUseTime: event.target.value });
+                        onChange: (event, value) => {
+                            widgets.settings.update({ dtwUseTime: value });
                         },
                     }}
                 />
@@ -148,8 +148,8 @@ function Widgets() {
                     action={{
                         type: ROWS_TYPE.CHECKBOX,
                         value: widgets.settings.dtwUseDate,
-                        onChange: (event) => {
-                            widgets.settings.update({ dtwUseDate: event.target.value });
+                        onChange: (event, value) => {
+                            widgets.settings.update({ dtwUseDate: value });
                         },
                     }}
                 />
@@ -159,8 +159,8 @@ function Widgets() {
                     action={{
                         type: ROWS_TYPE.CHECKBOX,
                         value: widgets.settings.dtwUseWeather,
-                        onChange: (event) => {
-                            widgets.settings.update({ dtwUseWeather: event.target.value });
+                        onChange: (event, value) => {
+                            widgets.settings.update({ dtwUseWeather: value });
                         },
                     }}
                 />

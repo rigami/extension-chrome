@@ -1,0 +1,126 @@
+import React from 'react';
+import { Typography, Box, Divider } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import useAppStateService from '@/stores/AppStateProvider';
+import DTW_SIZE from '@/enum/WIDGET/DTW_SIZE';
+import { observer } from 'mobx-react-lite';
+import useBookmarksService from '@/stores/BookmarksProvider';
+import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
+import clsx from 'clsx';
+import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        position: 'absolute',
+        zIndex: 1,
+        left: theme.spacing(11),
+        bottom: theme.spacing(6),
+        color: theme.palette.common.white,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'end',
+        /* transition: theme.transitions.create(['bottom', 'top'], {
+            easing: theme.transitions.easing.easeInOut,
+            duration: theme.transitions.duration.standard,
+        }), */
+    },
+    bottomOffset: {
+        bottom: theme.spacing(6) + theme.spacing(8),
+    },
+    topOffset: {},
+    leftMiddlePos: {
+        top: 0,
+        justifyContent: 'center',
+    },
+    centerTopPos: {
+        bottom: 'auto',
+        top: '30%',
+        right: theme.spacing(11),
+        alignItems: 'center',
+        '&$bottomOffset': {
+            top: '24%',
+        },
+        '&$topOffset': {
+            top: 'auto',
+            bottom: '24%',
+        },
+    },
+    time: {},
+    row: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    date: {},
+    weather: {},
+    divider: {
+        margin: theme.spacing(0, 2),
+        backgroundColor: theme.palette.common.white,
+    },
+}));
+
+const timeFontSize = ['h4', 'h2', 'h1'];
+const dateFontSize = ['h5', 'h3', 'h2'];
+
+const calcFontSize = (size, dict) => {
+    let fontSize = dict[0]
+
+    if (size === DTW_SIZE.BIG) {
+        fontSize = dict[2];
+    } else if (size === DTW_SIZE.MIDDLE) {
+        fontSize = dict[1];
+    }
+
+    return fontSize;
+};
+
+function Widgets() {
+    const classes = useStyles();
+    const { widgets } = useAppStateService();
+    const bookmarksService = useBookmarksService();
+
+    return (
+      <Box
+          className={clsx(
+              classes.root,
+              bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+              && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
+              && classes.bottomOffset,
+              bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+              && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
+              && classes.topOffset,
+              widgets.settings.dtwPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddlePos,
+              widgets.settings.dtwPosition === DTW_POSITION.CENTER_TOP && classes.centerTopPos,
+          )}
+      >
+          {widgets.settings.dtwUseTime && (
+              <Typography className={classes.time} variant={calcFontSize(widgets.settings.dtwSize, timeFontSize)}>
+                  22:42
+              </Typography>
+          )}
+          {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) &&(
+              <Box className={classes.row}>
+                  {widgets.settings.dtwUseDate && (
+                      <Typography className={classes.date} variant={calcFontSize(widgets.settings.dtwSize, dateFontSize)}>
+                          Tuesday, Aug 21
+                      </Typography>
+                  )}
+                  {widgets.settings.dtwUseWeather && (
+                      <React.Fragment>
+                          {widgets.settings.dtwUseDate && (
+                              <Divider className={classes.divider} orientation="vertical" flexItem />
+                              )}
+                          <Typography
+                              className={classes.weather}
+                              variant={calcFontSize(widgets.settings.dtwSize, dateFontSize)}
+                          >
+                              8 °C
+                          </Typography>
+                      </React.Fragment>
+                  )}
+              </Box>
+          )}
+      </Box>
+    );
+}
+
+export default observer(Widgets);

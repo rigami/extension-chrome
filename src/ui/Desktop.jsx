@@ -18,6 +18,8 @@ import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import useCoreService from '@/stores/BaseStateProvider';
 import Menu from '@/ui/Menu';
 import { useTranslation } from 'react-i18next';
+import Widgets from './Widgets';
+import useAppStateService from '@/stores/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -57,6 +59,7 @@ function Desktop() {
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
     const backgroundsStore = useBackgroundsService();
+    const { widgets } = useAppStateService();
     const coreService = useCoreService();
     const { t } = useTranslation();
     const store = useLocalObservable(() => ({
@@ -340,6 +343,9 @@ function Desktop() {
                     }
                 </div>
             </Fade>
+            {widgets.settings.useWidgets && (
+                <Widgets />
+            )}
             <Menu />
         </Box>
     );
