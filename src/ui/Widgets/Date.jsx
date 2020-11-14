@@ -23,8 +23,6 @@ function DateWidget({ size }) {
     const { widgets } = useAppStateService();
     const [now, setNow] = useState(new Date());
 
-    // Tuesday, Aug 21
-
     useEffect(() => {
         const scheduler = setInterval(() => {
             setNow(new Date());
