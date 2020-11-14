@@ -4,7 +4,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import useAppStateService from '@/stores/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
-    root: { textShadow: '0 2px 17px #00000029' },
+    root: {
+        textShadow: '0 2px 17px #00000029',
+        fontFamily: '"Manrope", "Open Sans", sans-serif',
+    },
     link: {},
 }));
 

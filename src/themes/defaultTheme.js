@@ -23,7 +23,7 @@ const theme = {
         borderRadiusBold: 8,
     },
     typography: {
-        fontFamily: localStorage.getItem('app_use_system_font') === 'true' ? 'system-ui' : 'Manrope, "Open Sans", sans-serif',
+        fontFamily: localStorage.getItem('app_use_system_font') === 'true' ? 'system-ui' : 'Roboto, "Open Sans", sans-serif',
         // h5: { fontWeight: 700 },
         // h6: { fontWeight: 700 },
     },
