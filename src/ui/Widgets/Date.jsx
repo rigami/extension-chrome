@@ -5,6 +5,7 @@ import useAppStateService from '@/stores/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        textShadow: '0 2px 17px #00000029',
     },
     link: {
 
@@ -41,7 +42,7 @@ function DateWidget({ size }) {
                 color="inherit"
                 className={classes.link}
             >
-                <Typography variant={size}>
+                <Typography variant={size} className={classes.root}>
                     {formatter.format(now)}
                 </Typography>
             </Link>
@@ -49,7 +50,7 @@ function DateWidget({ size }) {
     }
 
     return (
-        <Typography variant={size}>
+        <Typography variant={size} className={classes.root}>
             {formatter.format(now)}
         </Typography>
     );

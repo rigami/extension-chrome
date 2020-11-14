@@ -62,7 +62,7 @@ function DateWidget() {
     const [actionEditorOpen, setActionEditorOpen] = useState(false);
     const [actionUrl, setActionUrl] = useState('');
 
-    return (
+    return useObserver(() => (
         <React.Fragment>
             <SectionHeader title={t('settings.widgets.dtw.date.title')} />
             <MenuRow
@@ -126,7 +126,48 @@ function DateWidget() {
                 </Dialog>
             </Collapse>
         </React.Fragment>
-    );
+    ));
+}
+
+function WeatherWidget() {
+    const classes = useStyles();
+    const { t } = useTranslation();
+    const { widgets } = useAppStateService();
+    const [actionEditorOpen, setActionEditorOpen] = useState(false);
+    const [actionUrl, setActionUrl] = useState('');
+
+    return useObserver(() => (
+        <React.Fragment>
+            <SectionHeader title={t('settings.widgets.dtw.weather.title')} />
+            <MenuRow
+                title={t('settings.widgets.dtw.weather.useWeather')}
+                action={{
+                    type: ROWS_TYPE.CHECKBOX,
+                    value: widgets.settings.dtwUseWeather,
+                    onChange: (event, value) => {
+                        widgets.settings.update({ dtwUseWeather: value });
+                    },
+                }}
+            />
+            <Collapse in={widgets.settings.dtwUseWeather}>
+                <MenuRow
+                    title={t('settings.widgets.dtw.date.clickAction.title')}
+                    description={t('settings.widgets.dtw.date.clickAction.description')}
+                    action={{
+                        type: ROWS_TYPE.LINK,
+                        onClick: () => { setActionEditorOpen(true); },
+                        component: widgets.settings.dtwDateAction
+                            ? `open: ${getDomain(widgets.settings.dtwDateAction)}`
+                            : (
+                                <Typography className={classes.notSetValue}>
+                                    {t('settings.widgets.dtw.date.clickAction.notSet')}
+                                </Typography>
+                            ),
+                    }}
+                />
+            </Collapse>
+        </React.Fragment>
+    ));
 }
 
 function Widgets() {
@@ -224,17 +265,7 @@ function Widgets() {
                     />
                 </Collapse>
                 <DateWidget />
-                <SectionHeader title={t('settings.widgets.dtw.weather.title')} />
-                <MenuRow
-                    title={t('settings.widgets.dtw.weather.useWeather')}
-                    action={{
-                        type: ROWS_TYPE.CHECKBOX,
-                        value: widgets.settings.dtwUseWeather,
-                        onChange: (event, value) => {
-                            widgets.settings.update({ dtwUseWeather: value });
-                        },
-                    }}
-                />
+                {/* <WeatherWidget /> */}
             </Collapse>
         </React.Fragment>
     ));

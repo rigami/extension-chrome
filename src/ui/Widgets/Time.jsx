@@ -5,6 +5,7 @@ import useAppStateService from '@/stores/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        textShadow: '0 2px 17px #00000029',
     },
 }));
 
@@ -20,6 +21,7 @@ const formatter12 = new Intl.DateTimeFormat('nu', {
 });
 
 function Time({ size }) {
+    const classes = useStyles();
     const { widgets } = useAppStateService();
     const [now, setNow] = useState(new Date());
 
@@ -32,7 +34,7 @@ function Time({ size }) {
     }, []);
 
     return (
-        <Typography variant={size}>
+        <Typography variant={size} className={classes.root}>
             {(widgets.settings.dtwTimeFormat12 ? formatter12 : formatter).format(now)}
         </Typography>
     );

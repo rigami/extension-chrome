@@ -101,6 +101,57 @@
         }
       }
     },
+    "widgets": {
+      "title": "Desktop widgets",
+      "description": "Widgets help you get quick access to time and date",
+      "useWidgets": {
+        "title": "Use desktop widgets",
+        "description": "Widgets help you get quick access to time and date"
+      },
+      "dtw": {
+        "title": "Date and time",
+        "dtwPlace": {
+          "title": "Position",
+          "place": {
+            "LEFT_BOTTOM": "Lower left corner",
+            "CENTER_TOP": "Top center",
+            "LEFT_MIDDLE": "Left in the middle"
+          }
+        },
+        "dtwSize": {
+          "title": "The size",
+          "size": {
+            "SMALL": "Less",
+            "MIDDLE": "Average",
+            "BIG": "More"
+          }
+        },
+        "time": {
+          "title": "Time",
+          "description": "Current time display",
+          "useTime": "Show current time",
+          "format12": "Use 12 hour format"
+        },
+        "date": {
+          "title": "Date",
+          "description": "Display the current date",
+          "useDate": "Show current date",
+          "clickAction": {
+            "title": "Widget click action",
+            "description": "Configure so that when you click on the widget, the desired site opens",
+            "titleFull": "Configuring click action on date widget",
+            "descriptionFull": "Insert the url you want here, or leave it blank if you don't need to perform any action",
+            "textFieldLabelUrl": "Url address",
+            "notSet": "Not installed"
+          }
+        },
+        "weather": {
+          "title": "Weather",
+          "description": "Display of the current weather",
+          "useWeather": "Show current weather"
+        }
+      }
+    },
     "app":{
       "title":"Application settings",
       "description":"Enable dark theme. Change fonts and tab name",
