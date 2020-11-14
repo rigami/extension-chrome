@@ -19,7 +19,7 @@ import useBookmarksService from '@/stores/BookmarksProvider';
 import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import ScrollContainer from 'react-indiana-drag-scroll';
 import Link from './Link';
-import Folder from './Folder';
+import Category from './Category';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -223,7 +223,7 @@ function FAP() {
                                     isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
                                 />
                             ) : (
-                                <Folder
+                                <Category
                                     {...fav}
                                     key={`${fav.type}-${fav.id}`}
                                     isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}

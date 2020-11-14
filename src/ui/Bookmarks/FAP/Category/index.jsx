@@ -6,7 +6,7 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import {
-    FolderRounded as FolderIcon,
+    LabelRounded as TagIcon,
     BookmarkBorderRounded as PinnedFavoriteIcon,
     BookmarkRounded as UnpinnedFavoriteIcon,
     EditRounded as EditIcon,
@@ -166,7 +166,7 @@ function Folder({ id, name, color, isBlurBackdrop }) {
                     }}
                     onContextMenu={(event) => handlerContextMenu(event, event.currentTarget)}
                 >
-                    <FolderIcon style={{ color }} className={classes.icon} />
+                    <TagIcon style={{ color }} className={classes.icon} />
                 </ButtonBase>
             </Tooltip>
         </React.Fragment>
