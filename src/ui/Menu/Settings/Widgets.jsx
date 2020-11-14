@@ -1,31 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-    Box,
-    Divider,
-    Typography,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    ListItemSecondaryAction,
-    Link, Avatar, Collapse,
+    Collapse,
+    Dialog,
+    DialogTitle,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    Button,
+    TextField, Typography,
 } from '@material-ui/core';
-import {
-    NavigateNextRounded as ArrowRightIcon,
-    HomeRounded as HomeIcon,
-    BugReportRounded as BugIcon,
-    ChatBubbleRounded as ReviewIcon,
-    EmailRounded as EmailIcon,
-    PolicyRounded as PolicyIcon, BrokenImageRounded as BrokenIcon,
-} from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import LogoIcon from '@/images/logo-icon.svg';
-import LogoText from '@/images/logo-text.svg';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import useAppStateService from '@/stores/AppStateProvider';
 import { WIDGET_DTW_POSITION, WIDGET_DTW_SIZE } from '@/enum';
 import { useObserver } from 'mobx-react-lite';
+import { getDomain } from '@/utils/localSiteParse';
 
 const useStyles = makeStyles((theme) => ({
     splash: {
@@ -49,6 +40,10 @@ const useStyles = makeStyles((theme) => ({
     },
     appVersion: { color: theme.palette.text.secondary },
     row: { width: 520 },
+    notSetValue: {
+        fontStyle: 'italic',
+        color: theme.palette.text.secondary,
+    },
 }));
 
 const headerProps = { title: 'settings.widgets.title' };
@@ -58,6 +53,80 @@ const numberToEnumSize = (value) => {
 }
 const enumSizeToNumber = (value) => {
     return value === WIDGET_DTW_SIZE.BIG ? 3 : value === WIDGET_DTW_SIZE.MIDDLE ? 2 : 1;
+}
+
+function DateWidget() {
+    const classes = useStyles();
+    const { t } = useTranslation();
+    const { widgets } = useAppStateService();
+    const [actionEditorOpen, setActionEditorOpen] = useState(false);
+    const [actionUrl, setActionUrl] = useState('');
+
+    return (
+        <React.Fragment>
+            <SectionHeader title={t('settings.widgets.dtw.date.title')} />
+            <MenuRow
+                title={t('settings.widgets.dtw.date.useDate')}
+                action={{
+                    type: ROWS_TYPE.CHECKBOX,
+                    value: widgets.settings.dtwUseDate,
+                    onChange: (event, value) => {
+                        widgets.settings.update({ dtwUseDate: value });
+                    },
+                }}
+            />
+            <Collapse in={widgets.settings.dtwUseDate}>
+                <MenuRow
+                    title={t('settings.widgets.dtw.date.clickAction.title')}
+                    description={t('settings.widgets.dtw.date.clickAction.description')}
+                    action={{
+                        type: ROWS_TYPE.LINK,
+                        onClick: () => { setActionEditorOpen(true); },
+                        component: widgets.settings.dtwDateAction
+                            ? `open: ${getDomain(widgets.settings.dtwDateAction)}`
+                            : (
+                                <Typography className={classes.notSetValue}>
+                                    {t('settings.widgets.dtw.date.clickAction.notSet')}
+                                </Typography>
+                            ),
+                    }}
+                />
+                <Dialog open={actionEditorOpen} onClose={() => { setActionEditorOpen(false); }}>
+                    <DialogTitle>{t('settings.widgets.dtw.date.clickAction.titleFull')}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {t('settings.widgets.dtw.date.clickAction.descriptionFull')}
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            defaultValue={widgets.settings.dtwDateAction}
+                            fullWidth
+                            label={t('settings.widgets.dtw.date.clickAction.textFieldLabelUrl')}
+                            onChange={(event) => { setActionUrl(event.target.value) }}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            color="primary"
+                            onClick={() => { setActionEditorOpen(false); }}
+                        >
+                            {t("cancel")}
+                        </Button>
+                        <Button
+                            color="primary"
+                            onClick={() => {
+                                setActionEditorOpen(false);
+                                widgets.settings.update({ dtwDateAction: actionUrl });
+                            }}
+                        >
+                            {t("save")}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </Collapse>
+        </React.Fragment>
+    );
 }
 
 function Widgets() {
@@ -154,17 +223,7 @@ function Widgets() {
                         }}
                     />
                 </Collapse>
-                <SectionHeader title={t('settings.widgets.dtw.date.title')} />
-                <MenuRow
-                    title={t('settings.widgets.dtw.date.useDate')}
-                    action={{
-                        type: ROWS_TYPE.CHECKBOX,
-                        value: widgets.settings.dtwUseDate,
-                        onChange: (event, value) => {
-                            widgets.settings.update({ dtwUseDate: value });
-                        },
-                    }}
-                />
+                <DateWidget />
                 <SectionHeader title={t('settings.widgets.dtw.weather.title')} />
                 <MenuRow
                     title={t('settings.widgets.dtw.weather.useWeather')}

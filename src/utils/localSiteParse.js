@@ -1,5 +1,18 @@
 import { BKMS_VARIANT } from '@/enum';
 
+function getDomain(url) {
+    let  domain = url;
+    if (domain.indexOf("//") !== -1) {
+        domain = domain.substring(domain.indexOf("//")+2);
+    }
+
+    if (domain.indexOf("/") !== -1) {
+        domain = domain.substring(0, domain.indexOf("/"));
+    }
+
+    return domain;
+}
+
 function parseSite(xml, urlOrigin) {
     console.log({ xml });
     const head = xml.querySelector('head');
@@ -100,3 +113,5 @@ function parseSite(xml, urlOrigin) {
 }
 
 export default parseSite;
+
+export { getDomain };

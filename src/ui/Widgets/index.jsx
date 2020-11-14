@@ -8,7 +8,8 @@ import useBookmarksService from '@/stores/BookmarksProvider';
 import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
-import Time from '@/ui/Widgets/Time';
+import Time from './Time';
+import Date from './Date';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -96,9 +97,7 @@ function Widgets() {
           {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) &&(
               <Box className={classes.row}>
                   {widgets.settings.dtwUseDate && (
-                      <Typography className={classes.date} variant={calcFontSize(widgets.settings.dtwSize, dateFontSize)}>
-                          Tuesday, Aug 21
-                      </Typography>
+                      <Date size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
                   )}
                   {widgets.settings.dtwUseWeather && (
                       <React.Fragment>

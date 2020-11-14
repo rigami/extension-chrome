@@ -55,6 +55,7 @@ class WidgetsSettingsStore {
     dtwUseTime;
     dtwTimeFormat12;
     dtwUseDate;
+    dtwDateAction;
     dtwUseWeather;
     isSync = false;
 
@@ -66,6 +67,7 @@ class WidgetsSettingsStore {
         this.dtwUseTime = defaultSettings.widgets.dtw.time.use_time;
         this.dtwTimeFormat12 = defaultSettings.widgets.dtw.time.format12;
         this.dtwUseDate = defaultSettings.widgets.dtw.date.use_date;
+        this.dtwDateAction = defaultSettings.widgets.dtw.date.default_action;
         this.dtwUseWeather = defaultSettings.widgets.dtw.weather.use_weather;
 
         try {
@@ -94,6 +96,7 @@ class WidgetsSettingsStore {
             'dtwUseTime',
             'dtwTimeFormat12',
             'dtwUseDate',
+            'dtwDateAction',
             'dtwUseWeather',
         ]);
 

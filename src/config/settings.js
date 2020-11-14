@@ -38,6 +38,7 @@ export default {
             size: WIDGET_DTW_SIZE.MIDDLE,
             date: {
                 use_date: true,
+                default_action: '',
             },
             time: {
                 use_time: true,
