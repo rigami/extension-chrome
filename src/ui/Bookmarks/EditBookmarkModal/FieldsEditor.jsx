@@ -103,7 +103,9 @@ function FieldsEditor(props) {
                         store.searchRequest = value;
                         onChangeFields({ searchRequest: value });
                     }}
-                    onSelect={({ title, url: requestUrl, icons, forceAdded, ...other }) => {
+                    onSelect={({
+                        title, url: requestUrl, icons, forceAdded, ...other
+                    }) => {
                         store.searchRequest = requestUrl;
                         store.name = title || store.name || '';
 
@@ -113,7 +115,13 @@ function FieldsEditor(props) {
                             name: title,
                         };
 
-                        if (icons) result = { ...result, icons, ...other };
+                        if (icons) {
+                            result = {
+                                ...result,
+                                icons,
+                                ...other,
+                            };
+                        }
                         onChangeFields(result);
                     }}
                 />

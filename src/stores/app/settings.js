@@ -88,7 +88,6 @@ class WidgetsSettingsStore {
 
     @action
     update(props = {}, sync = true) {
-        console.log('upd', props)
         const updProps = pick(props, [
             'useWidgets',
             'dtwPosition',

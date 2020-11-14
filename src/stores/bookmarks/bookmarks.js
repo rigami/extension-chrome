@@ -21,7 +21,7 @@ class BookmarksStore {
 
     @action('get bookmark')
     async get(bookmarkId) {
-        console.log('get bookmark by id:', bookmarkId)
+        console.log('get bookmark by id:', bookmarkId);
         const bookmark = await DBConnector().get('bookmarks', bookmarkId);
 
         const storesName = ['bookmarks_by_categories', 'categories'];
@@ -63,9 +63,7 @@ class BookmarksStore {
     @action('query bookmarks')
     async query(searchQuery = {}, notSaveSearch = true) {
         if (!notSaveSearch) {
-            this._coreService.storage.updatePersistent({
-                bkmsLastSearch: searchQuery,
-            });
+            this._coreService.storage.updatePersistent({ bkmsLastSearch: searchQuery });
         }
 
         const query = {

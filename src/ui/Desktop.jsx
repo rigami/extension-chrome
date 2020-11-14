@@ -18,8 +18,8 @@ import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import useCoreService from '@/stores/BaseStateProvider';
 import Menu from '@/ui/Menu';
 import { useTranslation } from 'react-i18next';
-import Widgets from './Widgets';
 import useAppStateService from '@/stores/AppStateProvider';
+import Widgets from './Widgets';
 
 const useStyles = makeStyles((theme) => ({
     root: {

@@ -69,7 +69,7 @@ module.exports = () => ({
                 },
                 {
                     from: './config/manifestLocales/',
-                    to: './_locales/'
+                    to: './_locales/',
                 },
                 {
                     from: path.resolve(__dirname, 'public/'),

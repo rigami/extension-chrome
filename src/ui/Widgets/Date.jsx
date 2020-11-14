@@ -4,12 +4,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import useAppStateService from '@/stores/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        textShadow: '0 2px 17px #00000029',
-    },
-    link: {
-
-    },
+    root: { textShadow: '0 2px 17px #00000029' },
+    link: {},
 }));
 
 const formatter = new Intl.DateTimeFormat('nu', {

@@ -3,11 +3,7 @@ import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useAppStateService from '@/stores/AppStateProvider';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        textShadow: '0 2px 17px #00000029',
-    },
-}));
+const useStyles = makeStyles((theme) => ({ root: { textShadow: '0 2px 17px #00000029' } }));
 
 const formatter = new Intl.DateTimeFormat('nu', {
     hour: '2-digit',

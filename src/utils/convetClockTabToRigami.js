@@ -29,7 +29,7 @@ function convert(clockTabFile = {}) {
                 clockTabFile.data.settings.switching_background_in_special.random_selection.period >= 2
                     ? clockTabFile.data.settings.switching_background_in_special.random_selection.period - 1
                     : clockTabFile.data.settings.switching_background_in_special.random_selection.period
-                ];
+            ];
         }
 
         settings = {
@@ -74,7 +74,7 @@ function convert(clockTabFile = {}) {
             categories.push(category);
 
             group.sites.forEach((bookmark) => {
-                const imageBase64 = bookmark.image && clockTabFile.data.sitesIcons?.find(({ name }) => bookmark.image.indexOf(name) !== -1)?.file
+                const imageBase64 = bookmark.image && clockTabFile.data.sitesIcons?.find(({ name }) => bookmark.image.indexOf(name) !== -1)?.file;
 
                 bookmarks.push(
                     new Bookmark({
@@ -94,7 +94,7 @@ function convert(clockTabFile = {}) {
             let favBookmark = bookmarks.find(({ url }) => url === bookmark.url);
 
             if (!favBookmark) {
-                const imageBase64 = bookmark.image && clockTabFile.data.sitesIcons?.find(({ name }) => bookmark.image.indexOf(name) !== -1)?.file
+                const imageBase64 = bookmark.image && clockTabFile.data.sitesIcons?.find(({ name }) => bookmark.image.indexOf(name) !== -1)?.file;
 
                 favBookmark = new Bookmark({
                     id: bookmarks.length,

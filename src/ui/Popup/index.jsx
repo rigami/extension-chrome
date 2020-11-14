@@ -43,8 +43,7 @@ function Popup() {
             <CssBaseline />
             <Nest
                 components={[
-                    ({ children }) => (<BaseStateProvider side={DESTINATION.POPUP}>{children}</BaseStateProvider>),
-                    InitAppProvider,
+                    ({ children }) => (<BaseStateProvider side={DESTINATION.POPUP}>{children}</BaseStateProvider>), InitAppProvider,
                     // AppStateProvider,
                     BookmarksProvider,
                 ]}

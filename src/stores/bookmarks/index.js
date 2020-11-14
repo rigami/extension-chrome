@@ -1,4 +1,6 @@
-import { action, get, makeAutoObservable, reaction } from 'mobx';
+import {
+    action, get, makeAutoObservable, reaction,
+} from 'mobx';
 import { DESTINATION } from '@/enum';
 import { BookmarksSettingsStore } from '@/stores/app/settings';
 import DBConnector from '@/utils/dbConnector';
@@ -24,21 +26,15 @@ class BookmarksService {
         this.syncFavorites();
 
         this._coreService.globalEventBus.on('bookmark/new', () => {
-            this._coreService.storage.updatePersistent({
-                bkmsLastTruthSearchTimestamp: Date.now(),
-            });
+            this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
         this._coreService.globalEventBus.on('bookmark/remove', () => {
-            this._coreService.storage.updatePersistent({
-                bkmsLastTruthSearchTimestamp: Date.now(),
-            });
+            this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
         this._coreService.globalEventBus.on('category/new', async () => {
             await this.categories.sync();
 
-            this._coreService.storage.updatePersistent({
-                bkmsLastTruthSearchTimestamp: Date.now(),
-            });
+            this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
         this._coreService.globalEventBus.on('category/remove', async ({ categoryId }) => {
             await this.categories.sync();
@@ -46,9 +42,7 @@ class BookmarksService {
             this._coreService.storage.updatePersistent({
                 bkmsLastSearch: {
                     ...(this._coreService.storage.persistent.categories || {}),
-                    categories: {
-                        match: (this._coreService.storage.persistent.categories || []).filter((id) => id !== categoryId),
-                    }
+                    categories: { match: (this._coreService.storage.persistent.categories || []).filter((id) => id !== categoryId) },
                 },
                 bkmsLastTruthSearchTimestamp: Date.now(),
             });
@@ -74,7 +68,7 @@ class BookmarksService {
 
     @action('sync favorites')
     async syncFavorites() {
-        console.log("Sync fav")
+        console.log('Sync fav');
         const favorites = await DBConnector().getAll('favorites');
 
         this.favorites = favorites.map(({ favoriteId, type }) => ({

@@ -92,7 +92,7 @@ function Search({ query = '', onSelect }) {
 
             getSiteInfo(query.trim(), controller)
                 .then((siteData) => {
-                    setStraightResults({...siteData});
+                    setStraightResults({ ...siteData });
                 })
                 .catch(() => {
                     setStraightResults(null);

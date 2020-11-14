@@ -30,22 +30,25 @@ const getSiteInfo = async (url, signal) => {
     let localSearchUrl = url;
 
     if (localSearchUrl.indexOf('http') !== 0) {
-        localSearchUrl = `http://${localSearchUrl}`
+        localSearchUrl = `http://${localSearchUrl}`;
     }
 
     const { response, xhr } = await xhrPromise(
         localSearchUrl,
-        { signal, responseType: 'document' },
+        {
+            signal,
+            responseType: 'document',
+        },
     );
 
-    const urlOrigin = xhr.responseURL.substring(0, xhr.responseURL.indexOf('/', 'http://'.length+1));
+    const urlOrigin = xhr.responseURL.substring(0, xhr.responseURL.indexOf('/', 'http://'.length + 1));
 
     let parseData = {};
 
     try {
         parseData = { ...parseSite(response, urlOrigin) };
     } catch (e) {
-        console.log("Failed parse site", e)
+        console.log('Failed parse site', e);
     }
 
     const parseResult = {
@@ -60,36 +63,41 @@ const getSiteInfo = async (url, signal) => {
             body: JSON.stringify(parseResult),
             method: 'POST',
             headers: [
-                { name: "Content-type", value: "application/json" },
+                {
+                    name: 'Content-type',
+                    value: 'application/json',
+                },
             ],
             responseType: 'json',
         },
-    )
+    );
 
     return result;
 };
-
 
 const getSiteInfoLocal = async (url, signal) => {
     let localSearchUrl = url;
 
     if (localSearchUrl.indexOf('http') !== 0) {
-        localSearchUrl = `http://${localSearchUrl}`
+        localSearchUrl = `http://${localSearchUrl}`;
     }
 
     const { response, xhr } = await xhrPromise(
         localSearchUrl,
-        { signal, responseType: 'document' },
+        {
+            signal,
+            responseType: 'document',
+        },
     );
 
-    const urlOrigin = xhr.responseURL.substring(0, xhr.responseURL.indexOf('/', 'http://'.length+1));
+    const urlOrigin = xhr.responseURL.substring(0, xhr.responseURL.indexOf('/', 'http://'.length + 1));
 
     return {
         ...parseSite(response, urlOrigin),
         url: xhr.responseURL,
         urlOrigin,
     };
-}
+};
 
 const getFaviconUrl = (url = '') => {
     let origin;

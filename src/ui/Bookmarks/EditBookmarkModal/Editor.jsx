@@ -110,7 +110,7 @@ function Editor(props) {
         asyncAction(async () => {
             const siteData = await getSiteInfo(store.url, controller);
 
-            console.log('siteData', siteData)
+            console.log('siteData', siteData);
 
             if (store.editBookmarkId) {
                 store.images = siteData.icons;
@@ -119,7 +119,7 @@ function Editor(props) {
 
             if (siteData.bestIcon?.score === 0) {
                 try {
-                    console.log('siteData.bestIcon.url', siteData.bestIcon.url)
+                    console.log('siteData.bestIcon.url', siteData.bestIcon.url);
                     siteData.bestIcon = await getImageRecalc(siteData.bestIcon.url);
                 } catch (e) {
                     console.error(e);
@@ -263,23 +263,37 @@ function Editor(props) {
                                     store.isOpenSelectorPreview = false;
                                 }}
                                 onFailedLoadImage={(imageUrl) => {
-                                    console.log('onFailedLoadImage', imageUrl)
+                                    console.log('onFailedLoadImage', imageUrl);
                                     store.images = store.images.map(({ url, ...other }) => {
                                         if (url === imageUrl) {
-                                            return { url, ...other, failedLoad: true };
+                                            return {
+                                                url,
+                                                ...other,
+                                                failedLoad: true,
+                                            };
                                         }
 
-                                        return { url, ...other };
+                                        return {
+                                            url,
+                                            ...other,
+                                        };
                                     });
                                 }}
                                 onLoadImage={(imageUrl, data) => {
-                                    console.log('onLoadImage', imageUrl, data)
+                                    console.log('onLoadImage', imageUrl, data);
                                     store.images = store.images.map(({ url, ...other }) => {
                                         if (url === imageUrl) {
-                                            return { ...other, ...data, url: imageUrl };
+                                            return {
+                                                ...other,
+                                                ...data,
+                                                url: imageUrl,
+                                            };
                                         }
 
-                                        return { url, ...other };
+                                        return {
+                                            url,
+                                            ...other,
+                                        };
                                     });
                                 }}
                             />

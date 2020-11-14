@@ -69,7 +69,7 @@ function Preview(props) {
     }));
 
     useEffect(() => {
-        console.log('imageUrl', imageUrl)
+        console.log('imageUrl', imageUrl);
         if (stage !== STAGE.DONE && stage !== STAGE.FAILED_PARSE_SITE) {
             store.stateImageLoad = FETCH.WAIT;
             store.loadUrl = '';

@@ -26,9 +26,7 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.standard,
         }), */
     },
-    bottomOffset: {
-        bottom: theme.spacing(6) + theme.spacing(8),
-    },
+    bottomOffset: { bottom: theme.spacing(6) + theme.spacing(8) },
     topOffset: {},
     leftMiddlePos: {
         top: 0,
@@ -39,9 +37,7 @@ const useStyles = makeStyles((theme) => ({
         top: '30%',
         right: theme.spacing(11),
         alignItems: 'center',
-        '&$bottomOffset': {
-            top: '24%',
-        },
+        '&$bottomOffset': { top: '24%' },
         '&$topOffset': {
             top: 'auto',
             bottom: '24%',
@@ -61,7 +57,7 @@ const timeFontSize = ['h4', 'h2', 'h1'];
 const dateFontSize = ['h5', 'h3', 'h2'];
 
 const calcFontSize = (size, dict) => {
-    let fontSize = dict[0]
+    let fontSize = dict[0];
 
     if (size === DTW_SIZE.BIG) {
         fontSize = dict[2];
@@ -78,43 +74,43 @@ function Widgets() {
     const bookmarksService = useBookmarksService();
 
     return (
-      <Box
-          className={clsx(
-              classes.root,
-              bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+        <Box
+            className={clsx(
+                classes.root,
+                bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
               && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
               && classes.bottomOffset,
-              bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+                bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
               && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
               && classes.topOffset,
-              widgets.settings.dtwPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddlePos,
-              widgets.settings.dtwPosition === DTW_POSITION.CENTER_TOP && classes.centerTopPos,
-          )}
-      >
-          {widgets.settings.dtwUseTime && (
-              <Time size={calcFontSize(widgets.settings.dtwSize, timeFontSize)} />
-          )}
-          {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) &&(
-              <Box className={classes.row}>
-                  {widgets.settings.dtwUseDate && (
-                      <Date size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
-                  )}
-                  {widgets.settings.dtwUseWeather && (
-                      <React.Fragment>
-                          {widgets.settings.dtwUseDate && (
-                              <Divider className={classes.divider} orientation="vertical" flexItem />
-                              )}
-                          <Typography
-                              className={classes.weather}
-                              variant={calcFontSize(widgets.settings.dtwSize, dateFontSize)}
-                          >
-                              8 °C
-                          </Typography>
-                      </React.Fragment>
-                  )}
-              </Box>
-          )}
-      </Box>
+                widgets.settings.dtwPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddlePos,
+                widgets.settings.dtwPosition === DTW_POSITION.CENTER_TOP && classes.centerTopPos,
+            )}
+        >
+            {widgets.settings.dtwUseTime && (
+                <Time size={calcFontSize(widgets.settings.dtwSize, timeFontSize)} />
+            )}
+            {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) && (
+                <Box className={classes.row}>
+                    {widgets.settings.dtwUseDate && (
+                        <Date size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
+                    )}
+                    {widgets.settings.dtwUseWeather && (
+                        <React.Fragment>
+                            {widgets.settings.dtwUseDate && (
+                                <Divider className={classes.divider} orientation="vertical" flexItem />
+                            )}
+                            <Typography
+                                className={classes.weather}
+                                variant={calcFontSize(widgets.settings.dtwSize, dateFontSize)}
+                            >
+                                8 °C
+                            </Typography>
+                        </React.Fragment>
+                    )}
+                </Box>
+            )}
+        </Box>
     );
 }
 

@@ -48,12 +48,8 @@ const useStyles = makeStyles((theme) => ({
 
 const headerProps = { title: 'settings.widgets.title' };
 
-const numberToEnumSize = (value) => {
-    return value === 3 ? WIDGET_DTW_SIZE.BIG : value === 2 ? WIDGET_DTW_SIZE.MIDDLE : WIDGET_DTW_SIZE.SMALL;
-}
-const enumSizeToNumber = (value) => {
-    return value === WIDGET_DTW_SIZE.BIG ? 3 : value === WIDGET_DTW_SIZE.MIDDLE ? 2 : 1;
-}
+const numberToEnumSize = (value) => (value === 3 ? WIDGET_DTW_SIZE.BIG : value === 2 ? WIDGET_DTW_SIZE.MIDDLE : WIDGET_DTW_SIZE.SMALL);
+const enumSizeToNumber = (value) => (value === WIDGET_DTW_SIZE.BIG ? 3 : value === WIDGET_DTW_SIZE.MIDDLE ? 2 : 1);
 
 function DateWidget() {
     const classes = useStyles();
@@ -103,7 +99,7 @@ function DateWidget() {
                             defaultValue={widgets.settings.dtwDateAction}
                             fullWidth
                             label={t('settings.widgets.dtw.date.clickAction.textFieldLabelUrl')}
-                            onChange={(event) => { setActionUrl(event.target.value) }}
+                            onChange={(event) => { setActionUrl(event.target.value); }}
                         />
                     </DialogContent>
                     <DialogActions>
@@ -111,7 +107,7 @@ function DateWidget() {
                             color="primary"
                             onClick={() => { setActionEditorOpen(false); }}
                         >
-                            {t("cancel")}
+                            {t('cancel')}
                         </Button>
                         <Button
                             color="primary"
@@ -120,7 +116,7 @@ function DateWidget() {
                                 widgets.settings.update({ dtwDateAction: actionUrl });
                             }}
                         >
-                            {t("save")}
+                            {t('save')}
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -201,11 +197,7 @@ function Widgets() {
                         onChange: (event) => {
                             widgets.settings.update({ dtwPosition: event.target.value });
                         },
-                        values: [
-                            WIDGET_DTW_POSITION.LEFT_BOTTOM,
-                            WIDGET_DTW_POSITION.LEFT_MIDDLE,
-                            WIDGET_DTW_POSITION.CENTER_TOP,
-                        ],
+                        values: [WIDGET_DTW_POSITION.LEFT_BOTTOM, WIDGET_DTW_POSITION.LEFT_MIDDLE, WIDGET_DTW_POSITION.CENTER_TOP],
                     }}
                 />
                 <MenuRow
@@ -215,7 +207,7 @@ function Widgets() {
                         type: ROWS_TYPE.SLIDER,
                         value: enumSizeToNumber(widgets.settings.dtwSize),
                         onChange: (event, value) => {
-                            console.log('onChange', value, numberToEnumSize(value))
+                            console.log('onChange', value, numberToEnumSize(value));
                             widgets.settings.update({ dtwSize: numberToEnumSize(value) });
                         },
                         onChangeCommitted: (event, value) => {

@@ -68,10 +68,7 @@ class SyncBookmarks {
                     ...bookmark,
                     id: findBookmark.id,
                     imageBase64: bookmark.image || bookmark.imageBase64,
-                    categories: uniq([
-                        ...findBookmark.categories.map(({ id }) => id),
-                        ...bookmark.categories.map((id) => replaceCategoryId[id] || id),
-                    ]),
+                    categories: uniq([...findBookmark.categories.map(({ id }) => id), ...bookmark.categories.map((id) => replaceCategoryId[id] || id)]),
                 });
 
                 replaceBookmarkId[bookmark.id] = findBookmark.id;

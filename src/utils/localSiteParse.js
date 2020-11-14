@@ -1,13 +1,13 @@
 import { BKMS_VARIANT } from '@/enum';
 
 function getDomain(url) {
-    let  domain = url;
-    if (domain.indexOf("//") !== -1) {
-        domain = domain.substring(domain.indexOf("//")+2);
+    let domain = url;
+    if (domain.indexOf('//') !== -1) {
+        domain = domain.substring(domain.indexOf('//') + 2);
     }
 
-    if (domain.indexOf("/") !== -1) {
-        domain = domain.substring(0, domain.indexOf("/"));
+    if (domain.indexOf('/') !== -1) {
+        domain = domain.substring(0, domain.indexOf('/'));
     }
 
     return domain;
@@ -18,7 +18,7 @@ function parseSite(xml, urlOrigin) {
     const head = xml.querySelector('head');
 
     const title = head.querySelector('title')?.innerText;
-    const description = xml.querySelector(`meta[name='description']`)?.innerText;
+    const description = xml.querySelector('meta[name=\'description\']')?.innerText;
     const elements = xml.querySelectorAll(`
             [rel='shortcut icon'],
             [rel='shortcut'],
@@ -41,21 +41,21 @@ function parseSite(xml, urlOrigin) {
         let score = 0;
 
         if (element.tagName === 'LINK') {
-            url = element.getAttribute("href")
-            const sizes = element.getAttribute("sizes")
+            url = element.getAttribute('href');
+            const sizes = element.getAttribute('sizes');
 
-            if (sizes !== "" && sizes !== "any") {
+            if (sizes !== '' && sizes !== 'any') {
                 try {
-                    const separator = sizes.indexOf("x")
-                    if (separator === -1) throw Exception("Is not size");
-                    const width = Number.parseInt(sizes.substring(0, separator))
-                    const height = Number.parseInt(sizes.substring(separator+1))
+                    const separator = sizes.indexOf('x');
+                    if (separator === -1) throw Exception('Is not size');
+                    const width = Number.parseInt(sizes.substring(0, separator));
+                    const height = Number.parseInt(sizes.substring(separator + 1));
 
-                    const wScore = (1 / Math.abs(width - 70)) * ((width > 70) ? 400 : 100)
-                    const hScore = (1 / Math.abs(height - 70)) * ((height > 70) ? 400 : 100)
+                    const wScore = (1 / Math.abs(width - 70)) * ((width > 70) ? 400 : 100);
+                    const hScore = (1 / Math.abs(height - 70)) * ((height > 70) ? 400 : 100);
 
-                    score += wScore
-                    score += hScore
+                    score += wScore;
+                    score += hScore;
                 } catch (e) {
                 }
             }
@@ -64,44 +64,56 @@ function parseSite(xml, urlOrigin) {
         }
 
         if (url) {
-            icons.push({ url, score, type: BKMS_VARIANT.SMALL, name: `ic${icons.length}` })
+            icons.push({
+                url,
+                score,
+                type: BKMS_VARIANT.SMALL,
+                name: `ic${icons.length}`,
+            });
         }
     });
 
     [
-        "/favicon.ico",
-        "/apple-touch-icon-57x57-precomposed.png",
-        "/apple-touch-icon-57x57.png",
-        "/apple-touch-icon-72x72-precomposed.png",
-        "/apple-touch-icon-72x72.png",
-        "/apple-touch-icon-114x114-precomposed.png",
-        "/apple-touch-icon-114x114.png",
-        "/apple-touch-icon-120x120-precomposed.png",
-        "/apple-touch-icon-120x120.png",
-        "/apple-touch-icon-144x144-precomposed.png",
-        "/apple-touch-icon-144x144.png",
-        "/apple-touch-icon-152x152-precomposed.png",
-        "/apple-touch-icon-152x152.png",
-        "/apple-touch-icon-180x180-precomposed.png",
-        "/apple-touch-icon-180x180.png",
-        "/apple-touch-icon-precomposed.png",
-        "/apple-touch-icon.png",
-    ].forEach((url) => { icons.push({ url, score: 0, type: BKMS_VARIANT.SMALL, name: `ic${icons.length}` }) });
+        '/favicon.ico',
+        '/apple-touch-icon-57x57-precomposed.png',
+        '/apple-touch-icon-57x57.png',
+        '/apple-touch-icon-72x72-precomposed.png',
+        '/apple-touch-icon-72x72.png',
+        '/apple-touch-icon-114x114-precomposed.png',
+        '/apple-touch-icon-114x114.png',
+        '/apple-touch-icon-120x120-precomposed.png',
+        '/apple-touch-icon-120x120.png',
+        '/apple-touch-icon-144x144-precomposed.png',
+        '/apple-touch-icon-144x144.png',
+        '/apple-touch-icon-152x152-precomposed.png',
+        '/apple-touch-icon-152x152.png',
+        '/apple-touch-icon-180x180-precomposed.png',
+        '/apple-touch-icon-180x180.png',
+        '/apple-touch-icon-precomposed.png',
+        '/apple-touch-icon.png',
+    ].forEach((url) => {
+        icons.push({
+            url,
+            score: 0,
+            type: BKMS_VARIANT.SMALL,
+            name: `ic${icons.length}`,
+        });
+    });
 
     icons = icons.map((icon) => {
         let absoluteUrl = icon.url;
 
-        if ("//" === icon.url.substring(0, 2)) {
-            absoluteUrl = `http:${icon.url}`
-        } else if ("http" !== icon.url.substring(0, 4)) {
-            absoluteUrl = `${urlOrigin}${(icon.url[0] === '/') ? "" : "/"}${icon.url}`
+        if (icon.url.substring(0, 2) === '//') {
+            absoluteUrl = `http:${icon.url}`;
+        } else if (icon.url.substring(0, 4) !== 'http') {
+            absoluteUrl = `${urlOrigin}${(icon.url[0] === '/') ? '' : '/'}${icon.url}`;
         }
 
         return {
             ...icon,
             url: absoluteUrl,
         };
-    })
+    });
 
     let bestIcon = null;
 
@@ -109,7 +121,12 @@ function parseSite(xml, urlOrigin) {
         if (!bestIcon || bestIcon?.score < icon.score) bestIcon = icon;
     });
 
-    return { title, description, icons, bestIcon };
+    return {
+        title,
+        description,
+        icons,
+        bestIcon,
+    };
 }
 
 export default parseSite;

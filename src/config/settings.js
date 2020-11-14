@@ -44,10 +44,8 @@ export default {
                 use_time: true,
                 format12: false,
             },
-            weather: {
-                use_weather: false,
-            },
-        }
+            weather: { use_weather: false },
+        },
     },
     app: {
         backdrop_theme: THEME.DARK,
@@ -55,5 +53,5 @@ export default {
         use_system_font: true,
         tab_name: i18n.t('tabName.default'),
         default_activity: ACTIVITY.DESKTOP,
-    }
+    },
 };

@@ -17,12 +17,12 @@ import FakeScroll from '@/ui/FakeScroll';
 import FAPStub from '@/ui/Bookmarks/FAP/Stub';
 import InitAppProvider from '@/stores/InitApp';
 import { makeStyles } from '@material-ui/core/styles';
+import AddBookmarkButton from '@/ui/Bookmarks/EditBookmarkModal/AddButton';
 import FAP from './Bookmarks/FAP';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
 import GlobalScroll from './GlobalScroll';
 import GlobalModals from './GlobalModals';
-import AddBookmarkButton from '@/ui/Bookmarks/EditBookmarkModal/AddButton';
 
 const useStyles = makeStyles(() => ({
     bookmarkWrapper: {

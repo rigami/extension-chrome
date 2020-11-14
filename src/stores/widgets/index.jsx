@@ -10,7 +10,6 @@ class WidgetsService {
         this._coreService = coreService;
         this.settings = new WidgetsSettingsStore();
     }
-
 }
 
 export default WidgetsService;
