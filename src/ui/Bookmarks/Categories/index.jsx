@@ -1,8 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {
-    Box,
-    Chip,
-} from '@material-ui/core';
+import { Box, Chip } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import {
@@ -17,6 +14,7 @@ import clsx from 'clsx';
 import useCoreService from '@/stores/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import AddButton from './AddButton';
+import CollapseWrapper from '@/ui/Bookmarks/Categories/CollapseWrapper';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -24,10 +22,6 @@ const useStyles = makeStyles((theme) => ({
         maxHeight: 130,
         display: 'flex',
         flexWrap: 'wrap',
-        '& > *': {
-            marginRight: theme.spacing(1),
-            marginBottom: theme.spacing(1),
-        },
     },
     chip: {
         maxWidth: 290,
@@ -59,6 +53,7 @@ function Category(props) {
         color,
         onClick,
         isSelect,
+        className: externalClassName,
     } = props;
     const classes = useStyles();
     const coreService = useCoreService();
@@ -121,7 +116,7 @@ function Category(props) {
             key={id}
             icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
             label={name}
-            className={clsx(classes.chip, isSelect && classes.chipActive)}
+            className={clsx(classes.chip, isSelect && classes.chipActive, externalClassName)}
             style={{
                 backgroundColor: isSelect && fade(color, 0.14),
                 borderColor: isSelect && color,
@@ -140,7 +135,7 @@ function Categories(props) {
         className: externalClassName,
         onCreate,
         autoSelect = false,
-        maxRows,
+        oneRow,
     } = props;
     const { t } = useTranslation();
     const classes = useStyles();
@@ -165,35 +160,45 @@ function Categories(props) {
 
     return (
         <Box className={clsx(classes.root, externalClassName)}>
-            {bookmarksService.categories.all.map(({ id, name, color }) => (
-                <Category
-                    key={id}
-                    id={id}
-                    name={name}
-                    color={color}
-                    isSelect={selectedCategories.indexOf(id) !== -1}
-                    onClick={() => {
-                        if (~selectedCategories.indexOf(id)) {
-                            setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
-                        } else {
-                            setSelectedCategories([...selectedCategories, id]);
-                        }
-                    }}
-                />
-            ))}
-            <AddButton
-                isShowTitle={bookmarksService.categories.length === 0}
-                onCreate={(newId) => {
-                    if (autoSelect) setSelectedCategories([...selectedCategories, newId]);
-                    if (onCreate) onCreate(newId);
-                }}
+            <CollapseWrapper
+                list={bookmarksService.categories.all}
+                renderComponent={({ id, name, color, className }) => (
+                    <Category
+                        key={id}
+                        id={id}
+                        name={name}
+                        color={color}
+                        className={className}
+                        isSelect={selectedCategories.indexOf(id) !== -1}
+                        onClick={() => {
+                            if (~selectedCategories.indexOf(id)) {
+                                setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
+                            } else {
+                                setSelectedCategories([...selectedCategories, id]);
+                            }
+                        }}
+                    />
+                )}
+                expandButtonLabel="Показать все"
+                collapseButtonLabel="Свернуть"
+                actions={(
+                    <React.Fragment>
+                        <AddButton
+                            isShowTitle={bookmarksService.categories.length === 0}
+                            onCreate={(newId) => {
+                                if (autoSelect) setSelectedCategories([...selectedCategories, newId]);
+                                if (onCreate) onCreate(newId);
+                            }}
+                        />
+                        {bookmarksService.categories.all.length === 0 && (
+                            <Box className={classes.arrowBlock}>
+                                <ArrowIcon />
+                                {t('category.createFirstHelper')}
+                            </Box>
+                        )}
+                    </React.Fragment>
+                )}
             />
-            {bookmarksService.categories.all.length === 0 && (
-                <Box className={classes.arrowBlock}>
-                    <ArrowIcon />
-                    {t('category.createFirstHelper')}
-                </Box>
-            )}
         </Box>
     );
 }
