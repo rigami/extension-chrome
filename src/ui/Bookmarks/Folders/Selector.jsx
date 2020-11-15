@@ -1,9 +1,10 @@
 import { EditRounded as EditIcon } from '@material-ui/icons';
-import { Box, Button, Chip, Tooltip, Typography } from '@material-ui/core';
-import React, { useState } from 'react';
+import { Box, Breadcrumbs, Button, Chip, Tooltip, Typography } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import EditFolderModal from './EditModal';
+import useBookmarksService from '@/stores/BookmarksProvider';
 
 const useStyles = makeStyles((theme) => ({
     folderSelectButton: {
@@ -18,9 +19,19 @@ const useStyles = makeStyles((theme) => ({
 function FolderSelector({ value, onChange }) {
     const classes = useStyles();
     const { t } = useTranslation();
+    const bookmarksService = useBookmarksService();
+    const foldersService = bookmarksService.folders;
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
+    const [path, setPath] = useState(t('loading'));
+
+    useEffect(() => {
+        if (value) {
+            foldersService.getPath(value)
+                .then((folderPath) => setPath(folderPath));
+        }
+    }, [value]);
 
     return (
         <React.Fragment>
@@ -31,7 +42,8 @@ function FolderSelector({ value, onChange }) {
                     if (isBlockEvent) return;
                     setIsOpen(false);
                 }}
-                onSave={(categoryId) => {
+                onSave={(folderId) => {
+                    onChange(folderId);
                     setIsOpen(false);
                 }}
             />
@@ -48,7 +60,18 @@ function FolderSelector({ value, onChange }) {
                         if (!isOpen) setIsBlockEvent(true);
                     }}
                 >
-                    {value?.path || (
+                    {(value && Array.isArray(path) && (
+                        <Breadcrumbs>
+                            {path.map(({ name, id }, index) => (
+                                <Typography
+                                    key={id}
+                                    color={index === path.length - 1 ? 'textPrimary': 'textSecondary'}
+                                >
+                                    {name}
+                                </Typography>
+                            ))}
+                        </Breadcrumbs>
+                    )) || (value && path) || (
                         <Typography className={classes.notSelect}>
                             {t('folder.editor.notSelect')}
                         </Typography>

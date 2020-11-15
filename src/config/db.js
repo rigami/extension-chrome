@@ -42,6 +42,11 @@ export default {
         foldersStore.createIndex('name', 'name', { unique: false });
         foldersStore.createIndex('parent_id', 'parentId', { unique: false });
 
+        foldersStore.add( {
+            name: 'rigami',
+            parentId: 0,
+        })
+
         const favoritesStore = db.createObjectStore('favorites', {
             keyPath: 'id',
             autoIncrement: true,

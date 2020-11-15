@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Button,
     Card,
@@ -14,8 +14,8 @@ import {
     ExpandMoreRounded as ArrowDownIcon,
     ChevronRightRounded as ArrowRightIcon,
 } from '@material-ui/icons';
-import { first } from 'lodash';
 import { useLocalObservable, useObserver } from 'mobx-react-lite';
+import useBookmarksService from '@/stores/BookmarksProvider';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -37,40 +37,42 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const data = [
-    {
-        id: 'rigami',
-        name: 'rigami',
-    },
-    {
-        id: 'google-chrome',
-        name: 'google-chrome',
-    },
-    {
-        id: 'android',
-        name: 'android',
-    },
-];
-
 function Editor({ onSave, onError, onCancel, editCategoryId }) {
     const classes = useStyles();
     const { t } = useTranslation();
+    const bookmarksService = useBookmarksService();
+    const foldersService = bookmarksService.folders;
     const store = useLocalObservable(() => ({
-        expanded: [first(data).id],
-        folderId: first(data).id,
+        expanded: [],
+        folderId: null,
         newFolderRoot: false,
+        newFolderName: '',
+        folders: [],
     }));
 
     const handleCreateNewFolder = () => {
-        console.log(JSON.parse(JSON.stringify(store.expanded)))
         if (store.expanded.indexOf(store.folderId) === -1) {
             store.expanded.push(store.folderId)
         }
 
+        store.newFolderName = t('folder.editor.defaultFolderName');
         store.newFolderRoot = store.folderId;
     }
 
-    const handleSaveNewFolder = () => {
+    const handleSaveNewFolder = async () => {
+        if (store.newFolderName.trim() !== '') {
+            await foldersService.save({
+                name: store.newFolderName,
+                parentId: store.newFolderRoot,
+            });
+
+            await foldersService.getTree()
+                .then((folders) => {
+                    store.folders = folders;
+                })
+        }
+
+
         store.newFolderRoot = null;
     }
 
@@ -83,14 +85,26 @@ function Editor({ onSave, onError, onCancel, editCategoryId }) {
                         margin="dense"
                         variant="outlined"
                         fullWidth
-                        defaultValue="New folder"
+                        value={store.newFolderName}
                         autoFocus
+                        onChange={(event) => { store.newFolderName = event.target.value; }}
                         onBlur={handleSaveNewFolder}
+                        onKeyDown={(event) => {
+                            console.log('event.code', event.code);
+                            if (event.code === 'Enter') handleSaveNewFolder();
+                        }}
                     />
                 ) : null
             ].filter((item) => item)}
         </TreeItem>
     );
+
+    useEffect(() => {
+        foldersService.getTree()
+            .then((folders) => {
+                store.folders = folders;
+            })
+    }, []);
 
     return useObserver(() => (
         <Card className={classes.popper} elevation={16}>
@@ -104,7 +118,7 @@ function Editor({ onSave, onError, onCancel, editCategoryId }) {
                     onNodeSelect={(event, nodeId) => { store.folderId = nodeId; }}
                     onNodeToggle={(event, nodes) => { store.expanded = nodes }}
                 >
-                    {[...data].map((item) => renderTree(item))}
+                    {[...store.folders].map((item) => renderTree(item))}
                 </TreeView>
             </DialogContent>
             <DialogActions>
@@ -115,7 +129,13 @@ function Editor({ onSave, onError, onCancel, editCategoryId }) {
                     {t('folder.editor.create')}
                 </Button>
                 <Button onClick={onCancel}>{t('cancel')}</Button>
-                <Button color="primary" variant="contained">{t('save')}</Button>
+                <Button
+                    onClick={() => onSave(store.folderId)}
+                    color="primary"
+                    variant="contained"
+                >
+                    {t('save')}
+                </Button>
             </DialogActions>
         </Card>
     ));
