@@ -33,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
     },
     editor: { display: 'flex' },
+    fieldsWrapper: {
+        overflow: 'auto',
+    },
 }));
 
 function Editor(props) {
@@ -63,6 +66,7 @@ function Editor(props) {
         description: '',
         useDescription: false,
         categories: [],
+        folder: null,
         fullCategories: [],
         url: defaultUrl || '',
         forceAdded: false,
@@ -245,7 +249,7 @@ function Editor(props) {
                                 return store.images[maxScoreId];
                             }}
                         />
-                        <Box display="flex" flexDirection="column" flexGrow={1}>
+                        <Box display="flex" flexDirection="column" flexGrow={1} className={classes.fieldsWrapper}>
                             <SelectorWrapper
                                 isOpen={store.isOpenSelectorPreview}
                                 name={store.name}
@@ -304,6 +308,7 @@ function Editor(props) {
                                 description={store.description}
                                 useDescription={store.useDescription}
                                 categories={store.categories}
+                                folder={store.folder}
                                 saveState={store.saveStage}
                                 marginThreshold={marginThreshold}
                                 onChangeFields={(value) => {
@@ -332,6 +337,9 @@ function Editor(props) {
 
                                     if ('categories' in value) {
                                         store.categories = value.categories;
+                                    }
+                                    if ('folder' in value) {
+                                        store.folder = value.folder;
                                     }
                                     store.saveStage = FETCH.WAIT;
 

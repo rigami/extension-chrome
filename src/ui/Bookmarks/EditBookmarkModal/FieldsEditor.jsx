@@ -10,6 +10,8 @@ import {
 import {
     AddRounded as AddIcon,
     DoneRounded as DoneIcon,
+    LabelRounded as LabelIcon,
+    FolderRounded as FolderIcon,
 } from '@material-ui/icons';
 import Categories from '@/ui/Bookmarks/Categories';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +19,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useObserver, useLocalObservable } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import SearchSiteField from './SearchSiteField';
+import clsx from 'clsx';
+import FolderSelector from '@/ui/Bookmarks/Folders/Selector';
 
 const useStyles = makeStyles((theme) => ({
     content: { flex: '1 0 auto' },
@@ -38,10 +42,22 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     input: { marginTop: theme.spacing(2) },
-    inputDescription: { marginTop: theme.spacing(1) },
-    chipContainer: { marginTop: theme.spacing(2) },
-    addDescriptionButton: { marginTop: theme.spacing(1) },
+    inputDescription: { marginTop: theme.spacing(2) },
+    addDescriptionButton: { marginTop: theme.spacing(2) },
     saveIcon: { marginRight: theme.spacing(1) },
+    identBlock: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: theme.spacing(2),
+    },
+    identBlockIcon: {
+        marginRight: theme.spacing(1),
+    },
+    identBlockIconTopAlign: {
+        height: theme.spacing(4),
+        alignSelf: 'end',
+    },
 }));
 
 function FieldsEditor(props) {
@@ -53,6 +69,7 @@ function FieldsEditor(props) {
         description = '',
         useDescription = false,
         categories,
+        folder,
         saveState = FETCH.WAIT,
         marginThreshold = 24,
         onChangeFields = (value) => {},
@@ -139,14 +156,26 @@ function FieldsEditor(props) {
                         onChangeFields({ name: event.target.value });
                     }}
                 />
-                <Categories
-                    className={classes.chipContainer}
-                    sortByPopular
-                    value={categories}
-                    onChange={(newCategories) => onChangeFields({ categories: newCategories })}
-                    autoSelect
-                    maxRows={4}
-                />
+                <Box className={classes.identBlock}>
+                    <FolderIcon className={classes.identBlockIcon} color="primary" />
+                    <FolderSelector
+                        value={folder}
+                        onChange={(newFolder) => onChangeFields({ folder: newFolder })}
+                    />
+                </Box>
+                <Box className={classes.identBlock}>
+                    <LabelIcon
+                        className={clsx(classes.identBlockIcon, classes.identBlockIconTopAlign)}
+                        color="primary"
+                    />
+                    <Categories
+                        sortByPopular
+                        value={categories}
+                        onChange={(newCategories) => onChangeFields({ categories: newCategories })}
+                        autoSelect
+                        oneRow
+                    />
+                </Box>
                 {store.useDescription && (
                     <TextField
                         label={t('bookmark.editor.descriptionFieldLabel')}
