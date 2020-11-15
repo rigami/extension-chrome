@@ -20,13 +20,7 @@ export default {
         bookmarksStore.createIndex('name', 'name', { unique: false });
         bookmarksStore.createIndex('description', 'description', { unique: false });
         bookmarksStore.createIndex('count_clicks', 'countClicks', { unique: false });
-
-        const bByCStore = db.createObjectStore('bookmarks_by_categories', {
-            keyPath: 'id',
-            autoIncrement: true,
-        });
-        bByCStore.createIndex('category_id', 'categoryId', { unique: false });
-        bByCStore.createIndex('bookmark_id', 'bookmarkId', { unique: false });
+        bookmarksStore.createIndex('folder_id', 'folderId', { unique: false });
 
         const categoriesStore = db.createObjectStore('categories', {
             keyPath: 'id',
@@ -34,6 +28,13 @@ export default {
         });
         categoriesStore.createIndex('name', 'name', { unique: false });
         categoriesStore.createIndex('color', 'color', { unique: true });
+
+        const bByCStore = db.createObjectStore('bookmarks_by_categories', {
+            keyPath: 'id',
+            autoIncrement: true,
+        });
+        bByCStore.createIndex('category_id', 'categoryId', { unique: false });
+        bByCStore.createIndex('bookmark_id', 'bookmarkId', { unique: false });
 
         const foldersStore = db.createObjectStore('folders', {
             keyPath: 'id',
@@ -45,7 +46,7 @@ export default {
         foldersStore.add( {
             name: 'rigami',
             parentId: 0,
-        })
+        });
 
         const favoritesStore = db.createObjectStore('favorites', {
             keyPath: 'id',

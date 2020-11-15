@@ -66,7 +66,7 @@ function Editor(props) {
         description: '',
         useDescription: false,
         categories: [],
-        folder: null,
+        folderId: null,
         fullCategories: [],
         url: defaultUrl || '',
         forceAdded: false,
@@ -163,6 +163,7 @@ function Editor(props) {
                 store.imageURL = bookmark.imageUrl;
                 store.useDescription = !!bookmark.description?.trim();
                 if (store.useDescription) store.description = bookmark.description;
+                store.folderId = bookmark.folderId;
                 store.icoVariant = bookmark.icoVariant;
                 store.categories = (bookmark.categories || []).map((category) => category.id);
                 setIsLoading(false);
@@ -308,7 +309,7 @@ function Editor(props) {
                                 description={store.description}
                                 useDescription={store.useDescription}
                                 categories={store.categories}
-                                folder={store.folder}
+                                folderId={store.folderId}
                                 saveState={store.saveStage}
                                 marginThreshold={marginThreshold}
                                 onChangeFields={(value) => {
@@ -338,8 +339,8 @@ function Editor(props) {
                                     if ('categories' in value) {
                                         store.categories = value.categories;
                                     }
-                                    if ('folder' in value) {
-                                        store.folder = value.folder;
+                                    if ('folderId' in value) {
+                                        store.folderId = value.folderId;
                                     }
                                     store.saveStage = FETCH.WAIT;
 

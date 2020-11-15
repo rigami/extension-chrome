@@ -69,7 +69,7 @@ function FieldsEditor(props) {
         description = '',
         useDescription = false,
         categories,
-        folder,
+        folderId,
         saveState = FETCH.WAIT,
         marginThreshold = 24,
         onChangeFields = (value) => {},
@@ -159,8 +159,8 @@ function FieldsEditor(props) {
                 <Box className={classes.identBlock}>
                     <FolderIcon className={classes.identBlockIcon} color="primary" />
                     <FolderSelector
-                        value={folder}
-                        onChange={(newFolder) => onChangeFields({ folder: newFolder })}
+                        value={folderId}
+                        onChange={(newFolder) => onChangeFields({ folderId: newFolder })}
                     />
                 </Box>
                 <Box className={classes.identBlock}>
