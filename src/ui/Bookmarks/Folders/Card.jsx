@@ -1,0 +1,28 @@
+import React from 'react';
+import { Card, CardActionArea, CardHeader } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { FolderRounded as FolderIcon } from '@material-ui/icons';
+import clsx from 'clsx';
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        width: 180,
+    },
+    header: {
+        padding: theme.spacing(1, 2),
+    },
+}));
+
+function FolderCard({ name, className: externalClassName, ...other }) {
+    const classes = useStyles();
+
+    return (
+        <Card variant="outlined" className={clsx(classes.root, externalClassName)} {...other}>
+            <CardActionArea>
+                <CardHeader avatar={<FolderIcon />} title={name} className={classes.header} />
+            </CardActionArea>
+        </Card>
+    );
+}
+
+export default FolderCard;

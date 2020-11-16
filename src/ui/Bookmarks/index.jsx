@@ -3,7 +3,7 @@ import {
     Box,
     Container,
     Typography,
-    Fade,
+    Fade, Breadcrumbs,
 } from '@material-ui/core';
 import { FindReplaceRounded as ReFoundIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
@@ -15,8 +15,10 @@ import Categories from '@/ui/Bookmarks/Categories';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import Category from './Categories/CtegoryWrapper';
-import AddBookmarkButton from './EditBookmarkModal/AddButton';
 import CardLink from './CardLink';
+import Folder from './Folders/FolderWrapper';
+import { last } from 'lodash';
+import useCoreService from '@/stores/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -59,15 +61,20 @@ function Bookmarks() {
     const { t } = useTranslation();
     const classes = useStyles();
     const theme = useTheme();
+    const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
+    const foldersService = bookmarksService.folders;
     const appService = useAppService();
     const isFirstRun = useRef(true);
-    const [columnsCount, setColumnsCount] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
     const [findBookmarks, setFindBookmarks] = useState(null);
     const [statusSearch, setStatusSearch] = useState(SEARCH_STATUS.WAIT);
     const [searchCategories, setSearchCategories] = useState(null);
     const [lastTruthSearchTimestamp, setLastTruthSearchTimestamp] = useState(bookmarksService.lastTruthSearchTimestamp);
+    const [folders, setFolders] = useState([]);
+    const [path, setPath] = useState([]);
+    const [rootFolder, setRootFolder] = useState(null);
+    const [selectFolderId, setSelectFolderId] = useState(undefined);
 
     let columnStabilizer = null;
 
@@ -93,7 +100,7 @@ function Bookmarks() {
     };
 
     useEffect(() => {
-        setColumnsCount(maxColumnCalc());
+        coreService.storage.updateTemp({ columnsCount: maxColumnCalc() });
     }, []);
 
     useEffect(() => {
@@ -108,23 +115,42 @@ function Bookmarks() {
     }, [appService.activity]);
 
     useEffect(() => {
+
         if (isFirstRun.current) {
             isFirstRun.current = false;
             return;
         }
 
-        if (bookmarksService.lastTruthSearchTimestamp !== lastTruthSearchTimestamp && !isSearching) {
+        /* if (bookmarksService.lastTruthSearchTimestamp !== lastTruthSearchTimestamp && !isSearching) {
             setIsSearching(true);
             handleSearch(bookmarksService.lastSearch);
-        }
+        } */
     }, [bookmarksService.lastTruthSearchTimestamp]);
 
-    console.log('findBookmarks', findBookmarks, statusSearch);
+    useEffect(() => {
+        if (selectFolderId) {
+            foldersService.get(selectFolderId)
+                .then((foundFolder) => {
+                    console.log('foundFolder', foundFolder)
+                    setFolders([foundFolder])
+                });
+        } else {
+            foldersService.getFoldersByParent()
+                .then((foundFolders) => {
+                    console.log('foundFolders', foundFolders)
+                    setFolders(foundFolders)
+                });
+        }
+    }, [selectFolderId]);
 
     return (
         <React.Fragment>
             <Box id="bookmarks-container" className={classes.root}>
-                <Container className={classes.container} fixed style={{ maxWidth: columnsCount * 196 - 16 + 48 }}>
+                <Container
+                    className={classes.container}
+                    fixed
+                    style={{ maxWidth: coreService.storage.temp.columnsCount * 196 - 16 + 48 }}
+                >
                     <Categories
                         className={classes.chipContainer}
                         value={searchCategories}
@@ -133,7 +159,14 @@ function Bookmarks() {
                             setIsSearching(true);
                         }}
                     />
-                    <Fade
+                    {folders.map((folder) => (
+                        <Folder
+                            key={folder.id}
+                            folder={folder}
+                            onSelect={(nextFolderId) => setSelectFolderId(nextFolderId)}
+                        />
+                    ))}
+                    {/* <Fade
                         in={!isSearching}
                         onExited={() => {
                             // setFindBookmarks(null);
@@ -218,9 +251,14 @@ function Bookmarks() {
                                 );
                             })}
                         </div>
-                    </Fade>
+                    </Fade> */}
                 </Container>
-                <ReactResizeDetector handleWidth onResize={() => setColumnsCount(maxColumnCalc())} />
+                <ReactResizeDetector
+                    handleWidth
+                    onResize={() => {
+                        coreService.storage.updateTemp({ columnsCount: maxColumnCalc() });
+                    }}
+                />
             </Box>
         </React.Fragment>
     );
