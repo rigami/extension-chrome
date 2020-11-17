@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         position: 'relative',
-        '&:hover $menuIcon': {
+        '&:hover $menuIconButton': {
             opacity: 1,
             pointerEvents: 'auto',
         },
@@ -92,12 +92,17 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(0.6),
         wordBreak: 'break-word',
     },
-    menuIcon: {
+    menuIconButton: {
         position: 'absolute',
         right: theme.spacing(0.5),
         top: theme.spacing(0.5),
         opacity: 0,
         pointerEvents: 'none',
+    },
+    menuIcon: {
+        '& path': {
+            backdropFilter: 'invert(1)',
+        },
     },
     borderIcon: { boxShadow: '0 0 0 1px #e0e0e0' },
 }));
@@ -242,11 +247,11 @@ function CardLink(props) {
                 {!preview && (
                     <React.Fragment>
                         <IconButton
-                            className={classes.menuIcon}
+                            className={classes.menuIconButton}
                             onClick={handleOpenMenu}
                             ref={buttonRef}
                         >
-                            <MoreIcon />
+                            <MoreIcon className={classes.menuIcon} />
                         </IconButton>
                     </React.Fragment>
                 )}
