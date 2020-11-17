@@ -32,12 +32,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-    },
-    root: {
         '&:hover $actions': {
             opacity: 1,
             pointerEvents: 'auto',
         },
+    },
+    root: {
     },
     container: {
         marginTop: theme.spacing(3),
@@ -85,9 +85,26 @@ function FolderWrapper({ folder, onSelect }) {
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
     const foldersService = bookmarksService.folders;
+    const anchorEl = useRef(null);
     const [path, setPath] = useState(t('loading'));
     const [folders, setFolders] = useState([]);
     const [findBookmarks, setFindBookmarks] = useState(null);
+
+    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'folder' && fav.id === folder?.id);
+
+    const handlePin = () => {
+        if (isPin()) {
+            bookmarksService.removeFromFavorites({
+                type: 'folder',
+                id: folder?.id,
+            });
+        } else {
+            bookmarksService.addToFavorites({
+                type: 'folder',
+                id: folder?.id,
+            });
+        }
+    };
 
     useEffect(() => {
         if (folder?.id) {
@@ -155,12 +172,50 @@ function FolderWrapper({ folder, onSelect }) {
                         </Typography>
                     )}
                 />
+                <ListItemSecondaryAction className={classes.actions}>
+                    <Tooltip
+                        title={
+                            isPin()
+                                ? 'Открепить от панели быстрого доступа'
+                                : 'Закрепить на панели быстрого доступа'
+                        }
+                    >
+                        <IconButton onClick={handlePin}>
+                            {isPin() ? (<UnpinnedFavoriteIcon />) : (<PinnedFavoriteIcon />)}
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Изменить">
+                        <IconButton
+                            buttonRef={anchorEl}
+                            onClick={() => coreService.localEventBus.call(
+                                'folder/edit',
+                                {
+                                    id: folder?.id,
+                                    anchorEl: anchorEl.current,
+                                },
+                            )}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Удалить">
+                        <IconButton
+                            onClick={() => coreService.localEventBus.call(
+                                'folder/remove',
+                                { id: folder?.id },
+                            )}
+                        >
+                            <RemoveIcon />
+                        </IconButton>
+                    </Tooltip>
+                </ListItemSecondaryAction>
             </ListItem>
             <Box className={classes.bookmarksWrapper}>
                 <Box className={classes.foldersBlock}>
                     {folders.map((folder, index) => (
                         <FolderCard
                             key={folder.id}
+                            id={folder.id}
                             name={folder.name}
                             className={clsx(
                                 classes.folderMarginBottom,

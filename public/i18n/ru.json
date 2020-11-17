@@ -296,6 +296,10 @@
     "pin":"Закрепить",
     "unpin":"Открепить",
     "folder": {
+      "emptyTitle": "Папка пуста",
+      "emptyDescription": "Нет вкладок в этой папке"
+    },
+    "category": {
       "emptyTitle": "Категория пуста",
       "emptyDescription": "Нет вкладок связанных с этой категорией"
     }

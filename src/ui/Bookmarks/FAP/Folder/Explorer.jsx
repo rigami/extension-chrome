@@ -12,7 +12,7 @@ import {
     Typography,
 } from '@material-ui/core';
 import {
-    LabelRounded as LabelIcon,
+    FolderRounded as FolderIcon,
     BookmarkBorderRounded as PinnedFavoriteIcon,
     BookmarkRounded as UnpinnedFavoriteIcon,
     EditRounded as EditIcon,
@@ -161,18 +161,16 @@ function Link({
 
 function Folder({ id }) {
     const classes = useStyles();
+    const { t } = useTranslation();
     const bookmarksService = useBookmarksService();
     const coreService = useCoreService();
-    const { t } = useTranslation();
-
-    const [category] = useState(bookmarksService.categories.get(id));
+    const [folder, setFolder] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
+    const [folders, setFolders] = useState([]);
     const buttonRef = useRef(null);
 
-    console.log('category', category, id);
-
-    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'category' && fav.id === id);
+    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'folder' && fav.id === id);
 
     const handlerContextMenu = (anchorEl) => {
         const { top, left } = buttonRef.current.getBoundingClientRect();
@@ -185,23 +183,23 @@ function Folder({ id }) {
                     onClick: () => {
                         if (isPin()) {
                             bookmarksService.removeFromFavorites({
-                                type: 'category',
+                                type: 'folder',
                                 id,
                             });
                         } else {
                             bookmarksService.addToFavorites({
-                                type: 'category',
+                                type: 'folder',
                                 id,
                             });
                         }
                     },
                 },
-                {
+                /* {
                     type: 'button',
                     title: t('edit'),
                     icon: EditIcon,
                     onClick: () => {
-                        coreService.localEventBus.call('category/edit', {
+                        coreService.localEventBus.call('folder/edit', {
                             id,
                             anchorEl,
                         });
@@ -212,9 +210,9 @@ function Folder({ id }) {
                     title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        coreService.localEventBus.call('category/remove', { id });
+                        coreService.localEventBus.call('folder/remove', { id });
                     },
-                },
+                }, */
             ],
             position: {
                 top,
@@ -224,9 +222,16 @@ function Folder({ id }) {
     };
 
     useEffect(() => {
-        bookmarksService.bookmarks.query({ categories: { match: [id] } })
+        bookmarksService.folders.get(id).then((findFolder) => setFolder(findFolder));
+
+        bookmarksService.folders.getFoldersByParent(id)
+            .then((foundFolders) => {
+                setFolders(foundFolders)
+            });
+
+        bookmarksService.bookmarks.getAllInFolder(id)
             .then((searchResult) => {
-                setFindBookmarks(searchResult[0]?.bookmarks || []);
+                setFindBookmarks(searchResult);
                 setIsSearching(false);
             });
     }, []);
@@ -235,9 +240,9 @@ function Folder({ id }) {
         <Card className={classes.root} elevation={16}>
             <CardHeader
                 avatar={(
-                    <LabelIcon style={{ color: category.color }} />
+                    <FolderIcon />
                 )}
-                title={category.name}
+                title={folder?.name}
                 classes={{ avatar: classes.avatar }}
                 action={(
                     <IconButton
@@ -255,13 +260,20 @@ function Folder({ id }) {
                             <CircularProgress />
                         </FullScreenStub>
                     )}
-                    {!isSearching && findBookmarks.length === 0 && (
+                    {!isSearching && (findBookmarks.length === 0 && folders.length === 0) && (
                         <FullScreenStub
                             style={{ height: 300 }}
-                            message={t('fap.category.emptyTitle')}
-                            description={t('fap.category.emptyDescription')}
+                            message={t('fap.folder.emptyTitle')}
+                            description={t('fap.folder.emptyDescription')}
                         />
                     )}
+                    {folders && folders.map((folder, index) => (
+                        <Link
+                            key={folder.id}
+                            {...folder}
+                            divider={index !== folders.length - 1}
+                        />
+                    ))}
                     {findBookmarks && findBookmarks.map((bookmark, index) => (
                         <Link
                             key={bookmark.id}
