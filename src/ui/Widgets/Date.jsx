@@ -7,6 +7,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         textShadow: '0 2px 17px #00000029',
         fontFamily: '"Manrope", "Open Sans", sans-serif',
+        fontWeight: 800,
     },
     link: {},
 }));
