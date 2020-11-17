@@ -28,6 +28,11 @@ import FullScreenStub from '@/ui-components/FullscreenStub';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 
 const useStyles = makeStyles((theme) => ({
+    rootWrapper: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
     root: {
         '&:hover $actions': {
             opacity: 1,
@@ -56,13 +61,17 @@ const useStyles = makeStyles((theme) => ({
     },
     bookmarksWrapper: {
         display: 'flex',
-        flexWrap: 'wrap',
+        flexDirection: 'column',
     },
     folderMarginRight: {
         marginRight: theme.spacing(2),
     },
     folderMarginBottom: {
         marginBottom: theme.spacing(2),
+        display: 'inline-block',
+    },
+    foldersBlock: {
+        width: '100%',
     },
     bookmarksBlock: {
         width: '100%',
@@ -70,10 +79,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function FolderWrapper({ folder, onSelect, children }) {
+function FolderWrapper({ folder, onSelect }) {
     const { t } = useTranslation();
     const classes = useStyles();
-    const theme = useTheme();
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
     const foldersService = bookmarksService.folders;
@@ -99,11 +107,8 @@ function FolderWrapper({ folder, onSelect, children }) {
         }
     }, [folder?.id]);
 
-
-    let columnStabilizer = [...Array.from({ length: coreService.storage.temp.columnsCount }, () => 0)];
-
     return (
-        <Box className={classes.root}>
+        <Box className={classes.rootWrapper}>
             <ListItem
                 disableGutters
                 component="div"
@@ -123,7 +128,7 @@ function FolderWrapper({ folder, onSelect, children }) {
                     }}
                     primary={(folder && Array.isArray(path) && (
                         <Breadcrumbs>
-                            {path.map(({ name, id }, index) => index === path.length - 1 ? (
+                            {path.map(({ name, id, parentId }, index) => index === path.length - 1 ? (
                                 <Typography
                                     key={id}
                                     color="textPrimary"
@@ -137,7 +142,7 @@ function FolderWrapper({ folder, onSelect, children }) {
                                     href="/"
                                     onClick={(event) => {
                                         event.preventDefault();
-                                        onSelect(id);
+                                        onSelect(parentId && id);
                                     }}
                                 >
                                     {name}
@@ -152,17 +157,19 @@ function FolderWrapper({ folder, onSelect, children }) {
                 />
             </ListItem>
             <Box className={classes.bookmarksWrapper}>
-                {folders.map((folder, index) => (
-                    <FolderCard
-                        key={folder.id}
-                        name={folder.name}
-                        className={clsx(
-                            classes.folderMarginBottom,
-                            (index + 1) % coreService.storage.temp.columnsCount && classes.folderMarginRight,
-                        )}
-                        onClick={() => onSelect(folder.id)}
-                    />
-                ))}
+                <Box className={classes.foldersBlock}>
+                    {folders.map((folder, index) => (
+                        <FolderCard
+                            key={folder.id}
+                            name={folder.name}
+                            className={clsx(
+                                classes.folderMarginBottom,
+                                (index + 1) % coreService.storage.temp.columnsCount && classes.folderMarginRight,
+                            )}
+                            onClick={() => onSelect(folder.id)}
+                        />
+                    ))}
+                </Box>
                 <Box className={classes.bookmarksBlock}>
                     {findBookmarks && findBookmarks.length === 0 && (
                         <FullScreenStub
