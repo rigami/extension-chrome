@@ -66,7 +66,7 @@ function Editor(props) {
         description: '',
         useDescription: false,
         categories: [],
-        folderId: null,
+        folderId: 1,
         fullCategories: [],
         url: defaultUrl || '',
         forceAdded: false,

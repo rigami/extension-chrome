@@ -11,6 +11,13 @@ const useStyles = makeStyles((theme) => ({
     header: {
         padding: theme.spacing(1, 2),
     },
+    headerContent: {
+        overflow: 'hidden',
+    },
+    title: {
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+    },
 }));
 
 function FolderCard({ name, className: externalClassName, ...other }) {
@@ -19,7 +26,15 @@ function FolderCard({ name, className: externalClassName, ...other }) {
     return (
         <Card variant="outlined" className={clsx(classes.root, externalClassName)} {...other}>
             <CardActionArea>
-                <CardHeader avatar={<FolderIcon />} title={name} className={classes.header} />
+                <CardHeader
+                    avatar={<FolderIcon />}
+                    title={name}
+                    classes={{
+                        root: classes.header,
+                        content: classes.headerContent,
+                        title: classes.title,
+                    }}
+                />
             </CardActionArea>
         </Card>
     );
