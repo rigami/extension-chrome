@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Folder({ id, name, isBlurBackdrop, variant = 'icon', leftOffset = 0 }) {
+function Folder({ id, name, isBlurBackdrop, variant = 'icon', offset = false }) {
     const classes = useStyles();
     const coreService = useCoreService();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -62,7 +62,7 @@ function Folder({ id, name, isBlurBackdrop, variant = 'icon', leftOffset = 0 }) 
     useEffect(() => {
         if (isOpen) {
             setListenId(coreService.localEventBus.on('system/scroll', () => {
-                store.popperRef.update();
+                store.popperRef?.update();
             }));
         } else {
             coreService.localEventBus.removeListener(listenId);
@@ -83,11 +83,20 @@ function Folder({ id, name, isBlurBackdrop, variant = 'icon', leftOffset = 0 }) 
                     open={isOpen}
                     anchorEl={anchorEl}
                     popperRef={(popperRef) => { store.popperRef = popperRef; }}
-                    placement="top"
+                    placement="bottom"
                     className={classes.popperWrapper}
                     modifiers={{
+                        inner: {
+                            enabled: offset,
+                            order: 0,
+                        },
+                        offset: {
+                            enabled: true,
+                            offset: offset ? 128 : 0,
+                        },
                         flip: {
                             enabled: true,
+                            padding: 16,
                         },
                         preventOverflow: {
                             enabled: true,
@@ -118,6 +127,7 @@ function Folder({ id, name, isBlurBackdrop, variant = 'icon', leftOffset = 0 }) 
                         ref={anchorEl}
                         button
                         className={classes.row}
+                        selected={isOpen}
                     >
                         <ListItemAvatar>
                             <FolderIcon />

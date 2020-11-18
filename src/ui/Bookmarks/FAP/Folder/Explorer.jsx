@@ -161,7 +161,7 @@ function Folder({ id }) {
                     )}
                     {folders && folders.map((folder, index) => (
                         <FolderButton
-                            leftOffset={64}
+                            offset
                             key={folder.id}
                             {...folder}
                             variant="row"
