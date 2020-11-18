@@ -3,13 +3,8 @@ import {
     Card,
     CardHeader,
     List,
-    ListItem,
-    ListItemAvatar,
-    ListItemText,
     CircularProgress,
     IconButton,
-    Tooltip,
-    Typography,
 } from '@material-ui/core';
 import {
     LabelRounded as LabelIcon,
@@ -25,8 +20,8 @@ import useCoreService from '@/stores/BaseStateProvider';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
-import Image from '@/ui-components/Image';
 import { useTranslation } from 'react-i18next';
+import Link from '@/ui/Bookmarks/FAP/Link';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -41,123 +36,7 @@ const useStyles = makeStyles((theme) => ({
         height: 300,
         overflow: 'auto',
     },
-    primaryText: {
-        display: '-webkit-box',
-        '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 2,
-        overflow: 'hidden',
-        wordBreak: 'break-word',
-    },
-    secondaryText: {
-        display: '-webkit-box',
-        '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 2,
-        overflow: 'hidden',
-        wordBreak: 'break-word',
-    },
 }));
-
-function Link({
-    name, url, imageUrl, id, description, icoVariant,
-}) {
-    const classes = useStyles();
-    const coreService = useCoreService();
-    const bookmarksService = useBookmarksService();
-    const { t } = useTranslation();
-
-    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
-
-    const openMenu = (position) => {
-        coreService.localEventBus.call('system/contextMenu', {
-            actions: [
-                {
-                    type: 'button',
-                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
-                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
-                    onClick: () => {
-                        if (isPin()) {
-                            bookmarksService.removeFromFavorites({
-                                type: 'bookmark',
-                                id,
-                            });
-                        } else {
-                            bookmarksService.addToFavorites({
-                                type: 'bookmark',
-                                id,
-                            });
-                        }
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('edit'),
-                    icon: EditIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('bookmark/edit', { id });
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('remove'),
-                    icon: RemoveIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('bookmark/remove', { id });
-                    },
-                },
-            ],
-            position,
-        });
-    };
-
-    const handlerContextMenu = (event) => {
-        event.preventDefault();
-        openMenu({
-            top: event.nativeEvent.clientY,
-            left: event.nativeEvent.clientX,
-        });
-    };
-
-    const handleClick = (event) => {
-        if (event.button === 1) {
-            window.open(url);
-        } else if (event.button === 0) {
-            window.open(url, '_self');
-        }
-    };
-
-    return (
-        <Tooltip
-            title={(
-                <React.Fragment>
-                    {name}
-                    <br />
-                    <Typography variant="caption">{url}</Typography>
-                </React.Fragment>
-            )}
-            enterDelay={400}
-            enterNextDelay={400}
-        >
-            <ListItem
-                button
-                key={id}
-                onMouseUp={handleClick}
-                onContextMenu={handlerContextMenu}
-            >
-                <ListItemAvatar>
-                    <Image variant={icoVariant === 'poster' ? 'small' : icoVariant} src={imageUrl} />
-                </ListItemAvatar>
-                <ListItemText
-                    primary={name}
-                    secondary={description}
-                    classes={{
-                        primary: classes.primaryText,
-                        secondary: classes.secondaryText,
-                    }}
-                />
-            </ListItem>
-        </Tooltip>
-    );
-}
 
 function Folder({ id }) {
     const classes = useStyles();
@@ -169,8 +48,6 @@ function Folder({ id }) {
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
     const buttonRef = useRef(null);
-
-    console.log('category', category, id);
 
     const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'category' && fav.id === id);
 
@@ -266,6 +143,7 @@ function Folder({ id }) {
                         <Link
                             key={bookmark.id}
                             {...bookmark}
+                            variant="row"
                             divider={index !== findBookmarks.length - 1}
                         />
                     ))}

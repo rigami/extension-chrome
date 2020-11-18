@@ -1,94 +1,39 @@
 import React from 'react';
 import {
     ButtonBase,
-    Tooltip,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
     Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import {
-    BookmarkBorderRounded as PinnedFavoriteIcon,
-    BookmarkRounded as UnpinnedFavoriteIcon,
-    EditRounded as EditIcon,
-    DeleteRounded as RemoveIcon,
-} from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
-import useCoreService from '@/stores/BaseStateProvider';
-import useBookmarksService from '@/stores/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
+import FAPButton from './Button';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-        padding: 0,
+    row: {
+        margin: 0,
+        padding: theme.spacing(1, 2),
+        borderRadius: 0,
     },
-    rootBlur: { backdropFilter: 'blur(10px) brightness(130%)' },
-    icon: {},
-    roundedIcon: { borderRadius: theme.shape.borderRadiusBold },
 }));
 
-function LinkButton({
-    id, name, url, imageUrl, icoVariant, isBlurBackdrop,
-}) {
+function LinkButton(props) {
+    const {
+        id,
+        name,
+        description,
+        url,
+        imageUrl,
+        icoVariant,
+        isBlurBackdrop,
+        variant = 'icon',
+    } = props;
     const classes = useStyles();
-    const coreService = useCoreService();
-    const bookmarksService = useBookmarksService();
     const { t } = useTranslation();
-
-    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
-
-    const handlerContextMenu = (event) => {
-        event.preventDefault();
-        openMenu({
-            top: event.nativeEvent.clientY,
-            left: event.nativeEvent.clientX,
-        });
-    };
-
-    const openMenu = (position) => {
-        coreService.localEventBus.call('system/contextMenu', {
-            actions: [
-                {
-                    type: 'button',
-                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
-                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
-                    onClick: () => {
-                        if (isPin()) {
-                            bookmarksService.removeFromFavorites({
-                                type: 'bookmark',
-                                id,
-                            });
-                        } else {
-                            bookmarksService.addToFavorites({
-                                type: 'bookmark',
-                                id,
-                            });
-                        }
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('edit'),
-                    icon: EditIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('bookmark/edit', { id });
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('remove'),
-                    icon: RemoveIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('bookmark/remove', { id });
-                    },
-                },
-            ],
-            position,
-        });
-    };
 
     const handleClick = (event) => {
         if (!url) return;
@@ -101,33 +46,45 @@ function LinkButton({
     };
 
     return (
-        <Tooltip
-            title={(
+        <FAPButton
+            id={id}
+            tooltip={(
                 <React.Fragment>
                     {name}
                     <br />
-                    <Typography variant="caption">{url}</Typography>
+                    <Typography variant="caption">{url || t('bookmark.urlNotValid')}</Typography>
                 </React.Fragment>
             )}
-            enterDelay={400}
-            enterNextDelay={400}
+            isBlurBackdrop={isBlurBackdrop}
         >
-            <ButtonBase
-                className={clsx(
-                    classes.root,
-                    isBlurBackdrop && classes.rootBlur,
-                    classes.roundedIcon,
-                )}
-                onMouseUp={handleClick}
-                onContextMenu={handlerContextMenu}
-            >
-                <Image
-                    src={imageUrl}
-                    className={classes.icon}
-                    alternativeIcon={icoVariant === BKMS_VARIANT.SYMBOL ? name[0].toUpperCase() : undefined}
-                />
-            </ButtonBase>
-        </Tooltip>
+            {variant === 'row' ? (
+                <ListItem
+                    button
+                    onMouseUp={handleClick}
+                    className={classes.row}
+                >
+                    <ListItemAvatar>
+                        <Image variant={icoVariant === 'poster' ? 'small' : icoVariant} src={imageUrl} />
+                    </ListItemAvatar>
+                    <ListItemText
+                        primary={name}
+                        secondary={description}
+                        classes={{
+                            primary: classes.primaryText,
+                            secondary: classes.secondaryText,
+                        }}
+                    />
+                </ListItem>
+            ) : (
+                <ButtonBase onMouseUp={handleClick}>
+                    <Image
+                        src={imageUrl}
+                        className={classes.icon}
+                        alternativeIcon={icoVariant === BKMS_VARIANT.SYMBOL ? name[0].toUpperCase() : undefined}
+                    />
+                </ButtonBase>
+            )}
+        </FAPButton>
     );
 }
 
