@@ -1,8 +1,8 @@
 import React from 'react';
-import Editor from './Editor';
-import SimpleEditor from  './EditorSimple';
 import PopperWrapper from '@/ui-components/PopperWrapper';
 import { useLocalObservable, useObserver } from 'mobx-react-lite';
+import Editor from './Editor';
+import SimpleEditor from './EditorSimple';
 
 function EditFolderModal(props) {
     const {

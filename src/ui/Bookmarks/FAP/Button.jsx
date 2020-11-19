@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         padding: 0,
-        borderRadius: theme.shape.borderRadiusBold
+        borderRadius: theme.shape.borderRadiusBold,
     },
     rootBlur: { backdropFilter: 'blur(10px) brightness(130%)' },
 }));
@@ -71,7 +71,7 @@ function FAPButton(props) {
                     onClick: () => {
                         coreService.localEventBus.call(`${type}/edit`, {
                             id,
-                            anchorEl: type !== 'bookmark' &&  event.currentTarget,
+                            anchorEl: type !== 'bookmark' && event.currentTarget,
                         });
                     },
                 },
@@ -82,7 +82,7 @@ function FAPButton(props) {
                     onClick: () => {
                         coreService.localEventBus.call(`${type}/remove`, {
                             id,
-                            anchorEl: type !== 'bookmark' &&  event.currentTarget,
+                            anchorEl: type !== 'bookmark' && event.currentTarget,
                         });
                     },
                 },

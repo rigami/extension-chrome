@@ -21,9 +21,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         overflow: 'hidden',
         marginBottom: theme.spacing(-1),
-        '& $expandButton': {
-            marginBottom: theme.spacing(1),
-        },
+        '& $expandButton': { marginBottom: theme.spacing(1) },
     },
     gradient: { '-webkit-mask-image': 'linear-gradient(to left, rgba(0,0,0,0) 0, rgba(0,0,0,1) 16px)' },
     tag: {
@@ -36,16 +34,16 @@ const useStyles = makeStyles((theme) => ({
         color: '#bdbdbd !important',
         fontFamily: theme.typography.fontFamilySecondary,
     },
-    expandButton: { flexShrink: 0,
-        marginBottom: theme.spacing(0), },
+    expandButton: {
+        flexShrink: 0,
+        marginBottom: theme.spacing(0),
+    },
     wrap: { flexWrap: 'wrap' },
     expandIcon: {
         marginLeft: '3px !important',
         marginRight: 3,
     },
-    expandTitle: {
-        display: 'none'
-    },
+    expandTitle: { display: 'none' },
 }));
 
 function ExpandButton({ tooltip, icon, onClick }) {

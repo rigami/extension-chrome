@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
     popper: {
         zIndex: theme.zIndex.modal,
         willChange: 'auto !important',
-    }
+    },
 }));
 
 function PopperWrapper(props) {

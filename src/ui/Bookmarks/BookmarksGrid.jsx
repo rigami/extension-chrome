@@ -8,7 +8,7 @@ function BookmarksGrid({ bookmarks }) {
     const theme = useTheme();
     const coreService = useCoreService();
 
-    let columnStabilizer = [...Array.from({ length: coreService.storage.temp.columnsCount }, () => 0)];
+    const columnStabilizer = [...Array.from({ length: coreService.storage.temp.columnsCount }, () => 0)];
 
     return bookmarks && bookmarks.reduce((acc, curr) => {
         let column = 0;

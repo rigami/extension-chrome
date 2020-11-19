@@ -8,9 +8,9 @@ import {
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import Explorer from './Explorer';
 import FAPButton from '@/ui/Bookmarks/FAP/Button';
 import PopperWrapper from '@/ui-components/PopperWrapper';
+import Explorer from './Explorer';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -50,7 +50,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Folder({ id, name, isBlurBackdrop, variant = 'icon', offset = false }) {
+function Folder(props) {
+    const {
+        id,
+        name,
+        isBlurBackdrop,
+        variant = 'icon',
+        offset = false,
+    } = props;
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);

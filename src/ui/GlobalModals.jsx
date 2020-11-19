@@ -61,7 +61,10 @@ function GlobalModals({ children }) {
                 id,
             })),
             coreService.localEventBus.on('folder/edit', ({ id, anchorEl }) => {
-                console.log('folder/edit', { id, anchorEl })
+                console.log('folder/edit', {
+                    id,
+                    anchorEl,
+                });
 
                 setEdit({
                     type: 'folder',

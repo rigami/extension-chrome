@@ -33,12 +33,17 @@ const useStyles = makeStyles((theme) => ({
         width: 440,
         overflow: 'auto',
     },
-    createNewFolderButton: {
-        marginRight: 'auto',
-    },
+    createNewFolderButton: { marginRight: 'auto' },
 }));
 
-function Editor({ onSave, onError, onCancel, editId, selectId }) {
+function Editor(props) {
+    const {
+        editId,
+        selectId,
+        onSave,
+        onError,
+        onCancel,
+    } = props;
     const classes = useStyles();
     const { t } = useTranslation();
     const bookmarksService = useBookmarksService();
@@ -54,12 +59,12 @@ function Editor({ onSave, onError, onCancel, editId, selectId }) {
 
     const handleCreateNewFolder = () => {
         if (store.expanded.indexOf(store.folderId) === -1) {
-            store.expanded.push(store.folderId)
+            store.expanded.push(store.folderId);
         }
 
         store.newFolderName = t('folder.editor.defaultFolderName');
         store.newFolderRoot = store.folderId;
-    }
+    };
 
     const handleSaveNewFolder = async () => {
         if (store.newFolderName.trim() !== '') {
@@ -72,12 +77,12 @@ function Editor({ onSave, onError, onCancel, editId, selectId }) {
             await foldersService.getTree()
                 .then((folders) => {
                     store.folders = folders;
-                })
+                });
         }
 
         store.newFolderRoot = null;
         store.editId = null;
-    }
+    };
 
     const renderTree = (nodes) => (
         <TreeItem
@@ -117,7 +122,7 @@ function Editor({ onSave, onError, onCancel, editId, selectId }) {
                             if (event.code === 'Enter') handleSaveNewFolder();
                         }}
                     />
-                ) : null
+                ) : null,
             ].filter((item) => item)}
         </TreeItem>
     );
@@ -131,9 +136,9 @@ function Editor({ onSave, onError, onCancel, editId, selectId }) {
                 store.newFolderName = folder.name;
                 store.newFolderRoot = folder.parentId;
             }
-            store.expanded = path
+            store.expanded = path;
             store.folders = tree;
-        })
+        });
     }, []);
 
     return useObserver(() => (
@@ -147,7 +152,7 @@ function Editor({ onSave, onError, onCancel, editId, selectId }) {
                         defaultSelected={store.folderId}
                         defaultExpandIcon={<ArrowRightIcon />}
                         onNodeSelect={(event, nodeId) => { store.folderId = nodeId; }}
-                        onNodeToggle={(event, nodes) => { store.expanded = nodes }}
+                        onNodeToggle={(event, nodes) => { store.expanded = nodes; }}
                     >
                         {[...store.folders].map((item) => renderTree(item))}
                     </TreeView>

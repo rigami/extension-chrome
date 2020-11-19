@@ -6,7 +6,7 @@ import {
     BookmarkRounded as UnpinnedFavoriteIcon,
     DeleteRounded as RemoveIcon,
     EditRounded as EditIcon,
-    FolderRounded as FolderIcon
+    FolderRounded as FolderIcon,
 } from '@material-ui/icons';
 import clsx from 'clsx';
 import useBookmarksService from '@/stores/BookmarksProvider';
@@ -14,15 +14,9 @@ import useCoreService from '@/stores/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        width: 180,
-    },
-    header: {
-        padding: theme.spacing(1, 2),
-    },
-    headerContent: {
-        overflow: 'hidden',
-    },
+    root: { width: 180 },
+    header: { padding: theme.spacing(1, 2) },
+    headerContent: { overflow: 'hidden' },
     title: {
         textOverflow: 'ellipsis',
         overflow: 'hidden',

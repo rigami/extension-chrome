@@ -13,8 +13,8 @@ import useBookmarksService from '@/stores/BookmarksProvider';
 import clsx from 'clsx';
 import useCoreService from '@/stores/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
-import AddButton from './AddButton';
 import CollapseWrapper from '@/ui/Bookmarks/Categories/CollapseWrapper';
+import AddButton from './AddButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {

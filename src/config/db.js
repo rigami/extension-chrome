@@ -1,6 +1,6 @@
 export default {
     upgrade(db) {
-        console.log('upgrade db')
+        console.log('upgrade db');
         const backgroundsStore = db.createObjectStore('backgrounds', {
             keyPath: 'id',
             autoIncrement: true,
@@ -43,7 +43,7 @@ export default {
         foldersStore.createIndex('name', 'name', { unique: false });
         foldersStore.createIndex('parent_id', 'parentId', { unique: false });
 
-        foldersStore.add( {
+        foldersStore.add({
             name: 'rigami',
             parentId: 0,
         });

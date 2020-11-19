@@ -3,9 +3,9 @@ import { ButtonBase } from '@material-ui/core';
 import { LabelRounded as TagIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import Explorer from './Explorer';
 import FAPButton from '@/ui/Bookmarks/FAP/Button';
 import PopperWrapper from '@/ui-components/PopperWrapper';
+import Explorer from './Explorer';
 
 const useStyles = makeStyles((theme) => ({
     root: {

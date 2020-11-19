@@ -18,9 +18,9 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { useObserver, useLocalObservable } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
-import SearchSiteField from './SearchSiteField';
 import clsx from 'clsx';
 import FolderSelector from '@/ui/Bookmarks/Folders/Selector';
+import SearchSiteField from './SearchSiteField';
 
 const useStyles = makeStyles((theme) => ({
     content: { flex: '1 0 auto' },
@@ -51,9 +51,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         marginTop: theme.spacing(2),
     },
-    identBlockIcon: {
-        marginRight: theme.spacing(1),
-    },
+    identBlockIcon: { marginRight: theme.spacing(1) },
     identBlockIconTopAlign: {
         height: theme.spacing(4),
         alignSelf: 'end',

@@ -118,7 +118,7 @@ function Folder({ id }) {
 
         bookmarksService.folders.getFoldersByParent(id)
             .then((foundFolders) => {
-                setFolders(foundFolders)
+                setFolders(foundFolders);
             });
 
         bookmarksService.bookmarks.getAllInFolder(id)

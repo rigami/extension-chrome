@@ -290,6 +290,10 @@
       "create": "Создать папку",
       "changeTooltip": "Изменить папку",
       "defaultFolderName": "Новая папка"
+    },
+    "noBookmarks": {
+      "title": "В этой папке нет закладок",
+      "description": "Добавьте закладки в эту папку"
     }
   },
   "fap":{

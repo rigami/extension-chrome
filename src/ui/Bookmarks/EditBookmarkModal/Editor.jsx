@@ -33,9 +33,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
     },
     editor: { display: 'flex' },
-    fieldsWrapper: {
-        overflow: 'auto',
-    },
+    fieldsWrapper: { overflow: 'auto' },
 }));
 
 function Editor(props) {
@@ -250,7 +248,12 @@ function Editor(props) {
                                 return store.images[maxScoreId];
                             }}
                         />
-                        <Box display="flex" flexDirection="column" flexGrow={1} className={classes.fieldsWrapper}>
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            flexGrow={1}
+                            className={classes.fieldsWrapper}
+                        >
                             <SelectorWrapper
                                 isOpen={store.isOpenSelectorPreview}
                                 name={store.name}

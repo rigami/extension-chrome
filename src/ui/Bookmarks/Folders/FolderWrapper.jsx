@@ -6,7 +6,7 @@ import {
     ListItemSecondaryAction,
     IconButton,
     Tooltip,
-    Box, Breadcrumbs, Typography, Container, Link
+    Box, Breadcrumbs, Typography, Container, Link,
 } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
@@ -22,10 +22,10 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import FolderCard from '@/ui/Bookmarks/Folders/Card';
 import clsx from 'clsx';
-import Category from '../Categories/CtegoryWrapper';
-import CardLink from '../CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
+import Category from '../Categories/CtegoryWrapper';
+import CardLink from '../CardLink';
 
 const useStyles = makeStyles((theme) => ({
     rootWrapper: {
@@ -37,8 +37,7 @@ const useStyles = makeStyles((theme) => ({
             pointerEvents: 'auto',
         },
     },
-    root: {
-    },
+    root: {},
     container: {
         marginTop: theme.spacing(3),
         listStyle: 'none',
@@ -63,16 +62,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
     },
-    folderMarginRight: {
-        marginRight: theme.spacing(2),
-    },
+    folderMarginRight: { marginRight: theme.spacing(2) },
     folderMarginBottom: {
         marginBottom: theme.spacing(2),
         display: 'inline-block',
     },
-    foldersBlock: {
-        width: '100%',
-    },
+    foldersBlock: { width: '100%' },
     bookmarksBlock: {
         width: '100%',
         display: 'flex',
@@ -113,12 +108,12 @@ function FolderWrapper({ folder, onSelect }) {
 
             foldersService.getFoldersByParent(folder?.id)
                 .then((foundFolders) => {
-                    setFolders(foundFolders)
+                    setFolders(foundFolders);
                 });
 
             bookmarksService.bookmarks.getAllInFolder(folder?.id)
                 .then((searchResult) => {
-                    console.log('searchResult', searchResult)
+                    console.log('searchResult', searchResult);
                     setFindBookmarks(searchResult);
                 });
         }
@@ -135,7 +130,7 @@ function FolderWrapper({ folder, onSelect }) {
                 }}
             >
                 <ListItemIcon style={{ minWidth: 36 }}>
-                    <FolderIcon style={{  }} />
+                    <FolderIcon style={{ }} />
                 </ListItemIcon>
                 <ListItemText
                     classes={{
@@ -145,7 +140,7 @@ function FolderWrapper({ folder, onSelect }) {
                     }}
                     primary={(folder && Array.isArray(path) && (
                         <Breadcrumbs>
-                            {path.map(({ name, id, parentId }, index) => index === path.length - 1 ? (
+                            {path.map(({ name, id, parentId }, index) => (index === path.length - 1 ? (
                                 <Typography
                                     key={id}
                                     color="textPrimary"
@@ -164,7 +159,7 @@ function FolderWrapper({ folder, onSelect }) {
                                 >
                                     {name}
                                 </Link>
-                            ))}
+                            )))}
                         </Breadcrumbs>
                     )) || (folder && path) || (
                         <Typography className={classes.notSelect}>

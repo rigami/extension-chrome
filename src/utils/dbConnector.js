@@ -1,6 +1,6 @@
 import { openDB } from 'idb/with-async-ittr.js';
-import appVariables from '../config/appVariables';
 import dbConfig from '@/config/db';
+import appVariables from '../config/appVariables';
 
 let _db = null;
 

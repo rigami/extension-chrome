@@ -8,14 +8,12 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import EditFolderModal from './EditModal';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import { useLocalObservable, useObserver } from 'mobx-react-lite';
+import EditFolderModal from './EditModal';
 
 const useStyles = makeStyles((theme) => ({
-    folderSelectButton: {
-        textTransform: 'unset',
-    },
+    folderSelectButton: { textTransform: 'unset' },
     notSelect: {
         fontStyle: 'italic',
         color: theme.palette.text.secondary,
@@ -41,7 +39,7 @@ function FolderSelector({ value, onChange }) {
         }
     }, [value]);
 
-    useEffect(() => { console.log('isOpen', store.isOpen) }, [store.isOpen])
+    useEffect(() => { console.log('isOpen', store.isOpen); }, [store.isOpen]);
 
     return useObserver(() => (
         <React.Fragment>
@@ -76,7 +74,7 @@ function FolderSelector({ value, onChange }) {
                             {store.path.map(({ name, id }, index) => (
                                 <Typography
                                     key={id}
-                                    color={index === store.path.length - 1 ? 'textPrimary': 'textSecondary'}
+                                    color={index === store.path.length - 1 ? 'textPrimary' : 'textSecondary'}
                                 >
                                     {name}
                                 </Typography>

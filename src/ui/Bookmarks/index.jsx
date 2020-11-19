@@ -14,11 +14,11 @@ import useAppService from '@/stores/AppStateProvider';
 import Categories from '@/ui/Bookmarks/Categories';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
+import { last } from 'lodash';
+import useCoreService from '@/stores/BaseStateProvider';
 import Category from './Categories/CtegoryWrapper';
 import CardLink from './CardLink';
 import Folder from './Folders/FolderWrapper';
-import { last } from 'lodash';
-import useCoreService from '@/stores/BaseStateProvider';
 import BookmarksGrid from './BookmarksGrid';
 
 const useStyles = makeStyles((theme) => ({
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
     },
-    chipContainer: {  },
+    chipContainer: { },
     container: {
         paddingTop: theme.spacing(3),
         height: '100%',
@@ -85,15 +85,15 @@ function Bookmarks() {
         if (folderId) {
             foldersService.get(folderId)
                 .then((foundFolder) => {
-                    setFolders([foundFolder])
+                    setFolders([foundFolder]);
                 });
         } else {
             foldersService.getFoldersByParent()
                 .then((foundFolders) => {
-                    setFolders(foundFolders)
+                    setFolders(foundFolders);
                 });
         }
-    }
+    };
 
     const handleSearch = (query = {}) => {
         bookmarksService.bookmarks.query({ ...query }, false)
@@ -110,7 +110,7 @@ function Bookmarks() {
                     && searchResult[0].bookmarks.length === 0
                 ) {
                     setStatusSearch(SEARCH_STATUS.NO_BOOKMARKS);
-                } else  if (
+                } else if (
                     searchResult.length === 1
                     && searchResult[0].category.id === 'all'
                 ) {
@@ -172,9 +172,9 @@ function Bookmarks() {
                                 setIsSearching(true);
                             }}
                         />
-                        <IconButton>
+                        {/* <IconButton>
                             <SearchIcon />
-                        </IconButton>
+                        </IconButton> */}
                     </Box>
                     <Fade
                         in={!isSearching}

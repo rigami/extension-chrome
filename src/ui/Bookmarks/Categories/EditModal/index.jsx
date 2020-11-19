@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocalObservable, useObserver } from 'mobx-react-lite';
-import Editor from './Editor';
 import PopperWrapper from '@/ui-components/PopperWrapper';
+import Editor from './Editor';
 
 function EditCategoryModal(props) {
     const {

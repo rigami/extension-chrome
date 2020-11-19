@@ -34,7 +34,10 @@ class FoldersStore {
         return await Promise.all(root.map(async (folder) => {
             const children = await this.getTree(folder.id);
 
-            return new Folder({ ...folder, children })
+            return new Folder({
+                ...folder,
+                children,
+            });
         }));
     }
 
@@ -43,7 +46,7 @@ class FoldersStore {
         const folder = await this.get(parentId);
 
         if (folder.parentId === 0) {
-            return [folder, ...path]
+            return [folder, ...path];
         }
 
         return await this._getPath(folder.parentId, [folder, ...path]);
@@ -100,11 +103,11 @@ class FoldersStore {
             );
 
             return [parentId, ...((await Promise.all(childFolders.map(({ id }) => removeFolders(id)))).flat())];
-        }
+        };
 
         const removedFolders = await removeFolders(folderId);
 
-        console.log('removedFolders', removedFolders)
+        console.log('removedFolders', removedFolders);
 
         if (this._coreService) this._coreService.globalEventBus.call('folder/remove', DESTINATION.APP, { folderId });
     }
