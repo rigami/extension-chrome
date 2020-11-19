@@ -91,15 +91,15 @@ class FoldersStore {
         });
 
         const removeFolders = async (parentId) => {
-            await DBConnector().delete('folders', folderId);
+            await DBConnector().delete('folders', parentId);
 
             const childFolders = await DBConnector().getAllFromIndex(
                 'folders',
                 'parent_id',
-                folderId,
+                parentId,
             );
 
-            return await Promise.all(childFolders.map(({ id }) => removeFolders(id)));
+            return [parentId, ...((await Promise.all(childFolders.map(({ id }) => removeFolders(id)))).flat())];
         }
 
         const removedFolders = await removeFolders(folderId);
