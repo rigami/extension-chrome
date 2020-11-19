@@ -59,7 +59,7 @@ function FolderCard({ id, name, className: externalClassName, ...other }) {
                         }
                     },
                 },
-                /* {
+                {
                     type: 'button',
                     title: t('edit'),
                     icon: EditIcon,
@@ -77,7 +77,7 @@ function FolderCard({ id, name, className: externalClassName, ...other }) {
                     onClick: () => {
                         coreService.localEventBus.call('folder/remove', { id });
                     },
-                }, */
+                },
             ],
             position: {
                 top: event.nativeEvent.clientY,

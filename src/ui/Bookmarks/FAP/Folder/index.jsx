@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { ButtonBase, Popper, ClickAwayListener, ListItemAvatar, ListItemText, ListItem } from '@material-ui/core';
+import React, { useState } from 'react';
+import {
+    ButtonBase,
+    ListItemAvatar,
+    ListItemText,
+    ListItem,
+} from '@material-ui/core';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import useCoreService from '@/stores/BaseStateProvider';
-import { useLocalObservable } from 'mobx-react-lite';
 import Explorer from './Explorer';
 import FAPButton from '@/ui/Bookmarks/FAP/Button';
+import PopperWrapper from '@/ui-components/PopperWrapper';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -19,10 +23,6 @@ const useStyles = makeStyles((theme) => ({
     activeIconButton: {
         backgroundColor: theme.palette.common.white,
         // '&:hover': { backgroundColor: theme.palette.common.white },
-    },
-    popperWrapper: {
-        zIndex: theme.zIndex.drawer,
-        willChange: 'auto !important',
     },
     icon: {
         width: 32,
@@ -52,61 +52,33 @@ const useStyles = makeStyles((theme) => ({
 
 function Folder({ id, name, isBlurBackdrop, variant = 'icon', offset = false }) {
     const classes = useStyles();
-    const coreService = useCoreService();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
-    const [listenId, setListenId] = useState(null);
-    const store = useLocalObservable(() => ({ popperRef: null }));
-
-    useEffect(() => {
-        if (isOpen) {
-            setListenId(coreService.localEventBus.on('system/scroll', () => {
-                store.popperRef?.update();
-            }));
-        } else {
-            coreService.localEventBus.removeListener(listenId);
-        }
-    }, [isOpen]);
 
     return (
         <React.Fragment>
-            <ClickAwayListener
-                onClickAway={() => {
+            <PopperWrapper
+                isOpen={isOpen}
+                anchorEl={anchorEl}
+                onClose={() => {
                     if (isBlockEvent) return;
 
                     setIsOpen(false);
                 }}
-                mouseEvent="onMouseDown"
+                modifiers={{
+                    inner: {
+                        enabled: offset,
+                        order: 0,
+                    },
+                    offset: {
+                        enabled: true,
+                        offset: offset ? 128 : 0,
+                    },
+                }}
             >
-                <Popper
-                    open={isOpen}
-                    anchorEl={anchorEl}
-                    popperRef={(popperRef) => { store.popperRef = popperRef; }}
-                    placement="bottom"
-                    className={classes.popperWrapper}
-                    modifiers={{
-                        inner: {
-                            enabled: offset,
-                            order: 0,
-                        },
-                        offset: {
-                            enabled: true,
-                            offset: offset ? 128 : 0,
-                        },
-                        flip: {
-                            enabled: true,
-                            padding: 16,
-                        },
-                        preventOverflow: {
-                            enabled: true,
-                            boundariesElement: 'viewport',
-                        },
-                    }}
-                >
-                    <Explorer id={id} />
-                </Popper>
-            </ClickAwayListener>
+                <Explorer id={id} />
+            </PopperWrapper>
             <FAPButton
                 id={id}
                 name={name}

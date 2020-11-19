@@ -13,6 +13,7 @@ import useCoreService from '@/stores/BaseStateProvider';
 import EditCategoryModal from '@/ui/Bookmarks/Categories/EditModal';
 import { useTranslation } from 'react-i18next';
 import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
+import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import ContextMenu from '@/ui/ContextMenu';
 import { useSnackbar } from 'notistack';
 import FSConnector from '@/utils/fsConnector';
@@ -56,6 +57,21 @@ function GlobalModals({ children }) {
             })),
             coreService.localEventBus.on('category/remove', ({ id }) => setEdit({
                 type: 'category',
+                action: 'remove',
+                id,
+            })),
+            coreService.localEventBus.on('folder/edit', ({ id, anchorEl }) => {
+                console.log('folder/edit', { id, anchorEl })
+
+                setEdit({
+                    type: 'folder',
+                    action: 'edit',
+                    id,
+                    anchorEl,
+                });
+            }),
+            coreService.localEventBus.on('folder/remove', ({ id }) => setEdit({
+                type: 'folder',
                 action: 'remove',
                 id,
             })),
@@ -126,64 +142,53 @@ function GlobalModals({ children }) {
                 isOpen={edit && edit.type === 'category' && edit.action !== 'remove'}
                 onSave={() => setEdit(null)}
                 onClose={() => setEdit(null)}
-                editCategoryId={edit && edit.id}
+                editId={edit && edit.id}
             />
-            <Dialog
-                open={(edit && edit.action === 'remove' && edit.type === 'bookmark') || false}
+            <EditFolderModal
+                anchorEl={edit && edit.anchorEl}
+                isOpen={edit && edit.type === 'folder' && edit.action !== 'remove'}
+                onSave={() => setEdit(null)}
                 onClose={() => setEdit(null)}
-            >
-                <DialogTitle>
-                    {t('bookmark.remove.title')}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {t('bookmark.remove.description')}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setEdit(null)} color="primary">
-                        {t('cancel')}
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            bookmarksStore.bookmarks.remove(edit.id);
-                            setEdit(null);
-                        }}
-                        color="primary"
-                        autoFocus
-                    >
-                        {t('remove')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog
-                open={(edit && edit.action === 'remove' && edit.type === 'category') || false}
-                onClose={() => setEdit(null)}
-            >
-                <DialogTitle>
-                    {t('category.remove.title')}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {t('category.remove.description')}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setEdit(null)} color="primary">
-                        {t('cancel')}
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            bookmarksStore.categories.remove(edit.id);
-                            setEdit(null);
-                        }}
-                        color="primary"
-                        autoFocus
-                    >
-                        {t('remove')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                editId={edit && edit.id}
+                simple
+            />
+            {['bookmark', 'category', 'folder'].map((type) => (
+                <Dialog
+                    key={type}
+                    open={(edit && edit.action === 'remove' && edit.type === type) || false}
+                    onClose={() => setEdit(null)}
+                >
+                    <DialogTitle>
+                        {t(`${type}.remove.title`)}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {t(`${type}.remove.description`)}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setEdit(null)} color="primary">
+                            {t('cancel')}
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                if (type === 'bookmark') {
+                                    bookmarksStore.bookmarks.remove(edit.id);
+                                } else if (type === 'category') {
+                                    bookmarksStore.categories.remove(edit.id);
+                                } else if (type === 'folder') {
+                                    bookmarksStore.folders.remove(edit.id);
+                                }
+                                setEdit(null);
+                            }}
+                            color="primary"
+                            autoFocus
+                        >
+                            {t('remove')}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            ))}
             <Dialog
                 open={(edit && edit.action === 'prompt' && edit.type === 'oldAppBackupFile') || false}
                 onClose={() => setEdit(null)}

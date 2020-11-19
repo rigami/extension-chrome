@@ -15,6 +15,7 @@ function PopperWrapper(props) {
     const {
         anchorEl,
         isOpen,
+        modifiers = {},
         onClose,
         onService,
         children,
@@ -27,7 +28,7 @@ function PopperWrapper(props) {
     useEffect(() => {
         if (isOpen) {
             setListenId(coreService.localEventBus.on('system/scroll', () => {
-                store.popperRef.update();
+                if (store.popperRef) store.popperRef.update();
             }));
         } else {
             coreService.localEventBus.removeListener(listenId);
@@ -49,11 +50,15 @@ function PopperWrapper(props) {
                 placement="top"
                 className={classes.popper}
                 modifiers={{
-                    flip: { enabled: true },
+                    flip: {
+                        enabled: true,
+                        padding: 16,
+                    },
                     preventOverflow: {
                         enabled: true,
                         boundariesElement: 'viewport',
                     },
+                    ...modifiers,
                 }}
             >
                 {children}

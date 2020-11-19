@@ -16,6 +16,7 @@ import {
 } from '@material-ui/icons';
 import { useLocalObservable, useObserver } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/BookmarksProvider';
+import asyncAction from '@/utils/asyncAction';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -37,17 +38,18 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Editor({ onSave, onError, onCancel, editFolderId }) {
+function Editor({ onSave, onError, onCancel, editId }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const bookmarksService = useBookmarksService();
     const foldersService = bookmarksService.folders;
     const store = useLocalObservable(() => ({
-        expanded: [],
-        folderId: null,
+        expanded: editId ? [editId] : [],
+        folderId: editId || null,
+        editId,
         newFolderRoot: false,
         newFolderName: '',
-        folders: [],
+        folders: null,
     }));
 
     const handleCreateNewFolder = () => {
@@ -64,6 +66,7 @@ function Editor({ onSave, onError, onCancel, editFolderId }) {
             await foldersService.save({
                 name: store.newFolderName,
                 parentId: store.newFolderRoot,
+                id: store.editId,
             });
 
             await foldersService.getTree()
@@ -72,15 +75,35 @@ function Editor({ onSave, onError, onCancel, editFolderId }) {
                 })
         }
 
-
         store.newFolderRoot = null;
+        store.editId = null;
     }
 
     const renderTree = (nodes) => (
-        <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
+        <TreeItem
+            key={nodes.id}
+            nodeId={nodes.id}
+            label={
+                store.editId === nodes.id ? (
+                    <TextField
+                        margin="dense"
+                        variant="outlined"
+                        fullWidth
+                        value={store.newFolderName}
+                        autoFocus
+                        onChange={(event) => { store.newFolderName = event.target.value; }}
+                        onBlur={handleSaveNewFolder}
+                        onKeyDown={(event) => {
+                            console.log('event.code', event.code);
+                            if (event.code === 'Enter') handleSaveNewFolder();
+                        }}
+                    />
+                ) : nodes.name
+            }
+        >
             {[
                 ...(Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : []),
-                store.newFolderRoot === nodes.id ? (
+                store.newFolderRoot === nodes.id && !store.editId ? (
                     <TextField
                         margin="dense"
                         variant="outlined"
@@ -100,26 +123,36 @@ function Editor({ onSave, onError, onCancel, editFolderId }) {
     );
 
     useEffect(() => {
-        foldersService.getTree()
-            .then((folders) => {
-                store.folders = folders;
-            })
+        asyncAction(async () => {
+            const path = (await foldersService.getPath(editId)).map(({ id }) => id);
+            const tree = await foldersService.getTree();
+            if (editId) {
+                const folder = await foldersService.get(editId);
+                store.newFolderName = folder.name;
+                store.newFolderRoot = folder.parentId;
+            }
+            store.expanded = path
+            store.folders = tree;
+        })
     }, []);
 
     return useObserver(() => (
         <Card className={classes.popper} elevation={16}>
             <DialogTitle>{t('folder.editor.title')}</DialogTitle>
             <DialogContent>
-                <TreeView
-                    className={classes.tree}
-                    defaultCollapseIcon={<ArrowDownIcon />}
-                    expanded={store.expanded}
-                    defaultExpandIcon={<ArrowRightIcon />}
-                    onNodeSelect={(event, nodeId) => { store.folderId = nodeId; }}
-                    onNodeToggle={(event, nodes) => { store.expanded = nodes }}
-                >
-                    {[...store.folders].map((item) => renderTree(item))}
-                </TreeView>
+                {store.folders && (
+                    <TreeView
+                        className={classes.tree}
+                        defaultCollapseIcon={<ArrowDownIcon />}
+                        expanded={store.expanded}
+                        defaultSelected={store.folderId}
+                        defaultExpandIcon={<ArrowRightIcon />}
+                        onNodeSelect={(event, nodeId) => { store.folderId = nodeId; }}
+                        onNodeToggle={(event, nodes) => { store.expanded = nodes }}
+                    >
+                        {[...store.folders].map((item) => renderTree(item))}
+                    </TreeView>
+                )}
             </DialogContent>
             <DialogActions>
                 <Button

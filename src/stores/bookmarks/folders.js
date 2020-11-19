@@ -51,7 +51,7 @@ class FoldersStore {
 
     @action('get folders path')
     async getPath(parentId = 0) {
-        return await this._getPath(parentId, []);
+        return await this._getPath(parentId || 0, []);
     }
 
     @action('get folder by id')

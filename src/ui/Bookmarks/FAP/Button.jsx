@@ -71,7 +71,7 @@ function FAPButton(props) {
                     onClick: () => {
                         coreService.localEventBus.call(`${type}/edit`, {
                             id,
-                            anchorEl: type === 'category' &&  event.currentTarget,
+                            anchorEl: type !== 'bookmark' &&  event.currentTarget,
                         });
                     },
                 },
@@ -82,7 +82,7 @@ function FAPButton(props) {
                     onClick: () => {
                         coreService.localEventBus.call(`${type}/remove`, {
                             id,
-                            anchorEl: type === 'category' &&  event.currentTarget,
+                            anchorEl: type !== 'bookmark' &&  event.currentTarget,
                         });
                     },
                 },
