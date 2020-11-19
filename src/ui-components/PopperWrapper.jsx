@@ -6,7 +6,7 @@ import useCoreService from '@/stores/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
-        zIndex: theme.zIndex.drawer,
+        zIndex: theme.zIndex.modal,
         willChange: 'auto !important',
     }
 }));

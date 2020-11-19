@@ -1,10 +1,16 @@
+import React, { useEffect } from 'react';
 import { EditRounded as EditIcon } from '@material-ui/icons';
-import { Box, Breadcrumbs, Button, Chip, Tooltip, Typography } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import {
+    Breadcrumbs,
+    Button,
+    Tooltip,
+    Typography,
+} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import EditFolderModal from './EditModal';
 import useBookmarksService from '@/stores/BookmarksProvider';
+import { useLocalObservable, useObserver } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     folderSelectButton: {
@@ -21,30 +27,35 @@ function FolderSelector({ value, onChange }) {
     const { t } = useTranslation();
     const bookmarksService = useBookmarksService();
     const foldersService = bookmarksService.folders;
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [isOpen, setIsOpen] = useState(false);
-    const [isBlockEvent, setIsBlockEvent] = useState(false);
-    const [path, setPath] = useState(t('loading'));
+    const store = useLocalObservable(() => ({
+        anchorEl: null,
+        isOpen: false,
+        isBlockEvent: false,
+        path: t('loading'),
+    }));
 
     useEffect(() => {
         if (value) {
             foldersService.getPath(value)
-                .then((folderPath) => setPath(folderPath));
+                .then((folderPath) => { store.path = folderPath; });
         }
     }, [value]);
 
-    return (
+    useEffect(() => { console.log('isOpen', store.isOpen) }, [store.isOpen])
+
+    return useObserver(() => (
         <React.Fragment>
             <EditFolderModal
-                isOpen={isOpen}
-                anchorEl={anchorEl}
+                isOpen={store.isOpen}
+                anchorEl={store.anchorEl}
+                selectId={value}
                 onClose={() => {
-                    if (isBlockEvent) return;
-                    setIsOpen(false);
+                    if (store.isBlockEvent) return;
+                    store.isOpen = false;
                 }}
                 onSave={(folderId) => {
                     onChange(folderId);
-                    setIsOpen(false);
+                    store.isOpen = false;
                 }}
             />
             <Tooltip title={t('folder.editor.changeTooltip')}>
@@ -52,26 +63,26 @@ function FolderSelector({ value, onChange }) {
                     endIcon={<EditIcon />}
                     className={classes.folderSelectButton}
                     onClick={(event) => {
-                        setAnchorEl(event.currentTarget);
-                        if (isBlockEvent) setIsOpen(true);
-                        setIsBlockEvent(false);
+                        store.anchorEl = event.currentTarget;
+                        if (store.isBlockEvent) store.isOpen = true;
+                        store.isBlockEvent = false;
                     }}
                     onMouseDown={() => {
-                        if (!isOpen) setIsBlockEvent(true);
+                        if (!store.isOpen) store.isBlockEvent = true;
                     }}
                 >
-                    {(value && Array.isArray(path) && (
+                    {(value && Array.isArray(store.path) && (
                         <Breadcrumbs>
-                            {path.map(({ name, id }, index) => (
+                            {store.path.map(({ name, id }, index) => (
                                 <Typography
                                     key={id}
-                                    color={index === path.length - 1 ? 'textPrimary': 'textSecondary'}
+                                    color={index === store.path.length - 1 ? 'textPrimary': 'textSecondary'}
                                 >
                                     {name}
                                 </Typography>
                             ))}
                         </Breadcrumbs>
-                    )) || (value && path) || (
+                    )) || (value && store.path) || (
                         <Typography className={classes.notSelect}>
                             {t('folder.editor.notSelect')}
                         </Typography>
@@ -79,7 +90,7 @@ function FolderSelector({ value, onChange }) {
                 </Button>
             </Tooltip>
         </React.Fragment>
-    );
+    ));
 }
 
 export default FolderSelector;

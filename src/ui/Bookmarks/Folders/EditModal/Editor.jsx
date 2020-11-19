@@ -38,14 +38,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Editor({ onSave, onError, onCancel, editId }) {
+function Editor({ onSave, onError, onCancel, editId, selectId }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const bookmarksService = useBookmarksService();
     const foldersService = bookmarksService.folders;
     const store = useLocalObservable(() => ({
         expanded: editId ? [editId] : [],
-        folderId: editId || null,
+        folderId: editId || selectId || null,
         editId,
         newFolderRoot: false,
         newFolderName: '',
@@ -124,7 +124,7 @@ function Editor({ onSave, onError, onCancel, editId }) {
 
     useEffect(() => {
         asyncAction(async () => {
-            const path = (await foldersService.getPath(editId)).map(({ id }) => id);
+            const path = (await foldersService.getPath(editId || selectId)).map(({ id }) => id);
             const tree = await foldersService.getTree();
             if (editId) {
                 const folder = await foldersService.get(editId);
@@ -139,10 +139,9 @@ function Editor({ onSave, onError, onCancel, editId }) {
     return useObserver(() => (
         <Card className={classes.popper} elevation={16}>
             <DialogTitle>{t('folder.editor.title')}</DialogTitle>
-            <DialogContent>
+            <DialogContent className={classes.tree}>
                 {store.folders && (
                     <TreeView
-                        className={classes.tree}
                         defaultCollapseIcon={<ArrowDownIcon />}
                         expanded={store.expanded}
                         defaultSelected={store.folderId}
