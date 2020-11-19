@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Editor({ onSave, onError, onCancel, editCategoryId }) {
+function Editor({ onSave, onError, onCancel, editFolderId }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const bookmarksService = useBookmarksService();

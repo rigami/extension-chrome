@@ -1,10 +1,7 @@
 import React from 'react';
-import { Popper, ClickAwayListener } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { useLocalObservable } from 'mobx-react-lite';
 import Editor from './Editor';
-
-const useStyles = makeStyles((theme) => ({ popper: { zIndex: theme.zIndex.modal } }));
+import PopperWrapper from '@/ui-components/PopperWrapper';
+import { useLocalObservable, useObserver } from 'mobx-react-lite';
 
 function EditFolderModal(props) {
     const {
@@ -14,37 +11,23 @@ function EditFolderModal(props) {
         onClose,
         ...other
     } = props;
-    const classes = useStyles();
     const store = useLocalObservable(() => ({ popperRef: null }));
 
-    return (
-        <ClickAwayListener
-            onClickAway={onClose}
-            mouseEvent="onMouseDown"
+    return useObserver(() => (
+        <PopperWrapper
+            isOpen={isOpen}
+            anchorEl={anchorEl}
+            onClose={onClose}
+            onService={(service) => { store.popperRef = service; }}
         >
-            <Popper
-                open={!!isOpen}
-                anchorEl={anchorEl}
-                popperRef={(popperRef) => { store.popperRef = popperRef; }}
-                placement="top"
-                className={classes.popper}
-                modifiers={{
-                    flip: { enabled: true },
-                    preventOverflow: {
-                        enabled: true,
-                        boundariesElement: 'viewport',
-                    },
-                }}
-            >
-                <Editor
-                    onSave={(categoryId) => onSave && onSave(categoryId)}
-                    onError={() => store.popperRef.update()}
-                    onCancel={onClose}
-                    {...other}
-                />
-            </Popper>
-        </ClickAwayListener>
-    );
+            <Editor
+                onSave={(folderId) => onSave && onSave(folderId)}
+                onError={() => store.popperRef.update()}
+                onCancel={onClose}
+                {...other}
+            />
+        </PopperWrapper>
+    ));
 }
 
 export default EditFolderModal;

@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         width: '100%',
-        overflow: 'auto',
+        overflow: 'hidden',
     },
     list: {
         flexWrap: 'nowrap',

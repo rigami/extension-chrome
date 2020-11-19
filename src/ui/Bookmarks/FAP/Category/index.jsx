@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { ButtonBase, Popper, ClickAwayListener } from '@material-ui/core';
+import React, { useState } from 'react';
+import { ButtonBase } from '@material-ui/core';
 import { LabelRounded as TagIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import useCoreService from '@/stores/BaseStateProvider';
-import { useLocalObservable } from 'mobx-react-lite';
 import Explorer from './Explorer';
 import FAPButton from '@/ui/Bookmarks/FAP/Button';
+import PopperWrapper from '@/ui-components/PopperWrapper';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -20,10 +19,6 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.common.white,
         // '&:hover': { backgroundColor: theme.palette.common.white },
     },
-    popperWrapper: {
-        zIndex: theme.zIndex.drawer,
-        willChange: 'auto !important',
-    },
     icon: {
         width: 32,
         height: 32,
@@ -33,43 +28,23 @@ const useStyles = makeStyles((theme) => ({
 
 function Category({ id, name, color, isBlurBackdrop }) {
     const classes = useStyles();
-    const coreService = useCoreService();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
-    const [listenId, setListenId] = useState(null);
-    const store = useLocalObservable(() => ({ popperRef: null }));
-
-    useEffect(() => {
-        if (isOpen) {
-            setListenId(coreService.localEventBus.on('system/scroll', () => {
-                store.popperRef.update();
-            }));
-        } else {
-            coreService.localEventBus.removeListener(listenId);
-        }
-    }, [isOpen]);
 
     return (
         <React.Fragment>
-            <ClickAwayListener
-                onClickAway={() => {
+            <PopperWrapper
+                isOpen={isOpen}
+                anchorEl={anchorEl}
+                onClose={() => {
                     if (isBlockEvent) return;
 
                     setIsOpen(false);
                 }}
-                mouseEvent="onMouseDown"
             >
-                <Popper
-                    open={isOpen}
-                    anchorEl={anchorEl}
-                    popperRef={(popperRef) => { store.popperRef = popperRef; }}
-                    placement="top"
-                    className={classes.popperWrapper}
-                >
-                    <Explorer id={id} />
-                </Popper>
-            </ClickAwayListener>
+                <Explorer id={id} />
+            </PopperWrapper>
             <FAPButton
                 id={id}
                 name={name}

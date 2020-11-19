@@ -80,7 +80,7 @@ function FAPButton(props) {
                     title: t('remove'),
                     icon: RemoveIcon,
                     onClick: () => {
-                        coreService.localEventBus.call(`${type}/edit`, {
+                        coreService.localEventBus.call(`${type}/remove`, {
                             id,
                             anchorEl: type === 'category' &&  event.currentTarget,
                         });
