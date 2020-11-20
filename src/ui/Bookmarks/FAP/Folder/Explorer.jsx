@@ -4,12 +4,14 @@ import {
     CardHeader,
     List,
     CircularProgress,
-    IconButton, Typography, ListItem, ListItemAvatar, ListItemText, ButtonBase,
+    IconButton,
 } from '@material-ui/core';
 import {
     FolderRounded as FolderIcon,
     BookmarkBorderRounded as PinnedFavoriteIcon,
     BookmarkRounded as UnpinnedFavoriteIcon,
+    EditRounded as EditIcon,
+    DeleteRounded as RemoveIcon,
     MoreVertRounded as MoreIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,8 +27,6 @@ import FolderButton from './index';
 const useStyles = makeStyles((theme) => ({
     root: {
         width: 310,
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
         backdropFilter: 'blur(15px) brightness(130%)',
         backgroundColor: fade(theme.palette.background.default, 0.70),
     },
@@ -86,7 +86,7 @@ function Folder({ id }) {
                         }
                     },
                 },
-                /* {
+                {
                     type: 'button',
                     title: t('edit'),
                     icon: EditIcon,
@@ -104,7 +104,7 @@ function Folder({ id }) {
                     onClick: () => {
                         coreService.localEventBus.call('folder/remove', { id });
                     },
-                }, */
+                },
             ],
             position: {
                 top,

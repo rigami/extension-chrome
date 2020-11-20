@@ -76,11 +76,10 @@ function Folder(props) {
                 modifiers={{
                     inner: {
                         enabled: offset,
-                        order: 0,
                     },
                     offset: {
                         enabled: true,
-                        offset: offset ? 128 : 0,
+                        offset: `${offset ? 128 : 0}px, 32px`,
                     },
                 }}
             >

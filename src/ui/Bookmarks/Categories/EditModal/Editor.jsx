@@ -13,8 +13,6 @@ const useStyles = makeStyles((theme) => ({
     popper: {
         display: 'flex',
         flexDirection: 'column',
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
     },
     input: { padding: theme.spacing(2) },
     saveButton: { marginRight: theme.spacing(2) },

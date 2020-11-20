@@ -39,8 +39,6 @@ function FolderSelector({ value, onChange }) {
         }
     }, [value]);
 
-    useEffect(() => { console.log('isOpen', store.isOpen); }, [store.isOpen]);
-
     return useObserver(() => (
         <React.Fragment>
             <EditFolderModal

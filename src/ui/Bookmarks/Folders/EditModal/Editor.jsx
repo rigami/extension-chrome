@@ -22,15 +22,13 @@ const useStyles = makeStyles((theme) => ({
     popper: {
         display: 'flex',
         flexDirection: 'column',
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
     },
     input: { padding: theme.spacing(2) },
     saveButton: { marginRight: theme.spacing(2) },
     errorMessage: { padding: theme.spacing(1, 2) },
     tree: {
-        height: 280,
-        width: 440,
+        height: 230,
+        width: 400,
         overflow: 'auto',
     },
     createNewFolderButton: { marginRight: 'auto' },

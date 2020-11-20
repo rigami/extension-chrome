@@ -58,6 +58,10 @@ function PopperWrapper(props) {
                         enabled: true,
                         boundariesElement: 'viewport',
                     },
+                    offset: {
+                        enabled: true,
+                        offset: '0, 32px',
+                    },
                     ...modifiers,
                 }}
             >
