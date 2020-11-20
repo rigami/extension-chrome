@@ -179,30 +179,34 @@ function FolderWrapper({ folder, onSelect }) {
                             {isPin() ? (<UnpinnedFavoriteIcon />) : (<PinnedFavoriteIcon />)}
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Изменить">
-                        <IconButton
-                            buttonRef={anchorEl}
-                            onClick={() => coreService.localEventBus.call(
-                                'folder/edit',
-                                {
-                                    id: folder?.id,
-                                    anchorEl: anchorEl.current,
-                                },
-                            )}
-                        >
-                            <EditIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Удалить">
-                        <IconButton
-                            onClick={() => coreService.localEventBus.call(
-                                'folder/remove',
-                                { id: folder?.id },
-                            )}
-                        >
-                            <RemoveIcon />
-                        </IconButton>
-                    </Tooltip>
+                    {folder?.parentId !== 0 && (
+                        <React.Fragment>
+                            <Tooltip title="Изменить">
+                                <IconButton
+                                    buttonRef={anchorEl}
+                                    onClick={() => coreService.localEventBus.call(
+                                        'folder/edit',
+                                        {
+                                            id: folder?.id,
+                                            anchorEl: anchorEl.current,
+                                        },
+                                    )}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Удалить">
+                                <IconButton
+                                    onClick={() => coreService.localEventBus.call(
+                                        'folder/remove',
+                                        { id: folder?.id },
+                                    )}
+                                >
+                                    <RemoveIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </React.Fragment>
+                    )}
                 </ListItemSecondaryAction>
             </ListItem>
             <Box className={classes.bookmarksWrapper}>

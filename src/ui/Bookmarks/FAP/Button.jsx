@@ -33,6 +33,8 @@ function FAPButton(props) {
         isBlurBackdrop,
         type = 'bookmark',
         children,
+        disableEdit = false,
+        disableRemove = false,
         ...other
     } = props;
     const classes = useStyles();
@@ -64,28 +66,29 @@ function FAPButton(props) {
                         }
                     },
                 },
-                {
-                    type: 'button',
-                    title: t('edit'),
-                    icon: EditIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call(`${type}/edit`, {
-                            id,
-                            anchorEl: type !== 'bookmark' && event.currentTarget,
-                        });
+                ...(!disableEdit ? [
+                    {
+                        type: 'button',
+                        title: t('edit'),
+                        icon: EditIcon,
+                        onClick: () => {
+                            coreService.localEventBus.call('folder/edit', {
+                                id,
+                                anchorEl,
+                            });
+                        },
                     },
-                },
-                {
-                    type: 'button',
-                    title: t('remove'),
-                    icon: RemoveIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call(`${type}/remove`, {
-                            id,
-                            anchorEl: type !== 'bookmark' && event.currentTarget,
-                        });
+                ] : []),
+                ...(!disableRemove ? [
+                    {
+                        type: 'button',
+                        title: t('remove'),
+                        icon: RemoveIcon,
+                        onClick: () => {
+                            coreService.localEventBus.call('folder/remove', { id });
+                        },
                     },
-                },
+                ] : []),
             ],
             position: {
                 top: event.nativeEvent.clientY,
