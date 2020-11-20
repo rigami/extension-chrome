@@ -17,7 +17,7 @@ function upgradeOrCreateBackgrounds(db, transaction) {
     return store;
 }
 
-function upgradeOrCreateBookmarks(db, transaction) {
+async function upgradeOrCreateBookmarks(db, transaction) {
     let store;
 
     if (db.objectStoreNames.contains('bookmarks')) {
@@ -38,6 +38,11 @@ function upgradeOrCreateBookmarks(db, transaction) {
 
     if (!store.indexNames.contains("folder_id")) {
         store.createIndex('folder_id', 'folderId', { unique: false });
+
+        (await store.getAll()).forEach((bookmark) => store.put({
+            ...bookmark,
+            folderId: bookmark.folderId || 1,
+        }))
     }
 
     return store;
