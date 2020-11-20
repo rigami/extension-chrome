@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
 function Folder(props) {
     const {
         id,
+        parentId,
         name,
         isBlurBackdrop,
         variant = 'icon',
@@ -74,9 +75,7 @@ function Folder(props) {
                     setIsOpen(false);
                 }}
                 modifiers={{
-                    inner: {
-                        enabled: offset,
-                    },
+                    inner: { enabled: offset },
                     offset: {
                         enabled: true,
                         offset: `${offset ? 128 : 0}px, 32px`,
@@ -89,6 +88,8 @@ function Folder(props) {
                 id={id}
                 name={name}
                 tooltip={name}
+                disableEdit={parentId === 0}
+                disableRemove={parentId === 0}
                 isBlurBackdrop={isBlurBackdrop}
                 type="folder"
                 onMouseDown={() => {

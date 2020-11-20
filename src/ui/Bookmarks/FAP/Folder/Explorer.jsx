@@ -86,25 +86,27 @@ function Folder({ id }) {
                         }
                     },
                 },
-                {
-                    type: 'button',
-                    title: t('edit'),
-                    icon: EditIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('folder/edit', {
-                            id,
-                            anchorEl,
-                        });
+                ...(folder.parentId !== 0 ? [
+                    {
+                        type: 'button',
+                        title: t('edit'),
+                        icon: EditIcon,
+                        onClick: () => {
+                            coreService.localEventBus.call('folder/edit', {
+                                id,
+                                anchorEl,
+                            });
+                        },
                     },
-                },
-                {
-                    type: 'button',
-                    title: t('remove'),
-                    icon: RemoveIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('folder/remove', { id });
+                    {
+                        type: 'button',
+                        title: t('remove'),
+                        icon: RemoveIcon,
+                        onClick: () => {
+                            coreService.localEventBus.call('folder/remove', { id });
+                        },
                     },
-                },
+                ] : []),
             ],
             position: {
                 top,
