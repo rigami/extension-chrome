@@ -60,6 +60,24 @@ class BookmarksStore {
         });
     }
 
+    @action('query feature bookmarks')
+    async getAllInFolder(folderId) {
+        let bookmarks = await DBConnector().getAllFromIndex(
+            'bookmarks',
+            'folder_id',
+            folderId,
+        );
+
+        bookmarks = bookmarks.map((bookmark) => new Bookmark({
+            ...bookmark,
+            imageURL: FSConnector.getIconURL(bookmark.icoFileName),
+        }));
+
+        // TODO Add assign categories
+
+        return bookmarks;
+    }
+
     @action('query bookmarks')
     async query(searchQuery = {}, notSaveSearch = true) {
         if (!notSaveSearch) {
@@ -72,6 +90,7 @@ class BookmarksStore {
                 match: [],
                 ...searchQuery.categories,
             },
+            folderId: null,
             url: {
                 fullMatch: false,
                 match: '',
@@ -252,6 +271,7 @@ class BookmarksStore {
             imageURL,
             imageBase64,
             categories = [],
+            folderId,
             icoVariant,
             id,
         } = props;
@@ -263,6 +283,7 @@ class BookmarksStore {
             name: name.trim(),
             description: description && description.trim(),
             icoVariant,
+            folderId,
         };
 
         let saveBookmarkId;

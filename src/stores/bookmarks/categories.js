@@ -40,6 +40,7 @@ class CategoriesStore {
         if (!id) {
             const allIds = await DBConnector().getAllKeys('categories');
             newColor = color || getUniqueColor(last(allIds));
+            newColor = color || getUniqueColor((last(allIds) || 0) + 1);
         } else {
             newColor = color || this.get(id).color;
         }

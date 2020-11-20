@@ -13,6 +13,7 @@ class Bookmark {
     imageBase64;
     icoFileName;
     categories;
+    folderId;
     clickCounts = 0;
 
     constructor(bookmark = {}) {
@@ -25,6 +26,7 @@ class Bookmark {
         this.imageUrl = bookmark.imageUrl || FSConnector.getIconURL(bookmark.icoFileName);
         this.imageBase64 = bookmark.imageBase64;
         this.categories = bookmark.categories || [];
+        this.folderId = bookmark.folderId || null;
         this.icoFileName = bookmark.icoFileName;
 
         this.update(bookmark);

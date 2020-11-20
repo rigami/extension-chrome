@@ -16,13 +16,49 @@ class SyncBookmarks {
         const bookmarksQuery = await this.bookmarksService.bookmarks.query();
         const localBookmarks = bookmarksQuery[0].bookmarks;
         const localCategories = await this.bookmarksService.categories.sync();
+        const localFolders = await this.bookmarksService.folders.getTree();
         const localFavorites = await this.bookmarksService.syncFavorites();
 
         console.log('localBookmarks', {
             localBookmarks,
             localCategories,
             localFavorites,
+            localFolders,
         });
+
+        console.log('Restore folders...');
+
+        const replaceFolderId = {};
+
+        const compareLevel = async (level, localLevel) => {
+            for (const folder of level) {
+                console.log('Check folder:', folder);
+
+                const findFolder = localLevel.find(({ name }) => folder.name === name);
+
+                if (findFolder) {
+                    console.log(`Folder '${folder.name}' find in local store. Rewrite local`);
+                    await this.bookmarksService.folders.save({
+                        ...findFolder,
+                        ...folder,
+                        id: findFolder.id,
+                    });
+
+                    replaceFolderId[folder.id] = findFolder.id;
+                } else {
+                    console.log(`Folder '${folder.name}' not find in local store. Save as new`);
+                    replaceFolderId[folder.id] = await this.bookmarksService.folders.save({
+                        ...folder,
+                        id: null,
+                    });
+                }
+
+                if (Array.isArray(folder.children)) await compareLevel(folder.children, findFolder?.children || []);
+            }
+        };
+
+        if (bookmarks.folders) await compareLevel(bookmarks.folders, localFolders);
+
         console.log('Restore categories...');
 
         const replaceCategoryId = {};
@@ -67,6 +103,7 @@ class SyncBookmarks {
                     ...findBookmark,
                     ...bookmark,
                     id: findBookmark.id,
+                    folderId: replaceFolderId[bookmark.folderId] || bookmark.folderId || findBookmark.folderId,
                     imageBase64: bookmark.image || bookmark.imageBase64,
                     categories: uniq([...findBookmark.categories.map(({ id }) => id), ...bookmark.categories.map((id) => replaceCategoryId[id] || id)]),
                 });
@@ -76,6 +113,7 @@ class SyncBookmarks {
                 console.log(`Bookmark '${bookmark.name}' not find in local store. Save as new`);
                 replaceBookmarkId[bookmark.id] = await this.bookmarksService.bookmarks.save({
                     ...bookmark,
+                    folderId: replaceFolderId[bookmark.folderId] || bookmark.folderId || 1,
                     imageBase64: bookmark.image || bookmark.imageBase64,
                     categories: bookmark.categories.map((id) => replaceCategoryId[id] || id),
                     id: null,

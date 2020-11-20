@@ -20,6 +20,7 @@ import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import ScrollContainer from 'react-indiana-drag-scroll';
 import Link from './Link';
 import Category from './Category';
+import Folder from './Folder';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -158,6 +159,8 @@ function FAP() {
             bookmarksService.favorites.map((fav) => {
                 if (fav.type === 'bookmark') {
                     return bookmarksService.bookmarks.get(fav.id);
+                } else if (fav.type === 'folder') {
+                    return bookmarksService.folders.get(fav.id);
                 } else {
                     return bookmarksService.categories.get(fav.id);
                 }
@@ -215,21 +218,33 @@ function FAP() {
                         >
                             <LeftIcon />
                         </IconButton>
-                        {favorites.map((fav) => (
-                            fav.type === 'bookmark' ? (
-                                <Link
-                                    {...fav}
-                                    key={`${fav.type}-${fav.id}`}
-                                    isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
-                                />
-                            ) : (
-                                <Category
-                                    {...fav}
-                                    key={`${fav.type}-${fav.id}`}
-                                    isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
-                                />
-                            )
-                        ))}
+                        {favorites.map((fav) => {
+                            if (fav.type === 'bookmark') {
+                                return (
+                                    <Link
+                                        {...fav}
+                                        key={`${fav.type}-${fav.id}`}
+                                        isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
+                                    />
+                                );
+                            } else if (fav.type === 'folder') {
+                                return (
+                                    <Folder
+                                        {...fav}
+                                        key={`${fav.type}-${fav.id}`}
+                                        isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
+                                    />
+                                );
+                            } else {
+                                return (
+                                    <Category
+                                        {...fav}
+                                        key={`${fav.type}-${fav.id}`}
+                                        isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
+                                    />
+                                );
+                            }
+                        })}
                         <IconButton
                             className={clsx(
                                 classes.arrowButton,

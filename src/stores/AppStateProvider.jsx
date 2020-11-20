@@ -6,7 +6,6 @@ import React, {
 } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import AppService from '@/stores/app';
-import WidgetsService from '@/stores/widgets';
 
 const context = createContext({});
 
@@ -16,8 +15,6 @@ function AppStateProvider({ children, onChangeTheme }) {
     const isFirstRender = useRef(true);
 
     useEffect(() => {
-        console.log('Change app theme', store.settings.theme);
-
         if (isFirstRender.current) {
             isFirstRender.current = false;
             return;

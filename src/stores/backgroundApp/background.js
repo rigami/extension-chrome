@@ -15,15 +15,17 @@ class Background {
     bookmarks;
     bookmarksSyncService;
     bookmarksService;
+    foldersService;
 
     constructor() {
         this.bus = BusApp();
         this.bookmarksService = new BookmarksService();
         this.bookmarks = this.bookmarksService.bookmarks;
+        this.folders = this.bookmarksService.folders;
         this.bookmarksSyncService = new SyncBookmarks(this.bookmarksService);
         this.settingsService = new SyncSettings();
         this.storageService = new SyncStorage();
-        this.localBackup = new LocalBackup(this.bookmarks, this.settingsService, this.bookmarksSyncService);
+        this.localBackup = new LocalBackup(this.bookmarks, this.folders, this.settingsService, this.bookmarksSyncService);
         this.systemBookmarksService = new SyncSystemBookmarks();
     }
 }

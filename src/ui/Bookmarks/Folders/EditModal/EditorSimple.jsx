@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Card,
     InputBase,
@@ -8,11 +8,14 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
+import { useLocalObservable, useObserver } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
         display: 'flex',
         flexDirection: 'column',
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
     },
     input: { padding: theme.spacing(2) },
     saveButton: { marginRight: theme.spacing(2) },
@@ -22,39 +25,51 @@ const useStyles = makeStyles((theme) => ({
 function Editor({ onSave, onError, editId }) {
     const classes = useStyles();
     const { t } = useTranslation();
-    const [categoryName, setCategoryName] = useState('');
-    const [error, setError] = useState(null);
     const bookmarksService = useBookmarksService();
-    const categoryStore = bookmarksService.categories.get(editId);
+    const foldersService = bookmarksService.folders;
+    const store = useLocalObservable(() => ({
+        editId,
+        parentId: false,
+        name: '',
+    }));
 
     const handlerSubmit = (event) => {
         event.preventDefault();
-        if (categoryName.trim() !== '') {
-            bookmarksService.categories.save({
-                name: categoryName,
-                id: editId,
+        if (store.name.trim() !== '') {
+            foldersService.save({
+                name: store.name,
+                parentId: store.parentId,
+                id: store.editId,
             })
                 .then((categoryId) => onSave(categoryId))
                 .catch((e) => {
                     onError(e.message);
-                    setError(e.message);
                 });
         }
     };
 
-    return (
+    useEffect(() => {
+        if (!editId) return;
+
+        foldersService.get(editId)
+            .then((folder) => {
+                store.name = folder.name;
+                store.parentId = folder.parentId;
+            });
+    }, []);
+
+    return useObserver(() => (
         <Card className={classes.popper} elevation={16}>
             <form onSubmit={handlerSubmit}>
                 <InputBase
                     className={classes.input}
-                    placeholder={t('category.createPlaceholder')}
+                    placeholder={t('folder.createPlaceholder')}
                     variant="outlined"
                     autoFocus
-                    defaultValue={categoryStore?.name}
+                    value={store.name}
                     onChange={(event) => {
-                        setCategoryName(event.target.value);
+                        store.name = event.target.value;
                         onError(null);
-                        setError(null);
                     }}
                 />
                 <Button
@@ -67,13 +82,8 @@ function Editor({ onSave, onError, editId }) {
                     {t('save')}
                 </Button>
             </form>
-            {error && error === 'category_already_exist' && (
-                <Typography className={classes.errorMessage} variant="body2" color="error">
-                    {t('category.categoryAlreadyExist')}
-                </Typography>
-            )}
         </Card>
-    );
+    ));
 }
 
 export default Editor;

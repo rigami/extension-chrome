@@ -3,9 +3,9 @@ import {
     Box,
     Container,
     Typography,
-    Fade,
+    Fade, Breadcrumbs, IconButton,
 } from '@material-ui/core';
-import { FindReplaceRounded as ReFoundIcon } from '@material-ui/icons';
+import { FindReplaceRounded as ReFoundIcon, SearchRounded as SearchIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ReactResizeDetector from 'react-resize-detector';
@@ -14,9 +14,12 @@ import useAppService from '@/stores/AppStateProvider';
 import Categories from '@/ui/Bookmarks/Categories';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
+import { last } from 'lodash';
+import useCoreService from '@/stores/BaseStateProvider';
 import Category from './Categories/CtegoryWrapper';
-import AddBookmarkButton from './EditBookmarkModal/AddButton';
 import CardLink from './CardLink';
+import Folder from './Folders/FolderWrapper';
+import BookmarksGrid from './BookmarksGrid';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
     },
-    chipContainer: { marginBottom: theme.spacing(3) },
+    chipContainer: { },
     container: {
         paddingTop: theme.spacing(3),
         height: '100%',
@@ -41,6 +44,12 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         flexGrow: 1,
     },
+    header: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: theme.spacing(3),
+    },
 }));
 
 const maxColumnCalc = () => Math.min(
@@ -52,24 +61,39 @@ const SEARCH_STATUS = {
     WAIT: 'WAIT',
     NOTHING_FOUND: 'NOTHING_FOUND',
     NO_BOOKMARKS: 'NO_BOOKMARKS',
-    DONE: 'DONE',
+    DONE_SEARCH: 'DONE_SEARCH',
 };
 
 function Bookmarks() {
     const { t } = useTranslation();
     const classes = useStyles();
     const theme = useTheme();
+    const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
+    const foldersService = bookmarksService.folders;
     const appService = useAppService();
     const isFirstRun = useRef(true);
-    const [columnsCount, setColumnsCount] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
     const [findBookmarks, setFindBookmarks] = useState(null);
     const [statusSearch, setStatusSearch] = useState(SEARCH_STATUS.WAIT);
     const [searchCategories, setSearchCategories] = useState(null);
     const [lastTruthSearchTimestamp, setLastTruthSearchTimestamp] = useState(bookmarksService.lastTruthSearchTimestamp);
+    const [folders, setFolders] = useState([]);
+    const [selectFolderId, setSelectFolderId] = useState(undefined);
 
-    let columnStabilizer = null;
+    const handleLoadFolders = (folderId) => {
+        if (folderId) {
+            foldersService.get(folderId)
+                .then((foundFolder) => {
+                    setFolders([foundFolder]);
+                });
+        } else {
+            foldersService.getFoldersByParent()
+                .then((foundFolders) => {
+                    setFolders(foundFolders);
+                });
+        }
+    };
 
     const handleSearch = (query = {}) => {
         bookmarksService.bookmarks.query({ ...query }, false)
@@ -86,14 +110,22 @@ function Bookmarks() {
                     && searchResult[0].bookmarks.length === 0
                 ) {
                     setStatusSearch(SEARCH_STATUS.NO_BOOKMARKS);
+                } else if (
+                    searchResult.length === 1
+                    && searchResult[0].category.id === 'all'
+                ) {
+                    setFolders([]);
+                    setSelectFolderId(undefined);
+                    handleLoadFolders();
+                    setStatusSearch(SEARCH_STATUS.WAIT);
                 } else {
-                    setStatusSearch(SEARCH_STATUS.DONE);
+                    setStatusSearch(SEARCH_STATUS.DONE_SEARCH);
                 }
             });
     };
 
     useEffect(() => {
-        setColumnsCount(maxColumnCalc());
+        coreService.storage.updateTemp({ columnsCount: maxColumnCalc() });
     }, []);
 
     useEffect(() => {
@@ -119,20 +151,31 @@ function Bookmarks() {
         }
     }, [bookmarksService.lastTruthSearchTimestamp]);
 
-    console.log('findBookmarks', findBookmarks, statusSearch);
+    useEffect(() => {
+        handleLoadFolders(selectFolderId);
+    }, [selectFolderId]);
 
     return (
         <React.Fragment>
             <Box id="bookmarks-container" className={classes.root}>
-                <Container className={classes.container} fixed style={{ maxWidth: columnsCount * 196 - 16 + 48 }}>
-                    <Categories
-                        className={classes.chipContainer}
-                        value={searchCategories}
-                        onChange={(categories) => {
-                            setSearchCategories(categories);
-                            setIsSearching(true);
-                        }}
-                    />
+                <Container
+                    className={classes.container}
+                    fixed
+                    style={{ maxWidth: coreService.storage.temp.columnsCount * 196 - 16 + 48 }}
+                >
+                    <Box className={classes.header}>
+                        <Categories
+                            className={classes.chipContainer}
+                            value={searchCategories}
+                            onChange={(categories) => {
+                                setSearchCategories(categories);
+                                setIsSearching(true);
+                            }}
+                        />
+                        {/* <IconButton>
+                            <SearchIcon />
+                        </IconButton> */}
+                    </Box>
                     <Fade
                         in={!isSearching}
                         onExited={() => {
@@ -154,73 +197,35 @@ function Bookmarks() {
                                     description={t('bookmark.noBookmarks.description')}
                                 />
                             )}
-                            {statusSearch === SEARCH_STATUS.DONE && findBookmarks.map(({ category, bookmarks }) => {
-                                columnStabilizer = [...Array.from({ length: columnsCount }, () => 0)];
-
-                                return (
-                                    <Category {...category} key={category.id}>
-                                        {bookmarks.length === 0 && (
-                                            <Typography
-                                                variant="body1"
-                                                style={{ color: theme.palette.text.secondary }}
-                                            >
-                                                {t('bookmark.noMatchingItems')}
-                                            </Typography>
-                                        )}
-                                        {bookmarks.reduce((acc, curr) => {
-                                            let column = 0;
-                                            columnStabilizer.forEach((element, index) => {
-                                                if (columnStabilizer[column] > element) column = index;
-                                            });
-
-                                            columnStabilizer[column] += curr.type === 'extend' ? 0.8 : 0.6;
-                                            columnStabilizer[column] += Math.min(
-                                                Math.ceil(curr.name.length / 15),
-                                                2,
-                                            ) * 0.2 || 0.4;
-                                            columnStabilizer[column] += (
-                                                curr.description
-                                                && Math.min(Math.ceil(curr.description.length / 20), 4) * 0.17
-                                            ) || 0;
-                                            columnStabilizer[column] += 0.12;
-
-                                            if (typeof acc[column] === 'undefined') acc[column] = [];
-
-                                            acc[column].push(curr);
-
-                                            return acc;
-                                        }, [])
-                                            .map((column, index, arr) => (
-                                                <Box
-                                                    style={{
-                                                        marginRight: theme.spacing(
-                                                            arr.length - 1 !== index ? 2 : 0,
-                                                        ),
-                                                    }}
-                                                    key={index}
-                                                >
-                                                    {column.map((card) => (
-                                                        <CardLink
-                                                            id={card.id}
-                                                            name={card.name}
-                                                            url={card.url}
-                                                            categories={card.categories}
-                                                            icoVariant={card.icoVariant}
-                                                            description={card.description}
-                                                            imageUrl={card.imageUrl}
-                                                            key={card.id}
-                                                            style={{ marginBottom: theme.spacing(2) }}
-                                                        />
-                                                    ))}
-                                                </Box>
-                                            ))}
-                                    </Category>
-                                );
-                            })}
+                            {statusSearch === SEARCH_STATUS.WAIT && folders.map((folder) => (
+                                <Folder
+                                    key={folder.id}
+                                    folder={folder}
+                                    onSelect={(nextFolderId) => setSelectFolderId(nextFolderId)}
+                                />
+                            ))}
+                            {statusSearch === SEARCH_STATUS.DONE_SEARCH && findBookmarks.map(({ category, bookmarks }) => (
+                                <Category {...category} key={category.id}>
+                                    {bookmarks.length === 0 && (
+                                        <Typography
+                                            variant="body1"
+                                            style={{ color: theme.palette.text.secondary }}
+                                        >
+                                            {t('bookmark.noMatchingItems')}
+                                        </Typography>
+                                    )}
+                                    <BookmarksGrid bookmarks={bookmarks} />
+                                </Category>
+                            ))}
                         </div>
                     </Fade>
                 </Container>
-                <ReactResizeDetector handleWidth onResize={() => setColumnsCount(maxColumnCalc())} />
+                <ReactResizeDetector
+                    handleWidth
+                    onResize={() => {
+                        coreService.storage.updateTemp({ columnsCount: maxColumnCalc() });
+                    }}
+                />
             </Box>
         </React.Fragment>
     );

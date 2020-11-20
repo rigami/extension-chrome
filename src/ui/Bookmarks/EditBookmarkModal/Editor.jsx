@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
     },
     editor: { display: 'flex' },
+    fieldsWrapper: { overflow: 'auto' },
 }));
 
 function Editor(props) {
@@ -63,6 +64,7 @@ function Editor(props) {
         description: '',
         useDescription: false,
         categories: [],
+        folderId: 1,
         fullCategories: [],
         url: defaultUrl || '',
         forceAdded: false,
@@ -159,6 +161,7 @@ function Editor(props) {
                 store.imageURL = bookmark.imageUrl;
                 store.useDescription = !!bookmark.description?.trim();
                 if (store.useDescription) store.description = bookmark.description;
+                store.folderId = bookmark.folderId;
                 store.icoVariant = bookmark.icoVariant;
                 store.categories = (bookmark.categories || []).map((category) => category.id);
                 setIsLoading(false);
@@ -245,7 +248,12 @@ function Editor(props) {
                                 return store.images[maxScoreId];
                             }}
                         />
-                        <Box display="flex" flexDirection="column" flexGrow={1}>
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            flexGrow={1}
+                            className={classes.fieldsWrapper}
+                        >
                             <SelectorWrapper
                                 isOpen={store.isOpenSelectorPreview}
                                 name={store.name}
@@ -304,6 +312,7 @@ function Editor(props) {
                                 description={store.description}
                                 useDescription={store.useDescription}
                                 categories={store.categories}
+                                folderId={store.folderId}
                                 saveState={store.saveStage}
                                 marginThreshold={marginThreshold}
                                 onChangeFields={(value) => {
@@ -332,6 +341,9 @@ function Editor(props) {
 
                                     if ('categories' in value) {
                                         store.categories = value.categories;
+                                    }
+                                    if ('folderId' in value) {
+                                        store.folderId = value.folderId;
                                     }
                                     store.saveStage = FETCH.WAIT;
 

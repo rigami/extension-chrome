@@ -5,6 +5,7 @@ import { DESTINATION } from '@/enum';
 import { BookmarksSettingsStore } from '@/stores/app/settings';
 import DBConnector from '@/utils/dbConnector';
 import CategoriesStore from './categories';
+import FoldersStore from './folders';
 import BookmarksStore from './bookmarks';
 
 class BookmarksService {
@@ -17,6 +18,7 @@ class BookmarksService {
         makeAutoObservable(this);
         this._coreService = coreService;
         this.categories = new CategoriesStore(coreService, this);
+        this.folders = new FoldersStore(coreService, this);
         this.bookmarks = new BookmarksStore(coreService, this);
         this.settings = new BookmarksSettingsStore();
 
@@ -36,7 +38,7 @@ class BookmarksService {
 
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
-        this._coreService.globalEventBus.on('category/remove', async ({ categoryId }) => {
+        this._coreService.globalEventBus.on('category/remove', async ({ folderId }) => {
             await this.categories.sync();
 
             this._coreService.storage.updatePersistent({
@@ -48,6 +50,12 @@ class BookmarksService {
             });
 
             await this.syncFavorites();
+        });
+        this._coreService.globalEventBus.on('folder/remove', async ({ folderId }) => {
+            this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
+        });
+        this._coreService.globalEventBus.on('folder/new', async () => {
+            this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
         this._coreService.globalEventBus.on('favorite/new', () => this.syncFavorites());
         this._coreService.globalEventBus.on('favorite/remove', () => this.syncFavorites());
