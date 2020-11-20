@@ -28,7 +28,7 @@ function LoadBGFromLocalButton() {
                     if (form.files.length === 0) return;
 
                     backgroundsService.addToUploadQueue(form.files)
-                        .catch((e) => enqueueSnackbar({
+                        .catch(() => enqueueSnackbar({
                             ...t('settings.bg.general.library[e]'),
                             variant: 'error',
                         }))

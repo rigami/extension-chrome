@@ -210,7 +210,10 @@ function GlobalModals({ children }) {
                     </Button>
                     <Button
                         onClick={() => {
-                            eventToBackground('system/backup/local/restore', { backup: convertClockTabToRigami(edit.file) });
+                            eventToBackground(
+                                'system/backup/local/restore',
+                                { backup: convertClockTabToRigami(edit.file) },
+                            );
                             setEdit(null);
                         }}
                         color="primary"

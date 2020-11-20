@@ -13,7 +13,7 @@ const search = async (query, signal) => {
             responseType: 'document',
             signal,
         },
-    ).then(({ response }) => response);
+    ).then((body) => body.response);
 
     return Array.from(response.body.querySelectorAll('.result-link')).map((link) => ({
         url: link.href,

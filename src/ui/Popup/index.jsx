@@ -9,7 +9,6 @@ import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
 import { Provider as BaseStateProvider } from '@/stores/BaseStateProvider';
 import { Provider as BookmarksProvider } from '@/stores/BookmarksProvider';
-import { Provider as AppStateProvider } from '@/stores/AppStateProvider';
 import PopupContent from './PopupEditor';
 
 function Popup() {
@@ -43,9 +42,10 @@ function Popup() {
             <CssBaseline />
             <Nest
                 components={[
-                    ({ children }) => (<BaseStateProvider side={DESTINATION.POPUP}>{children}</BaseStateProvider>), InitAppProvider,
-                    // AppStateProvider,
+                    ({ children }) => (<BaseStateProvider side={DESTINATION.POPUP}>{children}</BaseStateProvider>),
+                    InitAppProvider,
                     BookmarksProvider,
+                    ({ children }) => children,
                 ]}
             >
                 {!isLoading && (<PopupContent tabName={tabName} tabUrl={tabUrl} />)}

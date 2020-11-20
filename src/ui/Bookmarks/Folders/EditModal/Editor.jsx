@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
     Button,
     Card,
@@ -39,7 +39,6 @@ function Editor(props) {
         editId,
         selectId,
         onSave,
-        onError,
         onCancel,
     } = props;
     const classes = useStyles();

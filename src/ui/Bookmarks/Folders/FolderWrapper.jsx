@@ -6,9 +6,12 @@ import {
     ListItemSecondaryAction,
     IconButton,
     Tooltip,
-    Box, Breadcrumbs, Typography, Container, Link,
+    Box,
+    Breadcrumbs,
+    Typography,
+    Link,
 } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import {
     FolderRounded as FolderIcon,
     BookmarkBorderRounded as PinnedFavoriteIcon,
@@ -24,8 +27,6 @@ import FolderCard from '@/ui/Bookmarks/Folders/Card';
 import clsx from 'clsx';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
-import Category from '../Categories/CtegoryWrapper';
-import CardLink from '../CardLink';
 
 const useStyles = makeStyles((theme) => ({
     rootWrapper: {
@@ -211,16 +212,16 @@ function FolderWrapper({ folder, onSelect }) {
             </ListItem>
             <Box className={classes.bookmarksWrapper}>
                 <Box className={classes.foldersBlock}>
-                    {folders.map((folder, index) => (
+                    {folders.map((currFolder, index) => (
                         <FolderCard
-                            key={folder.id}
-                            id={folder.id}
-                            name={folder.name}
+                            key={currFolder.id}
+                            id={currFolder.id}
+                            name={currFolder.name}
                             className={clsx(
                                 classes.folderMarginBottom,
                                 (index + 1) % coreService.storage.temp.columnsCount && classes.folderMarginRight,
                             )}
-                            onClick={() => onSelect(folder.id)}
+                            onClick={() => onSelect(currFolder.id)}
                         />
                     ))}
                 </Box>

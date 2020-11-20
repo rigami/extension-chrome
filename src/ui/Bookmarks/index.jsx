@@ -3,9 +3,9 @@ import {
     Box,
     Container,
     Typography,
-    Fade, Breadcrumbs, IconButton,
+    Fade,
 } from '@material-ui/core';
-import { FindReplaceRounded as ReFoundIcon, SearchRounded as SearchIcon } from '@material-ui/icons';
+import { FindReplaceRounded as ReFoundIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ReactResizeDetector from 'react-resize-detector';
@@ -14,10 +14,8 @@ import useAppService from '@/stores/AppStateProvider';
 import Categories from '@/ui/Bookmarks/Categories';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
-import { last } from 'lodash';
 import useCoreService from '@/stores/BaseStateProvider';
 import Category from './Categories/CtegoryWrapper';
-import CardLink from './CardLink';
 import Folder from './Folders/FolderWrapper';
 import BookmarksGrid from './BookmarksGrid';
 

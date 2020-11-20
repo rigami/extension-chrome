@@ -3,7 +3,7 @@ import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useAppStateService from '@/stores/AppStateProvider';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         textShadow: '0 2px 17px #00000029',
         fontFamily: '"Manrope", "Open Sans", sans-serif',

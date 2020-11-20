@@ -70,7 +70,7 @@ function FieldsEditor(props) {
         folderId,
         saveState = FETCH.WAIT,
         marginThreshold = 24,
-        onChangeFields = (value) => {},
+        onChangeFields = (value) => value,
         onSave,
         onCancel,
     } = props;

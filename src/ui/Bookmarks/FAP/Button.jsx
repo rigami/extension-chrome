@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-    Tooltip,
-    Typography,
-} from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import {
@@ -74,7 +71,7 @@ function FAPButton(props) {
                         onClick: () => {
                             coreService.localEventBus.call('folder/edit', {
                                 id,
-                                anchorEl,
+                                anchorEl: event.currentTarget,
                             });
                         },
                     },

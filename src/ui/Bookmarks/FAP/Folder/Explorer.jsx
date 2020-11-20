@@ -161,11 +161,11 @@ function Folder({ id }) {
                             description={t('fap.folder.emptyDescription')}
                         />
                     )}
-                    {folders && folders.map((folder, index) => (
+                    {folders && folders.map((currFolder, index) => (
                         <FolderButton
                             offset
                             key={folder.id}
-                            {...folder}
+                            {...currFolder}
                             variant="row"
                             divider={index !== folders.length - 1}
                         />

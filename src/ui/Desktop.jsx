@@ -74,14 +74,6 @@ function Desktop() {
 
     const bgRef = useRef(null);
 
-    const handlerContextMenu = (event) => {
-        event.preventDefault();
-        openMenu({
-            top: event.nativeEvent.clientY,
-            left: event.nativeEvent.clientX,
-        });
-    };
-
     const openMenu = (position) => {
         coreService.localEventBus.call('system/contextMenu', {
             actions: [
@@ -103,12 +95,11 @@ function Desktop() {
                         shadowInput.setAttribute('type', 'file');
                         shadowInput.setAttribute('accept', 'video/*,image/*');
                         shadowInput.onchange = (event) => {
-                            console.log('EVENT', event);
                             const form = event.target;
                             if (form.files.length === 0) return;
 
                             backgroundsStore.addToUploadQueue(form.files)
-                                .catch((e) => enqueueSnackbar({
+                                .catch(() => enqueueSnackbar({
                                     ...t('locale.settings.backgrounds.general.library[e]'),
                                     variant: 'error',
                                 }))
@@ -129,6 +120,14 @@ function Desktop() {
                 },
             ],
             position,
+        });
+    };
+
+    const handlerContextMenu = (event) => {
+        event.preventDefault();
+        openMenu({
+            top: event.nativeEvent.clientY,
+            left: event.nativeEvent.clientX,
         });
     };
 
@@ -193,7 +192,7 @@ function Desktop() {
     }, []);
 
     useEffect(() => {
-        if (!backgroundsStore.currentBGId) return;
+        if (!backgroundsStore.currentBGId) return () => {};
         const currentBg = backgroundsStore.getCurrentBG();
 
         const fileName = typeof currentBg.pause === 'number' ? 'temporaryVideoFrame' : currentBg.fileName;
@@ -263,7 +262,7 @@ function Desktop() {
                                 {
                                     title: t('bg.remove'),
                                     onClick: () => {
-                                        backgroundsStore.removeFromStore(ctore.currentBg.id)
+                                        backgroundsStore.removeFromStore(store.currentBg.id)
                                             .then(() => backgroundsStore.nextBG())
                                             .then(() => enqueueSnackbar({
                                                 message: t('bg.brokenRemovedSuccess'),

@@ -87,10 +87,10 @@ function Search({ query = '', onSelect }) {
 
         setTimer(setTimeout(() => {
             setTimer(null);
-            const controller = new AbortController();
-            setController(controller);
+            const currController = new AbortController();
+            setController(currController);
 
-            getSiteInfo(query.trim(), controller)
+            getSiteInfo(query.trim(), currController)
                 .then((siteData) => {
                     setStraightResults({ ...siteData });
                 })
@@ -102,7 +102,7 @@ function Search({ query = '', onSelect }) {
                     setStraightLoading(false);
                 });
 
-            search(query.trim(), controller)
+            search(query.trim(), currController)
                 .then((foundResults) => {
                     setGlobalResults(foundResults);
                 })
@@ -127,7 +127,9 @@ function Search({ query = '', onSelect }) {
                 </Fade>
                 <Collapse in={(!globalLoading || !straightLoading) && isOpen}>
                     <List disablePadding>
-                        <ListSubheader className={classes.subheader}>{t('bookmark.editor.searchURLTitle')}</ListSubheader>
+                        <ListSubheader className={classes.subheader}>
+                            {t('bookmark.editor.searchURLTitle')}
+                        </ListSubheader>
                         {!straightLoading && straightResults && (
                             <ListItem
                                 className={classes.row}
@@ -174,9 +176,12 @@ function Search({ query = '', onSelect }) {
                                 ...
                             </ListItem>
                         )}
-                        <ListSubheader className={classes.subheader}>{t('bookmark.editor.searchInWEBTitle')}</ListSubheader>
+                        <ListSubheader className={classes.subheader}>
+                            {t('bookmark.editor.searchInWEBTitle')}
+                        </ListSubheader>
                         {!globalLoading && globalResults && globalResults.map((option) => (
                             <ListItem
+                                key={option.url + option.title}
                                 className={classes.row}
                                 divider
                                 button

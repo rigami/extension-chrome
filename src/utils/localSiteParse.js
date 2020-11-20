@@ -57,6 +57,7 @@ function parseSite(xml, urlOrigin) {
                     score += wScore;
                     score += hScore;
                 } catch (e) {
+
                 }
             }
         } else if (element.tagName === 'META') {

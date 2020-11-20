@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
     Card,
     InputBase,
     Button,
-    Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/BookmarksProvider';

@@ -17,29 +17,9 @@ import useAppStateService from '@/stores/AppStateProvider';
 import { WIDGET_DTW_POSITION, WIDGET_DTW_SIZE } from '@/enum';
 import { useObserver } from 'mobx-react-lite';
 import { getDomain } from '@/utils/localSiteParse';
+import { map } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
-    splash: {
-        width: 520,
-        height: 250,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    appLogoIcon: {
-        width: 64,
-        height: 64,
-        marginBottom: theme.spacing(1),
-    },
-    appLogoText: {
-        marginBottom: theme.spacing(1),
-        width: 100,
-        height: 'auto',
-        fill: theme.palette.type === 'dark' ? theme.palette.common.white : theme.palette.common.black,
-    },
-    appVersion: { color: theme.palette.text.secondary },
-    row: { width: 520 },
     notSetValue: {
         fontStyle: 'italic',
         color: theme.palette.text.secondary,
@@ -48,8 +28,20 @@ const useStyles = makeStyles((theme) => ({
 
 const headerProps = { title: 'settings.widgets.title' };
 
-const numberToEnumSize = (value) => (value === 3 ? WIDGET_DTW_SIZE.BIG : value === 2 ? WIDGET_DTW_SIZE.MIDDLE : WIDGET_DTW_SIZE.SMALL);
-const enumSizeToNumber = (value) => (value === WIDGET_DTW_SIZE.BIG ? 3 : value === WIDGET_DTW_SIZE.MIDDLE ? 2 : 1);
+const numberToEnumSize = (value) => (
+    value === 3
+        ? WIDGET_DTW_SIZE.BIG
+        : value === 2
+            ? WIDGET_DTW_SIZE.MIDDLE
+            : WIDGET_DTW_SIZE.SMALL
+);
+const enumSizeToNumber = (value) => (
+    value === WIDGET_DTW_SIZE.BIG
+        ? 3
+        : value === WIDGET_DTW_SIZE.MIDDLE
+            ? 2
+            : 1
+);
 
 function DateWidget() {
     const classes = useStyles();
@@ -125,7 +117,7 @@ function DateWidget() {
     ));
 }
 
-function WeatherWidget() {
+/* function WeatherWidget() {
     const classes = useStyles();
     const { t } = useTranslation();
     const { widgets } = useAppStateService();
@@ -164,10 +156,9 @@ function WeatherWidget() {
             </Collapse>
         </React.Fragment>
     ));
-}
+} */
 
 function Widgets() {
-    const classes = useStyles();
     const { t } = useTranslation();
     const { widgets } = useAppStateService();
 
@@ -197,7 +188,7 @@ function Widgets() {
                         onChange: (event) => {
                             widgets.settings.update({ dtwPosition: event.target.value });
                         },
-                        values: [WIDGET_DTW_POSITION.LEFT_BOTTOM, WIDGET_DTW_POSITION.LEFT_MIDDLE, WIDGET_DTW_POSITION.CENTER_TOP],
+                        values: map(WIDGET_DTW_POSITION, (key) => WIDGET_DTW_POSITION[key]),
                     }}
                 />
                 <MenuRow

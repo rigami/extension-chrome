@@ -57,15 +57,15 @@ const timeFontSize = ['h4', 'h2', 'h1'];
 const dateFontSize = ['h5', 'h3', 'h2'];
 
 const calcFontSize = (size, dict) => {
-    let fontSize = dict[0];
+    const [small, middle, big] = dict;
 
     if (size === DTW_SIZE.BIG) {
-        fontSize = dict[2];
+        return big;
     } else if (size === DTW_SIZE.MIDDLE) {
-        fontSize = dict[1];
+        return middle;
     }
 
-    return fontSize;
+    return small;
 };
 
 function Widgets() {

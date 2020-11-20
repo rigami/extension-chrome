@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import {
     Card,
     Typography,
@@ -99,11 +99,7 @@ const useStyles = makeStyles((theme) => ({
         opacity: 0,
         pointerEvents: 'none',
     },
-    menuIcon: {
-        '& path': {
-            backdropFilter: 'invert(1)',
-        },
-    },
+    menuIcon: { '& path': { backdropFilter: 'invert(1)' } },
     borderIcon: { boxShadow: '0 0 0 1px #e0e0e0' },
 }));
 
@@ -128,22 +124,6 @@ function CardLink(props) {
     const { t } = useTranslation();
 
     const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
-
-    const handlerContextMenu = (event) => {
-        event.preventDefault();
-        openMenu({
-            top: event.nativeEvent.clientY,
-            left: event.nativeEvent.clientX,
-        });
-    };
-
-    const handleOpenMenu = () => {
-        const { top, left } = buttonRef.current.getBoundingClientRect();
-        openMenu({
-            top,
-            left,
-        });
-    };
 
     const openMenu = (position) => {
         coreService.localEventBus.call('system/contextMenu', {
@@ -187,6 +167,22 @@ function CardLink(props) {
         });
     };
 
+    const handlerContextMenu = (event) => {
+        event.preventDefault();
+        openMenu({
+            top: event.nativeEvent.clientY,
+            left: event.nativeEvent.clientX,
+        });
+    };
+
+    const handleOpenMenu = () => {
+        const { top, left } = buttonRef.current.getBoundingClientRect();
+        openMenu({
+            top,
+            left,
+        });
+    };
+
     const handleClick = (event) => {
         if (onClick) {
             onClick();
@@ -225,7 +221,11 @@ function CardLink(props) {
                             <Image
                                 variant={icoVariant}
                                 src={imageUrl}
-                                alternativeIcon={icoVariant === BKMS_VARIANT.SYMBOL ? name[0]?.toUpperCase() : undefined}
+                                alternativeIcon={
+                                    icoVariant === BKMS_VARIANT.SYMBOL
+                                        ? name[0]?.toUpperCase()
+                                        : undefined
+                                }
                                 className={clsx(classes.icon, classes.borderIcon)}
                             />
                         </Box>
