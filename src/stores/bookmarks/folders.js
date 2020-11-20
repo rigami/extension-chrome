@@ -96,6 +96,10 @@ class FoldersStore {
         const removeFolders = async (parentId) => {
             await DBConnector().delete('folders', parentId);
 
+            const removedBookmarks = await this._globalService.bookmarks.getAllInFolder(parentId);
+
+            await Promise.all(removedBookmarks.map(({ id }) => this._globalService.bookmarks.remove(id)));
+
             const childFolders = await DBConnector().getAllFromIndex(
                 'folders',
                 'parent_id',

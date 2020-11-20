@@ -16,7 +16,10 @@ import { useTranslation } from 'react-i18next';
 const useStyles = makeStyles((theme) => ({
     root: { width: 180 },
     header: { padding: theme.spacing(1, 2) },
-    headerContent: { overflow: 'hidden' },
+    headerContent: {
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+    },
     title: {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
