@@ -283,10 +283,31 @@
       "description": "The category will be removed from all linked bookmarks, are you sure?"
     }
   },
+  "folder": {
+    "notSelect": "No folder selected",
+    "editor": {
+      "title": "Change folder",
+      "create": "Create a folder",
+      "changeTooltip": "Change folder",
+      "defaultFolderName": "New folder"
+    },
+    "noBookmarks": {
+      "title": "There are no bookmarks in this folder",
+      "description": "Add bookmarks to this folder"
+    },
+    "remove": {
+      "title": "Delete folder?",
+      "description": "When you delete a folder, all folders and bookmarks in it will be deleted, are you sure you want to delete it?"
+    }
+  },
   "fap":{
     "pin":"Pin",
     "unpin":"Unpin",
     "folder": {
+      "emptyTitle": "The folder is empty",
+      "emptyDescription": "There are no tabs in this folder"
+    },
+    "category": {
       "emptyTitle": "Category is empty",
       "emptyDescription": "There are no tabs associated with this category."
     }
