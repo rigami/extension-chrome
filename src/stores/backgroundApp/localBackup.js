@@ -2,16 +2,19 @@ import BusApp, { eventToApp } from '@/stores/backgroundApp/busApp';
 import FSConnector from '@/utils/fsConnector';
 import DBConnector from '@/utils/dbConnector';
 import Category from '@/stores/bookmarks/entities/category';
+import Folder from '@/stores/bookmarks/entities/folder';
 
 class LocalBackup {
     bus;
     bookmarksService;
+    foldersService;
     settingsSyncService;
     bookmarksSyncService;
 
-    constructor(bookmarksService, settingsSyncService, bookmarksSyncService) {
+    constructor(bookmarksService, foldersService, settingsSyncService, bookmarksSyncService) {
         this.bus = BusApp();
         this.bookmarksService = bookmarksService;
+        this.foldersService = foldersService;
         this.settingsSyncService = settingsSyncService;
         this.bookmarksSyncService = bookmarksSyncService;
 
@@ -30,7 +33,7 @@ class LocalBackup {
                 date: new Date().toISOString(),
                 appVersion: chrome?.runtime?.getManifest?.().version,
                 appType: 'extension.chrome',
-                version: 1,
+                version: 2,
             };
 
             console.log('Backup:', backup);
@@ -62,7 +65,7 @@ class LocalBackup {
                     return;
                 }
 
-                if (backup.meta.version !== 1) {
+                if (backup.meta.version > 2) {
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'settings.backup.localBackup.noty.failed.wrongVersion',
@@ -121,6 +124,10 @@ class LocalBackup {
 
         const categories = categoriesAll.map((category) => new Category(category));
 
+        const foldersAll = await this.foldersService.getTree();
+
+        const folders = foldersAll.map((folder) => new Folder(folder));
+
         const favoritesAll = await DBConnector().getAll('favorites');
 
         const favorites = favoritesAll.map(({ favoriteId, type }) => ({
@@ -132,6 +139,7 @@ class LocalBackup {
             bookmarks,
             favorites,
             categories,
+            folders,
         };
     }
 }
