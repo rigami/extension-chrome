@@ -69,7 +69,7 @@ function FAPButton(props) {
                         title: t('edit'),
                         icon: EditIcon,
                         onClick: () => {
-                            coreService.localEventBus.call('folder/edit', {
+                            coreService.localEventBus.call(`${type}/edit`, {
                                 id,
                                 anchorEl: event.currentTarget,
                             });
@@ -82,7 +82,7 @@ function FAPButton(props) {
                         title: t('remove'),
                         icon: RemoveIcon,
                         onClick: () => {
-                            coreService.localEventBus.call('folder/remove', { id });
+                            coreService.localEventBus.call(`${type}/remove`, { id });
                         },
                     },
                 ] : []),
