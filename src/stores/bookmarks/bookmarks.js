@@ -73,9 +73,47 @@ class BookmarksStore {
             imageURL: FSConnector.getIconURL(bookmark.icoFileName),
         }));
 
-        // TODO Add assign categories
+        const storesName = ['bookmarks_by_categories', 'categories'];
+        const tx = DBConnector().transaction(storesName, 'readonly');
+        const stores = {
+            bookmarks_by_categories: tx.objectStore('bookmarks_by_categories'),
+            categories: tx.objectStore('categories'),
+        };
 
-        return bookmarks;
+        const getCategory = cachingDecorator((categoryId) => asyncAction(async () => {
+            const category = await stores.categories.get(categoryId);
+            return new Category(category);
+        }));
+
+        const findBookmarks = {};
+        const findCategories = {};
+        const result = [];
+
+        bookmarks.forEach((bookmark) => {
+            findBookmarks[bookmark.id] = new Bookmark({
+                ...bookmark,
+                imageURL: FSConnector.getIconURL(bookmark.icoFileName),
+            });
+        });
+
+        for (const bookmarkId in findBookmarks) {
+            const index = stores.bookmarks_by_categories.index('bookmark_id');
+            let score = 0;
+
+            for await (const cursor of index.iterate(+bookmarkId)) {
+                const category = await getCategory(cursor.value.categoryId);
+
+                if (findCategories[category.id]) score += 1;
+
+                findBookmarks[bookmarkId].categories = [...(findBookmarks[bookmarkId].categories || []), category];
+            }
+
+            result.push(findBookmarks[bookmarkId]);
+        }
+
+        await tx.done;
+
+        return result;
     }
 
     @action('query bookmarks')

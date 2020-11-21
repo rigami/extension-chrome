@@ -114,7 +114,6 @@ function FolderWrapper({ folder, onSelect }) {
 
             bookmarksService.bookmarks.getAllInFolder(folder?.id)
                 .then((searchResult) => {
-                    console.log('searchResult', searchResult);
                     setFindBookmarks(searchResult);
                 });
         }
@@ -232,7 +231,9 @@ function FolderWrapper({ folder, onSelect }) {
                             description={t('folder.noBookmarks.description')}
                         />
                     )}
-                    <BookmarksGrid bookmarks={findBookmarks} />
+                    {findBookmarks && Array.isArray(findBookmarks) && (
+                        <BookmarksGrid bookmarks={findBookmarks} />
+                    )}
                 </Box>
             </Box>
         </Box>
