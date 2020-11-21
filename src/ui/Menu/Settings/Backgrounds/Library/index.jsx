@@ -117,7 +117,7 @@ function HeaderActions() {
     return (
         <React.Fragment>
             <LoadBGFromLocalButton />
-            <Tooltip title={t('notAvailableYet')}>
+            {/* <Tooltip title={t('notAvailableYet')}>
                 <div>
                     <Button
                         variant="outlined"
@@ -128,7 +128,7 @@ function HeaderActions() {
                         {t('settings.bg.general.library.getFromLibrary')}
                     </Button>
                 </div>
-            </Tooltip>
+            </Tooltip> */}
         </React.Fragment>
     );
 }
