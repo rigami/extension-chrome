@@ -5,9 +5,21 @@
     "main": "index.js",
     "scripts": {
         "build": "NODE_ENV=production webpack",
-        "build-analyze": "ANALYZE=true yarn build",
+        "build:zip": "yarn build && yarn rimraf ./release/* && zip -r release/rigami-$npm_package_version.zip build",
+        "build:analyze": "ANALYZE=true yarn build",
         "dev": "NODE_ENV=development webpack-cli serve",
-        "lint": "eslint --fix --ext .jsx,.js,.json --ignore-path .gitignore ."
+        "lint": "eslint --fix --ext .jsx,.js,.json --ignore-path .gitignore .",
+        "bump": "yarn bump:patch",
+        "bump:patch": "yarn version --patch --no-commit --no-git-tag-version",
+        "bump:minor": "yarn version --minor",
+        "bump:major": "yarn version --major",
+        "preversion": "",
+        "postversion_": "git push --tags"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "git-branch-is master && yarn bump:patch || yarn bump:patch"
+        }
     },
     "repository": "https://github.com/rigami/extension-chrome",
     "author": "Danilkinkin <Danilkinkin@gmail.com>",
@@ -64,7 +76,9 @@
         "eslint-import-resolver-webpack": "^0.13.0",
         "file-loader": "^6.0.0",
         "generate-json-from-js-webpack-plugin": "^0.1.1",
+        "git-branch-is": "^4.0.0",
         "html-webpack-plugin": "^4.5.0",
+        "husky": "^4.3.0",
         "json-loader": "^0.5.7",
         "pnp-webpack-plugin": "^1.6.4",
         "react-svg-loader": "^3.0.3",
