@@ -14,7 +14,7 @@
         "bump:minor": "yarn version --minor && git add ./package.json",
         "bump:major": "yarn version --major && git add ./package.json",
         "preversion": "",
-        "postversion_": "git push --tags"
+        "postversion": "git push --tags"
     },
     "husky": {
         "hooks": {
