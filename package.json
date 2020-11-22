@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
@@ -18,7 +18,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "git-branch-is master && yarn bump:patch || echo 'skip set version'"
+            "pre-commit": "git-branch-is --not master && yarn bump:patch || echo 'skip set version'"
         }
     },
     "repository": "https://github.com/rigami/extension-chrome",
