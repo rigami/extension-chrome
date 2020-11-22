@@ -1,6 +1,6 @@
 import { BKMS_VARIANT, DESTINATION } from '@/enum';
 import Bookmark from '@/stores/bookmarks/entities/bookmark';
-import Category from '@/stores/bookmarks/entities/category';
+import Folder from '@/stores/bookmarks/entities/folder';
 import BusApp from '@/stores/backgroundApp/busApp';
 import BookmarksService from '@/stores/bookmarks';
 
@@ -20,6 +20,39 @@ class SyncSystemBookmarks {
         this.bus.on('system/parseSystemBookmarks', () => this.parseSystemBookmarks());
 
         chrome.bookmarks.onCreated.addListener(async (id, createInfo) => {
+            if (createInfo.url && !('dateGroupModified' in createInfo)) {
+                console.log('onCreated bookmark', id, createInfo);
+                this.saveBookmark(createInfo);
+            } else {
+                console.log('onCreated folder', id, createInfo);
+                this.saveFolder(createInfo);
+            }
+        });
+        chrome.bookmarks.onMoved.addListener((id, moveInfo) => {
+            if (createInfo.url && !('dateGroupModified' in createInfo)) {
+                console.log('onMoved bookmark', id, createInfo);
+            } else {
+                console.log('onMoved folder', id, createInfo);
+            }
+        });
+        chrome.bookmarks.onChanged.addListener(async (id, changeInfo) => {
+            if (createInfo.url && !('dateGroupModified' in createInfo)) {
+                console.log('onChanged bookmark', id, createInfo);
+            } else {
+                console.log('onChanged folder', id, createInfo);
+            }
+        });
+        chrome.bookmarks.onRemoved.addListener((id, removeInfo) => {
+            if (createInfo.url && !('dateGroupModified' in createInfo)) {
+                console.log('onRemoved bookmark', id, createInfo);
+            } else {
+                console.log('onRemoved folder', id, createInfo);
+            }
+        });
+
+        /* this.bus.on('system/parseSystemBookmarks', () => this.parseSystemBookmarks());
+
+        chrome.bookmarks.onCreated.addListener(async (id, createInfo) => {
             console.log('onCreated bookmark', id, createInfo);
 
             await this.saveSystemBookmark(id);
@@ -30,7 +63,7 @@ class SyncSystemBookmarks {
 
             await this.saveSystemBookmark(id);
         });
-        chrome.bookmarks.onRemoved.addListener((id, removeInfo) => console.log('onRemoved bookmark', id, removeInfo));
+        chrome.bookmarks.onRemoved.addListener((id, removeInfo) => console.log('onRemoved bookmark', id, removeInfo)); */
     }
 
     async saveSystemBookmark(bookmarkId) {
@@ -40,7 +73,7 @@ class SyncSystemBookmarks {
     }
 
     async saveBookmark(bookmark) {
-        const similarBookmarks = await this.bookmarksService.bookmarks.query({
+        /* const similarBookmarks = await this.bookmarksService.bookmarks.query({
             url: {
                 fullMatch: true,
                 match: bookmark.url,
@@ -62,7 +95,33 @@ class SyncSystemBookmarks {
             categories: [...(similarBookmark.categories?.map(({ id }) => id) || []), ...bookmark.categories],
         });
 
-        this.bus.call('bookmark/new', DESTINATION.APP, { bookmarkId: newBookmarkId });
+        this.bus.call('bookmark/new', DESTINATION.APP, { bookmarkId: newBookmarkId }); */
+    }
+
+    async saveFolder(folder) {
+        /* const similarBookmarks = await this.bookmarksService.bookmarks.query({
+            url: {
+                fullMatch: true,
+                match: bookmark.url,
+            },
+        });
+
+        console.log('similarBookmarks', similarBookmarks);
+        const similarBookmark = similarBookmarks[0]?.bookmarks?.[0] || {};
+        console.log('bookmark', similarBookmark);
+
+        const newBookmarkId = await this.bookmarksService.bookmarks.save({
+            url: bookmark.url,
+            description: '',
+            image_url: '',
+            icoVariant: BKMS_VARIANT.SYMBOL,
+            ...similarBookmark,
+            // id: bookmark.title === similarBookmark.name ? similarBookmark.id : null,
+            name: bookmark.name || similarBookmark.name,
+            categories: [...(similarBookmark.categories?.map(({ id }) => id) || []), ...bookmark.categories],
+        });
+
+        this.bus.call('bookmark/new', DESTINATION.APP, { bookmarkId: newBookmarkId }); */
     }
 
     async parseSystemBookmarks() {
@@ -78,28 +137,41 @@ class SyncSystemBookmarks {
             return await this.saveBookmark(saveBookmark);
         };
 
-        const parseNode = async (node, path) => {
-            if (!node.children) {
-                return await parseBookmark({
-                    ...node,
-                    path,
+        const parseNode = async (node, parentId = 0) => {
+            if (node.url && !('dateGroupModified' in node)) {
+                const saveBookmark = new Bookmark({
+                    name: node.title,
+                    url: node.url,
+                    folderId: parentId,
                 });
-            }
 
-            const category = new Category();
+                console.log('bookmark', saveBookmark);
 
-            if (node.id === '0' || node.title === '') {
-                category.name = 'Root category';
+                await this.bookmarksService.bookmarks.save({
+                    description: '',
+                    image_url: '',
+                    icoVariant: BKMS_VARIANT.SYMBOL,
+                    ...saveBookmark,
+                    categories: [],
+                });
+
+                return await this.saveBookmark(saveBookmark);
             } else {
-                category.name = node.title;
-            }
+                const folder = new Folder({ parentId });
 
-            console.log('create category:', category);
+                if (node.id === '0' || node.title === '') {
+                    folder.name = 'google-chrome';
+                } else {
+                    folder.name = node.title;
+                }
 
-            const newCategoryId = await this.bookmarksService.categories.save({ ...category });
+                console.log('create folder:', folder);
 
-            for (let i = 0; i < node.children.length; i += 1) {
-                await parseNode(node.children[i], [...path, newCategoryId]);
+                const newFolderId = await this.bookmarksService.folders.save({ ...folder });
+
+                for (let i = 0; i < node.children.length; i += 1) {
+                    await parseNode(node.children[i], newFolderId);
+                }
             }
 
             return Promise.resolve();
@@ -107,7 +179,7 @@ class SyncSystemBookmarks {
 
         chrome.bookmarks.getTree(async (nodes) => {
             for (let i = 0; i < nodes.length; i += 1) {
-                await parseNode(nodes[i], []);
+                await parseNode(nodes[i]);
             }
             console.log('finish sync!');
         });

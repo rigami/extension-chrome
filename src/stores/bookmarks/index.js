@@ -62,7 +62,7 @@ class BookmarksService {
 
         reaction(
             () => this.settings.syncWithSystem,
-            () => this._coreService.globalEventBus.call('system/parseSystemBookmarks', DESTINATION.BACKGROUND),
+            () => this.settings.syncWithSystem && this._coreService.globalEventBus.call('system/parseSystemBookmarks', DESTINATION.BACKGROUND),
         );
     }
 

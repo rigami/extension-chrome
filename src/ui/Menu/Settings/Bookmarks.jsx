@@ -70,18 +70,18 @@ function BookmarksSettings() {
                     }}
                 />
             </Collapse>
-            {/* <SectionHeader title={t("settings.bookmarks.systemBookmarks.title")} />
+            <SectionHeader title={t("settings.bookmarks.systemBookmarks.title")} />
             <MenuRow
                 title={t("settings.bookmarks.systemBookmarks.syncSystemBookmarks.title")}
                 description={t("settings.bookmarks.systemBookmarks.syncSystemBookmarks.description")}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
-                    value: bookmarksService.syncWithSystem,
+                    value: bookmarksService.settings.syncWithSystem,
                     onChange: (event, value) => {
-                        bookmarksService.setSyncWithSystem(value);
+                        bookmarksService.settings.update({ syncWithSystem: value });
                     },
                 }}
-            /> */}
+            />
         </React.Fragment>
     ));
 }

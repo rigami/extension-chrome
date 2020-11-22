@@ -15,7 +15,6 @@ class Background {
     bookmarks;
     bookmarksSyncService;
     bookmarksService;
-    foldersService;
 
     constructor() {
         this.bus = BusApp();
