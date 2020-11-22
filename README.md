@@ -8,16 +8,18 @@ Simple and beautiful new tab for chrome Transform your start page in your browse
 
 ### Develop build
 ```bash
-$ yarn start
+$ yarn dev
 ```
 
 ### Production build
-1. Create release build 
+Create release build. This command will create a zip file of release build in folder release in root of project.
 ```bash
-$ yarn build
-$ zip -r release/rigami-{CURRENT_VERSION}.zip build
+$ yarn build:zip
 ```
-2. Upload to dev panel
+Analyze release build 
+```bash
+$ yarn build:analyze
+```
 
 ## Screenshots
 
