@@ -18,7 +18,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "git-branch-is master && yarn bump:patch || yarn bump:patch"
+            "pre-commit": "git-branch-is master && yarn bump:patch || echo 'skip set version'"
         }
     },
     "repository": "https://github.com/rigami/extension-chrome",
