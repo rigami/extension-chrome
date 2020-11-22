@@ -5,6 +5,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
+const GenerateJsonPlugin = require('generate-json-from-js-webpack-plugin');
 const paths = require('./alias.config.js');
 
 module.exports = () => ({
@@ -36,7 +37,6 @@ module.exports = () => ({
                 '*.bundle.js',
                 '*.hot-update.js',
                 '!resource/*',
-                '!manifest.json',
                 '!fastInitialization.js',
                 '!index.html',
                 '!popup.html',
@@ -64,10 +64,6 @@ module.exports = () => ({
         new CopyWebpackPlugin({
             patterns: [
                 {
-                    from: './config/manifest.json',
-                    to: './manifest.json',
-                },
-                {
                     from: './config/manifestLocales/',
                     to: './_locales/',
                 },
@@ -80,6 +76,10 @@ module.exports = () => ({
                     to: './fastInitialization.js',
                 },
             ],
+        }),
+        new GenerateJsonPlugin({
+            path: './config/manifest.js',
+            filename: './manifest.json',
         }),
         new webpack.DefinePlugin({ PRODUCTION_MODE: JSON.stringify(process.env.NODE_ENV === 'production') }),
     ],

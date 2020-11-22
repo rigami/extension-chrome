@@ -1,13 +1,15 @@
-{
+const packageJson = require('../../package.json');
+
+module.exports = {
     "manifest_version": 2,
 
     "name": "__MSG_appName__",
     "description":"__MSG_appDesc__",
     "default_locale": "en",
     "short_name": "Rigami",
-    "version": "0.1.0",
+    "version": packageJson.version,
     "homepage_url": "https://rigami.io/",
-    "minimum_chrome_version": "48",
+    "minimum_chrome_version": "70",
     "offline_enabled": true,
     "icons":{
         "16":"resource/16x16.png",
@@ -36,4 +38,4 @@
         "default_title":"__MSG_appAction__",
         "default_popup": "popup.html"
     }
-}
+};

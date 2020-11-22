@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
@@ -63,7 +63,9 @@
         "eslint-import-resolver-alias": "^1.1.2",
         "eslint-import-resolver-webpack": "^0.13.0",
         "file-loader": "^6.0.0",
+        "generate-json-from-js-webpack-plugin": "^0.1.1",
         "html-webpack-plugin": "^4.5.0",
+        "json-loader": "^0.5.7",
         "pnp-webpack-plugin": "^1.6.4",
         "react-svg-loader": "^3.0.3",
         "style-loader": "^2.0.0",
