@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "0.1.1",
+    "version": "0.1.3",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
@@ -10,9 +10,9 @@
         "dev": "NODE_ENV=development webpack-cli serve",
         "lint": "eslint --fix --ext .jsx,.js,.json --ignore-path .gitignore .",
         "bump": "yarn bump:patch",
-        "bump:patch": "yarn version --patch --no-commit --no-git-tag-version",
-        "bump:minor": "yarn version --minor",
-        "bump:major": "yarn version --major",
+        "bump:patch": "yarn version --patch --no-commit --no-git-tag-version && git add ./package.json",
+        "bump:minor": "yarn version --minor && git add ./package.json",
+        "bump:major": "yarn version --major && git add ./package.json",
         "preversion": "",
         "postversion_": "git push --tags"
     },
