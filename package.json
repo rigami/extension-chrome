@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "build": "NODE_ENV=production webpack",
-        "build:zip": "yarn build && yarn rimraf ./release/* && zip -r release/rigami-$npm_package_version.zip build",
+        "build:zip": "yarn build && yarn rimraf ./release/* && mkdirp ./release && zip -r release/rigami-$npm_package_version.zip build",
         "build:analyze": "ANALYZE=true yarn build",
         "dev": "NODE_ENV=development webpack-cli serve",
         "lint": "eslint --fix --ext .jsx,.js,.json --ignore-path .gitignore .",
