@@ -75,10 +75,10 @@ function Folder(props) {
                     setIsOpen(false);
                 }}
                 modifiers={{
-                    inner: { enabled: offset },
+                    // inner: { enabled: offset },
                     offset: {
                         enabled: true,
-                        offset: `${offset ? 128 : 0}px, 32px`,
+                        offset: `${offset ? 128 : 0}px, ${offset ? 8 : 16}px`,
                     },
                 }}
             >
