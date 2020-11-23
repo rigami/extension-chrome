@@ -344,7 +344,10 @@
     }
   },
   "newVersion": {
-    "title": "New version {{version}}!"
+    "title": "New version {{version}}",
+    "description": "The extension has been updated, now it is even better\n\n  - Fixed folder behavior in the Quick Access Toolbar.\n  - Added a more detailed description of the release.\n  - Other minor changes.",
+    "ok": "OK",
+    "changelog": "List of changes"
   },
   "save":"Save",
   "cancel":"Cancel",

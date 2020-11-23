@@ -35,7 +35,10 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '0.875rem',
         fontWeight: 'bold',
     },
-    description: { fontSize: '0.75rem' },
+    description: {
+        fontSize: '0.75rem',
+        whiteSpace: 'break-spaces',
+    },
     headerAction: { marginTop: 0 },
     buttons: {
         padding: theme.spacing(2),

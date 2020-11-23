@@ -122,9 +122,9 @@ function GlobalModals({ children }) {
                 description: t('newVersion.description'),
                 buttons: [
                     { title: t('newVersion.ok'), onClick: () => { closeSnackbar(snackbar) } },
-                    { title: t('newVersion.changelog'), onClick: () => {
+                    /* { title: t('newVersion.changelog'), onClick: () => {
                             setEdit({ type: 'changelog', action: 'open', });
-                        } },
+                        } }, */
                 ]
             }, {
                 autoHideDuration: 18000,
