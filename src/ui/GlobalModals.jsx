@@ -19,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import FSConnector from '@/utils/fsConnector';
 import { eventToBackground } from '@/stores/backgroundApp/busApp';
 import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
-import Changelog from '@/ui/Changelog';
+// import Changelog from '@/ui/Changelog';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation();
@@ -167,10 +167,10 @@ function GlobalModals({ children }) {
                 editId={edit && edit.id}
                 simple
             />
-            <Changelog
+            {/* <Changelog
                 open={edit && edit.type === 'changelog' && edit.action === 'open'}
                 onClose={() => setEdit(null)}
-            />
+            /> */}
             {['bookmark', 'category', 'folder'].map((type) => (
                 <Dialog
                     key={type}
