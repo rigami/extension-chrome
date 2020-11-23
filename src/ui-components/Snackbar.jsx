@@ -14,7 +14,6 @@ import {
     WarningRounded as WarningIcon,
 } from '@material-ui/icons';
 import { useSnackbar } from 'notistack';
-
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -116,28 +115,5 @@ function Snackbar(props, ref) {
         </Card>
     );
 }
-
-/* Snackbar.propTypes = {
-    id: PropTypes.number.isRequired,
-    message: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    variant: PropTypes.oneOf([
-        'success',
-        'error',
-        'warning',
-        'progress',
-        'default',
-    ]),
-    buttons: PropTypes.arrayOf(PropTypes.object),
-    progressEffect: PropTypes.func,
-    closeButton: PropTypes.bool,
-};
-Snackbar.defaultProps = {
-    description: '',
-    variant: 'default',
-    buttons: [],
-    progressEffect: null,
-    closeButton: true,
-}; */
 
 export default React.forwardRef(Snackbar);
