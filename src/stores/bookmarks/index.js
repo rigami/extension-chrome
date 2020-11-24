@@ -39,7 +39,7 @@ class BookmarksService {
 
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
-        this._coreService.globalEventBus.on('category/remove', async ({ folderId }) => {
+        this._coreService.globalEventBus.on('category/remove', async ({ categoryId }) => {
             await this.categories.sync();
 
             this._coreService.storage.updatePersistent({
@@ -52,7 +52,7 @@ class BookmarksService {
 
             await this.syncFavorites();
         });
-        this._coreService.globalEventBus.on('folder/remove', async ({ folderId }) => {
+        this._coreService.globalEventBus.on('folder/remove', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
         this._coreService.globalEventBus.on('folder/new', async () => {
@@ -61,10 +61,10 @@ class BookmarksService {
         this._coreService.globalEventBus.on('favorite/new', () => this.syncFavorites());
         this._coreService.globalEventBus.on('favorite/remove', () => this.syncFavorites());
 
-        reaction(
+        /* reaction(
             () => this.settings.syncWithSystem,
             () => this.settings.syncWithSystem && this._coreService.globalEventBus.call('system/parseSystemBookmarks', DESTINATION.BACKGROUND),
-        );
+        ); */
 
         reaction(
             () => this.settings.fapStyle,

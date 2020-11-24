@@ -18,52 +18,38 @@ class SyncSystemBookmarks {
         }
 
         this.bus.on('system/parseSystemBookmarks', () => this.parseSystemBookmarks());
+        if (this.bookmarksService.settings.syncWithSystem) this.parseSystemBookmarks();
 
         chrome.bookmarks.onCreated.addListener(async (id, createInfo) => {
             if (createInfo.url && !('dateGroupModified' in createInfo)) {
                 console.log('onCreated bookmark', id, createInfo);
-                this.saveBookmark(createInfo);
+                // this.saveBookmark(createInfo);
             } else {
                 console.log('onCreated folder', id, createInfo);
-                this.saveFolder(createInfo);
+                // this.saveFolder(createInfo);
             }
         });
         chrome.bookmarks.onMoved.addListener((id, moveInfo) => {
-            if (createInfo.url && !('dateGroupModified' in createInfo)) {
-                console.log('onMoved bookmark', id, createInfo);
+            if (moveInfo.url && !('dateGroupModified' in moveInfo)) {
+                console.log('onMoved bookmark', id, moveInfo);
             } else {
-                console.log('onMoved folder', id, createInfo);
+                console.log('onMoved folder', id, moveInfo);
             }
         });
         chrome.bookmarks.onChanged.addListener(async (id, changeInfo) => {
-            if (createInfo.url && !('dateGroupModified' in createInfo)) {
-                console.log('onChanged bookmark', id, createInfo);
+            if (changeInfo.url && !('dateGroupModified' in changeInfo)) {
+                console.log('onChanged bookmark', id, changeInfo);
             } else {
-                console.log('onChanged folder', id, createInfo);
+                console.log('onChanged folder', id, changeInfo);
             }
         });
         chrome.bookmarks.onRemoved.addListener((id, removeInfo) => {
-            if (createInfo.url && !('dateGroupModified' in createInfo)) {
-                console.log('onRemoved bookmark', id, createInfo);
+            if (removeInfo.url && !('dateGroupModified' in removeInfo)) {
+                console.log('onRemoved bookmark', id, removeInfo);
             } else {
-                console.log('onRemoved folder', id, createInfo);
+                console.log('onRemoved folder', id, removeInfo);
             }
         });
-
-        /* this.bus.on('system/parseSystemBookmarks', () => this.parseSystemBookmarks());
-
-        chrome.bookmarks.onCreated.addListener(async (id, createInfo) => {
-            console.log('onCreated bookmark', id, createInfo);
-
-            await this.saveSystemBookmark(id);
-        });
-        chrome.bookmarks.onMoved.addListener((id, moveInfo) => console.log('onMoved bookmark', id, moveInfo));
-        chrome.bookmarks.onChanged.addListener(async (id, changeInfo) => {
-            console.log('onChanged bookmark', id, changeInfo);
-
-            await this.saveSystemBookmark(id);
-        });
-        chrome.bookmarks.onRemoved.addListener((id, removeInfo) => console.log('onRemoved bookmark', id, removeInfo)); */
     }
 
     async saveSystemBookmark(bookmarkId) {
@@ -125,6 +111,9 @@ class SyncSystemBookmarks {
     }
 
     async parseSystemBookmarks() {
+        console.log('Start sync with system bookmarks...')
+        return;
+
         const parseBookmark = async (bookmark) => {
             const saveBookmark = new Bookmark({
                 name: bookmark.title,
