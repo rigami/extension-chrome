@@ -125,7 +125,10 @@ function About() {
             <ListItem
                 button
                 className={classes.row}
-                disabled
+                component={Link}
+                href="mailto:danilkinkin@gmail.com"
+                color="initial"
+                underline="none"
             >
                 <ListItemIcon>
                     <EmailIcon />

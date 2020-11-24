@@ -344,7 +344,10 @@
     }
   },
   "newVersion": {
-    "title": "New version {{version}}!"
+    "title": "New version {{version}}",
+    "description": "The extension has been updated, now it is even better\n\n  - Fixed widget indentation if quick access bar is empty and not disabled.\n  - Unlocked the contact me button on the \"About\" page.",
+    "ok": "OK",
+    "changelog": "List of changes"
   },
   "save":"Save",
   "cancel":"Cancel",

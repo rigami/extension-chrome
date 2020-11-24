@@ -77,10 +77,10 @@ function Widgets() {
         <Box
             className={clsx(
                 classes.root,
-                bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+                bookmarksService.fapIsDisplay
               && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
               && classes.bottomOffset,
-                bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+                bookmarksService.fapIsDisplay
               && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
               && classes.topOffset,
                 widgets.settings.dtwPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddlePos,

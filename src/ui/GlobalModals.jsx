@@ -19,11 +19,12 @@ import { useSnackbar } from 'notistack';
 import FSConnector from '@/utils/fsConnector';
 import { eventToBackground } from '@/stores/backgroundApp/busApp';
 import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
+// import Changelog from '@/ui/Changelog';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation();
     const bookmarksStore = useBookmarksService();
-    const { enqueueSnackbar } = useSnackbar();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const coreService = useCoreService();
     const [edit, setEdit] = useState(null);
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
@@ -116,7 +117,24 @@ function GlobalModals({ children }) {
         ];
 
         if (coreService.storage.temp.newVersion) {
-            enqueueSnackbar({ message: t('newVersion.title', { version: coreService.storage.persistent.lastUsageVersion }) });
+            const snackbar = enqueueSnackbar({
+                message: t('newVersion.title', { version: coreService.storage.persistent.lastUsageVersion }),
+                description: t('newVersion.description'),
+                buttons: [
+                    {
+                        title: t('newVersion.ok'),
+                        onClick: () => {
+                            closeSnackbar(snackbar);
+                            coreService.storage.updateTemp({ newVersion: false });
+                        },
+                    },
+                    /* { title: t('newVersion.changelog'), onClick: () => {
+                            setEdit({ type: 'changelog', action: 'open', });
+                        } }, */
+                ]
+            }, {
+                autoHideDuration: 18000,
+            });
             coreService.storage.updateTemp({ newVersion: false });
         }
 
@@ -155,6 +173,10 @@ function GlobalModals({ children }) {
                 editId={edit && edit.id}
                 simple
             />
+            {/* <Changelog
+                open={edit && edit.type === 'changelog' && edit.action === 'open'}
+                onClose={() => setEdit(null)}
+            /> */}
             {['bookmark', 'category', 'folder'].map((type) => (
                 <Dialog
                     key={type}

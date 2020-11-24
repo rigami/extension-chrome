@@ -1,7 +1,5 @@
-import {
-    action, get, makeAutoObservable, reaction,
-} from 'mobx';
-import { DESTINATION } from '@/enum';
+import { action, makeAutoObservable, reaction } from 'mobx';
+import { BKMS_FAP_STYLE, DESTINATION } from '@/enum';
 import { BookmarksSettingsStore } from '@/stores/app/settings';
 import DBConnector from '@/utils/dbConnector';
 import CategoriesStore from './categories';
@@ -11,8 +9,11 @@ import BookmarksStore from './bookmarks';
 class BookmarksService {
     categories;
     bookmarks;
+    folders;
     favorites = [];
+    fapIsDisplay;
     _coreService;
+    settings;
 
     constructor(coreService) {
         makeAutoObservable(this);
@@ -63,6 +64,16 @@ class BookmarksService {
         reaction(
             () => this.settings.syncWithSystem,
             () => this.settings.syncWithSystem && this._coreService.globalEventBus.call('system/parseSystemBookmarks', DESTINATION.BACKGROUND),
+        );
+
+        reaction(
+            () => this.settings.fapStyle,
+            () => this.fapIsDisplay = this.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && this.favorites.length
+        );
+
+        reaction(
+            () => this.favorites.length,
+            () => this.fapIsDisplay = this.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && this.favorites.length
         );
     }
 

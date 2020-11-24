@@ -56,11 +56,12 @@ function PopperWrapper(props) {
                     },
                     preventOverflow: {
                         enabled: true,
-                        boundariesElement: 'viewport',
+                        padding: 8,
+                        boundariesElement: 'window',
                     },
                     offset: {
                         enabled: true,
-                        offset: '0, 32px',
+                        offset: '0, 16px',
                     },
                     ...modifiers,
                 }}
