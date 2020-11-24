@@ -121,7 +121,13 @@ function GlobalModals({ children }) {
                 message: t('newVersion.title', { version: coreService.storage.persistent.lastUsageVersion }),
                 description: t('newVersion.description'),
                 buttons: [
-                    { title: t('newVersion.ok'), onClick: () => { closeSnackbar(snackbar) } },
+                    {
+                        title: t('newVersion.ok'),
+                        onClick: () => {
+                            closeSnackbar(snackbar);
+                            coreService.storage.updateTemp({ newVersion: false });
+                        },
+                    },
                     /* { title: t('newVersion.changelog'), onClick: () => {
                             setEdit({ type: 'changelog', action: 'open', });
                         } }, */
