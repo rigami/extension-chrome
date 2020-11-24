@@ -11,7 +11,7 @@ function FAPStub() {
 
     let height = 0;
 
-    if (bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN) {
+    if (bookmarksService.fapIsDisplay) {
         height = 40 + theme.spacing(3 + (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 3));
     }
 
