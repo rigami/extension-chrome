@@ -301,7 +301,7 @@ class BookmarksStore {
     }
 
     @action('save bookmarks')
-    async save(props) {
+    async save(props, pushEvent = true) {
         const {
             url,
             name,
@@ -413,7 +413,7 @@ class BookmarksStore {
             }
         }
 
-        if (this._coreService) this._coreService.globalEventBus.call('bookmark/new', DESTINATION.APP, { bookmarkId: saveBookmarkId });
+        if (this._coreService && pushEvent) this._coreService.globalEventBus.call('bookmark/new', DESTINATION.APP, { bookmarkId: saveBookmarkId });
 
         return saveBookmarkId;
     }

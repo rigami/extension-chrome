@@ -65,7 +65,7 @@ class FoldersStore {
     }
 
     @action('save folder')
-    async save({ name, id, parentId }) {
+    async save({ name, id, parentId }, pushEvent = true) {
         let newFolderId = id;
 
         if (id) {
@@ -81,7 +81,7 @@ class FoldersStore {
             });
         }
 
-        if (this._coreService) this._coreService.globalEventBus.call('folder/new', DESTINATION.APP, { folderId: newFolderId });
+        if (this._coreService && pushEvent) this._coreService.globalEventBus.call('folder/new', DESTINATION.APP, { folderId: newFolderId });
 
         return newFolderId;
     }

@@ -1,4 +1,4 @@
-import { BKMS_VARIANT, DESTINATION } from '@/enum';
+import { BKMS_VARIANT } from '@/enum';
 import Bookmark from '@/stores/bookmarks/entities/bookmark';
 import Folder from '@/stores/bookmarks/entities/folder';
 import BusApp from '@/stores/backgroundApp/busApp';
@@ -18,38 +18,28 @@ class SyncSystemBookmarks {
         }
 
         this.bus.on('system/parseSystemBookmarks', () => this.parseSystemBookmarks());
-        if (this.bookmarksService.settings.syncWithSystem) this.parseSystemBookmarks();
+        if (this.bookmarksService.settings.syncWithSystem) {
+            this.parseSystemBookmarks();
 
-        chrome.bookmarks.onCreated.addListener(async (id, createInfo) => {
-            if (createInfo.url && !('dateGroupModified' in createInfo)) {
-                console.log('onCreated bookmark', id, createInfo);
-                // this.saveBookmark(createInfo);
-            } else {
-                console.log('onCreated folder', id, createInfo);
-                // this.saveFolder(createInfo);
-            }
-        });
-        chrome.bookmarks.onMoved.addListener((id, moveInfo) => {
-            if (moveInfo.url && !('dateGroupModified' in moveInfo)) {
-                console.log('onMoved bookmark', id, moveInfo);
-            } else {
-                console.log('onMoved folder', id, moveInfo);
-            }
-        });
-        chrome.bookmarks.onChanged.addListener(async (id, changeInfo) => {
-            if (changeInfo.url && !('dateGroupModified' in changeInfo)) {
-                console.log('onChanged bookmark', id, changeInfo);
-            } else {
-                console.log('onChanged folder', id, changeInfo);
-            }
-        });
-        chrome.bookmarks.onRemoved.addListener((id, removeInfo) => {
-            if (removeInfo.url && !('dateGroupModified' in removeInfo)) {
-                console.log('onRemoved bookmark', id, removeInfo);
-            } else {
-                console.log('onRemoved folder', id, removeInfo);
-            }
-        });
+            chrome.bookmarks.onCreated.addListener(async (id, createInfo) => {
+                if (createInfo.url && !('dateGroupModified' in createInfo)) {
+                    console.log('onCreated bookmark', id, createInfo);
+                    // this.saveBookmark(createInfo);
+                } else {
+                    console.log('onCreated folder', id, createInfo);
+                    // this.saveFolder(createInfo);
+                }
+            });
+            chrome.bookmarks.onMoved.addListener((id, moveInfo) => {
+                console.log('onMoved', id, moveInfo);
+            });
+            chrome.bookmarks.onChanged.addListener(async (id, changeInfo) => {
+                console.log('onChanged', id, changeInfo);
+            });
+            chrome.bookmarks.onRemoved.addListener((id, { node: removedNode, ...removeInfo }) => {
+                console.log('onChanged', id, removeInfo, removedNode);
+            });
+        }
     }
 
     async saveSystemBookmark(bookmarkId) {
@@ -111,21 +101,6 @@ class SyncSystemBookmarks {
     }
 
     async parseSystemBookmarks() {
-        console.log('Start sync with system bookmarks...')
-        return;
-
-        const parseBookmark = async (bookmark) => {
-            const saveBookmark = new Bookmark({
-                name: bookmark.title,
-                url: bookmark.url,
-                categories: bookmark.path,
-            });
-
-            console.log('bookmark', saveBookmark);
-
-            return await this.saveBookmark(saveBookmark);
-        };
-
         const parseNode = async (node, parentId = 0) => {
             if (node.url && !('dateGroupModified' in node)) {
                 const saveBookmark = new Bookmark({
@@ -142,21 +117,19 @@ class SyncSystemBookmarks {
                     icoVariant: BKMS_VARIANT.SYMBOL,
                     ...saveBookmark,
                     categories: [],
-                });
-
-                return await this.saveBookmark(saveBookmark);
+                }, false);
             } else {
                 const folder = new Folder({ parentId });
 
                 if (node.id === '0' || node.title === '') {
-                    folder.name = 'google-chrome';
+                    folder.name = this.bookmarksService.settings.syncFolderName;
                 } else {
                     folder.name = node.title;
                 }
 
                 console.log('create folder:', folder);
 
-                const newFolderId = await this.bookmarksService.folders.save({ ...folder });
+                const newFolderId = await this.bookmarksService.folders.save({ ...folder }, false);
 
                 for (let i = 0; i < node.children.length; i += 1) {
                     await parseNode(node.children[i], newFolderId);
