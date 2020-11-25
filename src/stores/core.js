@@ -160,4 +160,4 @@ class Core {
 }
 
 export default Core;
-export { APP_STATE, PREPARE_PROGRESS };
+export { APP_STATE, PREPARE_PROGRESS, Storage };

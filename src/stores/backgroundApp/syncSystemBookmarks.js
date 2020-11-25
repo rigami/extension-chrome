@@ -7,10 +7,12 @@ import BookmarksService from '@/stores/bookmarks';
 class SyncSystemBookmarks {
     bus;
     bookmarksService;
+    storageService;
 
-    constructor() {
+    constructor(storageService) {
         this.bus = BusApp();
         this.bookmarksService = new BookmarksService({ globalEventBus: this.bus });
+        this.storageService = storageService;
 
         if (!chrome?.bookmarks) {
             console.error('Not find bookmarks module');
@@ -122,14 +124,15 @@ class SyncSystemBookmarks {
                 const folder = new Folder({ parentId });
 
                 if (node.id === '0' || node.title === '') {
-                    folder.name = this.bookmarksService.settings.syncFolderName;
+                    if (!this.bookmarksService.settings.syncMerge) folder.name = this.bookmarksService.settings.syncFolderName;
+                    folder.id = this.storageService.storage.syncBrowserFolder;
                 } else {
                     folder.name = node.title;
                 }
 
                 console.log('create folder:', folder);
 
-                const newFolderId = await this.bookmarksService.folders.save({ ...folder }, false);
+                const newFolderId = node.id === '0' && this.storageService.storage.syncBrowserFolder || await this.bookmarksService.folders.save({ ...folder }, false);
 
                 for (let i = 0; i < node.children.length; i += 1) {
                     await parseNode(node.children[i], newFolderId);

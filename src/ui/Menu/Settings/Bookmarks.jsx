@@ -66,6 +66,8 @@ function BrowserSync() {
                         value: bookmarksService.settings.syncMerge,
                         onChange: (event, value) => {
                             bookmarksService.settings.update({ syncMerge: value });
+                            if (value) coreService.storage.updatePersistent({ syncBrowserFolder: 1 });
+                            else coreService.storage.updatePersistent({ syncBrowserFolder: null });
                         },
                     }}
                 />
