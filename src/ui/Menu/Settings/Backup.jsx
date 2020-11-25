@@ -21,13 +21,15 @@ import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     backupButton: {
-        width: 270,
         flexShrink: 0,
+    },
+    fullWidth: {
+        width: '100%',
     },
     saveIcon: { marginLeft: 10 },
     paper: {
         margin: theme.spacing(1),
-        width: 270,
+        width: 252,
     },
     optionLabel: {
         wordBreak: 'break-word',
@@ -81,6 +83,7 @@ function LocalBackup() {
                 onClick={handleToggle}
                 color="primary"
                 variant="contained"
+                fullWidth
                 className={classes.backupButton}
             >
                 {t('settings.backup.localBackup.create')}
@@ -206,11 +209,12 @@ function BackupSettings() {
                                 accept=".json,.ctbup"
                                 onChange={handleLocalRestore}
                             />
-                            <label htmlFor="upload-from-system">
+                            <label htmlFor="upload-from-system" className={classes.fullWidth}>
                                 <Button
                                     variant="contained"
                                     component="span"
                                     color="primary"
+                                    fullWidth
                                     className={classes.backupButton}
                                 >
                                     {t('settings.backup.localBackup.restore')}

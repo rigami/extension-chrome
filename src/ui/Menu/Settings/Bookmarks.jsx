@@ -45,7 +45,10 @@ function BrowserSync() {
             <SectionHeader title={t("settings.bookmarks.systemBookmarks.title")} />
             <MenuRow
                 title={t("settings.bookmarks.systemBookmarks.syncSystemBookmarks.title")}
-                description={t("settings.bookmarks.systemBookmarks.syncSystemBookmarks.description")}
+                description={t(
+                    "settings.bookmarks.systemBookmarks.syncSystemBookmarks.description",
+                    { folderName: bookmarksService.settings.syncMerge ? 'rigami' : bookmarksService.settings.syncFolderName },
+                )}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     value: bookmarksService.settings.syncWithSystem,
