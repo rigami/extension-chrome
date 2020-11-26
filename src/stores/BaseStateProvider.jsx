@@ -14,6 +14,12 @@ function BaseStateProvider({ side, children }) {
                 event.preventDefault();
             };
         }
+        window.addEventListener('mousedown', function(mouseEvent) {
+            if(mouseEvent.button !== 1) return;
+
+            mouseEvent.preventDefault();
+            mouseEvent.stopPropagation();
+        }, true);
     }, []);
 
     return (
