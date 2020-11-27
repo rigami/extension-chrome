@@ -110,8 +110,6 @@ class BookmarksSettingsStore {
     fapPosition;
     favorites;
     syncWithSystem;
-    syncMerge;
-    syncFolderName;
     isSync = false;
 
     constructor() {
@@ -120,8 +118,6 @@ class BookmarksSettingsStore {
         this.fapPosition = defaultSettings.bookmarks.fap_position;
         this.favorites = defaultSettings.bookmarks.favorites;
         this.syncWithSystem = defaultSettings.bookmarks.sync_with_system;
-        this.syncMerge = defaultSettings.bookmarks.sync_merge;
-        this.syncFolderName = defaultSettings.bookmarks.sync_folder_name;
 
         try {
             this.update(JSON.parse(localStorage.getItem('settings')).bookmarks, false);
@@ -146,8 +142,6 @@ class BookmarksSettingsStore {
             'fapPosition',
             'favorites',
             'syncWithSystem',
-            'syncMerge',
-            'syncFolderName',
         ]);
 
         assign(this, updProps);

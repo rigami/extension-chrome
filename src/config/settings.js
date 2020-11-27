@@ -30,8 +30,7 @@ export default {
         open_on_startup: false,
         favorites: [],
         sync_with_system: false,
-        sync_merge: false,
-        sync_folder_name: 'google chrome'
+        sync_default_folder_name: 'google chrome'
     },
     widgets: {
         use_widgets: true,

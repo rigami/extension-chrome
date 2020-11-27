@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useObserver } from 'mobx-react-lite';
 import {
     ACTIVITY,
@@ -23,6 +23,7 @@ import SectionHeader from '@/ui/Menu/SectionHeader';
 import useCoreService from '@/stores/BaseStateProvider';
 import useAppService from '@/stores/AppStateProvider';
 import { makeStyles } from '@material-ui/core/styles';
+import FolderEditor from '@/ui/Bookmarks/Folders/EditModal';
 
 const headerProps = { title: 'settings.bookmarks.title' };
 
@@ -37,8 +38,19 @@ function BrowserSync() {
     const { t } = useTranslation();
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
-    const [actionEditorOpen, setActionEditorOpen] = useState(false);
-    const [actionUrl, setActionUrl] = useState('');
+    const [editorAnchor, setEditorAnchor] = useState(null);
+    const [syncFolder, setSyncFolder] = useState(coreService.storage.persistent.syncBrowserFolder);
+    const [foldersRoot, setFoldersRoot] = useState(null);
+    const [foldersEditorOpen, setFoldersEditorOpen] = useState(false);
+
+    useEffect(() => {
+        bookmarksService.folders.getFoldersByParent().then((rootFolders) => setFoldersRoot(rootFolders));
+    }, []);
+
+    useEffect(() => {
+        setSyncFolder(coreService.storage.persistent.syncBrowserFolder);
+    }, [coreService.storage.persistent.syncBrowserFolder]);
+
 
     return useObserver(() => (
         <React.Fragment>
@@ -59,64 +71,37 @@ function BrowserSync() {
             />
             <Collapse in={bookmarksService.settings.syncWithSystem}>
                 <MenuRow
-                    title={t("settings.bookmarks.systemBookmarks.syncMerge.title")}
-                    description={t("settings.bookmarks.systemBookmarks.syncMerge.description")}
+                    title={t('settings.bookmarks.systemBookmarks.syncFolder.title')}
+                    description={t('settings.bookmarks.systemBookmarks.syncFolder.description')}
+                    disabled={foldersRoot === null}
                     action={{
-                        type: ROWS_TYPE.CHECKBOX,
-                        value: bookmarksService.settings.syncMerge,
-                        onChange: (event, value) => {
-                            bookmarksService.settings.update({ syncMerge: value });
-                            if (value) coreService.storage.updatePersistent({ syncBrowserFolder: 1 });
-                            else coreService.storage.updatePersistent({ syncBrowserFolder: null });
+                        type: ROWS_TYPE.SELECT,
+                        format: (value) => value === 'new-folder'
+                            ? t('settings.bookmarks.systemBookmarks.syncFolder.newFolder')
+                            : (foldersRoot ? foldersRoot.find(({ id }) => id === value)?.name : 'load...'),
+                        value: syncFolder,
+                        onOpen: (event) => setEditorAnchor(event.target),
+                        onChange: (event) => {
+                            if (event.target.value === 'new-folder') {
+                                setFoldersEditorOpen(true);
+                                setSyncFolder('new-folder');
+                            } else {
+                                setSyncFolder(event.target.value);
+                                coreService.storage.updatePersistent({ syncBrowserFolder: event.target.value });
+                            }
                         },
+                        values: [...(foldersRoot ? foldersRoot.map(({ id }) => id) : []), 'new-folder'],
                     }}
                 />
-                <Collapse in={bookmarksService.settings.syncWithSystem && !bookmarksService.settings.syncMerge}>
-                    <MenuRow
-                        title={t('settings.bookmarks.systemBookmarks.folderName.title')}
-                        description={t('settings.bookmarks.systemBookmarks.folderName.description')}
-                        action={{
-                            type: ROWS_TYPE.LINK,
-                            onClick: () => { setActionEditorOpen(true); },
-                            component: bookmarksService.settings.syncFolderName,
-                        }}
-                    />
-                    <Dialog open={actionEditorOpen} onClose={() => { setActionEditorOpen(false); }}>
-                        <DialogTitle>
-                            {t('settings.bookmarks.systemBookmarks.folderName.title')}
-                        </DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                {t('settings.bookmarks.systemBookmarks.folderName.fullDescription')}
-                            </DialogContentText>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                defaultValue={bookmarksService.settings.syncFolderName}
-                                fullWidth
-                                label={t('settings.bookmarks.systemBookmarks.folderName.textFieldLabel')}
-                                onChange={(event) => { setActionUrl(event.target.value); }}
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button
-                                color="primary"
-                                onClick={() => { setActionEditorOpen(false); }}
-                            >
-                                {t('cancel')}
-                            </Button>
-                            <Button
-                                color="primary"
-                                onClick={() => {
-                                    setActionEditorOpen(false);
-                                    bookmarksService.settings.update({ syncFolderName: actionUrl });
-                                }}
-                            >
-                                {t('save')}
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
-                </Collapse>
+                <FolderEditor
+                    anchorEl={editorAnchor}
+                    isOpen={foldersEditorOpen}
+                    onSave={() => {}}
+                    onClose={() => {
+                        setSyncFolder(coreService.storage.persistent.syncBrowserFolder);
+                        setFoldersEditorOpen(false);
+                    }}
+                />
                 <MenuRow
                     title={t('settings.bookmarks.systemBookmarks.reRunSync.title')}
                     description={t('settings.bookmarks.systemBookmarks.reRunSync.description')}

@@ -126,14 +126,19 @@ function Editor(props) {
 
     useEffect(() => {
         asyncAction(async () => {
-            const path = (await foldersService.getPath(editId || selectId)).map(({ id }) => id);
+            console.log('editId || selectId', editId, selectId)
+            if (editId || selectId) {
+                const path = (await foldersService.getPath(editId || selectId)).map(({ id }) => id);
+                console.log('path', path)
+                store.expanded = path;
+            }
             const tree = await foldersService.getTree();
+            console.log('tree', tree)
             if (editId) {
                 const folder = await foldersService.get(editId);
                 store.newFolderName = folder.name;
                 store.newFolderRoot = folder.parentId;
             }
-            store.expanded = path;
             store.folders = tree;
         });
     }, []);

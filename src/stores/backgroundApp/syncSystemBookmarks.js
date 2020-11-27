@@ -3,6 +3,7 @@ import Bookmark from '@/stores/bookmarks/entities/bookmark';
 import Folder from '@/stores/bookmarks/entities/folder';
 import BusApp from '@/stores/backgroundApp/busApp';
 import BookmarksService from '@/stores/bookmarks';
+import settings from '@/config/settings';
 
 class SyncSystemBookmarks {
     bus;
@@ -124,7 +125,7 @@ class SyncSystemBookmarks {
                 const folder = new Folder({ parentId });
 
                 if (node.id === '0' || node.title === '') {
-                    if (!this.bookmarksService.settings.syncMerge) folder.name = this.bookmarksService.settings.syncFolderName;
+                    if (!this.bookmarksService.settings.syncMerge) folder.name = settings.bookmarks.sync_default_folder_name;
                     folder.id = this.storageService.storage.syncBrowserFolder;
                 } else {
                     folder.name = node.title;

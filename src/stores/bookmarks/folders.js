@@ -42,8 +42,8 @@ class FoldersStore {
     }
 
     @action('get folders path')
-    async _getPath(parentId = 0, path) {
-        const folder = await this.get(parentId);
+    async _getPath(folderId = 0, path) {
+        const folder = await this.get(folderId);
 
         if (folder.parentId === 0) {
             return [folder, ...path];
@@ -53,8 +53,8 @@ class FoldersStore {
     }
 
     @action('get folders path')
-    async getPath(parentId = 0) {
-        return await this._getPath(parentId || 0, []);
+    async getPath(folderId = 0) {
+        return await this._getPath(folderId || 0, []);
     }
 
     @action('get folder by id')
