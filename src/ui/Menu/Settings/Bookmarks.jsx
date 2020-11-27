@@ -40,7 +40,7 @@ function BrowserSync() {
     const bookmarksService = useBookmarksService();
     const [editorAnchor, setEditorAnchor] = useState(null);
     const [syncFolderId, setSyncFolderId] = useState(coreService.storage.persistent.syncBrowserFolder);
-    const [syncFolder, setSyncFolder] = useState(null);
+    const [syncFolderName, setSyncFolderName] = useState(null);
     const [foldersRoot, setFoldersRoot] = useState(null);
     const [foldersEditorOpen, setFoldersEditorOpen] = useState(false);
 
@@ -51,7 +51,7 @@ function BrowserSync() {
     useEffect(() => {
         setSyncFolderId(coreService.storage.persistent.syncBrowserFolder);
         bookmarksService.folders.get(coreService.storage.persistent.syncBrowserFolder)
-            .then((folder) => setSyncFolder(folder));
+            .then((folder) => setSyncFolderName(folder.name));
     }, [coreService.storage.persistent.syncBrowserFolder]);
 
 
@@ -62,7 +62,7 @@ function BrowserSync() {
                 title={t("settings.bookmarks.systemBookmarks.syncSystemBookmarks.title")}
                 description={t(
                     "settings.bookmarks.systemBookmarks.syncSystemBookmarks.description",
-                    { folderName: syncFolder ? syncFolder.name : 'load...' },
+                    { folderName: syncFolderName || 'load...' },
                 )}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
@@ -105,9 +105,9 @@ function BrowserSync() {
                         bookmarksService.folders.getFoldersByParent()
                             .then((rootFolders) => {
                                 setFoldersRoot(rootFolders);
-                                setSyncFolderId(folderId);
-                                coreService.storage.updatePersistent({ syncBrowserFolder: folderId });
                             });
+                        setSyncFolderId(folderId);
+                        coreService.storage.updatePersistent({ syncBrowserFolder: folderId });
                         setFoldersEditorOpen(false);
                     }}
                     onClose={() => {
