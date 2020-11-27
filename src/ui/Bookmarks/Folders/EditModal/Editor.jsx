@@ -38,6 +38,8 @@ function Editor(props) {
     const {
         editId,
         selectId,
+        editRootFolders = false,
+        addNewFolderByParentId = false,
         onSave,
         onCancel,
     } = props;
@@ -81,59 +83,59 @@ function Editor(props) {
         store.editId = null;
     };
 
-    const renderTree = (nodes) => (
-        <TreeItem
-            key={nodes.id}
-            nodeId={nodes.id}
-            label={
-                store.editId === nodes.id ? (
-                    <TextField
-                        margin="dense"
-                        variant="outlined"
-                        fullWidth
-                        value={store.newFolderName}
-                        autoFocus
-                        onChange={(event) => { store.newFolderName = event.target.value; }}
-                        onBlur={handleSaveNewFolder}
-                        onKeyDown={(event) => {
-                            console.log('event.code', event.code);
-                            if (event.code === 'Enter') handleSaveNewFolder();
-                        }}
-                    />
-                ) : nodes.name
-            }
-        >
-            {[
-                ...(Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : []),
-                store.newFolderRoot === nodes.id && !store.editId ? (
-                    <TextField
-                        margin="dense"
-                        variant="outlined"
-                        fullWidth
-                        value={store.newFolderName}
-                        autoFocus
-                        onChange={(event) => { store.newFolderName = event.target.value; }}
-                        onBlur={handleSaveNewFolder}
-                        onKeyDown={(event) => {
-                            console.log('event.code', event.code);
-                            if (event.code === 'Enter') handleSaveNewFolder();
-                        }}
-                    />
-                ) : null,
-            ].filter((item) => item)}
-        </TreeItem>
-    );
+    const renderTree = (nodes) => {
+        console.log('nodes', nodes)
+        return (
+            <TreeItem
+                key={nodes.id}
+                nodeId={nodes.id}
+                label={
+                    store.editId === nodes.id ? (
+                        <TextField
+                            margin="dense"
+                            variant="outlined"
+                            fullWidth
+                            value={store.newFolderName}
+                            autoFocus
+                            onChange={(event) => { store.newFolderName = event.target.value; }}
+                            onBlur={handleSaveNewFolder}
+                            onKeyDown={(event) => {
+                                console.log('event.code', event.code);
+                                if (event.code === 'Enter') handleSaveNewFolder();
+                            }}
+                        />
+                    ) : nodes.name
+                }
+            >
+                {[
+                    ...(Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : []),
+                    store.newFolderRoot === nodes.id && !store.editId ? (
+                        <TextField
+                            margin="dense"
+                            variant="outlined"
+                            fullWidth
+                            value={store.newFolderName}
+                            autoFocus
+                            onChange={(event) => { store.newFolderName = event.target.value; }}
+                            onBlur={handleSaveNewFolder}
+                            onKeyDown={(event) => {
+                                console.log('event.code', event.code);
+                                if (event.code === 'Enter') handleSaveNewFolder();
+                            }}
+                        />
+                    ) : null,
+                ].filter((item) => item)}
+            </TreeItem>
+        );
+    };
 
     useEffect(() => {
         asyncAction(async () => {
-            console.log('editId || selectId', editId, selectId)
             if (editId || selectId) {
                 const path = (await foldersService.getPath(editId || selectId)).map(({ id }) => id);
-                console.log('path', path)
                 store.expanded = path;
             }
-            const tree = await foldersService.getTree();
-            console.log('tree', tree)
+            const tree = editRootFolders ? await foldersService.getFoldersByParent() : await foldersService.getTree();
             if (editId) {
                 const folder = await foldersService.get(editId);
                 store.newFolderName = folder.name;
@@ -141,6 +143,11 @@ function Editor(props) {
             }
             store.folders = tree;
         });
+
+        if (addNewFolderByParentId !== false) {
+            store.folderId = addNewFolderByParentId;
+            handleCreateNewFolder();
+        }
     }, []);
 
     return useObserver(() => (
@@ -157,6 +164,21 @@ function Editor(props) {
                         onNodeToggle={(event, nodes) => { store.expanded = nodes; }}
                     >
                         {[...store.folders].map((item) => renderTree(item))}
+                        {store.newFolderRoot === 0 && (
+                            <TextField
+                                margin="dense"
+                                variant="outlined"
+                                fullWidth
+                                value={store.newFolderName}
+                                autoFocus
+                                onChange={(event) => { store.newFolderName = event.target.value; }}
+                                onBlur={handleSaveNewFolder}
+                                onKeyDown={(event) => {
+                                    console.log('event.code', event.code);
+                                    if (event.code === 'Enter') handleSaveNewFolder();
+                                }}
+                            />
+                        )}
                     </TreeView>
                 )}
             </DialogContent>
@@ -164,6 +186,7 @@ function Editor(props) {
                 <Button
                     onClick={handleCreateNewFolder}
                     className={classes.createNewFolderButton}
+                    disabled={!store.folderId}
                 >
                     {t('folder.editor.create')}
                 </Button>

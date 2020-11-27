@@ -39,7 +39,8 @@ function BrowserSync() {
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
     const [editorAnchor, setEditorAnchor] = useState(null);
-    const [syncFolder, setSyncFolder] = useState(coreService.storage.persistent.syncBrowserFolder);
+    const [syncFolderId, setSyncFolderId] = useState(coreService.storage.persistent.syncBrowserFolder);
+    const [syncFolder, setSyncFolder] = useState(null);
     const [foldersRoot, setFoldersRoot] = useState(null);
     const [foldersEditorOpen, setFoldersEditorOpen] = useState(false);
 
@@ -48,7 +49,9 @@ function BrowserSync() {
     }, []);
 
     useEffect(() => {
-        setSyncFolder(coreService.storage.persistent.syncBrowserFolder);
+        setSyncFolderId(coreService.storage.persistent.syncBrowserFolder);
+        bookmarksService.folders.get(coreService.storage.persistent.syncBrowserFolder)
+            .then((folder) => setSyncFolder(folder));
     }, [coreService.storage.persistent.syncBrowserFolder]);
 
 
@@ -59,7 +62,7 @@ function BrowserSync() {
                 title={t("settings.bookmarks.systemBookmarks.syncSystemBookmarks.title")}
                 description={t(
                     "settings.bookmarks.systemBookmarks.syncSystemBookmarks.description",
-                    { folderName: bookmarksService.settings.syncMerge ? 'rigami' : bookmarksService.settings.syncFolderName },
+                    { folderName: syncFolder ? syncFolder.name : 'load...' },
                 )}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
@@ -79,14 +82,14 @@ function BrowserSync() {
                         format: (value) => value === 'new-folder'
                             ? t('settings.bookmarks.systemBookmarks.syncFolder.newFolder')
                             : (foldersRoot ? foldersRoot.find(({ id }) => id === value)?.name : 'load...'),
-                        value: syncFolder,
+                        value: syncFolderId,
                         onOpen: (event) => setEditorAnchor(event.target),
                         onChange: (event) => {
                             if (event.target.value === 'new-folder') {
                                 setFoldersEditorOpen(true);
-                                setSyncFolder('new-folder');
+                                setSyncFolderId('new-folder');
                             } else {
-                                setSyncFolder(event.target.value);
+                                setSyncFolderId(event.target.value);
                                 coreService.storage.updatePersistent({ syncBrowserFolder: event.target.value });
                             }
                         },
@@ -96,9 +99,19 @@ function BrowserSync() {
                 <FolderEditor
                     anchorEl={editorAnchor}
                     isOpen={foldersEditorOpen}
-                    onSave={() => {}}
+                    editRootFolders
+                    addNewFolderByParentId={0}
+                    onSave={(folderId) => {
+                        bookmarksService.folders.getFoldersByParent()
+                            .then((rootFolders) => {
+                                setFoldersRoot(rootFolders);
+                                setSyncFolderId(folderId);
+                                coreService.storage.updatePersistent({ syncBrowserFolder: folderId });
+                            });
+                        setFoldersEditorOpen(false);
+                    }}
                     onClose={() => {
-                        setSyncFolder(coreService.storage.persistent.syncBrowserFolder);
+                        setSyncFolderId(coreService.storage.persistent.syncBrowserFolder);
                         setFoldersEditorOpen(false);
                     }}
                 />
