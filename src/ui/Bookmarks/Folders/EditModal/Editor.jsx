@@ -67,7 +67,7 @@ function Editor(props) {
 
     const handleSaveNewFolder = async () => {
         if (store.newFolderName.trim() !== '') {
-            await foldersService.save({
+            const newFolderId = await foldersService.save({
                 name: store.newFolderName,
                 parentId: store.newFolderRoot,
                 id: store.editId,
@@ -76,6 +76,7 @@ function Editor(props) {
             await foldersService.getTree()
                 .then((folders) => {
                     store.folders = folders;
+                    store.folderId = newFolderId;
                 });
         }
 
@@ -158,7 +159,7 @@ function Editor(props) {
                     <TreeView
                         defaultCollapseIcon={<ArrowDownIcon />}
                         expanded={store.expanded}
-                        defaultSelected={store.folderId}
+                        selected={store.folderId}
                         defaultExpandIcon={<ArrowRightIcon />}
                         onNodeSelect={(event, nodeId) => { store.folderId = nodeId; }}
                         onNodeToggle={(event, nodes) => { store.expanded = nodes; }}
