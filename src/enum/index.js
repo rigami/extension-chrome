@@ -11,6 +11,7 @@ import DESTINATION from './DESTINATION';
 import ACTIVITY from './ACTIVITY';
 import WIDGET_DTW_POSITION from './WIDGET/DTW_POSITION';
 import WIDGET_DTW_SIZE from './WIDGET/DTW_SIZE';
+import TYPE from './TYPE';
 
 export {
     BG_CHANGE_INTERVAL,
@@ -26,4 +27,5 @@ export {
     ACTIVITY,
     WIDGET_DTW_POSITION,
     WIDGET_DTW_SIZE,
+    TYPE,
 };

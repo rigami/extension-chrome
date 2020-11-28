@@ -51,6 +51,24 @@ async function upgradeOrCreateBookmarks(db, transaction) {
     return store;
 }
 
+function upgradeOrCreateSystemBookmarks(db, transaction) {
+    let store;
+
+    if (db.objectStoreNames.contains('system_bookmarks')) {
+        store = transaction.objectStore('system_bookmarks');
+    } else {
+        store = db.createObjectStore('system_bookmarks', {
+            keyPath: 'id',
+            autoIncrement: true,
+        });
+        store.createIndex('type', 'type', { unique: false });
+        store.createIndex('rigami_id', 'rigamiId', { unique: false });
+        store.createIndex('system_id', 'systemId', { unique: false });
+    }
+
+    return store;
+}
+
 function upgradeOrCreateCategories(db, transaction) {
     let store;
 
@@ -185,6 +203,7 @@ export default ({ upgrade }) => ({
         console.log('upgrade db', db, transaction, oldVersion, newVersion);
         upgradeOrCreateBackgrounds(db, transaction);
         upgradeOrCreateBookmarks(db, transaction);
+        upgradeOrCreateSystemBookmarks(db, transaction);
         upgradeOrCreateCategories(db, transaction);
         upgradeOrCreateBookmarksByCategories(db, transaction);
         upgradeOrCreateFolders(db, transaction, newVersion).catch(console.error);
