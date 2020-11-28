@@ -1,4 +1,5 @@
-import { BKMS_VARIANT } from '@/enum';
+import { BKMS_VARIANT, TYPE } from '@/enum';
+import DBConnector from '@/utils/dbConnector';
 import Bookmark from '@/stores/bookmarks/entities/bookmark';
 import Folder from '@/stores/bookmarks/entities/folder';
 import BusApp from '@/stores/backgroundApp/busApp';
@@ -31,12 +32,18 @@ class SyncSystemBookmarks {
             this.parseSystemBookmarks();
 
             chrome.bookmarks.onCreated.addListener(async (id, createInfo) => {
+                const bind = await DBConnector().getFromIndex(
+                    'system_bookmarks',
+                    'system_id',
+                    createInfo.parentId,
+                );
+
                 if (createInfo.url && !('dateGroupModified' in createInfo)) {
-                    console.log('onCreated bookmark', id, createInfo);
-                    // this.saveBookmark(createInfo);
+                    console.log('onCreated bookmark', id, createInfo, bind);
+                    await this.createBookmark(createInfo, bind.rigamiId, true);
                 } else {
                     console.log('onCreated folder', id, createInfo);
-                    // this.saveFolder(createInfo);
+                    await this.createFolder(createInfo, bind.rigamiId, true);
                 }
             });
             chrome.bookmarks.onMoved.addListener((id, moveInfo) => {
@@ -51,28 +58,56 @@ class SyncSystemBookmarks {
         }
     }
 
+    async createBookmark(browserNode, parentId, notyEvent = false) {
+        const bookmark = new Bookmark({
+            name: browserNode.title,
+            url: browserNode.url,
+            folderId: parentId,
+        });
+
+        console.log('create bookmark:', bookmark);
+
+        const bookmarkId = await this.bookmarksService.bookmarks.save({
+            description: '',
+            image_url: '',
+            icoVariant: BKMS_VARIANT.SYMBOL,
+            ...bookmark,
+            categories: [],
+        }, notyEvent);
+
+        await DBConnector().add('system_bookmarks', {
+            type: TYPE.BOOKMARK,
+            rigamiId: bookmarkId,
+            systemId: browserNode.id,
+        });
+
+        return bookmarkId;
+    }
+
+    async createFolder(browserNode, parentId, notyEvent = false) {
+        const folder = new Folder({ name: browserNode.title, parentId });
+        console.log('create folder:', folder);
+        const newFolderId = await this.bookmarksService.folders.save({ ...folder }, notyEvent);
+
+        await DBConnector().add('system_bookmarks', {
+            type: TYPE.FOLDER,
+            rigamiId: newFolderId,
+            systemId: browserNode.id,
+        });
+
+        return newFolderId;
+    }
+
     async parseSystemBookmarks() {
+        const db = DBConnector();
+
         const parseNodeBookmark = async (browserNode, rigamiNode, parentId) => {
             console.log('parseNodeBookmark', browserNode, rigamiNode, parentId);
 
             if (rigamiNode) {
                 console.log('use rigami bookmark:', rigamiNode);
             } else {
-                const bookmark = new Bookmark({
-                    name: browserNode.title,
-                    url: browserNode.url,
-                    folderId: parentId,
-                });
-
-                console.log('create bookmark:', bookmark);
-
-                await this.bookmarksService.bookmarks.save({
-                    description: '',
-                    image_url: '',
-                    icoVariant: BKMS_VARIANT.SYMBOL,
-                    ...bookmark,
-                    categories: [],
-                }, false);
+                await this.createBookmark(browserNode, parentId);
             }
 
             return Promise.resolve();
@@ -87,9 +122,7 @@ class SyncSystemBookmarks {
                 console.log('use rigami folder:', rigamiNode);
                 newFolderId = rigamiNode.id;
             } else {
-                const folder = new Folder({ name: browserNode.title, parentId });
-                console.log('create folder:', folder);
-                newFolderId = await this.bookmarksService.folders.save({ ...folder }, false);
+                newFolderId = await this.createFolder(browserNode, parentId);
             }
 
             await parseLevel(browserNode.children, rigamiNode?.children || [], newFolderId);
