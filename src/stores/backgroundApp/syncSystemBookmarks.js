@@ -20,7 +20,13 @@ class SyncSystemBookmarks {
             return;
         }
 
-        this.bus.on('system/parseSystemBookmarks', () => this.parseSystemBookmarks());
+        this.bus.on('system/parseSystemBookmarks', async (props, options, callback, ...other) => {
+            await this.parseSystemBookmarks();
+            console.log(props, options, callback, other)
+            console.log('finish SYNC!')
+            // await new Promise((resolve) => setTimeout(resolve, 4500))
+            callback();
+        });
         if (this.bookmarksService.settings.syncWithSystem) {
             this.parseSystemBookmarks();
 
@@ -114,12 +120,10 @@ class SyncSystemBookmarks {
         }
 
         const tree = await this.bookmarksService.folders.getTree(this.storageService.storage.syncBrowserFolder);
+        const nodes = await new Promise((resolve) => chrome.bookmarks.getTree(resolve));
 
-
-        await chrome.bookmarks.getTree(async (nodes) => {
-            await parseLevel(first(nodes).children, tree, this.storageService.storage.syncBrowserFolder);
-            console.log('finish sync!');
-        });
+        await parseLevel(first(nodes).children, tree, this.storageService.storage.syncBrowserFolder);
+        console.log('finish sync!');
     }
 }
 

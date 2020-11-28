@@ -1,4 +1,9 @@
-import React, { Fragment, useState, useRef } from 'react';
+import React, {
+    Fragment,
+    useState,
+    useRef,
+    useEffect,
+} from 'react';
 import {
     Popper,
     Button,
@@ -9,7 +14,7 @@ import {
     MenuItem,
     Checkbox,
     ListItemText,
-    ListItemIcon,
+    ListItemIcon, Collapse,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
@@ -18,6 +23,10 @@ import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
 import { eventToBackground } from '@/stores/backgroundApp/busApp';
 import { useSnackbar } from 'notistack';
+import useCoreService from '@/stores/BaseStateProvider';
+import useBookmarksService from '@/stores/BookmarksProvider';
+import SectionHeader from '@/ui/Menu/SectionHeader';
+import FolderEditor from '@/ui/Bookmarks/Folders/EditModal';
 
 const useStyles = makeStyles((theme) => ({
     backupButton: {
@@ -37,9 +46,131 @@ const useStyles = makeStyles((theme) => ({
     },
     popper: { zIndex: theme.zIndex.modal },
     input: { display: 'none' },
+    reRunSyncButton: {
+        flexShrink: 0,
+    },
 }));
 
 const headerProps = { title: 'settings.backup.title' };
+
+function BrowserSync() {
+    const classes = useStyles();
+    const { t } = useTranslation();
+    const coreService = useCoreService();
+    const bookmarksService = useBookmarksService();
+    const [editorAnchor, setEditorAnchor] = useState(null);
+    const [syncFolderId, setSyncFolderId] = useState(coreService.storage.persistent.syncBrowserFolder);
+    const [syncFolderName, setSyncFolderName] = useState(null);
+    const [foldersRoot, setFoldersRoot] = useState(null);
+    const [foldersEditorOpen, setFoldersEditorOpen] = useState(false);
+    const [syncing, setSyncing] = useState(false);
+
+    useEffect(() => {
+        bookmarksService.folders.getFoldersByParent().then((rootFolders) => setFoldersRoot(rootFolders));
+    }, []);
+
+    useEffect(() => {
+        setSyncFolderId(coreService.storage.persistent.syncBrowserFolder);
+        bookmarksService.folders.get(coreService.storage.persistent.syncBrowserFolder)
+            .then((folder) => setSyncFolderName(folder.name));
+    }, [coreService.storage.persistent.syncBrowserFolder]);
+
+
+    return useObserver(() => (
+        <React.Fragment>
+            <SectionHeader title={t("settings.backup.systemBookmarks.title")} />
+            <MenuRow
+                title={t("settings.backup.systemBookmarks.syncSystemBookmarks.title")}
+                description={t(
+                    "settings.backup.systemBookmarks.syncSystemBookmarks.description",
+                    { folderName: syncFolderName || 'load...' },
+                )}
+                action={{
+                    type: ROWS_TYPE.CHECKBOX,
+                    value: bookmarksService.settings.syncWithSystem,
+                    onChange: (event, value) => {
+                        bookmarksService.settings.update({ syncWithSystem: value });
+                    },
+                }}
+            />
+            <Collapse in={bookmarksService.settings.syncWithSystem}>
+                <MenuRow
+                    title={t('settings.backup.systemBookmarks.syncFolder.title')}
+                    description={t('settings.backup.systemBookmarks.syncFolder.description')}
+                    disabled={foldersRoot === null}
+                    action={{
+                        type: ROWS_TYPE.SELECT,
+                        format: (value) => value === 'new-folder'
+                            ? t('settings.backup.systemBookmarks.syncFolder.newFolder')
+                            : (foldersRoot ? foldersRoot.find(({ id }) => id === value)?.name : 'load...'),
+                        value: syncFolderId,
+                        onOpen: (event) => setEditorAnchor(event.target),
+                        onChange: (event) => {
+                            if (event.target.value === 'new-folder') {
+                                setFoldersEditorOpen(true);
+                                setSyncFolderId('new-folder');
+                            } else {
+                                setSyncFolderId(event.target.value);
+                                coreService.storage.updatePersistent({ syncBrowserFolder: event.target.value });
+                            }
+                        },
+                        values: [...(foldersRoot ? foldersRoot.map(({ id }) => id) : []), 'new-folder'],
+                    }}
+                />
+                <FolderEditor
+                    anchorEl={editorAnchor}
+                    isOpen={foldersEditorOpen}
+                    editRootFolders
+                    addNewFolderByParentId={0}
+                    onSave={(folderId) => {
+                        bookmarksService.folders.getFoldersByParent()
+                            .then((rootFolders) => {
+                                setFoldersRoot(rootFolders);
+                            });
+                        setSyncFolderId(folderId);
+                        coreService.storage.updatePersistent({ syncBrowserFolder: folderId });
+                        setFoldersEditorOpen(false);
+                    }}
+                    onClose={() => {
+                        setSyncFolderId(coreService.storage.persistent.syncBrowserFolder);
+                        setFoldersEditorOpen(false);
+                    }}
+                />
+                <MenuRow
+                    title={t('settings.backup.systemBookmarks.reRunSync.title')}
+                    description={t('settings.backup.systemBookmarks.reRunSync.description')}
+                    action={{
+                        type: ROWS_TYPE.CUSTOM,
+                        onClick: () => {},
+                        component: (
+                            <Button
+                                variant="contained"
+                                component="span"
+                                color="primary"
+                                className={classes.reRunSyncButton}
+                                fullWidth
+                                disabled={syncing}
+                                onClick={() => {
+                                    setSyncing(true);
+                                    eventToBackground('system/parseSystemBookmarks', {}, () => {
+                                        console.log("FINISH SYNC!")
+                                        setSyncing(false);
+                                    })
+                                }}
+                            >
+                                {
+                                    syncing
+                                        ? t('settings.backup.systemBookmarks.reRunSync.progress')
+                                        : t('settings.backup.systemBookmarks.reRunSync.button')
+                                }
+                            </Button>
+                        ),
+                    }}
+                />
+            </Collapse>
+        </React.Fragment>
+    ));
+}
 
 function LocalBackup() {
     const classes = useStyles();
@@ -86,7 +217,7 @@ function LocalBackup() {
                 fullWidth
                 className={classes.backupButton}
             >
-                {t('settings.backup.localBackup.create')}
+                {t('settings.backup.localBackup.create.button')}
             </Button>
             <Popper
                 open={open}
@@ -187,9 +318,11 @@ function BackupSettings() {
 
     return useObserver(() => (
         <React.Fragment>
+            <BrowserSync />
+            <SectionHeader title={t('settings.backup.localBackup.title')} />
             <MenuRow
-                title={t('settings.backup.localBackup.title')}
-                description={t('settings.backup.localBackup.description')}
+                title={t('settings.backup.localBackup.create.title')}
+                description={t('settings.backup.localBackup.create.description')}
                 action={{
                     type: ROWS_TYPE.CUSTOM,
                     onClick: () => {},
