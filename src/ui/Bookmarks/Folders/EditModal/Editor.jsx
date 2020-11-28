@@ -54,6 +54,7 @@ function Editor(props) {
         newFolderRoot: false,
         newFolderName: '',
         folders: null,
+        forceSave: false,
     }));
 
     const handleCreateNewFolder = () => {
@@ -61,11 +62,23 @@ function Editor(props) {
             store.expanded.push(store.folderId);
         }
 
-        store.newFolderName = t('folder.editor.defaultFolderName');
-        store.newFolderRoot = store.folderId;
+        bookmarksService.folders.getFoldersByParent(store.folderId).then((folders) => {
+            const folderNames = folders.map(({ name }) => name);
+            let newFolderName = t('folder.editor.defaultFolderName');
+            let count = 1;
+
+            while (folderNames.indexOf(newFolderName) !== -1) {
+                count += 1;
+                newFolderName = `${t('folder.editor.defaultFolderName')} ${count}`;
+            }
+            store.newFolderRoot = store.folderId;
+            store.newFolderName = newFolderName;
+        });
     };
 
-    const handleSaveNewFolder = async () => {
+    const handleSaveNewFolder = async (forceSave = false) => {
+        if (store.forceSave && !forceSave) return;
+
         if (store.newFolderName.trim() !== '') {
             const newFolderId = await foldersService.save({
                 name: store.newFolderName,
@@ -84,8 +97,16 @@ function Editor(props) {
         store.editId = null;
     };
 
+    const handleSave = async () => {
+        store.forceSave = true;
+        if (store.newFolderRoot !== null) {
+            await handleSaveNewFolder(true);
+        }
+        store.forceSave = false;
+        onSave(store.folderId);
+    }
+
     const renderTree = (nodes) => {
-        console.log('nodes', nodes)
         return (
             <TreeItem
                 key={nodes.id}
@@ -99,7 +120,7 @@ function Editor(props) {
                             value={store.newFolderName}
                             autoFocus
                             onChange={(event) => { store.newFolderName = event.target.value; }}
-                            onBlur={handleSaveNewFolder}
+                            onBlur={() => handleSaveNewFolder()}
                             onKeyDown={(event) => {
                                 console.log('event.code', event.code);
                                 if (event.code === 'Enter') handleSaveNewFolder();
@@ -118,7 +139,7 @@ function Editor(props) {
                             value={store.newFolderName}
                             autoFocus
                             onChange={(event) => { store.newFolderName = event.target.value; }}
-                            onBlur={handleSaveNewFolder}
+                            onBlur={() => handleSaveNewFolder()}
                             onKeyDown={(event) => {
                                 console.log('event.code', event.code);
                                 if (event.code === 'Enter') handleSaveNewFolder();
@@ -173,7 +194,7 @@ function Editor(props) {
                                 value={store.newFolderName}
                                 autoFocus
                                 onChange={(event) => { store.newFolderName = event.target.value; }}
-                                onBlur={handleSaveNewFolder}
+                                onBlur={() => handleSaveNewFolder()}
                                 onKeyDown={(event) => {
                                     console.log('event.code', event.code);
                                     if (event.code === 'Enter') handleSaveNewFolder();
@@ -193,7 +214,7 @@ function Editor(props) {
                 </Button>
                 <Button onClick={onCancel}>{t('cancel')}</Button>
                 <Button
-                    onClick={() => onSave(store.folderId)}
+                    onClick={handleSave}
                     color="primary"
                     variant="contained"
                 >
