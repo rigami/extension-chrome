@@ -299,7 +299,8 @@
       "title": "Изменить папку",
       "create": "Создать папку",
       "changeTooltip": "Изменить папку",
-      "defaultFolderName": "Новая папка"
+      "defaultFolderName": "Новая папка",
+      "folderAlreadyExist": "Такая папка уже существует"
     },
     "noBookmarks": {
       "title": "В этой папке нет закладок",

@@ -3,20 +3,21 @@ import {
     Button,
     Card,
     DialogActions,
-    DialogTitle,
     DialogContent,
+    DialogTitle,
     TextField,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import { TreeView, TreeItem } from '@material-ui/lab';
+import { TreeItem, TreeView } from '@material-ui/lab';
 import {
-    ExpandMoreRounded as ArrowDownIcon,
     ChevronRightRounded as ArrowRightIcon,
+    ExpandMoreRounded as ArrowDownIcon,
 } from '@material-ui/icons';
 import { useLocalObservable, useObserver } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import asyncAction from '@/utils/asyncAction';
+import { toJS } from 'mobx';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -33,6 +34,46 @@ const useStyles = makeStyles((theme) => ({
     },
     createNewFolderButton: { marginRight: 'auto' },
 }));
+
+function FolderEditor({ value, nodesLevel, onSave, onError }) {
+    const { t } = useTranslation();
+    const store = useLocalObservable(() => ({
+        value,
+        error: false,
+        level: nodesLevel.map(({ name }) => name),
+    }));
+
+    const handleSave = () => {
+        if (store.error) return;
+        onSave(store.value);
+    };
+
+    useEffect(() => {
+        store.value = value;
+    }, [value]);
+
+    return useObserver(() => (
+        <TextField
+            margin="dense"
+            variant="outlined"
+            fullWidth
+            value={store.value}
+            autoFocus
+            error={store.error}
+            helperText={store.error ? t('folder.editor.folderAlreadyExist') : ''}
+            onChange={(event) => {
+                store.value = event.target.value;
+                console.log(toJS(store.level), store.level.indexOf(store.value))
+                store.error = store.level.indexOf(store.value.trim()) !== -1;
+                onError(store.error);
+            }}
+            onBlur={() => handleSave()}
+            onKeyDown={(event) => {
+                if (event.code === 'Enter') handleSave();
+            }}
+        />
+    ));
+}
 
 function Editor(props) {
     const {
@@ -55,6 +96,7 @@ function Editor(props) {
         newFolderName: '',
         folders: null,
         forceSave: false,
+        error: false,
     }));
 
     const handleCreateNewFolder = () => {
@@ -106,43 +148,34 @@ function Editor(props) {
         onSave(store.folderId);
     }
 
-    const renderTree = (nodes) => {
+    const renderTree = (nodes, parentLevel) => {
         return (
             <TreeItem
                 key={nodes.id}
                 nodeId={nodes.id}
                 label={
                     store.editId === nodes.id ? (
-                        <TextField
-                            margin="dense"
-                            variant="outlined"
-                            fullWidth
+                        <FolderEditor
                             value={store.newFolderName}
-                            autoFocus
-                            onChange={(event) => { store.newFolderName = event.target.value; }}
-                            onBlur={() => handleSaveNewFolder()}
-                            onKeyDown={(event) => {
-                                console.log('event.code', event.code);
-                                if (event.code === 'Enter') handleSaveNewFolder();
+                            onSave={() => handleSaveNewFolder()}
+                            nodesLevel={parentLevel}
+                            onError={(isError) => {
+                                store.error = isError;
                             }}
+
                         />
                     ) : nodes.name
                 }
             >
                 {[
-                    ...(Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : []),
+                    ...(Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node, nodes.children)) : []),
                     store.newFolderRoot === nodes.id && !store.editId ? (
-                        <TextField
-                            margin="dense"
-                            variant="outlined"
-                            fullWidth
+                        <FolderEditor
                             value={store.newFolderName}
-                            autoFocus
-                            onChange={(event) => { store.newFolderName = event.target.value; }}
-                            onBlur={() => handleSaveNewFolder()}
-                            onKeyDown={(event) => {
-                                console.log('event.code', event.code);
-                                if (event.code === 'Enter') handleSaveNewFolder();
+                            onSave={() => handleSaveNewFolder()}
+                            nodesLevel={nodes.children}
+                            onError={(isError) => {
+                                store.error = isError;
                             }}
                         />
                     ) : null,
@@ -154,8 +187,7 @@ function Editor(props) {
     useEffect(() => {
         asyncAction(async () => {
             if (editId || selectId) {
-                const path = (await foldersService.getPath(editId || selectId)).map(({ id }) => id);
-                store.expanded = path;
+                store.expanded = (await foldersService.getPath(editId || selectId)).map(({ id }) => id);
             }
             const tree = editRootFolders ? await foldersService.getFoldersByParent() : await foldersService.getTree();
             if (editId) {
@@ -187,17 +219,12 @@ function Editor(props) {
                     >
                         {[...store.folders].map((item) => renderTree(item))}
                         {store.newFolderRoot === 0 && (
-                            <TextField
-                                margin="dense"
-                                variant="outlined"
-                                fullWidth
+                            <FolderEditor
                                 value={store.newFolderName}
-                                autoFocus
-                                onChange={(event) => { store.newFolderName = event.target.value; }}
-                                onBlur={() => handleSaveNewFolder()}
-                                onKeyDown={(event) => {
-                                    console.log('event.code', event.code);
-                                    if (event.code === 'Enter') handleSaveNewFolder();
+                                onSave={() => handleSaveNewFolder()}
+                                nodesLevel={store.folders}
+                                onError={(isError) => {
+                                    store.error = isError;
                                 }}
                             />
                         )}
@@ -217,6 +244,7 @@ function Editor(props) {
                     onClick={handleSave}
                     color="primary"
                     variant="contained"
+                    disabled={store.error}
                 >
                     {t('save')}
                 </Button>
