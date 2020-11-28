@@ -179,7 +179,7 @@ function FolderWrapper({ folder, onSelect }) {
                             {isPin() ? (<UnpinnedFavoriteIcon />) : (<PinnedFavoriteIcon />)}
                         </IconButton>
                     </Tooltip>
-                    {folder?.parentId !== 0 && (
+                    {folder?.id !== 1 && (
                         <React.Fragment>
                             <Tooltip title="Изменить">
                                 <IconButton

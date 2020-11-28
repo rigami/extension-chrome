@@ -118,7 +118,8 @@ function Editor(props) {
         });
     };
 
-    const handleSaveNewFolder = async (forceSave = false) => {
+    const handleSaveNewFolder = async (name, forceSave = false) => {
+        store.newFolderName = name;
         if (store.forceSave && !forceSave) return;
 
         if (store.newFolderName.trim() !== '') {
@@ -157,7 +158,7 @@ function Editor(props) {
                     store.editId === nodes.id ? (
                         <FolderEditor
                             value={store.newFolderName}
-                            onSave={() => handleSaveNewFolder()}
+                            onSave={handleSaveNewFolder}
                             nodesLevel={parentLevel}
                             onError={(isError) => {
                                 store.error = isError;
@@ -172,7 +173,7 @@ function Editor(props) {
                     store.newFolderRoot === nodes.id && !store.editId ? (
                         <FolderEditor
                             value={store.newFolderName}
-                            onSave={() => handleSaveNewFolder()}
+                            onSave={handleSaveNewFolder}
                             nodesLevel={nodes.children}
                             onError={(isError) => {
                                 store.error = isError;
@@ -221,7 +222,7 @@ function Editor(props) {
                         {store.newFolderRoot === 0 && (
                             <FolderEditor
                                 value={store.newFolderName}
-                                onSave={() => handleSaveNewFolder()}
+                                onSave={handleSaveNewFolder}
                                 nodesLevel={store.folders}
                                 onError={(isError) => {
                                     store.error = isError;
