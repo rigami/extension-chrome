@@ -3,7 +3,7 @@ import Bookmark from '@/stores/bookmarks/entities/bookmark';
 import Folder from '@/stores/bookmarks/entities/folder';
 import BusApp from '@/stores/backgroundApp/busApp';
 import BookmarksService from '@/stores/bookmarks';
-import settings from '@/config/settings';
+import { first } from 'lodash';
 
 class SyncSystemBookmarks {
     bus;
@@ -45,108 +45,79 @@ class SyncSystemBookmarks {
         }
     }
 
-    async saveSystemBookmark(bookmarkId) {
-        chrome.bookmarks.get(bookmarkId, async ([bookmark]) => {
-            await this.saveBookmark(bookmark);
-        });
-    }
-
-    async saveBookmark(bookmark) {
-        /* const similarBookmarks = await this.bookmarksService.bookmarks.query({
-            url: {
-                fullMatch: true,
-                match: bookmark.url,
-            },
-        });
-
-        console.log('similarBookmarks', similarBookmarks);
-        const similarBookmark = similarBookmarks[0]?.bookmarks?.[0] || {};
-        console.log('bookmark', similarBookmark);
-
-        const newBookmarkId = await this.bookmarksService.bookmarks.save({
-            url: bookmark.url,
-            description: '',
-            image_url: '',
-            icoVariant: BKMS_VARIANT.SYMBOL,
-            ...similarBookmark,
-            // id: bookmark.title === similarBookmark.name ? similarBookmark.id : null,
-            name: bookmark.name || similarBookmark.name,
-            categories: [...(similarBookmark.categories?.map(({ id }) => id) || []), ...bookmark.categories],
-        });
-
-        this.bus.call('bookmark/new', DESTINATION.APP, { bookmarkId: newBookmarkId }); */
-    }
-
-    async saveFolder(folder) {
-        /* const similarBookmarks = await this.bookmarksService.bookmarks.query({
-            url: {
-                fullMatch: true,
-                match: bookmark.url,
-            },
-        });
-
-        console.log('similarBookmarks', similarBookmarks);
-        const similarBookmark = similarBookmarks[0]?.bookmarks?.[0] || {};
-        console.log('bookmark', similarBookmark);
-
-        const newBookmarkId = await this.bookmarksService.bookmarks.save({
-            url: bookmark.url,
-            description: '',
-            image_url: '',
-            icoVariant: BKMS_VARIANT.SYMBOL,
-            ...similarBookmark,
-            // id: bookmark.title === similarBookmark.name ? similarBookmark.id : null,
-            name: bookmark.name || similarBookmark.name,
-            categories: [...(similarBookmark.categories?.map(({ id }) => id) || []), ...bookmark.categories],
-        });
-
-        this.bus.call('bookmark/new', DESTINATION.APP, { bookmarkId: newBookmarkId }); */
-    }
-
     async parseSystemBookmarks() {
-        const parseNode = async (node, parentId = 0) => {
-            if (node.url && !('dateGroupModified' in node)) {
-                const saveBookmark = new Bookmark({
-                    name: node.title,
-                    url: node.url,
+        const parseNodeBookmark = async (browserNode, rigamiNode, parentId) => {
+            console.log('parseNodeBookmark', browserNode, rigamiNode, parentId);
+
+            if (rigamiNode) {
+                console.log('use rigami bookmark:', rigamiNode);
+            } else {
+                const bookmark = new Bookmark({
+                    name: browserNode.title,
+                    url: browserNode.url,
                     folderId: parentId,
                 });
 
-                console.log('bookmark', saveBookmark);
+                console.log('create bookmark:', bookmark);
 
                 await this.bookmarksService.bookmarks.save({
                     description: '',
                     image_url: '',
                     icoVariant: BKMS_VARIANT.SYMBOL,
-                    ...saveBookmark,
+                    ...bookmark,
                     categories: [],
                 }, false);
-            } else {
-                const folder = new Folder({ parentId });
-
-                if (node.id === '0' || node.title === '') {
-                    if (!this.bookmarksService.settings.syncMerge) folder.name = settings.bookmarks.sync_default_folder_name;
-                    folder.id = this.storageService.storage.syncBrowserFolder;
-                } else {
-                    folder.name = node.title;
-                }
-
-                console.log('create folder:', folder);
-
-                const newFolderId = node.id === '0' && this.storageService.storage.syncBrowserFolder || await this.bookmarksService.folders.save({ ...folder }, false);
-
-                for (let i = 0; i < node.children.length; i += 1) {
-                    await parseNode(node.children[i], newFolderId);
-                }
             }
+
+            return Promise.resolve();
+        }
+
+        const parseNodeFolder = async (browserNode, rigamiNode, parentId) => {
+            console.log('parseNodeFolder', browserNode, rigamiNode, parentId);
+
+            let newFolderId;
+
+            if (rigamiNode) {
+                console.log('use rigami folder:', rigamiNode);
+                newFolderId = rigamiNode.id;
+            } else {
+                const folder = new Folder({ name: browserNode.title, parentId });
+                console.log('create folder:', folder);
+                newFolderId = await this.bookmarksService.folders.save({ ...folder }, false);
+            }
+
+            await parseLevel(browserNode.children, rigamiNode?.children || [], newFolderId);
 
             return Promise.resolve();
         };
 
-        chrome.bookmarks.getTree(async (nodes) => {
-            for (let i = 0; i < nodes.length; i += 1) {
-                await parseNode(nodes[i]);
+        const parseLevel = async (browserNodes, rigamiNodes, parentId) => {
+            console.log('parseLevel', browserNodes, rigamiNodes);
+
+            const bookmarks = await this.bookmarksService.bookmarks.getAllInFolder(parentId);
+
+            for (let i = 0; i < browserNodes.length; i += 1) {
+                if (browserNodes[i].url && !('dateGroupModified' in browserNodes[i])) {
+                    await parseNodeBookmark(
+                        browserNodes[i],
+                        bookmarks.find(({ name, url }) => name === browserNodes[i].title || url === browserNodes[i].url),
+                        parentId,
+                    );
+                } else {
+                    await parseNodeFolder(
+                        browserNodes[i],
+                        rigamiNodes.find(({ name }) => name === browserNodes[i].title),
+                        parentId,
+                    );
+                }
             }
+        }
+
+        const tree = await this.bookmarksService.folders.getTree(this.storageService.storage.syncBrowserFolder);
+
+
+        await chrome.bookmarks.getTree(async (nodes) => {
+            await parseLevel(first(nodes).children, tree, this.storageService.storage.syncBrowserFolder);
             console.log('finish sync!');
         });
     }
