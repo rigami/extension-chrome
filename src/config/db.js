@@ -1,3 +1,6 @@
+import DBConnector from '@/utils/dbConnector';
+import { toJS } from 'mobx';
+
 function upgradeOrCreateBackgrounds(db, transaction) {
     let store;
 
@@ -82,7 +85,7 @@ function upgradeOrCreateBookmarksByCategories(db, transaction) {
     return store;
 }
 
-function upgradeOrCreateFolders(db, transaction) {
+async function upgradeOrCreateFolders(db, transaction, newVersion) {
     let store;
 
     if (db.objectStoreNames.contains('folders')) {
@@ -95,7 +98,7 @@ function upgradeOrCreateFolders(db, transaction) {
         store.createIndex('name', 'name', { unique: false });
         store.createIndex('parent_id', 'parentId', { unique: false });
 
-        store.add({
+        await store.add({
             name: 'rigami',
             parentId: 0,
         });
@@ -121,18 +124,77 @@ function upgradeOrCreateFavorites(db, transaction) {
     return store;
 }
 
+async function migrate(version) {
+    console.log('Migrate!')
 
-export default {
+    if (version === 3) {
+        console.log('Rename old folders');
+        const renameFolder = (folderIndex, folderNames, oldName) => {
+            let newFolderName = oldName;
+            let count = 1;
+
+            while (folderNames.indexOf(newFolderName) !== -1) {
+                count += 1;
+                newFolderName = `${oldName} ${count}`;
+            }
+
+            return newFolderName
+        }
+
+        const findRenamedFolders = async (folderId) => {
+            let folders = await DBConnector().getAllFromIndex('folders', 'parent_id', folderId);
+
+            console.log('check level', folderId, toJS(folders))
+
+            if (folders.length === 0) return [];
+
+            let renamedFolders = [];
+
+            const changedFolders = folders.map(({ name, ...folder }, index) => {
+                const newName = renameFolder(index, [...renamedFolders].splice(0, index), folders[index].name);
+
+                renamedFolders.push(newName);
+
+                return {
+                    ...folder,
+                    name,
+                    newName,
+                };
+            }).filter(({ name, newName }) => name !== newName);
+
+            const childFolders = (await Promise.all(folders.map((folder) => findRenamedFolders(folder.id)))).flat();
+
+            return [...changedFolders, ...childFolders];
+        }
+
+        const changedFolders = await findRenamedFolders(0);
+
+        await Promise.all(changedFolders.map((folder) => {
+            return DBConnector().put('folders', {
+                id: folder.id,
+                name: folder.newName.trim(),
+                parentId: folder.parentId,
+            })
+        }));
+    }
+}
+
+
+export default ({ upgrade }) => ({
     upgrade(db, oldVersion, newVersion, transaction) {
-        console.log('upgrade db', db, transaction);
+        console.log('upgrade db', db, transaction, oldVersion, newVersion);
         upgradeOrCreateBackgrounds(db, transaction);
         upgradeOrCreateBookmarks(db, transaction);
         upgradeOrCreateCategories(db, transaction);
         upgradeOrCreateBookmarksByCategories(db, transaction);
-        upgradeOrCreateFolders(db, transaction);
+        upgradeOrCreateFolders(db, transaction, newVersion).catch(console.error);
         upgradeOrCreateFavorites(db, transaction);
+
+        upgrade();
     },
     blocked() {},
     blocking() {},
     terminated() {},
-};
+});
+
+export { migrate };
