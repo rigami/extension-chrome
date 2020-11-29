@@ -94,15 +94,13 @@ function Widgets() {
             {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) && (
                 <Box className={classes.row}>
                     {widgets.settings.dtwUseDate && (
-                        <Date size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
+                        <Date
+                            size={calcFontSize(widgets.settings.dtwSize, dateFontSize)}
+                            dot={widgets.settings.dtwUseWeather}
+                        />
                     )}
                     {widgets.settings.dtwUseWeather && (
-                        <React.Fragment>
-                            {widgets.settings.dtwUseDate && (
-                                <Divider className={classes.divider} orientation="vertical" flexItem />
-                            )}
-                            <WeatherWidget size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
-                        </React.Fragment>
+                        <WeatherWidget size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
                     )}
                 </Box>
             )}

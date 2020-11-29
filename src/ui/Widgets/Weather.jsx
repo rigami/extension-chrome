@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link, Typography, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useAppStateService from '@/stores/AppStateProvider';
-import { useObserver } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
+import appVariables from '@/config/appVariables';
+import { WIDGET_DTW_UNITS } from '@/enum';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -20,29 +22,39 @@ function WeatherWidget({ size }) {
     const { t } = useTranslation();
     const { widgets } = useAppStateService();
 
-    /* if (widgets.settings.dtwDateAction) {
-        return (
+    let units;
+    let temp;
+
+    if (widgets.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.FAHRENHEIT) {
+        units = '°F';
+        temp = ((widgets.weather?.currTemp || 0) - 273.15) * (9/5) + 32;
+    } else if (widgets.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.KELVIN) {
+        units = 'К';
+        temp = widgets.weather?.currTemp;
+    } else {
+        units = '°C';
+        temp = (widgets.weather?.currTemp || 0) - 273.15;
+    }
+
+    return (
+        <Tooltip title={t('widgets.weather.openInNewTab')}>
             <Link
-                href={widgets.settings.dtwDateAction}
+                href={appVariables.widgets.weather.services.openweathermap.dashboard}
                 target="_blank"
                 underline="none"
                 color="inherit"
                 className={classes.link}
             >
                 <Typography variant={size} className={classes.root}>
-                    {formatter.format(now)}
+                    {
+                        widgets.weather
+                            ?  `${temp} ${units}`
+                            : t('widgets.weather.unavailable')
+                    }
                 </Typography>
             </Link>
-        );
-    } */
-
-    return useObserver(() => (
-        <Tooltip title={t('widgets.weather.openInNewTab')}>
-            <Typography variant={size} className={classes.root}>
-                {widgets.weather?.currTemp} °C
-            </Typography>
         </Tooltip>
-    ));
+    );
 }
 
-export default WeatherWidget;
+export default observer(WeatherWidget);

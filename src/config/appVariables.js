@@ -22,8 +22,9 @@ export default {
             services: {
                 'openweathermap': {
                     name: 'openweathermap',
+                    dashboard: 'https://openweathermap.org/',
                     api: {
-                        curr: ({ lat, lon, lang, units, apiKey }) => `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${units}&lang=${lang}`,
+                        curr: ({ lat, lon, lang, apiKey }) => `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=${lang}`,
                     },
                     apiKey: '10ad1bca6850a2c26033e31c2a60229f',
                 }

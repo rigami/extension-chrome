@@ -57,6 +57,7 @@ class WidgetsSettingsStore {
     dtwUseDate;
     dtwDateAction;
     dtwUseWeather;
+    dtwWeatherMetrics;
     isSync = false;
 
     constructor() {
@@ -69,6 +70,7 @@ class WidgetsSettingsStore {
         this.dtwUseDate = defaultSettings.widgets.dtw.date.use_date;
         this.dtwDateAction = defaultSettings.widgets.dtw.date.default_action;
         this.dtwUseWeather = defaultSettings.widgets.dtw.weather.use_weather;
+        this.dtwWeatherMetrics = defaultSettings.widgets.dtw.weather.metrics;
 
         try {
             this.update(JSON.parse(localStorage.getItem('settings')).widgets, false);
@@ -97,6 +99,7 @@ class WidgetsSettingsStore {
             'dtwUseDate',
             'dtwDateAction',
             'dtwUseWeather',
+            'dtwWeatherMetrics',
         ]);
 
         assign(this, updProps);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     Collapse,
     Dialog,
@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import useAppStateService from '@/stores/AppStateProvider';
-import { WIDGET_DTW_POSITION, WIDGET_DTW_SIZE } from '@/enum';
+import { WIDGET_DTW_POSITION, WIDGET_DTW_SIZE, WIDGET_DTW_UNITS } from '@/enum';
 import { useObserver } from 'mobx-react-lite';
 import { getDomain } from '@/utils/localSiteParse';
 import { map } from 'lodash';
@@ -119,11 +119,9 @@ function DateWidget() {
 }
 
 function WeatherWidget() {
-    const classes = useStyles();
     const { t } = useTranslation();
     const { enqueueSnackbar } = useSnackbar();
     const { widgets } = useAppStateService();
-    const [actionEditorOpen, setActionEditorOpen] = useState(false);
     const [dtwUseWeather, setDtwUseWeather] = useState(widgets.settings.dtwUseWeather);
 
     return useObserver(() => (
@@ -162,18 +160,15 @@ function WeatherWidget() {
             />
             <Collapse in={widgets.settings.dtwUseWeather}>
                 <MenuRow
-                    title={t('settings.widgets.dtw.date.clickAction.title')}
-                    description={t('settings.widgets.dtw.date.clickAction.description')}
+                    title={t('settings.widgets.dtw.weather.units.title')}
                     action={{
-                        type: ROWS_TYPE.LINK,
-                        onClick: () => { setActionEditorOpen(true); },
-                        component: widgets.settings.dtwDateAction
-                            ? `open: ${getDomain(widgets.settings.dtwDateAction)}`
-                            : (
-                                <Typography className={classes.notSetValue}>
-                                    {t('settings.widgets.dtw.date.clickAction.notSet')}
-                                </Typography>
-                            ),
+                        type: ROWS_TYPE.SELECT,
+                        format: (value) => t(`settings.widgets.dtw.weather.units.unit.${value}`),
+                        value: widgets.settings.dtwWeatherMetrics,
+                        onChange: (event) => {
+                            widgets.settings.update({ dtwWeatherMetrics: event.target.value });
+                        },
+                        values: map(WIDGET_DTW_UNITS, (key) => WIDGET_DTW_UNITS[key]),
                     }}
                 />
             </Collapse>

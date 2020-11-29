@@ -2,14 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { Link, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useAppStateService from '@/stores/AppStateProvider';
+import clsx from 'clsx';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         textShadow: '0 2px 17px #00000029',
         fontFamily: '"Manrope", "Open Sans", sans-serif',
         fontWeight: 800,
     },
     link: {},
+    offset: {
+        marginRight: theme.spacing(3),
+    },
 }));
 
 const formatter = new Intl.DateTimeFormat('nu', {
@@ -18,7 +22,7 @@ const formatter = new Intl.DateTimeFormat('nu', {
     day: '2-digit',
 });
 
-function DateWidget({ size }) {
+function DateWidget({ size, dot = false }) {
     const classes = useStyles();
     const { widgets } = useAppStateService();
     const [now, setNow] = useState(new Date());
@@ -38,18 +42,18 @@ function DateWidget({ size }) {
                 target="_blank"
                 underline="none"
                 color="inherit"
-                className={classes.link}
+                className={clsx(classes.link, dot && classes.offset)}
             >
                 <Typography variant={size} className={classes.root}>
-                    {formatter.format(now)}
+                    {formatter.format(now)}{dot ? '.' : ''}
                 </Typography>
             </Link>
         );
     }
 
     return (
-        <Typography variant={size} className={classes.root}>
-            {formatter.format(now)}
+        <Typography variant={size} className={clsx(classes.root, dot && classes.offset)}>
+            {formatter.format(now)}{dot ? '.' : ''}
         </Typography>
     );
 }

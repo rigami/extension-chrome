@@ -1,13 +1,11 @@
-import { makeAutoObservable, reaction, toJS } from 'mobx';
-import { WidgetsSettingsStore } from '@/stores/app/settings';
+import { makeAutoObservable, reaction } from 'mobx';
 import fetchData from '@/utils/xhrPromise'
 import appVariables from '@/config/appVariables';
 import BusApp from '@/stores/backgroundApp/busApp';
-import { assign } from 'lodash';
+import { WIDGET_DTW_UNITS } from '@/enum';
 
 class WidgetsService {
     bus;
-    _coreService;
     settings;
     weather;
     storageService;
@@ -16,6 +14,9 @@ class WidgetsService {
         makeAutoObservable(this);
         this.bus = BusApp();
         this.storageService = storageService;
+        this.settings = settingsService.settings;
+
+        console.log(this.settings)
 
         reaction(
             () => settingsService.settings.widgets.dtwUseWeather,
@@ -56,7 +57,6 @@ class WidgetsService {
             lon: coords.longitude,
             apiKey: openweathermap.apiKey,
             lang: 'ru',
-            units: 'metric',
         }));
 
         console.log('weather', weather)
