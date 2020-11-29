@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Collapse,
     Dialog,
@@ -18,6 +18,7 @@ import { WIDGET_DTW_POSITION, WIDGET_DTW_SIZE } from '@/enum';
 import { useObserver } from 'mobx-react-lite';
 import { getDomain } from '@/utils/localSiteParse';
 import { map } from 'lodash';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     notSetValue: {
@@ -117,12 +118,13 @@ function DateWidget() {
     ));
 }
 
-/* function WeatherWidget() {
+function WeatherWidget() {
     const classes = useStyles();
     const { t } = useTranslation();
+    const { enqueueSnackbar } = useSnackbar();
     const { widgets } = useAppStateService();
     const [actionEditorOpen, setActionEditorOpen] = useState(false);
-    const [actionUrl, setActionUrl] = useState('');
+    const [dtwUseWeather, setDtwUseWeather] = useState(widgets.settings.dtwUseWeather);
 
     return useObserver(() => (
         <React.Fragment>
@@ -131,9 +133,30 @@ function DateWidget() {
                 title={t('settings.widgets.dtw.weather.useWeather')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
-                    value: widgets.settings.dtwUseWeather,
+                    value: dtwUseWeather,
+                    disabled: dtwUseWeather !== widgets.settings.dtwUseWeather,
                     onChange: (event, value) => {
-                        widgets.settings.update({ dtwUseWeather: value });
+                        setDtwUseWeather(value);
+
+                        if (value) {
+                            widgets.getPermissionsToWeather()
+                                .then(() => {
+                                    widgets.settings.update({ dtwUseWeather: value });
+                                })
+                                .catch((e) => {
+                                    console.error(e);
+                                    setDtwUseWeather(false);
+                                    widgets.settings.update({ dtwUseWeather: false });
+
+                                    enqueueSnackbar({
+                                        message: t('settings.widgets.dtw.weather.userDeniedGeolocation.title'),
+                                        description: t('settings.widgets.dtw.weather.userDeniedGeolocation.description'),
+                                        variant: 'error',
+                                    });
+                                })
+                        } else {
+                            widgets.settings.update({ dtwUseWeather: value });
+                        }
                     },
                 }}
             />
@@ -156,7 +179,7 @@ function DateWidget() {
             </Collapse>
         </React.Fragment>
     ));
-} */
+}
 
 function Widgets() {
     const { t } = useTranslation();
@@ -248,7 +271,7 @@ function Widgets() {
                     />
                 </Collapse>
                 <DateWidget />
-                {/* <WeatherWidget /> */}
+                <WeatherWidget />
             </Collapse>
         </React.Fragment>
     ));

@@ -3,14 +3,16 @@ import { AppSettingsStore } from '@/stores/app/settings';
 import WidgetsService from '@/stores/widgets';
 
 class AppStateStore {
+    coreService;
     activity = 'desktop';
     settings;
     widgets;
 
-    constructor() {
+    constructor({ coreService }) {
         makeAutoObservable(this);
+        this.coreService = coreService;
         this.settings = new AppSettingsStore();
-        this.widgets = new WidgetsService();
+        this.widgets = new WidgetsService(coreService);
     }
 
     @action('set activity')

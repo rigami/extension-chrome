@@ -16,4 +16,18 @@ export default {
         sourceLink: 'https://unsplash.com/photos/WajET_vzPmI',
     },
     rest: { url: `${PRODUCTION_MODE ? 'https://api.rigami.io' : 'http://localhost:8080'}` },
+    widgets: {
+        weather: {
+            updateTime: 60 * 60 * 1000,
+            services: {
+                'openweathermap': {
+                    name: 'openweathermap',
+                    api: {
+                        curr: ({ lat, lon, lang, units, apiKey }) => `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${units}&lang=${lang}`,
+                    },
+                    apiKey: '10ad1bca6850a2c26033e31c2a60229f',
+                }
+            },
+        },
+    },
 };

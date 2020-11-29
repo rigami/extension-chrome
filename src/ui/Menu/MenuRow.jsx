@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     ListItem,
     ListItemSecondaryAction,
@@ -17,6 +17,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { set } from 'mobx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -87,6 +88,13 @@ function MenuRow(props) {
         (actionType === TYPE.CHECKBOX && actionProps.checked)
         || actionProps.value,
     );
+
+    useEffect(() => {
+        setValue(
+            (actionType === TYPE.CHECKBOX && actionProps.checked)
+            || actionProps.value,
+        );
+    }, [actionProps.checked, actionProps.value]);
 
     return (
         <ListItem
