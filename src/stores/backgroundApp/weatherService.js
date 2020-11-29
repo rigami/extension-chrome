@@ -2,7 +2,6 @@ import { makeAutoObservable, reaction } from 'mobx';
 import fetchData from '@/utils/xhrPromise'
 import appVariables from '@/config/appVariables';
 import BusApp from '@/stores/backgroundApp/busApp';
-import { WIDGET_DTW_UNITS } from '@/enum';
 
 class WidgetsService {
     bus;
@@ -16,18 +15,40 @@ class WidgetsService {
         this.storageService = storageService;
         this.settings = settingsService.settings;
 
-        console.log(this.settings)
+        let timer;
+
+        const start = () => {
+            const lastUpd = this.storageService.storage.widgetWeather.lastUpdateTimestamp;
+
+            if (!lastUpd || lastUpd + appVariables.widgets.weather.updateTime < Date.now()) {
+                console.log('START')
+                this.getCurWeather().catch(console.error);
+
+                timer = setInterval(() => {
+                    this.getCurWeather().catch(console.error);
+                }, appVariables.widgets.weather.updateTime);
+            } else {
+                console.log('AWAIT', lastUpd + appVariables.widgets.weather.updateTime - Date.now())
+                setTimeout(start, lastUpd + appVariables.widgets.weather.updateTime - Date.now());
+            }
+        };
+
+        const stop = () => {
+            console.log('STOP')
+            clearInterval(timer);
+        };
 
         reaction(
-            () => settingsService.settings.widgets.dtwUseWeather,
-            () => { if (settingsService.settings.widgets.dtwUseWeather) this.getCurWeather().catch(console.error); },
+            () => this.settings.widgets.dtwUseWeather,
+            () => {
+                if (this.settings.widgets.dtwUseWeather) start();
+                else stop();
+            },
         );
 
-        if (settingsService.settings.widgets.dtwUseWeather) this.getCurWeather().catch(console.error);
+        if (this.settings.widgets.dtwUseWeather) start();
 
-        setInterval(() => {
-            this.getCurWeather().catch(console.error);
-        }, appVariables.widgets.weather.updateTime);
+        console.log(this.settings)
     }
 
     async getCurWeather() {
@@ -65,6 +86,7 @@ class WidgetsService {
             ...this.weather,
             currTemp: weather.main.temp,
             regionName: weather.name,
+            lastUpdateTimestamp: Date.now(),
         };
 
         this.storageService.updatePersistent({ widgetWeather: this.weather });

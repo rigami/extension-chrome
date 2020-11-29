@@ -2,12 +2,14 @@ import BusApp, { eventToApp } from '@/stores/backgroundApp/busApp';
 import { assign, throttle } from 'lodash';
 import defaultSettings from '@/config/settings';
 import FSConnector from '@/utils/fsConnector';
+import { makeAutoObservable } from 'mobx';
 
 class SyncSettings {
     bus;
     settings;
 
     constructor() {
+        makeAutoObservable(this);
         this.bus = BusApp();
         this.settings = {
             app: {},
