@@ -63,7 +63,7 @@ function upgradeOrCreateSystemBookmarks(db, transaction) {
         });
         store.createIndex('type', 'type', { unique: false });
         store.createIndex('rigami_id', 'rigamiId', { unique: false });
-        store.createIndex('system_id', 'systemId', { unique: false });
+        store.createIndex('system_id', 'systemId', { unique: true });
     }
 
     return store;

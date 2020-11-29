@@ -22,7 +22,11 @@ class SyncSystemBookmarks {
         }
 
         this.bus.on('system/parseSystemBookmarks', async (props, options, callback, ...other) => {
-            await this.parseSystemBookmarks();
+            try {
+                await this.parseSystemBookmarks();
+            } catch (e) {
+                console.error(e);
+            }
             console.log(props, options, callback, other)
             console.log('finish SYNC!')
             // await new Promise((resolve) => setTimeout(resolve, 4500))
@@ -53,7 +57,7 @@ class SyncSystemBookmarks {
                 console.log('onChanged', id, changeInfo);
             });
             chrome.bookmarks.onRemoved.addListener((id, { node: removedNode, ...removeInfo }) => {
-                console.log('onChanged', id, removeInfo, removedNode);
+                console.log('onRemoved', id, removeInfo, removedNode);
             });
         }
     }
@@ -75,6 +79,12 @@ class SyncSystemBookmarks {
             categories: [],
         }, notyEvent);
 
+        console.log('add bind:', {
+            type: TYPE.BOOKMARK,
+            rigamiId: bookmarkId,
+            systemId: browserNode.id,
+        });
+
         await DBConnector().add('system_bookmarks', {
             type: TYPE.BOOKMARK,
             rigamiId: bookmarkId,
@@ -89,6 +99,12 @@ class SyncSystemBookmarks {
         console.log('create folder:', folder);
         const newFolderId = await this.bookmarksService.folders.save({ ...folder }, notyEvent);
 
+        console.log('add bind:', {
+            type: TYPE.FOLDER,
+            rigamiId: newFolderId,
+            systemId: browserNode.id,
+        });
+
         await DBConnector().add('system_bookmarks', {
             type: TYPE.FOLDER,
             rigamiId: newFolderId,
@@ -99,8 +115,6 @@ class SyncSystemBookmarks {
     }
 
     async parseSystemBookmarks() {
-        const db = DBConnector();
-
         const parseNodeBookmark = async (browserNode, rigamiNode, parentId) => {
             console.log('parseNodeBookmark', browserNode, rigamiNode, parentId);
 
@@ -136,16 +150,24 @@ class SyncSystemBookmarks {
             const bookmarks = await this.bookmarksService.bookmarks.getAllInFolder(parentId);
 
             for (let i = 0; i < browserNodes.length; i += 1) {
+                const bind = await DBConnector().getFromIndex(
+                    'system_bookmarks',
+                    'system_id',
+                    browserNodes[i].id,
+                );
+
+                console.log('bind', bind, browserNodes[i])
+
                 if (browserNodes[i].url && !('dateGroupModified' in browserNodes[i])) {
                     await parseNodeBookmark(
                         browserNodes[i],
-                        bookmarks.find(({ name, url }) => name === browserNodes[i].title || url === browserNodes[i].url),
+                        bookmarks.find(({ name, url, id }) => id === bind?.rigamiId || name === browserNodes[i].title || url === browserNodes[i].url),
                         parentId,
                     );
                 } else {
                     await parseNodeFolder(
                         browserNodes[i],
-                        rigamiNodes.find(({ name }) => name === browserNodes[i].title),
+                        rigamiNodes.find(({ name, id }) => id === bind?.rigamiId || name === browserNodes[i].title),
                         parentId,
                     );
                 }
