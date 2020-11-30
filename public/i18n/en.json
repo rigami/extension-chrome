@@ -373,7 +373,7 @@
   },
   "newVersion": {
     "title": "New version {{version}}",
-    "description": "The extension has been updated, now it is even better\n\n  - Fixed scrolling activated by middle mouse button.",
+    "description": "The extension has been updated, now it is even better\n\n  - Added weather widget.\n\n  - Fixed other minor issues.",
     "ok": "OK",
     "changelog": "List of changes"
   },
