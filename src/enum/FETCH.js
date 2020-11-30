@@ -3,4 +3,7 @@ export default {
     DONE: 'DONE',
     FAILED: 'FAILED',
     WAIT: 'WAIT',
+    ONLINE: 'ONLINE',
+    ABORT: 'ABORT',
+    STOP: 'STOP',
 };

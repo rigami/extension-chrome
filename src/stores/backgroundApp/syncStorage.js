@@ -1,13 +1,14 @@
 import BusApp, { eventToApp, eventToBackground, instanceId } from '@/stores/backgroundApp/busApp';
 import { assign, throttle } from 'lodash';
 import FSConnector from '@/utils/fsConnector';
-import { action } from 'mobx';
+import { action, makeAutoObservable } from 'mobx';
 
 class SyncStorage {
     bus;
     storage;
 
     constructor() {
+        makeAutoObservable(this);
         this.bus = BusApp();
 
         console.log(this.bus)

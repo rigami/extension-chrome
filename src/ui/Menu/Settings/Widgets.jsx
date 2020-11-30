@@ -7,18 +7,27 @@ import {
     DialogContent,
     DialogContentText,
     Button,
-    TextField, Typography,
+    TextField,
+    Typography,
+    LinearProgress,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import useAppStateService from '@/stores/AppStateProvider';
-import { WIDGET_DTW_POSITION, WIDGET_DTW_SIZE, WIDGET_DTW_UNITS } from '@/enum';
+import {
+    FETCH,
+    WIDGET_DTW_POSITION,
+    WIDGET_DTW_SIZE,
+    WIDGET_DTW_UNITS,
+} from '@/enum';
 import { useObserver } from 'mobx-react-lite';
 import { getDomain } from '@/utils/localSiteParse';
 import { map } from 'lodash';
 import { useSnackbar } from 'notistack';
+import MenuInfo from '@/ui/Menu/MenuInfo';
+import useCoreService from '@/stores/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     notSetValue: {
@@ -123,6 +132,7 @@ function WeatherWidget() {
     const { t } = useTranslation();
     const { enqueueSnackbar } = useSnackbar();
     const { widgets } = useAppStateService();
+    const coreService = useCoreService();
     const [dtwUseWeather, setDtwUseWeather] = useState(widgets.settings.dtwUseWeather);
     const [actionEditorOpen, setActionEditorOpen] = useState(false);
     const [actionUrl, setActionUrl] = useState('');
@@ -184,6 +194,12 @@ function WeatherWidget() {
                         values: ['openweathermap'],
                     }}
                 />
+                <MenuInfo
+                    width={750}
+                    show={coreService.storage.persistent.widgetWeather?.status === FETCH.FAILED}
+                    message={t('settings.widgets.dtw.weather.serviceUnavailable')}
+                />
+                {coreService.storage.persistent.widgetWeather?.status === FETCH.PENDING && (<LinearProgress />)}
                 <MenuRow
                     title={t('settings.widgets.dtw.weather.clickAction.title')}
                     description={t('settings.widgets.dtw.weather.clickAction.description')}

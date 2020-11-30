@@ -148,6 +148,8 @@
         "weather": {
           "title": "Weather",
           "description": "Display of the current weather",
+          "serviceUnavailable": "Weather service not available",
+          "pendingData": "Receiving data...",
           "useWeather": "Show current weather",
           "userDeniedGeolocation": {
             "title": "You have denied access to geolocation. Weather display not possible",

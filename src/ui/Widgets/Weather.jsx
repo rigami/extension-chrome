@@ -1,11 +1,11 @@
 import React from 'react';
-import { Link, Typography, Tooltip } from '@material-ui/core';
+import { Link, Typography, Tooltip, Fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useAppStateService from '@/stores/AppStateProvider';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import appVariables from '@/config/appVariables';
-import { WIDGET_DTW_UNITS } from '@/enum';
+import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -37,23 +37,21 @@ function WeatherWidget({ size }) {
     }
 
     return (
-        <Tooltip title={t('widgets.weather.openInNewTab')}>
-            <Link
-                href={widgets.settings.dtwWeatherAction || appVariables.widgets.weather.services.openweathermap.dashboard}
-                target="_blank"
-                underline="none"
-                color="inherit"
-                className={classes.link}
-            >
-                <Typography variant={size} className={classes.root}>
-                    {
-                        widgets.weather
-                            ?  `${temp} ${units}`
-                            : t('widgets.weather.unavailable')
-                    }
-                </Typography>
-            </Link>
-        </Tooltip>
+        <Fade in={widgets.weather?.status === FETCH.ONLINE}>
+            <Tooltip title={t('widgets.weather.openInNewTab')}>
+                <Link
+                    href={widgets.settings.dtwWeatherAction || appVariables.widgets.weather.services.openweathermap.dashboard}
+                    target="_blank"
+                    underline="none"
+                    color="inherit"
+                    className={classes.link}
+                >
+                    <Typography variant={size} className={classes.root}>
+                        {`${temp} ${units}`}
+                    </Typography>
+                </Link>
+            </Tooltip>
+        </Fade>
     );
 }
 
