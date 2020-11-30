@@ -48,6 +48,7 @@ export default {
             weather: {
                 use_weather: false,
                 metrics: WIDGET_DTW_UNITS.CELSIUS,
+                default_action: '',
             },
         },
     },

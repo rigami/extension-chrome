@@ -119,10 +119,13 @@ function DateWidget() {
 }
 
 function WeatherWidget() {
+    const classes = useStyles();
     const { t } = useTranslation();
     const { enqueueSnackbar } = useSnackbar();
     const { widgets } = useAppStateService();
     const [dtwUseWeather, setDtwUseWeather] = useState(widgets.settings.dtwUseWeather);
+    const [actionEditorOpen, setActionEditorOpen] = useState(false);
+    const [actionUrl, setActionUrl] = useState('');
 
     return useObserver(() => (
         <React.Fragment>
@@ -171,6 +174,64 @@ function WeatherWidget() {
                         values: map(WIDGET_DTW_UNITS, (key) => WIDGET_DTW_UNITS[key]),
                     }}
                 />
+                <MenuRow
+                    title={t('settings.widgets.dtw.weather.provider.title')}
+                    action={{
+                        type: ROWS_TYPE.SELECT,
+                        format: (value) => t(`settings.widgets.dtw.weather.provider.provider.${value}`),
+                        value: 'openweathermap',
+                        disabled: true,
+                        values: ['openweathermap'],
+                    }}
+                />
+                <MenuRow
+                    title={t('settings.widgets.dtw.weather.clickAction.title')}
+                    description={t('settings.widgets.dtw.weather.clickAction.description')}
+                    action={{
+                        type: ROWS_TYPE.LINK,
+                        onClick: () => { setActionEditorOpen(true); },
+                        component: widgets.settings.dtwWeatherAction
+                            ? `open: ${getDomain(widgets.settings.dtwWeatherAction)}`
+                            : (
+                                <Typography className={classes.notSetValue}>
+                                    {t('settings.widgets.dtw.weather.clickAction.notSet')}
+                                </Typography>
+                            ),
+                    }}
+                />
+                <Dialog open={actionEditorOpen} onClose={() => { setActionEditorOpen(false); }}>
+                    <DialogTitle>{t('settings.widgets.dtw.weather.clickAction.titleFull')}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {t('settings.widgets.dtw.weather.clickAction.descriptionFull')}
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            defaultValue={widgets.settings.dtwWeatherAction}
+                            fullWidth
+                            label={t('settings.widgets.dtw.weather.clickAction.textFieldLabelUrl')}
+                            onChange={(event) => { setActionUrl(event.target.value); }}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            color="primary"
+                            onClick={() => { setActionEditorOpen(false); }}
+                        >
+                            {t('cancel')}
+                        </Button>
+                        <Button
+                            color="primary"
+                            onClick={() => {
+                                setActionEditorOpen(false);
+                                widgets.settings.update({ dtwWeatherAction: actionUrl });
+                            }}
+                        >
+                            {t('save')}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Collapse>
         </React.Fragment>
     ));
