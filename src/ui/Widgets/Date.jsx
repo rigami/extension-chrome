@@ -3,6 +3,7 @@ import { Link, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useAppStateService from '@/stores/AppStateProvider';
 import clsx from 'clsx';
+import { last } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,6 +36,8 @@ function DateWidget({ size, dot = false }) {
         return () => clearInterval(scheduler);
     }, []);
 
+    const date = formatter.format(now);
+
     if (widgets.settings.dtwDateAction) {
         return (
             <Link
@@ -45,7 +48,7 @@ function DateWidget({ size, dot = false }) {
                 className={clsx(classes.link, dot && classes.offset)}
             >
                 <Typography variant={size} className={classes.root}>
-                    {formatter.format(now)}{dot ? '.' : ''}
+                    {date}{dot && last(date) !== '.' ? '.' : ''}
                 </Typography>
             </Link>
         );
@@ -53,7 +56,7 @@ function DateWidget({ size, dot = false }) {
 
     return (
         <Typography variant={size} className={clsx(classes.root, dot && classes.offset)}>
-            {formatter.format(now)}{dot ? '.' : ''}
+            {date}{dot && last(date) !== '.' ? '.' : ''}
         </Typography>
     );
 }
