@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         bottom: theme.spacing(3),
         right: theme.spacing(3),
+        zIndex: 2,
     },
     card: {
         borderRadius: theme.spacing(3),

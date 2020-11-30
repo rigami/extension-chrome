@@ -11,8 +11,6 @@ class WidgetsService {
         this._coreService = coreService;
         this.settings = new WidgetsSettingsStore();
 
-        console.log('this._coreService', this._coreService)
-
         reaction(
             () => this._coreService.storage.persistent.widgetWeather,
             () => { this.weather = this._coreService.storage.persistent.widgetWeather; },
