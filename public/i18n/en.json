@@ -148,7 +148,33 @@
         "weather": {
           "title": "Weather",
           "description": "Display of the current weather",
-          "useWeather": "Show current weather"
+          "useWeather": "Show current weather",
+          "userDeniedGeolocation": {
+            "title": "You have denied access to geolocation. Weather display not possible",
+            "description": "To allow access, click on the geolocation icon on the right in the search field, allow access to geolocation and reload the page"
+          },
+          "units": {
+            "title": "Measurement system",
+            "unit": {
+              "FAHRENHEIT": "Fahrenheit",
+              "CELSIUS": "Celsius",
+              "KELVIN": "Kelvin"
+            }
+          },
+          "provider": {
+            "title": "Weather Forecast Provider",
+            "provider": {
+              "openweathermap": "OpenWeatherMap"
+            }
+          },
+          "clickAction": {
+            "title": "Widget click action",
+            "description": "Configure so that when you click on the widget, the desired site opens",
+            "titleFull": "Configuring click action on weather widget",
+            "descriptionFull": "Insert the url you want here, or leave it blank if you don't need to perform any action",
+            "textFieldLabelUrl": "Url address",
+            "notSet": "Not set"
+          }
         }
       }
     },
@@ -348,6 +374,12 @@
     "description": "The extension has been updated, now it is even better\n\n  - Fixed scrolling activated by middle mouse button.",
     "ok": "OK",
     "changelog": "List of changes"
+  },
+  "widgets": {
+    "weather": {
+      "openInNewTab": "Click to open more detailed summary",
+      "unavailable": "Weather forecast not available"
+    }
   },
   "save":"Save",
   "cancel":"Cancel",
