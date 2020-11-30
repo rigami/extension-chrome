@@ -6,11 +6,13 @@ import React, {
 } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import AppService from '@/stores/app';
+import useCoreService from '@/stores/BaseStateProvider';
 
 const context = createContext({});
 
 function AppStateProvider({ children, onChangeTheme }) {
-    const store = useLocalObservable(() => new AppService());
+    const coreService = useCoreService();
+    const store = useLocalObservable(() => new AppService({ coreService }));
     const Context = context;
     const isFirstRender = useRef(true);
 

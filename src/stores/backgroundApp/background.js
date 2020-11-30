@@ -5,6 +5,7 @@ import SyncStorage from './syncStorage';
 import SyncSystemBookmarks from './syncSystemBookmarks';
 import SyncBookmarks from './syncBookmarks';
 import LocalBackup from './localBackup';
+import WeatherService from './weatherService';
 
 class Background {
     bus;
@@ -15,6 +16,8 @@ class Background {
     bookmarks;
     bookmarksSyncService;
     bookmarksService;
+    foldersService;
+    weatherService;
 
     constructor() {
         this.bus = BusApp();
@@ -26,6 +29,7 @@ class Background {
         this.storageService = new SyncStorage();
         this.localBackup = new LocalBackup(this.bookmarks, this.folders, this.settingsService, this.bookmarksSyncService);
         this.systemBookmarksService = new SyncSystemBookmarks(this.storageService);
+        this.weatherService = new WeatherService(this.storageService, this.settingsService);
     }
 }
 

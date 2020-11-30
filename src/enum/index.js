@@ -11,6 +11,7 @@ import DESTINATION from './DESTINATION';
 import ACTIVITY from './ACTIVITY';
 import WIDGET_DTW_POSITION from './WIDGET/DTW_POSITION';
 import WIDGET_DTW_SIZE from './WIDGET/DTW_SIZE';
+import WIDGET_DTW_UNITS from './WIDGET/DTW_UNITS';
 import TYPE from './TYPE';
 
 export {
@@ -27,5 +28,6 @@ export {
     ACTIVITY,
     WIDGET_DTW_POSITION,
     WIDGET_DTW_SIZE,
+    WIDGET_DTW_UNITS,
     TYPE,
 };

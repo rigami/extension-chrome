@@ -8,6 +8,7 @@ import {
     ACTIVITY,
     WIDGET_DTW_POSITION,
     WIDGET_DTW_SIZE,
+    WIDGET_DTW_UNITS,
 } from '@/enum';
 import i18n from 'i18next';
 
@@ -45,7 +46,11 @@ export default {
                 use_time: true,
                 format12: false,
             },
-            weather: { use_weather: false },
+            weather: {
+                use_weather: false,
+                metrics: WIDGET_DTW_UNITS.CELSIUS,
+                default_action: '',
+            },
         },
     },
     app: {

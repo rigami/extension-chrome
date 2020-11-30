@@ -10,6 +10,7 @@ import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import Time from './Time';
 import Date from './Date';
+import WeatherWidget from '@/ui/Widgets/Weather';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -93,20 +94,13 @@ function Widgets() {
             {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) && (
                 <Box className={classes.row}>
                     {widgets.settings.dtwUseDate && (
-                        <Date size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
+                        <Date
+                            size={calcFontSize(widgets.settings.dtwSize, dateFontSize)}
+                            dot={widgets.settings.dtwUseWeather}
+                        />
                     )}
                     {widgets.settings.dtwUseWeather && (
-                        <React.Fragment>
-                            {widgets.settings.dtwUseDate && (
-                                <Divider className={classes.divider} orientation="vertical" flexItem />
-                            )}
-                            <Typography
-                                className={classes.weather}
-                                variant={calcFontSize(widgets.settings.dtwSize, dateFontSize)}
-                            >
-                                8 °C
-                            </Typography>
-                        </React.Fragment>
+                        <WeatherWidget size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
                     )}
                 </Box>
             )}

@@ -7,17 +7,27 @@ import {
     DialogContent,
     DialogContentText,
     Button,
-    TextField, Typography,
+    TextField,
+    Typography,
+    LinearProgress,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import useAppStateService from '@/stores/AppStateProvider';
-import { WIDGET_DTW_POSITION, WIDGET_DTW_SIZE } from '@/enum';
+import {
+    FETCH,
+    WIDGET_DTW_POSITION,
+    WIDGET_DTW_SIZE,
+    WIDGET_DTW_UNITS,
+} from '@/enum';
 import { useObserver } from 'mobx-react-lite';
 import { getDomain } from '@/utils/localSiteParse';
 import { map } from 'lodash';
+import { useSnackbar } from 'notistack';
+import MenuInfo from '@/ui/Menu/MenuInfo';
+import useCoreService from '@/stores/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     notSetValue: {
@@ -117,10 +127,13 @@ function DateWidget() {
     ));
 }
 
-/* function WeatherWidget() {
+function WeatherWidget() {
     const classes = useStyles();
     const { t } = useTranslation();
+    const { enqueueSnackbar } = useSnackbar();
     const { widgets } = useAppStateService();
+    const coreService = useCoreService();
+    const [dtwUseWeather, setDtwUseWeather] = useState(widgets.settings.dtwUseWeather);
     const [actionEditorOpen, setActionEditorOpen] = useState(false);
     const [actionUrl, setActionUrl] = useState('');
 
@@ -131,32 +144,114 @@ function DateWidget() {
                 title={t('settings.widgets.dtw.weather.useWeather')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
-                    value: widgets.settings.dtwUseWeather,
+                    value: dtwUseWeather,
+                    disabled: dtwUseWeather !== widgets.settings.dtwUseWeather,
                     onChange: (event, value) => {
-                        widgets.settings.update({ dtwUseWeather: value });
+                        setDtwUseWeather(value);
+
+                        if (value) {
+                            widgets.getPermissionsToWeather()
+                                .then(() => {
+                                    widgets.settings.update({ dtwUseWeather: value });
+                                })
+                                .catch((e) => {
+                                    console.error(e);
+                                    setDtwUseWeather(false);
+                                    widgets.settings.update({ dtwUseWeather: false });
+
+                                    enqueueSnackbar({
+                                        message: t('settings.widgets.dtw.weather.userDeniedGeolocation.title'),
+                                        description: t('settings.widgets.dtw.weather.userDeniedGeolocation.description'),
+                                        variant: 'error',
+                                    });
+                                })
+                        } else {
+                            widgets.settings.update({ dtwUseWeather: value });
+                        }
                     },
                 }}
             />
             <Collapse in={widgets.settings.dtwUseWeather}>
                 <MenuRow
-                    title={t('settings.widgets.dtw.date.clickAction.title')}
-                    description={t('settings.widgets.dtw.date.clickAction.description')}
+                    title={t('settings.widgets.dtw.weather.units.title')}
+                    action={{
+                        type: ROWS_TYPE.SELECT,
+                        format: (value) => t(`settings.widgets.dtw.weather.units.unit.${value}`),
+                        value: widgets.settings.dtwWeatherMetrics,
+                        onChange: (event) => {
+                            widgets.settings.update({ dtwWeatherMetrics: event.target.value });
+                        },
+                        values: map(WIDGET_DTW_UNITS, (key) => WIDGET_DTW_UNITS[key]),
+                    }}
+                />
+                <MenuRow
+                    title={t('settings.widgets.dtw.weather.provider.title')}
+                    action={{
+                        type: ROWS_TYPE.SELECT,
+                        format: (value) => t(`settings.widgets.dtw.weather.provider.provider.${value}`),
+                        value: 'openweathermap',
+                        disabled: true,
+                        values: ['openweathermap'],
+                    }}
+                />
+                <MenuInfo
+                    width={750}
+                    show={coreService.storage.persistent.widgetWeather?.status === FETCH.FAILED}
+                    message={t('settings.widgets.dtw.weather.serviceUnavailable')}
+                />
+                {coreService.storage.persistent.widgetWeather?.status === FETCH.PENDING && (<LinearProgress />)}
+                <MenuRow
+                    title={t('settings.widgets.dtw.weather.clickAction.title')}
+                    description={t('settings.widgets.dtw.weather.clickAction.description')}
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => { setActionEditorOpen(true); },
-                        component: widgets.settings.dtwDateAction
-                            ? `open: ${getDomain(widgets.settings.dtwDateAction)}`
+                        component: widgets.settings.dtwWeatherAction
+                            ? `open: ${getDomain(widgets.settings.dtwWeatherAction)}`
                             : (
                                 <Typography className={classes.notSetValue}>
-                                    {t('settings.widgets.dtw.date.clickAction.notSet')}
+                                    {t('settings.widgets.dtw.weather.clickAction.notSet')}
                                 </Typography>
                             ),
                     }}
                 />
+                <Dialog open={actionEditorOpen} onClose={() => { setActionEditorOpen(false); }}>
+                    <DialogTitle>{t('settings.widgets.dtw.weather.clickAction.titleFull')}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {t('settings.widgets.dtw.weather.clickAction.descriptionFull')}
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            defaultValue={widgets.settings.dtwWeatherAction}
+                            fullWidth
+                            label={t('settings.widgets.dtw.weather.clickAction.textFieldLabelUrl')}
+                            onChange={(event) => { setActionUrl(event.target.value); }}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            color="primary"
+                            onClick={() => { setActionEditorOpen(false); }}
+                        >
+                            {t('cancel')}
+                        </Button>
+                        <Button
+                            color="primary"
+                            onClick={() => {
+                                setActionEditorOpen(false);
+                                widgets.settings.update({ dtwWeatherAction: actionUrl });
+                            }}
+                        >
+                            {t('save')}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Collapse>
         </React.Fragment>
     ));
-} */
+}
 
 function Widgets() {
     const { t } = useTranslation();
@@ -248,7 +343,7 @@ function Widgets() {
                     />
                 </Collapse>
                 <DateWidget />
-                {/* <WeatherWidget /> */}
+                <WeatherWidget />
             </Collapse>
         </React.Fragment>
     ));

@@ -1,56 +1,68 @@
-import BusApp, { eventToApp } from '@/stores/backgroundApp/busApp';
+import BusApp, { eventToApp, eventToBackground, instanceId } from '@/stores/backgroundApp/busApp';
 import { assign, throttle } from 'lodash';
 import FSConnector from '@/utils/fsConnector';
+import { action, makeAutoObservable } from 'mobx';
 
 class SyncStorage {
     bus;
     storage;
 
     constructor() {
+        makeAutoObservable(this);
         this.bus = BusApp();
+
+        console.log(this.bus)
         this.storage = {};
-        const fastSyncStorage = throttle(() => this.fastSync(), 1000);
-        const syncStorage = throttle(() => this.sync(), 10000);
 
         try {
             console.log('Getting storage from fast cache');
             this.storage = { ...JSON.parse(localStorage.getItem('storage')) };
 
-            fastSyncStorage();
+            this.fastSync();
         } catch (e) {
             console.log('Not find fast cache or broken. Get from old cache');
 
             FSConnector.getFileAsText('/storage.json')
                 .then((props) => {
                     this.storage = { ...JSON.parse(props) };
-                    fastSyncStorage();
+                    this.fastSync();
                 })
                 .catch(console.error);
         }
 
         this.bus.on('system/syncStorage', (storage, { initiatorId }) => {
-            eventToApp('system/syncStorage', {
-                storage,
-                changeInitiatorId: initiatorId,
-            });
-            assign(this.storage, storage);
-            syncStorage();
-            fastSyncStorage();
+            this._syncStorage(storage, initiatorId);
         });
 
         this.bus.on('system/getStorage', (storage, props, callback) => {
             callback(this.storage);
-            syncStorage();
-            fastSyncStorage();
+            this.sync();
+            this.fastSync();
         });
     }
 
-    fastSync() {
-        console.log('Save fast cache storage', this.storage);
-        localStorage.setItem('storage', JSON.stringify(this.storage));
+    _syncStorage(storage, initiatorId) {
+        eventToApp('system/syncStorage', {
+            storage,
+            changeInitiatorId: initiatorId,
+        });
+        assign(this.storage, storage);
+        this.sync();
+        this.fastSync();
     }
 
-    sync() {
+    @action
+    updatePersistent(props = {}) {
+        console.log('updatePersistent', props);
+        this._syncStorage(props, instanceId);
+    }
+
+    fastSync = throttle(() => {
+        console.log('Save fast cache storage', this.storage);
+        localStorage.setItem('storage', JSON.stringify(this.storage));
+    }, 1000);
+
+    sync = throttle(() => {
         console.log('Save settings', this.storage);
 
         FSConnector.saveFile(
@@ -59,7 +71,7 @@ class SyncStorage {
         ).then(() => {
             console.log('Success save cache storage');
         });
-    }
+    }, 10000);
 }
 
 export default SyncStorage;
