@@ -13,6 +13,8 @@ import {
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useTranslation } from 'react-i18next';
+import { useLocalStore, useObserver } from 'mobx-react-lite';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,6 +29,12 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: fade(theme.palette.background.default, 0.52),
     },
     button: { padding: theme.spacing(1) },
+    smooth: {
+        transition: theme.transitions.create(['opacity'], {
+            easing: theme.transitions.easing.easeInOut,
+            duration: theme.transitions.duration.complex,
+        }),
+    }
 }));
 
 function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG }) {
@@ -36,9 +44,16 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
     const rootAl = useRef();
     const fastAl = useRef();
     const mainAl = useRef();
+    const store = useLocalStore(() => ({
+        hideTimer: null,
+        smooth: false,
+    }));
 
     const moveMouseHandler = (e) => {
         if (!rootAl.current) return;
+
+        store.smooth = false;
+        clearTimeout(store.hideTimer);
 
         const { x, y, height, width } = rootAl.current.getBoundingClientRect();
         const a = Math.abs((x + width * 0.5) - e.pageX);
@@ -57,20 +72,30 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
 
         if (fastAl.current) fastAl.current.style.opacity = opacity;
         if (mainAl.current) mainAl.current.style.opacity = opacity;
+
+        store.hideTimer = setTimeout(() => {
+            if (e.path.indexOf(mainAl.current) !== -1 || e.path.indexOf(fastAl.current) !== -1) return;
+
+            store.smooth = true;
+            if (fastAl.current) fastAl.current.style.opacity = 0;
+            if (mainAl.current) mainAl.current.style.opacity = 0;
+        }, 3000);
     };
 
     useEffect(() => {
-        document.addEventListener('mousemove', moveMouseHandler);
+        if (fastAl.current) fastAl.current.style.opacity = 0;
+        if (mainAl.current) mainAl.current.style.opacity = 0;
+        window.addEventListener('mousemove', moveMouseHandler);
 
         return () => {
-            document.removeEventListener('mousemove', moveMouseHandler);
+            window.removeEventListener('mousemove', moveMouseHandler);
         };
     }, []);
 
-    return (
+    return useObserver(() => (
         <Box className={classes.root} ref={rootAl}>
             <Card
-                className={classes.card}
+                className={clsx(classes.card, store.smooth && classes.smooth)}
                 elevation={12}
                 style={{ marginBottom: theme.spacing(2) }}
                 ref={fastAl}
@@ -84,7 +109,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                 ))}
             </Card>
             <Card
-                className={classes.card}
+                className={clsx(classes.card, store.smooth && classes.smooth)}
                 elevation={12}
                 ref={mainAl}
             >
@@ -105,7 +130,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                 )}
             </Card>
         </Box>
-    );
+    ));
 }
 
 export default memo(FabMenu);
