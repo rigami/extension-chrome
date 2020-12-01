@@ -47,7 +47,7 @@ function WeatherWidget({ size }) {
                     className={classes.link}
                 >
                     <Typography variant={size} className={classes.root}>
-                        {`${temp} ${units}`}
+                        {`${Math.round(temp)} ${units}`}
                     </Typography>
                 </Link>
             </Tooltip>

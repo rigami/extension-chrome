@@ -125,7 +125,6 @@ function GlobalModals({ children }) {
                         title: t('newVersion.ok'),
                         onClick: () => {
                             closeSnackbar(snackbar);
-                            coreService.storage.updateTemp({ newVersion: false });
                         },
                     },
                     /* { title: t('newVersion.changelog'), onClick: () => {
