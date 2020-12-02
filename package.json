@@ -6,15 +6,15 @@
     "scripts": {
         "build": "NODE_ENV=production webpack",
         "build:zip": "yarn build && yarn rimraf ./release/* && mkdirp ./release && zip -r release/rigami-$npm_package_version.zip build",
+        "build:release": "yarn build:zip && yarn release",
         "build:analyze": "ANALYZE=true yarn build",
         "dev": "NODE_ENV=development webpack-cli serve",
         "lint": "eslint --fix --ext .jsx,.js,.json --ignore-path .gitignore .",
+        "release": "git tag -a v$npm_package_version && git push --tags",
         "bump": "yarn bump:patch",
         "bump:patch": "yarn version --patch --no-commit --no-git-tag-version && git add ./package.json",
-        "bump:minor": "yarn version --minor && git add ./package.json",
-        "bump:major": "yarn version --major && git add ./package.json",
-        "preversion": "",
-        "postversion": "git push --tags"
+        "bump:minor": "yarn version --minor --no-commit --no-git-tag-version && git add ./package.json",
+        "bump:major": "yarn version --major --no-commit --no-git-tag-version && git add ./package.json"
     },
     "husky": {
         "hooks": {
