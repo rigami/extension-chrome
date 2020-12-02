@@ -39,6 +39,7 @@ class Storage {
         this.temp = {};
         this.persistent = {};
         try {
+            if (!localStorage.getItem('storage')) throw new Error('Storage not esixt');
             this.updatePersistent(JSON.parse(localStorage.getItem('storage')), false);
             this.isSync = true;
         } catch (e) {
@@ -81,27 +82,27 @@ class Core {
         this.localEventBus = new EventBus();
         this.storage = new Storage();
 
-        const init = () => {
-            if (!this.storage.isSync) return;
+        const init = async () => {
+            try {
+                await this.initialization();
 
-            this.initialization()
-                .then(() => {
-                    if (!this.storage.persistent.lastUsageVersion) {
-                        this.appState = APP_STATE.REQUIRE_SETUP;
-                    } else {
-                        this.appState = APP_STATE.WORK;
-                    }
-                })
-                .catch(() => { this.appState = APP_STATE.FAILED; });
+                if (!this.storage.persistent.lastUsageVersion) {
+                    this.appState = APP_STATE.REQUIRE_SETUP;
+                } else {
+                    this.appState = APP_STATE.WORK;
+                }
+            } catch (e) {
+                this.appState = APP_STATE.FAILED;
+            }
         };
 
         this.globalEventBus.on('system/ping', (data, options, callback) => {
             callback({ type: data });
-        })
-
-        init();
+        });
 
         reaction(() => this.storage.isSync, () => { init(); });
+
+        if (this.storage.isSync) init();
     }
 
     async initialization() {
