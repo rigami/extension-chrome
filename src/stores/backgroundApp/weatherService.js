@@ -72,6 +72,12 @@ class WidgetsService {
             } else {
                 console.log(`Weather await ${this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now()}ms`);
                 this._timer = setTimeout(start, this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now());
+                this.storageService.updatePersistent({
+                    widgetWeather: {
+                        ...this.storageService.storage.widgetWeather,
+                        status: FETCH.ONLINE,
+                    },
+                });
             }
         };
 
