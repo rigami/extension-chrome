@@ -377,7 +377,7 @@
   },
   "newVersion": {
     "title": "New version {{version}}",
-    "description": "The extension has been updated, now it is even better\n\n  - Fixed rounding of temperature in the weather widget.\n\n  - Added auto-hide of the settings button when idle.",
+    "description": "The extension has been updated, now it is even better\n\n  - Increased the frequency of weather updates.\n\n  - Added a description of the region for which the weather is determined in the widget settings.\n\n  - Fixed dark background\n\n  - Fixed other minor issues",
     "ok": "OK",
     "changelog": "List of changes"
   },
