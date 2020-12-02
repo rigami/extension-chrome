@@ -95,6 +95,10 @@ class Core {
                 .catch(() => { this.appState = APP_STATE.FAILED; });
         };
 
+        this.globalEventBus.on('system/ping', (data, options, callback) => {
+            callback({ type: data });
+        })
+
         init();
 
         reaction(() => this.storage.isSync, () => { init(); });

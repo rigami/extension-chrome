@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction } from 'mobx';
 import fetchData from '@/utils/xhrPromise'
 import appVariables from '@/config/appVariables';
-import BusApp from '@/stores/backgroundApp/busApp';
+import BusApp, { eventToApp } from '@/stores/backgroundApp/busApp';
 import { FETCH } from '@/enum';
 
 class WidgetsService {
@@ -9,6 +9,9 @@ class WidgetsService {
     settings;
     weather;
     storageService;
+    _lastUpd;
+    _timer;
+    _active;
 
     constructor(storageService, settingsService) {
         makeAutoObservable(this);
@@ -16,59 +19,66 @@ class WidgetsService {
         this.storageService = storageService;
         this.settings = settingsService.settings;
 
-        let timer;
-
-        const start = () => {
-            const lastUpd = this.storageService.storage.widgetWeather?.lastUpdateTimestamp;
-
+        const updateWeather = () => {
+            if (!this._active) return;
+            console.log('Weather update');
+            this._lastUpd = Date.now();
             this.storageService.updatePersistent({
                 widgetWeather: {
                     ...this.storageService.storage.widgetWeather,
                     status: FETCH.PENDING,
                 },
             });
-
-            if (!lastUpd || lastUpd + appVariables.widgets.weather.updateTime < Date.now()) {
-                console.log('START')
-                this.getCurWeather()
-                    .catch((e) => {
-                        console.error(e);
-                        this.storageService.updatePersistent({
-                            widgetWeather: {
-                                ...this.storageService.storage.widgetWeather,
-                                status: FETCH.FAILED,
-                            },
-                        });
+            this.getCurWeather()
+                .then(() => {
+                    this.storageService.updatePersistent({
+                        widgetWeather: {
+                            ...this.storageService.storage.widgetWeather,
+                            status: FETCH.ONLINE,
+                        },
                     });
+                })
+                .catch((e) => {
+                    console.error(e);
+                    this.storageService.updatePersistent({
+                        widgetWeather: {
+                            ...this.storageService.storage.widgetWeather,
+                            status: FETCH.FAILED,
+                        },
+                    });
+                })
+                .finally(() => {
+                    eventToApp('system/ping', 'weather-check', (pong) => {
+                        let time = appVariables.widgets.weather.updateTime.inactive;
 
-                timer = setInterval(() => {
-                    this.getCurWeather()
-                        .catch((e) => {
-                            console.error(e);
-                            this.storageService.updatePersistent({
-                                widgetWeather: {
-                                    ...this.storageService.storage.widgetWeather,
-                                    status: FETCH.FAILED,
-                                },
-                            });
-                        });
-                }, appVariables.widgets.weather.updateTime);
-            } else {
-                console.log('AWAIT', lastUpd + appVariables.widgets.weather.updateTime - Date.now())
-                setTimeout(start, lastUpd + appVariables.widgets.weather.updateTime - Date.now());
+                        if (pong && pong.type === 'weather-check') {
+                            time = appVariables.widgets.weather.updateTime.active;
+                        }
 
-                this.storageService.updatePersistent({
-                    widgetWeather: {
-                        ...this.storageService.storage.widgetWeather,
-                        status: FETCH.ONLINE,
-                    },
+                        this._lastUpd = Date.now();
+                        this._timer = setTimeout(updateWeather, time);
+                        console.log(`Weather await ${time}ms`);
+                    });
                 });
+        }
+
+        const start = () => {
+            clearTimeout(this._timer);
+            this._active = true;
+
+            if (!this._lastUpd || this._lastUpd + appVariables.widgets.weather.updateTime.inactive <= Date.now()) {
+                console.log('Weather start')
+                updateWeather();
+            } else {
+                console.log(`Weather await ${this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now()}ms`);
+                this._timer = setTimeout(start, this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now());
             }
         };
 
         const stop = () => {
-            console.log('STOP')
-            clearInterval(timer);
+            console.log('Weather stop');
+            this._active = false;
+            clearTimeout(this._timer);
 
             this.storageService.updatePersistent({
                 widgetWeather: {
@@ -77,6 +87,8 @@ class WidgetsService {
                 },
             });
         };
+
+        this._lastUpd = this.storageService.storage.widgetWeather?.lastUpdateTimestamp;
 
         reaction(
             () => this.settings.widgets.dtwUseWeather,
@@ -88,13 +100,24 @@ class WidgetsService {
 
         if (this.settings.widgets.dtwUseWeather) start();
 
-        console.log(this.settings)
+        this.bus.on('widgets/weather/update', () => {
+            console.log('Weather request force update');
+            if (this._lastUpd + appVariables.widgets.weather.updateTime.active < Date.now()) {
+                console.log('Weather force update');
+                updateWeather();
+            } else {
+                console.log(`Weather update less ${appVariables.widgets.weather.updateTime.active}ms ago`);
+                clearTimeout(this._timer);
+                console.log(`Weather await ${this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now()}ms`);
+                this._timer = setTimeout(updateWeather, this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now());
+            }
+        });
     }
 
     async getCurWeather() {
         if (!navigator.geolocation) {
             console.log('Geolocation is not supported for this Browser/OS version yet.');
-            return;
+            throw new Error('Geolocation is not supported');
         }
 
         console.log('Geolocation is supported!');

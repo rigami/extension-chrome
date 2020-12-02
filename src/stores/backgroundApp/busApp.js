@@ -22,9 +22,11 @@ class BusApp {
         chrome.runtime.onMessage.addListener((props, info, callback) => {
             const { event, destination: eventDestination, data, initiatorId } = props;
             console.log('event from', eventDestination, props, info);
-            if (eventDestination !== this._destination || instanceId === initiatorId) return;
+            if (eventDestination !== this._destination || instanceId === initiatorId) return true;
 
             this._eventBus.call(event, data, props, callback);
+
+            return true;
         });
     }
 

@@ -18,7 +18,10 @@ export default {
     rest: { url: `${PRODUCTION_MODE ? 'https://api.rigami.io' : 'http://localhost:8080'}` },
     widgets: {
         weather: {
-            updateTime: 60 * 60 * 1000,
+            updateTime: {
+                active: 30 * 60 * 1000,
+                inactive: 2 * 60 * 60 * 1000,
+            },
             services: {
                 'openweathermap': {
                     name: 'openweathermap',
