@@ -5,7 +5,7 @@ if (localStorage.getItem('app_tab_name')) {
 
 document.title = localStorage.getItem('appTabName') || '\u200E';
 
-if (localStorage.getItem('backdropTheme') === 'DARK') {
+if (localStorage.getItem('storage') !== '{}' && localStorage.getItem('backdropTheme') === 'DARK') {
     document.documentElement.style.backgroundColor = '#000';
 } else {
     document.documentElement.style.backgroundColor = '#fff';

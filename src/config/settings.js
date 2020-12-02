@@ -56,7 +56,7 @@ export default {
         backdrop_theme: THEME.DARK,
         theme: THEME.LIGHT,
         use_system_font: true,
-        tab_name: i18n.t('tabName.default'),
+        tab_name: i18n.t('tabName.default') || 'Rigami',
         default_activity: ACTIVITY.DESKTOP,
     },
 };

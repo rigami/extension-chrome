@@ -7,7 +7,7 @@ import useService from '@/stores/BaseStateProvider';
 import asyncAction from '@/utils/asyncAction';
 import { PREPARE_PROGRESS } from '@/stores/core';
 
-function FirstLookScreen({ onStart }) {
+function FirstLookScreen({ onStart, onLoad }) {
     const { t } = useTranslation();
     const service = useService();
     const [progress, setProgress] = useState(0);
@@ -24,6 +24,7 @@ function FirstLookScreen({ onStart }) {
                 if (stageValue === PREPARE_PROGRESS.DONE) {
                     document.title = i18n.t('tabName.default') || 'Rigami';
                     localStorage.setItem('appTabName', document.title);
+                    onLoad();
                 }
             });
         }).catch(console.error);
