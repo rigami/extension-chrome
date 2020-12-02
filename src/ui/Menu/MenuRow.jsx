@@ -8,7 +8,7 @@ import {
     Slider,
     Switch,
     Box,
-    Checkbox,
+    Checkbox, ListItemIcon,
 } from '@material-ui/core';
 import {
     NavigateNextRounded as ArrowRightIcon,
@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
     },
     textWrapper: {},
     linkArrow: { marginLeft: theme.spacing(1) },
+    icon: { alignSelf: 'center' },
 }));
 
 const TYPE = {
@@ -69,11 +70,10 @@ const TYPE = {
 };
 
 function MenuRow(props) {
-    const classes = useStyles();
     const {
         title,
         description,
-        withoutIcon,
+        icon,
         action: {
             type: actionType = TYPE.NONE,
             width: actionWidth = 252,
@@ -82,6 +82,7 @@ function MenuRow(props) {
         width = 750,
         children,
     } = props;
+    const classes = useStyles();
     const { t } = useTranslation();
 
     const [value, setValue] = useState(
@@ -95,6 +96,8 @@ function MenuRow(props) {
             || actionProps.value,
         );
     }, [actionProps.checked, actionProps.value]);
+
+    const Icon = icon;
 
     return (
         <ListItem
@@ -110,11 +113,16 @@ function MenuRow(props) {
             }}
         >
             <div className={classes.rowWrapper}>
+                {icon && (
+                    <ListItemIcon className={classes.icon}>
+                        <Icon />
+                    </ListItemIcon>
+                )}
                 <ListItemText
                     primary={title}
                     secondary={description}
                     className={classes.textWrapper}
-                    inset={!withoutIcon}
+                    inset={!icon}
                 />
                 {actionType !== TYPE.NONE && (
                     <ListItemSecondaryAction

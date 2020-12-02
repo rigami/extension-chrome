@@ -169,6 +169,10 @@
               "openweathermap": "OpenWeatherMap"
             }
           },
+          "region": {
+            "title": "Your region",
+            "description": "The region is determined automatically by your coordinates"
+          },
           "clickAction": {
             "title": "Widget click action",
             "description": "Configure so that when you click on the widget, the desired site opens",
@@ -393,5 +397,6 @@
   "notAvailableYet":"Not available yet",
   "all":"All",
   "nothingSelected":"Nothing selected",
-  "changeTakeEffectAfterReload":"Changes will take effect after page refresh"
+  "changeTakeEffectAfterReload":"Changes will take effect after page refresh",
+  "unknown": "Unknown"
 }

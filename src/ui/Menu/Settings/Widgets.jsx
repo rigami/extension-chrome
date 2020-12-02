@@ -11,6 +11,7 @@ import {
     Typography,
     LinearProgress,
 } from '@material-ui/core';
+import { PlaceRounded as PlaceIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
@@ -24,7 +25,7 @@ import {
 } from '@/enum';
 import { useObserver } from 'mobx-react-lite';
 import { getDomain } from '@/utils/localSiteParse';
-import { map } from 'lodash';
+import { map, round } from 'lodash';
 import { useSnackbar } from 'notistack';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import useCoreService from '@/stores/BaseStateProvider';
@@ -198,6 +199,21 @@ function WeatherWidget() {
                     width={750}
                     show={coreService.storage.persistent.widgetWeather?.status === FETCH.FAILED}
                     message={t('settings.widgets.dtw.weather.serviceUnavailable')}
+                />
+                <MenuRow
+                    icon={PlaceIcon}
+                    title={t('settings.widgets.dtw.weather.region.title')}
+                    description={t('settings.widgets.dtw.weather.region.description')}
+                    action={{
+                        type: ROWS_TYPE.CUSTOM,
+                        component: `${
+                            coreService.storage.persistent.widgetWeather?.regionName || t('unknown')
+                        } (${
+                            round(coreService.storage.persistent.widgetWeather?.latitude, 1) || '-'
+                        }, ${
+                            round(coreService.storage.persistent.widgetWeather?.longitude, 1) || '-'
+                        })`,
+                    }}
                 />
                 {coreService.storage.persistent.widgetWeather?.status === FETCH.PENDING && (<LinearProgress />)}
                 <MenuRow

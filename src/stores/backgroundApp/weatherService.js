@@ -122,6 +122,7 @@ class WidgetsService {
             ...this.weather,
             currTemp: weather.main.temp,
             regionName: weather.name,
+            ...coords,
             lastUpdateTimestamp: Date.now(),
             status: FETCH.ONLINE,
         };

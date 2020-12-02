@@ -169,6 +169,10 @@
               "openweathermap": "OpenWeatherMap"
             }
           },
+          "region": {
+            "title": "Ваш регион",
+            "description": "Регион определен автоматически по вашим координатам"
+          },
           "clickAction": {
             "title": "Действие на клик по виджету",
             "description": "Настройте чтобы при клике по виджету открывался нужный сайт",
@@ -393,5 +397,6 @@
   "notAvailableYet":"Пока не доступно",
   "all":"Всё",
   "nothingSelected":"Ничего не выбрано",
-  "changeTakeEffectAfterReload":"Изменения вступят в силу после обновления страницы"
+  "changeTakeEffectAfterReload":"Изменения вступят в силу после обновления страницы",
+  "unknown": "Неизвестно"
 }
