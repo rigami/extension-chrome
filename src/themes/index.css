@@ -1,6 +1,7 @@
 body {
     overflow: hidden;
     user-select: none;
+    background-color: inherit;
 }
 
 [data-scrollbar] {

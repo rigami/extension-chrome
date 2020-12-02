@@ -34,7 +34,9 @@ function AppSettings({ onSelect }) {
                     width: 72,
                     checked: appService.settings.backdropTheme === THEME.DARK,
                     color: 'primary',
-                    onChange: (event, value) => appService.settings.update({ backdropTheme: value ? THEME.DARK : THEME.LIGHT }),
+                    onChange: (event, value) => {
+                        appService.settings.update({ backdropTheme: value ? THEME.DARK : THEME.LIGHT })
+                    },
                 }}
             />
             <MenuRow

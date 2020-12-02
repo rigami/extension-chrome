@@ -23,7 +23,7 @@ function FirstLookScreen({ onStart }) {
 
                 if (stageValue === PREPARE_PROGRESS.DONE) {
                     document.title = i18n.t('tabName.default') || 'Rigami';
-                    localStorage.setItem('app_tab_name', document.title);
+                    localStorage.setItem('appTabName', document.title);
                 }
             });
         }).catch(console.error);

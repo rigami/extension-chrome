@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useObserver } from 'mobx-react-lite';
 import TabNameExampleImage from '@/images/tabName.svg';
 import useAppService from '@/stores/AppStateProvider';
+import defaultSettings from '@/config/settings';
 
 const useStyles = makeStyles((theme) => ({
     row: {
