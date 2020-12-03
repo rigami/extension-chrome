@@ -43,19 +43,14 @@ function WeatherWidget({ size }) {
         temp = ((widgets.weather?.currTemp || 0) - 273.15) * (9/5) + 32;
     } else if (widgets.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.KELVIN) {
         units = 'К';
-        temp = widgets.weather?.currTemp;
+        temp = widgets.weather?.currTemp || 0;
     } else {
         units = '°C';
         temp = (widgets.weather?.currTemp || 0) - 273.15;
     }
 
     return (
-        <Fade
-            in={
-                widgets.weather?.status === FETCH.ONLINE
-                || (widgets.weather?.status === FETCH.PENDING && widgets.weather?.currTemp)
-            }
-        >
+        <Fade in={widgets.showWeather}>
             <Tooltip title={t('widgets.weather.openInNewTab')}>
                 <Link
                     href={widgets.settings.dtwWeatherAction || appVariables.widgets.weather.services.openweathermap.dashboard}
@@ -68,7 +63,7 @@ function WeatherWidget({ size }) {
                         <CircularProgress className={classes.loader} size={15} />
                     )}
                     <Typography variant={size} className={classes.root}>
-                        {`${Math.round(temp)} ${units}`}
+                        {widgets.weather?.currTemp ? `${Math.round(temp)} ${units}` : 'Failed get weather data'}
                     </Typography>
                 </Link>
             </Tooltip>

@@ -44,6 +44,7 @@ class WidgetsService {
                         widgetWeather: {
                             ...this.storageService.storage.widgetWeather,
                             status: FETCH.FAILED,
+                            lastUpdateStatus: FETCH.FAILED,
                         },
                     });
                 })
@@ -66,7 +67,12 @@ class WidgetsService {
             clearTimeout(this._timer);
             this._active = true;
 
-            if (!this._lastUpd || this._lastUpd + appVariables.widgets.weather.updateTime.inactive <= Date.now()) {
+            if (
+                this.weather?.lastUpdateStatus === FETCH.FAILED
+                || !this._lastUpd
+                || this._lastUpd + appVariables.widgets.weather.updateTime.inactive <= Date.now()
+                || !isFinite(this.weather?.currTemp)
+            ) {
                 console.log('Weather start')
                 updateWeather();
             } else {
@@ -152,6 +158,7 @@ class WidgetsService {
             currTemp: weather.main.temp,
             regionName: weather.name,
             ...coords,
+            lastUpdateStatus: FETCH.DONE,
             lastUpdateTimestamp: Date.now(),
             status: FETCH.ONLINE,
         };
