@@ -82,4 +82,4 @@ function TabName() {
 
 const ObserverTabName = observer(TabName);
 
-export { headerProps as header, TabName as content };
+export { headerProps as header, ObserverTabName as content };

@@ -17,7 +17,6 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { set } from 'mobx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -74,6 +73,8 @@ function MenuRow(props) {
         title,
         description,
         icon,
+        disableIconInsert = false,
+        className: externalClassName,
         action: {
             type: actionType = TYPE.NONE,
             width: actionWidth = 252,
@@ -101,7 +102,7 @@ function MenuRow(props) {
 
     return (
         <ListItem
-            classes={{ root: classes.root }}
+            classes={{ root: clsx(classes.root, externalClassName) }}
             style={{ width }}
             button={actionType === TYPE.LINK || actionType === TYPE.CHECKBOX}
             onClick={(event) => {
@@ -122,7 +123,7 @@ function MenuRow(props) {
                     primary={title}
                     secondary={description}
                     className={classes.textWrapper}
-                    inset={!icon}
+                    inset={!icon && !disableIconInsert}
                 />
                 {actionType !== TYPE.NONE && (
                     <ListItemSecondaryAction
