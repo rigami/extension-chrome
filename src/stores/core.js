@@ -1,6 +1,6 @@
 import BusApp, { eventToBackground, initBus, instanceId } from '@/stores/backgroundApp/busApp';
 import { DESTINATION } from '@/enum';
-import { reaction, action, makeAutoObservable } from 'mobx';
+import { reaction, action, makeAutoObservable, runInAction } from 'mobx';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
@@ -86,13 +86,17 @@ class Core {
             try {
                 await this.initialization();
 
-                if (!this.storage.persistent.lastUsageVersion) {
-                    this.appState = APP_STATE.REQUIRE_SETUP;
-                } else {
-                    this.appState = APP_STATE.WORK;
-                }
+                runInAction(() => {
+                    if (!this.storage.persistent.lastUsageVersion) {
+                        this.appState = APP_STATE.REQUIRE_SETUP;
+                    } else {
+                        this.appState = APP_STATE.WORK;
+                    }
+                });
             } catch (e) {
-                this.appState = APP_STATE.FAILED;
+                runInAction(() => {
+                    this.appState = APP_STATE.FAILED;
+                });
             }
         };
 

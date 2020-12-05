@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, reaction } from 'mobx';
+import { action, makeAutoObservable, reaction, runInAction } from 'mobx';
 import { BKMS_FAP_STYLE, DESTINATION } from '@/enum';
 import { BookmarksSettingsStore } from '@/stores/app/settings';
 import DBConnector from '@/utils/dbConnector';
@@ -90,10 +90,12 @@ class BookmarksService {
         console.log('Sync fav');
         const favorites = await DBConnector().getAll('favorites');
 
-        this.favorites = favorites.map(({ favoriteId, type }) => ({
-            id: favoriteId,
-            type,
-        }));
+        runInAction(() => {
+            this.favorites = favorites.map(({ favoriteId, type }) => ({
+                id: favoriteId,
+                type,
+            }));
+        });
 
         return this.favorites;
     }
