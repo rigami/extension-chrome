@@ -6,10 +6,9 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import { useObserver } from 'mobx-react-lite';
 import TabNameExampleImage from '@/images/tabName.svg';
 import useAppService from '@/stores/AppStateProvider';
-import defaultSettings from '@/config/settings';
+import ObserverComponent from '@/utils/ObserverComponent';
 
 const useStyles = makeStyles((theme) => ({
     row: {
@@ -37,8 +36,8 @@ function TabName() {
     const { t } = useTranslation();
     const classes = useStyles();
 
-    return useObserver(() => (
-        <React.Fragment>
+    return (
+        <ObserverComponent>
             <Box className={classes.splash}>
                 <TabNameExampleImage />
                 <span
@@ -77,8 +76,8 @@ function TabName() {
                     }}
                 />
             </Box>
-        </React.Fragment>
-    ));
+        </ObserverComponent>
+    );
 }
 
 export { headerProps as header, TabName as content };

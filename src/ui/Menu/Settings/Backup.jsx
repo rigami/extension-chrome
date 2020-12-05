@@ -13,11 +13,11 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import { useObserver } from 'mobx-react-lite';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
 import { eventToBackground } from '@/stores/backgroundApp/busApp';
 import { useSnackbar } from 'notistack';
+import ObserverComponent from '@/utils/ObserverComponent';
 
 const useStyles = makeStyles((theme) => ({
     backupButton: {
@@ -182,8 +182,8 @@ function BackupSettings() {
         reader.readAsText(form.files[0]);
     };
 
-    return useObserver(() => (
-        <React.Fragment>
+    return (
+        <ObserverComponent>
             <MenuRow
                 title={t('settings.backup.localBackup.title')}
                 description={t('settings.backup.localBackup.description')}
@@ -220,8 +220,8 @@ function BackupSettings() {
                     ),
                 }}
             />
-        </React.Fragment>
-    ));
+        </ObserverComponent>
+    );
 }
 
 export { headerProps as header, BackupSettings as content };

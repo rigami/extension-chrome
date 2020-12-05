@@ -1,5 +1,5 @@
 import React from 'react';
-import { useObserver } from 'mobx-react-lite';
+import ObserverComponent from '@/utils/ObserverComponent';
 import { ACTIVITY, BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import { Collapse } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
@@ -7,17 +7,17 @@ import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import SectionHeader from '@/ui/Menu/SectionHeader';
-import usAppService from '@/stores/AppStateProvider';
+import useAppService from '@/stores/AppStateProvider';
 
 const headerProps = { title: 'settings.bookmarks.title' };
 
 function BookmarksSettings() {
     const bookmarksService = useBookmarksService();
-    const appService = usAppService();
+    const appService = useAppService();
     const { t } = useTranslation();
 
-    return useObserver(() => (
-        <React.Fragment>
+    return (
+        <ObserverComponent>
             <SectionHeader title={t('settings.bookmarks.general.title')} />
             <MenuRow
                 title={t('settings.bookmarks.general.openOnStartup.title')}
@@ -82,8 +82,8 @@ function BookmarksSettings() {
                     },
                 }}
             /> */}
-        </React.Fragment>
-    ));
+        </ObserverComponent>
+    );
 }
 
 export { headerProps as header, BookmarksSettings as content };

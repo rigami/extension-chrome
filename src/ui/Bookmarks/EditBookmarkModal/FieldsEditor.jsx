@@ -16,7 +16,7 @@ import {
 import Categories from '@/ui/Bookmarks/Categories';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import { useObserver, useLocalObservable } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import clsx from 'clsx';
 import FolderSelector from '@/ui/Bookmarks/Folders/Selector';
@@ -105,7 +105,7 @@ function FieldsEditor(props) {
         store.useDescription = useDescription;
     }, [useDescription]);
 
-    return useObserver(() => (
+    return (
         <div className={classes.details}>
             <CardContent className={classes.content}>
                 <Typography variant="h5" className={classes.header}>
@@ -243,7 +243,7 @@ function FieldsEditor(props) {
                 </div>
             </div>
         </div>
-    ));
+    );
 }
 
-export default FieldsEditor;
+export default observer(FieldsEditor);

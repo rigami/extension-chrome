@@ -3,11 +3,11 @@ import { Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import { useObserver } from 'mobx-react-lite';
 import { THEME } from '@/enum';
 import useAppService from '@/stores/AppStateProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import { content as TabNamePageContent, header as tabNamePageHeader } from './TabName';
+import ObserverComponent from '@/utils/ObserverComponent';
 
 const useStyles = makeStyles((theme) => ({
     defaultTabValue: {
@@ -24,8 +24,8 @@ function AppSettings({ onSelect }) {
     const appService = useAppService();
     const [defaultFontValue] = useState(appService.settings.useSystemFont);
 
-    return useObserver(() => (
-        <React.Fragment>
+    return (
+        <ObserverComponent>
             <MenuRow
                 title={t('settings.app.darkThemeBackdrop')}
                 width={520}
@@ -82,8 +82,8 @@ function AppSettings({ onSelect }) {
                     ),
                 }}
             />
-        </React.Fragment>
-    ));
+        </ObserverComponent>
+    );
 }
 
 export { headerProps as header, AppSettings as content };

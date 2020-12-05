@@ -23,12 +23,12 @@ import {
     WIDGET_DTW_SIZE,
     WIDGET_DTW_UNITS,
 } from '@/enum';
-import { useObserver } from 'mobx-react-lite';
 import { getDomain } from '@/utils/localSiteParse';
 import { map, round } from 'lodash';
 import { useSnackbar } from 'notistack';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import useCoreService from '@/stores/BaseStateProvider';
+import ObserverComponent from '@/utils/ObserverComponent';
 
 const useStyles = makeStyles((theme) => ({
     notSetValue: {
@@ -61,8 +61,8 @@ function DateWidget() {
     const [actionEditorOpen, setActionEditorOpen] = useState(false);
     const [actionUrl, setActionUrl] = useState('');
 
-    return useObserver(() => (
-        <React.Fragment>
+    return (
+        <ObserverComponent>
             <SectionHeader title={t('settings.widgets.dtw.date.title')} />
             <MenuRow
                 title={t('settings.widgets.dtw.date.useDate')}
@@ -124,8 +124,8 @@ function DateWidget() {
                     </DialogActions>
                 </Dialog>
             </Collapse>
-        </React.Fragment>
-    ));
+        </ObserverComponent>
+    );
 }
 
 function WeatherWidget() {
@@ -138,8 +138,8 @@ function WeatherWidget() {
     const [actionEditorOpen, setActionEditorOpen] = useState(false);
     const [actionUrl, setActionUrl] = useState('');
 
-    return useObserver(() => (
-        <React.Fragment>
+    return (
+        <ObserverComponent>
             <SectionHeader title={t('settings.widgets.dtw.weather.title')} />
             <MenuRow
                 title={t('settings.widgets.dtw.weather.useWeather')}
@@ -265,16 +265,16 @@ function WeatherWidget() {
                     </DialogActions>
                 </Dialog>
             </Collapse>
-        </React.Fragment>
-    ));
+        </ObserverComponent>
+    );
 }
 
 function Widgets() {
     const { t } = useTranslation();
     const { widgets } = useAppStateService();
 
-    return useObserver(() => (
-        <React.Fragment>
+    return (
+        <ObserverComponent>
             <MenuRow
                 title={t('settings.widgets.useWidgets.title')}
                 description={t('settings.widgets.useWidgets.description')}
@@ -361,8 +361,8 @@ function Widgets() {
                 <DateWidget />
                 <WeatherWidget />
             </Collapse>
-        </React.Fragment>
-    ));
+        </ObserverComponent>
+    );
 }
 
 export { headerProps as header, Widgets as content };

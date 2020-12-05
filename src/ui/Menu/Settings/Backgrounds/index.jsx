@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import { useObserver, observer } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE } from '@/enum';
 import {
     Avatar,
@@ -16,6 +16,7 @@ import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import FSConnector from '@/utils/fsConnector';
 import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import { content as LibraryPageContent, header as LibraryPageHeader } from './Library';
+import ObserverComponent from '@/utils/ObserverComponent';
 
 const headerProps = { title: 'settings.bg.title' };
 
@@ -116,8 +117,8 @@ function SchedulerSection({ onSelect }) {
     const backgroundsStore = useBackgroundsService();
     const { t } = useTranslation();
 
-    return useObserver(() => (
-        <React.Fragment>
+    return (
+        <ObserverComponent>
             <SectionHeader title={t('settings.bg.scheduler.title')} />
             <MenuRow
                 title={t('settings.bg.scheduler.selectionMethod.title')}
@@ -195,19 +196,19 @@ function SchedulerSection({ onSelect }) {
                     }}
                 />
             </Collapse>
-        </React.Fragment>
-    ));
+        </ObserverComponent>
+    );
 }
 
 const MemoSchedulerSection = memo(SchedulerSection);
 
 function BackgroundsMenu({ onSelect }) {
-    return useObserver(() => (
-        <React.Fragment>
+    return (
+        <ObserverComponent>
             <MemoBackgroundsSection onSelect={onSelect} />
             <MemoSchedulerSection onSelect={onSelect} />
-        </React.Fragment>
-    ));
+        </ObserverComponent>
+    );
 }
 
 export { headerProps as header, BackgroundsMenu as content };

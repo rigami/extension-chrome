@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocalObservable, useObserver } from 'mobx-react-lite';
+import { useLocalObservable, observer } from 'mobx-react-lite';
 import PopperWrapper from '@/ui-components/PopperWrapper';
 import Editor from './Editor';
 
@@ -13,7 +13,7 @@ function EditCategoryModal(props) {
     } = props;
     const store = useLocalObservable(() => ({ popperRef: null }));
 
-    return useObserver(() => (
+    return (
         <PopperWrapper
             isOpen={isOpen}
             anchorEl={anchorEl}
@@ -26,7 +26,7 @@ function EditCategoryModal(props) {
                 {...other}
             />
         </PopperWrapper>
-    ));
+    );
 }
 
-export default EditCategoryModal;
+export default observer(EditCategoryModal);

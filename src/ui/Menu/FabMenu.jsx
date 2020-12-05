@@ -13,8 +13,9 @@ import {
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useTranslation } from 'react-i18next';
-import { useLocalStore, useObserver } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import clsx from 'clsx';
+import { action } from 'mobx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -44,12 +45,12 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
     const rootAl = useRef();
     const fastAl = useRef();
     const mainAl = useRef();
-    const store = useLocalStore(() => ({
+    const store = useLocalObservable(() => ({
         hideTimer: null,
         smooth: false,
     }));
 
-    const moveMouseHandler = (e) => {
+    const moveMouseHandler = action((e) => {
         if (!rootAl.current) return;
 
         store.smooth = false;
@@ -73,14 +74,14 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
         if (fastAl.current) fastAl.current.style.opacity = opacity;
         if (mainAl.current) mainAl.current.style.opacity = opacity;
 
-        store.hideTimer = setTimeout(() => {
+        store.hideTimer = setTimeout(action(() => {
             if (e.path.indexOf(mainAl.current) !== -1 || e.path.indexOf(fastAl.current) !== -1) return;
 
             store.smooth = true;
             if (fastAl.current) fastAl.current.style.opacity = 0;
             if (mainAl.current) mainAl.current.style.opacity = 0;
-        }, 3000);
-    };
+        }), 3000);
+    });
 
     useEffect(() => {
         if (fastAl.current) fastAl.current.style.opacity = 0;
@@ -92,7 +93,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
         };
     }, []);
 
-    return useObserver(() => (
+    return (
         <Box className={classes.root} ref={rootAl}>
             <Card
                 className={clsx(classes.card, store.smooth && classes.smooth)}
@@ -130,7 +131,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                 )}
             </Card>
         </Box>
-    ));
+    );
 }
 
-export default memo(FabMenu);
+export default memo(observer(FabMenu));

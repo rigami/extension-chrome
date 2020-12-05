@@ -7,7 +7,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
-import { useLocalObservable, useObserver } from 'mobx-react-lite';
+import { useLocalObservable, observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -57,7 +57,7 @@ function Editor({ onSave, onError, editId }) {
             });
     }, []);
 
-    return useObserver(() => (
+    return (
         <Card className={classes.popper} elevation={16}>
             <form onSubmit={handlerSubmit}>
                 <InputBase
@@ -82,7 +82,7 @@ function Editor({ onSave, onError, editId }) {
                 </Button>
             </form>
         </Card>
-    ));
+    );
 }
 
-export default Editor;
+export default observer(Editor);

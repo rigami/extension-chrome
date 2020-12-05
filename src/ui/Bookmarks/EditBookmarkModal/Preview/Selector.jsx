@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import { getImageRecalc } from '@/utils/siteSearch';
 import { BKMS_VARIANT } from '@/enum';
-import { useLocalObservable, useObserver } from 'mobx-react-lite';
+import { useLocalObservable, observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: { position: 'relative' },
@@ -110,7 +110,7 @@ function PreviewSelector(props) {
         });
     }, [defaultImages.length]);
 
-    return useObserver(() => (
+    return (
         <Card className={classes.root} elevation={8} {...other}>
             <CardHeader
                 title={t('bookmark.editor.alternativeIconsTitle')}
@@ -159,8 +159,8 @@ function PreviewSelector(props) {
                 </Box>
             )}
         </Card>
-    ));
+    );
 }
 
-export default PreviewSelector;
+export default observer(PreviewSelector);
 export { PreviewSelectorToggleButton };
