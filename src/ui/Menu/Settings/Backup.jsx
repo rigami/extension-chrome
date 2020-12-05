@@ -17,7 +17,7 @@ import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
 import { eventToBackground } from '@/stores/backgroundApp/busApp';
 import { useSnackbar } from 'notistack';
-import ObserverComponent from '@/utils/ObserverComponent';
+import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     backupButton: {
@@ -183,7 +183,7 @@ function BackupSettings() {
     };
 
     return (
-        <ObserverComponent>
+        <React.Fragment>
             <MenuRow
                 title={t('settings.backup.localBackup.title')}
                 description={t('settings.backup.localBackup.description')}
@@ -220,8 +220,10 @@ function BackupSettings() {
                     ),
                 }}
             />
-        </ObserverComponent>
+        </React.Fragment>
     );
 }
+
+const ObserverBackupSettings = observer(BackupSettings);
 
 export { headerProps as header, BackupSettings as content };

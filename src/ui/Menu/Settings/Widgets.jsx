@@ -28,7 +28,9 @@ import { map, round } from 'lodash';
 import { useSnackbar } from 'notistack';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import useCoreService from '@/stores/BaseStateProvider';
-import ObserverComponent from '@/utils/ObserverComponent';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+
 
 const useStyles = makeStyles((theme) => ({
     notSetValue: {
@@ -62,7 +64,7 @@ function DateWidget() {
     const [actionUrl, setActionUrl] = useState('');
 
     return (
-        <ObserverComponent>
+        <React.Fragment>
             <SectionHeader title={t('settings.widgets.dtw.date.title')} />
             <MenuRow
                 title={t('settings.widgets.dtw.date.useDate')}
@@ -124,7 +126,7 @@ function DateWidget() {
                     </DialogActions>
                 </Dialog>
             </Collapse>
-        </ObserverComponent>
+        </React.Fragment>
     );
 }
 
@@ -139,7 +141,7 @@ function WeatherWidget() {
     const [actionUrl, setActionUrl] = useState('');
 
     return (
-        <ObserverComponent>
+        <React.Fragment>
             <SectionHeader title={t('settings.widgets.dtw.weather.title')} />
             <MenuRow
                 title={t('settings.widgets.dtw.weather.useWeather')}
@@ -152,10 +154,12 @@ function WeatherWidget() {
 
                         if (value) {
                             widgets.getPermissionsToWeather()
-                                .then(() => {
+                                .then(action(() => {
+                                    console.log('getPermissionsToWeather', true)
                                     widgets.settings.update({ dtwUseWeather: value });
-                                })
-                                .catch((e) => {
+                                }))
+                                .catch(action((e) => {
+                                    console.log('getPermissionsToWeather', false)
                                     console.error(e);
                                     setDtwUseWeather(false);
                                     widgets.settings.update({ dtwUseWeather: false });
@@ -165,7 +169,7 @@ function WeatherWidget() {
                                         description: t('settings.widgets.dtw.weather.userDeniedGeolocation.description'),
                                         variant: 'error',
                                     });
-                                })
+                                }));
                         } else {
                             widgets.settings.update({ dtwUseWeather: value });
                         }
@@ -265,16 +269,19 @@ function WeatherWidget() {
                     </DialogActions>
                 </Dialog>
             </Collapse>
-        </ObserverComponent>
+        </React.Fragment>
     );
 }
+
+const ObserverDateWidget = observer(DateWidget);
+const ObserverWeatherWidget = observer(WeatherWidget);
 
 function Widgets() {
     const { t } = useTranslation();
     const { widgets } = useAppStateService();
 
     return (
-        <ObserverComponent>
+        <React.Fragment>
             <MenuRow
                 title={t('settings.widgets.useWidgets.title')}
                 description={t('settings.widgets.useWidgets.description')}
@@ -358,11 +365,13 @@ function Widgets() {
                         }}
                     />
                 </Collapse>
-                <DateWidget />
-                <WeatherWidget />
+                <ObserverDateWidget />
+                <ObserverWeatherWidget />
             </Collapse>
-        </ObserverComponent>
+        </React.Fragment>
     );
 }
 
-export { headerProps as header, Widgets as content };
+const ObserverWidgets = observer(Widgets);
+
+export { headerProps as header, ObserverWidgets as content };

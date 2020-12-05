@@ -16,7 +16,6 @@ import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import FSConnector from '@/utils/fsConnector';
 import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import { content as LibraryPageContent, header as LibraryPageHeader } from './Library';
-import ObserverComponent from '@/utils/ObserverComponent';
 
 const headerProps = { title: 'settings.bg.title' };
 
@@ -118,7 +117,7 @@ function SchedulerSection({ onSelect }) {
     const { t } = useTranslation();
 
     return (
-        <ObserverComponent>
+        <React.Fragment>
             <SectionHeader title={t('settings.bg.scheduler.title')} />
             <MenuRow
                 title={t('settings.bg.scheduler.selectionMethod.title')}
@@ -196,19 +195,21 @@ function SchedulerSection({ onSelect }) {
                     }}
                 />
             </Collapse>
-        </ObserverComponent>
+        </React.Fragment>
     );
 }
 
-const MemoSchedulerSection = memo(SchedulerSection);
+const MemoSchedulerSection = memo(observer(SchedulerSection));
 
 function BackgroundsMenu({ onSelect }) {
     return (
-        <ObserverComponent>
+        <React.Fragment>
             <MemoBackgroundsSection onSelect={onSelect} />
             <MemoSchedulerSection onSelect={onSelect} />
-        </ObserverComponent>
+        </React.Fragment>
     );
 }
 
-export { headerProps as header, BackgroundsMenu as content };
+const ObserverBackgroundsMenu = observer(BackgroundsMenu);
+
+export { headerProps as header, ObserverBackgroundsMenu as content };

@@ -7,7 +7,7 @@ import { THEME } from '@/enum';
 import useAppService from '@/stores/AppStateProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import { content as TabNamePageContent, header as tabNamePageHeader } from './TabName';
-import ObserverComponent from '@/utils/ObserverComponent';
+import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     defaultTabValue: {
@@ -25,7 +25,7 @@ function AppSettings({ onSelect }) {
     const [defaultFontValue] = useState(appService.settings.useSystemFont);
 
     return (
-        <ObserverComponent>
+        <React.Fragment>
             <MenuRow
                 title={t('settings.app.darkThemeBackdrop')}
                 width={520}
@@ -82,8 +82,10 @@ function AppSettings({ onSelect }) {
                     ),
                 }}
             />
-        </ObserverComponent>
+        </React.Fragment>
     );
 }
+
+const ObserverAppSettings = observer(AppSettings);
 
 export { headerProps as header, AppSettings as content };
