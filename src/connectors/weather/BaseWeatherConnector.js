@@ -17,10 +17,16 @@ class BaseWeatherConnector {
         console.log('Set weather:', weather);
         this.weather = weather;
 
-        this.storageService.updatePersistent({
-            weather,
-            widgetWeather: null,
-        });
+        if (this.storageService.storage.widgetWeather) {
+            this.storageService.updatePersistent({
+                weather,
+                widgetWeather: null,
+            });
+        } else {
+            this.storageService.updatePersistent({
+                weather,
+            });
+        }
     }
 
     async searchLocation(query) {
