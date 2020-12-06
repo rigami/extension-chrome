@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
 function WeatherWidget({ onSelect }) {
     const classes = useStyles();
     const { t } = useTranslation();
-    const { enqueueSnackbar } = useSnackbar();
     const { widgets } = useAppStateService();
     const coreService = useCoreService();
     const [dtwUseWeather, setDtwUseWeather] = useState(widgets.settings.dtwUseWeather);
@@ -56,24 +55,14 @@ function WeatherWidget({ onSelect }) {
 
                         if (value) {
                             widgets.getPermissionsToWeather()
-                                .then(action(() => {
-                                    console.log('getPermissionsToWeather', true)
-                                    widgets.settings.update({ dtwUseWeather: value });
-                                }))
                                 .catch(action((e) => {
-                                    console.log('getPermissionsToWeather', false)
                                     console.error(e);
-                                    setDtwUseWeather(false);
-                                    widgets.settings.update({ dtwUseWeather: false });
-
-                                    enqueueSnackbar({
-                                        message: t('settings.widgets.dtw.weather.userDeniedGeolocation.title'),
-                                        description: t('settings.widgets.dtw.weather.userDeniedGeolocation.description'),
-                                        variant: 'error',
-                                    });
-                                }));
+                                }))
+                                .finally(() => {
+                                    widgets.settings.update({ dtwUseWeather: true });
+                                });
                         } else {
-                            widgets.settings.update({ dtwUseWeather: value });
+                            widgets.settings.update({ dtwUseWeather: false });
                         }
                     },
                 }}
@@ -103,16 +92,21 @@ function WeatherWidget({ onSelect }) {
                 />
                 <MenuInfo
                     width={750}
-                    show={coreService.storage.persistent.widgetWeather?.status === FETCH.FAILED}
+                    show={coreService.storage.persistent.weather?.status === FETCH.FAILED}
                     message={t('settings.widgets.dtw.weather.serviceUnavailable')}
                 />
                 <MenuRow
                     icon={PlaceIcon}
                     title={t('settings.widgets.dtw.weather.region.title')}
                     description={
-                        !coreService.storage.persistent.weatherLocation?.manual
-                            ? t('settings.widgets.dtw.weather.region.autoDescription')
-                            : t('settings.widgets.dtw.weather.region.manualDescription')
+                        coreService.storage.persistent.weatherLocation
+                            ? (
+                                !coreService.storage.persistent.weatherLocation?.manual
+                                    ? t('settings.widgets.dtw.weather.region.autoDescription')
+                                    : t('settings.widgets.dtw.weather.region.manualDescription')
+                            )
+                            : t('settings.widgets.dtw.weather.region.failedDescription')
+
                     }
                     action={{
                         type: ROWS_TYPE.LINK,
@@ -120,16 +114,22 @@ function WeatherWidget({ onSelect }) {
                             content: ChangeLocationPageContent,
                             header: changeLocationPageHeader,
                         }),
-                        component: `${
+                        component: coreService.storage.persistent.weatherLocation
+                            ? (`${
                             coreService.storage.persistent.weatherLocation?.name || t('unknown')
                         } [${
                             round(coreService.storage.persistent.weatherLocation?.latitude, 1) || '-'
                         }, ${
                             round(coreService.storage.persistent.weatherLocation?.longitude, 1) || '-'
-                        }]`,
+                        }]`)
+                        : (
+                                <Typography className={classes.notSetValue}>
+                                    {t('settings.widgets.dtw.weather.location.notSet')}
+                                </Typography>
+                            ),
                     }}
                 />
-                {coreService.storage.persistent.widgetWeather?.status === FETCH.PENDING && (<LinearProgress />)}
+                {coreService.storage.persistent.weather?.status === FETCH.PENDING && (<LinearProgress />)}
                 <MenuRow
                     title={t('settings.widgets.dtw.weather.clickAction.title')}
                     description={t('settings.widgets.dtw.weather.clickAction.description')}

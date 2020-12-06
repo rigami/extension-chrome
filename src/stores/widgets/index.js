@@ -1,12 +1,13 @@
 import { makeAutoObservable, reaction } from 'mobx';
 import { WidgetsSettingsStore } from '@/stores/app/settings';
 import { FETCH } from '@/enum';
+import { eventToBackground } from '@/stores/backgroundApp/busApp';
 
 class WidgetsService {
     _coreService;
     settings;
     weather;
-    showWeather;
+    showWeather = false;
 
     constructor(coreService) {
         makeAutoObservable(this);
@@ -14,12 +15,11 @@ class WidgetsService {
         this.settings = new WidgetsSettingsStore();
 
         reaction(
-            () => this._coreService.storage.persistent.widgetWeather,
-            () => { this.weather = this._coreService.storage.persistent.widgetWeather; },
+            () => this._coreService.storage.persistent.weather,
+            () => { this.weather = this._coreService.storage.persistent.weather; },
         );
 
-        if (this.settings.dtwUseWeather) this.weather = this._coreService.storage.persistent.widgetWeather;
-
+        if (this.settings.dtwUseWeather) this.weather = this._coreService.storage.persistent.weather;
 
         reaction(
             () => [
@@ -28,12 +28,36 @@ class WidgetsService {
                 this.weather?.lastUpdateStatus
             ],
             () => {
-                console.log("CHANGE WW")
                 this.showWeather = this.settings.dtwUseWeather
                     && (this.weather?.status === FETCH.ONLINE || this.weather?.status === FETCH.PENDING)
                     && this.weather?.lastUpdateStatus === FETCH.DONE
             },
         );
+
+        this.showWeather = this.showWeather = this.settings.dtwUseWeather
+            && (this.weather?.status === FETCH.ONLINE || this.weather?.status === FETCH.PENDING)
+            && this.weather?.lastUpdateStatus === FETCH.DONE
+    }
+
+    async autoDetectWeatherLocation() {
+        return new Promise((resolve, reject) => eventToBackground(
+            'widgets/weather/autoDetectLocation',
+            {},
+            (success) => success ? resolve() : reject(),
+        ));
+    }
+
+    async searchWeatherLocation(query) {
+        return new Promise((resolve) => eventToBackground(
+            'widgets/weather/searchLocation',
+            { query },
+            resolve,
+        ));
+    }
+
+    setWeatherLocation(location) {
+        eventToBackground('widgets/weather/setLocation',{ location });
+
     }
 
     async getPermissionsToWeather() {

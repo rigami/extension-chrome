@@ -1,5 +1,4 @@
 import { makeAutoObservable, reaction } from 'mobx';
-import fetchData from '@/utils/xhrPromise'
 import appVariables from '@/config/appVariables';
 import BusApp, { eventToApp } from '@/stores/backgroundApp/busApp';
 import { FETCH } from '@/enum';
@@ -10,7 +9,6 @@ import Weather from '@/entities/Weather';
 class WidgetsService {
     bus;
     settings;
-    weather;
     storageService;
     weatherService;
     _lastUpd;
@@ -138,6 +136,17 @@ class WidgetsService {
             callback(result);
         });
 
+        this.bus.on('widgets/weather/autoDetectLocation', async ({}, {}, callback) => {
+            console.log('Weather auto detect location');
+
+            try {
+                const result = await this.autoDetectLocation();
+                callback(true);
+            } catch (e) {
+                callback(false);
+            }
+        });
+
         this.bus.on('widgets/weather/setLocation', async ({ location }, { }) => {
             console.log('Weather set location', location);
 
@@ -148,31 +157,37 @@ class WidgetsService {
         });
     }
 
+    async autoDetectLocation() {
+        if (!navigator.geolocation) {
+            console.log('Geolocation is not supported for this Browser/OS version yet.');
+            throw new Error('Geolocation is not supported');
+        }
+
+        console.log('Geolocation is supported!');
+
+        let currPos;
+
+        currPos = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject));
+
+        console.log('currPos', currPos)
+
+        const coords = { latitude: currPos.coords.latitude, longitude: currPos.coords.longitude };
+
+        const locations = await this.weatherService.searchLocation(coords);
+
+        if (locations.length >= 1) {
+            this.weatherService.setLocation(new WeatherLocation({
+                ...locations[0].location,
+                manual: false,
+            }));
+        } else {
+            throw new Error('failed get automation location');
+        }
+    }
+
     async getCurWeather() {
         if (!this.weatherService.location) {
-            if (!navigator.geolocation) {
-                console.log('Geolocation is not supported for this Browser/OS version yet.');
-                throw new Error('Geolocation is not supported');
-            }
-
-            console.log('Geolocation is supported!');
-
-            let currPos;
-
-            currPos = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject));
-
-            const coords = { latitude: currPos.coords.latitude, longitude: currPos.coords.longitude };
-
-            const locations = await this.weatherService.searchLocation(coords);
-
-            if (locations.length >= 1) {
-                this.weatherService.setLocation(new WeatherLocation({
-                    ...locations[0].location,
-                    manual: false,
-                }));
-            } else {
-                throw new Error('failed get automation location');
-            }
+            await this.autoDetectLocation();
         }
 
         await this.weatherService.getWeather();

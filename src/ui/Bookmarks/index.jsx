@@ -184,7 +184,7 @@ function Bookmarks() {
                         <div className={classes.fadeWrapper}>
                             {statusSearch === SEARCH_STATUS.NOTHING_FOUND && (
                                 <FullScreenStub
-                                    iconRender={ReFoundIcon}
+                                    icon={ReFoundIcon}
                                     message={t('bookmark.nothingFound.title')}
                                     description={t('bookmark.nothingFound.description')}
                                 />

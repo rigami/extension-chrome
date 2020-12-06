@@ -106,19 +106,19 @@ function Preview(props) {
         >
             {stage === STAGE.WAIT_REQUEST && (
                 <FullScreenStub
-                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
+                    icon={URLIcon}
                     description={t('bookmark.editor.helper.writeURL')}
                 />
             )}
             {stage === STAGE.WAIT_RESULT && (
                 <FullScreenStub
-                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
+                    icon={URLIcon}
                     description={t('bookmark.editor.helper.selectResult')}
                 />
             )}
             {stage === STAGE.WAIT_NAME && (
                 <FullScreenStub
-                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
+                    icon={URLIcon}
                     description={t('bookmark.editor.helper.writeName')}
                 />
             )}

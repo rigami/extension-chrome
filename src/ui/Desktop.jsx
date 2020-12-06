@@ -252,7 +252,7 @@ function Desktop() {
                     )}
                     {store.state === 'failed' && (
                         <FullscreenStub
-                            iconRender={(props) => (<BrokenIcon {...props} />)}
+                            icon={BrokenIcon}
                             message={t('bg.errorLoad')}
                             description={
                                 (store.bg && t('bg.errorLoadUnknownReason'))

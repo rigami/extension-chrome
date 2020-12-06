@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useAppStateService from '@/stores/AppStateProvider';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
@@ -7,18 +7,29 @@ import {
     Divider,
     InputBase,
     LinearProgress,
+    Tooltip,
+    CircularProgress,
 } from '@material-ui/core';
 import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
+import {
+    ErrorRounded as ErrorIcon,
+    SearchRounded as SearchIcon,
+    NearMeRounded as MyLocationIcon,
+} from '@material-ui/icons';
+import {
+    NearMeRoundedDisabled as CustomLocationIcon,
+} from '@/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { round } from 'lodash';
 import FullScreenStub from '@/ui-components/FullscreenStub';
-import { eventToBackground } from '@/stores/backgroundApp/busApp';
 import useCoreService from '@/stores/BaseStateProvider';
+import { runInAction } from 'mobx';
+import MenuInfo from '@/ui/Menu/MenuInfo';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     row: {
-        width: 520,
         padding: theme.spacing(0, 2),
         display: 'flex',
         alignItems: 'center',
@@ -35,9 +46,76 @@ const useStyles = makeStyles((theme) => ({
     locationRow: {
         paddingLeft: theme.spacing(4),
     },
+    geoButtonWrapper: {
+        position: 'relative',
+    },
+    geoButton: {
+
+    },
+    geoButtonProgress: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12,
+    },
 }));
 
-const headerProps = { title: 'settings.widgets.dtw.weather.region.title' };
+const ObserverHeaderActions = observer(HeaderActions);
+
+const headerProps = {
+    title: 'settings.widgets.dtw.weather.region.title',
+    actions: (<ObserverHeaderActions />),
+    style: { width: 520 },
+};
+
+function HeaderActions() {
+    const classes = useStyles();
+    const { t } = useTranslation();
+    const { widgets } = useAppStateService();
+    const coreService = useCoreService();
+    const { enqueueSnackbar } = useSnackbar();
+    const [loading, setLoading] = useState(false);
+
+    const isAuto = coreService.storage.persistent.weatherLocation && !coreService.storage.persistent.weatherLocation?.manual;
+
+    return (
+        <React.Fragment>
+            <Tooltip title={t(`settings.widgets.dtw.weather.region.autoGeolocation.${isAuto ? 'onTooltip' : 'offTooltip'}`)}>
+                <span className={classes.geoButtonWrapper}>
+                    <Button
+                        className={classes.geoButton}
+                        variant={isAuto ? "contained" : "outlined"}
+                        color="primary"
+                        startIcon={isAuto ? (<MyLocationIcon />) : (<CustomLocationIcon />)}
+                        disabled={loading}
+                        onClick={() => {
+                            if (isAuto) {
+                                coreService.localEventBus.call('system/widgets/weather/focusManualSearchInput')
+                            } else {
+                                setLoading(true);
+                                widgets.autoDetectWeatherLocation()
+                                    .catch(() => {
+                                        enqueueSnackbar({
+                                            message: t('settings.widgets.dtw.weather.userDeniedGeolocation.title'),
+                                            description: t('settings.widgets.dtw.weather.userDeniedGeolocation.description'),
+                                            variant: 'error',
+                                        });
+                                    })
+                                    .finally(() => {
+                                        setLoading(false);
+                                    });
+                            }
+                        }}
+                    >
+                        {t(`settings.widgets.dtw.weather.region.autoGeolocation.${isAuto ? 'onTitle' : 'offTitle'}`)}
+                    </Button>
+                    {loading && <CircularProgress size={24} className={classes.geoButtonProgress} />}
+                </span>
+            </Tooltip>
+        </React.Fragment>
+    );
+}
 
 function Location(props) {
     const {
@@ -82,12 +160,14 @@ function Location(props) {
 function WeatherChangeLocation({ onClose }) {
     const classes = useStyles();
     const { t } = useTranslation();
+    const { widgets } = useAppStateService();
     const coreService = useCoreService();
     const store = useLocalObservable(() => ({
         searchRequest: coreService.storage.persistent.weatherLocation?.name,
         list: [],
         status: FETCH.WAIT,
     }));
+    const inputRef = useRef(null);
 
     const handleSearch = async (event) => {
         event.preventDefault();
@@ -95,13 +175,11 @@ function WeatherChangeLocation({ onClose }) {
         store.status = FETCH.PENDING;
 
         try {
-            eventToBackground(
-                'widgets/weather/searchLocation',
-                { query: store.searchRequest },
-                (list) => {
-                    console.log('widgets/weather/searchLocation', list)
-                    store.list = list;
-                    store.status = FETCH.DONE;
+            const list = await widgets.searchWeatherLocation(store.searchRequest);
+
+            runInAction(() => {
+                store.list = list;
+                store.status = FETCH.DONE;
             });
 
         } catch (e) {
@@ -110,16 +188,31 @@ function WeatherChangeLocation({ onClose }) {
         }
     }
 
+    useEffect(() => {
+        const listenId = coreService.localEventBus.on('system/widgets/weather/focusManualSearchInput', () => {
+            console.log('focusManualSearchInput', inputRef)
+            inputRef.current?.focus();
+        });
+
+        return () => coreService.localEventBus.removeListener(listenId);
+    }, []);
+
     return (
         <React.Fragment>
+            <MenuInfo
+                width={520}
+                show={!coreService.storage.persistent.weatherLocation}
+                message={t('settings.widgets.dtw.weather.region.notDetected.title')}
+                description={t('settings.widgets.dtw.weather.region.notDetected.description')}
+            />
             <form className={classes.row} onSubmit={handleSearch}>
                 <InputBase
                     fullWidth
+                    inputRef={inputRef}
                     className={classes.input}
-                    placeholder={t('category.createPlaceholder')}
+                    placeholder={coreService.storage.persistent.weatherLocation?.name}
                     variant="outlined"
                     autoFocus
-                    defaultValue={coreService.storage.persistent.weatherLocation?.name}
                     onChange={(event) => {
                         store.searchRequest = event.target.value;
                     }}
@@ -143,19 +236,27 @@ function WeatherChangeLocation({ onClose }) {
                     latitude={item.location.latitude}
                     longitude={item.location.longitude}
                     onClick={() => {
-                        eventToBackground('widgets/weather/setLocation',{ location: item.location });
+                        widgets.setWeatherLocation(item.location);
                         onClose();
                     }}
                 />
             ))}
+            {store.status === FETCH.DONE && store.list.length === 0 && (
+                <FullScreenStub
+                    message={t('settings.widgets.dtw.weather.region.search.notFound.title')}
+                    description={t('settings.widgets.dtw.weather.region.search.notFound.description')}
+                />
+            )}
             {store.status === FETCH.FAILED && (
                 <FullScreenStub
+                    error={ErrorIcon}
                     message={t('settings.widgets.dtw.weather.region.search.failed.title')}
                     description={t('settings.widgets.dtw.weather.region.search.failed.description')}
                 />
             )}
             {store.status === FETCH.WAIT && (
                 <FullScreenStub
+                    icon={SearchIcon}
                     message={t('settings.widgets.dtw.weather.region.search.wait.title')}
                     description={t('settings.widgets.dtw.weather.region.search.wait.description')}
                 />
