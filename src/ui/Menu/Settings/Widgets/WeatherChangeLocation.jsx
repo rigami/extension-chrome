@@ -26,7 +26,6 @@ import { round } from 'lodash';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import useCoreService from '@/stores/BaseStateProvider';
 import { runInAction } from 'mobx';
-import MenuInfo from '@/ui/Menu/MenuInfo';
 import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
@@ -93,8 +92,11 @@ function HeaderActions() {
                                 coreService.localEventBus.call('system/widgets/weather/focusManualSearchInput')
                             } else {
                                 setLoading(true);
-                                widgets.autoDetectWeatherLocation()
-                                    .catch(() => {
+                                widgets.getPermissionsToWeather()
+                                    .then(() => widgets.autoDetectWeatherLocation())
+                                    .catch((e) => {
+                                        console.error(e);
+
                                         enqueueSnackbar({
                                             message: t('settings.widgets.dtw.weather.failedGeolocation.title'),
                                             description: t('settings.widgets.dtw.weather.failedGeolocation.description'),
