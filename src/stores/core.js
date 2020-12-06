@@ -1,6 +1,6 @@
 import BusApp, { eventToBackground, initBus, instanceId } from '@/stores/backgroundApp/busApp';
 import { DESTINATION } from '@/enum';
-import { reaction, action, makeAutoObservable } from 'mobx';
+import { reaction, action, makeAutoObservable, runInAction } from 'mobx';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
@@ -39,6 +39,7 @@ class Storage {
         this.temp = {};
         this.persistent = {};
         try {
+            if (!localStorage.getItem('storage')) throw new Error('Storage not esixt');
             this.updatePersistent(JSON.parse(localStorage.getItem('storage')), false);
             this.isSync = true;
         } catch (e) {
@@ -81,23 +82,31 @@ class Core {
         this.localEventBus = new EventBus();
         this.storage = new Storage();
 
-        const init = () => {
-            if (!this.storage.isSync) return;
+        const init = async () => {
+            try {
+                await this.initialization();
 
-            this.initialization()
-                .then(() => {
+                runInAction(() => {
                     if (!this.storage.persistent.lastUsageVersion) {
                         this.appState = APP_STATE.REQUIRE_SETUP;
                     } else {
                         this.appState = APP_STATE.WORK;
                     }
-                })
-                .catch(() => { this.appState = APP_STATE.FAILED; });
+                });
+            } catch (e) {
+                runInAction(() => {
+                    this.appState = APP_STATE.FAILED;
+                });
+            }
         };
 
-        init();
+        this.globalEventBus.on('system/ping', (data, options, callback) => {
+            callback({ type: data });
+        });
 
         reaction(() => this.storage.isSync, () => { init(); });
+
+        if (this.storage.isSync) init();
     }
 
     async initialization() {

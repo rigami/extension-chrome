@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import { useObserver, observer } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE } from '@/enum';
 import {
     Avatar,
@@ -116,7 +116,7 @@ function SchedulerSection({ onSelect }) {
     const backgroundsStore = useBackgroundsService();
     const { t } = useTranslation();
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
             <SectionHeader title={t('settings.bg.scheduler.title')} />
             <MenuRow
@@ -196,18 +196,20 @@ function SchedulerSection({ onSelect }) {
                 />
             </Collapse>
         </React.Fragment>
-    ));
+    );
 }
 
-const MemoSchedulerSection = memo(SchedulerSection);
+const MemoSchedulerSection = memo(observer(SchedulerSection));
 
 function BackgroundsMenu({ onSelect }) {
-    return useObserver(() => (
+    return (
         <React.Fragment>
             <MemoBackgroundsSection onSelect={onSelect} />
             <MemoSchedulerSection onSelect={onSelect} />
         </React.Fragment>
-    ));
+    );
 }
 
-export { headerProps as header, BackgroundsMenu as content };
+const ObserverBackgroundsMenu = observer(BackgroundsMenu);
+
+export { headerProps as header, ObserverBackgroundsMenu as content };

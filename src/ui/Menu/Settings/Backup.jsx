@@ -18,11 +18,11 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import { useObserver } from 'mobx-react-lite';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
 import { eventToBackground } from '@/stores/backgroundApp/busApp';
 import { useSnackbar } from 'notistack';
+import { observer } from 'mobx-react-lite';
 import useCoreService from '@/stores/BaseStateProvider';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import SectionHeader from '@/ui/Menu/SectionHeader';
@@ -76,7 +76,7 @@ function BrowserSync() {
     }, [coreService.storage.persistent.syncBrowserFolder]);
 
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
             <SectionHeader title={t("settings.backup.systemBookmarks.title")} />
             <MenuRow
@@ -169,7 +169,7 @@ function BrowserSync() {
                 />
             </Collapse>
         </React.Fragment>
-    ));
+    );
 }
 
 function LocalBackup() {
@@ -291,6 +291,8 @@ function LocalBackup() {
     );
 }
 
+const ObserverBrowserSync = observer(BrowserSync);
+
 function BackupSettings() {
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
@@ -316,9 +318,9 @@ function BackupSettings() {
         reader.readAsText(form.files[0]);
     };
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
-            <BrowserSync />
+            <ObserverBrowserSync />
             <SectionHeader title={t('settings.backup.localBackup.title')} />
             <MenuRow
                 title={t('settings.backup.localBackup.create.title')}
@@ -358,7 +360,9 @@ function BackupSettings() {
                 }}
             />
         </React.Fragment>
-    ));
+    );
 }
 
-export { headerProps as header, BackupSettings as content };
+const ObserverBackupSettings = observer(BackupSettings);
+
+export { headerProps as header, ObserverBackupSettings as content };

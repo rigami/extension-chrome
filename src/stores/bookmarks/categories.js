@@ -1,4 +1,4 @@
-import { action, computed, makeAutoObservable } from 'mobx';
+import { action, computed, makeAutoObservable, runInAction } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
 import getUniqueColor from '@/utils/uniqueColor';
 import { DESTINATION } from '@/enum';
@@ -18,7 +18,11 @@ class CategoriesStore {
 
     @action('sync categories with db')
     async sync() {
-        this._categories = await DBConnector().getAll('categories');
+        const categories = await DBConnector().getAll('categories');
+
+        runInAction(() => {
+            this._categories = categories;
+        })
 
         return this._categories;
     }

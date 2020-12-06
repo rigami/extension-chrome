@@ -1,6 +1,6 @@
 import React from 'react';
 import PopperWrapper from '@/ui-components/PopperWrapper';
-import { useLocalObservable, useObserver } from 'mobx-react-lite';
+import { useLocalObservable, observer } from 'mobx-react-lite';
 import Editor from './Editor';
 import SimpleEditor from './EditorSimple';
 
@@ -15,7 +15,7 @@ function EditFolderModal(props) {
     } = props;
     const store = useLocalObservable(() => ({ popperRef: null }));
 
-    return useObserver(() => (
+    return (
         <PopperWrapper
             isOpen={isOpen}
             anchorEl={anchorEl}
@@ -38,7 +38,7 @@ function EditFolderModal(props) {
                 />
             )}
         </PopperWrapper>
-    ));
+    );
 }
 
-export default EditFolderModal;
+export default observer(EditFolderModal);

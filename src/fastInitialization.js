@@ -1,9 +1,12 @@
-document.title = localStorage.getItem('app_tab_name') || '\u200E';
+if (localStorage.getItem('app_tab_name')) {
+    localStorage.setItem('appTabName', localStorage.getItem('app_tab_name'));
+    localStorage.removeItem('app_tab_name')
+}
 
-if (localStorage.getItem('last_setup_timestamp')) {
-    if (localStorage.getItem('app_backdrop_theme') === 'DARK') {
-        document.documentElement.style.backgroundColor = '#000';
-    } else {
-        document.documentElement.style.backgroundColor = '#fff';
-    }
+document.title = localStorage.getItem('appTabName') || '\u200E';
+
+if (localStorage.getItem('storage') !== '{}' && localStorage.getItem('backdropTheme') === 'DARK') {
+    document.documentElement.style.backgroundColor = '#000';
+} else {
+    document.documentElement.style.backgroundColor = '#fff';
 }

@@ -31,6 +31,9 @@ function InitApp({ children }) {
             {isConfig && !isFirstContact && children}
             {isFirstContact && (
                 <FirstLookScreen
+                    onLoad={() => {
+                        service.storage.updatePersistent({ lastUsageVersion: packageJson.version });
+                    }}
                     onStart={() => {
                         setIsConfig(true);
                         setIsFirstContact(false);

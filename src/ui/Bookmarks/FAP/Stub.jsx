@@ -2,10 +2,17 @@ import React from 'react';
 import { BKMS_FAP_STYLE } from '@/enum';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import { Box } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        backgroundColor: theme.palette.background.paper,
+    },
+}));
+
 function FAPStub() {
+    const classes = useStyles();
     const bookmarksService = useBookmarksService();
     const theme = useTheme();
 
@@ -16,7 +23,7 @@ function FAPStub() {
     }
 
     return (
-        <Box style={{ height }} />
+        <Box style={{ height }} className={classes.root} />
     );
 }
 

@@ -6,7 +6,7 @@ import {
     Fade,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useObserver, useLocalObservable } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import ReactResizeDetector from 'react-resize-detector';
 import Scrollbar from '@/ui-components/CustomScroll';
 import PreviewSelector from './Selector';
@@ -38,7 +38,7 @@ function SelectorWrapper(props) {
         filedWidth: 0,
     }));
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
             <ReactResizeDetector
                 handleHeight
@@ -95,7 +95,7 @@ function SelectorWrapper(props) {
                 </Scrollbar>
             </Popover>
         </React.Fragment>
-    ));
+    );
 }
 
-export default SelectorWrapper;
+export default observer(SelectorWrapper);

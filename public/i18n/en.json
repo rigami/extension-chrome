@@ -151,9 +151,9 @@
           "serviceUnavailable": "Weather service not available",
           "pendingData": "Receiving data...",
           "useWeather": "Show current weather",
-          "userDeniedGeolocation": {
-            "title": "You have denied access to geolocation. Weather display not possible",
-            "description": "To allow access, click on the geolocation icon on the right in the search field, allow access to geolocation and reload the page"
+          "failedGeolocation": {
+            "title": "Can't determine your geolocation",
+            "description": "Perhaps you are denied access to geolocation, or the weather service does not supply weather for this place"
           },
           "units": {
             "title": "Measurement system",
@@ -167,6 +167,49 @@
             "title": "Weather Forecast Provider",
             "provider": {
               "openweathermap": "OpenWeatherMap"
+            }
+          },
+          "region": {
+            "notSet": "Не установлен",
+            "title": "Region",
+            "autoDescription": "The region is determined automatically by your location, click here to change it",
+            "manualDescription": "Region set manually, click here to change it",
+            "failedDescription": "Could not determine your region, click here to set it manually",
+            "search": {
+              "button": "Search",
+              "wait": {
+                "manual": {
+                  "title": "The weather is shown for the region \"{{locationName}}\"",
+                  "description": "Enter the place name to change the region"
+                },
+                "auto": {
+                  "title": "Weather shown for your location \"{{locationName}}\"",
+                  "description": "Enter the place name to set the region manually"
+                },
+                "failed": {
+                  "title": "Can't find your location",
+                  "description": "Enter the name of the place to set the region manually, or try turning on geolocation"
+                }
+              },
+              "notFound": {
+                "title": "Place not found",
+                "description": "Try changing your request and try again"
+              },
+              "failed": {
+                "title": "Search error",
+                "description": "Something went wrong, please try again later"
+              }
+            },
+            "notDetected": {
+              "title": "Region not defined",
+              "description": "Failed to determine the region, please try to select it manually",
+              "changeRegion": "Select region"
+            },
+            "autoGeolocation": {
+              "onTooltip": "Click to turn off automatic location",
+              "offTooltip": "Click to turn on automatic location",
+              "onTitle": "Geolocation enabled",
+              "offTitle": "Geolocation is off"
             }
           },
           "clickAction": {
@@ -220,7 +263,7 @@
       }
     },
     "about":{
-      "title":"About Applications",
+      "title":"About extension",
       "description":"Write to the developer, send a bug report",
       "homePage":"Project home page",
       "review":{
@@ -239,7 +282,7 @@
     },
     "betaBanner": {
       "title": "The extension is in beta testing",
-      "description": "Help us become better, if you have ideas or you notice a problem, please let us know on the \"About page\""
+      "description": "Help us become better, if you have ideas or you notice a problem, please let us know on the \"About extension\" page"
     }
   },
   "bg":{
@@ -373,7 +416,7 @@
   },
   "newVersion": {
     "title": "New version {{version}}",
-    "description": "The extension has been updated, now it is even better\n\n  - Added weather widget.\n\n  - Fixed other minor issues.",
+    "description": "The extension has been updated, now it is even better\n\n  - Added manual selection of the weather region\n\n  - Fixed black bar under quick access bar\n\n  - Fixed other minor issues",
     "ok": "OK",
     "changelog": "List of changes"
   },
@@ -393,5 +436,6 @@
   "notAvailableYet":"Not available yet",
   "all":"All",
   "nothingSelected":"Nothing selected",
-  "changeTakeEffectAfterReload":"Changes will take effect after page refresh"
+  "changeTakeEffectAfterReload":"Changes will take effect after page refresh",
+  "unknown": "Unknown"
 }

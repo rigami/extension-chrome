@@ -3,11 +3,11 @@ import { Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import { useObserver } from 'mobx-react-lite';
 import { THEME } from '@/enum';
 import useAppService from '@/stores/AppStateProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import { content as TabNamePageContent, header as tabNamePageHeader } from './TabName';
+import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     defaultTabValue: {
@@ -24,7 +24,7 @@ function AppSettings({ onSelect }) {
     const appService = useAppService();
     const [defaultFontValue] = useState(appService.settings.useSystemFont);
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
             <MenuRow
                 title={t('settings.app.darkThemeBackdrop')}
@@ -34,7 +34,9 @@ function AppSettings({ onSelect }) {
                     width: 72,
                     checked: appService.settings.backdropTheme === THEME.DARK,
                     color: 'primary',
-                    onChange: (event, value) => appService.settings.update({ backdropTheme: value ? THEME.DARK : THEME.LIGHT }),
+                    onChange: (event, value) => {
+                        appService.settings.update({ backdropTheme: value ? THEME.DARK : THEME.LIGHT })
+                    },
                 }}
             />
             <MenuRow
@@ -81,7 +83,9 @@ function AppSettings({ onSelect }) {
                 }}
             />
         </React.Fragment>
-    ));
+    );
 }
+
+const ObserverAppSettings = observer(AppSettings);
 
 export { headerProps as header, AppSettings as content };

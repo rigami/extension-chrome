@@ -11,7 +11,7 @@ import CardLink from '@/ui/Bookmarks/CardLink';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import { BKMS_VARIANT, FETCH } from '@/enum';
-import { useObserver, useLocalObservable } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     cover: {
@@ -100,25 +100,25 @@ function Preview(props) {
         store.loadUrl = imgCache.src;
     }, [imageUrl, stage]);
 
-    return useObserver(() => (
+    return (
         <CardMedia
             className={classes.cover}
         >
             {stage === STAGE.WAIT_REQUEST && (
                 <FullScreenStub
-                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
+                    icon={URLIcon}
                     description={t('bookmark.editor.helper.writeURL')}
                 />
             )}
             {stage === STAGE.WAIT_RESULT && (
                 <FullScreenStub
-                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
+                    icon={URLIcon}
                     description={t('bookmark.editor.helper.selectResult')}
                 />
             )}
             {stage === STAGE.WAIT_NAME && (
                 <FullScreenStub
-                    iconRender={(renderProps) => (<URLIcon {...renderProps} />)}
+                    icon={URLIcon}
                     description={t('bookmark.editor.helper.writeName')}
                 />
             )}
@@ -155,8 +155,8 @@ function Preview(props) {
                 </Box>
             )}
         </CardMedia>
-    ));
+    );
 }
 
-export default Preview;
+export default observer(Preview);
 export { STAGE };

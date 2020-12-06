@@ -115,7 +115,7 @@ function Menu({ }) {
                 onClose={() => handleClose()}
                 disableEnforceFocus
             >
-                <List disablePadding className={classes.list}>
+                <List disablePadding className={classes.list} style={{ width: headerProps?.width }}>
                     <Header onBack={handleBack} {...headerProps} />
                     <Page
                         onClose={handleBack}

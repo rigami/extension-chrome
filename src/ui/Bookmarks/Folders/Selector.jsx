@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/BookmarksProvider';
-import { useLocalObservable, useObserver } from 'mobx-react-lite';
+import { useLocalObservable, observer } from 'mobx-react-lite';
 import EditFolderModal from './EditModal';
 
 const useStyles = makeStyles((theme) => ({
@@ -39,7 +39,7 @@ function FolderSelector({ value, onChange }) {
         }
     }, [value]);
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
             <EditFolderModal
                 isOpen={store.isOpen}
@@ -86,7 +86,7 @@ function FolderSelector({ value, onChange }) {
                 </Button>
             </Tooltip>
         </React.Fragment>
-    ));
+    );
 }
 
-export default FolderSelector;
+export default observer(FolderSelector);

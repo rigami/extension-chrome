@@ -16,7 +16,7 @@ import {
     Box,
     IconButton,
 } from '@material-ui/core';
-import { observer, useLocalObservable, useObserver } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import {
@@ -255,7 +255,7 @@ function UploadBGForm({ children }) {
         store.uploadQueueSize = backgroundsService.uploadQueue.length;
     }, [backgroundsService.uploadQueue.length]);
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
             {children}
             {dragFiles && dragFiles.length > 0 && (
@@ -325,7 +325,7 @@ function UploadBGForm({ children }) {
                 </Tooltip>
             )}
         </React.Fragment>
-    ));
+    );
 }
 
 export default observer(UploadBGForm);

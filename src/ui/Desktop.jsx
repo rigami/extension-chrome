@@ -20,6 +20,7 @@ import Menu from '@/ui/Menu';
 import { useTranslation } from 'react-i18next';
 import useAppStateService from '@/stores/AppStateProvider';
 import Widgets from './Widgets';
+import { action } from 'mobx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -191,7 +192,7 @@ function Desktop() {
         };
     }, []);
 
-    useEffect(() => {
+    useEffect(action(() => {
         if (!backgroundsStore.currentBGId) return () => {};
         const currentBg = backgroundsStore.getCurrentBG();
 
@@ -216,7 +217,7 @@ function Desktop() {
             if (typeof store.captureFrameTimer === 'number') clearTimeout(+store.captureFrameTimer);
             store.captureFrameTimer = null;
         };
-    }, [backgroundsStore.currentBGId]);
+    }), [backgroundsStore.currentBGId]);
 
     useEffect(() => {
         if (store.currentBg || !store.nextBg) return;
@@ -251,7 +252,7 @@ function Desktop() {
                     )}
                     {store.state === 'failed' && (
                         <FullscreenStub
-                            iconRender={(props) => (<BrokenIcon {...props} />)}
+                            icon={BrokenIcon}
                             message={t('bg.errorLoad')}
                             description={
                                 (store.bg && t('bg.errorLoadUnknownReason'))
@@ -292,11 +293,11 @@ function Desktop() {
                             className={clsx(classes.bg, classes.image)}
                             src={store.currentBg.src}
                             style={{ imageRendering: store.currentBg.antiAliasing ? 'auto' : 'pixelated' }}
-                            onLoad={() => {
+                            onLoad={action(() => {
                                 console.log('load done');
                                 store.state = 'done';
-                            }}
-                            onError={() => {
+                            })}
+                            onError={action(() => {
                                 if (store.currentBg.type === BG_TYPE.VIDEO) {
                                     store.nextBg = {
                                         ...store.currentBg,
@@ -308,7 +309,7 @@ function Desktop() {
                                 } else {
                                     store.state = 'failed';
                                 }
-                            }}
+                            })}
                             ref={bgRef}
                         />
                     )}

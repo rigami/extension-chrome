@@ -104,6 +104,8 @@ class SyncSettings {
         console.log('Save fast cache settings', this, this.settings);
         localStorage.setItem('settings', JSON.stringify(this.settings));
         localStorage.setItem('theme', this.settings.app?.theme || defaultSettings.app.theme);
+        localStorage.setItem('backdropTheme', this.settings.app?.backdropTheme || defaultSettings.app.backdropTheme);
+        localStorage.setItem('appTabName', this.settings.app?.tabName || defaultSettings.app.tab_name);
 
         if (settings) {
             eventToApp('system/syncSettings/app', {

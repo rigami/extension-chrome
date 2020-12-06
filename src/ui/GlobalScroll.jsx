@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         height: '100vh',
         width: '100vw',
-        backgroundColor: theme.palette.background.paper,
+        // backgroundColor: theme.palette.background.paper,
     },
     // scrollBar: scrollbarClasses(theme).scrollBar,
     hideScroll: { opacity: 0 },

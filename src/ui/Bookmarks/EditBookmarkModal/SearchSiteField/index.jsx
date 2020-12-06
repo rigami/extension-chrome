@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import { useObserver, useLocalObservable } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import ReactResizeDetector from 'react-resize-detector';
 import Scrollbar from '@/ui-components/CustomScroll';
 import Search from './Search';
@@ -64,7 +64,7 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
         store.searchRequest = searchRequest;
     }, [searchRequest]);
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
             <ReactResizeDetector
                 handleHeight
@@ -165,7 +165,7 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
                 </Scrollbar>
             </Popover>
         </React.Fragment>
-    ));
+    );
 }
 
-export default SearchSiteField;
+export default observer(SearchSiteField);

@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { useObserver } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { useSnackbar } from 'notistack';
 import { Button } from '@material-ui/core';
 import { Add as UploadFromComputerIcon } from '@material-ui/icons';
@@ -15,7 +15,7 @@ function LoadBGFromLocalButton() {
     const classes = useStyles();
     const { t } = useTranslation();
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
             <input
                 className={classes.input}
@@ -50,7 +50,7 @@ function LoadBGFromLocalButton() {
                 </Button>
             </label>
         </React.Fragment>
-    ));
+    );
 }
 
-export default memo(LoadBGFromLocalButton);
+export default memo(observer(LoadBGFromLocalButton));

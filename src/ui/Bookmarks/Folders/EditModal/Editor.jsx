@@ -14,7 +14,7 @@ import {
     ChevronRightRounded as ArrowRightIcon,
     ExpandMoreRounded as ArrowDownIcon,
 } from '@material-ui/icons';
-import { useLocalObservable, useObserver } from 'mobx-react-lite';
+import { useLocalObservable, observer } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/BookmarksProvider';
 import asyncAction from '@/utils/asyncAction';
 import { toJS } from 'mobx';
@@ -205,7 +205,7 @@ function Editor(props) {
         }
     }, []);
 
-    return useObserver(() => (
+    return (
         <Card className={classes.popper} elevation={16}>
             <DialogTitle>{t('folder.editor.title')}</DialogTitle>
             <DialogContent className={classes.tree}>
@@ -251,7 +251,7 @@ function Editor(props) {
                 </Button>
             </DialogActions>
         </Card>
-    ));
+    );
 }
 
-export default Editor;
+export default observer(Editor);

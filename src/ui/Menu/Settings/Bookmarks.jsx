@@ -1,5 +1,4 @@
 import React from 'react';
-import { useObserver } from 'mobx-react-lite';
 import {
     ACTIVITY,
     BKMS_FAP_POSITION,
@@ -12,18 +11,16 @@ import useBookmarksService from '@/stores/BookmarksProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import useAppService from '@/stores/AppStateProvider';
+import { observer } from 'mobx-react-lite';
 
 const headerProps = { title: 'settings.bookmarks.title' };
-
-
-
 
 function BookmarksSettings() {
     const bookmarksService = useBookmarksService();
     const appService = useAppService();
     const { t } = useTranslation();
 
-    return useObserver(() => (
+    return (
         <React.Fragment>
             <SectionHeader title={t('settings.bookmarks.general.title')} />
             <MenuRow
@@ -78,7 +75,9 @@ function BookmarksSettings() {
                 />
             </Collapse>
         </React.Fragment>
-    ));
+    );
 }
 
-export { headerProps as header, BookmarksSettings as content };
+const ObserverBookmarksSettings = observer(BookmarksSettings);
+
+export { headerProps as header, ObserverBookmarksSettings as content };

@@ -60,7 +60,7 @@ class SyncStorage {
     fastSync = throttle(() => {
         console.log('Save fast cache storage', this.storage);
         localStorage.setItem('storage', JSON.stringify(this.storage));
-    }, 1000);
+    }, 100);
 
     sync = throttle(() => {
         console.log('Save settings', this.storage);
@@ -71,7 +71,7 @@ class SyncStorage {
         ).then(() => {
             console.log('Success save cache storage');
         });
-    }, 10000);
+    }, 7000);
 }
 
 export default SyncStorage;

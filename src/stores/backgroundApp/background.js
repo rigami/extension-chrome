@@ -1,5 +1,5 @@
 import BookmarksService from '@/stores/bookmarks';
-import BusApp from '@/stores/backgroundApp/busApp';
+import BusApp, { eventToApp } from '@/stores/backgroundApp/busApp';
 import SyncSettings from './syncSettings';
 import SyncStorage from './syncStorage';
 import SyncSystemBookmarks from './syncSystemBookmarks';
