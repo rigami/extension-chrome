@@ -416,7 +416,7 @@
   },
   "newVersion": {
     "title": "New version {{version}}",
-    "description": "The extension has been updated, now it is even better\n\n  - Fixed some cases of incorrect weather detection",
+    "description": "The extension has been updated, now it is even better\n\n  - Added manual selection of the weather region\n\n  - Fixed black bar under quick access bar\n\n  - Fixed other minor issues",
     "ok": "OK",
     "changelog": "List of changes"
   },
