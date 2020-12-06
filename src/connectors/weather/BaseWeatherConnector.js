@@ -13,18 +13,13 @@ class BaseWeatherConnector {
         this.weather = storageService.storage.weather;
     }
 
-    getDashboardUrl() {
-        if (!this.weather) throw new Error("weather not set")
-
-        return this.weather.dashboardUrl;
-    }
-
     async getWeather(weather) {
         console.log('Set weather:', weather);
         this.weather = weather;
 
         this.storageService.updatePersistent({
             weather,
+            widgetWeather: null,
         });
     }
 

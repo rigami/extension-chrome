@@ -75,6 +75,7 @@ class WidgetsService {
                 || !this._lastUpd
                 || this._lastUpd + appVariables.widgets.weather.updateTime.inactive <= Date.now()
                 || !isFinite(this.weatherService.weather?.currTemp)
+                || this.storageService.widgetWeather
             ) {
                 console.log('Weather start')
                 updateWeather();
