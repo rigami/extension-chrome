@@ -24,20 +24,9 @@ export default {
             },
             services: {
                 'openweathermap': {
-                    name: 'openweathermap',
-                    dashboard: 'https://openweathermap.org/',
-                    api: {
-                        curr: ({ lat, lon, lang, apiKey }) => `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=${lang}`,
-                    },
                     apiKey: '10ad1bca6850a2c26033e31c2a60229f',
                 },
                 'accuweather': {
-                    name: 'AccuWeather',
-                    dashboard: 'http://accuweather.com/',
-                    api: {
-                        getLocation: ({ lat, lon, apiKey}) => `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apiKey=${apiKey}&q${lat},${lon}`,
-                        curr: ({ location, lang, apiKey }) => `http://dataservice.accuweather.com/forecasts/v1/hourly/1hour/${location}?apikey=${apiKey}&metric=true&language=${lang}`,
-                    },
                     apiKey: 'va8RX4nd9wx0hDVf6SdnB57tlsfAKA7m',
                 }
             },

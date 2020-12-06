@@ -14,7 +14,9 @@ class BaseWeatherConnector {
     }
 
     getDashboardUrl() {
-        throw new Error('Method "getDashboardUrl" not override');
+        if (!this.weather) throw new Error("weather not set")
+
+        return this.weather.dashboardUrl;
     }
 
     async getWeather(weather) {

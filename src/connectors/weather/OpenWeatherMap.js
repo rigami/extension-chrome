@@ -15,7 +15,6 @@ class OpenWeatherMap extends BaseWeatherConnector {
     }
 
     async getWeather() {
-        console.log('Get weather')
         if (!this.location) throw new Error("location not set")
 
         const { response: weather } = await fetchData(`http://api.openweathermap.org/data/2.5/weather?id=${this.location.id}&appid=${this.apiKey}`);
@@ -26,6 +25,7 @@ class OpenWeatherMap extends BaseWeatherConnector {
             lastUpdateStatus: FETCH.DONE,
             lastUpdateTimestamp: Date.now(),
             status: FETCH.ONLINE,
+            dashboardUrl: `https://openweathermap.org/city/${this.location.id}`,
         }));
     }
 

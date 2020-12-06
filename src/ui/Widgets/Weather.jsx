@@ -53,7 +53,7 @@ function WeatherWidget({ size }) {
         <Fade in={widgets.showWeather}>
             <Tooltip title={t('widgets.weather.openInNewTab')}>
                 <Link
-                    href={widgets.settings.dtwWeatherAction || appVariables.widgets.weather.services.openweathermap.dashboard}
+                    href={widgets.settings.dtwWeatherAction || widgets.weather?.dashboardUrl}
                     target="_blank"
                     underline="none"
                     color="inherit"
