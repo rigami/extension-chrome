@@ -48,10 +48,10 @@ class WidgetsService {
     }
 
     async searchWeatherLocation(query) {
-        return new Promise((resolve) => eventToBackground(
+        return new Promise((resolve, reject) => eventToBackground(
             'widgets/weather/searchLocation',
             { query },
-            resolve,
+            ({ success, result }) => success ? resolve(result) : reject(),
         ));
     }
 

@@ -14,11 +14,12 @@ import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     ErrorRounded as ErrorIcon,
-    SearchRounded as SearchIcon,
     NearMeRounded as MyLocationIcon,
+    PlaceRounded as PlaceIcon,
 } from '@material-ui/icons';
 import {
     NearMeRoundedDisabled as CustomLocationIcon,
+    WrongLocationRounded as WrongLocationIcon,
 } from '@/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { round } from 'lodash';
@@ -39,10 +40,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
     },
     input: { padding: theme.spacing(2) },
-    submit: {
-        marginRight: theme.spacing(2),
-        flexShrink: 0
-    },
+    submit: { flexShrink: 0 },
     locationRow: {
         paddingLeft: theme.spacing(4),
     },
@@ -66,7 +64,8 @@ const ObserverHeaderActions = observer(HeaderActions);
 const headerProps = {
     title: 'settings.widgets.dtw.weather.region.title',
     actions: (<ObserverHeaderActions />),
-    style: { width: 520 },
+    style: { width: 520, maxWidth: 520 },
+    width: 520,
 };
 
 function HeaderActions() {
@@ -97,8 +96,8 @@ function HeaderActions() {
                                 widgets.autoDetectWeatherLocation()
                                     .catch(() => {
                                         enqueueSnackbar({
-                                            message: t('settings.widgets.dtw.weather.userDeniedGeolocation.title'),
-                                            description: t('settings.widgets.dtw.weather.userDeniedGeolocation.description'),
+                                            message: t('settings.widgets.dtw.weather.failedGeolocation.title'),
+                                            description: t('settings.widgets.dtw.weather.failedGeolocation.description'),
                                             variant: 'error',
                                         });
                                     })
@@ -199,12 +198,6 @@ function WeatherChangeLocation({ onClose }) {
 
     return (
         <React.Fragment>
-            <MenuInfo
-                width={520}
-                show={!coreService.storage.persistent.weatherLocation}
-                message={t('settings.widgets.dtw.weather.region.notDetected.title')}
-                description={t('settings.widgets.dtw.weather.region.notDetected.description')}
-            />
             <form className={classes.row} onSubmit={handleSearch}>
                 <InputBase
                     fullWidth
@@ -249,16 +242,40 @@ function WeatherChangeLocation({ onClose }) {
             )}
             {store.status === FETCH.FAILED && (
                 <FullScreenStub
-                    error={ErrorIcon}
+                    icon={ErrorIcon}
                     message={t('settings.widgets.dtw.weather.region.search.failed.title')}
                     description={t('settings.widgets.dtw.weather.region.search.failed.description')}
                 />
             )}
-            {store.status === FETCH.WAIT && (
+            {store.status === FETCH.WAIT && !coreService.storage.persistent.weatherLocation && (
                 <FullScreenStub
-                    icon={SearchIcon}
-                    message={t('settings.widgets.dtw.weather.region.search.wait.title')}
-                    description={t('settings.widgets.dtw.weather.region.search.wait.description')}
+                    icon={WrongLocationIcon}
+                    message={t('settings.widgets.dtw.weather.region.search.wait.failed.title')}
+                    description={t('settings.widgets.dtw.weather.region.search.wait.failed.description')}
+                />
+            )}
+            {store.status === FETCH.WAIT && coreService.storage.persistent.weatherLocation?.manual && (
+                <FullScreenStub
+                    icon={PlaceIcon}
+                    message={t(
+                        'settings.widgets.dtw.weather.region.search.wait.manual.title',
+                        { locationName: coreService.storage.persistent.weatherLocation?.name },
+                    )}
+                    description={t('settings.widgets.dtw.weather.region.search.wait.manual.description')}
+                />
+            )}
+            {
+                store.status === FETCH.WAIT
+                && coreService.storage.persistent.weatherLocation
+                && !coreService.storage.persistent.weatherLocation?.manual
+                && (
+                <FullScreenStub
+                    icon={MyLocationIcon}
+                    message={t(
+                        'settings.widgets.dtw.weather.region.search.wait.auto.title',
+                        { locationName: coreService.storage.persistent.weatherLocation?.name },
+                    )}
+                    description={t('settings.widgets.dtw.weather.region.search.wait.auto.description')}
                 />
             )}
         </React.Fragment>

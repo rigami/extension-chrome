@@ -68,6 +68,35 @@ function WeatherWidget({ onSelect }) {
                 }}
             />
             <Collapse in={widgets.settings.dtwUseWeather}>
+                <MenuInfo
+                    width={750}
+                    show={
+                        !coreService.storage.persistent.weatherLocation
+                        && coreService.storage.persistent.weather?.status === FETCH.FAILED
+                    }
+                    message={t('settings.widgets.dtw.weather.region.notDetected.title')}
+                    description={t('settings.widgets.dtw.weather.region.notDetected.description')}
+                    actions={(
+                        <Button
+                            variant="outlined"
+                            color="inherit"
+                            onClick={() => onSelect({
+                                content: ChangeLocationPageContent,
+                                header: changeLocationPageHeader,
+                            })}
+                        >
+                            {t('settings.widgets.dtw.weather.region.notDetected.changeRegion')}
+                        </Button>
+                    )}
+                />
+                <MenuInfo
+                    width={750}
+                    show={
+                        coreService.storage.persistent.weatherLocation
+                        && coreService.storage.persistent.weather?.status === FETCH.FAILED
+                    }
+                    message={t('settings.widgets.dtw.weather.serviceUnavailable')}
+                />
                 <MenuRow
                     title={t('settings.widgets.dtw.weather.units.title')}
                     action={{
@@ -89,11 +118,6 @@ function WeatherWidget({ onSelect }) {
                         disabled: true,
                         values: ['openweathermap'],
                     }}
-                />
-                <MenuInfo
-                    width={750}
-                    show={coreService.storage.persistent.weather?.status === FETCH.FAILED}
-                    message={t('settings.widgets.dtw.weather.serviceUnavailable')}
                 />
                 <MenuRow
                     icon={PlaceIcon}
@@ -124,7 +148,7 @@ function WeatherWidget({ onSelect }) {
                         }]`)
                         : (
                                 <Typography className={classes.notSetValue}>
-                                    {t('settings.widgets.dtw.weather.location.notSet')}
+                                    {t('settings.widgets.dtw.weather.region.notSet')}
                                 </Typography>
                             ),
                     }}

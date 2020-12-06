@@ -132,16 +132,20 @@ class WidgetsService {
         this.bus.on('widgets/weather/searchLocation', async ({ query }, { }, callback) => {
             console.log('Weather search location', query);
 
-            const result = await this.weatherService.searchLocation(query);
+            try {
+                const result = await this.weatherService.searchLocation(query);
 
-            callback(result);
+                callback({ success: true, result });
+            } catch (e) {
+                callback({ success: false })
+            }
         });
 
         this.bus.on('widgets/weather/autoDetectLocation', async ({}, {}, callback) => {
             console.log('Weather auto detect location');
 
             try {
-                const result = await this.autoDetectLocation();
+                await this.autoDetectLocation();
                 callback(true);
             } catch (e) {
                 callback(false);

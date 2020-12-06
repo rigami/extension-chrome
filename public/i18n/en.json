@@ -151,9 +151,9 @@
           "serviceUnavailable": "Weather service not available",
           "pendingData": "Receiving data...",
           "useWeather": "Show current weather",
-          "userDeniedGeolocation": {
-            "title": "You have denied access to geolocation. Weather display not possible",
-            "description": "To allow access, click on the geolocation icon on the right in the search field, allow access to geolocation and reload the page"
+          "failedGeolocation": {
+            "title": "Can't determine your geolocation",
+            "description": "Perhaps you are denied access to geolocation, or the weather service does not supply weather for this place"
           },
           "units": {
             "title": "Measurement system",
@@ -170,6 +170,7 @@
             }
           },
           "region": {
+            "notSet": "Не установлен",
             "title": "Region",
             "autoDescription": "The region is determined automatically by your location, click here to change it",
             "manualDescription": "Region set manually, click here to change it",
@@ -177,8 +178,18 @@
             "search": {
               "button": "Search",
               "wait": {
-                "title": "Change the weather region",
-                "description": "Enter the name of the place to find it"
+                "manual": {
+                  "title": "The weather is shown for the region \"{{locationName}}\"",
+                  "description": "Enter the place name to change the region"
+                },
+                "auto": {
+                  "title": "Weather shown for your location \"{{locationName}}\"",
+                  "description": "Enter the place name to set the region manually"
+                },
+                "failed": {
+                  "title": "Can't find your location",
+                  "description": "Enter the name of the place to set the region manually, or try turning on geolocation"
+                }
               },
               "notFound": {
                 "title": "Place not found",
@@ -191,7 +202,8 @@
             },
             "notDetected": {
               "title": "Region not defined",
-              "description": "Failed to determine the region, please try to select it manually"
+              "description": "Failed to determine the region, please try to select it manually",
+              "changeRegion": "Select region"
             },
             "autoGeolocation": {
               "onTooltip": "Click to turn off automatic location",

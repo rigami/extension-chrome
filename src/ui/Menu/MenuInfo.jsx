@@ -5,6 +5,7 @@ import {
     ListItemIcon,
     ListItemText,
     Collapse,
+    ListItemSecondaryAction,
 } from '@material-ui/core';
 import { InfoRounded as InfoIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -14,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
     icon: { color: theme.palette.warning.contrastText },
     messageText: { color: theme.palette.warning.contrastText },
     descriptionText: { color: fade(theme.palette.warning.contrastText, 0.8) },
+    actions: { color: theme.palette.warning.contrastText }
 }));
 
 function MenuInfo(props) {
@@ -23,6 +25,7 @@ function MenuInfo(props) {
         description,
         width,
         classes: externalClasses = {},
+        actions,
     } = props;
     const classes = useStyles();
 
@@ -40,6 +43,11 @@ function MenuInfo(props) {
                     primary={message}
                     secondary={description}
                 />
+                {actions && (
+                    <ListItemSecondaryAction className={classes.actions}>
+                        {actions}
+                    </ListItemSecondaryAction>
+                )}
             </ListItem>
         </Collapse>
     );
