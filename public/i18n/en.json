@@ -170,8 +170,35 @@
             }
           },
           "region": {
-            "title": "Your region",
-            "description": "The region is determined automatically by your coordinates"
+            "title": "Region",
+            "autoDescription": "The region is determined automatically by your location, click here to change it",
+            "manualDescription": "Region set manually, click here to change it",
+            "failedDescription": "Could not determine your region, click here to set it manually",
+            "search": {
+              "button": "Search",
+              "wait": {
+                "title": "Change the weather region",
+                "description": "Enter the name of the place to find it"
+              },
+              "notFound": {
+                "title": "Place not found",
+                "description": "Try changing your request and try again"
+              },
+              "failed": {
+                "title": "Search error",
+                "description": "Something went wrong, please try again later"
+              }
+            },
+            "notDetected": {
+              "title": "Region not defined",
+              "description": "Failed to determine the region, please try to select it manually"
+            },
+            "autoGeolocation": {
+              "onTooltip": "Click to turn off automatic location",
+              "offTooltip": "Click to turn on automatic location",
+              "onTitle": "Geolocation enabled",
+              "offTitle": "Geolocation is off"
+            }
           },
           "clickAction": {
             "title": "Widget click action",

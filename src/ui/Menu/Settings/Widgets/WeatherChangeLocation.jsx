@@ -223,7 +223,7 @@ function WeatherChangeLocation({ onClose }) {
                     variant="contained"
                     className={classes.submit}
                 >
-                    Search
+                    {t('settings.widgets.dtw.weather.region.search.button')}
                 </Button>
             </form>
             <Divider />
