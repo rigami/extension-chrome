@@ -68,6 +68,7 @@ class WidgetsService {
         if (state === 'denied') return Promise.reject();
 
         const iframe = document.createElement('iframe');
+        iframe.className = 'hidden-iframe';
         iframe.src = `chrome-extension://${appVariables.extensionId}/requestPermissions.html`;
 
         document.body.appendChild(iframe);

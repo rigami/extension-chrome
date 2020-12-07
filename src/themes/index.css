@@ -47,3 +47,8 @@ body {
     backdrop-filter: blur(10px) invert(0.8) brightness(2);
     background: rgba(160, 160, 160, 0.21);
 }
+.hidden-iframe {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
