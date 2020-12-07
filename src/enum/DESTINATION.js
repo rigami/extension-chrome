@@ -2,4 +2,5 @@ export default {
     BACKGROUND: 'BACKGROUND',
     APP: 'APP',
     POPUP: 'POPUP',
+    REQUEST_PERMISSIONS: 'REQUEST_PERMISSIONS',
 };

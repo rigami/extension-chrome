@@ -1,7 +1,8 @@
 import { makeAutoObservable, reaction } from 'mobx';
 import { WidgetsSettingsStore } from '@/stores/app/settings';
 import { FETCH } from '@/enum';
-import { eventToBackground } from '@/stores/backgroundApp/busApp';
+import { eventToBackground, eventToRequestPermissions } from '@/stores/backgroundApp/busApp';
+import appVariables from '@/config/appVariables';
 
 class WidgetsService {
     _coreService;
@@ -61,11 +62,26 @@ class WidgetsService {
     }
 
     async getPermissionsToWeather() {
-        if (!navigator.geolocation) {
-            throw new Error('not supported');
-        }
+        const { state } = await navigator.permissions.query({ name: 'geolocation' });
 
-        await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject));
+        if (state === 'granted') return Promise.resolve();
+        if (state === 'denied') return Promise.reject();
+
+        const iframe = document.createElement('iframe');
+        iframe.src = `chrome-extension://${appVariables.extensionId}/requestPermissions.html`;
+
+        document.body.appendChild(iframe);
+
+        return new Promise((resolve, reject) => {
+            const listener = this._coreService.globalEventBus.on('requestPermissions/ready', () => {
+                eventToRequestPermissions('requestPermissions/geolocation', {}, (result) => {
+                    console.log('requestPermissions/geolocation', result);
+                    iframe.remove();
+                    if(result) resolve(); else reject();
+                });
+                this._coreService.globalEventBus.removeListener(listener);
+            });
+        })
     }
 }
 

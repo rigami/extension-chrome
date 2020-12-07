@@ -55,6 +55,10 @@ class BusApp {
     on(event, callback) {
         return this._eventBus.on(event, callback);
     }
+
+    removeListener(listenId) {
+        return this._eventBus.removeListener(listenId);
+    }
 }
 
 function initBus(destination) {
@@ -73,6 +77,11 @@ function eventToBackground(event, data, callback) {
     bus.call(event, DESTINATION.BACKGROUND, data, callback);
 }
 
+function eventToRequestPermissions(event, data, callback) {
+    console.log('eventToRequestPermissions', event, data);
+    bus.call(event, DESTINATION.REQUEST_PERMISSIONS, data, callback);
+}
+
 function eventToPopup(event, data, callback) {
     console.log('eventToPopup', event, data);
     bus.call(event, DESTINATION.POPUP, data, callback);
@@ -83,6 +92,7 @@ export {
     initBus,
     eventToApp,
     eventToBackground,
+    eventToRequestPermissions,
     eventToPopup,
     instanceId,
 };

@@ -14,6 +14,7 @@ module.exports = () => ({
         app: './index.js',
         popup: './popup.js',
         background: './background.js',
+        requestPermissions: './requestPermissions.js'
     },
     mode: process.env.NODE_ENV || 'development',
     output: {
@@ -60,6 +61,12 @@ module.exports = () => ({
             chunks: ['background'],
             template: './background.html',
             filename: 'background.html',
+        }),
+        new HtmlWebpackPlugin({
+            inject: true,
+            chunks: ['requestPermissions'],
+            template: './requestPermissions.html',
+            filename: 'requestPermissions.html',
         }),
         new CopyWebpackPlugin({
             patterns: [
