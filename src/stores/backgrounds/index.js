@@ -188,16 +188,32 @@ class BackgroundsStore {
                 .catch((e) => console.error(e));
         };
 
-        return Promise.all(Array.prototype.map.call(fileList, (file, index) => ({
-            id: `${uploadTimestamp}-${index}`,
-            preview: 'pending',
-            previewUrl: null,
-            type: ~file.type.indexOf('video') ? [BG_TYPE.VIDEO] : [BG_TYPE.IMAGE, BG_TYPE.ANIMATION],
-            size: file.size,
-            format: file.type.substring(file.type.indexOf('/') + 1),
-            name: file.name,
-            file,
-        }))).then((bgs) => {
+        return Promise.all(Array.prototype.map.call(fileList, (file, index) => {
+
+            let computeType;
+            let computeAntiAliasing = true;
+
+            if (~file.type.indexOf('video')) {
+                computeType = [BG_TYPE.VIDEO];
+            } else if (~file.type.indexOf('gif')) {
+                computeType = [BG_TYPE.ANIMATION];
+                computeAntiAliasing = false;
+            } else {
+                computeType = [BG_TYPE.IMAGE];
+            }
+
+            return {
+                id: `${uploadTimestamp}-${index}`,
+                preview: 'pending',
+                previewUrl: null,
+                type: computeType,
+                size: file.size,
+                format: file.type.substring(file.type.indexOf('/') + 1),
+                antiAliasing: computeAntiAliasing,
+                name: file.name,
+                file,
+            };
+        })).then((bgs) => {
             this.uploadQueue = [...this.uploadQueue, ...bgs];
 
             getNextPreview();

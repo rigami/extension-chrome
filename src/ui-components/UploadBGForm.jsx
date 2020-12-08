@@ -106,6 +106,7 @@ function BGCard(props) {
         size,
         type,
         format,
+        antiAliasing: defaultAntiAliasing,
         onRemove,
         onDone,
         ...other
@@ -115,7 +116,7 @@ function BGCard(props) {
     const theme = useTheme();
 
     const [save, setSave] = useState(false);
-    const [antiAliasing, setAntiAliasing] = useState(true);
+    const [antiAliasing, setAntiAliasing] = useState(defaultAntiAliasing);
 
     return (
         <Card className={classes.bgCardRoot} elevation={8} {...other}>
@@ -161,7 +162,7 @@ function BGCard(props) {
                                     onChange={(e) => setAntiAliasing(e.target.checked)}
                                     disabled={save}
                                     color="primary"
-                                    defaultChecked
+                                    defaultChecked={antiAliasing}
                                 />
                             )}
                             label={t('uploadBG.antiAliasing.label')}
