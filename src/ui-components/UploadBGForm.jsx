@@ -303,7 +303,7 @@ function UploadBGForm({ children }) {
                             justifyContent: 'flex-end',
                         }}
                     >
-                        {backgroundsService.uploadQueue.map((row, index) => (
+                        {backgroundsService.uploadQueue.slice().reverse().map((row, index) => (
                             <MemoBGCard
                                 key={row.id}
                                 {...row}
