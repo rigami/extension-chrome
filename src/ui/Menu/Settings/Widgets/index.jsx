@@ -12,6 +12,7 @@ import DateWidget from './Date';
 import WeatherWidget from './Weather';
 
 const headerProps = { title: 'settings.widgets.title' };
+const pageProps = { width: 750 };
 
 const numberToEnumSize = (value) => (
     value === 3
@@ -104,4 +105,14 @@ function Widgets({ onSelect }) {
 
 const ObserverWidgets = observer(Widgets);
 
-export { headerProps as header, ObserverWidgets as content };
+export {
+    headerProps as header,
+    ObserverWidgets as content,
+    pageProps as props,
+};
+
+export default {
+    header: headerProps,
+    content: ObserverWidgets,
+    props: pageProps,
+};

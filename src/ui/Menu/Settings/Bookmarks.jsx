@@ -14,6 +14,7 @@ import useAppService from '@/stores/AppStateProvider';
 import { observer } from 'mobx-react-lite';
 
 const headerProps = { title: 'settings.bookmarks.title' };
+const pageProps = { width: 750 };
 
 function BookmarksSettings() {
     const bookmarksService = useBookmarksService();
@@ -45,7 +46,6 @@ function BookmarksSettings() {
                 }}
             />
             <MenuInfo
-                width={750}
                 show={(
                     bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
                     && bookmarksService.favorites.length === 0
@@ -80,4 +80,14 @@ function BookmarksSettings() {
 
 const ObserverBookmarksSettings = observer(BookmarksSettings);
 
-export { headerProps as header, ObserverBookmarksSettings as content };
+export {
+    headerProps as header,
+    ObserverBookmarksSettings as content,
+    pageProps as props,
+};
+
+export default {
+    header: headerProps,
+    content: ObserverBookmarksSettings,
+    props: pageProps,
+};

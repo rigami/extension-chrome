@@ -6,7 +6,7 @@ import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { THEME } from '@/enum';
 import useAppService from '@/stores/AppStateProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
-import { content as TabNamePageContent, header as tabNamePageHeader } from './TabName';
+import tabNamePage from './TabName';
 import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
@@ -28,7 +28,6 @@ function AppSettings({ onSelect }) {
         <React.Fragment>
             <MenuRow
                 title={t('settings.app.darkThemeBackdrop')}
-                width={520}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     width: 72,
@@ -41,7 +40,6 @@ function AppSettings({ onSelect }) {
             />
             <MenuRow
                 title={t('settings.app.darkThemeApp')}
-                width={520}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     width: 72,
@@ -52,7 +50,6 @@ function AppSettings({ onSelect }) {
             />
             <MenuRow
                 title={t('settings.app.useSystemFont')}
-                width={520}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     width: 72,
@@ -64,17 +61,12 @@ function AppSettings({ onSelect }) {
             <MenuInfo
                 show={defaultFontValue !== appService.settings.useSystemFont}
                 message={t('changeTakeEffectAfterReload')}
-                width={520}
             />
             <MenuRow
                 title={t('settings.app.tabName.title')}
-                width={520}
                 action={{
                     type: ROWS_TYPE.LINK,
-                    onClick: () => onSelect({
-                        content: TabNamePageContent,
-                        header: tabNamePageHeader,
-                    }),
+                    onClick: () => onSelect(tabNamePage),
                     component: (
                         <Typography className={(!appService.settings.tabName && classes.defaultTabValue) || ''}>
                             {appService.settings.tabName || t('default')}
@@ -88,4 +80,9 @@ function AppSettings({ onSelect }) {
 
 const ObserverAppSettings = observer(AppSettings);
 
-export { headerProps as header, AppSettings as content };
+export { headerProps as header, ObserverAppSettings as content };
+
+export default {
+    header: headerProps,
+    content: ObserverAppSettings,
+};

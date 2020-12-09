@@ -18,12 +18,14 @@ import Header from '@/ui/Menu/PageHeader';
 import { useTranslation } from 'react-i18next';
 import HomePage, { header as homePageHeader } from './Settings';
 import FabMenu from './FabMenu';
+import Scrollbar from '@/ui-components/CustomScroll';
 
 const useStyles = makeStyles((theme) => ({
     list: {
         flexGrow: 1,
         display: 'flex',
         flexDirection: 'column',
+        minHeight: '100vh',
     },
     divider: {
         backgroundColor: fade(theme.palette.common.white, 0.12),
@@ -98,6 +100,7 @@ function Menu({ }) {
 
     const Page = stack[stack.length - 1].content;
     const headerProps = stack[stack.length - 1] && stack[stack.length - 1].header;
+    const pageProps = (stack[stack.length - 1] && stack[stack.length - 1].props) || {};
 
     return (
         <React.Fragment>
@@ -114,14 +117,25 @@ function Menu({ }) {
                 open={isOpen}
                 onClose={() => handleClose()}
                 disableEnforceFocus
+                PaperProps={{
+                    style: {
+                        width: pageProps.width || 520,
+                    }
+                }}
             >
-                <List disablePadding className={classes.list} style={{ width: headerProps?.width }}>
-                    <Header onBack={handleBack} {...headerProps} />
-                    <Page
-                        onClose={handleBack}
-                        onSelect={(page) => setStack([...stack, page])}
-                    />
-                </List>
+                <Scrollbar>
+                    <List
+                        disablePadding
+                        className={classes.list}
+                        style={{ width: pageProps.width || 520 }}
+                    >
+                        <Header onBack={handleBack} {...headerProps} />
+                        <Page
+                            onClose={handleBack}
+                            onSelect={(page) => setStack([...stack, page])}
+                        />
+                    </List>
+                </Scrollbar>
             </Drawer>
         </React.Fragment>
     );

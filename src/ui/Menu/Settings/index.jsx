@@ -18,12 +18,12 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuInfo from '@/ui/Menu/MenuInfo';
-import { content as BackgroundsPageContent, header as backgroundsPageHeader } from './Backgrounds';
-import { content as AboutPageContent, header as aboutPageHeader } from './About';
-import { content as AppSettingsPageContent, header as appSettingsPageHeader } from './AppSettings';
-import { content as BookmarksPageContent, header as bookmarksPageHeader } from './Bookmarks';
-import { content as BackupPageContent, header as backupPageHeader } from './Backup';
-import { content as WidgetsPageContent, header as widgetsPageHeader } from './Widgets';
+import backgroundsPage from './Backgrounds';
+import aboutPage from './About';
+import appSettingsPage from './AppSettings';
+import bookmarksPage from './Bookmarks';
+import backupPage from './Backup';
+import widgetsPage from './Widgets';
 
 const useStyles = makeStyles((theme) => ({
     divider: {
@@ -43,8 +43,7 @@ const general = [
         description: 'settings.bg.description',
         icon: <BackgroundsIcon />,
         id: 'backgrounds',
-        header: backgroundsPageHeader,
-        content: BackgroundsPageContent,
+        page: backgroundsPage,
         color: '#2675F0',
     },
     {
@@ -52,8 +51,7 @@ const general = [
         description: 'settings.bookmarks.description',
         icon: <BookmarksIcon />,
         id: 'bookmarks',
-        header: bookmarksPageHeader,
-        content: BookmarksPageContent,
+        page: bookmarksPage,
         color: '#ff4f88',
     },
     {
@@ -61,8 +59,7 @@ const general = [
         description: 'settings.widgets.description',
         icon: <WidgetsIcon />,
         id: 'widgets',
-        header: widgetsPageHeader,
-        content: WidgetsPageContent,
+        page: widgetsPage,
         color: '#596dff',
     },
     {
@@ -70,8 +67,7 @@ const general = [
         description: 'settings.app.description',
         icon: <SettingsIcon />,
         id: 'app',
-        header: appSettingsPageHeader,
-        content: AppSettingsPageContent,
+        page: appSettingsPage,
         color: '#F88317',
     },
     {
@@ -79,8 +75,7 @@ const general = [
         description: 'settings.backup.description',
         icon: <BackupIcon />,
         id: 'backup',
-        header: backupPageHeader,
-        content: BackupPageContent,
+        page: backupPage,
         color: '#0f9d58',
     },
 ];
@@ -90,8 +85,7 @@ const additional = [
         description: 'settings.about.description',
         icon: <AboutIcon />,
         id: 'about',
-        header: aboutPageHeader,
-        content: AboutPageContent,
+        page: aboutPage,
         color: '#9C27B0',
     },
 ];
@@ -101,11 +95,10 @@ const headerProps = { title: 'settings.title' };
 function Row(props) {
     const {
         title,
-        content,
-        header,
         color,
         description,
         icon: Icon,
+        page,
         onSelect,
     } = props;
     const { t } = useTranslation();
@@ -113,12 +106,8 @@ function Row(props) {
     return (
         <ListItem
             button
-            onClick={() => onSelect({
-                header,
-                content,
-            })}
-            style={{ width: 520 }}
-            disabled={!content}
+            onClick={() => onSelect(page)}
+            disabled={!page}
         >
             <ListItemAvatar>
                 <Avatar style={{ backgroundColor: color }}>
@@ -147,7 +136,6 @@ function GeneralMenu({ onSelect }) {
                 <MenuInfo
                     classes={{ wrapper: classes.betaBanner }}
                     show
-                    width={520}
                     message={t('settings.betaBanner.title')}
                     description={t('settings.betaBanner.description')}
                 />

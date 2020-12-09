@@ -12,7 +12,6 @@ import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     row: {
-        width: 520,
         padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
     },
     splash: {
@@ -83,3 +82,8 @@ function TabName() {
 const ObserverTabName = observer(TabName);
 
 export { headerProps as header, ObserverTabName as content };
+
+export default {
+    header: headerProps,
+    content: ObserverTabName,
+};

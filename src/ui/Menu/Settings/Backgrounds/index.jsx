@@ -15,9 +15,10 @@ import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import FSConnector from '@/utils/fsConnector';
 import useBackgroundsService from '@/stores/BackgroundsStateProvider';
-import { content as LibraryPageContent, header as LibraryPageHeader } from './Library';
+import libraryPage from './Library';
 
 const headerProps = { title: 'settings.bg.title' };
+const pageProps = { width: 750 };
 
 function BGCard({ src }) {
     return (
@@ -44,10 +45,7 @@ function LibraryRow({ bgs, onSelect }) {
             description={t('settings.bg.general.library.description', bgs && bgs.length)}
             action={{
                 type: ROWS_TYPE.LINK,
-                onClick: () => onSelect({
-                    content: LibraryPageContent,
-                    header: LibraryPageHeader,
-                }),
+                onClick: () => onSelect(libraryPage),
             }}
         >
             {bgs && bgs.slice(0, 8).map((src) => (
@@ -212,4 +210,15 @@ function BackgroundsMenu({ onSelect }) {
 
 const ObserverBackgroundsMenu = observer(BackgroundsMenu);
 
-export { headerProps as header, ObserverBackgroundsMenu as content };
+export {
+    headerProps as header,
+    ObserverBackgroundsMenu as content,
+    pageProps as props,
+};
+
+export default {
+    header: headerProps,
+    content: ObserverBackgroundsMenu,
+    props: pageProps,
+};
+

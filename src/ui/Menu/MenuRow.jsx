@@ -80,7 +80,7 @@ function MenuRow(props) {
             width: actionWidth = 252,
             ...actionProps
         } = {},
-        width = 750,
+        width,
         children,
     } = props;
     const classes = useStyles();

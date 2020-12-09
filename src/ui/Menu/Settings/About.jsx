@@ -24,7 +24,7 @@ import LogoText from '@/images/logo-text.svg';
 
 const useStyles = makeStyles((theme) => ({
     splash: {
-        width: 520,
+        width: '100%',
         height: 250,
         display: 'flex',
         flexDirection: 'column',
@@ -43,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
         fill: theme.palette.type === 'dark' ? theme.palette.common.white : theme.palette.common.black,
     },
     appVersion: { color: theme.palette.text.secondary },
-    row: { width: 520 },
 }));
 
 const headerProps = { title: 'settings.about.title' };
@@ -67,7 +66,6 @@ function About() {
             <Divider />
             <ListItem
                 button
-                className={classes.row}
                 component={Link}
                 href="https://rigami.io/"
                 target="_blank"
@@ -169,3 +167,9 @@ function About() {
 }
 
 export { headerProps as header, About as content };
+
+export default {
+    header: headerProps,
+    content: About,
+};
+

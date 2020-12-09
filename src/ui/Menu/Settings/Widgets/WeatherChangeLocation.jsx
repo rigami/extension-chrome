@@ -63,8 +63,6 @@ const ObserverHeaderActions = observer(HeaderActions);
 const headerProps = {
     title: 'settings.widgets.dtw.weather.region.title',
     actions: (<ObserverHeaderActions />),
-    style: { width: 520, maxWidth: 520 },
-    width: 520,
 };
 
 function HeaderActions() {
@@ -146,7 +144,6 @@ function Location(props) {
     return (
         <MenuRow
             className={classes.locationRow}
-            width={520}
             disableIconInsert
             title={locationName}
             description={`${Math.round(temp)} ${units} [${round(latitude, 1) || '-'}, ${round(longitude, 1) || '-'}]`}
@@ -287,3 +284,8 @@ function WeatherChangeLocation({ onClose }) {
 const ObserverWeatherChangeLocation = observer(WeatherChangeLocation);
 
 export { headerProps as header, ObserverWeatherChangeLocation as content };
+
+export default {
+    header: headerProps,
+    content: ObserverWeatherChangeLocation,
+};

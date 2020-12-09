@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
 import useAppStateService from '@/stores/AppStateProvider';
 import useCoreService from '@/stores/BaseStateProvider';
 import SectionHeader from '@/ui/Menu/SectionHeader';
@@ -23,7 +22,7 @@ import { PlaceRounded as PlaceIcon } from '@material-ui/icons';
 import { getDomain } from '@/utils/localSiteParse';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import { content as ChangeLocationPageContent, header as changeLocationPageHeader } from './WeatherChangeLocation';
+import changeLocationPage from './WeatherChangeLocation';
 
 const useStyles = makeStyles((theme) => ({
     notSetValue: {
@@ -69,7 +68,6 @@ function WeatherWidget({ onSelect }) {
             />
             <Collapse in={widgets.settings.dtwUseWeather}>
                 <MenuInfo
-                    width={750}
                     show={
                         !coreService.storage.persistent.weatherLocation
                         && coreService.storage.persistent.weather?.status === FETCH.FAILED
@@ -80,17 +78,13 @@ function WeatherWidget({ onSelect }) {
                         <Button
                             variant="outlined"
                             color="inherit"
-                            onClick={() => onSelect({
-                                content: ChangeLocationPageContent,
-                                header: changeLocationPageHeader,
-                            })}
+                            onClick={() => onSelect(changeLocationPage)}
                         >
                             {t('settings.widgets.dtw.weather.region.notDetected.changeRegion')}
                         </Button>
                     )}
                 />
                 <MenuInfo
-                    width={750}
                     show={
                         coreService.storage.persistent.weatherLocation
                         && coreService.storage.persistent.weather?.status === FETCH.FAILED
@@ -134,10 +128,7 @@ function WeatherWidget({ onSelect }) {
                     }
                     action={{
                         type: ROWS_TYPE.LINK,
-                        onClick: () => onSelect({
-                            content: ChangeLocationPageContent,
-                            header: changeLocationPageHeader,
-                        }),
+                        onClick: () => onSelect(changeLocationPage),
                         component: coreService.storage.persistent.weatherLocation
                             ? (`${
                             coreService.storage.persistent.weatherLocation?.name || t('unknown')

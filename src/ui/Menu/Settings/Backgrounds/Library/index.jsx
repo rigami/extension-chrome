@@ -141,8 +141,8 @@ const useStyles = makeStyles((theme) => ({
 const headerProps = {
     title: 'settings.bg.general.library.title',
     actions: (<HeaderActions />),
-    style: { width: 960 },
 };
+const pageProps = { width: 960 };
 
 function HeaderActions() {
     const { t } = useTranslation();
@@ -238,7 +238,7 @@ function LibraryMenu() {
                                             </Tooltip>
                                         )}
                                         <Tooltip title={t('bg.remove')}>
-                                            <IconButton className={classes.deleteIcon} onClick={() => {}}>
+                                            <IconButton className={classes.deleteIcon} onClick={() => backgroundsService.removeFromStore(bg.id)}>
                                                 <DeleteIcon />
                                             </IconButton>
                                         </Tooltip>
@@ -281,4 +281,14 @@ function LibraryMenu() {
 
 const ObserverLibraryMenu = observer(LibraryMenu);
 
-export { headerProps as header, ObserverLibraryMenu as content };
+export {
+    headerProps as header,
+    ObserverLibraryMenu as content,
+    pageProps as props,
+};
+
+export default {
+    header: headerProps,
+    content: ObserverLibraryMenu,
+    props: pageProps,
+};

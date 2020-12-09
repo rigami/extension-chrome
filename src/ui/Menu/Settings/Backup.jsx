@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const headerProps = { title: 'settings.backup.title' };
+const pageProps = { width: 750 };
 
 function BrowserSync() {
     const classes = useStyles();
@@ -365,4 +366,15 @@ function BackupSettings() {
 
 const ObserverBackupSettings = observer(BackupSettings);
 
-export { headerProps as header, ObserverBackupSettings as content };
+export {
+    headerProps as header,
+    ObserverBackupSettings as content,
+    pageProps as props,
+};
+
+export default {
+    header: headerProps,
+    content: ObserverBackupSettings,
+    props: pageProps,
+};
+
