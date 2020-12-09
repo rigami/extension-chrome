@@ -5,6 +5,7 @@ import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
 import getPreview from '@/utils/createPreview';
 import { BackgroundSettingsStore } from '@/stores/app/settings';
+import Background from './background';
 
 export const ERRORS = {
     TOO_MANY_FILES: 'TOO_MANY_FILES',
@@ -144,7 +145,9 @@ class BackgroundsStore {
             this.currentBGId = null;
         }
 
-        const bg = await DBConnector().get('backgrounds', currentBGId);
+        const dbBg = await DBConnector().get('backgrounds', currentBGId);
+
+        const bg = new Background(dbBg);
 
         this._currentBG = bg;
         this.currentBGId = this._currentBG.id;
