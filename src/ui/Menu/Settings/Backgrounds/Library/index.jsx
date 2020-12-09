@@ -21,7 +21,6 @@ import {
     ArrowForwardRounded as LeftIcon,
 } from '@material-ui/icons';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import FSConnector from '@/utils/fsConnector';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
