@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx';
+import FSConnector from '@/utils/fsConnector';
 
 class Background {
     id;
@@ -9,6 +10,8 @@ class Background {
     source;
     sourceLink;
     type;
+    previewSrc;
+    fullSrc;
 
     constructor(background = {}) {
         makeAutoObservable(this);
@@ -20,6 +23,8 @@ class Background {
         this.source = background.source;
         this.sourceLink = background.sourceLink;
         this.type = background.type;
+        this.previewSrc = FSConnector.getBGURL(this.fileName, 'preview');
+        this.fullSrc = FSConnector.getBGURL(this.fileName, 'full');
     }
 }
 

@@ -289,8 +289,10 @@ class BackgroundsStore {
     }
 
     @action('get all')
-    getAll() {
-        return DBConnector().getAll('backgrounds');
+    async getAll() {
+        const bgs = await DBConnector().getAll('backgrounds');
+
+        return bgs.map((bg) => new Background(bg));
     }
 }
 

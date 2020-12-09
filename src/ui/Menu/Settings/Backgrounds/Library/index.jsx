@@ -151,6 +151,8 @@ function Bg(props) {
     const {
         fileName,
         sourceLink,
+        previewSrc,
+        fullSrc,
         source,
         author,
         select,
@@ -167,7 +169,7 @@ function Bg(props) {
         <GridListTile className={classes.bgCardWrapper} {...other}>
             <Box
                 className={classes.bgCard}
-                style={{ backgroundImage: `url('${FSConnector.getBGURL(fileName, 'preview')}')` }}
+                style={{ backgroundImage: `url('${previewSrc}')` }}
             >
                 <Avatar variant="square" className={classes.bgStub}>
                     <WallpaperIcon fontSize="large" />
