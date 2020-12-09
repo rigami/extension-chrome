@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import { BG_TYPE, FETCH } from '@/enum';
+import { FETCH } from '@/enum';
 import {
     Box,
     Avatar,
@@ -16,7 +16,6 @@ import {
 } from '@material-ui/core';
 import {
     WallpaperRounded as WallpaperIcon,
-    CloudDownloadRounded as GetFromLibraryIcon,
     DeleteForeverRounded as DeleteIcon,
     CheckRounded as SetIcon,
     ArrowForwardRounded as LeftIcon,
@@ -24,7 +23,6 @@ import {
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import FSConnector from '@/utils/fsConnector';
 import { useTranslation } from 'react-i18next';
-import SectionHeader from '@/ui/Menu/SectionHeader';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import FullscreenStub from '@/ui-components/FullscreenStub';
@@ -36,14 +34,6 @@ import useCoreService from '@/stores/BaseStateProvider';
 const useStyles = makeStyles((theme) => ({
     root: {
         overflow: 'hidden',
-    },
-    bgWrapper: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        width: 960,
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(1.5),
-        paddingBottom: theme.spacing(1.5),
     },
     bgCard: {
         position: 'relative',
@@ -93,11 +83,6 @@ const useStyles = makeStyles((theme) => ({
             color: theme.palette.error.main,
         },
     },
-    bgActionDivider: {
-        backgroundColor: fade(theme.palette.common.white, 0.5),
-        height: 30,
-        width: 2,
-    },
     centerPage: {
         flexGrow: 1,
         display: 'flex',
@@ -105,15 +90,11 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    input: { display: 'none' },
     bgStub: {
         position: 'absolute',
         zIndex: -1,
         height: '100%',
         width: '100%',
-    },
-    bgDescription: {
-
     },
     titleBar: {
         position: 'relative',
@@ -166,6 +147,71 @@ function HeaderActions() {
     );
 }
 
+function Bg(props) {
+    const {
+        fileName,
+        sourceLink,
+        author,
+        select,
+        antiAliasing,
+        format,
+        onSet,
+        onRemove,
+        ...other
+    } = props;
+    const { t } = useTranslation();
+    const classes = useStyles();
+
+    return (
+        <GridListTile className={classes.bgCardWrapper} {...other}>
+            <Box
+                className={classes.bgCard}
+                style={{ backgroundImage: `url('${FSConnector.getBGURL(fileName, 'preview')}')` }}
+            >
+                <Avatar variant="square" className={classes.bgStub}>
+                    <WallpaperIcon fontSize="large" />
+                </Avatar>
+                {select && (
+                    <SetIcon className={classes.selectIcon} />
+                )}
+                <Box className={classes.bgActionsWrapper}>
+                    {!select && (
+                        <Tooltip title={t('settings.bg.apply')} placement="top">
+                            <Button className={classes.setIcon} onClick={onSet}>
+                                <SetIcon />
+                            </Button>
+                        </Tooltip>
+                    )}
+                    <Tooltip title={t('bg.remove')}>
+                        <IconButton className={classes.deleteIcon} onClick={onRemove}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t('settings.bg.openSource')} placement="top">
+                        <Link
+                            className={classes.link}
+                            underline="none"
+                            href={sourceLink}
+                            target="_blank"
+                        >
+                            <GridListTileBar
+                                className={classes.titleBar}
+                                classes={{
+                                    actionIcon: classes.icon,
+                                }}
+                                subtitle={`by ${author}, Unsplash`}
+                                actionIcon={(<LeftIcon />)}
+                            />
+                        </Link>
+                    </Tooltip>
+                </Box>
+            </Box>
+        </GridListTile>
+    );
+}
+
+const MemoBg = memo(Bg);
+
 function LibraryMenu() {
     const backgroundsService = useBackgroundsService();
     const coreService = useCoreService();
@@ -201,81 +247,50 @@ function LibraryMenu() {
     }, [backgroundsService.count]);
 
     return (
-        <Box className={classes.root}>
+        <React.Fragment>
             {state === FETCH.PENDING && (
-                <Box className={classes.centerPage}>
+                <FullscreenStub>
                     <CircularProgress />
-                </Box>
-            )}
-            {state === FETCH.DONE && bgs.length !== 0 && (
-                <GridList cellHeight={160} cols={4}>
-                    {bgs.map((group) => [
-                        (
-                            <GridListTile cols={4} style={{ height: 'auto' }}>
-                                <ListSubheader component="div">
-                                    {t(`settings.bg.general.library.type.${group.type}`)}
-                                </ListSubheader>
-                            </GridListTile>
-                        ),
-                        ...group.list.map((bg) => (
-                            <GridListTile key={bg.id} className={classes.bgCardWrapper}>
-                                <Box
-                                    className={classes.bgCard}
-                                    style={{ backgroundImage: `url('${FSConnector.getBGURL(bg.fileName, 'preview')}')` }}
-                                >
-                                    <Avatar variant="square" className={classes.bgStub}>
-                                        <WallpaperIcon fontSize="large" />
-                                    </Avatar>
-                                    {coreService.storage.persistent.bgCurrent?.id === bg.id && (
-                                        <SetIcon className={classes.selectIcon} />
-                                    )}
-                                    <Box className={classes.bgActionsWrapper}>
-                                        {coreService.storage.persistent.bgCurrent?.id !== bg.id && (
-                                            <Tooltip title={t('settings.bg.apply')} placement="top">
-                                                <Button className={classes.setIcon} onClick={() => backgroundsService.setCurrentBG(bg.id)}>
-                                                    <SetIcon />
-                                                </Button>
-                                            </Tooltip>
-                                        )}
-                                        <Tooltip title={t('bg.remove')}>
-                                            <IconButton className={classes.deleteIcon} onClick={() => backgroundsService.removeFromStore(bg.id)}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title={t('settings.bg.openSource')} placement="top">
-                                            <Link
-                                                className={classes.link}
-                                                underline="none"
-                                                href={bg.sourceLink}
-                                                target="_blank"
-                                            >
-                                                <GridListTileBar
-                                                    className={classes.titleBar}
-                                                    classes={{
-                                                        actionIcon: classes.icon,
-                                                    }}
-                                                    subtitle={`by ${bg.author}, Unsplash`}
-                                                    actionIcon={(<LeftIcon />)}
-                                                />
-                                            </Link>
-                                        </Tooltip>
-                                    </Box>
-                                </Box>
-                            </GridListTile>
-                        ))
-                    ])}
-                </GridList>
-            )}
-            {state === FETCH.DONE && bgs.length === 0 && (
-                <FullscreenStub message={t('bg.notFound')} />
+                </FullscreenStub>
             )}
             {state === FETCH.FAILED && (
                 <Box className={classes.centerPage}>
                     <Typography variant="h5" color="error">{t('error')}</Typography>
-                    <Typography variant="body1" gutterBottom>{t('bg.loadFailed')}</Typography>
+                    <Typography variant="body1" gutterBottom>
+                        {t('settings.bg.general.library.loadFailed')}
+                    </Typography>
                 </Box>
             )}
-        </Box>
+            {state === FETCH.DONE && (
+                <Box className={classes.root}>
+                    {bgs.length !== 0 && (
+                        <GridList cellHeight={160} cols={4}>
+                            {bgs.map((group) => [
+                                (
+                                    <GridListTile cols={4} style={{ height: 'auto' }}>
+                                        <ListSubheader component="div">
+                                            {t(`settings.bg.general.library.type.${group.type}`)}
+                                        </ListSubheader>
+                                    </GridListTile>
+                                ),
+                                ...group.list.map((bg) => (
+                                    <MemoBg
+                                        key={bg.id}
+                                        {...bg}
+                                        select={coreService.storage.persistent.bgCurrent?.id === bg.id}
+                                        onSet={() => backgroundsService.setCurrentBG(bg.id)}
+                                        onRemove={() => backgroundsService.removeFromStore(bg.id)}
+                                    />
+                                ))
+                            ])}
+                        </GridList>
+                    )}
+                    {bgs.length === 0 && (
+                        <FullscreenStub message={t('bg.notFound')} />
+                    )}
+                </Box>
+            )}
+        </React.Fragment>
     );
 }
 
