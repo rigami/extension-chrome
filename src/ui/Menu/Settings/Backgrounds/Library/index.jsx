@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import { FETCH } from '@/enum';
+import { BG_SOURCE, FETCH } from '@/enum';
 import {
     Box,
     Avatar,
@@ -151,6 +151,7 @@ function Bg(props) {
     const {
         fileName,
         sourceLink,
+        source,
         author,
         select,
         antiAliasing,
@@ -187,23 +188,25 @@ function Bg(props) {
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={t('settings.bg.openSource')} placement="top">
-                        <Link
-                            className={classes.link}
-                            underline="none"
-                            href={sourceLink}
-                            target="_blank"
-                        >
-                            <GridListTileBar
-                                className={classes.titleBar}
-                                classes={{
-                                    actionIcon: classes.icon,
-                                }}
-                                subtitle={`by ${author}, Unsplash`}
-                                actionIcon={(<LeftIcon />)}
-                            />
-                        </Link>
-                    </Tooltip>
+                    {source === BG_SOURCE.UNSPLASH && (
+                        <Tooltip title={t('settings.bg.openSource')} placement="top">
+                            <Link
+                                className={classes.link}
+                                underline="none"
+                                href={sourceLink}
+                                target="_blank"
+                            >
+                                <GridListTileBar
+                                    className={classes.titleBar}
+                                    classes={{
+                                        actionIcon: classes.icon,
+                                    }}
+                                    subtitle={`by ${author}, Unsplash`}
+                                    actionIcon={(<LeftIcon />)}
+                                />
+                            </Link>
+                        </Tooltip>
+                    )}
                 </Box>
             </Box>
         </GridListTile>

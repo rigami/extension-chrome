@@ -4,7 +4,7 @@ export default {
     extensionId: chrome.runtime.id,
     db: {
         name: 'rigami',
-        version: 3,
+        version: 4,
     },
     fs: { root: `chrome-extension://${chrome.runtime.id}/persistent/` },
     maxUploadFiles: 15,

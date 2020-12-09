@@ -1,7 +1,8 @@
 import DBConnector from '@/utils/dbConnector';
 import { toJS } from 'mobx';
+import { BG_SOURCE } from '@/enum';
 
-function upgradeOrCreateBackgrounds(db, transaction) {
+async function upgradeOrCreateBackgrounds(db, transaction) {
     let store;
 
     if (db.objectStoreNames.contains('backgrounds')) {
@@ -15,6 +16,19 @@ function upgradeOrCreateBackgrounds(db, transaction) {
         store.createIndex('author', 'author', { unique: false });
         store.createIndex('source_link', 'sourceLink', { unique: false });
         store.createIndex('file_name', 'fileName', { unique: false });
+    }
+
+    if (!store.indexNames.contains("folder_id")) {
+        store.createIndex('source', 'source', { unique: false });
+
+        try {
+            (await store.getAll()).forEach((background) => store.put({
+                ...background,
+                source: background.sourceLink.indexOf('https://unsplash.com') !== -1 ? BG_SOURCE.UNSPLASH : BG_SOURCE.USER,
+            }))
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     return store;
