@@ -60,7 +60,7 @@ class BackgroundsStore {
             () => this._coreService.storage.persistent?.bgCurrent?.id,
             () => {
                 this._currentBG = this._coreService.storage.persistent.bgCurrent;
-                this.bgState = this._coreService.storage.persistent.bgCurrent.pause ? 'pause' : 'play';
+                this.bgState = this._coreService.storage.persistent.bgCurrent?.pause ? 'pause' : 'play';
                 this.currentBGId = this._currentBG.id;
             },
         );
@@ -114,23 +114,24 @@ class BackgroundsStore {
 
     @action('next bg')
     async nextBG() {
-        const countBG = await DBConnector().count('backgrounds');
+        const bgs = (await Promise.all(this.settings.type.map((type) => (
+            DBConnector().getAllFromIndex('backgrounds', 'type', type)
+        )))).flat();
 
-        const bgPos = countBG > 1 ? Math.max(Math.floor(Math.random() * (countBG - 1)), 0) + 1 : -1;
+        if (bgs.length === 0) {
+            return await this.setCurrentBG(null);
+        }
 
-        let index = 0;
-        let cursor = await DBConnector().transaction('backgrounds').store.openCursor();
+        const bgPos = Math.floor(Math.random() * bgs.length);
 
-        let bg;
+        let bg = bgs[bgPos];
 
-        while (cursor) {
-            if (index === 0) bg = cursor.value;
-            if (cursor.key !== this.currentBGId) index += 1;
-            if (bgPos === index) {
-                bg = cursor.value;
-                break;
+        if (bg.id === this.currentBGId) {
+            if (bgPos === 0) {
+                bg = bgs[Math.min(bgPos + 1, bgs.length - 1)];
+            } else {
+                bg = bgs[Math.max(bgPos - 1, 0)];
             }
-            cursor = await cursor.continue();
         }
 
         if (bg) await this.setCurrentBG(bg.id);
@@ -143,6 +144,13 @@ class BackgroundsStore {
         if (!currentBGId) {
             this._currentBG = null;
             this.currentBGId = null;
+
+            this._coreService.storage.updatePersistent({
+                bgNextSwitchTimestamp: Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval],
+                bgCurrent: null,
+            });
+
+            return Promise.resolve();
         }
 
         const dbBg = await DBConnector().get('backgrounds', currentBGId);

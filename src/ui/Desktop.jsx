@@ -9,7 +9,7 @@ import {
     Add as AddBookmarkIcon,
 } from '@material-ui/icons';
 import FSConnector from '@/utils/fsConnector';
-import { BG_TYPE, THEME } from '@/enum';
+import { BG_TYPE, FETCH, THEME } from '@/enum';
 import clsx from 'clsx';
 import { Fade, Box } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
@@ -54,6 +54,9 @@ const useStyles = makeStyles((theme) => ({
         bottom: 0,
         backgroundColor: theme.palette.common.black,
     },
+    errorStub: {
+        backgroundColor: theme.palette.background.default,
+    },
 }));
 
 function Desktop() {
@@ -66,7 +69,7 @@ function Desktop() {
     const store = useLocalObservable(() => ({
         currentBg: null,
         nextBg: null,
-        state: 'pending',
+        state: FETCH.PENDING,
         captureFrameTimer: null,
         bgId: null,
         isOpenMenu: false,
@@ -154,7 +157,7 @@ function Desktop() {
                             ...temporaryBG,
                             src: FSConnector.getBGURL('temporaryVideoFrame'),
                         };
-                        store.state = 'pending';
+                        store.state = FETCH.PENDING;
                     }, 5000);
                 };
 
@@ -182,7 +185,7 @@ function Desktop() {
                         ...currentBg,
                         src: FSConnector.getBGURL(currentBg.fileName),
                     };
-                    store.state = 'pending';
+                    store.state = FETCH.PENDING;
                 }
             }),
         ];
@@ -193,13 +196,17 @@ function Desktop() {
     }, []);
 
     useEffect(action(() => {
-        if (!backgroundsStore.currentBGId) return () => {};
+        if (!backgroundsStore.currentBGId) {
+            store.state = FETCH.FAILED;
+
+            return () => {};
+        }
         const currentBg = backgroundsStore.getCurrentBG();
 
         const fileName = typeof currentBg.pause === 'number' ? 'temporaryVideoFrame' : currentBg.fileName;
         const src = FSConnector.getBGURL(fileName);
 
-        store.state = 'pending';
+        store.state = FETCH.PENDING;
 
         if (!store.currentBg) {
             store.currentBg = {
@@ -229,7 +236,7 @@ function Desktop() {
     return (
         <Box className={classes.root}>
             <Fade
-                in={store.state === 'done' || store.state === 'failed'}
+                in={store.state === FETCH.DONE || store.state === FETCH.FAILED}
                 onExit={() => {
                     if (coreService.backdropTheme === THEME.DARK) {
                         document.documentElement.style.backgroundColor = '#000';
@@ -244,19 +251,20 @@ function Desktop() {
                 onContextMenu={handlerContextMenu}
             >
                 <div className={classes.root}>
-                    {store.state !== 'failed' && (
+                    {store.state !== FETCH.FAILED && (
                         <div
                             className={classes.dimmingSurface}
                             style={{ opacity: backgroundsStore.settings.dimmingPower / 100 || 0 }}
                         />
                     )}
-                    {store.state === 'failed' && (
+                    {store.state === FETCH.FAILED && (
                         <FullscreenStub
+                            className={classes.errorStub}
                             icon={BrokenIcon}
                             message={t('bg.errorLoad')}
                             description={
                                 (store.bg && t('bg.errorLoadUnknownReason'))
-                                || t('bg.notFoundBG')
+                                || t('bg.notFound')
                             }
                             style={{ height: '100vh' }}
                             actions={store.bg && [
@@ -295,7 +303,7 @@ function Desktop() {
                             style={{ imageRendering: store.currentBg.antiAliasing ? 'auto' : 'pixelated' }}
                             onLoad={action(() => {
                                 console.log('load done');
-                                store.state = 'done';
+                                store.state = FETCH.DONE;
                             })}
                             onError={action(() => {
                                 if (store.currentBg.type === BG_TYPE.VIDEO) {
@@ -304,10 +312,10 @@ function Desktop() {
                                         forceLoadAsVideo: true,
                                         src: FSConnector.getBGURL(store.currentBg.fileName),
                                     };
-                                    store.state = 'pending';
+                                    store.state = FETCH.PENDING;
                                     store.currentBg = null;
                                 } else {
-                                    store.state = 'failed';
+                                    store.state = FETCH.FAILED;
                                 }
                             })}
                             ref={bgRef}
@@ -328,7 +336,7 @@ function Desktop() {
                                 src={store.currentBg.src}
                                 className={clsx(classes.bg, classes.video)}
                                 style={{ imageRendering: store.currentBg.antiAliasing ? 'auto' : 'pixelated' }}
-                                onPlay={() => { store.state = 'done'; }}
+                                onPlay={() => { store.state = FETCH.DONE; }}
                                 onLoadedMetadata={() => {
                                     console.log(store.currentBg);
                                     if (typeof store.currentBg.pause === 'number') {
@@ -336,7 +344,7 @@ function Desktop() {
                                         coreService.localEventBus.call('background/pause');
                                     }
                                 }}
-                                onError={() => { store.state = 'failed'; }}
+                                onError={() => { store.state = FETCH.FAILED; }}
                                 ref={bgRef}
                             />
                         )

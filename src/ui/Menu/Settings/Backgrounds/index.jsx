@@ -134,10 +134,7 @@ function SchedulerSection({ onSelect }) {
                     description={t('bg.change')}
                     action={{
                         type: ROWS_TYPE.LINK,
-                        onClick: () => onSelect({
-                            content: LibraryPageContent,
-                            header: LibraryPageHeader,
-                        }),
+                        onClick: () => onSelect(libraryPage),
                         component: (
                             <Avatar
                                 src={
@@ -183,7 +180,11 @@ function SchedulerSection({ onSelect }) {
                         type: ROWS_TYPE.MULTISELECT,
                         format: (value) => t(`settings.bg.scheduler.BGType.type.${value}`),
                         value: backgroundsStore.settings.type || [],
-                        onChange: (event) => backgroundsStore.settings.update({ type: event.target.value }),
+                        onChange: (event) => {
+                            if (event.target.value.length === 0) return;
+
+                            backgroundsStore.settings.update({ type: event.target.value })
+                        },
                         values: [
                             BG_TYPE.IMAGE,
                             BG_TYPE.ANIMATION,

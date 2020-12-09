@@ -5,6 +5,7 @@
       "title":"Backgrounds",
       "apply":"Apply background",
       "change":"Change background",
+      "openSource": "Open source",
       "description":"Select, add, remove backgrounds. Configure switching",
       "general":{
         "title":"General",
@@ -294,6 +295,7 @@
     "remove":"Remove background",
     "errorLoad":"Error load background",
     "errorLoadUnknownReason":"Failed to load background for unknown reasons",
+    "notFound": "No matching backgrounds to display",
     "brokenRemovedSuccess":"Broken background removed",
     "playVideo":"Play video",
     "pauseVideo":"Stop video",
