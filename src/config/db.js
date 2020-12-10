@@ -1,6 +1,6 @@
 import DBConnector from '@/utils/dbConnector';
 import { toJS } from 'mobx';
-import { BG_SOURCE } from '@/enum';
+import { BG_SOURCE, BG_TYPE } from '@/enum';
 
 async function upgradeOrCreateBackgrounds(db, transaction) {
     let store;
@@ -24,7 +24,12 @@ async function upgradeOrCreateBackgrounds(db, transaction) {
         try {
             (await store.getAll()).forEach((background) => store.put({
                 ...background,
-                source: background.sourceLink.indexOf('https://unsplash.com') !== -1 ? BG_SOURCE.UNSPLASH : BG_SOURCE.USER,
+                source: background.sourceLink.indexOf('https://unsplash.com') !== -1
+                    ? BG_SOURCE.UNSPLASH
+                    : BG_SOURCE.USER,
+                type: background.sourceLink.substring(background.sourceLink.length - 4) === '.gif'
+                    ? BG_TYPE.ANIMATION
+                    : background.type,
             }))
         } catch (e) {
             console.log(e)
