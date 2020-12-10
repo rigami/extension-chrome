@@ -155,7 +155,10 @@ class BackgroundsStore {
 
     @action('set current bg')
     async setCurrentBG(currentBGId) {
-        if (this.currentBGId === currentBGId) return Promise.resolve();
+        if (this.currentBGId === currentBGId) {
+            this.bgState = BG_STATE.DONE;
+            return Promise.resolve();
+        }
 
         if (!currentBGId) {
             console.log('Error set bg')
