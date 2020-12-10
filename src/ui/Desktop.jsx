@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import useAppStateService from '@/stores/AppStateProvider';
 import Widgets from './Widgets';
 import { action } from 'mobx';
+import { BG_STATE } from '@/stores/backgrounds';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -63,7 +64,7 @@ function Desktop() {
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
     const backgroundsStore = useBackgroundsService();
-    const { widgets } = useAppStateService();
+    const { settings, widgets } = useAppStateService();
     const coreService = useCoreService();
     const { t } = useTranslation();
     const store = useLocalObservable(() => ({
@@ -74,6 +75,7 @@ function Desktop() {
         bgId: null,
         isOpenMenu: false,
         position: null,
+        isFirstRender: true,
     }));
 
     const bgRef = useRef(null);
@@ -196,11 +198,24 @@ function Desktop() {
     }, []);
 
     useEffect(action(() => {
-        if (!backgroundsStore.currentBGId) {
-            store.state = FETCH.FAILED;
+        console.log('bgState || currentBGId', backgroundsStore.bgState, backgroundsStore.currentBGId)
+        if (backgroundsStore.bgState === BG_STATE.SEARCH || backgroundsStore.bgState === BG_STATE.WAIT) {
+            store.state = FETCH.PENDING;
+        }
+
+        if (!backgroundsStore.currentBGId || backgroundsStore.bgState !== BG_STATE.DONE) {
+            console.log('store.isFirstRender', store.isFirstRender, backgroundsStore.bgState)
+            if (!store.isFirstRender && backgroundsStore.bgState === BG_STATE.NOT_FOUND) {
+                console.log('FAILED SET', store.isFirstRender, backgroundsStore.bgState)
+                store.state = FETCH.FAILED;
+                store.currentBg = null;
+            }
+
+            store.isFirstRender = false;
 
             return () => {};
         }
+
         const currentBg = backgroundsStore.getCurrentBG();
 
         const fileName = typeof currentBg.pause === 'number' ? 'temporaryVideoFrame' : currentBg.fileName;
@@ -224,7 +239,7 @@ function Desktop() {
             if (typeof store.captureFrameTimer === 'number') clearTimeout(+store.captureFrameTimer);
             store.captureFrameTimer = null;
         };
-    }), [backgroundsStore.currentBGId]);
+    }), [backgroundsStore.bgState, backgroundsStore.currentBGId]);
 
     useEffect(() => {
         if (store.currentBg || !store.nextBg) return;
@@ -238,7 +253,7 @@ function Desktop() {
             <Fade
                 in={store.state === FETCH.DONE || store.state === FETCH.FAILED}
                 onExit={() => {
-                    if (coreService.backdropTheme === THEME.DARK) {
+                    if (settings.backdropTheme === THEME.DARK) {
                         document.documentElement.style.backgroundColor = '#000';
                     } else {
                         document.documentElement.style.backgroundColor = '#fff';
@@ -246,7 +261,7 @@ function Desktop() {
                 }}
                 onExited={() => {
                     console.log('Reset current bg');
-                    store.currentBg = null;
+                    if (store.currentBg?.id !== backgroundsStore.currentBGId) store.currentBg = null;
                 }}
                 onContextMenu={handlerContextMenu}
             >
@@ -262,10 +277,7 @@ function Desktop() {
                             className={classes.errorStub}
                             icon={BrokenIcon}
                             message={t('bg.errorLoad')}
-                            description={
-                                (store.bg && t('bg.errorLoadUnknownReason'))
-                                || t('bg.notFound')
-                            }
+                            description={(store.bg && t('bg.errorLoadUnknownReason')) || t('bg.notFound')}
                             style={{ height: '100vh' }}
                             actions={store.bg && [
                                 {

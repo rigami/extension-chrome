@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import HomePage, { header as homePageHeader } from './Settings';
 import FabMenu from './FabMenu';
 import Scrollbar from '@/ui-components/CustomScroll';
+import { BG_MODE } from '@/stores/backgrounds';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -70,7 +71,7 @@ function Menu({ }) {
 
     useEffect(() => {
         if (backgroundsService.currentBGId && backgroundsService.getCurrentBG().type === BG_TYPE.VIDEO) {
-            if (backgroundsService.bgState === 'play') {
+            if (backgroundsService.bgMode === BG_MODE.LIVE) {
                 setFastSettings([
                     {
                         tooltip: (
@@ -96,7 +97,7 @@ function Menu({ }) {
         } else {
             setFastSettings([]);
         }
-    }, [backgroundsService.currentBGId, backgroundsService.bgState]);
+    }, [backgroundsService.currentBGId, backgroundsService.bgMode]);
 
     const Page = stack[stack.length - 1].content;
     const headerProps = stack[stack.length - 1] && stack[stack.length - 1].header;

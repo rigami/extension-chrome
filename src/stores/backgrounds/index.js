@@ -13,10 +13,23 @@ export const ERRORS = {
     ID_BG_IS_CHANGED: 'ID_BG_IS_CHANGED',
 };
 
+export const BG_STATE = {
+    WAIT: 'WAIT',
+    SEARCH: 'SEARCH',
+    DONE: 'DONE',
+    NOT_FOUND: 'NOT_FOUND',
+};
+
+export const BG_MODE = {
+    STATIC: 'STATIC',
+    LIVE: 'LIVE',
+};
+
 class BackgroundsStore {
     currentBGId;
     uploadQueue = [];
-    bgState = 'pending';
+    bgMode = BG_MODE.LIVE;
+    bgState = BG_STATE.WAIT;
     count;
     settings;
     _currentBG;
@@ -33,8 +46,9 @@ class BackgroundsStore {
                 this._coreService.storage.persistent.bgNextSwitchTimestamp > Date.now()
                 || this.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC
             ) {
+                this.bgState = BG_STATE.DONE;
                 this._currentBG = this._coreService.storage.persistent.bgCurrent;
-                this.bgState = this._coreService.storage.persistent.bgCurrent.pause ? 'pause' : 'play';
+                this.bgMode = this._coreService.storage.persistent.bgCurrent.pause ? BG_MODE.STATIC : BG_MODE.LIVE;
                 this.currentBGId = this._currentBG.id;
             } else {
                 this.nextBG();
@@ -60,8 +74,8 @@ class BackgroundsStore {
             () => this._coreService.storage.persistent?.bgCurrent?.id,
             () => {
                 this._currentBG = this._coreService.storage.persistent.bgCurrent;
-                this.bgState = this._coreService.storage.persistent.bgCurrent?.pause ? 'pause' : 'play';
-                this.currentBGId = this._currentBG.id;
+                this.bgMode = this._coreService.storage.persistent.bgCurrent?.pause ? BG_MODE.STATIC : BG_MODE.LIVE;
+                this.currentBGId = this._currentBG?.id;
             },
         );
     }
@@ -77,7 +91,7 @@ class BackgroundsStore {
             ...this._currentBG,
             pause: false,
         };
-        this.bgState = 'play';
+        this.bgMode = BG_MODE.LIVE;
 
         this._coreService.storage.updatePersistent({ bgCurrent: { ...this._currentBG } });
         FSConnector.removeFile(this._FULL_PATH, 'temporaryVideoFrame').catch(() => {});
@@ -93,7 +107,7 @@ class BackgroundsStore {
             ...this._currentBG,
             pause: timestamp,
         };
-        this.bgState = 'pause';
+        this.bgMode = BG_MODE.STATIC;
 
         this._coreService.storage.updatePersistent({ bgCurrent: { ...this._currentBG } });
         const frame = await getPreview(
@@ -114,6 +128,8 @@ class BackgroundsStore {
 
     @action('next bg')
     async nextBG() {
+        console.log('nextBG')
+        this.bgState = BG_STATE.SEARCH;
         const bgs = (await Promise.all(this.settings.type.map((type) => (
             DBConnector().getAllFromIndex('backgrounds', 'type', type)
         )))).flat();
@@ -142,6 +158,7 @@ class BackgroundsStore {
         if (this.currentBGId === currentBGId) return Promise.resolve();
 
         if (!currentBGId) {
+            console.log('Error set bg')
             this._currentBG = null;
             this.currentBGId = null;
 
@@ -149,6 +166,8 @@ class BackgroundsStore {
                 bgNextSwitchTimestamp: Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval],
                 bgCurrent: null,
             });
+
+            this.bgState = BG_STATE.NOT_FOUND;
 
             return Promise.resolve();
         }
@@ -164,6 +183,8 @@ class BackgroundsStore {
             bgNextSwitchTimestamp: Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval],
             bgCurrent: { ...bg },
         });
+
+        this.bgState = BG_STATE.DONE;
 
         return Promise.resolve();
     }
