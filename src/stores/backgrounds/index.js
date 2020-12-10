@@ -47,8 +47,11 @@ class BackgroundsStore {
                 || this.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC
             ) {
                 this.bgState = BG_STATE.DONE;
-                this._currentBG = this._coreService.storage.persistent.bgCurrent;
-                this.bgMode = this._coreService.storage.persistent.bgCurrent.pause ? BG_MODE.STATIC : BG_MODE.LIVE;
+
+                const bg = new Background(this._coreService.storage.persistent.bgCurrent);
+
+                this._currentBG = bg;
+                this.bgMode = bg.pause ? BG_MODE.STATIC : BG_MODE.LIVE;
                 this.currentBGId = this._currentBG.id;
             } else {
                 this.nextBG();
@@ -73,8 +76,10 @@ class BackgroundsStore {
         reaction(
             () => this._coreService.storage.persistent?.bgCurrent?.id,
             () => {
-                this._currentBG = this._coreService.storage.persistent.bgCurrent;
-                this.bgMode = this._coreService.storage.persistent.bgCurrent?.pause ? BG_MODE.STATIC : BG_MODE.LIVE;
+                const bg = new Background(this._coreService.storage.persistent.bgCurrent);
+
+                this._currentBG = bg;
+                this.bgMode = bg.pause ? BG_MODE.STATIC : BG_MODE.LIVE;
                 this.currentBGId = this._currentBG?.id;
             },
         );
@@ -87,10 +92,7 @@ class BackgroundsStore {
 
     @action('play bg')
     play() {
-        this._currentBG = {
-            ...this._currentBG,
-            pause: false,
-        };
+        this._currentBG.pause = false;
         this.bgMode = BG_MODE.LIVE;
 
         this._coreService.storage.updatePersistent({ bgCurrent: { ...this._currentBG } });
@@ -103,10 +105,7 @@ class BackgroundsStore {
     async pause(captureBgId, timestamp) {
         if (captureBgId !== this.currentBGId) return Promise.reject(ERRORS.ID_BG_IS_CHANGED);
 
-        this._currentBG = {
-            ...this._currentBG,
-            pause: timestamp,
-        };
+        this._currentBG.pause = timestamp;
         this.bgMode = BG_MODE.STATIC;
 
         this._coreService.storage.updatePersistent({ bgCurrent: { ...this._currentBG } });

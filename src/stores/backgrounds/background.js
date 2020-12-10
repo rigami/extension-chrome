@@ -12,6 +12,7 @@ class Background {
     type;
     previewSrc;
     fullSrc;
+    pause = false;
 
     constructor(background = {}) {
         makeAutoObservable(this);
@@ -25,6 +26,7 @@ class Background {
         this.type = background.type;
         this.previewSrc = FSConnector.getBGURL(this.fileName, 'preview');
         this.fullSrc = FSConnector.getBGURL(this.fileName, 'full');
+        this.pause = background.pause || false;
     }
 }
 

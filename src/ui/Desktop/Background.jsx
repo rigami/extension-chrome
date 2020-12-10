@@ -5,7 +5,6 @@ import {
     BrokenImageRounded as BrokenIcon,
     DeleteRounded as DeleteIcon,
 } from '@material-ui/icons';
-import FSConnector from '@/utils/fsConnector';
 import { BG_TYPE, FETCH, THEME } from '@/enum';
 import clsx from 'clsx';
 import { Fade, Box } from '@material-ui/core';
@@ -17,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import useAppStateService from '@/stores/AppStateProvider';
 import { action } from 'mobx';
 import { BG_STATE } from '@/stores/backgrounds';
+import BackgroundEntity from '@/stores/backgrounds/background';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -84,7 +84,7 @@ function Background() {
 
     const handleSwitchBg = () => {
         store.showBg = false;
-        console.log('[BACKGROUND] SWITCH BG');
+        console.log('[BACKGROUND] SWITCH BG', store.currentBg, store.requestBg);
 
         if (store.stateRequestLoadBg === FETCH.DONE) {
             store.currentBg = store.requestBg;
@@ -100,25 +100,28 @@ function Background() {
     useEffect(() => {
         const listeners = [
             coreService.localEventBus.on('background/pause', () => {
+                console.log('background/pause', bgRef.current.tagName);
                 bgRef.current.onpause = async () => {
+                    console.log('bgRef.current', bgRef.current)
                     const pauseTimestamp = bgRef.current.currentTime;
+                    console.log('pauseTimestamp', pauseTimestamp);
                     const captureBGId = store.currentBg.id;
                     let temporaryBG;
 
                     try {
                         temporaryBG = await backgroundsStore.pause(captureBGId, pauseTimestamp);
                     } catch (e) {
-                        console.log(e);
+                        console.log('Failed pause', e);
                         return;
                     }
 
                     store.captureFrameTimer = setTimeout(() => {
                         if (pauseTimestamp !== bgRef.current.currentTime) return;
 
-                        store.requestBg = {
+                        store.requestBg = new BackgroundEntity({
                             ...temporaryBG,
-                            src: FSConnector.getBGURL('temporaryVideoFrame'),
-                        };
+                            fileName: 'temporaryVideoFrame',
+                        });
                         store.stateLoadBg = FETCH.PENDING;
                     }, 5000);
                 };
@@ -130,10 +133,8 @@ function Background() {
                 if (typeof store.captureFrameTimer === 'number') clearTimeout(+store.captureFrameTimer);
                 store.captureFrameTimer = null;
 
-                let currentBg;
-
                 try {
-                    currentBg = await backgroundsStore.play();
+                    await backgroundsStore.play();
                 } catch (e) {
                     console.log(e);
                     return;
@@ -143,10 +144,7 @@ function Background() {
                     bgRef.current.play();
                     bgRef.current.onpause = null;
                 } else {
-                    store.requestBg = {
-                        ...currentBg,
-                        src: FSConnector.getBGURL(currentBg.fileName),
-                    };
+                    store.requestBg = backgroundsStore.getCurrentBG();
                     store.stateLoadBg = FETCH.PENDING;
                 }
             }),
@@ -160,6 +158,7 @@ function Background() {
     useEffect(action(() => {
         if (!backgroundsStore.currentBGId || backgroundsStore.bgState !== BG_STATE.DONE) {
             if (!store.isFirstRender && backgroundsStore.bgState === BG_STATE.NOT_FOUND) {
+                console.log('Force reset current bg')
                 store.stateLoadBg = FETCH.FAILED;
                 store.currentBg = null;
                 store.requestBg = null;
@@ -172,14 +171,13 @@ function Background() {
 
         const currentBg = backgroundsStore.getCurrentBG();
 
-        const fileName = typeof currentBg.pause === 'number' ? 'temporaryVideoFrame' : currentBg.fileName;
-        const src = FSConnector.getBGURL(fileName);
+        console.log('currentBg', currentBg)
 
         if (store.requestBg?.id !== currentBg.id) {
-            store.requestBg = {
+            store.requestBg = new BackgroundEntity({
                 ...currentBg,
-                src,
-            };
+                fileName: typeof currentBg.pause === 'number' ? 'temporaryVideoFrame' : currentBg.fileName,
+            });
         }
 
         return () => {
@@ -198,7 +196,7 @@ function Background() {
 
         const successLoad = () => {
             if (loadBgId !== store.requestBg.id) return;
-            console.log('[BACKGROUND] NEW BG DONE');
+            console.log('[BACKGROUND] NEW BG DONE', store.showBg, store.requestBg, store.stateLoadBg);
             store.stateRequestLoadBg = FETCH.DONE;
 
             if (!store.showBg) {
@@ -208,28 +206,30 @@ function Background() {
             }
         }
 
-        const failedLoad = () => {
+        const failedLoad = (e) => {
             if (loadBgId !== store.requestBg.id) return;
-            console.log('[BACKGROUND] NEW BG FAILED');
+            console.log('[BACKGROUND] NEW BG FAILED', e);
             store.stateRequestLoadBg = FETCH.FAILED;
         }
 
-        if (store.requestBg.type === BG_TYPE.IMAGE || store.requestBg.type === BG_TYPE.ANIMATION) {
-            const image = new Image();
-
-            image.onload = successLoad;
-            image.onerror = failedLoad;
-
-            image.src = store.requestBg.fullSrc;
-        } else {
+        if (store.requestBg.type === BG_TYPE.VIDEO && store.requestBg.fileName !== 'temporaryVideoFrame') {
             const video = document.createElement('video');
 
             video.onloadedmetadata = successLoad;
             video.onerror = failedLoad;
 
             video.src = store.requestBg.fullSrc;
+        } else {
+            const image = new Image();
+
+            image.onload = successLoad;
+            image.onerror = failedLoad;
+
+            image.src = store.requestBg.fullSrc;
         }
     }, [store.requestBg]);
+
+    console.log('Fade', (store.stateLoadBg === FETCH.DONE || store.stateLoadBg === FETCH.FAILED) && store.stateRequestLoadBg !== FETCH.DONE)
 
     return (
         <Fade
@@ -276,26 +276,22 @@ function Background() {
                         || store.currentBg.type === BG_TYPE.ANIMATION
                         || (
                             store.currentBg.type === BG_TYPE.VIDEO
-                            && !store.currentBg.forceLoadAsVideo
-                            && typeof store.currentBg.pause === 'number'
+                            && store.currentBg.fileName === 'temporaryVideoFrame'
                         )
                     )
                 ) && (
                     <img
                         alt={store.currentBg.fileName}
                         className={clsx(classes.bg, classes.image)}
-                        src={store.currentBg.src}
+                        src={store.currentBg.fullSrc}
                         style={{ imageRendering: store.currentBg.antiAliasing ? 'auto' : 'pixelated' }}
                         onLoad={action(() => {
                             store.stateLoadBg = FETCH.DONE;
                         })}
                         onError={action(() => {
+                            console.log('Failed load img')
                             if (store.currentBg.type === BG_TYPE.VIDEO) {
-                                store.requestBg = {
-                                    ...store.currentBg,
-                                    forceLoadAsVideo: true,
-                                    src: FSConnector.getBGURL(store.currentBg.fileName),
-                                };
+                                store.requestBg = backgroundsStore.getCurrentBG();
                                 store.stateLoadBg = FETCH.PENDING;
                                 store.currentBg = null;
                             } else {
@@ -308,15 +304,13 @@ function Background() {
                 {
                     store.currentBg
                     && store.currentBg.type === BG_TYPE.VIDEO
+                    && store.currentBg.fileName !== 'temporaryVideoFrame'
                     && (
-                        typeof store.currentBg.pause !== 'number'
-                        || store.currentBg.forceLoadAsVideo
-                    ) && (
                         <video
                             autoPlay={!store.currentBg.pause}
                             loop
                             muted
-                            src={store.currentBg.src}
+                            src={store.currentBg.fullSrc}
                             className={clsx(classes.bg, classes.video)}
                             style={{ imageRendering: store.currentBg.antiAliasing ? 'auto' : 'pixelated' }}
                             onPlay={() => { store.stateLoadBg = FETCH.DONE; }}
