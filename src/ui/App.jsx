@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { render } from 'react-dom';
 import { CssBaseline, Box } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
@@ -33,49 +33,52 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function App() {
+function RootApp({ onChangeTheme }) {
     const classes = useStyles();
+
+    return (
+        <Nest components={[
+            ({ children }) => (
+                <SnackbarProvider
+                    maxSnack={4}
+                    content={(key, options) => (<Snackbar id={key} {...options} />)}
+                >
+                    {children}
+                </SnackbarProvider>
+            ),
+            ({ children }) => (<BaseStateProvider side={DESTINATION.APP}>{children}</BaseStateProvider>),
+            InitAppProvider,
+            ({ children }) => (<AppStateProvider onChangeTheme={onChangeTheme}>{children}</AppStateProvider>),
+            BookmarksProvider,
+            BackgroundsProvider,
+            UploadBGForm,
+            GlobalModals,
+        ]}
+        >
+            <GlobalScroll>
+                <Desktop />
+                <Box className={classes.bookmarkWrapper}>
+                    <FAPStub />
+                    <Bookmarks />
+                </Box>
+            </GlobalScroll>
+            <FakeScroll>
+                <FAP />
+                <AddBookmarkButton />
+            </FakeScroll>
+        </Nest>
+    );
+}
+
+const MemoRootApp = memo(RootApp);
+
+function App() {
     const [theme, setTheme] = useState(localStorage.getItem('theme') === THEME.LIGHT ? lightTheme : darkTheme);
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Nest components={[
-                ({ children }) => (
-                    <SnackbarProvider
-                        maxSnack={4}
-                        content={(key, options) => (<Snackbar id={key} {...options} />)}
-                    >
-                        {children}
-                    </SnackbarProvider>
-                ),
-                ({ children }) => (<BaseStateProvider side={DESTINATION.APP}>{children}</BaseStateProvider>),
-                InitAppProvider,
-                ({ children }) => (
-                    <AppStateProvider
-                        onChangeTheme={(newTheme) => setTheme(newTheme === THEME.LIGHT ? lightTheme : darkTheme)}
-                    >
-                        {children}
-                    </AppStateProvider>
-                ),
-                BookmarksProvider,
-                BackgroundsProvider,
-                UploadBGForm,
-                GlobalModals,
-            ]}
-            >
-                <GlobalScroll>
-                    <Desktop />
-                    <Box className={classes.bookmarkWrapper}>
-                        <FAPStub />
-                        <Bookmarks />
-                    </Box>
-                </GlobalScroll>
-                <FakeScroll>
-                    <FAP />
-                    <AddBookmarkButton />
-                </FakeScroll>
-            </Nest>
+            <MemoRootApp onChangeTheme={(newTheme) => setTheme(newTheme === THEME.LIGHT ? lightTheme : darkTheme)} />
         </ThemeProvider>
     );
 }
