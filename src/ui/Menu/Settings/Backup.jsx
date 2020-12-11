@@ -321,8 +321,8 @@ function BackupSettings() {
 
     return (
         <React.Fragment>
-            <ObserverBrowserSync />
-            <SectionHeader title={t('settings.backup.localBackup.title')} />
+            {/* <ObserverBrowserSync />
+            <SectionHeader title={t('settings.backup.localBackup.title')} /> */}
             <MenuRow
                 title={t('settings.backup.localBackup.create.title')}
                 description={t('settings.backup.localBackup.create.description')}

@@ -93,13 +93,6 @@
             "BOTTOM":"From below"
           }
         }
-      },
-      "systemBookmarks": {
-        "title": "Synchronization with browser bookmarks",
-        "syncSystemBookmarks": {
-          "title": "Sync bookmarks of this browser",
-          "description": "All bookmarks of this browser will be marked with the category 'Google chrome bookmarks'"
-        }
       }
     },
     "widgets": {
@@ -237,12 +230,33 @@
       }
     },
     "backup":{
-      "title":"Synchronization and backup",
-      "description":"Soon",
+      "title":"Data backup",
+      "description":"Save data to computer",
+      "systemBookmarks": {
+        "title": "Synchronization with browser bookmarks",
+        "syncSystemBookmarks": {
+          "title": "Sync bookmarks of this browser",
+          "description": "All bookmarks of this browser will be stored in the folder"
+        },
+        "syncFolder": {
+          "title": "Select the folder where bookmarks of this browser will be saved",
+          "description": "Bookmarks will be saved to this folder",
+          "newFolder": "Create a new folder"
+        },
+        "reRunSync": {
+          "title": "Synchronize bookmarks",
+          "description": "Changes will take effect after browser restart. Or you can do it now",
+          "button": "Synchronize",
+          "progress": "Synchronization..."
+        }
+      },
       "localBackup": {
-        "title": "Create backup",
-        "description": "Save application settings and bookmarks on your computer",
-        "create": "Create backup",
+        "title": "Local backup",
+        "create": {
+          "title": "Create backup",
+          "description": "Save application settings and bookmarks on your computer",
+          "button": "Create backup"
+        },
         "item": {
           "settings": "Settings",
           "bookmarks": "Bookmarks"
@@ -279,7 +293,8 @@
         "title":"Get into contact with me",
         "description":"Contact the developer directly"
       },
-      "policy":"privacy policy"
+      "policy":"privacy policy",
+      "rate": "Оцените расширение в магазине Chrome"
     },
     "betaBanner": {
       "title": "The extension is in beta testing",
@@ -362,7 +377,8 @@
       "title": "Change folder",
       "create": "Create a folder",
       "changeTooltip": "Change folder",
-      "defaultFolderName": "New folder"
+      "defaultFolderName": "New folder",
+      "folderAlreadyExist": "This folder already exists"
     },
     "noBookmarks": {
       "title": "There are no bookmarks in this folder",
@@ -421,6 +437,19 @@
     "description": "The extension has been updated, now it is even better\n\n  - Changed the design of the background library\n  - Added link to background authors\n  - Added automatic recognition of GIF animations\n  - Accelerated switching between backgrounds\n  - Fixed problems with getting weather permissions on some devices\n  - Other minor fixes",
     "ok": "OK",
     "changelog": "List of changes"
+  },
+  "interrogation": {
+    "request": {
+      "title": "How do you like Rigami?",
+      "description": "Take a short survey, it won't take more than a couple of minutes. This will help me understand what to focus on in the further development of the project.",
+      "accept": "Take a survey",
+      "dismiss": "Close"
+    },
+    "end": {
+      "title": "Thanks for your input",
+      "description": "Your answers will help me make Rigami better",
+      "close": "Close"
+    }
   },
   "widgets": {
     "weather": {
