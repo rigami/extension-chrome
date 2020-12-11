@@ -434,7 +434,7 @@
   },
   "newVersion": {
     "title": "New version {{version}}",
-    "description": "The extension has been updated, now it is even better\n\n  - Changed the design of the background library\n  - Added link to background authors\n  - Added automatic recognition of GIF animations\n  - Accelerated switching between backgrounds\n  - Fixed problems with getting weather permissions on some devices\n  - Other minor fixes",
+    "description": "The extension has been updated, now it is even better\n\n  - Minor fixes",
     "ok": "OK",
     "changelog": "List of changes"
   },
