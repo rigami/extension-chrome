@@ -54,6 +54,7 @@ function Snackbar(props, ref) {
         id,
         message,
         description: defaultDescription,
+        content,
         variant,
         buttons,
         progressEffect,
@@ -77,37 +78,40 @@ function Snackbar(props, ref) {
 
     return (
         <Card className={classes.root} ref={ref}>
-            <CardHeader
-                classes={{
-                    root: classes.header,
-                    avatar: classes.snackTypeIcon,
-                    title: classes.title,
-                    subheader: classes.description,
-                    action: classes.headerAction,
-                }}
-                avatar={variant && (
-                    <React.Fragment>
-                        {variant === 'success' && (<SuccessIcon color="primary" />)}
-                        {variant === 'error' && (<ErrorIcon color="error" />)}
-                        {variant === 'warning' && (<WarningIcon style={{ color: theme.palette.warning.main }} />)}
-                        {variant === 'progress' && (
-                            <CircularProgress
-                                size={26}
-                                thickness={3.4}
-                                variant={progressEffect ? 'determinate' : 'indeterminate'}
-                                value={progress}
-                            />
-                        )}
-                    </React.Fragment>
-                )}
-                action={closeButton && (
-                    <IconButton className={classes.expand} onClick={handleDismiss}>
-                        <CloseIcon />
-                    </IconButton>
-                )}
-                title={message}
-                subheader={description}
-            />
+            {(message || description || closeButton) && (
+                <CardHeader
+                    classes={{
+                        root: classes.header,
+                        avatar: classes.snackTypeIcon,
+                        title: classes.title,
+                        subheader: classes.description,
+                        action: classes.headerAction,
+                    }}
+                    avatar={variant && (
+                        <React.Fragment>
+                            {variant === 'success' && (<SuccessIcon color="primary" />)}
+                            {variant === 'error' && (<ErrorIcon color="error" />)}
+                            {variant === 'warning' && (<WarningIcon style={{ color: theme.palette.warning.main }} />)}
+                            {variant === 'progress' && (
+                                <CircularProgress
+                                    size={26}
+                                    thickness={3.4}
+                                    variant={progressEffect ? 'determinate' : 'indeterminate'}
+                                    value={progress}
+                                />
+                            )}
+                        </React.Fragment>
+                    )}
+                    action={closeButton && (
+                        <IconButton className={classes.expand} onClick={handleDismiss}>
+                            <CloseIcon />
+                        </IconButton>
+                    )}
+                    title={message}
+                    subheader={description}
+                />
+            )}
+            {content}
             {buttons && (
                 <CardActions className={classes.buttons}>
                     {buttons.map(({ title, onClick }) => (

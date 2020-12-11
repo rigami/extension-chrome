@@ -111,7 +111,7 @@ module.exports = () => ({
                 use: [{ loader: require.resolve('style-loader') }, { loader: require.resolve('css-loader') }],
             },
             {
-                test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
+                test: /\.(woff(2)?|ttf|eot|png|jpg|gif)(\?v=\d+\.\d+\.\d+)?$/,
                 use: [
                     {
                         loader: require.resolve('file-loader'),

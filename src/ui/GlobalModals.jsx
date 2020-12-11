@@ -19,9 +19,20 @@ import { useSnackbar } from 'notistack';
 import FSConnector from '@/utils/fsConnector';
 import { eventToBackground } from '@/stores/backgroundApp/busApp';
 import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
-// import Changelog from '@/ui/Changelog';
+import { makeStyles } from '@material-ui/core/styles';
+import InterrogationRequest from '@/ui/InterrogationRequest';
+
+const useStyles = makeStyles((theme) => ({
+    rateScreen: {
+        height: 300
+    },
+    rateScreenIcon: {
+        color: '#f61515'
+    },
+}));
 
 function GlobalModals({ children }) {
+    const classes = useStyles();
     const { t } = useTranslation();
     const bookmarksStore = useBookmarksService();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -146,6 +157,7 @@ function GlobalModals({ children }) {
     return (
         <React.Fragment>
             {children}
+            <InterrogationRequest />
             <ContextMenu
                 isOpen={contextMenuPosition !== null}
                 position={contextMenuPosition}

@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
 function FullScreenStub(props) {
     const {
         icon,
+        iconProps = {},
         message,
         description,
         actions,
@@ -55,7 +56,7 @@ function FullScreenStub(props) {
     return (
         <Box className={clsx(classes.root, externalClassName)} {...other}>
             <Container className={classes.container} maxWidth="md">
-                {icon && (<Icon className={classes.icon} />)}
+                {icon && (<Icon {...iconProps} className={clsx(classes.icon, iconProps.className)} />)}
                 {message && (
                     <Typography variant="h6" className={classes.title}>{message}</Typography>
                 )}
