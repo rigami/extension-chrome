@@ -87,7 +87,10 @@ function InterrogationRequest() {
     const coreService = useCoreService();
 
     useEffect(() => {
-        if (coreService.storage.persistent.completedPoll === 'how-do-you-rigami') return;
+        if (
+            coreService.storage.temp.newVersion
+            || coreService.storage.persistent.completedPoll === 'how-do-you-rigami'
+        ) return;
 
         const rateSnackbar = enqueueSnackbar({
             content: (
