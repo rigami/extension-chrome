@@ -1,0 +1,110 @@
+import React, { useRef } from 'react';
+import useBackgroundsService from '@/stores/BackgroundsStateProvider';
+import { useTranslation } from 'react-i18next';
+import { Button, Collapse, InputBase, Typography } from '@material-ui/core';
+import { BG_CHANGE_INTERVAL, BG_SELECT_MODE, BG_TYPE, FETCH } from '@/enum';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
+import { observer, useLocalObservable } from 'mobx-react-lite';
+import { makeStyles } from '@material-ui/core/styles';
+import { runInAction } from 'mobx';
+import useCoreService from '@/stores/BaseStateProvider';
+import { PlaceRounded as PlaceIcon } from '@material-ui/icons';
+import changeLocationPage from './ChangeQuery';
+import { round } from 'lodash';
+
+const useStyles = makeStyles((theme) => ({
+    row: {
+        padding: theme.spacing(0, 2),
+        display: 'flex',
+        alignItems: 'center',
+    },
+    notSetValue: {
+        fontStyle: 'italic',
+        color: theme.palette.text.secondary,
+    },
+    input: { padding: theme.spacing(2) },
+    submit: { flexShrink: 0 },
+    locationRow: {
+        paddingLeft: theme.spacing(4),
+    },
+    geoButtonWrapper: {
+        position: 'relative',
+    },
+    geoButton: {
+
+    },
+    geoButtonProgress: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12,
+    },
+}));
+
+function Radio({ onSelect }) {
+    const classes = useStyles();
+    const coreService = useCoreService();
+    const backgroundsStore = useBackgroundsService();
+    const { t } = useTranslation();
+
+    return (
+        <Collapse in={backgroundsStore.settings.selectionMethod === BG_SELECT_MODE.RADIO}>
+            <MenuRow
+                title={t('settings.bg.scheduler.changeInterval.title')}
+                description={t('settings.bg.scheduler.changeInterval.description')}
+                action={{
+                    type: ROWS_TYPE.SELECT,
+                    format: (value) => t(`settings.bg.scheduler.changeInterval.interval.${value}`),
+                    value: backgroundsStore.settings.changeInterval,
+                    onChange: (event) => backgroundsStore.settings.update({ changeInterval: event.target.value }),
+                    values: [
+                        BG_CHANGE_INTERVAL.OPEN_TAB,
+                        BG_CHANGE_INTERVAL.MINUTES_30,
+                        BG_CHANGE_INTERVAL.HOURS_1,
+                        BG_CHANGE_INTERVAL.HOURS_6,
+                        BG_CHANGE_INTERVAL.HOURS_12,
+                        BG_CHANGE_INTERVAL.DAY_1,
+                    ],
+                }}
+            />
+            <MenuRow
+                title={t('settings.bg.scheduler.BGType.title')}
+                description={t('settings.bg.scheduler.BGType.description')}
+                action={{
+                    type: ROWS_TYPE.MULTISELECT,
+                    format: (value) => t(`settings.bg.scheduler.BGType.type.${value}`),
+                    value: backgroundsStore.settings.type || [],
+                    onChange: (event) => {
+                        if (event.target.value.length === 0) return;
+
+                        backgroundsStore.settings.update({ type: event.target.value })
+                    },
+                    values: [
+                        BG_TYPE.IMAGE,
+                        BG_TYPE.VIDEO,
+                    ],
+                }}
+            />
+            <MenuRow
+                title={t('settings.bg.scheduler.query.title')}
+                description={t('settings.bg.scheduler.query.description')}
+                action={{
+                    type: ROWS_TYPE.LINK,
+                    onClick: () => onSelect(changeLocationPage),
+                    component: coreService.storage.persistent.backgroundRadioQuery
+                        ? (`${
+                            coreService.storage.persistent.backgroundRadioQuery || t('unknown')
+                        }`)
+                        : (
+                            <Typography className={classes.notSetValue}>
+                                {t('settings.bg.scheduler.query.notSet')}
+                            </Typography>
+                        ),
+                }}
+            />
+        </Collapse>
+    );
+}
+
+export default observer(Radio);

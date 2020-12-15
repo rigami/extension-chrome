@@ -8,11 +8,13 @@ import { action } from 'mobx';
 import {
     Button,
     Collapse,
-    Dialog, DialogActions,
+    Dialog,
+    DialogActions,
     DialogContent,
     DialogContentText,
     DialogTitle,
-    LinearProgress, TextField,
+    LinearProgress,
+    TextField,
     Typography
 } from '@material-ui/core';
 import { map, round } from 'lodash';

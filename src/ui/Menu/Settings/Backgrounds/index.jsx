@@ -1,21 +1,16 @@
 import React, { useState, useEffect, memo } from 'react';
 import { observer } from 'mobx-react-lite';
-import { BG_CHANGE_INTERVAL, BG_TYPE, BG_SELECT_MODE } from '@/enum';
-import {
-    Avatar,
-    Collapse,
-} from '@material-ui/core';
+import { Avatar } from '@material-ui/core';
 import {
     WallpaperRounded as WallpaperIcon,
     MoreHorizRounded as MoreIcon,
-    BrokenImageRounded as BrokenIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import FSConnector from '@/utils/fsConnector';
 import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import libraryPage from './Library';
+import SchedulerSection from './Scheduler';
 
 const headerProps = { title: 'settings.bg.title' };
 const pageProps = { width: 750 };
@@ -110,101 +105,11 @@ function BackgroundsSection({ onSelect }) {
 
 const MemoBackgroundsSection = memo(observer(BackgroundsSection));
 
-function SchedulerSection({ onSelect }) {
-    const backgroundsStore = useBackgroundsService();
-    const { t } = useTranslation();
-
-    return (
-        <React.Fragment>
-            <SectionHeader title={t('settings.bg.scheduler.title')} />
-            <MenuRow
-                title={t('settings.bg.scheduler.selectionMethod.title')}
-                description={t('settings.bg.scheduler.selectionMethod.description')}
-                action={{
-                    type: ROWS_TYPE.SELECT,
-                    format: (value) => t(`settings.bg.scheduler.selectionMethod.method.${value}`),
-                    value: backgroundsStore.settings.selectionMethod,
-                    onChange: (event) => backgroundsStore.settings.update({ selectionMethod: event.target.value }),
-                    values: [BG_SELECT_MODE.RANDOM, BG_SELECT_MODE.SPECIFIC],
-                }}
-            />
-            <Collapse in={backgroundsStore.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC}>
-                <MenuRow
-                    title={t('bg.title')}
-                    description={t('bg.change')}
-                    action={{
-                        type: ROWS_TYPE.LINK,
-                        onClick: () => onSelect(libraryPage),
-                        component: (
-                            <Avatar
-                                src={
-                                    backgroundsStore.currentBGId
-                                    && FSConnector.getBGURL(backgroundsStore.getCurrentBG().fileName, 'preview')
-                                }
-                                variant="rounded"
-                                style={{
-                                    width: 48,
-                                    height: 48,
-                                    marginRight: 8,
-                                }}
-                            >
-                                <BrokenIcon />
-                            </Avatar>
-                        ),
-                    }}
-                />
-            </Collapse>
-            <Collapse in={backgroundsStore.settings.selectionMethod === BG_SELECT_MODE.RANDOM}>
-                <MenuRow
-                    title={t('settings.bg.scheduler.changeInterval.title')}
-                    description={t('settings.bg.scheduler.changeInterval.description')}
-                    action={{
-                        type: ROWS_TYPE.SELECT,
-                        format: (value) => t(`settings.bg.scheduler.changeInterval.interval.${value}`),
-                        value: backgroundsStore.settings.changeInterval,
-                        onChange: (event) => backgroundsStore.settings.update({ changeInterval: event.target.value }),
-                        values: [
-                            BG_CHANGE_INTERVAL.OPEN_TAB,
-                            BG_CHANGE_INTERVAL.MINUTES_30,
-                            BG_CHANGE_INTERVAL.HOURS_1,
-                            BG_CHANGE_INTERVAL.HOURS_6,
-                            BG_CHANGE_INTERVAL.HOURS_12,
-                            BG_CHANGE_INTERVAL.DAY_1,
-                        ],
-                    }}
-                />
-                <MenuRow
-                    title={t('settings.bg.scheduler.BGType.title')}
-                    description={t('settings.bg.scheduler.BGType.description')}
-                    action={{
-                        type: ROWS_TYPE.MULTISELECT,
-                        format: (value) => t(`settings.bg.scheduler.BGType.type.${value}`),
-                        value: backgroundsStore.settings.type || [],
-                        onChange: (event) => {
-                            if (event.target.value.length === 0) return;
-
-                            backgroundsStore.settings.update({ type: event.target.value })
-                        },
-                        values: [
-                            BG_TYPE.IMAGE,
-                            BG_TYPE.ANIMATION,
-                            BG_TYPE.VIDEO,
-                            BG_TYPE.FILL_COLOR,
-                        ],
-                    }}
-                />
-            </Collapse>
-        </React.Fragment>
-    );
-}
-
-const MemoSchedulerSection = memo(observer(SchedulerSection));
-
 function BackgroundsMenu({ onSelect }) {
     return (
         <React.Fragment>
             <MemoBackgroundsSection onSelect={onSelect} />
-            <MemoSchedulerSection onSelect={onSelect} />
+            <SchedulerSection onSelect={onSelect} />
         </React.Fragment>
     );
 }
