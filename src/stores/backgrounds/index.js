@@ -1,11 +1,18 @@
 import { action, reaction, makeAutoObservable } from 'mobx';
 import appVariables from '@/config/appVariables';
-import { BG_TYPE, BG_CHANGE_INTERVAL_MILLISECONDS, BG_SELECT_MODE } from '@/enum';
+import {
+    BG_TYPE,
+    BG_CHANGE_INTERVAL_MILLISECONDS,
+    BG_SELECT_MODE,
+    BG_SOURCE,
+} from '@/enum';
 import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
 import getPreview from '@/utils/createPreview';
 import { BackgroundSettingsStore } from '@/stores/app/settings';
 import Background from './background';
+import createPreview from '@/utils/createPreview';
+import fetchData from '@/utils/xhrPromise';
 
 export const ERRORS = {
     TOO_MANY_FILES: 'TOO_MANY_FILES',
@@ -126,8 +133,19 @@ class BackgroundsStore {
     }
 
     @action('next bg')
-    async nextBG() {
+    nextBG() {
         console.log('nextBG')
+
+        if (this.settings.selectionMethod === BG_SELECT_MODE.RANDOM) {
+            return this.nextBGLocal();
+        } else if (this.settings.selectionMethod === BG_SELECT_MODE.RADIO) {
+            return this.nextBGRadio();
+        }
+    }
+
+    @action('next bg local')
+    async nextBGLocal() {
+        console.log('nextBGLocal')
         this.bgState = BG_STATE.SEARCH;
         const bgs = (await Promise.all(this.settings.type.map((type) => (
             DBConnector().getAllFromIndex('backgrounds', 'type', type)
@@ -149,17 +167,54 @@ class BackgroundsStore {
             }
         }
 
-        if (bg) await this.setCurrentBG(bg.id);
+        if (bg) await this.setCurrentBG(bg);
     }
 
+    @action('next bg radio')
+    async nextBGRadio() {
+        console.log('nextBGRadio')
+        this.bgState = BG_STATE.SEARCH;
+
+        const { response } = await fetchData(`${
+            appVariables.rest.url
+        }/backgrounds/get-random?type=image&query=${
+            this._coreService.storage.persistent.backgroundRadioQuery || ""
+        }`);
+
+        console.log('response: ', response)
+
+        const fileName = await  this.fetchBG(response.fullSrc);
+
+        console.log('fileName: ', fileName)
+
+        this._coreService.storage.updatePersistent({
+            bgRadio: {
+                ...response,
+                fileName,
+            }
+        });
+
+        await this.setCurrentBG(new Background({
+            id: response.id,
+            fileName,
+            author: response.author,
+            description: response.description,
+            source: BG_SOURCE[response.service],
+            sourceLink: response.sourceLink,
+            type: BG_TYPE.IMAGE,
+        }));
+    }
+
+
     @action('set current bg')
-    async setCurrentBG(currentBGId) {
-        if (this.currentBGId === currentBGId) {
+    async setCurrentBG(setBG) {
+        console.log('setCurrentBG', setBG);
+        if (this.currentBGId === setBG?.id) {
             this.bgState = BG_STATE.DONE;
             return Promise.resolve();
         }
 
-        if (!currentBGId) {
+        if (!setBG) {
             console.log('Error set bg')
             this._currentBG = null;
             this.currentBGId = null;
@@ -174,21 +229,33 @@ class BackgroundsStore {
             return Promise.resolve();
         }
 
-        const dbBg = await DBConnector().get('backgrounds', currentBGId);
-
-        const bg = new Background(dbBg);
-
-        this._currentBG = bg;
+        this._currentBG = setBG;
         this.currentBGId = this._currentBG.id;
 
         this._coreService.storage.updatePersistent({
             bgNextSwitchTimestamp: Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval],
-            bgCurrent: { ...bg },
+            bgCurrent: { ...setBG },
         });
 
         this.bgState = BG_STATE.DONE;
 
         return Promise.resolve();
+    }
+
+    @action('fetch BG')
+    async fetchBG(src) {
+        const fileName = Date.now().toString();
+
+        console.log('Fetch BG: ', src);
+        const defaultBG = await fetch(src).then((response) => response.blob());
+        console.log('Create preview BG');
+        const previewDefaultBG = await createPreview(defaultBG);
+
+        console.log('Save BG');
+        await FSConnector.saveFile('/backgrounds/full', defaultBG, fileName);
+        await FSConnector.saveFile('/backgrounds/preview', previewDefaultBG, fileName);
+
+        return fileName;
     }
 
     @action('add bg`s to queue')

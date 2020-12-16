@@ -10,12 +10,15 @@ import {
     GridList,
     CardMedia,
     Chip,
+    IconButton,
 } from '@material-ui/core';
 import { FETCH, } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     ErrorRounded as ErrorIcon,
     PlaceRounded as PlaceIcon,
+    CheckRounded as ApplyIcon,
+    ToysRounded as StationIcon,
 } from '@material-ui/icons';
 import {
     WrongLocationRounded as WrongLocationIcon,
@@ -30,9 +33,6 @@ import FullscreenStub from '@/ui-components/FullscreenStub';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        maxHeight: 800,
-        overflow: 'hidden',
-        '-webkit-mask': 'linear-gradient(to top, rgb(255 255 255 / 0%) 0, rgb(255 255 255) 370px)',
         marginTop: 4,
     },
     row: {
@@ -74,19 +74,23 @@ const useStyles = makeStyles((theme) => ({
     chipsWrapper: {
         paddingRight: theme.spacing(4),
         paddingLeft: theme.spacing(3),
-        paddingBottom: theme.spacing(0.5),
+        paddingBottom: theme.spacing(1.5),
+        paddingTop: theme.spacing(1),
     },
     chip: {
         marginLeft: theme.spacing(1),
         marginTop: theme.spacing(1),
         borderRadius: theme.shape.borderRadius,
     },
+    footer: {
+        height: 400,
+    },
 }));
 
 const headerProps = {
     title: 'settings.bg.scheduler.query.title',
 };
-const pageProps = { width: 750 };
+const pageProps = { width: 960 };
 
 function ChangeQuery({ onClose }) {
     const classes = useStyles();
@@ -107,10 +111,9 @@ function ChangeQuery({ onClose }) {
 
         store.foundRequest = store.searchRequest;
         store.status = FETCH.PENDING;
-        // coreService.storage.updatePersistent({ backgroundRadioQuery: store.searchRequest });
 
         try {
-            const { response: list } = await fetchData(`${appVariables.rest.url}/backgrounds/get-random?count=12&type=image&query=${store.searchRequest}`);
+            const { response: list } = await fetchData(`${appVariables.rest.url}/backgrounds/search?count=30&type=image&query=${store.searchRequest}`);
 
             console.log('list', list)
 
@@ -123,6 +126,10 @@ function ChangeQuery({ onClose }) {
             console.error(e);
             store.status = FETCH.FAILED;
         }
+    }
+
+    const handleSelect = () => {
+        coreService.storage.updatePersistent({ backgroundRadioQuery: store.searchRequest });
     }
 
     return (
@@ -140,6 +147,9 @@ function ChangeQuery({ onClose }) {
                         store.searchRequest = event.target.value;
                     }}
                 />
+                <IconButton onClick={handleSelect}>
+                    <ApplyIcon />
+                </IconButton>
             </form>
             <Divider />
             <Box className={classes.chipsWrapper}>
@@ -158,20 +168,37 @@ function ChangeQuery({ onClose }) {
             </Box>
             {store.status === FETCH.PENDING && (<LinearProgress />)}
             {store.status === FETCH.DONE && (
-                <Box className={classes.root}>
+                <React.Fragment>
+                    <Box className={classes.root}>
+                        {store.list.length !== 0 && (
+                            <GridList cellHeight={220} cols={3}>
+                                {store.list.map((bg) => (
+                                    <GridListTile cols={1}>
+                                        <CardMedia image={bg.previewSrc} className={classes.bgCard} />
+                                    </GridListTile>
+                                ))}
+                            </GridList>
+                        )}
+                        {store.list.length === 0 && (
+                            <FullscreenStub message={t('bg.notFound')} />
+                        )}
+                    </Box>
                     {store.list.length !== 0 && (
-                        <GridList cellHeight={220} cols={3}>
-                            {store.list.map((bg) => (
-                                <GridListTile cols={1}>
-                                    <CardMedia image={bg.previewSrc} className={classes.bgCard} />
-                                </GridListTile>
-                            ))}
-                        </GridList>
+                        <FullscreenStub
+                            className={classes.footer}
+                            icon={StationIcon}
+                            message={t("settings.bg.scheduler.query.footerMessage.title")}
+                            actions={[
+                                {
+                                    title: t("settings.bg.scheduler.query.footerMessage.useStation"),
+                                    variant: 'contained',
+                                    color: 'primary',
+                                    onClick: handleSelect,
+                                }
+                            ]}
+                        />
                     )}
-                    {store.list.length === 0 && (
-                        <FullscreenStub message={t('bg.notFound')} />
-                    )}
-                </Box>
+                </React.Fragment>
             )}
             {store.status === FETCH.DONE && store.list.length === 0 && (
                 <FullScreenStub

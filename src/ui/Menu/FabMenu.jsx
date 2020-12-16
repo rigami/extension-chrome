@@ -4,7 +4,7 @@ import {
     IconButton,
     Divider,
     Tooltip,
-    Box,
+    Box, CircularProgress,
 } from '@material-ui/core';
 import {
     Refresh as RefreshIcon,
@@ -16,6 +16,9 @@ import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import clsx from 'clsx';
 import { action } from 'mobx';
+import { BG_SELECT_MODE } from '@/enum';
+import useBackgroundsService from '@/stores/BackgroundsStateProvider';
+import { BG_STATE } from '@/stores/backgrounds';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,12 +38,27 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.easeInOut,
             duration: theme.transitions.duration.complex,
         }),
-    }
+    },
+    loadBGIconWhite: {
+        position: 'absolute',
+        bottom: theme.spacing(4.25),
+        right: theme.spacing(4.25),
+        zIndex: 1,
+        color: theme.palette.common.white,
+    },
+    loadBGIcon: {
+        color: theme.palette.common.black,
+        margin: theme.spacing(0.25),
+    },
+    loadBgButton: {
+        pointerEvents: 'none',
+    },
 }));
 
 function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG }) {
     const classes = useStyles();
     const theme = useTheme();
+    const backgroundsService = useBackgroundsService();
     const { t } = useTranslation();
     const rootAl = useRef();
     const fastAl = useRef();
@@ -94,43 +112,69 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
     }, []);
 
     return (
-        <Box className={classes.root} ref={rootAl}>
-            <Card
-                className={clsx(classes.card, store.smooth && classes.smooth)}
-                elevation={12}
-                style={{ marginBottom: theme.spacing(2) }}
-                ref={fastAl}
-            >
-                {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }) => (
-                    <Tooltip title={tooltip} placement="left" key={tooltip}>
-                        <IconButton size="small" className={classes.button} {...props}>
-                            {Icon}
-                        </IconButton>
-                    </Tooltip>
-                ))}
-            </Card>
-            <Card
-                className={clsx(classes.card, store.smooth && classes.smooth)}
-                elevation={12}
-                ref={mainAl}
-            >
-                <Tooltip title={t('settings.title')} placement="left">
-                    <IconButton size="small" className={classes.button} onClick={() => onOpenMenu()}>
-                        <SettingsIcon />
-                    </IconButton>
-                </Tooltip>
-                {useChangeBG && (
-                    <React.Fragment>
-                        <Divider />
-                        <Tooltip title={t('bg.next')} placement="left">
-                            <IconButton size="small" className={classes.button} onClick={() => onRefreshBackground()}>
-                                <RefreshIcon />
+        <React.Fragment>
+            <Box className={classes.root} ref={rootAl}>
+                <Card
+                    className={clsx(classes.card, store.smooth && classes.smooth)}
+                    elevation={12}
+                    style={{ marginBottom: theme.spacing(2) }}
+                    ref={fastAl}
+                >
+                    {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }) => (
+                        <Tooltip title={tooltip} placement="left" key={tooltip}>
+                            <IconButton size="small" className={classes.button} {...props}>
+                                {Icon}
                             </IconButton>
                         </Tooltip>
-                    </React.Fragment>
-                )}
-            </Card>
-        </Box>
+                    ))}
+                </Card>
+                <Card
+                    className={clsx(classes.card, store.smooth && classes.smooth)}
+                    elevation={12}
+                    ref={mainAl}
+                >
+                    <Tooltip title={t('settings.title')} placement="left">
+                        <IconButton size="small" className={classes.button} onClick={() => onOpenMenu()}>
+                            <SettingsIcon />
+                        </IconButton>
+                    </Tooltip>
+                    {(
+                        backgroundsService.settings.selectionMethod === BG_SELECT_MODE.RANDOM
+                        || backgroundsService.settings.selectionMethod === BG_SELECT_MODE.RADIO
+                    ) && (
+                        <React.Fragment>
+                            <Divider />
+                            <Tooltip title={t('bg.next')} placement="left">
+                                <IconButton
+                                    size="small"
+                                    className={clsx(
+                                        classes.button,
+                                        backgroundsService.bgState === BG_STATE.SEARCH && classes.loadBgButton,
+                                    )}
+                                    onClick={() => onRefreshBackground()}
+                                >
+                                    {backgroundsService.bgState !== BG_STATE.SEARCH &&  (
+                                        <RefreshIcon />
+                                    )}
+                                    {backgroundsService.bgState === BG_STATE.SEARCH && (
+                                        <CircularProgress
+                                            className={classes.loadBGIcon}
+                                            size={20}
+                                        />
+                                    )}
+                                </IconButton>
+                            </Tooltip>
+                        </React.Fragment>
+                    )}
+                </Card>
+            </Box>
+            {backgroundsService.bgState === BG_STATE.SEARCH && (
+                <CircularProgress
+                    className={classes.loadBGIconWhite}
+                    size={20}
+                />
+            )}
+        </React.Fragment>
     );
 }
 

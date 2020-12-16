@@ -34,7 +34,17 @@ export default {
     },
     backgrounds: {
         radio: {
-            queryPresets: ["Minimalism", "Abstract", "Night sky", "Winter", "Wallpaper", "Black", "Aesthetic", "Minimalism nature"],
+            queryPresets: [
+                "Minimalism",
+                "Abstract",
+                "Night sky",
+                "Winter",
+                "Wallpaper",
+                "Black",
+                "Aesthetic",
+                "Minimalism nature",
+                "Architecture",
+            ],
         }
     }
 };

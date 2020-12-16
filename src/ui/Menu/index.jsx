@@ -111,7 +111,6 @@ function Menu({ }) {
                     backgroundsService.nextBG();
                 }}
                 fastSettings={fastSettings}
-                useChangeBG={backgroundsService.settings.selectionMethod === BG_SELECT_MODE.RANDOM}
             />
             <Drawer
                 anchor="right"

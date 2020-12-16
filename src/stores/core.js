@@ -12,6 +12,7 @@ import createPreview from '@/utils/createPreview';
 import FSConnector from '@/utils/fsConnector';
 import EventBus from '@/utils/eventBus';
 import { assign } from 'lodash';
+import Background from '@/stores/backgrounds/background';
 
 const APP_STATE = {
     WAIT_INIT: 'WAIT_INIT',
@@ -152,11 +153,11 @@ class Core {
         });
 
         this.storage.updatePersistent({
-            bgCurrent: {
+            bgCurrent: new Background({
                 ...appVariables.defaultBG,
                 fileName,
                 id: bgId,
-            },
+            }),
         });
 
         this.appState = APP_STATE.WORK;
