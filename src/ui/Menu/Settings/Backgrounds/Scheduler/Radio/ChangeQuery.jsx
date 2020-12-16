@@ -30,6 +30,7 @@ import { runInAction } from 'mobx';
 import fetchData from '@/utils/xhrPromise';
 import appVariables from '@/config/appVariables';
 import FullscreenStub from '@/ui-components/FullscreenStub';
+import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -96,6 +97,7 @@ function ChangeQuery({ onClose }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const coreService = useCoreService();
+    const backgroundsService = useBackgroundsService();
     const store = useLocalObservable(() => ({
         searchRequest: coreService.storage.persistent.backgroundRadioQuery,
         foundRequest: "",
@@ -129,7 +131,12 @@ function ChangeQuery({ onClose }) {
     }
 
     const handleSelect = () => {
-        coreService.storage.updatePersistent({ backgroundRadioQuery: store.searchRequest });
+        coreService.storage.updatePersistent({
+            backgroundRadioQuery: store.searchRequest,
+            bgsRadio: [],
+        });
+
+        backgroundsService.nextBG();
     }
 
     return (

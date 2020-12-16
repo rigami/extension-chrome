@@ -13,6 +13,7 @@ import { BackgroundSettingsStore } from '@/stores/app/settings';
 import Background from './background';
 import createPreview from '@/utils/createPreview';
 import fetchData from '@/utils/xhrPromise';
+import { first } from 'lodash';
 
 export const ERRORS = {
     TOO_MANY_FILES: 'TOO_MANY_FILES',
@@ -175,24 +176,48 @@ class BackgroundsStore {
         console.log('nextBGRadio')
         this.bgState = BG_STATE.SEARCH;
 
+        if (this._coreService.storage.persistent.bgsRadio?.length > 1) {
+            this._coreService.storage.updatePersistent({
+                bgsRadio: this._coreService.storage.persistent.bgsRadio.splice(1)
+            });
+
+            const bgCurr = first(this._coreService.storage.persistent.bgsRadio);
+
+            const fileName = await this.fetchBG(bgCurr.fullSrc);
+
+            console.log('fileName: ', fileName)
+
+            await this.setCurrentBG(new Background({
+                id: bgCurr.id,
+                fileName,
+                author: bgCurr.author,
+                description: bgCurr.description,
+                source: BG_SOURCE[bgCurr.service],
+                sourceLink: bgCurr.sourceLink,
+                type: BG_TYPE.IMAGE,
+            }));
+
+            return Promise.resolve();
+        }
+
         const { response } = await fetchData(`${
             appVariables.rest.url
         }/backgrounds/get-random?type=image&query=${
             this._coreService.storage.persistent.backgroundRadioQuery || ""
-        }`);
+        }&count=5`);
 
         console.log('response: ', response)
 
-        const fileName = await  this.fetchBG(response.fullSrc);
+        this._coreService.storage.updatePersistent({
+            bgsRadio: response.map((bg) => ({
+                ...bg,
+                fileName: null,
+            }))
+        });
+
+        const fileName = await this.fetchBG(first(response).fullSrc);
 
         console.log('fileName: ', fileName)
-
-        this._coreService.storage.updatePersistent({
-            bgRadio: {
-                ...response,
-                fileName,
-            }
-        });
 
         await this.setCurrentBG(new Background({
             id: response.id,
