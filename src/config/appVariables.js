@@ -34,6 +34,8 @@ export default {
     },
     backgrounds: {
         radio: {
+            preloadBGCount: 2,
+            preloadMetaCount: 10,
             queryPresets: [
                 "Minimalism",
                 "Abstract",

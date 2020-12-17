@@ -196,7 +196,7 @@ class BackgroundsStore {
             await this.setCurrentBG(new Background(currBg));
         };
 
-        if (this._coreService.storage.persistent.bgsRadio?.length > 1) {
+        if (this._coreService.storage.persistent.bgsRadio?.length > appVariables.backgrounds.radio.preloadBGCount) {
             const bgRemove = first(this._coreService.storage.persistent.bgsRadio);
             await this.removeFromStore(null, bgRemove);
 
@@ -209,7 +209,7 @@ class BackgroundsStore {
             appVariables.rest.url
         }/backgrounds/get-random?type=image&query=${
             this._coreService.storage.persistent.backgroundRadioQuery || ""
-        }&count=5`);
+        }&count=${appVariables.backgrounds.radio.preloadMetaCount}`);
 
         await setFromQueue([
             ...this._coreService.storage.persistent.bgsRadio,
