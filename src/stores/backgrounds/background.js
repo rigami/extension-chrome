@@ -1,31 +1,31 @@
-import { makeAutoObservable } from 'mobx';
+import { observable } from 'mobx';
 import FSConnector from '@/utils/fsConnector';
+import { BG_SOURCE } from '@/enum';
 
 class Background {
-    id;
-    fileName;
-    author;
-    description;
-    antiAliasing;
-    source;
-    sourceLink;
-    type;
-    previewSrc;
-    fullSrc;
-    pause = false;
+    @observable id;
+    @observable fileName;
+    @observable author;
+    @observable description;
+    @observable antiAliasing;
+    @observable source;
+    @observable sourceLink;
+    @observable type;
+    @observable previewSrc;
+    @observable fullSrc;
+    @observable pause = false;
 
     constructor(background = {}) {
-        makeAutoObservable(this);
         this.id = background.id;
         this.fileName = background.fileName;
         this.author = background.author;
         this.description = background.description;
-        this.antiAliasing = background.antiAliasing;
-        this.source = background.source;
+        this.antiAliasing = background.antiAliasing === false ? false : (background.antiAliasing || true);
+        this.source = background.source || BG_SOURCE.USER;
         this.sourceLink = background.sourceLink;
         this.type = background.type;
-        this.previewSrc = FSConnector.getBGURL(this.fileName, 'preview');
-        this.fullSrc = FSConnector.getBGURL(this.fileName, 'full');
+        this.previewSrc = this.fileName && FSConnector.getBGURL(this.fileName, 'preview');
+        this.fullSrc = this.fileName && FSConnector.getBGURL(this.fileName, 'full');
         this.pause = background.pause || false;
     }
 }

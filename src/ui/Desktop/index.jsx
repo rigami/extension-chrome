@@ -13,7 +13,7 @@ import useCoreService from '@/stores/BaseStateProvider';
 import Menu from '@/ui/Menu';
 import { useTranslation } from 'react-i18next';
 import useAppStateService from '@/stores/AppStateProvider';
-import Widgets from '../Widgets';
+import Widgets from './Widgets';
 import Background from './Background';
 
 const useStyles = makeStyles((theme) => ({

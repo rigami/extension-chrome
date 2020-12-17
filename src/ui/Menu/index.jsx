@@ -7,6 +7,7 @@ import {
 import {
     PauseRounded as PauseIcon,
     PlayArrowRounded as PlayIcon,
+    AddRounded as AddIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
@@ -70,34 +71,45 @@ function Menu({ }) {
     };
 
     useEffect(() => {
-        if (backgroundsService.currentBGId && backgroundsService.getCurrentBG().type === BG_TYPE.VIDEO) {
-            if (backgroundsService.bgMode === BG_MODE.LIVE) {
-                setFastSettings([
-                    {
-                        tooltip: (
-                            <React.Fragment>
-                                <b>{t('bg.pauseVideo')}</b>
-                                <Divider className={classes.divider} />
-                                {t('bg.pauseVideoDescription')}
-                            </React.Fragment>
-                        ),
-                        onClick: () => coreService.localEventBus.call('background/pause'),
-                        icon: <PauseIcon />,
-                    },
-                ]);
-            } else {
-                setFastSettings([
-                    {
-                        tooltip: t('bg.playVideo'),
-                        onClick: () => coreService.localEventBus.call('background/play'),
-                        icon: <PlayIcon />,
-                    },
-                ]);
-            }
-        } else {
-            setFastSettings([]);
+        const settings = [];
+
+        if (!backgroundsService.currentBGId) {
+            setFastSettings(settings);
+            return;
         }
-    }, [backgroundsService.currentBGId, backgroundsService.bgMode]);
+
+        if (backgroundsService.getCurrentBG().type === BG_TYPE.VIDEO && backgroundsService.bgMode === BG_MODE.LIVE) {
+            settings.push({
+                tooltip: (
+                    <React.Fragment>
+                        <b>{t('bg.pauseVideo')}</b>
+                        <Divider className={classes.divider} />
+                        {t('bg.pauseVideoDescription')}
+                    </React.Fragment>
+                ),
+                onClick: () => coreService.localEventBus.call('background/pause'),
+                icon: <PauseIcon />,
+            });
+        }
+
+        if (backgroundsService.getCurrentBG().type !== BG_TYPE.VIDEO && backgroundsService.bgMode === BG_MODE.STATIC) {
+            settings.push({
+                tooltip: t('bg.playVideo'),
+                onClick: () => coreService.localEventBus.call('background/play'),
+                icon: <PlayIcon />,
+            });
+        }
+
+        if (backgroundsService.settings.selectionMethod === BG_SELECT_MODE.RADIO) {
+            settings.push({
+                tooltip: t('bg.addToLibrary'),
+                onClick: () => backgroundsService.addToLibrary(coreService.storage.persistent.currentBGRadio),
+                icon: <AddIcon />,
+            });
+        }
+
+        setFastSettings(settings);
+    }, [backgroundsService.currentBGId, backgroundsService.bgMode, backgroundsService.settings.selectionMethod]);
 
     const Page = stack[stack.length - 1].content;
     const headerProps = stack[stack.length - 1] && stack[stack.length - 1].header;

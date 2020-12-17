@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import Time from './Time';
 import Date from './Date';
-import WeatherWidget from '@/ui/Widgets/Weather';
+import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
 
 const useStyles = makeStyles((theme) => ({
     root: {

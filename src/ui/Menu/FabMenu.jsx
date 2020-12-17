@@ -120,12 +120,15 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                     style={{ marginBottom: theme.spacing(2) }}
                     ref={fastAl}
                 >
-                    {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }) => (
-                        <Tooltip title={tooltip} placement="left" key={tooltip}>
-                            <IconButton size="small" className={classes.button} {...props}>
-                                {Icon}
-                            </IconButton>
-                        </Tooltip>
+                    {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }, index) => (
+                        <React.Fragment>
+                            {index !== 0 && (<Divider />)}
+                            <Tooltip title={tooltip} placement="left" key={tooltip}>
+                                <IconButton size="small" className={classes.button} {...props}>
+                                    {Icon}
+                                </IconButton>
+                            </Tooltip>
+                        </React.Fragment>
                     ))}
                 </Card>
                 <Card

@@ -14,6 +14,7 @@ import Background from './background';
 import createPreview from '@/utils/createPreview';
 import fetchData from '@/utils/xhrPromise';
 import { first } from 'lodash';
+import RemoteBackground from '@/stores/backgrounds/remoteBackground';
 
 export const ERRORS = {
     TOO_MANY_FILES: 'TOO_MANY_FILES',
@@ -176,26 +177,30 @@ class BackgroundsStore {
         console.log('nextBGRadio')
         this.bgState = BG_STATE.SEARCH;
 
-        if (this._coreService.storage.persistent.bgsRadio?.length > 1) {
-            this._coreService.storage.updatePersistent({
-                bgsRadio: this._coreService.storage.persistent.bgsRadio.splice(1)
+        const setFromQueue = async (queue) => {
+            const fileName = await this.fetchBG(first(queue).loadSrc);
+
+            const currBg = new RemoteBackground({
+                ...first(queue),
+                fileName,
+                isLoad: true,
             });
 
-            const bgCurr = first(this._coreService.storage.persistent.bgsRadio);
+            console.log("setFromQueue", currBg, queue.slice());
 
-            const fileName = await this.fetchBG(bgCurr.fullSrc);
+            this._coreService.storage.updatePersistent({
+                bgsRadio: queue.splice(1),
+                currentBGRadio: currBg,
+            });
 
-            console.log('fileName: ', fileName)
+            await this.setCurrentBG(new Background(currBg));
+        };
 
-            await this.setCurrentBG(new Background({
-                id: bgCurr.id,
-                fileName,
-                author: bgCurr.author,
-                description: bgCurr.description,
-                source: BG_SOURCE[bgCurr.service],
-                sourceLink: bgCurr.sourceLink,
-                type: BG_TYPE.IMAGE,
-            }));
+        if (this._coreService.storage.persistent.bgsRadio?.length > 1) {
+            const bgRemove = first(this._coreService.storage.persistent.bgsRadio);
+            await this.removeFromStore(null, bgRemove);
+
+            await setFromQueue(this._coreService.storage.persistent.bgsRadio);
 
             return Promise.resolve();
         }
@@ -206,28 +211,15 @@ class BackgroundsStore {
             this._coreService.storage.persistent.backgroundRadioQuery || ""
         }&count=5`);
 
-        console.log('response: ', response)
-
-        this._coreService.storage.updatePersistent({
-            bgsRadio: response.map((bg) => ({
+        await setFromQueue([
+            ...this._coreService.storage.persistent.bgsRadio,
+            ...response.map((bg) => new RemoteBackground({
                 ...bg,
-                fileName: null,
+                source: BG_SOURCE[bg.service],
+                type: BG_TYPE.IMAGE,
+                loadSrc: bg.fullSrc,
             }))
-        });
-
-        const fileName = await this.fetchBG(first(response).fullSrc);
-
-        console.log('fileName: ', fileName)
-
-        await this.setCurrentBG(new Background({
-            id: response.id,
-            fileName,
-            author: response.author,
-            description: response.description,
-            source: BG_SOURCE[response.service],
-            sourceLink: response.sourceLink,
-            type: BG_TYPE.IMAGE,
-        }));
+        ]);
     }
 
 
@@ -384,25 +376,50 @@ class BackgroundsStore {
             });
     }
 
+    @action('add to library')
+    async addToLibrary(remoteBG) {
+        console.log("addToLibrary", remoteBG);
+
+        // await FSConnector.saveFile(this._FULL_PATH, saveBG.file, remoteBG.id);
+        // await FSConnector.saveFile('/backgrounds/preview', saveBG.preview, remoteBG.id);
+        await DBConnector().add('backgrounds', {
+            author: remoteBG.author,
+            type: BG_TYPE.IMAGE,
+            fileName: remoteBG.fileName,
+            description: remoteBG.description,
+            sourceLink: remoteBG.sourceLink,
+            antiAliasing: false,
+        });
+
+        this.count += 1;
+    }
+
     @action('remove bg from store')
-    removeFromStore(removeBGId) {
-        let fileName;
+    async removeFromStore(removeBGId, bg) {
+        console.log('Remove bg from store', removeBGId, bg);
+        let fileName = bg?.fileName;
 
-        return DBConnector().get('backgrounds', removeBGId)
-            .then((value) => {
-                if (!value) throw new Error('Not find in db');
+        let removeId = removeBGId || bg?.id;
 
-                fileName = value.fileName;
-            })
-            .then(() => DBConnector().delete('backgrounds', removeBGId))
-            .then(() => {
-                this.count -= 1;
-                console.log('remove from db');
-            })
-            .catch((e) => console.error(e))
-            .then(() => FSConnector.removeFile(`/backgrounds/full/${fileName}`))
-            .then(() => FSConnector.removeFile(`/backgrounds/preview/${fileName}`))
-            .catch((e) => console.error(e));
+        try {
+            const value = await DBConnector().get('backgrounds', removeId);
+
+            fileName = value?.fileName || fileName;
+
+            await DBConnector().delete('backgrounds', removeId);
+        } catch (e) {
+            console.log(`bg ${removeId} not find in db`)
+        }
+
+        this.count -= 1;
+        console.log('remove from db');
+
+        try {
+            await FSConnector.removeFile(`/backgrounds/full/${fileName}`);
+            await FSConnector.removeFile(`/backgrounds/preview/${fileName}`);
+        } catch (e) {
+            console.log(`bg ${removeId} not find in file system`)
+        }
     }
 
     @action('get srcs')
