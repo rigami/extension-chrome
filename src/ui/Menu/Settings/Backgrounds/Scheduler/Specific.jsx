@@ -1,5 +1,4 @@
 import React from 'react';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Collapse } from '@material-ui/core';
 import { BG_SELECT_MODE } from '@/enum';
@@ -8,13 +7,14 @@ import libraryPage from '../Library';
 import FSConnector from '@/utils/fsConnector';
 import { BrokenImageRounded as BrokenIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
+import useAppStateService from '@/stores/app/AppStateProvider';
 
 function Specific({ onSelect }) {
-    const backgroundsStore = useBackgroundsService();
+    const { backgrounds } = useAppStateService();
     const { t } = useTranslation();
 
     return (
-        <Collapse in={backgroundsStore.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC}>
+        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC}>
             <MenuRow
                 title={t('bg.title')}
                 description={t('bg.change')}
@@ -24,8 +24,8 @@ function Specific({ onSelect }) {
                     component: (
                         <Avatar
                             src={
-                                backgroundsStore.currentBGId
-                                && FSConnector.getBGURL(backgroundsStore.getCurrentBG().fileName, 'preview')
+                                backgrounds.currentBGId
+                                && FSConnector.getBGURL(backgrounds.currentBG.fileName, 'preview')
                             }
                             variant="rounded"
                             style={{

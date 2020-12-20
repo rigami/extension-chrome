@@ -13,7 +13,7 @@ module.exports = () => ({
     entry: {
         app: './index.js',
         popup: './popup.js',
-        background: './background.js',
+        server: './server.js',
         requestPermissions: './requestPermissions.js'
     },
     mode: process.env.NODE_ENV || 'development',
@@ -41,7 +41,7 @@ module.exports = () => ({
                 '!fastInitialization.js',
                 '!index.html',
                 '!popup.html',
-                '!background.html',
+                '!server.html',
             ],
         }),
         new HtmlWebpackPlugin({
@@ -58,9 +58,9 @@ module.exports = () => ({
         }),
         new HtmlWebpackPlugin({
             inject: true,
-            chunks: ['background'],
-            template: './background.html',
-            filename: 'background.html',
+            chunks: ['server'],
+            template: './server.html',
+            filename: 'server.html',
         }),
         new HtmlWebpackPlugin({
             inject: true,

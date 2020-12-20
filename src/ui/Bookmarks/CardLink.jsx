@@ -18,8 +18,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
-import useCoreService from '@/stores/BaseStateProvider';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({

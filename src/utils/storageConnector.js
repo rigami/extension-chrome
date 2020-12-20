@@ -1,4 +1,4 @@
-import { eventToBackground } from '@/stores/backgroundApp/busApp';
+import { eventToBackground } from '@/stores/server/bus';
 
 class StorageConnector {
     static getItem(key) {

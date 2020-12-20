@@ -8,13 +8,13 @@ import {
 } from '@material-ui/icons';
 import { Box } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
-import useCoreService from '@/stores/BaseStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import Menu from '@/ui/Menu';
 import { useTranslation } from 'react-i18next';
-import useAppStateService from '@/stores/AppStateProvider';
+import useAppStateService from '@/stores/app/AppStateProvider';
 import Widgets from './Widgets';
 import Background from './Background';
+import { eventToBackground } from '@/stores/server/bus';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,8 +29,7 @@ function Desktop() {
     const { t } = useTranslation();
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
-    const backgroundsStore = useBackgroundsService();
-    const { widgets } = useAppStateService();
+    const { widgets, backgrounds } = useAppStateService();
     const coreService = useCoreService();
 
     const openMenu = (position) => {
@@ -40,7 +39,7 @@ function Desktop() {
                     type: 'button',
                     title: t('bg.next'),
                     icon: RefreshIcon,
-                    onClick: () => backgroundsStore.nextBG(),
+                    onClick: () => eventToBackground('backgrounds/nextBg'),
                 },
                 {
                     type: 'button',
@@ -55,7 +54,7 @@ function Desktop() {
                             const form = event.target;
                             if (form.files.length === 0) return;
 
-                            backgroundsStore.addToUploadQueue(form.files)
+                            backgrounds.addToUploadQueue(form.files)
                                 .catch(() => enqueueSnackbar({
                                     ...t('locale.settings.backgrounds.general.library[e]'),
                                     variant: 'error',

@@ -28,7 +28,7 @@ module.exports = {
         "bookmarks"
     ],
     "background": {
-        "page": "background.html",
+        "page": "server.html",
         "persistent": false
     },
     "chrome_url_overrides": {

@@ -3,7 +3,7 @@ import { Collapse } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import SectionHeader from '@/ui/Menu/SectionHeader';
-import useAppStateService from '@/stores/AppStateProvider';
+import useAppStateService from '@/stores/app/AppStateProvider';
 import { WIDGET_DTW_POSITION, WIDGET_DTW_SIZE } from '@/enum';
 import { map } from 'lodash';
 import { observer } from 'mobx-react-lite';

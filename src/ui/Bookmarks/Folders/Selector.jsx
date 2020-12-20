@@ -8,7 +8,7 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import EditFolderModal from './EditModal';
 

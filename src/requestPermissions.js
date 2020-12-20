@@ -1,4 +1,4 @@
-import { eventToApp, initBus } from '@/stores/backgroundApp/busApp';
+import { eventToApp, initBus } from '@/stores/server/bus';
 import { DESTINATION } from '@/enum';
 
 const bus = initBus(DESTINATION.REQUEST_PERMISSIONS);

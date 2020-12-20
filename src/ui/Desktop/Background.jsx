@@ -5,18 +5,21 @@ import {
     BrokenImageRounded as BrokenIcon,
     DeleteRounded as DeleteIcon,
 } from '@material-ui/icons';
-import { BG_TYPE, FETCH, THEME } from '@/enum';
+import {
+    BG_TYPE,
+    FETCH,
+    THEME,
+    BG_SHOW_STATE,
+} from '@/enum';
 import clsx from 'clsx';
-import { Fade, Box } from '@material-ui/core';
+import { Fade } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useSnackbar } from 'notistack';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
-import useCoreService from '@/stores/BaseStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
-import useAppStateService from '@/stores/AppStateProvider';
-import { action } from 'mobx';
-import { BG_STATE } from '@/stores/backgrounds';
-import BackgroundEntity from '@/stores/backgrounds/background';
+import useAppStateService from '@/stores/app/AppStateProvider';
+import { action, toJS } from 'mobx';
+import BackgroundEntity from '@/stores/universal/backgrounds/entities/background';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -59,8 +62,7 @@ function Background() {
     const { t } = useTranslation();
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
-    const backgroundsStore = useBackgroundsService();
-    const { settings } = useAppStateService();
+    const { settings, backgrounds } = useAppStateService();
     const coreService = useCoreService();
     const store = useLocalObservable(() => ({
         currentBg: null,
@@ -109,7 +111,7 @@ function Background() {
                     let temporaryBG;
 
                     try {
-                        temporaryBG = await backgroundsStore.pause(captureBGId, pauseTimestamp);
+                        temporaryBG = await backgrounds.pause(captureBGId, pauseTimestamp);
                     } catch (e) {
                         console.log('Failed pause', e);
                         return;
@@ -134,7 +136,7 @@ function Background() {
                 store.captureFrameTimer = null;
 
                 try {
-                    await backgroundsStore.play();
+                    await backgrounds.play();
                 } catch (e) {
                     console.log(e);
                     return;
@@ -144,7 +146,7 @@ function Background() {
                     bgRef.current.play();
                     bgRef.current.onpause = null;
                 } else {
-                    store.requestBg = backgroundsStore.getCurrentBG();
+                    store.requestBg = backgrounds.currentBG;
                     store.stateLoadBg = FETCH.PENDING;
                 }
             }),
@@ -156,8 +158,8 @@ function Background() {
     }, []);
 
     useEffect(action(() => {
-        if (!backgroundsStore.currentBGId || backgroundsStore.bgState !== BG_STATE.DONE) {
-            if (!store.isFirstRender && backgroundsStore.bgState === BG_STATE.NOT_FOUND) {
+        if (!backgrounds.currentBGId || backgrounds.bgState !== BG_SHOW_STATE.DONE) {
+            if (!store.isFirstRender && backgrounds.bgState === BG_SHOW_STATE.NOT_FOUND) {
                 console.log('Force reset current bg')
                 store.stateLoadBg = FETCH.FAILED;
                 store.currentBg = null;
@@ -169,9 +171,9 @@ function Background() {
             return () => {};
         }
 
-        const currentBg = backgroundsStore.getCurrentBG();
+        const currentBg = backgrounds.currentBG;
 
-        console.log('currentBg', currentBg)
+        console.log('currentBg', currentBg, backgrounds, toJS(backgrounds))
 
         if (store.requestBg?.id !== currentBg.id) {
             store.requestBg = new BackgroundEntity({
@@ -184,7 +186,7 @@ function Background() {
             if (typeof store.captureFrameTimer === 'number') clearTimeout(+store.captureFrameTimer);
             store.captureFrameTimer = null;
         };
-    }), [backgroundsStore.currentBGId, backgroundsStore.bgState]);
+    }), [backgrounds.currentBGId, backgrounds.bgState]);
 
     useEffect(() => {
         if (!store.requestBg) return;
@@ -242,7 +244,7 @@ function Background() {
                 {store.stateLoadBg !== FETCH.FAILED && (
                     <div
                         className={classes.dimmingSurface}
-                        style={{ opacity: backgroundsStore.settings.dimmingPower / 100 || 0 }}
+                        style={{ opacity: backgrounds.settings.dimmingPower / 100 || 0 }}
                     />
                 )}
                 {(store.stateLoadBg === FETCH.FAILED || !store.currentBg) && (
@@ -256,8 +258,8 @@ function Background() {
                             {
                                 title: t('bg.remove'),
                                 onClick: () => {
-                                    backgroundsStore.removeFromStore(store.currentBg.id)
-                                        .then(() => backgroundsStore.nextBG())
+                                    backgrounds.removeFromStore(store.currentBg.id)
+                                        .then(() => backgrounds.nextBG())
                                         .then(() => enqueueSnackbar({
                                             message: t('bg.brokenRemovedSuccess'),
                                             variant: 'warning',
@@ -291,7 +293,7 @@ function Background() {
                         onError={action(() => {
                             console.log('Failed load img')
                             if (store.currentBg.type === BG_TYPE.VIDEO) {
-                                store.requestBg = backgroundsStore.getCurrentBG();
+                                store.requestBg = backgrounds.currentBG;
                                 store.stateLoadBg = FETCH.PENDING;
                                 store.currentBg = null;
                             } else {

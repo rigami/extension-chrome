@@ -1,16 +1,16 @@
-import BusApp, { eventToApp } from '@/stores/backgroundApp/busApp';
-import { assign, throttle } from 'lodash';
+import { eventToApp } from '@/stores/server/bus';
+import { assign, throttle, forEach } from 'lodash';
 import defaultSettings from '@/config/settings';
 import FSConnector from '@/utils/fsConnector';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, toJS } from 'mobx';
 
-class SyncSettings {
-    bus;
+class SettingsService {
+    core;
     settings;
 
-    constructor() {
+    constructor(core) {
         makeAutoObservable(this);
-        this.bus = BusApp();
+        this.core = core;
         this.settings = {
             app: {},
             bookmarks: {},
@@ -33,75 +33,60 @@ class SyncSettings {
         const syncSettings = throttle(() => this.sync(), 10000);
 
         try {
-            console.log('Getting settings from fast cache');
+            console.log('[settings] Getting settings from fast cache...');
             this.settings = {
                 ...this.settings,
                 ...JSON.parse(localStorage.getItem('settings')),
             };
-
-            fastSyncSettings();
+            console.log('[settings]', toJS(this.settings))
         } catch (e) {
-            console.log('Not find fast cache or broken. Get from old cache');
+            console.log('[settings] Not find fast cache or broken. Get from file cache...');
 
             FSConnector.getFileAsText('/settings.json')
-                .then((props) => {
+                .then((file) => {
                     this.settings = {
                         app: {},
                         bookmarks: {},
                         backgrounds: {},
                         widgets: {},
-                        ...JSON.parse(props),
+                        ...JSON.parse(file),
                     };
                     fastSyncSettings();
                 })
-                .catch(console.error);
+                .catch((e) => console.error('[settings] Failed read cache from file:', e));
         }
 
-        this.bus.on('system/syncSettings/app', (settings, { initiatorId }) => {
-            assign(this.settings.app, settings);
-            changed.settings = true;
-            syncSettings();
-            fastSyncSettings(initiatorId);
-        });
-        this.bus.on('system/syncSettings/bookmarks', (settings, { initiatorId }) => {
-            assign(this.settings.bookmarks, settings);
-            changed.bookmarks = true;
-            syncSettings();
-            fastSyncSettings(initiatorId);
-        });
-        this.bus.on('system/syncSettings/backgrounds', (settings, { initiatorId }) => {
-            assign(this.settings.backgrounds, settings);
-            changed.backgrounds = true;
-            syncSettings();
-            fastSyncSettings(initiatorId);
-        });
-        this.bus.on('system/syncSettings/widgets', (settings, { initiatorId }) => {
-            assign(this.settings.widgets, settings);
-            changed.widgets = true;
+        this.core.globalBus.on('system/syncSettings', (settings, { initiatorId }) => {
+            forEach(settings, (value, key) => {
+                if (!(key in this.settings)) return;
+
+                assign(this.settings[key], value);
+                changed[key] = true;
+            });
             syncSettings();
             fastSyncSettings(initiatorId);
         });
 
-        this.bus.on('system/getSettings/app', (settings, props, callback) => {
+        this.core.globalBus.on('system/getSettings/app', (settings, props, callback) => {
             callback(this.settings.app);
             fastSyncSettings();
         });
-        this.bus.on('system/getSettings/bookmarks', (settings, props, callback) => {
+        this.core.globalBus.on('system/getSettings/bookmarks', (settings, props, callback) => {
             callback(this.settings.bookmarks);
             fastSyncSettings();
         });
-        this.bus.on('system/getSettings/backgrounds', (settings, props, callback) => {
+        this.core.globalBus.on('system/getSettings/backgrounds', (settings, props, callback) => {
             callback(this.settings.backgrounds);
             fastSyncSettings();
         });
-        this.bus.on('system/getSettings/widgets', (settings, props, callback) => {
+        this.core.globalBus.on('system/getSettings/widgets', (settings, props, callback) => {
             callback(this.settings.widgets);
             fastSyncSettings();
         });
     }
 
     fastSync({ backgrounds = false, settings = false, bookmarks = false, widgets = false }, initiatorId) {
-        console.log('Save fast cache settings', this, this.settings);
+        console.log('[settings] Save fast cache settings', this, this.settings);
         localStorage.setItem('settings', JSON.stringify(this.settings));
         localStorage.setItem('theme', this.settings.app?.theme || defaultSettings.app.theme);
         localStorage.setItem('backdropTheme', this.settings.app?.backdropTheme || defaultSettings.app.backdropTheme);
@@ -134,13 +119,13 @@ class SyncSettings {
     }
 
     sync() {
-        console.log('Save settings', this.settings);
+        console.log('[settings] Save settings', this.settings);
 
         FSConnector.saveFile(
             '/settings.json',
             new Blob([JSON.stringify(this.settings)], { type: 'application/json' }),
         ).then(() => {
-            console.log('Success save cache settings');
+            console.log('[settings] Success save cache settings');
         });
     }
 
@@ -162,4 +147,4 @@ class SyncSettings {
     }
 }
 
-export default SyncSettings;
+export default SettingsService;

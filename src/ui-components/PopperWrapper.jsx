@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Popper, ClickAwayListener } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLocalObservable } from 'mobx-react-lite';
-import useCoreService from '@/stores/BaseStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     popper: {

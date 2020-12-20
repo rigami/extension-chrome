@@ -5,12 +5,12 @@ import { Button } from '@material-ui/core';
 import { Add as UploadFromComputerIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
+import useAppStateService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles(() => ({ input: { display: 'none' } }));
 
 function LoadBGFromLocalButton() {
-    const backgroundsService = useBackgroundsService();
+    const { backgrounds } = useAppStateService();
     const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
     const { t } = useTranslation();
@@ -27,7 +27,7 @@ function LoadBGFromLocalButton() {
                     const form = event.target;
                     if (form.files.length === 0) return;
 
-                    backgroundsService.addToUploadQueue(form.files)
+                    backgrounds.addToUploadQueue(form.files)
                         .catch(() => enqueueSnackbar({
                             ...t('settings.bg.general.library[e]'),
                             variant: 'error',

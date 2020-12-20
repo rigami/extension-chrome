@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import CoreAppService from '@/stores/core';
+import CoreAppService from '@/stores/app/core';
 
 const context = createContext({});
 

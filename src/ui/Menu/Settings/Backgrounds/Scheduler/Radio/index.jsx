@@ -1,16 +1,13 @@
-import React, { useRef } from 'react';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Collapse, InputBase, Typography } from '@material-ui/core';
+import { Collapse, Typography } from '@material-ui/core';
 import { BG_CHANGE_INTERVAL, BG_SELECT_MODE, BG_TYPE, FETCH } from '@/enum';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import { observer, useLocalObservable } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import { runInAction } from 'mobx';
-import useCoreService from '@/stores/BaseStateProvider';
-import { PlaceRounded as PlaceIcon } from '@material-ui/icons';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import changeLocationPage from './ChangeQuery';
-import { round } from 'lodash';
+import useAppStateService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     row: {
@@ -45,19 +42,19 @@ const useStyles = makeStyles((theme) => ({
 function Radio({ onSelect }) {
     const classes = useStyles();
     const coreService = useCoreService();
-    const backgroundsStore = useBackgroundsService();
+    const { backgrounds } = useAppStateService();
     const { t } = useTranslation();
 
     return (
-        <Collapse in={backgroundsStore.settings.selectionMethod === BG_SELECT_MODE.RADIO}>
+        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO}>
             <MenuRow
                 title={t('settings.bg.scheduler.changeInterval.title')}
                 description={t('settings.bg.scheduler.changeInterval.description')}
                 action={{
                     type: ROWS_TYPE.SELECT,
                     format: (value) => t(`settings.bg.scheduler.changeInterval.interval.${value}`),
-                    value: backgroundsStore.settings.changeInterval,
-                    onChange: (event) => backgroundsStore.settings.update({ changeInterval: event.target.value }),
+                    value: backgrounds.settings.changeInterval,
+                    onChange: (event) => backgrounds.settings.update({ changeInterval: event.target.value }),
                     values: [
                         BG_CHANGE_INTERVAL.OPEN_TAB,
                         BG_CHANGE_INTERVAL.MINUTES_30,
@@ -74,11 +71,11 @@ function Radio({ onSelect }) {
                 action={{
                     type: ROWS_TYPE.MULTISELECT,
                     format: (value) => t(`settings.bg.scheduler.BGType.type.${value}`),
-                    value: backgroundsStore.settings.type || [],
+                    value: backgrounds.settings.type || [],
                     onChange: (event) => {
                         if (event.target.value.length === 0) return;
 
-                        backgroundsStore.settings.update({ type: event.target.value })
+                        backgrounds.settings.update({ type: event.target.value })
                     },
                     values: [
                         BG_TYPE.IMAGE,

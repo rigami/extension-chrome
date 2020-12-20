@@ -20,11 +20,11 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
-import { eventToBackground } from '@/stores/backgroundApp/busApp';
+import { eventToBackground } from '@/stores/server/bus';
 import { useSnackbar } from 'notistack';
 import { observer } from 'mobx-react-lite';
-import useCoreService from '@/stores/BaseStateProvider';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import FolderEditor from '@/ui/Bookmarks/Folders/EditModal';
 

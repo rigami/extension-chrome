@@ -1,67 +1,63 @@
-import { makeAutoObservable, reaction } from 'mobx';
+import { makeAutoObservable, reaction, toJS } from 'mobx';
 import appVariables from '@/config/appVariables';
-import BusApp, { eventToApp } from '@/stores/backgroundApp/busApp';
+import { eventToApp } from '@/stores/server/bus';
 import { FETCH } from '@/enum';
-import OpenWeatherMap from '@/connectors/weather/OpenWeatherMap';
+import OpenWeatherMap from './connectors/OpenWeatherMap';
 import WeatherLocation from '@/entities/WeatherLocation';
 import Weather from '@/entities/Weather';
 
-class WidgetsService {
-    bus;
-    settings;
-    storageService;
-    weatherService;
+class WeatherService {
+    core;
+    weatherConnector;
     _lastUpd;
     _timer;
     _active;
 
-    constructor(storageService, settingsService) {
+    constructor(core) {
         makeAutoObservable(this);
-        this.bus = BusApp();
-        this.storageService = storageService;
-        this.settings = settingsService.settings;
-        this.weatherService = new OpenWeatherMap({ storageService });
+        this.core = core;
+        this.weatherConnector = new OpenWeatherMap(core);
 
         const updateWeather = () => {
             if (!this._active) return;
-            console.log('Weather update');
+            console.log('[weather] Update...');
             this._lastUpd = Date.now();
-            this.storageService.updatePersistent({
+            this.core.storageService.updatePersistent({
                 weather: new Weather({
-                    ...this.storageService.storage.weather,
+                    ...this.core.storageService.storage.weather,
                     status: FETCH.PENDING,
                 }),
             });
             this.getCurWeather()
                 .then(() => {
-                    this.storageService.updatePersistent({
+                    this.core.storageService.updatePersistent({
                         weather: new Weather({
-                            ...this.storageService.storage.weather,
+                            ...this.core.storageService.storage.weather,
                             status: FETCH.ONLINE,
                         }),
                     });
                 })
                 .catch((e) => {
-                    console.error(e);
-                    this.storageService.updatePersistent({
+                    console.error('[weather] Failed get current weather:', e);
+                    this.core.storageService.updatePersistent({
                         weather: new Weather({
-                            ...this.storageService.storage.weather,
+                            ...this.core.storageService.storage.weather,
                             status: FETCH.FAILED,
                             lastUpdateStatus: FETCH.FAILED,
                         }),
                     });
                 })
                 .finally(() => {
-                    eventToApp('system/ping', 'weather-check', (pong) => {
+                    eventToApp('system/ping', 'connectors-check', (pong) => {
                         let time = appVariables.widgets.weather.updateTime.inactive;
 
-                        if (pong && pong.type === 'weather-check') {
+                        if (pong && pong.type === 'connectors-check') {
                             time = appVariables.widgets.weather.updateTime.active;
                         }
 
                         this._lastUpd = Date.now();
                         this._timer = setTimeout(updateWeather, time);
-                        console.log(`Weather await ${time}ms`);
+                        console.log(`[weather] Await ${time}ms`);
                     });
                 });
         }
@@ -71,20 +67,20 @@ class WidgetsService {
             this._active = true;
 
             if (
-                this.weatherService.weather?.lastUpdateStatus === FETCH.FAILED
+                this.weatherConnector.weather?.lastUpdateStatus === FETCH.FAILED
                 || !this._lastUpd
                 || this._lastUpd + appVariables.widgets.weather.updateTime.inactive <= Date.now()
-                || !isFinite(this.weatherService.weather?.currTemp)
-                || this.storageService.widgetWeather
+                || !isFinite(this.weatherConnector.weather?.currTemp)
+                || this.core.storageService.widgetWeather
             ) {
-                console.log('Weather start')
+                console.log('[weather] Start service')
                 updateWeather();
             } else {
-                console.log(`Weather await ${this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now()}ms`);
+                console.log(`[weather] Await ${this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now()}ms`);
                 this._timer = setTimeout(start, this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now());
-                this.storageService.updatePersistent({
+                this.core.storageService.updatePersistent({
                     weather: new Weather({
-                        ...this.storageService.storage.weather,
+                        ...this.core.storageService.storage.weather,
                         status: FETCH.ONLINE,
                     }),
                 });
@@ -92,48 +88,48 @@ class WidgetsService {
         };
 
         const stop = () => {
-            console.log('Weather stop');
+            console.log('[weather] Stop service');
             this._active = false;
             clearTimeout(this._timer);
 
-            this.storageService.updatePersistent({
+            this.core.storageService.updatePersistent({
                 weather: new Weather({
-                    ...this.storageService.storage.weather,
+                    ...this.core.storageService.storage.weather,
                     status: FETCH.STOP,
                 }),
             });
         };
 
-        this._lastUpd = this.storageService.storage.weather?.lastUpdateTimestamp;
+        this._lastUpd = this.core.storageService.storage.weather?.lastUpdateTimestamp;
 
         reaction(
-            () => this.settings.widgets.dtwUseWeather,
+            () => this.core.settingsService.settings.widgets.dtwUseWeather,
             () => {
-                if (this.settings.widgets.dtwUseWeather) start();
+                if (this.core.settingsService.settings.widgets.dtwUseWeather) start();
                 else stop();
             },
         );
 
-        if (this.settings.widgets.dtwUseWeather) start();
+        if (this.core.settingsService.settings.widgets.dtwUseWeather) start();
 
-        this.bus.on('widgets/weather/update', () => {
-            console.log('Weather request force update');
+        this.core.globalBus.on('widgets/connectors/update', () => {
+            console.log('[weather] Request force update');
             if (this._lastUpd + appVariables.widgets.weather.updateTime.active < Date.now()) {
-                console.log('Weather force update');
+                console.log('[weather] Force update...');
                 updateWeather();
             } else {
-                console.log(`Weather update less ${appVariables.widgets.weather.updateTime.active}ms ago`);
+                console.log(`[weather] Last update less ${appVariables.widgets.weather.updateTime.active}ms ago`);
                 clearTimeout(this._timer);
-                console.log(`Weather await ${this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now()}ms`);
+                console.log(`[weather] Await ${this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now()}ms`);
                 this._timer = setTimeout(updateWeather, this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now());
             }
         });
 
-        this.bus.on('widgets/weather/searchLocation', async ({ query }, { }, callback) => {
-            console.log('Weather search location', query);
+        this.core.globalBus.on('widgets/connectors/searchLocation', async ({ query }, { }, callback) => {
+            console.log('[weather] Search location for query:', query);
 
             try {
-                const result = await this.weatherService.searchLocation(query);
+                const result = await this.weatherConnector.searchLocation(query);
 
                 callback({ success: true, result });
             } catch (e) {
@@ -141,8 +137,8 @@ class WidgetsService {
             }
         });
 
-        this.bus.on('widgets/weather/autoDetectLocation', async ({}, {}, callback) => {
-            console.log('Weather auto detect location');
+        this.core.globalBus.on('widgets/connectors/autoDetectLocation', async ({}, {}, callback) => {
+            console.log('[weather] Auto detect location');
 
             try {
                 await this.autoDetectLocation();
@@ -152,10 +148,10 @@ class WidgetsService {
             }
         });
 
-        this.bus.on('widgets/weather/setLocation', async ({ location }, { }) => {
-            console.log('Weather set location', location);
+        this.core.globalBus.on('widgets/connectors/setLocation', async ({ location }, { }) => {
+            console.log('[weather] Set manual location', location);
 
-            this.weatherService.setLocation(new WeatherLocation({
+            this.weatherConnector.setLocation(new WeatherLocation({
                 ...location,
                 manual: true,
             }));
@@ -164,24 +160,24 @@ class WidgetsService {
 
     async autoDetectLocation() {
         if (!navigator.geolocation) {
-            console.log('Geolocation is not supported for this Browser/OS version yet.');
+            console.log('[weather] Geolocation is not supported for this Browser/OS version yet.');
             throw new Error('Geolocation is not supported');
         }
 
-        console.log('Geolocation is supported!');
+        console.log('[weather] Geolocation is supported!');
 
         let currPos;
 
         currPos = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject));
 
-        console.log('currPos', currPos)
+        console.log('[weather] Current position', currPos)
 
         const coords = { latitude: currPos.coords.latitude, longitude: currPos.coords.longitude };
 
-        const locations = await this.weatherService.searchLocation(coords);
+        const locations = await this.weatherConnector.searchLocation(coords);
 
         if (locations.length >= 1) {
-            this.weatherService.setLocation(new WeatherLocation({
+            this.weatherConnector.setLocation(new WeatherLocation({
                 ...locations[0].location,
                 manual: false,
             }));
@@ -191,12 +187,12 @@ class WidgetsService {
     }
 
     async getCurWeather() {
-        if (!this.weatherService.location) {
+        if (!this.weatherConnector.location) {
             await this.autoDetectLocation();
         }
 
-        await this.weatherService.getWeather();
+        await this.weatherConnector.getWeather();
     }
 }
 
-export default WidgetsService;
+export default WeatherService;

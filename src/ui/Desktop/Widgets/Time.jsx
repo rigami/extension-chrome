@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import useAppStateService from '@/stores/AppStateProvider';
+import useAppStateService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles(() => ({
     root: {

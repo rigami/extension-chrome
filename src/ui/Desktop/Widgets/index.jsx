@@ -1,10 +1,10 @@
 import React from 'react';
 import { Typography, Box, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import useAppStateService from '@/stores/AppStateProvider';
+import useAppStateService from '@/stores/app/AppStateProvider';
 import DTW_SIZE from '@/enum/WIDGET/DTW_SIZE';
 import { observer } from 'mobx-react-lite';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { BKMS_FAP_POSITION, BKMS_FAP_STYLE, FETCH } from '@/enum';
 import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';

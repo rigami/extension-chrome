@@ -7,10 +7,10 @@ import {
 import { Collapse } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import SectionHeader from '@/ui/Menu/SectionHeader';
-import useAppService from '@/stores/AppStateProvider';
+import useAppService from '@/stores/app/AppStateProvider';
 import { observer } from 'mobx-react-lite';
 
 const headerProps = { title: 'settings.bookmarks.title' };

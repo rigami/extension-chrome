@@ -3,9 +3,9 @@ import { LinearProgress, Fade } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
-import useService from '@/stores/BaseStateProvider';
+import useService from '@/stores/app/BaseStateProvider';
 import asyncAction from '@/utils/asyncAction';
-import { PREPARE_PROGRESS } from '@/stores/core';
+import { PREPARE_PROGRESS } from '@/stores/app/core';
 
 function FirstLookScreen({ onStart, onLoad }) {
     const { t } = useTranslation();

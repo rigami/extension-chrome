@@ -4,7 +4,8 @@ import {
     IconButton,
     Divider,
     Tooltip,
-    Box, CircularProgress,
+    Box,
+    CircularProgress,
 } from '@material-ui/core';
 import {
     Refresh as RefreshIcon,
@@ -16,9 +17,8 @@ import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import clsx from 'clsx';
 import { action } from 'mobx';
-import { BG_SELECT_MODE } from '@/enum';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
-import { BG_STATE } from '@/stores/backgrounds';
+import { BG_SELECT_MODE, BG_SHOW_STATE } from '@/enum';
+import useAppStateService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
 function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG }) {
     const classes = useStyles();
     const theme = useTheme();
-    const backgroundsService = useBackgroundsService();
+    const { backgrounds } = useAppStateService();
     const { t } = useTranslation();
     const rootAl = useRef();
     const fastAl = useRef();
@@ -142,8 +142,8 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                         </IconButton>
                     </Tooltip>
                     {(
-                        backgroundsService.settings.selectionMethod === BG_SELECT_MODE.RANDOM
-                        || backgroundsService.settings.selectionMethod === BG_SELECT_MODE.RADIO
+                        backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM
+                        || backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO
                     ) && (
                         <React.Fragment>
                             <Divider />
@@ -152,14 +152,14 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                                     size="small"
                                     className={clsx(
                                         classes.button,
-                                        backgroundsService.bgState === BG_STATE.SEARCH && classes.loadBgButton,
+                                        backgrounds.bgState === BG_SHOW_STATE.SEARCH && classes.loadBgButton,
                                     )}
                                     onClick={() => onRefreshBackground()}
                                 >
-                                    {backgroundsService.bgState !== BG_STATE.SEARCH &&  (
+                                    {backgrounds.bgState !== BG_SHOW_STATE.SEARCH &&  (
                                         <RefreshIcon />
                                     )}
-                                    {backgroundsService.bgState === BG_STATE.SEARCH && (
+                                    {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
                                         <CircularProgress
                                             className={classes.loadBGIcon}
                                             size={20}
@@ -171,7 +171,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                     )}
                 </Card>
             </Box>
-            {backgroundsService.bgState === BG_STATE.SEARCH && (
+            {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
                 <CircularProgress
                     className={classes.loadBGIconWhite}
                     size={20}

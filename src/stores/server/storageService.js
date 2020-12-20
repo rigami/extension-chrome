@@ -1,40 +1,37 @@
-import BusApp, { eventToApp, eventToBackground, instanceId } from '@/stores/backgroundApp/busApp';
+import { eventToApp, instanceId } from '@/stores/server/bus';
 import { assign, throttle } from 'lodash';
 import FSConnector from '@/utils/fsConnector';
-import { action, makeAutoObservable } from 'mobx';
+import { action, makeAutoObservable, toJS } from 'mobx';
 
-class SyncStorage {
-    bus;
+class StorageService {
+    core;
     storage;
 
-    constructor() {
+    constructor(core) {
         makeAutoObservable(this);
-        this.bus = BusApp();
-
-        console.log(this.bus)
+        this.core = core;
         this.storage = {};
 
         try {
-            console.log('Getting storage from fast cache');
+            console.log('[storage] Getting storage from fast cache...');
             this.storage = { ...JSON.parse(localStorage.getItem('storage')) };
-
-            this.fastSync();
+            console.log('[storage]', toJS(this.storage));
         } catch (e) {
-            console.log('Not find fast cache or broken. Get from old cache');
+            console.log('[storage] Not find fast cache or broken. Get from file cache...');
 
             FSConnector.getFileAsText('/storage.json')
                 .then((props) => {
                     this.storage = { ...JSON.parse(props) };
                     this.fastSync();
                 })
-                .catch(console.error);
+                .catch((e) => console.error('[storage] Failed read storage from file:', e));
         }
 
-        this.bus.on('system/syncStorage', (storage, { initiatorId }) => {
+        this.core.globalBus.on('system/syncStorage', (storage, { initiatorId }) => {
             this._syncStorage(storage, initiatorId);
         });
 
-        this.bus.on('system/getStorage', (storage, props, callback) => {
+        this.core.globalBus.on('system/getStorage', (storage, props, callback) => {
             callback(this.storage);
             this.sync();
             this.fastSync();
@@ -53,25 +50,25 @@ class SyncStorage {
 
     @action
     updatePersistent(props = {}) {
-        console.log('updatePersistent', props);
+        console.log('[storage] updatePersistent', props);
         this._syncStorage(props, instanceId);
     }
 
     fastSync = throttle(() => {
-        console.log('Save fast cache storage', this.storage);
+        console.log('[storage] Save fast cache storage', this.storage);
         localStorage.setItem('storage', JSON.stringify(this.storage));
     }, 100);
 
     sync = throttle(() => {
-        console.log('Save settings', this.storage);
+        console.log('[storage] Save settings', this.storage);
 
         FSConnector.saveFile(
             '/storage.json',
             new Blob([JSON.stringify(this.storage)], { type: 'application/json' }),
         ).then(() => {
-            console.log('Success save cache storage');
+            console.log('[storage] Success save cache storage');
         });
     }, 7000);
 }
 
-export default SyncStorage;
+export default StorageService;

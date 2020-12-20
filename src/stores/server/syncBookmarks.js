@@ -1,23 +1,22 @@
-import BusApp from '@/stores/backgroundApp/busApp';
 import { uniq } from 'lodash';
+import { makeAutoObservable } from 'mobx';
 
 class SyncBookmarks {
-    bus;
-    bookmarksService;
+    core;
 
-    constructor(bookmarksService) {
-        this.bus = BusApp();
-        this.bookmarksService = bookmarksService;
+    constructor(core) {
+        makeAutoObservable(this);
+        this.core = core;
     }
 
     async restore(bookmarks) {
         console.log('restore bookmarks', bookmarks);
 
-        const bookmarksQuery = await this.bookmarksService.bookmarks.query();
+        const bookmarksQuery = await this.core.bookmarksService.bookmarks.query();
         const localBookmarks = bookmarksQuery[0].bookmarks;
-        const localCategories = await this.bookmarksService.categories.sync();
-        const localFolders = await this.bookmarksService.folders.getTree();
-        const localFavorites = await this.bookmarksService.syncFavorites();
+        const localCategories = await this.core.bookmarksService.categories.sync();
+        const localFolders = await this.core.bookmarksService.folders.getTree();
+        const localFavorites = await this.core.bookmarksService.syncFavorites();
 
         console.log('localBookmarks', {
             localBookmarks,
@@ -38,7 +37,7 @@ class SyncBookmarks {
 
                 if (findFolder) {
                     console.log(`Folder '${folder.name}' find in local store. Rewrite local`);
-                    await this.bookmarksService.folders.save({
+                    await this.core.bookmarksService.folders.save({
                         ...findFolder,
                         ...folder,
                         id: findFolder.id,
@@ -47,7 +46,7 @@ class SyncBookmarks {
                     replaceFolderId[folder.id] = findFolder.id;
                 } else {
                     console.log(`Folder '${folder.name}' not find in local store. Save as new`);
-                    replaceFolderId[folder.id] = await this.bookmarksService.folders.save({
+                    replaceFolderId[folder.id] = await this.core.bookmarksService.folders.save({
                         ...folder,
                         id: null,
                     });
@@ -69,7 +68,7 @@ class SyncBookmarks {
 
             if (findCategory) {
                 console.log(`Category '${category.name}' find in local store. Rewrite local`);
-                await this.bookmarksService.categories.save({
+                await this.core.bookmarksService.categories.save({
                     ...findCategory,
                     ...category,
                     id: findCategory.id,
@@ -79,7 +78,7 @@ class SyncBookmarks {
                 replaceCategoryId[category.id] = findCategory.id;
             } else {
                 console.log(`Category '${category.name}' not find in local store. Save as new`);
-                replaceCategoryId[category.id] = await this.bookmarksService.categories.save({
+                replaceCategoryId[category.id] = await this.core.bookmarksService.categories.save({
                     ...category,
                     color: null,
                     id: null,
@@ -99,7 +98,7 @@ class SyncBookmarks {
 
             if (findBookmark) {
                 console.log(`Bookmark '${bookmark.name}' find in local store. Rewrite local`);
-                await this.bookmarksService.bookmarks.save({
+                await this.core.bookmarksService.bookmarks.save({
                     ...findBookmark,
                     ...bookmark,
                     id: findBookmark.id,
@@ -111,7 +110,7 @@ class SyncBookmarks {
                 replaceBookmarkId[bookmark.id] = findBookmark.id;
             } else {
                 console.log(`Bookmark '${bookmark.name}' not find in local store. Save as new`);
-                replaceBookmarkId[bookmark.id] = await this.bookmarksService.bookmarks.save({
+                replaceBookmarkId[bookmark.id] = await this.core.bookmarksService.bookmarks.save({
                     ...bookmark,
                     folderId: replaceFolderId[bookmark.folderId] || bookmark.folderId || 1,
                     imageBase64: bookmark.image || bookmark.imageBase64,
@@ -136,7 +135,7 @@ class SyncBookmarks {
 
             if (!findBookmark) {
                 console.log('Save new favorite', favorite);
-                await this.bookmarksService.addToFavorites({
+                await this.core.bookmarksService.addToFavorites({
                     ...favorite,
                     id: favoriteId,
                 });

@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { getSiteInfo, getImageRecalc } from '@/utils/siteSearch';
 import { FETCH, BKMS_VARIANT } from '@/enum';
 import asyncAction from '@/utils/asyncAction';

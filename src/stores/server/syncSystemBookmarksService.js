@@ -1,27 +1,23 @@
 import { BKMS_VARIANT, TYPE } from '@/enum';
 import DBConnector from '@/utils/dbConnector';
-import Bookmark from '@/stores/bookmarks/entities/bookmark';
-import Folder from '@/stores/bookmarks/entities/folder';
-import BusApp from '@/stores/backgroundApp/busApp';
-import BookmarksService from '@/stores/bookmarks';
+import Bookmark from '@/stores/app/bookmarks/entities/bookmark';
+import Folder from '@/stores/app/bookmarks/entities/folder';
 import { first } from 'lodash';
+import { makeAutoObservable } from 'mobx';
 
-class SyncSystemBookmarks {
-    bus;
-    bookmarksService;
-    storageService;
+class SyncSystemBookmarksService {
+    core;
 
-    constructor(storageService) {
-        this.bus = BusApp();
-        this.bookmarksService = new BookmarksService({ globalEventBus: this.bus });
-        this.storageService = storageService;
+    constructor(core) {
+        makeAutoObservable(this);
+        this.core = core;
 
         if (!chrome?.bookmarks) {
             console.error('Not find bookmarks module');
             return;
         }
 
-        this.bus.on('system/parseSystemBookmarks', async (props, options, callback, ...other) => {
+        this.core.globalBus.on('system/parseSystemBookmarks', async (props, options, callback, ...other) => {
             try {
                 await this.parseSystemBookmarks();
             } catch (e) {
@@ -32,7 +28,7 @@ class SyncSystemBookmarks {
             // await new Promise((resolve) => setTimeout(resolve, 4500))
             callback();
         });
-        if (this.bookmarksService.settings.syncWithSystem) {
+        if (this.core.bookmarksService.settings.syncWithSystem) {
             this.parseSystemBookmarks();
 
             chrome.bookmarks.onCreated.addListener(async (id, createInfo) => {
@@ -71,7 +67,7 @@ class SyncSystemBookmarks {
 
         console.log('create bookmark:', bookmark);
 
-        const bookmarkId = await this.bookmarksService.bookmarks.save({
+        const bookmarkId = await this.core.bookmarksService.bookmarks.save({
             description: '',
             image_url: '',
             icoVariant: BKMS_VARIANT.SYMBOL,
@@ -97,7 +93,7 @@ class SyncSystemBookmarks {
     async createFolder(browserNode, parentId, notyEvent = false) {
         const folder = new Folder({ name: browserNode.title, parentId });
         console.log('create folder:', folder);
-        const newFolderId = await this.bookmarksService.folders.save({ ...folder }, notyEvent);
+        const newFolderId = await this.core.bookmarksService.folders.save({ ...folder }, notyEvent);
 
         console.log('add bind:', {
             type: TYPE.FOLDER,
@@ -147,7 +143,7 @@ class SyncSystemBookmarks {
         const parseLevel = async (browserNodes, rigamiNodes, parentId) => {
             console.log('parseLevel', browserNodes, rigamiNodes);
 
-            const bookmarks = await this.bookmarksService.bookmarks.getAllInFolder(parentId);
+            const bookmarks = await this.core.bookmarksService.bookmarks.getAllInFolder(parentId);
 
             for (let i = 0; i < browserNodes.length; i += 1) {
                 const bind = await DBConnector().getFromIndex(
@@ -174,12 +170,12 @@ class SyncSystemBookmarks {
             }
         }
 
-        const tree = await this.bookmarksService.folders.getTree(this.storageService.storage.syncBrowserFolder);
+        const tree = await this.core.bookmarksService.folders.getTree(this.core.storageService.storage.syncBrowserFolder);
         const nodes = await new Promise((resolve) => chrome.bookmarks.getTree(resolve));
 
-        await parseLevel(first(nodes).children, tree, this.storageService.storage.syncBrowserFolder);
+        await parseLevel(first(nodes).children, tree, this.core.storageService.storage.syncBrowserFolder);
         console.log('finish sync!');
     }
 }
 
-export default SyncSystemBookmarks;
+export default SyncSystemBookmarksService;

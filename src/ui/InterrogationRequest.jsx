@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { IconButton, CardMedia, Collapse } from '@material-ui/core';
-import useCoreService from '@/stores/BaseStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import FullScreenStub from '@/ui-components/FullscreenStub';

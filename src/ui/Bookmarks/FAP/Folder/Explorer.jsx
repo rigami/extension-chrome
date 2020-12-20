@@ -16,8 +16,8 @@ import {
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import useCoreService from '@/stores/BaseStateProvider';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';

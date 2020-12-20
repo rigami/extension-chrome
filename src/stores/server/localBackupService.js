@@ -1,24 +1,18 @@
-import BusApp, { eventToApp } from '@/stores/backgroundApp/busApp';
+import { eventToApp } from '@/stores/server/bus';
 import FSConnector from '@/utils/fsConnector';
 import DBConnector from '@/utils/dbConnector';
-import Category from '@/stores/bookmarks/entities/category';
-import Folder from '@/stores/bookmarks/entities/folder';
+import Category from '@/stores/app/bookmarks/entities/category';
+import Folder from '@/stores/app/bookmarks/entities/folder';
+import { makeAutoObservable } from 'mobx';
 
-class LocalBackup {
-    bus;
-    bookmarksService;
-    foldersService;
-    settingsSyncService;
-    bookmarksSyncService;
+class LocalBackupService {
+    core;
 
-    constructor(bookmarksService, foldersService, settingsSyncService, bookmarksSyncService) {
-        this.bus = BusApp();
-        this.bookmarksService = bookmarksService;
-        this.foldersService = foldersService;
-        this.settingsSyncService = settingsSyncService;
-        this.bookmarksSyncService = bookmarksSyncService;
+    constructor(core) {
+        makeAutoObservable(this);
+        this.core = core;
 
-        this.bus.on('system/backup/local/create', async ({ settings, bookmarks }) => {
+        this.core.globalBus.on('system/backup/local/create', async ({ settings, bookmarks }) => {
             const backup = {};
 
             if (settings) {
@@ -51,7 +45,7 @@ class LocalBackup {
             });
         });
 
-        this.bus.on('system/backup/local/restore', async ({ backup }) => {
+        this.core.globalBus.on('system/backup/local/restore', async ({ backup }) => {
             console.log('restore backup', backup);
 
             try {
@@ -72,8 +66,8 @@ class LocalBackup {
                     });
                 }
 
-                if (backup.settings) await this.settingsSyncService.restore(backup.settings);
-                if (backup.bookmarks) await this.bookmarksSyncService.restore(backup.bookmarks);
+                if (backup.settings) await this.core.settingsService.restore(backup.settings);
+                if (backup.bookmarks) await this.core.bookmarksSyncService.restore(backup.bookmarks);
 
                 eventToApp('system/backup/local/restore/progress', { result: 'done' });
             } catch (e) {
@@ -101,7 +95,7 @@ class LocalBackup {
     }
 
     async collectBookmarks() {
-        const bookmarksAll = await this.bookmarksService.query();
+        const bookmarksAll = await this.core.bookmarksService.query();
 
         const bookmarks = [];
 
@@ -124,7 +118,7 @@ class LocalBackup {
 
         const categories = categoriesAll.map((category) => new Category(category));
 
-        const foldersAll = await this.foldersService.getTree();
+        const foldersAll = await this.core.bookmarksService.folders.getTree();
 
         const folders = foldersAll.map((folder) => new Folder(folder));
 
@@ -144,4 +138,4 @@ class LocalBackup {
     }
 }
 
-export default LocalBackup;
+export default LocalBackupService;

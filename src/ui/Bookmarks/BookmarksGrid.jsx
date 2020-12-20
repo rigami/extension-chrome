@@ -1,7 +1,7 @@
 import { Box } from '@material-ui/core';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import React from 'react';
-import useCoreService from '@/stores/BaseStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTheme } from '@material-ui/core/styles';
 
 function BookmarksGrid({ bookmarks }) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useAppStateService from '@/stores/AppStateProvider';
+import useAppStateService from '@/stores/app/AppStateProvider';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import {
     Button,
@@ -24,7 +24,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { round } from 'lodash';
 import FullScreenStub from '@/ui-components/FullscreenStub';
-import useCoreService from '@/stores/BaseStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import { runInAction } from 'mobx';
 import { useSnackbar } from 'notistack';
 

@@ -25,10 +25,10 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import FullscreenStub from '@/ui-components/FullscreenStub';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 import { last } from 'lodash';
-import useCoreService from '@/stores/BaseStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
+import useAppStateService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -217,7 +217,7 @@ function Bg(props) {
 const MemoBg = memo(Bg);
 
 function LibraryMenu() {
-    const backgroundsService = useBackgroundsService();
+    const { backgrounds } = useAppStateService();
     const coreService = useCoreService();
     const { t } = useTranslation();
     const classes = useStyles();
@@ -225,9 +225,10 @@ function LibraryMenu() {
     const [bgs, setBgs] = useState(null);
     const [state, setState] = useState(FETCH.PENDING);
 
-    useEffect(() => {
-        backgroundsService.getAll()
+    const fetchBackgrounds = () => {
+        backgrounds.getAll()
             .then((values) => {
+                console.log('getAll', values)
                 const groups = values.reduce((acc, bg) => {
                     let group = acc.find(({ type }) => type === bg.type);
                     if (!group) {
@@ -248,7 +249,17 @@ function LibraryMenu() {
                 setState(FETCH.FAILED);
                 console.error('Failed load bg`s from db:', e);
             });
-    }, [backgroundsService.count]);
+    };
+
+    useEffect(() => {
+        fetchBackgrounds();
+
+        const listenerId = coreService.localEventBus.on('backgrounds/new', () => {
+            fetchBackgrounds();
+        });
+
+        return () => coreService.localEventBus.removeListener(listenerId);
+    }, []);
 
     return (
         <React.Fragment>
@@ -282,8 +293,8 @@ function LibraryMenu() {
                                         key={bg.id}
                                         {...bg}
                                         select={coreService.storage.persistent.bgCurrent?.id === bg.id}
-                                        onSet={() => backgroundsService.setCurrentBG(bg.id)}
-                                        onRemove={() => backgroundsService.removeFromStore(bg.id)}
+                                        onSet={() => backgrounds.setCurrentBG(bg.id)}
+                                        onRemove={() => backgrounds.removeFromStore(bg.id)}
                                     />
                                 ))
                             ])}

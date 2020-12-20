@@ -1,5 +1,5 @@
-import BusApp, { eventToBackground, initBus, instanceId } from '@/stores/backgroundApp/busApp';
-import { DESTINATION } from '@/enum';
+import BusApp, { eventToBackground, initBus, instanceId } from '@/stores/server/bus';
+import { BG_TYPE, DESTINATION } from '@/enum';
 import { reaction, action, makeAutoObservable, runInAction } from 'mobx';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -7,12 +7,13 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import DBConnector, { open as openDB } from '@/utils/dbConnector';
 import appVariables from '@/config/appVariables';
-import defaultSettings from '@/config/settings';
 import createPreview from '@/utils/createPreview';
 import FSConnector from '@/utils/fsConnector';
 import EventBus from '@/utils/eventBus';
 import { assign } from 'lodash';
-import Background from '@/stores/backgrounds/background';
+import Background from '@/stores/universal/backgrounds/entities/background';
+import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
+import fetchData from '@/utils/xhrPromise';
 
 const APP_STATE = {
     WAIT_INIT: 'WAIT_INIT',
@@ -130,34 +131,22 @@ class Core {
         console.log('Create FS');
         progressCallback(5, PREPARE_PROGRESS.CREATE_FS);
         await FSConnector.createFS();
-        /* const backgrounds = await DBConnector().getAll('backgrounds');
-
-        if (backgrounds.length !== 0) return Promise.resolve(); */
-
-        const fileName = Date.now().toString();
 
         console.log('Fetch BG');
         progressCallback(10, PREPARE_PROGRESS.FETCH_BG);
-        const defaultBG = await fetch(appVariables.defaultBG.src).then((response) => response.blob());
-        console.log('Create preview BG');
-        progressCallback(90, PREPARE_PROGRESS.SAVE_BG);
-        const previewDefaultBG = await createPreview(defaultBG);
 
-        console.log('Save BG');
-        await FSConnector.saveFile('/backgrounds/full', defaultBG, fileName);
-        await FSConnector.saveFile('/backgrounds/preview', previewDefaultBG, fileName);
+        const { response } = await fetchData(`${appVariables.rest.url}/backgrounds/get-first`);
 
-        const bgId = await DBConnector().add('backgrounds', {
-            ...appVariables.defaultBG,
-            fileName,
-        });
+        progressCallback(30, PREPARE_PROGRESS.FETCH_BG);
+
+        const bg = await BackgroundsUniversalService.addToLibrary(new Background({
+            ...response,
+            downloadLink: response.fullSrc,
+            type: BG_TYPE.IMAGE,
+        }));
 
         this.storage.updatePersistent({
-            bgCurrent: new Background({
-                ...appVariables.defaultBG,
-                fileName,
-                id: bgId,
-            }),
+            bgCurrent: bg,
         });
 
         this.appState = APP_STATE.WORK;

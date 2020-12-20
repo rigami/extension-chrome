@@ -14,7 +14,7 @@ class BaseWeatherConnector {
     }
 
     async getWeather(weather) {
-        console.log('Set weather:', weather);
+        console.log('Set connectors:', weather);
         this.weather = weather;
 
         if (this.storageService.storage.widgetWeather) {

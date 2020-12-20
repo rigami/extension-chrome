@@ -12,15 +12,20 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { BG_SELECT_MODE, BG_TYPE } from '@/enum';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
-import useCoreService from '@/stores/BaseStateProvider';
+import {
+    BG_SELECT_MODE,
+    BG_TYPE,
+    BG_SHOW_MODE,
+} from '@/enum';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import Header from '@/ui/Menu/PageHeader';
 import { useTranslation } from 'react-i18next';
 import HomePage, { header as homePageHeader } from './Settings';
 import FabMenu from './FabMenu';
 import Scrollbar from '@/ui-components/CustomScroll';
-import { BG_MODE } from '@/stores/backgrounds';
+import { eventToBackground } from '@/stores/server/bus';
+import useAppStateService from '@/stores/app/AppStateProvider';
+import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -38,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Menu({ }) {
-    const backgroundsService = useBackgroundsService();
+    const { backgrounds } = useAppStateService();
     const coreService = useCoreService();
     const { t } = useTranslation();
 
@@ -73,12 +78,12 @@ function Menu({ }) {
     useEffect(() => {
         const settings = [];
 
-        if (!backgroundsService.currentBGId) {
+        if (!backgrounds.currentBGId) {
             setFastSettings(settings);
             return;
         }
 
-        if (backgroundsService.getCurrentBG().type === BG_TYPE.VIDEO && backgroundsService.bgMode === BG_MODE.LIVE) {
+        if (backgrounds.currentBG.type === BG_TYPE.VIDEO && backgrounds.bgMode === BG_SHOW_MODE.LIVE) {
             settings.push({
                 tooltip: (
                     <React.Fragment>
@@ -92,7 +97,7 @@ function Menu({ }) {
             });
         }
 
-        if (backgroundsService.getCurrentBG().type !== BG_TYPE.VIDEO && backgroundsService.bgMode === BG_MODE.STATIC) {
+        if (backgrounds.currentBG.type !== BG_TYPE.VIDEO && backgrounds.bgMode === BG_SHOW_MODE.STATIC) {
             settings.push({
                 tooltip: t('bg.playVideo'),
                 onClick: () => coreService.localEventBus.call('background/play'),
@@ -100,16 +105,16 @@ function Menu({ }) {
             });
         }
 
-        if (backgroundsService.settings.selectionMethod === BG_SELECT_MODE.RADIO) {
+        if (backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO) {
             settings.push({
                 tooltip: t('bg.addToLibrary'),
-                onClick: () => backgroundsService.addToLibrary(coreService.storage.persistent.currentBGRadio),
+                onClick: () => BackgroundsUniversalService.addToLibrary(backgrounds.currentBGRadio),
                 icon: <AddIcon />,
             });
         }
 
         setFastSettings(settings);
-    }, [backgroundsService.currentBGId, backgroundsService.bgMode, backgroundsService.settings.selectionMethod]);
+    }, [backgrounds.currentBGId, backgrounds.bgMode, backgrounds.settings.selectionMethod]);
 
     const Page = stack[stack.length - 1].content;
     const headerProps = stack[stack.length - 1] && stack[stack.length - 1].header;
@@ -120,7 +125,7 @@ function Menu({ }) {
             <FabMenu
                 onOpenMenu={() => setIsOpen(true)}
                 onRefreshBackground={() => {
-                    backgroundsService.nextBG();
+                    eventToBackground('backgrounds/nextBg');
                 }}
                 fastSettings={fastSettings}
             />

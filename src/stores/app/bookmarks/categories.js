@@ -2,7 +2,7 @@ import { action, computed, makeAutoObservable, runInAction } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
 import getUniqueColor from '@/utils/uniqueColor';
 import { DESTINATION } from '@/enum';
-import Category from '@/stores/bookmarks/entities/category';
+import Category from '@/stores/app/bookmarks/entities/category';
 import { last } from 'lodash';
 
 class CategoriesStore {

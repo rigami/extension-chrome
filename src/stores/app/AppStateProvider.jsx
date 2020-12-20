@@ -5,8 +5,8 @@ import React, {
     useRef,
 } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import AppService from '@/stores/app';
-import useCoreService from '@/stores/BaseStateProvider';
+import AppService from '@/stores/app/index';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const context = createContext({});
 

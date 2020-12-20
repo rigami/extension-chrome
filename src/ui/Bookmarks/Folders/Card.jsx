@@ -9,8 +9,8 @@ import {
     FolderRounded as FolderIcon,
 } from '@material-ui/icons';
 import clsx from 'clsx';
-import useBookmarksService from '@/stores/BookmarksProvider';
-import useCoreService from '@/stores/BaseStateProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({

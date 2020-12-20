@@ -15,7 +15,7 @@ import {
     ExpandMoreRounded as ArrowDownIcon,
 } from '@material-ui/icons';
 import { useLocalObservable, observer } from 'mobx-react-lite';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import asyncAction from '@/utils/asyncAction';
 import { toJS } from 'mobx';
 

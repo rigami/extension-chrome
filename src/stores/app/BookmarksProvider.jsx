@@ -1,13 +1,13 @@
 import React, { createContext, useContext } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import BackgroundsService from '@/stores/backgrounds';
-import useCoreService from '@/stores/BaseStateProvider';
+import BookmarksService from '@/stores/app/bookmarks';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const context = createContext({});
 
-function BackgroundsStateProvider({ children }) {
+function BookmarksStateProvider({ children }) {
     const coreService = useCoreService();
-    const store = useLocalObservable(() => new BackgroundsService(coreService));
+    const store = useLocalObservable(() => new BookmarksService(coreService));
     const Context = context;
 
     return store.settings.isSync && (
@@ -17,7 +17,7 @@ function BackgroundsStateProvider({ children }) {
     );
 }
 
-const observerProvider = observer(BackgroundsStateProvider);
+const observerProvider = observer(BookmarksStateProvider);
 const useService = () => useContext(context);
 
 export default useService;

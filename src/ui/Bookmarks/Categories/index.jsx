@@ -9,9 +9,9 @@ import {
     DeleteRounded as RemoveIcon,
     ArrowBackRounded as ArrowIcon,
 } from '@material-ui/icons';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import clsx from 'clsx';
-import useCoreService from '@/stores/BaseStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import CollapseWrapper from '@/ui/Bookmarks/Categories/CollapseWrapper';
 import AddButton from './AddButton';

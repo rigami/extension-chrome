@@ -4,8 +4,8 @@ import DBConnector from '@/utils/dbConnector';
 import { cachingDecorator } from '@/utils/decorators';
 import FSConnector from '@/utils/fsConnector';
 import { DESTINATION } from '@/enum';
-import Bookmark from '@/stores/bookmarks/entities/bookmark';
-import Category from '@/stores/bookmarks/entities/category';
+import Bookmark from '@/stores/app/bookmarks/entities/bookmark';
+import Category from '@/stores/app/bookmarks/entities/category';
 import { difference } from 'lodash';
 import asyncAction from '@/utils/asyncAction';
 

@@ -1,4 +1,4 @@
-import BaseWeatherConnector from '@/connectors/weather/BaseWeatherConnector';
+import BaseWeatherConnector from './BaseWeatherConnector';
 import appVariables from '@/config/appVariables';
 import fetchData from '@/utils/xhrPromise';
 import WeatherLocation from '@/entities/WeatherLocation';

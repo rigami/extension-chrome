@@ -7,7 +7,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import TabNameExampleImage from '@/images/tabName.svg';
-import useAppService from '@/stores/AppStateProvider';
+import useAppService from '@/stores/app/AppStateProvider';
 import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({

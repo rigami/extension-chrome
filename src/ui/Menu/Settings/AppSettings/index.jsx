@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { THEME } from '@/enum';
-import useAppService from '@/stores/AppStateProvider';
+import useAppService from '@/stores/app/AppStateProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import tabNamePage from './TabName';
 import { observer } from 'mobx-react-lite';

@@ -9,8 +9,8 @@ import {
     DeleteRounded as RemoveIcon,
 } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
-import useCoreService from '@/stores/BaseStateProvider';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({

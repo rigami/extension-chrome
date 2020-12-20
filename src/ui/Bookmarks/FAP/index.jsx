@@ -15,7 +15,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import ScrollContainer from 'react-indiana-drag-scroll';
 import Link from './Link';

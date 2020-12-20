@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    Button,
     Divider,
     InputBase,
     LinearProgress,
@@ -25,12 +24,11 @@ import {
 } from '@/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import FullScreenStub from '@/ui-components/FullscreenStub';
-import useCoreService from '@/stores/BaseStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import { runInAction } from 'mobx';
 import fetchData from '@/utils/xhrPromise';
 import appVariables from '@/config/appVariables';
 import FullscreenStub from '@/ui-components/FullscreenStub';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -97,7 +95,6 @@ function ChangeQuery({ onClose }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const coreService = useCoreService();
-    const backgroundsService = useBackgroundsService();
     const store = useLocalObservable(() => ({
         searchRequest: coreService.storage.persistent.backgroundRadioQuery,
         foundRequest: "",
@@ -136,7 +133,7 @@ function ChangeQuery({ onClose }) {
             bgsRadio: [],
         });
 
-        backgroundsService.nextBG();
+        coreService.localEventBus.call('background/play')
     }
 
     return (

@@ -1,7 +1,7 @@
 import { action, makeAutoObservable } from 'mobx';
 import defaultSettings from '@/config/settings';
 import { assign, pick, size } from 'lodash';
-import BusApp, { eventToBackground, instanceId } from '@/stores/backgroundApp/busApp';
+import BusApp, { eventToBackground, instanceId } from '@/stores/server/bus';
 
 class BackgroundSettingsStore {
     selectionMethod;
@@ -44,7 +44,7 @@ class BackgroundSettingsStore {
 
         assign(this, updProps);
 
-        if (sync && size(updProps) !== 0) eventToBackground('system/syncSettings/backgrounds', updProps);
+        if (sync && size(updProps) !== 0) eventToBackground('system/syncSettings', { backgrounds: updProps });
     }
 }
 
@@ -107,7 +107,7 @@ class WidgetsSettingsStore {
 
         assign(this, updProps);
 
-        if (sync && size(updProps) !== 0) eventToBackground('system/syncSettings/widgets', updProps);
+        if (sync && size(updProps) !== 0) eventToBackground('system/syncSettings', { widgets: updProps });
     }
 }
 
@@ -152,7 +152,7 @@ class BookmarksSettingsStore {
 
         assign(this, updProps);
 
-        if (sync && size(updProps) !== 0) eventToBackground('system/syncSettings/bookmarks', updProps);
+        if (sync && size(updProps) !== 0) eventToBackground('system/syncSettings', { bookmarks: updProps });
     }
 }
 
@@ -203,7 +203,7 @@ class AppSettingsStore {
 
         assign(this, updProps);
 
-        if (sync && size(updProps) !== 0) eventToBackground('system/syncSettings/app', updProps);
+        if (sync && size(updProps) !== 0) eventToBackground('system/syncSettings', { app: updProps });
     }
 }
 

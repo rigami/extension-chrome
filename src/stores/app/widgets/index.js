@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction } from 'mobx';
 import { WidgetsSettingsStore } from '@/stores/app/settings';
 import { FETCH } from '@/enum';
-import { eventToBackground, eventToRequestPermissions } from '@/stores/backgroundApp/busApp';
+import { eventToBackground, eventToRequestPermissions } from '@/stores/server/bus';
 import appVariables from '@/config/appVariables';
 
 class WidgetsService {
@@ -42,7 +42,7 @@ class WidgetsService {
 
     async autoDetectWeatherLocation() {
         return new Promise((resolve, reject) => eventToBackground(
-            'widgets/weather/autoDetectLocation',
+            'widgets/connectors/autoDetectLocation',
             {},
             (success) => success ? resolve() : reject(),
         ));
@@ -50,14 +50,14 @@ class WidgetsService {
 
     async searchWeatherLocation(query) {
         return new Promise((resolve, reject) => eventToBackground(
-            'widgets/weather/searchLocation',
+            'widgets/connectors/searchLocation',
             { query },
             ({ success, result }) => success ? resolve(result) : reject(),
         ));
     }
 
     setWeatherLocation(location) {
-        eventToBackground('widgets/weather/setLocation',{ location });
+        eventToBackground('widgets/connectors/setLocation',{ location });
 
     }
 

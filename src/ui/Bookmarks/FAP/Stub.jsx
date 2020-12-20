@@ -1,6 +1,6 @@
 import React from 'react';
 import { BKMS_FAP_STYLE } from '@/enum';
-import useBookmarksService from '@/stores/BookmarksProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { Box } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';

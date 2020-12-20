@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { Link, Typography, Tooltip, Fade, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import useAppStateService from '@/stores/AppStateProvider';
+import useAppStateService from '@/stores/app/AppStateProvider';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import appVariables from '@/config/appVariables';
 import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
-import { eventToBackground } from '@/stores/backgroundApp/busApp';
+import { eventToBackground } from '@/stores/server/bus';
 
 const useStyles = makeStyles((theme) => ({
     root: {

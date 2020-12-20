@@ -26,9 +26,9 @@ import {
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
 import BeautifulFileSize from '@/utils/beautifulFileSize';
+import useAppStateService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     preview: {
@@ -204,7 +204,7 @@ function BGCard(props) {
 const MemoBGCard = memo(BGCard);
 
 function UploadBGForm({ children }) {
-    const backgroundsService = useBackgroundsService();
+    const { backgrounds } = useAppStateService();
     const { enqueueSnackbar } = useSnackbar();
     const { t } = useTranslation();
 
@@ -241,7 +241,7 @@ function UploadBGForm({ children }) {
         dragRef.current.ondrop = (event) => {
             event.preventDefault();
             setDragFiles(null);
-            backgroundsService.addToUploadQueue(event.dataTransfer.files)
+            backgrounds.addToUploadQueue(event.dataTransfer.files)
                 .catch((e) => enqueueSnackbar({
                     ...t(e),
                     variant: 'error',
@@ -253,8 +253,8 @@ function UploadBGForm({ children }) {
         if (store.uploadQueueSize === 0) {
             store.requireScrollToBottom = true;
         }
-        store.uploadQueueSize = backgroundsService.uploadQueue.length;
-    }, [backgroundsService.uploadQueue.length]);
+        store.uploadQueueSize = backgrounds.uploadQueue.length;
+    }, [backgrounds.uploadQueue.length]);
 
     return (
         <React.Fragment>
@@ -274,7 +274,7 @@ function UploadBGForm({ children }) {
             )}
             <Drawer
                 anchor="bottom"
-                open={backgroundsService.uploadQueue.length !== 0}
+                open={backgrounds.uploadQueue.length !== 0}
                 PaperProps={{
                     elevation: 0,
                     style: {
@@ -303,23 +303,23 @@ function UploadBGForm({ children }) {
                             justifyContent: 'flex-end',
                         }}
                     >
-                        {backgroundsService.uploadQueue.slice().reverse().map((row, index) => (
+                        {backgrounds.uploadQueue.slice().reverse().map((row, index) => (
                             <MemoBGCard
                                 key={row.id}
                                 {...row}
                                 style={{ marginTop: index === 0 ? 0 : theme.spacing(3) }}
-                                onRemove={() => backgroundsService.removeFromUploadQueue(row.id)}
-                                onDone={(options) => backgroundsService.saveFromUploadQueue(row.id, options)}
+                                onRemove={() => backgrounds.removeFromUploadQueue(row.id)}
+                                onDone={(options) => backgrounds.saveFromUploadQueue(row.id, options)}
                             />
                         ))}
                     </Container>
                 </Scrollbar>
             </Drawer>
-            {(backgroundsService.uploadQueue.length !== 0) && (
+            {(backgrounds.uploadQueue.length !== 0) && (
                 <Tooltip title={t('uploadBG.discardAll')}>
                     <IconButton
                         className={classes.closeIcon}
-                        onClick={() => backgroundsService.resetUploadQueue()}
+                        onClick={() => backgrounds.resetUploadQueue()}
                     >
                         <CloseIcon />
                     </IconButton>

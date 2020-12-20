@@ -19,8 +19,8 @@ import {
     EditRounded as EditIcon,
     DeleteRounded as RemoveIcon,
 } from '@material-ui/icons';
-import useBookmarksService from '@/stores/BookmarksProvider';
-import useCoreService from '@/stores/BaseStateProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import FolderCard from '@/ui/Bookmarks/Folders/Card';

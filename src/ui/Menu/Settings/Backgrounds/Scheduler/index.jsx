@@ -4,14 +4,14 @@ import { BG_SELECT_MODE } from '@/enum';
 import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import Radio from './Radio';
 import Random from './Random';
 import Specific from './Specific';
+import useAppStateService from '@/stores/app/AppStateProvider';
 
 
 function SchedulerSection({ onSelect }) {
-    const backgroundsStore = useBackgroundsService();
+    const { backgrounds } = useAppStateService();
     const { t } = useTranslation();
 
     return (
@@ -23,8 +23,8 @@ function SchedulerSection({ onSelect }) {
                 action={{
                     type: ROWS_TYPE.SELECT,
                     format: (value) => t(`settings.bg.scheduler.selectionMethod.method.${value}`),
-                    value: backgroundsStore.settings.selectionMethod,
-                    onChange: (event) => backgroundsStore.settings.update({ selectionMethod: event.target.value }),
+                    value: backgrounds.settings.selectionMethod,
+                    onChange: (event) => backgrounds.settings.update({ selectionMethod: event.target.value }),
                     values: [
                         BG_SELECT_MODE.RANDOM,
                         BG_SELECT_MODE.SPECIFIC,

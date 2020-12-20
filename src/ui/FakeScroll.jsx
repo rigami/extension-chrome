@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import useCoreService from '@/stores/BaseStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles(() => ({
     root: {

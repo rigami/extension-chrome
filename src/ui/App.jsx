@@ -9,13 +9,12 @@ import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
-import { Provider as BaseStateProvider } from '@/stores/BaseStateProvider';
-import { Provider as AppStateProvider } from '@/stores/AppStateProvider';
-import { Provider as BookmarksProvider } from '@/stores/BookmarksProvider';
-import { Provider as BackgroundsProvider } from '@/stores/BackgroundsStateProvider';
+import { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
+import { Provider as AppStateProvider } from '@/stores/app/AppStateProvider';
+import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import FakeScroll from '@/ui/FakeScroll';
 import FAPStub from '@/ui/Bookmarks/FAP/Stub';
-import InitAppProvider from '@/stores/InitApp';
+import InitAppProvider from '@/stores/app/InitApp';
 import { makeStyles } from '@material-ui/core/styles';
 import AddBookmarkButton from '@/ui/Bookmarks/EditBookmarkModal/AddButton';
 import FAP from './Bookmarks/FAP';
@@ -50,7 +49,6 @@ function RootApp({ onChangeTheme }) {
             InitAppProvider,
             ({ children }) => (<AppStateProvider onChangeTheme={onChangeTheme}>{children}</AppStateProvider>),
             BookmarksProvider,
-            BackgroundsProvider,
             UploadBGForm,
             GlobalModals,
         ]}

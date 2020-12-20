@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useAppStateService from '@/stores/AppStateProvider';
-import useCoreService from '@/stores/BaseStateProvider';
+import useAppStateService from '@/stores/app/AppStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { action } from 'mobx';

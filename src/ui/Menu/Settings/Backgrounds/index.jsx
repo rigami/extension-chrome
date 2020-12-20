@@ -8,9 +8,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import useBackgroundsService from '@/stores/BackgroundsStateProvider';
 import libraryPage from './Library';
 import SchedulerSection from './Scheduler';
+import useAppStateService from '@/stores/app/AppStateProvider';
 
 const headerProps = { title: 'settings.bg.title' };
 const pageProps = { width: 750 };
@@ -43,8 +43,8 @@ function LibraryRow({ bgs, onSelect }) {
                 onClick: () => onSelect(libraryPage),
             }}
         >
-            {bgs && bgs.slice(0, 8).map((src) => (
-                <MemoBGCard src={src} key={src} />
+            {bgs && bgs.map(({ previewSrc, id }) => (
+                <MemoBGCard src={previewSrc} key={id} />
             ))}
             {bgs && bgs.length > 8 && (
                 <Avatar
@@ -64,17 +64,17 @@ function LibraryRow({ bgs, onSelect }) {
 const MemoLibraryRow = memo(LibraryRow);
 
 function BackgroundsSection({ onSelect }) {
-    const backgroundsStore = useBackgroundsService();
+    const { backgrounds } = useAppStateService();
     const { t } = useTranslation();
     const [bgs, setBgs] = useState(null);
 
     useEffect(() => {
-        backgroundsStore.getSrcs({ type: 'preview' })
-            .then((links) => setBgs(links))
+        backgrounds.getLastUsage(8)
+            .then((bgs) => setBgs(bgs))
             .catch((e) => {
                 console.error('Failed load bg`s from db:', e);
             });
-    }, [backgroundsStore.count]);
+    }, [backgrounds.count]);
 
     return (
         <React.Fragment>
@@ -85,14 +85,14 @@ function BackgroundsSection({ onSelect }) {
                 description={t('settings.bg.general.dimmingPower.description')}
                 action={{
                     type: ROWS_TYPE.SLIDER,
-                    value: typeof backgroundsStore.settings.dimmingPower === 'number'
-                        ? backgroundsStore.settings.dimmingPower
+                    value: typeof backgrounds.settings.dimmingPower === 'number'
+                        ? backgrounds.settings.dimmingPower
                         : 0,
                     onChange: (event, value) => {
-                        backgroundsStore.settings.update({ dimmingPower: value });
+                        backgrounds.settings.update({ dimmingPower: value });
                     },
                     onChangeCommitted: (event, value) => {
-                        backgroundsStore.settings.update({ dimmingPower: value });
+                        backgrounds.settings.update({ dimmingPower: value });
                     },
                     min: 0,
                     max: 90,

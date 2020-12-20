@@ -8,8 +8,8 @@ import {
     DialogActions,
     Button,
 } from '@material-ui/core';
-import useBookmarksService from '@/stores/BookmarksProvider';
-import useCoreService from '@/stores/BaseStateProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import EditCategoryModal from '@/ui/Bookmarks/Categories/EditModal';
 import { useTranslation } from 'react-i18next';
 import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
@@ -17,22 +17,11 @@ import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import ContextMenu from '@/ui/ContextMenu';
 import { useSnackbar } from 'notistack';
 import FSConnector from '@/utils/fsConnector';
-import { eventToBackground } from '@/stores/backgroundApp/busApp';
+import { eventToBackground } from '@/stores/server/bus';
 import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
-import { makeStyles } from '@material-ui/core/styles';
 import InterrogationRequest from '@/ui/InterrogationRequest';
 
-const useStyles = makeStyles((theme) => ({
-    rateScreen: {
-        height: 300
-    },
-    rateScreenIcon: {
-        color: '#f61515'
-    },
-}));
-
 function GlobalModals({ children }) {
-    const classes = useStyles();
     const { t } = useTranslation();
     const bookmarksStore = useBookmarksService();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();

@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
-import InitAppProvider from '@/stores/InitApp';
 import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
-import { Provider as BaseStateProvider } from '@/stores/BaseStateProvider';
-import { Provider as BookmarksProvider } from '@/stores/BookmarksProvider';
+import { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
+import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import PopupContent from './PopupEditor';
 
 function Popup() {
@@ -43,7 +42,6 @@ function Popup() {
             <Nest
                 components={[
                     ({ children }) => (<BaseStateProvider side={DESTINATION.POPUP}>{children}</BaseStateProvider>),
-                    InitAppProvider,
                     BookmarksProvider,
                     ({ children }) => children,
                 ]}
