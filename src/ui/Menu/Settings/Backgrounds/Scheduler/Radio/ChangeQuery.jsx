@@ -29,6 +29,7 @@ import { runInAction } from 'mobx';
 import fetchData from '@/utils/xhrPromise';
 import appVariables from '@/config/appVariables';
 import FullscreenStub from '@/ui-components/FullscreenStub';
+import { eventToBackground } from '@/stores/server/bus';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -133,7 +134,7 @@ function ChangeQuery({ onClose }) {
             bgsRadio: [],
         });
 
-        coreService.localEventBus.call('background/play')
+        eventToBackground('backgrounds/nextBg')
     }
 
     return (

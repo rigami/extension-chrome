@@ -5,12 +5,11 @@ import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
-import DBConnector, { open as openDB } from '@/utils/dbConnector';
+import { open as openDB } from '@/utils/dbConnector';
 import appVariables from '@/config/appVariables';
-import createPreview from '@/utils/createPreview';
 import FSConnector from '@/utils/fsConnector';
 import EventBus from '@/utils/eventBus';
-import { assign } from 'lodash';
+import { assign, first } from 'lodash';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import fetchData from '@/utils/xhrPromise';
@@ -135,13 +134,13 @@ class Core {
         console.log('Fetch BG');
         progressCallback(10, PREPARE_PROGRESS.FETCH_BG);
 
-        const { response } = await fetchData(`${appVariables.rest.url}/backgrounds/get-first`);
+        const { response } = await fetchData(`${appVariables.rest.url}/backgrounds/get-best?count=1&type=image`);
 
         progressCallback(30, PREPARE_PROGRESS.FETCH_BG);
 
         const bg = await BackgroundsUniversalService.addToLibrary(new Background({
-            ...response,
-            downloadLink: response.fullSrc,
+            ...first(response),
+            downloadLink: first(response).fullSrc,
             type: BG_TYPE.IMAGE,
         }));
 

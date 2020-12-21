@@ -8,6 +8,7 @@ import {
     PauseRounded as PauseIcon,
     PlayArrowRounded as PlayIcon,
     AddRounded as AddIcon,
+    CheckRounded as AddedIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
@@ -105,16 +106,29 @@ function Menu({ }) {
             });
         }
 
-        if (backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO) {
+        if (backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO && !backgrounds.currentBG.isSaved) {
             settings.push({
                 tooltip: t('bg.addToLibrary'),
-                onClick: () => BackgroundsUniversalService.addToLibrary(backgrounds.currentBGRadio),
+                onClick: () => BackgroundsUniversalService.addToLibrary(backgrounds.currentBG),
                 icon: <AddIcon />,
             });
         }
 
+        if (backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO && backgrounds.currentBG.isSaved) {
+            settings.push({
+                tooltip: t('bg.addedToLibrary'),
+                icon: <AddedIcon />,
+                disableRipple: true,
+            });
+        }
+
         setFastSettings(settings);
-    }, [backgrounds.currentBGId, backgrounds.bgMode, backgrounds.settings.selectionMethod]);
+    }, [
+        backgrounds.currentBGId,
+        backgrounds.bgMode,
+        backgrounds.settings.selectionMethod,
+        backgrounds.currentBG?.isSaved,
+    ]);
 
     const Page = stack[stack.length - 1].content;
     const headerProps = stack[stack.length - 1] && stack[stack.length - 1].header;

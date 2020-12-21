@@ -1,5 +1,4 @@
 import DBConnector from '@/utils/dbConnector';
-import { BG_TYPE } from '@/enum';
 import FSConnector from '@/utils/fsConnector';
 import Background from './entities/background';
 import createPreview from '@/utils/createPreview';
@@ -26,6 +25,7 @@ class BackgroundsUniversalService {
 
         const savedBG = new Background({
             ...saveBG,
+            isSaved: true,
             id: saveBG.originId,
             fileName: saveFileName,
         })

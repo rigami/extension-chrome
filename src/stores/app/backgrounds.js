@@ -1,10 +1,15 @@
-import { action, reaction, makeAutoObservable, toJS, computed } from 'mobx';
+import {
+    action,
+    reaction,
+    makeAutoObservable,
+    computed,
+} from 'mobx';
 import appVariables from '@/config/appVariables';
 import {
     BG_TYPE,
     BG_SHOW_MODE,
     BG_SHOW_STATE,
-    FETCH,
+    FETCH, BG_CHANGE_INTERVAL_MILLISECONDS,
 } from '@/enum';
 import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
@@ -32,10 +37,10 @@ class BackgroundsAppService {
             this.bgState = state;
         });
 
-        const setCurrentBg = () => {
+        const setCurrentBg = (setBG, prepareNextEvent = true) => {
             const bg = new Background({
-                ...this._coreService.storage.persistent.bgCurrent,
-                id: this._coreService.storage.persistent.bgCurrent.originId,
+                ...setBG,
+                id: setBG.originId,
             });
 
             console.log('[backgrounds] Change current background:', bg);
@@ -44,7 +49,11 @@ class BackgroundsAppService {
             this.bgMode = bg.pause ? BG_SHOW_MODE.STATIC : BG_SHOW_MODE.LIVE;
             this.currentBGId = this._currentBG?.id;
 
-            eventToBackground('backgrounds/prepareNextBg');
+            this._coreService.storage.updatePersistent({
+                bgCurrent: { ...bg },
+            });
+
+            if (prepareNextEvent) eventToBackground('backgrounds/prepareNextBg');
         }
 
         reaction(
@@ -59,6 +68,10 @@ class BackgroundsAppService {
         if (this._coreService.storage.persistent?.bgCurrent) {
             setCurrentBg(this._coreService.storage.persistent.bgCurrent);
         }
+
+        this._coreService.globalEventBus.on('backgrounds/new', ({ bg }) => {
+            setCurrentBg(bg, false);
+        })
     }
 
     @computed
