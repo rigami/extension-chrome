@@ -1,5 +1,5 @@
 import BusApp, { eventToBackground, initBus, instanceId } from '@/stores/server/bus';
-import { BG_TYPE, DESTINATION } from '@/enum';
+import { BG_SOURCE, BG_TYPE, DESTINATION } from '@/enum';
 import { reaction, action, makeAutoObservable, runInAction } from 'mobx';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -40,7 +40,7 @@ class Storage {
         this.temp = {};
         this.persistent = {};
         try {
-            if (!localStorage.getItem('storage')) throw new Error('Storage not esixt');
+            if (!localStorage.getItem('storage')) throw new Error('Storage not exist');
             this.updatePersistent(JSON.parse(localStorage.getItem('storage')), false);
             this.isSync = true;
         } catch (e) {
@@ -140,6 +140,7 @@ class Core {
 
         const bg = await BackgroundsUniversalService.addToLibrary(new Background({
             ...first(response),
+            source: BG_SOURCE[first(response).service],
             downloadLink: first(response).fullSrc,
             type: BG_TYPE.IMAGE,
         }));

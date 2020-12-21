@@ -9,6 +9,7 @@ class Background {
     @observable isLoad;
     @observable fileName;
     @observable author;
+    @observable authorAvatarSrc;
     @observable description;
     @observable antiAliasing;
     @observable source;
@@ -25,6 +26,7 @@ class Background {
         this.isLoad = background.isLoad || false;
         this.fileName = background.fileName;
         this.author = background.author;
+        this.authorAvatarSrc = background.authorAvatarSrc;
         this.description = background.description;
         this.antiAliasing = background.antiAliasing === false ? false : (background.antiAliasing || true);
         this.source = background.source || BG_SOURCE.USER;

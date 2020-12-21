@@ -19,6 +19,7 @@ import clsx from 'clsx';
 import { action } from 'mobx';
 import { BG_SELECT_MODE, BG_SHOW_STATE } from '@/enum';
 import useAppStateService from '@/stores/app/AppStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -58,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
 function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG }) {
     const classes = useStyles();
     const theme = useTheme();
+    const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const { t } = useTranslation();
     const rootAl = useRef();
@@ -89,8 +91,22 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
 
         const opacity = 1 - dist / 540;
 
-        if (fastAl.current) fastAl.current.style.opacity = opacity;
-        if (mainAl.current) mainAl.current.style.opacity = opacity;
+        coreService.storage.updateTemp({
+            interfaceOpacity: {
+                ...coreService.storage.temp.interfaceOpacity,
+                menu: opacity,
+            },
+        });
+
+        const calcOpacity = Math.max(
+            coreService.storage.temp.interfaceOpacity.bgInfo || 0,
+            coreService.storage.temp.interfaceOpacity.menu || 0,
+        );
+
+        coreService.localEventBus.call('system/interfaceOpacity', { opacity: calcOpacity });
+
+        if (fastAl.current) fastAl.current.style.opacity = calcOpacity;
+        if (mainAl.current) mainAl.current.style.opacity = calcOpacity;
 
         store.hideTimer = setTimeout(action(() => {
             if (e.path.indexOf(mainAl.current) !== -1 || e.path.indexOf(fastAl.current) !== -1) return;
@@ -106,8 +122,14 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
         if (mainAl.current) mainAl.current.style.opacity = 0;
         window.addEventListener('mousemove', moveMouseHandler);
 
+        const listener = coreService.localEventBus.on('system/interfaceOpacity', ({ opacity }) => {
+            if (fastAl.current) fastAl.current.style.opacity = opacity;
+            if (mainAl.current) mainAl.current.style.opacity = opacity;
+        });
+
         return () => {
             window.removeEventListener('mousemove', moveMouseHandler);
+            coreService.localEventBus.removeListener(listener);
         };
     }, []);
 

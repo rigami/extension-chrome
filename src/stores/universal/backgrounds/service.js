@@ -28,7 +28,9 @@ class BackgroundsUniversalService {
             isSaved: true,
             id: saveBG.originId,
             fileName: saveFileName,
-        })
+        });
+
+        console.log('savedBG', savedBG)
 
         await DBConnector().add('backgrounds', savedBG);
 

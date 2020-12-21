@@ -18,7 +18,7 @@ async function upgradeOrCreateBackgrounds(db, transaction) {
         store.createIndex('file_name', 'fileName', { unique: false });
     }
 
-    if (!store.indexNames.contains("folder_id")) {
+    if (!store.indexNames.contains("source")) {
         store.createIndex('source', 'source', { unique: false });
 
         try {
@@ -34,6 +34,18 @@ async function upgradeOrCreateBackgrounds(db, transaction) {
         } catch (e) {
             console.log(e)
         }
+    }
+
+    if (!store.indexNames.contains("origin_id")) {
+        store.createIndex('origin_id', 'originId', { unique: false });
+    }
+
+    if (!store.indexNames.contains("author")) {
+        store.createIndex('author', 'originId', { unique: false });
+    }
+
+    if (!store.indexNames.contains("download_link")) {
+        store.createIndex('download_link', 'downloadLink', { unique: false });
     }
 
     return store;

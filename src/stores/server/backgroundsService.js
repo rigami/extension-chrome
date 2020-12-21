@@ -150,7 +150,7 @@ class BackgroundsServerService {
             console.log('[backgrounds] Download next queue backgrounds', response);
 
             await setFromQueue([
-                ...this.storage.bgsRadio,
+                ...(this.storage.bgsRadio || []),
                 ...response.map((bg) => new Background({
                     ...bg,
                     source: BG_SOURCE[bg.service],
