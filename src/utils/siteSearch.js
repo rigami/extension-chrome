@@ -7,7 +7,7 @@ const search = async (query, signal) => {
         `${
             PRODUCTION_MODE
                 ? 'https://duckduckgo.com/lite/?q'
-                : `${appVariables.rest.url}/site/proxy_DuckDuckGo?query`
+                : `${appVariables.rest.url}/site/proxy-duck-duck-go?query`
         }=${query}`,
         {
             responseType: 'document',
@@ -58,7 +58,7 @@ const getSiteInfo = async (url, signal) => {
     };
 
     const { response: result } = await xhrPromise(
-        `${appVariables.rest.url}/site_parse/add_data`,
+        `${appVariables.rest.url}/site-parse/add-data`,
         {
             body: JSON.stringify(parseResult),
             method: 'POST',
