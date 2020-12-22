@@ -240,7 +240,15 @@ function LibraryMenu() {
                     }
                     group.list.push(bg);
                     return acc;
-                }, []);
+                }, []).sort((groupA, groupB) => {
+                    if (groupA.type < groupB.type) {
+                        return -1;
+                    } else if (groupA.type > groupB.type) {
+                        return 1;
+                    }
+
+                    return 0;
+                });
 
                 setBgs(groups);
                 setState(FETCH.DONE);
