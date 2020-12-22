@@ -134,7 +134,9 @@ function ChangeQuery({ onClose }) {
             bgsRadio: [],
         });
 
-        eventToBackground('backgrounds/nextBg')
+        eventToBackground('backgrounds/nextBg');
+
+        onClose();
     }
 
     return (
