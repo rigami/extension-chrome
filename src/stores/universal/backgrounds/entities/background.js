@@ -22,7 +22,7 @@ class Background {
     @observable pause = false;
 
     constructor(background = {}) {
-        this.originId = background.id;
+        this.originId = background.originId || background.id;
         this.isSaved = background.isSaved || false;
         this.isLoad = background.isLoad || false;
         this.fileName = background.fileName;

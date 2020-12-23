@@ -134,7 +134,7 @@ function BGCard(props) {
             <div className={classes.details}>
                 <CardContent className={classes.content}>
                     <Typography component="h5" variant="h5">
-                        {type.map((fileType) => t(`bg.type.${fileType}`)).join('/')}
+                        {t(`bg.type.${type}`)}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
                         {t('uploadBG.labelFile')}

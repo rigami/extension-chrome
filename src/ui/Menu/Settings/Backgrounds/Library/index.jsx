@@ -29,6 +29,7 @@ import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 import { last } from 'lodash';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
+import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -262,11 +263,17 @@ function LibraryMenu() {
     useEffect(() => {
         fetchBackgrounds();
 
-        const listenerId = coreService.localEventBus.on('backgrounds/new', () => {
-            fetchBackgrounds();
-        });
+        const listeners = []
 
-        return () => coreService.localEventBus.removeListener(listenerId);
+        listeners.push(coreService.globalEventBus.on('backgrounds/new', () => {
+            fetchBackgrounds();
+        }));
+
+        listeners.push(coreService.globalEventBus.on('backgrounds/remove', () => {
+            fetchBackgrounds();
+        }));
+
+        return () => listeners.forEach((listener) => coreService.localEventBus.removeListener(listener));
     }, []);
 
     return (
@@ -301,8 +308,8 @@ function LibraryMenu() {
                                         key={bg.id}
                                         {...bg}
                                         select={coreService.storage.persistent.bgCurrent?.id === bg.id}
-                                        onSet={() => backgrounds.setCurrentBG(bg.id)}
-                                        onRemove={() => backgrounds.removeFromStore(bg.id)}
+                                        onSet={() => backgrounds.setBG(bg)}
+                                        onRemove={() => BackgroundsUniversalService.removeFromStore(bg)}
                                     />
                                 ))
                             ])}

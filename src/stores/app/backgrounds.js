@@ -71,7 +71,16 @@ class BackgroundsAppService {
 
         this._coreService.globalEventBus.on('backgrounds/new', ({ bg }) => {
             setCurrentBg(bg, false);
-        })
+        });
+
+        this._coreService.globalEventBus.on('backgrounds/remove', ({ bg }) => {
+
+        });
+    }
+
+    @action('')
+    setBG(bg) {
+        return new Promise(((resolve) => eventToBackground('backgrounds/setBg', { bg }, resolve)));
     }
 
     @computed
@@ -116,12 +125,12 @@ class BackgroundsAppService {
             let computeAntiAliasing = true;
 
             if (~file.type.indexOf('video')) {
-                computeType = [BG_TYPE.VIDEO];
+                computeType = BG_TYPE.VIDEO;
             } else if (~file.type.indexOf('gif')) {
-                computeType = [BG_TYPE.ANIMATION];
+                computeType = BG_TYPE.ANIMATION;
                 computeAntiAliasing = false;
             } else {
-                computeType = [BG_TYPE.IMAGE];
+                computeType = BG_TYPE.IMAGE;
             }
 
             return {
@@ -156,25 +165,21 @@ class BackgroundsAppService {
 
     @action('save bg`s in store')
     saveFromUploadQueue(saveBGId, options) {
-        const saveBG = {
-            ...this.uploadQueue.find(({ id }) => saveBGId === id),
+        const bg = this.uploadQueue.find(({ id }) => saveBGId === id);
+
+        const saveBG = new Background({
+            ...bg,
             ...{
                 antiAliasing: true,
                 ...options,
             },
-        };
+            downloadLink: URL.createObjectURL(bg.file),
+        });
 
-        return FSConnector.saveFile(BackgroundsUniversalService.FULL_PATH, saveBG.file, saveBGId)
-            .then(() => FSConnector.saveFile('/backgrounds/preview', saveBG.preview, saveBGId))
-            .then(() => DBConnector().add('backgrounds', {
-                author: 'unknown',
-                type: saveBG.type[0],
-                fileName: saveBGId,
-                description: 'user_background',
-                sourceLink: saveBG.name,
-                antiAliasing: saveBG.antiAliasing,
-            }))
-            .then(() => {
+        console.log('saveFromUploadQueue', saveBGId, saveBG, options, this.uploadQueue.find(({ id }) => saveBGId === id))
+
+        return BackgroundsUniversalService.addToLibrary(saveBG)
+            .finally(() => {
                 this.uploadQueue = this.uploadQueue.filter(({ id }) => saveBGId !== id);
             });
     }

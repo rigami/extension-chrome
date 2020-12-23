@@ -44,18 +44,20 @@ class BackgroundsUniversalService {
 
         try {
             await DBConnector().delete('backgrounds', removeBG.id);
+            console.log('[backgrounds] Remove from db...');
         } catch (e) {
             console.log(`bg ${removeBG.id} not find in db`)
         }
 
-        console.log('[backgrounds] Remove from db...');
-
         try {
             await FSConnector.removeFile(`/backgrounds/full/${removeBG.fileName}`);
             await FSConnector.removeFile(`/backgrounds/preview/${removeBG.fileName}`);
+            console.log('[backgrounds] Remove from file system...');
         } catch (e) {
             console.log(`[backgrounds] BG with id=${removeBG.id} not find in file system`)
         }
+
+        eventToApp('backgrounds/remove', { bg: removeBG });
     }
 
     static async fetchBG(src) {

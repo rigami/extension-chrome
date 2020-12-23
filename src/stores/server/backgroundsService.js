@@ -59,6 +59,10 @@ class BackgroundsServerService {
             console.log('[backgrounds] Request for prepare next background');
         });
 
+        this.core.globalBus.on('backgrounds/setBg', ({ bg }, callback) => {
+            this.setBG(bg).finally(callback)
+        });
+
         reaction(
             () => this.settings.type,
             () => this.nextBG(),
