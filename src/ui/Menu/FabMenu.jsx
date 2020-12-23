@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, memo } from 'react';
+import React, { memo } from 'react';
 import {
     Card,
     IconButton,
@@ -14,12 +14,11 @@ import {
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useTranslation } from 'react-i18next';
-import { observer, useLocalObservable } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
-import { action } from 'mobx';
 import { BG_SELECT_MODE, BG_SHOW_STATE } from '@/enum';
 import useAppStateService from '@/stores/app/AppStateProvider';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -59,140 +58,69 @@ const useStyles = makeStyles((theme) => ({
 function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG }) {
     const classes = useStyles();
     const theme = useTheme();
-    const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const { t } = useTranslation();
-    const rootAl = useRef();
-    const fastAl = useRef();
-    const mainAl = useRef();
-    const store = useLocalObservable(() => ({
-        hideTimer: null,
-        smooth: false,
-    }));
-
-    const moveMouseHandler = action((e) => {
-        if (!rootAl.current) return;
-
-        store.smooth = false;
-        clearTimeout(store.hideTimer);
-
-        const { x, y, height, width } = rootAl.current.getBoundingClientRect();
-        const a = Math.abs((x + width * 0.5) - e.pageX);
-        const b = Math.abs((y + height * 0.5) - e.pageY);
-        let dist = 0.96 * Math.max(a, b) + 0.4 * Math.min(a, b);
-
-        if (dist > 700) {
-            dist = 700;
-        } else if (dist < 160) {
-            dist = 160;
-        }
-
-        dist -= 160;
-
-        const opacity = 1 - dist / 540;
-
-        coreService.storage.updateTemp({
-            interfaceOpacity: {
-                ...coreService.storage.temp.interfaceOpacity,
-                menu: opacity,
-            },
-        });
-
-        const calcOpacity = Math.max(
-            coreService.storage.temp.interfaceOpacity.bgInfo || 0,
-            coreService.storage.temp.interfaceOpacity.menu || 0,
-        );
-
-        coreService.localEventBus.call('system/interfaceOpacity', { opacity: calcOpacity });
-
-        if (fastAl.current) fastAl.current.style.opacity = calcOpacity;
-        if (mainAl.current) mainAl.current.style.opacity = calcOpacity;
-
-        store.hideTimer = setTimeout(action(() => {
-            if (e.path.indexOf(mainAl.current) !== -1 || e.path.indexOf(fastAl.current) !== -1) return;
-
-            store.smooth = true;
-            if (fastAl.current) fastAl.current.style.opacity = 0;
-            if (mainAl.current) mainAl.current.style.opacity = 0;
-        }), 3000);
-    });
-
-    useEffect(() => {
-        if (fastAl.current) fastAl.current.style.opacity = 0;
-        if (mainAl.current) mainAl.current.style.opacity = 0;
-        window.addEventListener('mousemove', moveMouseHandler);
-
-        const listener = coreService.localEventBus.on('system/interfaceOpacity', ({ opacity }) => {
-            if (fastAl.current) fastAl.current.style.opacity = opacity;
-            if (mainAl.current) mainAl.current.style.opacity = opacity;
-        });
-
-        return () => {
-            window.removeEventListener('mousemove', moveMouseHandler);
-            coreService.localEventBus.removeListener(listener);
-        };
-    }, []);
 
     return (
         <React.Fragment>
-            <Box className={classes.root} ref={rootAl}>
-                <Card
-                    className={clsx(classes.card, store.smooth && classes.smooth)}
-                    elevation={12}
-                    style={{ marginBottom: theme.spacing(2) }}
-                    ref={fastAl}
-                >
-                    {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }, index) => (
-                        <React.Fragment>
-                            {index !== 0 && (<Divider />)}
-                            <Tooltip title={tooltip} placement="left" key={tooltip}>
-                                <IconButton size="small" className={classes.button} {...props}>
-                                    {Icon}
-                                </IconButton>
-                            </Tooltip>
-                        </React.Fragment>
-                    ))}
-                </Card>
-                <Card
-                    className={clsx(classes.card, store.smooth && classes.smooth)}
-                    elevation={12}
-                    ref={mainAl}
-                >
-                    <Tooltip title={t('settings.title')} placement="left">
-                        <IconButton size="small" className={classes.button} onClick={() => onOpenMenu()}>
-                            <SettingsIcon />
-                        </IconButton>
-                    </Tooltip>
-                    {(
-                        backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM
-                        || backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO
-                    ) && (
-                        <React.Fragment>
-                            <Divider />
-                            <Tooltip title={t('bg.next')} placement="left">
-                                <IconButton
-                                    size="small"
-                                    className={clsx(
-                                        classes.button,
-                                        backgrounds.bgState === BG_SHOW_STATE.SEARCH && classes.loadBgButton,
-                                    )}
-                                    onClick={() => onRefreshBackground()}
-                                >
-                                    {backgrounds.bgState !== BG_SHOW_STATE.SEARCH &&  (
-                                        <RefreshIcon />
-                                    )}
-                                    {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
-                                        <CircularProgress
-                                            className={classes.loadBGIcon}
-                                            size={20}
-                                        />
-                                    )}
-                                </IconButton>
-                            </Tooltip>
-                        </React.Fragment>
-                    )}
-                </Card>
-            </Box>
+            <MouseDistanceFade>
+                <Box className={classes.root}>
+                    <Card
+                        className={classes.card}
+                        elevation={12}
+                        style={{ marginBottom: theme.spacing(2) }}
+                    >
+                        {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }, index) => (
+                            <React.Fragment>
+                                {index !== 0 && (<Divider />)}
+                                <Tooltip title={tooltip} placement="left" key={tooltip}>
+                                    <IconButton size="small" className={classes.button} {...props}>
+                                        {Icon}
+                                    </IconButton>
+                                </Tooltip>
+                            </React.Fragment>
+                        ))}
+                    </Card>
+                    <Card
+                        className={classes.card}
+                        elevation={12}
+                    >
+                        <Tooltip title={t('settings.title')} placement="left">
+                            <IconButton size="small" className={classes.button} onClick={() => onOpenMenu()}>
+                                <SettingsIcon />
+                            </IconButton>
+                        </Tooltip>
+                        {(
+                            backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM
+                            || backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO
+                        ) && (
+                            <React.Fragment>
+                                <Divider />
+                                <Tooltip title={t('bg.next')} placement="left">
+                                    <IconButton
+                                        size="small"
+                                        className={clsx(
+                                            classes.button,
+                                            backgrounds.bgState === BG_SHOW_STATE.SEARCH && classes.loadBgButton,
+                                        )}
+                                        onClick={() => onRefreshBackground()}
+                                    >
+                                        {backgrounds.bgState !== BG_SHOW_STATE.SEARCH &&  (
+                                            <RefreshIcon />
+                                        )}
+                                        {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
+                                            <CircularProgress
+                                                className={classes.loadBGIcon}
+                                                size={20}
+                                            />
+                                        )}
+                                    </IconButton>
+                                </Tooltip>
+                            </React.Fragment>
+                        )}
+                    </Card>
+                </Box>
+            </MouseDistanceFade>
             {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
                 <CircularProgress
                     className={classes.loadBGIconWhite}

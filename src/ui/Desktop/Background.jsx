@@ -258,6 +258,7 @@ function Background() {
                 )}
                 <BackgroundInfo
                     author={store.currentBg?.author}
+                    authorName={store.currentBg?.authorName}
                     authorAvatarSrc={store.currentBg?.authorAvatarSrc}
                     sourceLink={store.currentBg?.sourceLink}
                     service={store.currentBg?.service}
