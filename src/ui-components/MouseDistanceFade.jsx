@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import { useLocalObservable, Observer } from 'mobx-react-lite';
 import { action } from 'mobx';
 import { useForkRef } from '@material-ui/core/utils';
@@ -18,14 +17,18 @@ const useStyles = makeStyles((theme) => ({
 
 const items = {};
 
-const MouseDistanceFade = React.forwardRef(function MouseDistanceFade({ children }, ref) {
+const MouseDistanceFade = React.forwardRef(function MouseDistanceFade(props, ref) {
+    const {
+        children,
+        distanceMax = 750,
+        distanceMin = 300,
+    } = props;
     const classes = useStyles();
     const rootAl = useRef();
-    const coreService = useCoreService();
     const store = useLocalObservable(() => ({
         hideTimer: null,
         smooth: false,
-        id: Date.now(),
+        id: `item-${Math.random().toString().substring(2)}`,
     }));
 
     const handleRef = useForkRef(children.ref, rootAl);
@@ -37,23 +40,22 @@ const MouseDistanceFade = React.forwardRef(function MouseDistanceFade({ children
         clearTimeout(store.hideTimer);
 
         const { x, y, height, width } = rootAl.current.getBoundingClientRect();
-        const a = Math.abs((x + width * 0.5) - e.pageX);
-        const b = Math.abs((y + height * 0.5) - e.pageY);
+
+        const a = (e.pageX < x) ? Math.abs(x - e.pageX) : (e.pageX > x + width) ? Math.abs(x + width - e.pageX) : 1;
+        const b = (e.pageY < y) ? Math.abs(y - e.pageY) : (e.pageY > y + height) ? Math.abs(y + height - e.pageY) : 1;
         let dist = 0.96 * Math.max(a, b) + 0.4 * Math.min(a, b);
 
-        if (dist > 300) {
-            dist = 300;
-        } else if (dist < 90) {
-            dist = 90;
+        if (dist > distanceMax) {
+            dist = distanceMax;
+        } else if (dist < distanceMin) {
+            dist = distanceMin;
         }
 
-        dist -= 90;
+        dist -= distanceMin;
 
-        items[store.id] = 1 - dist / 210;
+        items[store.id] = 1 - dist / (distanceMax - distanceMin);
 
         const calcOpacity = max(values(items));
-
-        coreService.localEventBus.call('system/interfaceOpacity', { opacity: calcOpacity });
 
         if (rootAl.current) rootAl.current.style.opacity = calcOpacity;
 
@@ -76,8 +78,6 @@ const MouseDistanceFade = React.forwardRef(function MouseDistanceFade({ children
             delete items[store.id];
         };
     }, []);
-
-    console.log('clsx', clsx(children.props.className, store.smooth && classes.smooth))
 
     return (
         <Observer>

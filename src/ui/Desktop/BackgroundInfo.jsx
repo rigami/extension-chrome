@@ -30,11 +30,9 @@ const useStyles = makeStyles((theme) => ({
     service: {
         color: theme.palette.text.secondary,
     },
-    smooth: {
-        transition: theme.transitions.create(['opacity'], {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.complex,
-        }),
+    action: {
+        marginTop: theme.spacing(-0.5),
+        marginBottom: theme.spacing(-0.5),
     },
 }));
 
@@ -43,12 +41,13 @@ function BackgroundInfo({ author, authorName, authorAvatarSrc, sourceLink, servi
     const classes = useStyles();
 
     return (
-        <MouseDistanceFade>
+        <MouseDistanceFade distanceMax={160} distanceMin={16}>
             <Card className={classes.infoCard} elevation={11}>
                 <CardHeader
                     classes={{
                         avatar: classes.avatar,
                         subheader: classes.subheader,
+                        action: classes.action,
                     }}
                     avatar={(
                         <Avatar src={authorAvatarSrc} />

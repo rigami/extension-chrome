@@ -33,12 +33,6 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: fade(theme.palette.background.default, 0.52),
     },
     button: { padding: theme.spacing(1) },
-    smooth: {
-        transition: theme.transitions.create(['opacity'], {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.complex,
-        }),
-    },
     loadBGIconWhite: {
         position: 'absolute',
         bottom: theme.spacing(4.25),
