@@ -4,23 +4,16 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     BrokenImageRounded as BrokenIcon,
     DeleteRounded as DeleteIcon,
-    OpenInNewRounded as OpenSourceIcon,
 } from '@material-ui/icons';
 import {
     BG_TYPE,
     FETCH,
     THEME,
     BG_SHOW_STATE,
+    BG_SOURCE,
 } from '@/enum';
 import clsx from 'clsx';
-import {
-    Fade,
-    Card,
-    CardHeader,
-    Avatar,
-    Typography,
-    IconButton,
-} from '@material-ui/core';
+import { Fade } from '@material-ui/core';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { useSnackbar } from 'notistack';
 import useCoreService from '@/stores/app/BaseStateProvider';
@@ -256,14 +249,16 @@ function Background() {
                         style={{ opacity: backgrounds.settings.dimmingPower / 100 || 0 }}
                     />
                 )}
-                <BackgroundInfo
-                    author={store.currentBg?.author}
-                    authorName={store.currentBg?.authorName}
-                    authorAvatarSrc={store.currentBg?.authorAvatarSrc}
-                    sourceLink={store.currentBg?.sourceLink}
-                    service={store.currentBg?.service}
-                    description={store.currentBg?.description}
-                />
+                {store.currentBg?.source !== BG_SOURCE.USER && (
+                    <BackgroundInfo
+                        author={store.currentBg?.author}
+                        authorName={store.currentBg?.authorName}
+                        authorAvatarSrc={store.currentBg?.authorAvatarSrc}
+                        sourceLink={store.currentBg?.sourceLink}
+                        service={store.currentBg?.source}
+                        description={store.currentBg?.description}
+                    />
+                )}
                 {(store.stateLoadBg === FETCH.FAILED || !store.currentBg) && (
                     <FullscreenStub
                         className={classes.errorStub}

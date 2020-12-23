@@ -17,6 +17,7 @@ import {
     BG_SELECT_MODE,
     BG_TYPE,
     BG_SHOW_MODE,
+    BG_SOURCE,
 } from '@/enum';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import Header from '@/ui/Menu/PageHeader';
@@ -106,7 +107,11 @@ function Menu({ }) {
             });
         }
 
-        if (backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO && !backgrounds.currentBG.isSaved) {
+        if (
+            backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO
+            && backgrounds.currentBG.source === BG_SOURCE.UNSPLASH
+            && !backgrounds.currentBG.isSaved
+        ) {
             settings.push({
                 tooltip: t('bg.addToLibrary'),
                 onClick: () => BackgroundsUniversalService.addToLibrary(backgrounds.currentBG),
@@ -114,7 +119,11 @@ function Menu({ }) {
             });
         }
 
-        if (backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO && backgrounds.currentBG.isSaved) {
+        if (
+            backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO
+            && backgrounds.currentBG.source === BG_SOURCE.UNSPLASH
+            && backgrounds.currentBG.isSaved
+        ) {
             settings.push({
                 tooltip: t('bg.addedToLibrary'),
                 icon: <AddedIcon />,
@@ -128,6 +137,7 @@ function Menu({ }) {
         backgrounds.bgMode,
         backgrounds.settings.selectionMethod,
         backgrounds.currentBG?.isSaved,
+        backgrounds.currentBG?.source,
     ]);
 
     const Page = stack[stack.length - 1].content;
