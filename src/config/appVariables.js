@@ -1,5 +1,3 @@
-import { BG_SOURCE, BG_TYPE } from '@/enum';
-
 export default {
     extensionId: chrome.runtime.id,
     db: {
@@ -29,16 +27,19 @@ export default {
         radio: {
             preloadBGCount: 2,
             preloadMetaCount: 10,
+            collections: [
+                'EDITORS_СHOICE',
+            ],
             queryPresets: [
-                "Minimalism",
-                "Abstract",
-                "Night sky",
-                "Winter",
-                "Wallpaper",
-                "Black",
-                "Aesthetic",
-                "Minimalism nature",
-                "Architecture",
+                { id: 'MINIMALISM', value: 'Minimalism' },
+                { id: 'ABSTRACT', value: 'Abstract' },
+                { id: 'NIGHT_SKY', value: 'Night sky' },
+                { id: 'WINTER', value: 'Winter' },
+                { id: 'WALLPAPER', value: 'Wallpaper' },
+                { id: 'BLACK', value: 'Black' },
+                { id: 'AESTHETIC', value: 'Aesthetic' },
+                { id: 'MINIMALISM_NATURE', value: 'Minimalism nature' },
+                { id: 'ARCHITECTURE', value: 'Architecture' },
             ],
         }
     }

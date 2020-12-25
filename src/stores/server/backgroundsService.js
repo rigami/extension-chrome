@@ -147,8 +147,12 @@ class BackgroundsServerService {
         try {
             const { response } = await fetchData(`${
                 appVariables.rest.url
-            }/backgrounds/get-random?type=image&query=${
-                this.storage.backgroundRadioQuery || ""
+            }/backgrounds/${
+                this.storage.backgroundRadioQuery?.type === 'collection' ? 'get-from-collection' : 'get-random'
+            }?type=image${
+                this.storage.backgroundRadioQuery?.type === 'collection'
+                    ? ''
+                    : `&query=${this.storage.backgroundRadioQuery?.value || ""}`
             }&count=${appVariables.backgrounds.radio.preloadMetaCount}`);
 
             console.log('[backgrounds] Download next queue backgrounds', response);

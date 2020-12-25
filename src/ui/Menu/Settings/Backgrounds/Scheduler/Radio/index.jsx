@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Collapse, Typography } from '@material-ui/core';
 import { BG_CHANGE_INTERVAL, BG_SELECT_MODE, BG_TYPE, FETCH } from '@/enum';
@@ -8,6 +8,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import changeLocationPage from './ChangeQuery';
 import useAppStateService from '@/stores/app/AppStateProvider';
+import appVariables from '@/config/appVariables';
+import { eventToBackground } from '@/stores/server/bus';
 
 const useStyles = makeStyles((theme) => ({
     row: {
@@ -39,11 +41,27 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const stations = [
+    ...appVariables.backgrounds.radio.collections.map((collection) => ({
+        type: 'collection',
+        id: collection,
+    })),
+    ...appVariables.backgrounds.radio.queryPresets.map((query) => ({
+        type: 'query',
+        ...query,
+    })),
+    {
+        type: 'custom-query',
+        id: 'CUSTOM_QUERY',
+    },
+];
+
 function Radio({ onSelect }) {
     const classes = useStyles();
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const { t } = useTranslation();
+    const [isCustomQuery, setIsCustomQuery] = useState(coreService.storage.persistent.backgroundRadioQuery?.type === 'custom-query');
 
     return (
         <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO}>
@@ -84,22 +102,50 @@ function Radio({ onSelect }) {
                 }}
             />
             <MenuRow
-                title={t('settings.bg.scheduler.query.title')}
-                description={t('settings.bg.scheduler.query.description')}
+                title={t('settings.bg.scheduler.changeInterval.title')}
+                description={t('settings.bg.scheduler.changeInterval.description')}
                 action={{
-                    type: ROWS_TYPE.LINK,
-                    onClick: () => onSelect(changeLocationPage),
-                    component: coreService.storage.persistent.backgroundRadioQuery
-                        ? (`${
-                            coreService.storage.persistent.backgroundRadioQuery || t('unknown')
-                        }`)
-                        : (
-                            <Typography className={classes.notSetValue}>
-                                {t('settings.bg.scheduler.query.notSet')}
-                            </Typography>
-                        ),
+                    type: ROWS_TYPE.SELECT,
+                    format: (value) => t(`settings.bg.scheduler.query.query.${value}`),
+                    value: isCustomQuery ? 'CUSTOM_QUERY' : coreService.storage.persistent.backgroundRadioQuery?.id,
+                    onChange: (event) => {
+                        if (event.target.value === 'CUSTOM_QUERY') {
+                            setIsCustomQuery(true);
+                        } else {
+                            const value = stations.find((station) => station.id === event.target.value);
+
+                            setIsCustomQuery(false);
+
+                            coreService.storage.updatePersistent({
+                                backgroundRadioQuery: value,
+                                bgsRadio: [],
+                            });
+
+                            eventToBackground('backgrounds/nextBg');
+                        }
+                    },
+                    values: stations.map(({ id }) => id),
                 }}
             />
+            <Collapse in={isCustomQuery}>
+                <MenuRow
+                    title={t('settings.bg.scheduler.query.title')}
+                    description={t('settings.bg.scheduler.query.description')}
+                    action={{
+                        type: ROWS_TYPE.LINK,
+                        onClick: () => onSelect(changeLocationPage),
+                        component: coreService.storage.persistent.backgroundRadioQuery?.value
+                            ? (`${
+                                coreService.storage.persistent.backgroundRadioQuery?.value || t('unknown')
+                            }`)
+                            : (
+                                <Typography className={classes.notSetValue}>
+                                    {t('settings.bg.scheduler.query.notSet')}
+                                </Typography>
+                            ),
+                    }}
+                />
+            </Collapse>
         </Collapse>
     );
 }

@@ -97,7 +97,7 @@ function ChangeQuery({ onClose }) {
     const { t } = useTranslation();
     const coreService = useCoreService();
     const store = useLocalObservable(() => ({
-        searchRequest: coreService.storage.persistent.backgroundRadioQuery,
+        searchRequest: coreService.storage.persistent.backgroundRadioQuery?.value,
         foundRequest: "",
         list: [],
         status: FETCH.WAIT,
@@ -130,7 +130,11 @@ function ChangeQuery({ onClose }) {
 
     const handleSelect = () => {
         coreService.storage.updatePersistent({
-            backgroundRadioQuery: store.searchRequest,
+            backgroundRadioQuery: {
+                id: 'CUSTOM_QUERY',
+                type: 'custom-query',
+                value: store.searchRequest,
+            },
             bgsRadio: [],
         });
 
@@ -164,10 +168,10 @@ function ChangeQuery({ onClose }) {
                     <Chip
                         className={classes.chip}
                         variant="outlined"
-                        key={query}
-                        label={query}
+                        key={query.id}
+                        label={query.value}
                         onClick={() => {
-                            store.searchRequest = query;
+                            store.searchRequest = query.value;
                             handleSearch();
                         }}
                     />
