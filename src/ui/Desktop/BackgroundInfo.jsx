@@ -13,6 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
+import { BG_SOURCE } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
     infoCard: {
@@ -39,6 +40,16 @@ const useStyles = makeStyles((theme) => ({
 function BackgroundInfo({ author, authorName, authorAvatarSrc, sourceLink, service, description }) {
     const { t } = useTranslation();
     const classes = useStyles();
+
+    let serviceName = 'Unknown';
+
+    if (service === BG_SOURCE.UNSPLASH) {
+        serviceName = 'Unsplash';
+    } else if (service === BG_SOURCE.PIXABAY) {
+        serviceName = 'Pixabay';
+    } else if (service === BG_SOURCE.PEXELS) {
+        serviceName = 'Pexels';
+    }
 
     return (
         <MouseDistanceFade distanceMax={160} distanceMin={16}>
@@ -67,7 +78,7 @@ function BackgroundInfo({ author, authorName, authorAvatarSrc, sourceLink, servi
                         <Typography variant="span">
                             {authorName}
                             <Typography className={classes.service} variant="span">
-                                , from Unsplash
+                                , from {serviceName}
                             </Typography>
                         </Typography>
                     )}

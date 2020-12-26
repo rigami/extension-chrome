@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { observer } from 'mobx-react-lite';
-import { BG_SELECT_MODE } from '@/enum';
+import { BG_SELECT_MODE, BG_TYPE } from '@/enum';
 import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
@@ -24,7 +24,17 @@ function SchedulerSection({ onSelect }) {
                     type: ROWS_TYPE.SELECT,
                     format: (value) => t(`settings.bg.scheduler.selectionMethod.method.${value}`),
                     value: backgrounds.settings.selectionMethod,
-                    onChange: (event) => backgrounds.settings.update({ selectionMethod: event.target.value }),
+                    onChange: (event) => {
+                        if(event.target.value === BG_SELECT_MODE.RADIO) {
+                            backgrounds.settings.update({
+                                type: backgrounds.settings.type.filter((type) => (
+                                    type !== BG_TYPE.ANIMATION
+                                    && type !== BG_TYPE.FILL_COLOR
+                                )),
+                            });
+                        }
+                        backgrounds.settings.update({ selectionMethod: event.target.value });
+                    },
                     values: [
                         BG_SELECT_MODE.RANDOM,
                         BG_SELECT_MODE.SPECIFIC,

@@ -30,6 +30,7 @@ import fetchData from '@/utils/xhrPromise';
 import appVariables from '@/config/appVariables';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { eventToBackground } from '@/stores/server/bus';
+import useAppStateService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -96,6 +97,7 @@ function ChangeQuery({ onClose }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const coreService = useCoreService();
+    const { backgrounds } = useAppStateService();
     const store = useLocalObservable(() => ({
         searchRequest: coreService.storage.persistent.backgroundRadioQuery?.value,
         foundRequest: "",
@@ -113,7 +115,13 @@ function ChangeQuery({ onClose }) {
         store.status = FETCH.PENDING;
 
         try {
-            const { response: list } = await fetchData(`${appVariables.rest.url}/backgrounds/search?count=30&type=image&query=${store.searchRequest}`);
+            const { response: list } = await fetchData(`${
+                appVariables.rest.url
+            }/backgrounds/search?count=30&type=${
+                backgrounds.settings.type.join(',').toLowerCase()
+            }&query=${
+                store.searchRequest
+            }`);
 
             console.log('list', list)
 

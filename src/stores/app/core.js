@@ -142,7 +142,7 @@ class Core {
             ...first(response),
             source: BG_SOURCE[first(response).service],
             downloadLink: first(response).fullSrc,
-            type: BG_TYPE.IMAGE,
+            type: BG_TYPE[first(response).type],
         }));
 
         this.storage.updatePersistent({

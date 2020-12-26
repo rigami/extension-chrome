@@ -149,7 +149,7 @@ class BackgroundsServerService {
                 appVariables.rest.url
             }/backgrounds/${
                 this.storage.backgroundRadioQuery?.type === 'collection' ? 'get-from-collection' : 'get-random'
-            }?type=image${
+            }?type=${this.settings.type.join(',').toLowerCase()}${
                 this.storage.backgroundRadioQuery?.type === 'collection'
                     ? ''
                     : `&query=${this.storage.backgroundRadioQuery?.value || ""}`
@@ -162,7 +162,7 @@ class BackgroundsServerService {
                 ...response.map((bg) => new Background({
                     ...bg,
                     source: BG_SOURCE[bg.service],
-                    type: BG_TYPE.IMAGE,
+                    type: BG_TYPE[bg.type],
                     downloadLink: bg.fullSrc,
                 }))
             ]);

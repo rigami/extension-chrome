@@ -165,6 +165,16 @@ function Bg(props) {
     const { t } = useTranslation();
     const classes = useStyles();
 
+    let serviceName = 'Unknown';
+
+    if (source === BG_SOURCE.UNSPLASH) {
+        serviceName = 'Unsplash';
+    } else if (source === BG_SOURCE.PIXABAY) {
+        serviceName = 'Pixabay';
+    } else if (source === BG_SOURCE.PEXELS) {
+        serviceName = 'Pexels';
+    }
+
     return (
         <GridListTile className={classes.bgCardWrapper} {...other}>
             <Box
@@ -190,7 +200,7 @@ function Bg(props) {
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip>
-                    {source === BG_SOURCE.UNSPLASH && (
+                    {source !== BG_SOURCE.USER && (
                         <Tooltip title={t('settings.bg.openSource')} placement="top">
                             <Link
                                 className={classes.link}
@@ -203,7 +213,7 @@ function Bg(props) {
                                     classes={{
                                         actionIcon: classes.icon,
                                     }}
-                                    subtitle={`by ${author}, Unsplash`}
+                                    subtitle={`by ${author}, ${serviceName}`}
                                     actionIcon={(<LeftIcon />)}
                                 />
                             </Link>

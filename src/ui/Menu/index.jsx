@@ -109,7 +109,7 @@ function Menu({ }) {
 
         if (
             backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO
-            && backgrounds.currentBG.source === BG_SOURCE.UNSPLASH
+            && backgrounds.currentBG.source !== BG_SOURCE.USER
             && !backgrounds.currentBG.isSaved
         ) {
             settings.push({
@@ -121,7 +121,7 @@ function Menu({ }) {
 
         if (
             backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO
-            && backgrounds.currentBG.source === BG_SOURCE.UNSPLASH
+            && backgrounds.currentBG.source !== BG_SOURCE.USER
             && backgrounds.currentBG.isSaved
         ) {
             settings.push({
