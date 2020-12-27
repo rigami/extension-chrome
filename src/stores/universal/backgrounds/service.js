@@ -64,7 +64,14 @@ class BackgroundsUniversalService {
         const fileName = Date.now().toString();
         console.log('[backgrounds] Fetch BG', { src, fileName });
 
-        const defaultBG = await fetch(src).then((response) => response.blob());
+        let defaultBG;
+
+        try {
+            defaultBG = await (await fetch(src)).blob();
+        } catch (e) {
+            console.error('[backgrounds] Failed fetch bg', e);
+            return Promise.reject();
+        }
 
         console.log('[backgrounds] Create preview...');
 

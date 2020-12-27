@@ -119,7 +119,19 @@ class BackgroundsServerService {
         this.bgState = BG_SHOW_STATE.SEARCH;
 
         const setFromQueue = async (queue) => {
-            const fileName = await Service.fetchBG(first(queue).downloadLink);
+            let fileName;
+
+            try {
+                fileName = await Service.fetchBG(first(queue).downloadLink);
+            } catch (e) {
+                console.error('[backgrounds] Failed get background. Get next...', e);
+
+                this.core.storageService.updatePersistent({
+                    bgsRadio: queue.splice(1),
+                });
+
+                return this.nextBGRadio()
+            }
 
             const currBg = new Background({
                 ...first(queue),
