@@ -4,7 +4,8 @@ import {
     IconButton,
     CardHeader,
     Avatar,
-    Typography, Tooltip,
+    Typography,
+    Tooltip,
 } from '@material-ui/core';
 import {
     OpenInNewRounded as OpenSourceIcon,

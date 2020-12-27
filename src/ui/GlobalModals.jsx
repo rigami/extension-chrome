@@ -29,12 +29,14 @@ function GlobalModals({ children }) {
     const [edit, setEdit] = useState(null);
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
     const [contextMenuActions, setContextMenuActions] = useState([]);
+    const [contextMenuReactions, setContextMenuReactions] = useState([]);
 
     useEffect(() => {
         const localListeners = [
-            coreService.localEventBus.on('system/contextMenu', ({ actions, position }) => {
+            coreService.localEventBus.on('system/contextMenu', ({ actions, position, reactions }) => {
                 setContextMenuPosition(position);
-                setContextMenuActions(actions);
+                setContextMenuActions(() => actions);
+                setContextMenuReactions(reactions);
             }),
             coreService.localEventBus.on('bookmark/create', () => setEdit({
                 type: 'bookmark',
@@ -151,6 +153,7 @@ function GlobalModals({ children }) {
                 isOpen={contextMenuPosition !== null}
                 position={contextMenuPosition}
                 actions={contextMenuActions}
+                reactions={contextMenuReactions}
                 onClose={() => setContextMenuPosition(null)}
             />
             <EditBookmarkModal

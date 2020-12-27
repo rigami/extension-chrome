@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Menu,
     ListItem,
@@ -8,11 +8,30 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
+import { reaction } from 'mobx';
+import { useTranslation } from 'react-i18next';
 
-const useStyles = makeStyles(() => ({ menu: { width: 230 } }));
+const useStyles = makeStyles((theme) => ({
+    menu: { width: 230 },
+    emptyMenu: {
+        color: theme.palette.text.secondary,
+        fontStyle: 'italic',
+    },
+}));
 
-function ContextMenu({ isOpen, onClose, position, actions = [] }) {
+function ContextMenu({ isOpen, onClose, position, actions = [], reactions = [] }) {
+    const { t } = useTranslation();
     const classes = useStyles();
+    const [forceRender, setForceRender] = useState(0);
+
+    useEffect(() => {
+        reactions.forEach((rule) => {
+            reaction(rule, () => setForceRender((old) => old > 10 ? 0 : old + 1))
+        });
+
+    }, [reactions.length]);
+
+    const calcActions = typeof actions === 'function' ? actions() : actions;
 
     return (
         <Menu
@@ -22,25 +41,36 @@ function ContextMenu({ isOpen, onClose, position, actions = [] }) {
             anchorPosition={position}
             classes={{ list: classes.menu }}
         >
-            {actions.map((element) => {
+            {calcActions.length === 0 && (
+                <ListItem
+                    dense
+                    disabled
+                    className={classes.emptyMenu}
+                >
+                    <ListItemText primary={t('contextMenu.empty')} />
+                </ListItem>
+            )}
+            {calcActions.map((element) => {
                 if (element.type === 'divider') {
                     return (
-                        <Divider />
+                        <Divider key="divider" />
                     );
                 } else {
                     const Icon = element.icon;
 
                     return (
                         <ListItem
+                            key={element.title}
                             button
                             dense
+                            disabled={element.disabled}
                             onClick={() => {
                                 element.onClick();
                                 onClose();
                             }}
                         >
                             <ListItemIcon>
-                                <Icon />
+                                <Icon {...element.iconProps} />
                             </ListItemIcon>
                             <ListItemText primary={element.title} secondary={element.description} />
                         </ListItem>

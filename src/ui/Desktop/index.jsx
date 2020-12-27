@@ -2,11 +2,14 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import {
-    Refresh as RefreshIcon,
+    RefreshRounded as RefreshIcon,
     AddPhotoAlternateRounded as UploadFromComputerIcon,
-    Add as AddBookmarkIcon,
+    AddRounded as AddBookmarkIcon,
+    AddRounded as AddIcon,
+    CheckRounded as AddedIcon,
+    OpenInNewRounded as OpenSourceIcon,
 } from '@material-ui/icons';
-import { Box } from '@material-ui/core';
+import { Box, CircularProgress } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import Menu from '@/ui/Menu';
@@ -15,6 +18,8 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 import Widgets from './Widgets';
 import Background from './Background';
 import { eventToBackground } from '@/stores/server/bus';
+import { BG_SHOW_STATE, BG_SOURCE } from '@/enum';
+import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -22,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
         height: '100vh',
         overflow: 'hidden',
         position: 'relative',
+    },
+    loadBGIcon: {
+        color: theme.palette.text.primary,
     },
 }));
 
@@ -34,13 +42,37 @@ function Desktop() {
 
     const openMenu = (position) => {
         coreService.localEventBus.call('system/contextMenu', {
-            actions: [
+            reactions: [
+                () => backgrounds.bgState,
+            ],
+            actions: () => [
                 {
                     type: 'button',
-                    title: t('bg.next'),
-                    icon: RefreshIcon,
+                    title: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? t('bg.fetchNextBG') : t('bg.next'),
+                    disabled: backgrounds.bgState === BG_SHOW_STATE.SEARCH,
+                    icon: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? CircularProgress : RefreshIcon,
+                    iconProps: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? {
+                        size: 20,
+                        className: classes.loadBGIcon,
+                    } : {},
                     onClick: () => eventToBackground('backgrounds/nextBg'),
                 },
+                ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
+                    {
+                        type: 'button',
+                        title: backgrounds.currentBG?.isSaved ? t('bg.addedToLibrary') : t('bg.addToLibrary'),
+                        disabled: backgrounds.currentBG?.isSaved,
+                        icon: backgrounds.currentBG?.isSaved ? AddedIcon : AddIcon,
+                        onClick: () => BackgroundsUniversalService.addToLibrary(backgrounds.currentBG),
+                    },
+                    {
+                        type: 'button',
+                        title: t('bg.openSource'),
+                        icon: OpenSourceIcon,
+                        onClick: () => window.open(backgrounds.currentBG?.sourceLink, "_blank"),
+                    },
+                    { type: 'divider' },
+                ] : []),
                 {
                     type: 'button',
                     title: t('bg.addShort'),
