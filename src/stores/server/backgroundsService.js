@@ -22,6 +22,7 @@ class BackgroundsServerService {
     core;
     storage;
     settings;
+    _schedulerTimer;
 
     constructor(core) {
         makeAutoObservable(this);
@@ -67,10 +68,33 @@ class BackgroundsServerService {
             () => this.settings.type,
             () => this.nextBG(),
         );
+
         reaction(
             () => this.settings.changeInterval,
-            () => this.nextBG(),
+            () => {
+                try {
+                    this.core.storageService.updatePersistent({ bgNextSwitchTimestamp: Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval] });
+                    this._schedulerSwitch();
+                } catch (e) {
+                    console.error('[backgrounds] Failed change interval', e)
+                }
+            },
         );
+
+        if (this.settings.changeInterval) this._schedulerSwitch();
+    }
+
+    @action('next bg')
+    async _schedulerSwitch() {
+        console.log()
+        if (this.storage.bgNextSwitchTimestamp <= Date.now()) {
+            console.log('[backgrounds] Run switch scheduler...')
+            await this.nextBG();
+        }
+
+        clearTimeout(this._schedulerTimer);
+        this._schedulerTimer = setTimeout(this._schedulerSwitch, this.storage.bgNextSwitchTimestamp - Date.now());
+        console.log(`[backgrounds] Set scheduler switch. Run after ${this.storage.bgNextSwitchTimestamp - Date.now()}ms`);
     }
 
     @action('next bg')
