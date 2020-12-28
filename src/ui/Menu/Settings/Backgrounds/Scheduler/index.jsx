@@ -4,7 +4,7 @@ import { BG_SELECT_MODE, BG_TYPE } from '@/enum';
 import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import Radio from './Radio';
+import Stream from './Stream';
 import Random from './Random';
 import Specific from './Specific';
 import useAppStateService from '@/stores/app/AppStateProvider';
@@ -25,7 +25,7 @@ function SchedulerSection({ onSelect }) {
                     format: (value) => t(`settings.bg.scheduler.selectionMethod.method.${value}`),
                     value: backgrounds.settings.selectionMethod,
                     onChange: (event) => {
-                        if(event.target.value === BG_SELECT_MODE.RADIO) {
+                        if(event.target.value === BG_SELECT_MODE.STREAM) {
                             backgrounds.settings.update({
                                 type: backgrounds.settings.type.filter((type) => (
                                     type !== BG_TYPE.ANIMATION
@@ -38,14 +38,14 @@ function SchedulerSection({ onSelect }) {
                     values: [
                         BG_SELECT_MODE.RANDOM,
                         BG_SELECT_MODE.SPECIFIC,
-                        BG_SELECT_MODE.SEQUENCE,
-                        BG_SELECT_MODE.RADIO,
+                        // BG_SELECT_MODE.SEQUENCE,
+                        BG_SELECT_MODE.STREAM,
                     ],
                 }}
             />
             <Specific onSelect={onSelect} />
             <Random />
-            <Radio onSelect={onSelect} />
+            <Stream onSelect={onSelect} />
         </React.Fragment>
     );
 }

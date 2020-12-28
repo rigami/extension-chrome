@@ -86,7 +86,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                         </Tooltip>
                         {(
                             backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM
-                            || backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO
+                            || backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
                         ) && (
                             <React.Fragment>
                                 <Divider />

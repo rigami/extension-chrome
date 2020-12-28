@@ -48,7 +48,7 @@ function Desktop() {
             actions: () => [
                 {
                     type: 'button',
-                    title: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? t('bg.fetchNextBG') : t('bg.next'),
+                    title: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? t('bg.fetchingNextBG') : t('bg.next'),
                     disabled: backgrounds.bgState === BG_SHOW_STATE.SEARCH,
                     icon: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? CircularProgress : RefreshIcon,
                     iconProps: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? {

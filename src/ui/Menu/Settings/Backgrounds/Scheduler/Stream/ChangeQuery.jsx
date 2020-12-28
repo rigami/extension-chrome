@@ -102,7 +102,7 @@ function ChangeQuery({ onClose }) {
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const store = useLocalObservable(() => ({
-        searchRequest: coreService.storage.persistent.backgroundRadioQuery?.value,
+        searchRequest: coreService.storage.persistent.backgroundStreamQuery?.value,
         foundRequest: "",
         list: [],
         status: FETCH.WAIT,
@@ -141,12 +141,12 @@ function ChangeQuery({ onClose }) {
 
     const handleSelect = () => {
         coreService.storage.updatePersistent({
-            backgroundRadioQuery: {
+            backgroundStreamQuery: {
                 id: 'CUSTOM_QUERY',
                 type: 'custom-query',
                 value: store.searchRequest,
             },
-            bgsRadio: [],
+            bgsStream: [],
         });
 
         eventToBackground('backgrounds/nextBg');
@@ -175,7 +175,7 @@ function ChangeQuery({ onClose }) {
             </form>
             <Divider />
             <Box className={classes.chipsWrapper}>
-                {(appVariables.backgrounds.radio.queryPresets.map((query) => (
+                {(appVariables.backgrounds.stream.queryPresets.map((query) => (
                     <Chip
                         className={classes.chip}
                         variant="outlined"
@@ -228,7 +228,7 @@ function ChangeQuery({ onClose }) {
                             message={t("settings.bg.scheduler.query.footerMessage.title")}
                             actions={[
                                 {
-                                    title: t("settings.bg.scheduler.query.footerMessage.useStation"),
+                                    title: t("settings.bg.scheduler.query.footerMessage.useStream"),
                                     variant: 'contained',
                                     color: 'primary',
                                     onClick: handleSelect,
@@ -251,19 +251,19 @@ function ChangeQuery({ onClose }) {
                     description={t('settings.widgets.dtw.weather.region.search.failed.description')}
                 />
             )}
-            {store.status === FETCH.WAIT && !coreService.storage.persistent.backgroundRadioQuery && (
+            {store.status === FETCH.WAIT && !coreService.storage.persistent.backgroundStreamQuery && (
                 <FullScreenStub
                     icon={WrongLocationIcon}
                     message={t('settings.widgets.dtw.weather.region.search.wait.failed.title')}
                     description={t('settings.widgets.dtw.weather.region.search.wait.failed.description')}
                 />
             )}
-            {store.status === FETCH.WAIT && coreService.storage.persistent.backgroundRadioQuery && (
+            {store.status === FETCH.WAIT && coreService.storage.persistent.backgroundStreamQuery && (
                 <FullScreenStub
                     icon={PlaceIcon}
                     message={t(
                         'settings.widgets.dtw.weather.region.search.wait.manual.title',
-                        { locationName: coreService.storage.persistent.backgroundRadioQuery },
+                        { locationName: coreService.storage.persistent.backgroundStreamQuery },
                     )}
                     description={t('settings.widgets.dtw.weather.region.search.wait.manual.description')}
                 />

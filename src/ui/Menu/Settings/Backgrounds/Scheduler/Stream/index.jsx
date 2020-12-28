@@ -42,11 +42,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const stations = [
-    ...appVariables.backgrounds.radio.collections.map((collection) => ({
+    ...appVariables.backgrounds.stream.collections.map((collection) => ({
         type: 'collection',
         id: collection,
     })),
-    ...appVariables.backgrounds.radio.queryPresets.map((query) => ({
+    ...appVariables.backgrounds.stream.queryPresets.map((query) => ({
         type: 'query',
         ...query,
     })),
@@ -56,15 +56,15 @@ const stations = [
     },
 ];
 
-function Radio({ onSelect }) {
+function Stream({ onSelect }) {
     const classes = useStyles();
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const { t } = useTranslation();
-    const [isCustomQuery, setIsCustomQuery] = useState(coreService.storage.persistent.backgroundRadioQuery?.type === 'custom-query');
+    const [isCustomQuery, setIsCustomQuery] = useState(coreService.storage.persistent.backgroundStreamQuery?.type === 'custom-query');
 
     return (
-        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO}>
+        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM}>
             <MenuRow
                 title={t('settings.bg.scheduler.changeInterval.title')}
                 description={t('settings.bg.scheduler.changeInterval.description')}
@@ -102,12 +102,12 @@ function Radio({ onSelect }) {
                 }}
             />
             <MenuRow
-                title={t('settings.bg.scheduler.changeInterval.title')}
-                description={t('settings.bg.scheduler.changeInterval.description')}
+                title={t('settings.bg.scheduler.query.title')}
+                description={t('settings.bg.scheduler.query.description')}
                 action={{
                     type: ROWS_TYPE.SELECT,
                     format: (value) => t(`settings.bg.scheduler.query.query.${value}`),
-                    value: isCustomQuery ? 'CUSTOM_QUERY' : coreService.storage.persistent.backgroundRadioQuery?.id,
+                    value: isCustomQuery ? 'CUSTOM_QUERY' : coreService.storage.persistent.backgroundStreamQuery?.id,
                     onChange: (event) => {
                         if (event.target.value === 'CUSTOM_QUERY') {
                             setIsCustomQuery(true);
@@ -117,8 +117,8 @@ function Radio({ onSelect }) {
                             setIsCustomQuery(false);
 
                             coreService.storage.updatePersistent({
-                                backgroundRadioQuery: value,
-                                bgsRadio: [],
+                                backgroundStreamQuery: value,
+                                bgsStream: [],
                             });
 
                             eventToBackground('backgrounds/nextBg');
@@ -129,14 +129,14 @@ function Radio({ onSelect }) {
             />
             <Collapse in={isCustomQuery}>
                 <MenuRow
-                    title={t('settings.bg.scheduler.query.title')}
-                    description={t('settings.bg.scheduler.query.description')}
+                    title={t('settings.bg.scheduler.query.custom.title')}
+                    description={t('settings.bg.scheduler.query.custom.description')}
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => onSelect(changeLocationPage),
-                        component: coreService.storage.persistent.backgroundRadioQuery?.value
+                        component: coreService.storage.persistent.backgroundStreamQuery?.value
                             ? (`${
-                                coreService.storage.persistent.backgroundRadioQuery?.value || t('unknown')
+                                coreService.storage.persistent.backgroundStreamQuery?.value || t('unknown')
                             }`)
                             : (
                                 <Typography className={classes.notSetValue}>
@@ -150,4 +150,4 @@ function Radio({ onSelect }) {
     );
 }
 
-export default observer(Radio);
+export default observer(Stream);

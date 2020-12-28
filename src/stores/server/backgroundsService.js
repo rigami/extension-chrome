@@ -105,8 +105,8 @@ class BackgroundsServerService {
 
         if (this.settings.selectionMethod === BG_SELECT_MODE.RANDOM) {
             return this.nextBGLocal();
-        } else if (this.settings.selectionMethod === BG_SELECT_MODE.RADIO) {
-            return this.nextBGRadio();
+        } else if (this.settings.selectionMethod === BG_SELECT_MODE.STREAM) {
+            return this.nextBGStream();
         }
     }
 
@@ -137,9 +137,9 @@ class BackgroundsServerService {
         if (bg) await this.setBG(bg);
     }
 
-    @action('next bg radio')
-    async nextBGRadio() {
-        console.log('[backgrounds] Search next background from radio station...')
+    @action('next bg stream')
+    async nextBGStream() {
+        console.log('[backgrounds] Search next background from stream station...')
         this.bgState = BG_SHOW_STATE.SEARCH;
 
         const setFromQueue = async (queue) => {
@@ -151,10 +151,10 @@ class BackgroundsServerService {
                 console.error('[backgrounds] Failed get background. Get next...', e);
 
                 this.core.storageService.updatePersistent({
-                    bgsRadio: queue.splice(1),
+                    bgsStream: queue.splice(1),
                 });
 
-                return this.nextBGRadio()
+                return this.nextBGStream()
             }
 
             const currBg = new Background({
@@ -164,18 +164,18 @@ class BackgroundsServerService {
             });
 
             this.core.storageService.updatePersistent({
-                bgsRadio: queue.splice(1),
-                currentBGRadio: currBg,
+                bgsStream: queue.splice(1),
+                currentBGStream: currBg,
             });
 
             await this.setBG(new Background(currBg));
         };
 
-        if (this.storage.bgsRadio?.length > appVariables.backgrounds.radio.preloadBGCount) {
-            const bgRemove = first(this.storage.bgsRadio);
+        if (this.storage.bgsStream?.length > appVariables.backgrounds.stream.preloadBGCount) {
+            const bgRemove = first(this.storage.bgsStream);
             await Service.removeFromStore(bgRemove);
 
-            await setFromQueue(this.storage.bgsRadio);
+            await setFromQueue(this.storage.bgsStream);
 
             return Promise.resolve();
         }
@@ -184,17 +184,17 @@ class BackgroundsServerService {
             const { response } = await fetchData(`${
                 appVariables.rest.url
             }/backgrounds/${
-                this.storage.backgroundRadioQuery?.type === 'collection' ? 'get-from-collection' : 'get-random'
+                this.storage.backgroundStreamQuery?.type === 'collection' ? 'get-from-collection' : 'get-random'
             }?type=${this.settings.type.join(',').toLowerCase()}${
-                this.storage.backgroundRadioQuery?.type === 'collection'
+                this.storage.backgroundStreamQuery?.type === 'collection'
                     ? ''
-                    : `&query=${this.storage.backgroundRadioQuery?.value || ""}`
-            }&count=${appVariables.backgrounds.radio.preloadMetaCount}`);
+                    : `&query=${this.storage.backgroundStreamQuery?.value || ""}`
+            }&count=${appVariables.backgrounds.stream.preloadMetaCount}`);
 
             console.log('[backgrounds] Download next queue backgrounds', response);
 
             await setFromQueue([
-                ...(this.storage.bgsRadio || []),
+                ...(this.storage.bgsStream || []),
                 ...response.map((bg) => new Background({
                     ...bg,
                     source: BG_SOURCE[bg.service],

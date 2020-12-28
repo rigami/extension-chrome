@@ -108,7 +108,7 @@ function Menu({ }) {
         }
 
         if (
-            backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO
+            backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
             && backgrounds.currentBG.source !== BG_SOURCE.USER
             && !backgrounds.currentBG.isSaved
         ) {
@@ -120,7 +120,7 @@ function Menu({ }) {
         }
 
         if (
-            backgrounds.settings.selectionMethod === BG_SELECT_MODE.RADIO
+            backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
             && backgrounds.currentBG.source !== BG_SOURCE.USER
             && backgrounds.currentBG.isSaved
         ) {

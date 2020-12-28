@@ -24,7 +24,7 @@ export default {
         },
     },
     backgrounds: {
-        radio: {
+        stream: {
             preloadBGCount: 2,
             preloadMetaCount: 10,
             collections: [
