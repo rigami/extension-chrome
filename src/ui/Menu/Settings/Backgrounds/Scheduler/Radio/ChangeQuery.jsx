@@ -11,7 +11,7 @@ import {
     Chip,
     IconButton,
 } from '@material-ui/core';
-import { FETCH, } from '@/enum';
+import { BG_SOURCE, BG_TYPE, FETCH, } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     ErrorRounded as ErrorIcon,
@@ -31,6 +31,9 @@ import appVariables from '@/config/appVariables';
 import FullscreenStub from '@/ui-components/FullscreenStub';
 import { eventToBackground } from '@/stores/server/bus';
 import useAppStateService from '@/stores/app/AppStateProvider';
+import BackgroundCard from '@/ui-components/BackgroundCard';
+import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
+import Background from '@/stores/universal/backgrounds/entities/background';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -192,8 +195,24 @@ function ChangeQuery({ onClose }) {
                         {store.list.length !== 0 && (
                             <GridList cellHeight={220} cols={3}>
                                 {store.list.map((bg) => (
-                                    <GridListTile cols={1}>
-                                        <CardMedia image={bg.previewSrc} className={classes.bgCard} />
+                                    <GridListTile key={bg.id}>
+                                        <BackgroundCard
+                                            {...bg}
+                                            source={bg.service}
+                                            select={coreService.storage.persistent.bgCurrent?.id === bg.id}
+                                            onSet={() => backgrounds.setBG(new Background({
+                                                ...bg,
+                                                source: BG_SOURCE[bg.service],
+                                                type: BG_TYPE[bg.type],
+                                                downloadLink: bg.fullSrc,
+                                            }))}
+                                            onAdd={() => BackgroundsUniversalService.addToLibrary(new Background({
+                                                ...bg,
+                                                source: BG_SOURCE[bg.service],
+                                                type: BG_TYPE[bg.type],
+                                                downloadLink: bg.fullSrc,
+                                            }))}
+                                        />
                                     </GridListTile>
                                 ))}
                             </GridList>

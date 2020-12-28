@@ -1,26 +1,13 @@
-import React, { useState, useEffect, memo } from 'react';
-import { BG_SOURCE, FETCH } from '@/enum';
+import React, { useState, useEffect } from 'react';
+import { FETCH } from '@/enum';
 import {
     Box,
-    Avatar,
-    Button,
-    IconButton,
-    Tooltip,
     CircularProgress,
     Typography,
     GridList,
     GridListTile,
     ListSubheader,
-    GridListTileBar,
-    Link,
 } from '@material-ui/core';
-import {
-    WallpaperRounded as WallpaperIcon,
-    DeleteForeverRounded as DeleteIcon,
-    CheckRounded as SetIcon,
-    ArrowForwardRounded as LeftIcon,
-} from '@material-ui/icons';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
@@ -30,58 +17,11 @@ import { last } from 'lodash';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
+import BackgroundCard from '@/ui-components/BackgroundCard';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         overflow: 'hidden',
-    },
-    bgCard: {
-        position: 'relative',
-        backgroundSize: 'cover',
-        backgroundPosition: '50%',
-        height: '100%',
-        width: '100%',
-    },
-    bgCardWrapper: {
-        height: theme.spacing(20),
-    },
-    bgActionsWrapper: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        backgroundColor: fade(theme.palette.common.black, 0.7),
-        opacity: 0,
-        transition: theme.transitions.create('', {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.shortest,
-        }),
-        '&:hover': { opacity: 1 },
-    },
-    setIcon: {
-        color: theme.palette.primary.main,
-        width: '100%',
-        height: '100%',
-        '& svg': {
-            width: 36,
-            height: 36,
-        },
-    },
-    deleteIcon: {
-        color: theme.palette.common.white,
-        opacity: 0.7,
-        position: 'absolute',
-        top: theme.spacing(1),
-        right: theme.spacing(1),
-        '&:hover': {
-            opacity: 1,
-            color: theme.palette.error.main,
-        },
     },
     centerPage: {
         flexGrow: 1,
@@ -89,33 +29,6 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    bgStub: {
-        position: 'absolute',
-        zIndex: -1,
-        height: '100%',
-        width: '100%',
-    },
-    titleBar: {
-        position: 'relative',
-        width: '100%',
-        height: 'auto',
-        padding: theme.spacing(1, 0),
-        paddingRight: theme.spacing(2),
-        background: 'none',
-        borderTop: `1px solid ${fade(theme.palette.common.white, 0.12)}`,
-    },
-    icon: {
-        display: 'flex',
-        color: theme.palette.common.white,
-    },
-    link: {
-        position: 'relative',
-        width: '100%',
-    },
-    selectIcon: {
-        backgroundColor: theme.palette.common.white,
-        color: theme.palette.common.black,
     },
 }));
 
@@ -146,86 +59,6 @@ function HeaderActions() {
         </React.Fragment>
     );
 }
-
-function Bg(props) {
-    const {
-        fileName,
-        sourceLink,
-        previewSrc,
-        fullSrc,
-        source,
-        author,
-        select,
-        antiAliasing,
-        format,
-        onSet,
-        onRemove,
-        ...other
-    } = props;
-    const { t } = useTranslation();
-    const classes = useStyles();
-
-    let serviceName = 'Unknown';
-
-    if (source === BG_SOURCE.UNSPLASH) {
-        serviceName = 'Unsplash';
-    } else if (source === BG_SOURCE.PIXABAY) {
-        serviceName = 'Pixabay';
-    } else if (source === BG_SOURCE.PEXELS) {
-        serviceName = 'Pexels';
-    }
-
-    return (
-        <GridListTile className={classes.bgCardWrapper} {...other}>
-            <Box
-                className={classes.bgCard}
-                style={{ backgroundImage: `url('${previewSrc}')` }}
-            >
-                <Avatar variant="square" className={classes.bgStub}>
-                    <WallpaperIcon fontSize="large" />
-                </Avatar>
-                {select && (
-                    <SetIcon className={classes.selectIcon} />
-                )}
-                <Box className={classes.bgActionsWrapper}>
-                    {!select && (
-                        <Tooltip title={t('settings.bg.apply')} placement="top">
-                            <Button className={classes.setIcon} onClick={onSet}>
-                                <SetIcon />
-                            </Button>
-                        </Tooltip>
-                    )}
-                    <Tooltip title={t('bg.remove')}>
-                        <IconButton className={classes.deleteIcon} onClick={onRemove}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
-                    {source !== BG_SOURCE.USER && (
-                        <Tooltip title={t('settings.bg.openSource')} placement="top">
-                            <Link
-                                className={classes.link}
-                                underline="none"
-                                href={sourceLink}
-                                target="_blank"
-                            >
-                                <GridListTileBar
-                                    className={classes.titleBar}
-                                    classes={{
-                                        actionIcon: classes.icon,
-                                    }}
-                                    subtitle={`by ${author}, ${serviceName}`}
-                                    actionIcon={(<LeftIcon />)}
-                                />
-                            </Link>
-                        </Tooltip>
-                    )}
-                </Box>
-            </Box>
-        </GridListTile>
-    );
-}
-
-const MemoBg = memo(Bg);
 
 function LibraryMenu() {
     const { backgrounds } = useAppStateService();
@@ -314,13 +147,14 @@ function LibraryMenu() {
                                     </GridListTile>
                                 ),
                                 ...group.list.map((bg) => (
-                                    <MemoBg
-                                        key={bg.id}
-                                        {...bg}
-                                        select={coreService.storage.persistent.bgCurrent?.id === bg.id}
-                                        onSet={() => backgrounds.setBG(bg)}
-                                        onRemove={() => BackgroundsUniversalService.removeFromStore(bg)}
-                                    />
+                                    <GridListTile key={bg.id}>
+                                        <BackgroundCard
+                                            {...bg}
+                                            select={coreService.storage.persistent.bgCurrent?.id === bg.id}
+                                            onSet={() => backgrounds.setBG(bg)}
+                                            onRemove={() => BackgroundsUniversalService.removeFromStore(bg)}
+                                        />
+                                    </GridListTile>
                                 ))
                             ])}
                         </GridList>

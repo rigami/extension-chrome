@@ -79,6 +79,10 @@ module.exports = () => ({
                     to: './resource/',
                 },
                 {
+                    from: './i18n/',
+                    to: './resource/i18n/',
+                },
+                {
                     from: './fastInitialization.js',
                     to: './fastInitialization.js',
                 },

@@ -211,6 +211,26 @@ class BackgroundsServerService {
     @action('set bg')
     async setBG(setBG) {
         console.log('[backgrounds] Set background', setBG);
+
+        if (!setBG.fileName) {
+            console.log('[backgrounds] Bg not load background. Fetch...');
+            let fileName;
+
+            try {
+                fileName = await Service.fetchBG(setBG.downloadLink);
+            } catch (e) {
+                console.error('[backgrounds] Failed get background. Get next...', e);
+
+                return Promise.reject();
+            }
+
+            return this.setBG(new Background({
+                ...setBG,
+                fileName,
+                isLoad: true,
+            }));
+        }
+
         if (this.currentBGId === setBG?.id) {
             this.bgState = BG_SHOW_STATE.DONE;
             eventToApp('backgrounds/state', { state: BG_SHOW_STATE.DONE });

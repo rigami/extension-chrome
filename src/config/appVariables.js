@@ -36,7 +36,7 @@ export default {
                 { id: 'NIGHT_SKY', value: 'Night sky' },
                 { id: 'WINTER', value: 'Winter' },
                 { id: 'WALLPAPER', value: 'Wallpaper' },
-                { id: 'BLACK', value: 'Black' },
+                { id: 'DARK', value: 'Dark' },
                 { id: 'AESTHETIC', value: 'Aesthetic' },
                 { id: 'MINIMALISM_NATURE', value: 'Minimalism nature' },
                 { id: 'ARCHITECTURE', value: 'Architecture' },
