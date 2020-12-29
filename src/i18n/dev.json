@@ -65,9 +65,9 @@
         "query": {
           "title": "",
           "description": "",
-          "placeholder": "",
           "custom": {
             "title": "",
+            "createTitle": "",
             "description": ""
           },
           "query": {
@@ -83,9 +83,25 @@
             "ARCHITECTURE": "",
             "CUSTOM_QUERY": ""
           },
-          "footerMessage": {
-            "title": "",
-            "useStream": ""
+          "search": {
+            "placeholder": "",
+            "button": "",
+            "wait": {
+              "title": "",
+              "description": ""
+            },
+            "failed": {
+              "title": "",
+              "description": ""
+            },
+            "notFound": {
+              "title": "",
+              "description": ""
+            },
+            "footerMessage": {
+              "title": "",
+              "useStream": ""
+            }
           }
         }
       }
@@ -351,6 +367,12 @@
       "ANIMATION":"",
       "VIDEO":"",
       "FILL_COLOR":""
+    },
+    "serviceName": {
+      "unknown": "",
+      "UNSPLASH": "",
+      "PEXELS": "",
+      "PIXABAY": ""
     }
   },
   "bookmark":{

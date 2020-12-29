@@ -7,21 +7,17 @@ import {
     GridListTile,
     Box,
     GridList,
-    CardMedia,
     Chip,
-    IconButton,
+    IconButton, Button,
 } from '@material-ui/core';
 import { BG_SOURCE, BG_TYPE, FETCH, } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     ErrorRounded as ErrorIcon,
-    PlaceRounded as PlaceIcon,
     CheckRounded as ApplyIcon,
     ToysRounded as StationIcon,
+    WifiTetheringRounded as StreamIcon,
 } from '@material-ui/icons';
-import {
-    WrongLocationRounded as WrongLocationIcon,
-} from '@/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import useCoreService from '@/stores/app/BaseStateProvider';
@@ -92,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const headerProps = {
-    title: 'settings.bg.scheduler.query.title',
+    title: 'settings.bg.scheduler.query.custom.createTitle',
 };
 const pageProps = { width: 960 };
 
@@ -161,7 +157,7 @@ function ChangeQuery({ onClose }) {
                     fullWidth
                     inputRef={inputRef}
                     className={classes.input}
-                    placeholder={t('settings.bg.scheduler.query.placeholder')}
+                    placeholder={t('settings.bg.scheduler.query.search.placeholder')}
                     variant="outlined"
                     autoFocus
                     value={store.searchRequest}
@@ -169,6 +165,14 @@ function ChangeQuery({ onClose }) {
                         store.searchRequest = event.target.value;
                     }}
                 />
+                <Button
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    className={classes.submit}
+                >
+                    {t('settings.bg.scheduler.query.search.button')}
+                </Button>
                 <IconButton onClick={handleSelect}>
                     <ApplyIcon />
                 </IconButton>
@@ -225,10 +229,10 @@ function ChangeQuery({ onClose }) {
                         <FullscreenStub
                             className={classes.footer}
                             icon={StationIcon}
-                            message={t("settings.bg.scheduler.query.footerMessage.title")}
+                            message={t("settings.bg.scheduler.query.search.footerMessage.title")}
                             actions={[
                                 {
-                                    title: t("settings.bg.scheduler.query.footerMessage.useStream"),
+                                    title: t("settings.bg.scheduler.query.search.footerMessage.useStream"),
                                     variant: 'contained',
                                     color: 'primary',
                                     onClick: handleSelect,
@@ -240,32 +244,22 @@ function ChangeQuery({ onClose }) {
             )}
             {store.status === FETCH.DONE && store.list.length === 0 && (
                 <FullScreenStub
-                    message={t('settings.widgets.dtw.weather.region.search.notFound.title')}
-                    description={t('settings.widgets.dtw.weather.region.search.notFound.description')}
+                    message={t('settings.bg.scheduler.query.search.notFound.title')}
+                    description={t('settings.bg.scheduler.query.search.notFound.description')}
                 />
             )}
             {store.status === FETCH.FAILED && (
                 <FullScreenStub
                     icon={ErrorIcon}
-                    message={t('settings.widgets.dtw.weather.region.search.failed.title')}
-                    description={t('settings.widgets.dtw.weather.region.search.failed.description')}
+                    message={t('settings.bg.scheduler.query.search.failed.title')}
+                    description={t('settings.bg.scheduler.query.search.failed.description')}
                 />
             )}
-            {store.status === FETCH.WAIT && !coreService.storage.persistent.backgroundStreamQuery && (
+            {store.status === FETCH.WAIT && (
                 <FullScreenStub
-                    icon={WrongLocationIcon}
-                    message={t('settings.widgets.dtw.weather.region.search.wait.failed.title')}
-                    description={t('settings.widgets.dtw.weather.region.search.wait.failed.description')}
-                />
-            )}
-            {store.status === FETCH.WAIT && coreService.storage.persistent.backgroundStreamQuery && (
-                <FullScreenStub
-                    icon={PlaceIcon}
-                    message={t(
-                        'settings.widgets.dtw.weather.region.search.wait.manual.title',
-                        { locationName: coreService.storage.persistent.backgroundStreamQuery },
-                    )}
-                    description={t('settings.widgets.dtw.weather.region.search.wait.manual.description')}
+                    icon={StreamIcon}
+                    message={t('settings.bg.scheduler.query.search.wait.title')}
+                    description={t('settings.bg.scheduler.query.search.wait.description')}
                 />
             )}
         </React.Fragment>

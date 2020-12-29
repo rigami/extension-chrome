@@ -43,8 +43,8 @@ function SchedulerSection({ onSelect }) {
                     ],
                 }}
             />
-            <Specific onSelect={onSelect} />
             <Random />
+            <Specific onSelect={onSelect} />
             <Stream onSelect={onSelect} />
         </React.Fragment>
     );

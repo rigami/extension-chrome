@@ -110,7 +110,7 @@ function Stream({ onSelect }) {
                     value: isCustomQuery ? 'CUSTOM_QUERY' : coreService.storage.persistent.backgroundStreamQuery?.id,
                     onChange: (event) => {
                         if (event.target.value === 'CUSTOM_QUERY') {
-                            setIsCustomQuery(true);
+                            onSelect(changeLocationPage);
                         } else {
                             const value = stations.find((station) => station.id === event.target.value);
 
