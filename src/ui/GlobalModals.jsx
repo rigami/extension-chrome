@@ -19,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import FSConnector from '@/utils/fsConnector';
 import { eventToBackground } from '@/stores/server/bus';
 import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
-import InterrogationRequest from '@/ui/InterrogationRequest';
+// import InterrogationRequest from '@/ui/InterrogationRequest';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation();
@@ -148,7 +148,7 @@ function GlobalModals({ children }) {
     return (
         <React.Fragment>
             {children}
-            <InterrogationRequest />
+            {/* <InterrogationRequest /> */}
             <ContextMenu
                 isOpen={contextMenuPosition !== null}
                 position={contextMenuPosition}
