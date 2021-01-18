@@ -86,14 +86,17 @@ class BackgroundsServerService {
 
     @action('next bg')
     async _schedulerSwitch() {
-        console.log()
-        if (this.storage.bgNextSwitchTimestamp <= Date.now()) {
+        console.log('this.storage', this.storage)
+        if (!this.storage?.bgNextSwitchTimestamp || this.storage.bgNextSwitchTimestamp <= Date.now()) {
             console.log('[backgrounds] Run switch scheduler...')
             await this.nextBG();
         }
 
         clearTimeout(this._schedulerTimer);
-        this._schedulerTimer = setTimeout(this._schedulerSwitch, this.storage.bgNextSwitchTimestamp - Date.now());
+        this._schedulerTimer = setTimeout(
+            () => this._schedulerSwitch,
+            this.storage.bgNextSwitchTimestamp - Date.now(),
+        );
         console.log(`[backgrounds] Set scheduler switch. Run after ${this.storage.bgNextSwitchTimestamp - Date.now()}ms`);
     }
 
@@ -145,6 +148,10 @@ class BackgroundsServerService {
         const setFromQueue = async (queue) => {
             let fileName;
 
+            if (queue.length === 0) {
+                return this.nextBGStream();
+            }
+
             try {
                 fileName = await Service.fetchBG(first(queue).downloadLink);
             } catch (e) {
@@ -190,6 +197,13 @@ class BackgroundsServerService {
                     ? ''
                     : `&query=${this.storage.backgroundStreamQuery?.value || ""}`
             }&count=${appVariables.backgrounds.stream.preloadMetaCount}`);
+
+            if (response.length === 0) {
+                console.log('[backgrounds] Backgrounds not found');
+                eventToApp('backgrounds/state', { state: BG_SHOW_STATE.NOT_FOUND });
+
+                return;
+            }
 
             console.log('[backgrounds] Download next queue backgrounds', response);
 

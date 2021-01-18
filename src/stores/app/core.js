@@ -134,7 +134,7 @@ class Core {
         console.log('Fetch BG');
         progressCallback(10, PREPARE_PROGRESS.FETCH_BG);
 
-        const { response } = await fetchData(`${appVariables.rest.url}/backgrounds/get-best?count=1&type=image`);
+        const { response } = await fetchData(`${appVariables.rest.url}/backgrounds/get-from-collection?count=1&type=image&collection=best`);
 
         progressCallback(30, PREPARE_PROGRESS.FETCH_BG);
 

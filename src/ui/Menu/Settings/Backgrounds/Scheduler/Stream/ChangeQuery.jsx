@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: '900',
         fontFamily: '"Manrope", "Open Sans", sans-serif',
     },
-    submit: { flexShrink: 0 },
+    submit: { flexShrink: 0, marginLeft: theme.spacing(2) },
     locationRow: {
         paddingLeft: theme.spacing(4),
     },
@@ -122,8 +122,6 @@ function ChangeQuery({ onClose }) {
                 store.searchRequest
             }`);
 
-            console.log('list', list)
-
             runInAction(() => {
                 store.list = list;
                 store.status = FETCH.DONE;
@@ -165,17 +163,36 @@ function ChangeQuery({ onClose }) {
                         store.searchRequest = event.target.value;
                     }}
                 />
-                <Button
-                    type="submit"
-                    color="primary"
-                    variant="contained"
-                    className={classes.submit}
-                >
-                    {t('settings.bg.scheduler.query.search.button')}
-                </Button>
-                <IconButton onClick={handleSelect}>
-                    <ApplyIcon />
-                </IconButton>
+                {(store.foundRequest !== store.searchRequest || store.status === FETCH.FAILED) && (
+                    <Button
+                        type="submit"
+                        variant="text"
+                        className={classes.submit}
+                        disabled={store.foundRequest === store.searchRequest}
+                    >
+                        {t('settings.bg.scheduler.query.search.button')}
+                    </Button>
+                )}
+                {store.foundRequest === store.searchRequest && store.status === FETCH.PENDING && (
+                    <Button
+                        variant="text"
+                        className={classes.submit}
+                        disabled
+                    >
+                        {t('settings.bg.scheduler.query.search.process')}
+                    </Button>
+                )}
+                {store.foundRequest === store.searchRequest && store.status === FETCH.DONE && (
+                    <Button
+                        type="submit"
+                        color="primary"
+                        variant="contained"
+                        className={classes.submit}
+                        onClick={handleSelect}
+                    >
+                        {t('settings.bg.scheduler.query.search.saveButton')}
+                    </Button>
+                )}
             </form>
             <Divider />
             <Box className={classes.chipsWrapper}>

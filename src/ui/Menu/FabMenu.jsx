@@ -64,8 +64,8 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                         elevation={12}
                         style={{ marginBottom: theme.spacing(2) }}
                     >
-                        {fastSettings && fastSettings.map(({ tooltip, icon: Icon, ...props }, index) => (
-                            <React.Fragment>
+                        {fastSettings && fastSettings.map(({ id, tooltip, icon: Icon, ...props }, index) => (
+                            <React.Fragment key={id}>
                                 {index !== 0 && (<Divider />)}
                                 <Tooltip title={tooltip} placement="left" key={tooltip}>
                                     <IconButton size="small" className={classes.button} {...props}>

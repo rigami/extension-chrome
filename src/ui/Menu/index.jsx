@@ -87,6 +87,7 @@ function Menu({ }) {
 
         if (backgrounds.currentBG.type === BG_TYPE.VIDEO && backgrounds.bgMode === BG_SHOW_MODE.LIVE) {
             settings.push({
+                id: 'pauseVideo',
                 tooltip: (
                     <React.Fragment>
                         <b>{t('bg.pauseVideo')}</b>
@@ -101,6 +102,7 @@ function Menu({ }) {
 
         if (backgrounds.currentBG.type !== BG_TYPE.VIDEO && backgrounds.bgMode === BG_SHOW_MODE.STATIC) {
             settings.push({
+                id: 'playVideo',
                 tooltip: t('bg.playVideo'),
                 onClick: () => coreService.localEventBus.call('background/play'),
                 icon: <PlayIcon />,
@@ -113,6 +115,7 @@ function Menu({ }) {
             && !backgrounds.currentBG.isSaved
         ) {
             settings.push({
+                id: 'addToLibrary',
                 tooltip: t('bg.addToLibrary'),
                 onClick: () => BackgroundsUniversalService.addToLibrary(backgrounds.currentBG),
                 icon: <AddIcon />,
@@ -125,6 +128,7 @@ function Menu({ }) {
             && backgrounds.currentBG.isSaved
         ) {
             settings.push({
+                id: 'addedToLibrary',
                 tooltip: t('bg.addedToLibrary'),
                 icon: <AddedIcon />,
                 disableRipple: true,

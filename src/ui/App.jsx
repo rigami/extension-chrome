@@ -76,7 +76,9 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <MemoRootApp onChangeTheme={(newTheme) => setTheme(newTheme === THEME.LIGHT ? lightTheme : darkTheme)} />
+            <MemoRootApp
+                onChangeTheme={(newTheme) => setTheme(newTheme === THEME.LIGHT ? lightTheme : darkTheme)}
+            />
         </ThemeProvider>
     );
 }

@@ -33,7 +33,9 @@
           "description":"Select a method for changing the background",
           "method":{
             "RANDOM":"Random selection",
-            "SPECIFIC":"Specific background"
+            "SPECIFIC":"Specific background",
+            "SEQUENCE": "Sequence of backgrounds",
+            "STREAM": "Stream"
           }
         },
         "changeInterval":{
@@ -58,6 +60,50 @@
             "FILL_COLOR":"Solid color",
             "all":"All types",
             "nothingSelected":"Nothing selected"
+          }
+        },
+        "query": {
+          "title": "Request to customize the background flow",
+          "description": "Choose a ready-made request for the flow of backgrounds, or create your own",
+          "custom": {
+            "title": "Custom request for backgrounds thread",
+            "createTitle": "Creating your own stream",
+            "description": "Specify any request, the stream will be selected for it"
+          },
+          "query": {
+            "EDITORS_СHOICE": "Editor's Choice",
+            "MINIMALISM": "Minimalism",
+            "ABSTRACT": "Abstract backgrounds",
+            "NIGHT_SKY": "Night sky",
+            "WINTER": "Winter",
+            "WALLPAPER": "Wallpaper",
+            "DARK": "Dark backgrounds",
+            "AESTHETIC": "Beautiful",
+            "MINIMALISM_NATURE": "Minimalistic nature",
+            "ARCHITECTURE": "Architecture",
+            "CUSTOM_QUERY": "Own flow"
+          },
+          "search": {
+            "placeholder": "Search query",
+            "process": "Search...",
+            "button": "Preview",
+            "saveButton": "Create stream",
+            "wait": {
+              "title": "Create your flow",
+              "description": "Enter a request to preview the stream"
+            },
+            "failed": {
+              "title": "Data retrieval error",
+              "description": "No matching backgrounds for this threadry later"
+            },
+            "notFound": {
+              "title": "No matching backgrounds for this thread",
+              "description": "Try changing your request"
+            },
+            "footerMessage": {
+              "title": "Do you like this thread? He seems to be great",
+              "useStream": "Create stream"
+            }
           }
         }
       }
@@ -314,11 +360,21 @@
     "brokenRemovedSuccess":"Broken background removed",
     "playVideo":"Play video",
     "pauseVideo":"Stop video",
+    "addToLibrary": "Add to library",
+    "addedToLibrary": "Added to the library",
+    "openSource": "Open in source",
+    "fetchingNextBG": "Loading background...",
     "type":{
       "IMAGE":"Picture",
       "ANIMATION":"Animation",
       "VIDEO":"Video",
       "FILL_COLOR":"Solid color"
+    },
+    "serviceName": {
+      "unknown": "Unknown service",
+      "UNSPLASH": "Unsplash",
+      "PEXELS": "Pexels",
+      "PIXABAY": "Pixabay"
     }
   },
   "bookmark":{

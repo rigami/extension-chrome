@@ -233,8 +233,6 @@ function Background() {
         }
     }, [store.requestBg]);
 
-    console.log('Fade', (store.stateLoadBg === FETCH.DONE || store.stateLoadBg === FETCH.FAILED) && store.stateRequestLoadBg !== FETCH.DONE)
-
     return (
         <Fade
             in={(store.stateLoadBg === FETCH.DONE || store.stateLoadBg === FETCH.FAILED) && store.stateRequestLoadBg !== FETCH.DONE}
