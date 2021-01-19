@@ -71,30 +71,39 @@ class BackgroundsServerService {
 
         reaction(
             () => this.settings.changeInterval,
-            () => {
-                try {
-                    this.core.storageService.updatePersistent({ bgNextSwitchTimestamp: Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval] });
-                    this._schedulerSwitch();
-                } catch (e) {
-                    console.error('[backgrounds] Failed change interval', e)
-                }
-            },
+            () => this._runScheduler(),
+        );
+        reaction(
+            () => this.storage.bgCurrent?.id,
+            () => this._runScheduler(),
         );
 
         if (this.settings.changeInterval) this._schedulerSwitch();
     }
 
-    @action('next bg')
+    @action('run scheduler')
+    async _runScheduler() {
+        try {
+            console.log('[backgrounds] Run scheduler...')
+            this.core.storageService.updatePersistent({ bgNextSwitchTimestamp: Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval] });
+            await this._schedulerSwitch();
+        } catch (e) {
+            console.error('[backgrounds] Failed change interval', e)
+        }
+    }
+
+    @action('scheduler switch')
     async _schedulerSwitch() {
-        console.log('this.storage', this.storage)
+        console.log(`[backgrounds] Call scheduler switch`);
         if (!this.storage?.bgNextSwitchTimestamp || this.storage.bgNextSwitchTimestamp <= Date.now()) {
             console.log('[backgrounds] Run switch scheduler...')
             await this.nextBG();
         }
 
         clearTimeout(this._schedulerTimer);
+        console.log(`[backgrounds] Set scheduler switch`);
         this._schedulerTimer = setTimeout(
-            () => this._schedulerSwitch,
+            () => this._schedulerSwitch(),
             this.storage.bgNextSwitchTimestamp - Date.now(),
         );
         console.log(`[backgrounds] Set scheduler switch. Run after ${this.storage.bgNextSwitchTimestamp - Date.now()}ms`);
@@ -257,7 +266,6 @@ class BackgroundsServerService {
             this.currentBGId = null;
 
             this.core.storageService.updatePersistent({
-                bgNextSwitchTimestamp: Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval],
                 bgCurrent: null,
             });
 
@@ -271,7 +279,6 @@ class BackgroundsServerService {
         this.currentBGId = this._currentBG.id;
 
         this.core.storageService.updatePersistent({
-            bgNextSwitchTimestamp: Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval],
             bgCurrent: { ...setBG },
         });
 
