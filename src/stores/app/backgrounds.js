@@ -2,17 +2,16 @@ import {
     action,
     reaction,
     makeAutoObservable,
-    computed,
+    computed, toJS,
 } from 'mobx';
 import appVariables from '@/config/appVariables';
 import {
     BG_TYPE,
     BG_SHOW_MODE,
     BG_SHOW_STATE,
-    FETCH, BG_CHANGE_INTERVAL_MILLISECONDS,
+    FETCH,
 } from '@/enum';
 import DBConnector from '@/utils/dbConnector';
-import FSConnector from '@/utils/fsConnector';
 import getPreview from '@/utils/createPreview';
 import { BackgroundSettingsStore } from '@/stores/app/settings';
 import Background from '@/stores/universal/backgrounds/entities/background';
@@ -22,7 +21,7 @@ import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrou
 class BackgroundsAppService {
     currentBGId;
     uploadQueue = [];
-    bgMode = BG_SHOW_MODE.LIVE;
+    bgShowMode = BG_SHOW_MODE.LIVE;
     bgState = BG_SHOW_STATE.DONE;
     settings;
     _currentBG;
@@ -46,7 +45,6 @@ class BackgroundsAppService {
             console.log('[backgrounds] Change current background:', bg);
 
             this._currentBG = bg;
-            this.bgMode = bg.pause ? BG_SHOW_MODE.STATIC : BG_SHOW_MODE.LIVE;
             this.currentBGId = this._currentBG?.id;
 
             this._coreService.storage.updatePersistent({
@@ -65,9 +63,38 @@ class BackgroundsAppService {
             },
         );
 
+        reaction(
+            () => this._coreService.storage.persistent?.bgShowMode,
+            () => {
+                this.bgShowMode = this._coreService.storage.persistent?.bgShowMode;
+            },
+        );
+
+        reaction(
+            () => this._coreService.storage.persistent?.bgCurrent?.pauseStubSrc,
+            () => {
+                if (this._coreService.storage.persistent.bgCurrent) {
+                    this._currentBG = this._coreService.storage.persistent.bgCurrent;
+                }
+            },
+        );
+        reaction(
+            () => this._coreService.storage.persistent?.bgCurrent?.pauseTimestamp,
+            () => {
+                if (this._coreService.storage.persistent.bgCurrent) {
+                    this._currentBG = this._coreService.storage.persistent.bgCurrent;
+                }
+            },
+        );
+
         if (this._coreService.storage.persistent?.bgCurrent) {
             setCurrentBg(this._coreService.storage.persistent.bgCurrent);
+
+            console.log('this._coreService.storage.persistent', toJS(this._coreService.storage.persistent))
         }
+        this.bgShowMode = this._coreService.storage.persistent?.bgShowMode || BG_SHOW_MODE.LIVE;
+
+        console.log('this.bgShowMode', this.bgShowMode)
 
         this._coreService.globalEventBus.on('backgrounds/new', ({ bg }) => {
             setCurrentBg(bg, false);

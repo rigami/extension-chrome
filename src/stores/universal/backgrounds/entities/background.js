@@ -18,8 +18,9 @@ class Background {
     @observable downloadLink;
     @observable type;
     @observable previewSrc;
+    @observable pauseStubSrc;
     @observable fullSrc;
-    @observable pause = false;
+    @observable pauseTimestamp;
 
     constructor(background = {}) {
         this.originId = background.originId || background.id;
@@ -37,8 +38,9 @@ class Background {
         this.downloadLink = background.downloadLink;
         this.type = background.type;
         this.previewSrc = this.fileName && FSConnector.getBGURL(this.fileName, 'preview');
+        this.pauseStubSrc = background.pauseStubSrc;
         this.fullSrc = this.fileName && FSConnector.getBGURL(this.fileName, 'full');
-        this.pause = background.pause || false;
+        this.pauseTimestamp = background.pauseTimestamp;
     }
 }
 

@@ -10,7 +10,7 @@ import {
     FETCH,
     THEME,
     BG_SHOW_STATE,
-    BG_SOURCE,
+    BG_SOURCE, BG_SHOW_MODE,
 } from '@/enum';
 import clsx from 'clsx';
 import { Fade } from '@material-ui/core';
@@ -22,6 +22,8 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 import { action, toJS } from 'mobx';
 import BackgroundEntity from '@/stores/universal/backgrounds/entities/background';
 import BackgroundInfo from '@/ui/Desktop/BackgroundInfo';
+import { eventToBackground } from '@/stores/server/bus';
+import FSConnector from '@/utils/fsConnector';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -87,11 +89,14 @@ function Background() {
     }
 
     const handleSwitchBg = () => {
+        if (!store.requestBg) return;
         store.showBg = false;
         console.log('[BACKGROUND] SWITCH BG', store.currentBg, store.requestBg);
 
         if (store.stateRequestLoadBg === FETCH.DONE) {
             store.currentBg = store.requestBg;
+            console.log('store.requestBg clear 2');
+            store.requestBg = null;
             store.stateLoadBg = FETCH.PENDING;
             store.stateRequestLoadBg = FETCH.WAIT;
         }
@@ -104,16 +109,22 @@ function Background() {
     useEffect(() => {
         const listeners = [
             coreService.localEventBus.on('background/pause', () => {
-                console.log('background/pause', bgRef.current.tagName);
                 bgRef.current.onpause = async () => {
-                    console.log('bgRef.current', bgRef.current)
                     const pauseTimestamp = bgRef.current.currentTime;
-                    console.log('pauseTimestamp', pauseTimestamp);
                     const captureBGId = store.currentBg.id;
-                    let temporaryBG;
 
                     try {
-                        temporaryBG = await backgrounds.pause(captureBGId, pauseTimestamp);
+                        await new Promise((resolve, reject) => eventToBackground('backgrounds/pause', {
+                            bgId: captureBGId,
+                            timestamp: pauseTimestamp,
+                        }, (data) => {
+                            console.log('backgrounds/pause', data)
+                            if (data.success) {
+                                resolve();
+                            } else {
+                                reject();
+                            }
+                        }));
                     } catch (e) {
                         console.log('Failed pause', e);
                         return;
@@ -122,23 +133,25 @@ function Background() {
                     store.captureFrameTimer = setTimeout(() => {
                         if (pauseTimestamp !== bgRef.current.currentTime) return;
 
-                        store.requestBg = new BackgroundEntity({
-                            ...temporaryBG,
-                            fileName: 'temporaryVideoFrame',
-                        });
-                        store.stateLoadBg = FETCH.PENDING;
+                        store.requestBg = backgrounds.currentBG;
                     }, 5000);
                 };
 
                 bgRef.current.play().then(() => bgRef.current.pause());
             }),
             coreService.localEventBus.on('background/play', async () => {
-                console.log('background/play');
+                console.log('backgrounds/play');
                 if (typeof store.captureFrameTimer === 'number') clearTimeout(+store.captureFrameTimer);
                 store.captureFrameTimer = null;
 
                 try {
-                    await backgrounds.play();
+                    await new Promise((resolve, reject) => eventToBackground('backgrounds/play', {}, (data) => {
+                        if (data.success) {
+                            resolve();
+                        } else {
+                            reject();
+                        }
+                    }))
                 } catch (e) {
                     console.log(e);
                     return;
@@ -149,7 +162,6 @@ function Background() {
                     bgRef.current.onpause = null;
                 } else {
                     store.requestBg = backgrounds.currentBG;
-                    store.stateLoadBg = FETCH.PENDING;
                 }
             }),
         ];
@@ -160,11 +172,13 @@ function Background() {
     }, []);
 
     useEffect(action(() => {
+        console.log('store.requestBg 1:', backgrounds.currentBGId, backgrounds.bgState)
         if (!backgrounds.currentBGId || backgrounds.bgState !== BG_SHOW_STATE.DONE) {
             if (!store.isFirstRender && backgrounds.bgState === BG_SHOW_STATE.NOT_FOUND) {
                 console.log('Force reset current bg')
                 store.stateLoadBg = FETCH.FAILED;
                 store.currentBg = null;
+                console.log('store.requestBg clear 1')
                 store.requestBg = null;
             }
 
@@ -175,13 +189,8 @@ function Background() {
 
         const currentBg = backgrounds.currentBG;
 
-        console.log('currentBg', currentBg, backgrounds, toJS(backgrounds))
-
         if (store.requestBg?.id !== currentBg.id) {
-            store.requestBg = new BackgroundEntity({
-                ...currentBg,
-                fileName: typeof currentBg.pause === 'number' ? 'temporaryVideoFrame' : currentBg.fileName,
-            });
+            store.requestBg = new BackgroundEntity(currentBg);
         }
 
         return () => {
@@ -288,14 +297,18 @@ function Background() {
                         || store.currentBg.type === BG_TYPE.ANIMATION
                         || (
                             store.currentBg.type === BG_TYPE.VIDEO
-                            && store.currentBg.fileName === 'temporaryVideoFrame'
+                            && store.currentBg.pauseStubSrc
                         )
                     )
                 ) && (
                     <img
                         alt={store.currentBg.fileName}
                         className={clsx(classes.bg, classes.image)}
-                        src={store.currentBg.fullSrc}
+                        src={
+                            store.currentBg.type === BG_TYPE.VIDEO
+                                ? store.currentBg.pauseStubSrc
+                                : store.currentBg.fullSrc
+                        }
                         style={{ imageRendering: store.currentBg.antiAliasing ? 'auto' : 'pixelated' }}
                         onLoad={action(() => {
                             store.stateLoadBg = FETCH.DONE;
@@ -303,6 +316,7 @@ function Background() {
                         onError={action(() => {
                             console.log('Failed load img')
                             if (store.currentBg.type === BG_TYPE.VIDEO) {
+                                console.log('store.requestBg 2')
                                 store.requestBg = backgrounds.currentBG;
                                 store.stateLoadBg = FETCH.PENDING;
                                 store.currentBg = null;
@@ -316,7 +330,7 @@ function Background() {
                 {
                     store.currentBg
                     && store.currentBg.type === BG_TYPE.VIDEO
-                    && store.currentBg.fileName !== 'temporaryVideoFrame'
+                    && !store.currentBg.pauseStubSrc
                     && (
                         <video
                             autoPlay={!store.currentBg.pause}
@@ -328,7 +342,7 @@ function Background() {
                             onPlay={() => { store.stateLoadBg = FETCH.DONE; }}
                             onLoadedMetadata={() => {
                                 if (typeof store.currentBg.pause === 'number') {
-                                    bgRef.current.currentTime = store.currentBg.pause;
+                                    bgRef.current.currentTime = store.currentBg.pauseTimestamp;
                                     coreService.localEventBus.call('background/pause');
                                 }
                             }}

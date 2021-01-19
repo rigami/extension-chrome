@@ -85,7 +85,9 @@ function Menu({ }) {
             return;
         }
 
-        if (backgrounds.currentBG.type === BG_TYPE.VIDEO && backgrounds.bgMode === BG_SHOW_MODE.LIVE) {
+        console.log('menu:', backgrounds.bgShowMode, backgrounds.currentBG.type)
+
+        if (backgrounds.currentBG.type === BG_TYPE.VIDEO && backgrounds.bgShowMode === BG_SHOW_MODE.LIVE) {
             settings.push({
                 id: 'pauseVideo',
                 tooltip: (
@@ -100,7 +102,7 @@ function Menu({ }) {
             });
         }
 
-        if (backgrounds.currentBG.type !== BG_TYPE.VIDEO && backgrounds.bgMode === BG_SHOW_MODE.STATIC) {
+        if (backgrounds.currentBG.type === BG_TYPE.VIDEO && backgrounds.bgShowMode === BG_SHOW_MODE.STATIC) {
             settings.push({
                 id: 'playVideo',
                 tooltip: t('bg.playVideo'),
@@ -138,7 +140,7 @@ function Menu({ }) {
         setFastSettings(settings);
     }, [
         backgrounds.currentBGId,
-        backgrounds.bgMode,
+        backgrounds.bgShowMode,
         backgrounds.settings.selectionMethod,
         backgrounds.currentBG?.isSaved,
         backgrounds.currentBG?.source,

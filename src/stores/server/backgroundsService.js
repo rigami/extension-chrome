@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, reaction } from 'mobx';
+import { action, makeAutoObservable, reaction, toJS } from 'mobx';
 import {
     BG_CHANGE_INTERVAL_MILLISECONDS,
     BG_SELECT_MODE,
@@ -43,7 +43,7 @@ class BackgroundsServerService {
                 const bg = new Background(this.storage.bgCurrent);
 
                 this._currentBG = bg;
-                this.bgMode = bg.pause ? BG_SHOW_MODE.STATIC : BG_SHOW_MODE.LIVE;
+                this.bgShowMode = bg.pause ? BG_SHOW_MODE.STATIC : BG_SHOW_MODE.LIVE;
                 this.currentBGId = this._currentBG.id;
             } else {
                 console.log('[backgrounds] Current background is expired. Change to next...');
@@ -62,6 +62,28 @@ class BackgroundsServerService {
 
         this.core.globalBus.on('backgrounds/setBg', ({ bg }, callback) => {
             this.setBG(bg).finally(callback)
+        });
+
+        this.core.globalBus.on('backgrounds/play', async (data, props, callback) => {
+            console.log('backgrounds/play', data);
+            try {
+                const result = await this.play(data);
+
+                callback({ success: true, result });
+            } catch (e) {
+                callback({ success: false, result: e });
+            }
+        });
+
+        this.core.globalBus.on('backgrounds/pause', async (data, props, callback) => {
+            console.log('backgrounds/pause', data);
+            try {
+                const result = await this.pause(data);
+
+                callback({ success: true, result });
+            } catch (e) {
+                callback({ success: false, result: e });
+            }
         });
 
         reaction(
@@ -291,22 +313,33 @@ class BackgroundsServerService {
     @action('play bg')
     play() {
         this._currentBG.pause = false;
-        this.bgMode = BG_SHOW_MODE.LIVE;
+        this.bgShowMode = BG_SHOW_MODE.LIVE;
 
-        this.core.storageService.updatePersistent({ bgCurrent: { ...this._currentBG } });
+        this.core.storageService.updatePersistent({
+            bgCurrent: new Background({
+                ...this._currentBG,
+                pauseTimestamp: null,
+                pauseStubSrc: null,
+            }),
+            bgShowMode: BG_SHOW_MODE.LIVE,
+        });
         FSConnector.removeFile(BackgroundsUniversalService.FULL_PATH, 'temporaryVideoFrame').catch(() => {});
 
-        return this._currentBG;
+        return true;
     }
 
     @action('pause bg')
-    async pause(captureBgId, timestamp) {
-        if (captureBgId !== this.currentBGId) return Promise.reject(ERRORS.ID_BG_IS_CHANGED);
+    async pause({ bgId, timestamp }) {
+        console.log('pause bg:', this.currentBGId, toJS((this)))
+        if (bgId !== this.currentBGId) return Promise.reject(ERRORS.ID_BG_IS_CHANGED);
 
-        this._currentBG.pause = timestamp;
-        this.bgMode = BG_SHOW_MODE.STATIC;
+        this._currentBG.pauseTimestamp = timestamp;
+        this.bgShowMode = BG_SHOW_MODE.STATIC;
 
-        this.core.storageService.updatePersistent({ bgCurrent: { ...this._currentBG } });
+        this.core.storageService.updatePersistent({
+            bgCurrent: this._currentBG,
+            bgShowMode: BG_SHOW_MODE.STATIC,
+        });
         const frame = await getPreview(
             FSConnector.getBGURL(this._currentBG.fileName),
             this._currentBG.type,
@@ -316,11 +349,17 @@ class BackgroundsServerService {
             },
         );
 
-        if (captureBgId !== this.currentBGId) throw ERRORS.ID_BG_IS_CHANGED;
+        if (bgId !== this.currentBGId) throw ERRORS.ID_BG_IS_CHANGED;
 
         await FSConnector.saveFile(BackgroundsUniversalService.FULL_PATH, frame, 'temporaryVideoFrame');
 
-        return this._currentBG;
+        this._currentBG.pauseStubSrc = FSConnector.getBGURL('temporaryVideoFrame');
+
+        this.core.storageService.updatePersistent({
+            bgCurrent: this._currentBG,
+        });
+
+        return true;
     }
 }
 
