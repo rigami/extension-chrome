@@ -22,6 +22,7 @@ function Random() {
                     onChange: (event) => backgrounds.settings.update({ changeInterval: event.target.value }),
                     values: [
                         BG_CHANGE_INTERVAL.OPEN_TAB,
+                        BG_CHANGE_INTERVAL.MINUTES_5,
                         BG_CHANGE_INTERVAL.MINUTES_30,
                         BG_CHANGE_INTERVAL.HOURS_1,
                         BG_CHANGE_INTERVAL.HOURS_6,

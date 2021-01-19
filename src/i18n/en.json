@@ -43,6 +43,7 @@
           "description":"Select background change period",
           "interval":{
             "OPEN_TAB":"On opening",
+            "MINUTES_5": "5 min",
             "MINUTES_30":"30 min",
             "HOURS_1":"1 hour",
             "HOURS_6":"6 hours",
