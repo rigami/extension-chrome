@@ -297,6 +297,8 @@ class BackgroundsServerService {
             return Promise.resolve();
         }
 
+        setBG.pauseTimestamp = -0.5;
+
         this._currentBG = setBG;
         this.currentBGId = this._currentBG.id;
 
@@ -349,7 +351,7 @@ class BackgroundsServerService {
             },
         );
 
-        if (bgId !== this.currentBGId) throw ERRORS.ID_BG_IS_CHANGED;
+        if (bgId !== this.currentBGId || this.bgShowMode !== BG_SHOW_MODE.STATIC) throw ERRORS.ID_BG_IS_CHANGED;
 
         await FSConnector.saveFile(BackgroundsUniversalService.FULL_PATH, frame, 'temporaryVideoFrame');
 

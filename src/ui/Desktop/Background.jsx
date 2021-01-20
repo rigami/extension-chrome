@@ -339,10 +339,15 @@ function Background() {
                             src={store.currentBg.fullSrc}
                             className={clsx(classes.bg, classes.video)}
                             style={{ imageRendering: store.currentBg.antiAliasing ? 'auto' : 'pixelated' }}
-                            onPlay={() => { store.stateLoadBg = FETCH.DONE; }}
+                            onPlay={() => {
+                                store.stateLoadBg = FETCH.DONE;
+                            }}
                             onLoadedMetadata={() => {
-                                if (typeof store.currentBg.pause === 'number') {
-                                    bgRef.current.currentTime = store.currentBg.pauseTimestamp;
+                                if (store.currentBg.pauseTimestamp) {
+                                    bgRef.current.currentTime = store.currentBg.pauseTimestamp >= 0
+                                        ? store.currentBg.pauseTimestamp
+                                        : bgRef.current.duration / 2;
+                                    bgRef.current.pause();
                                     coreService.localEventBus.call('background/pause');
                                 }
                             }}
