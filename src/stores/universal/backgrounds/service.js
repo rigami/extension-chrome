@@ -67,7 +67,10 @@ class BackgroundsUniversalService {
         let defaultBG;
 
         try {
-            defaultBG = await (await fetch(src)).blob();
+            const response = await fetch(src);
+            console.log('response', response);
+            if (!response.ok) throw new Error(response.statusText);
+            defaultBG = await response.blob();
         } catch (e) {
             console.error('[backgrounds] Failed fetch bg', e);
             return Promise.reject();
