@@ -89,12 +89,8 @@ class BackgroundsAppService {
 
         if (this._coreService.storage.persistent?.bgCurrent) {
             setCurrentBg(this._coreService.storage.persistent.bgCurrent);
-
-            console.log('this._coreService.storage.persistent', toJS(this._coreService.storage.persistent))
         }
         this.bgShowMode = this._coreService.storage.persistent?.bgShowMode || BG_SHOW_MODE.LIVE;
-
-        console.log('this.bgShowMode', this.bgShowMode)
 
         this._coreService.globalEventBus.on('backgrounds/new', ({ bg }) => {
             setCurrentBg(bg, false);

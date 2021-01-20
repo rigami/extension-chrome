@@ -297,7 +297,7 @@ class BackgroundsServerService {
             return Promise.resolve();
         }
 
-        setBG.pauseTimestamp = -0.5;
+        if (this.bgShowMode === BG_SHOW_MODE.STATIC) setBG.pauseTimestamp = -0.5;
 
         this._currentBG = setBG;
         this.currentBGId = this._currentBG.id;
