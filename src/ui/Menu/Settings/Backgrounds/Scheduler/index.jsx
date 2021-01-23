@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { observer } from 'mobx-react-lite';
-import { BG_SELECT_MODE, BG_TYPE } from '@/enum';
+import { BG_SELECT_MODE, BG_SHOW_STATE, BG_TYPE } from '@/enum';
 import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
@@ -8,6 +8,7 @@ import Stream from './Stream';
 import Random from './Random';
 import Specific from './Specific';
 import useAppStateService from '@/stores/app/AppStateProvider';
+import { Collapse, LinearProgress } from '@material-ui/core';
 
 
 function SchedulerSection({ onSelect }) {
@@ -43,6 +44,9 @@ function SchedulerSection({ onSelect }) {
                     ],
                 }}
             />
+            <Collapse in={backgrounds.bgState === BG_SHOW_STATE.SEARCH}>
+                <LinearProgress />
+            </Collapse>
             <Random />
             <Specific onSelect={onSelect} />
             <Stream onSelect={onSelect} />

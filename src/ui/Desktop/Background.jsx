@@ -256,7 +256,7 @@ function Background() {
                         style={{ opacity: backgrounds.settings.dimmingPower / 100 || 0 }}
                     />
                 )}
-                {store.currentBg?.source !== BG_SOURCE.USER && (
+                {store.currentBg && store.currentBg?.source !== BG_SOURCE.USER && (
                     <BackgroundInfo
                         author={store.currentBg?.author}
                         authorName={store.currentBg?.authorName}

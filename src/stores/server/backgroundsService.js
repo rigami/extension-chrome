@@ -216,6 +216,7 @@ class BackgroundsServerService {
                 currentBGStream: currBg,
             });
 
+            this._fetchCount = 0;
             await this.setBG(new Background(currBg));
         };
 
@@ -224,8 +225,6 @@ class BackgroundsServerService {
             await Service.removeFromStore(bgRemove);
 
             await setFromQueue(this.storage.bgsStream);
-
-            this._fetchCount = 0;
 
             return Promise.resolve();
         }
