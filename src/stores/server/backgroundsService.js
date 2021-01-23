@@ -23,6 +23,7 @@ class BackgroundsServerService {
     storage;
     settings;
     _schedulerTimer;
+    _fetchCount = 0;
 
     constructor(core) {
         makeAutoObservable(this);
@@ -120,6 +121,7 @@ class BackgroundsServerService {
         if (!this.storage?.bgNextSwitchTimestamp || this.storage.bgNextSwitchTimestamp <= Date.now()) {
             console.log('[backgrounds] Run switch scheduler...')
             await this.nextBG();
+            return Promise.resolve();
         }
 
         clearTimeout(this._schedulerTimer);
@@ -176,6 +178,14 @@ class BackgroundsServerService {
         console.log('[backgrounds] Search next background from stream station...')
         this.bgState = BG_SHOW_STATE.SEARCH;
 
+        this._fetchCount += 1;
+
+        if (this._fetchCount > 4) {
+            const timeout = Math.min(this._fetchCount * 1000, 30000);
+            console.log(`[backgrounds] Many failed requests, wait ${timeout}ms`)
+            await new Promise((resolve) => setTimeout(resolve, timeout))
+        }
+
         const setFromQueue = async (queue) => {
             let fileName;
 
@@ -214,6 +224,8 @@ class BackgroundsServerService {
             await Service.removeFromStore(bgRemove);
 
             await setFromQueue(this.storage.bgsStream);
+
+            this._fetchCount = 0;
 
             return Promise.resolve();
         }
