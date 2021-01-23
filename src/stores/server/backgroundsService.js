@@ -253,6 +253,7 @@ class BackgroundsServerService {
                 ...(this.storage.bgsStream || []),
                 ...response.map((bg) => new Background({
                     ...bg,
+                    originId: bg.bgId,
                     source: BG_SOURCE[bg.service],
                     type: BG_TYPE[bg.type],
                     downloadLink: bg.fullSrc,

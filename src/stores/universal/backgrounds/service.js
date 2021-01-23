@@ -3,6 +3,8 @@ import FSConnector from '@/utils/fsConnector';
 import Background from './entities/background';
 import createPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/server/bus';
+import fetchData from '@/utils/xhrPromise';
+import appVariables from '@/config/appVariables';
 
 export const ERRORS = {
     TOO_MANY_FILES: 'TOO_MANY_FILES',
@@ -26,7 +28,6 @@ class BackgroundsUniversalService {
         const savedBG = new Background({
             ...saveBG,
             isSaved: true,
-            id: saveBG.originId,
             fileName: saveFileName,
         });
 
@@ -35,6 +36,8 @@ class BackgroundsUniversalService {
         await DBConnector().add('backgrounds', savedBG);
 
         eventToApp('backgrounds/new', { bg: savedBG });
+
+        fetchData(`${appVariables.rest.url}/backgrounds/mark-download/${savedBG.id}`);
 
         return savedBG;
     }

@@ -223,12 +223,14 @@ function ChangeQuery({ onClose }) {
                                             select={coreService.storage.persistent.bgCurrent?.id === bg.id}
                                             onSet={() => backgrounds.setBG(new Background({
                                                 ...bg,
+                                                originId: bg.bgId,
                                                 source: BG_SOURCE[bg.service],
                                                 type: BG_TYPE[bg.type],
                                                 downloadLink: bg.fullSrc,
                                             }))}
                                             onAdd={() => BackgroundsUniversalService.addToLibrary(new Background({
                                                 ...bg,
+                                                originId: bg.bgId,
                                                 source: BG_SOURCE[bg.service],
                                                 type: BG_TYPE[bg.type],
                                                 downloadLink: bg.fullSrc,
