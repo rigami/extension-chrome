@@ -138,12 +138,18 @@ class Core {
 
         progressCallback(30, PREPARE_PROGRESS.FETCH_BG);
 
-        const bg = await BackgroundsUniversalService.addToLibrary(new Background({
-            ...first(response),
-            source: BG_SOURCE[first(response).service],
-            downloadLink: first(response).fullSrc,
-            type: BG_TYPE[first(response).type],
-        }));
+        let bg
+
+        if (response.length !== 0) {
+            bg = await BackgroundsUniversalService.addToLibrary(new Background({
+                ...first(response),
+                source: BG_SOURCE[first(response).service],
+                downloadLink: first(response).fullSrc,
+                type: BG_TYPE[first(response).type],
+            }));
+        } else {
+            bg = await BackgroundsUniversalService.addToLibrary(new Background(appVariables.backgrounds.fallback));
+        }
 
         this.storage.updatePersistent({
             bgCurrent: bg,

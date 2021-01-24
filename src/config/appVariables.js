@@ -24,6 +24,21 @@ export default {
         },
     },
     backgrounds: {
+        fallback: {
+            author: "danilkinkin",
+            authorAvatarSrc: "https://images.unsplash.com/profile-1607373378133-7e664e90d70cimage?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=64&w=64",
+            authorName: "Danil Zakhvatkin",
+            originId: "nL1pAWmRFYU",
+            color: "#0c590c",
+            description: "",
+            id: "unsplash-nL1pAWmRFYU",
+            previewSrc: "https://images.unsplash.com/photo-1607374904945-feef89bffa1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1&q=80&w=400",
+            rawSrc: "https://images.unsplash.com/photo-1607374904945-feef89bffa1f?ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1",
+            sourceLink: "https://unsplash.com/photos/nL1pAWmRFYU",
+            source: BG_SOURCE.UNSPLASH,
+            downloadLink: "https://images.unsplash.com/photo-1607374904945-feef89bffa1f?crop=entropy&cs=srgb&fm=jpg&ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1&q=85",
+            type: BG_TYPE.IMAGE,
+        },
         stream: {
             preloadBGCount: 2,
             preloadMetaCount: 10,
