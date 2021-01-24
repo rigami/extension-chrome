@@ -37,7 +37,7 @@ class BackgroundsUniversalService {
 
         eventToApp('backgrounds/new', { bg: savedBG });
 
-        fetchData(`${appVariables.rest.url}/backgrounds/mark-download/${savedBG.id}`);
+        fetchData(`${appVariables.rest.url}/backgrounds/mark-download/${savedBG.source}/${savedBG.originId}`);
 
         return savedBG;
     }
