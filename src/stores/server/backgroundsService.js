@@ -176,6 +176,15 @@ class BackgroundsServerService {
     @action('next bg stream')
     async nextBGStream() {
         console.log('[backgrounds] Search next background from stream station...')
+        if (!this.storage.backgroundStreamQuery) {
+            console.log('[backgrounds] Not set stream query. Set default...');
+            this.core.storageService.updatePersistent({
+                backgroundStreamQuery: {
+                    type: 'collection',
+                    id: 'EDITORS_СHOICE',
+                },
+            });
+        }
         this.bgState = BG_SHOW_STATE.SEARCH;
 
         this._fetchCount += 1;

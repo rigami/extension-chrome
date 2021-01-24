@@ -18,8 +18,6 @@ export default {
         type: [
             BG_TYPE.IMAGE,
             BG_TYPE.VIDEO,
-            BG_TYPE.ANIMATION,
-            BG_TYPE.FILL_COLOR,
         ],
         selectionMethod: BG_SELECT_MODE.STREAM,
         dimmingPower: 25,
