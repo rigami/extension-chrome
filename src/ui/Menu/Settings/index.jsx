@@ -34,7 +34,13 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         display: 'contents',
     },
-    betaBanner: { marginTop: 'auto' },
+    betaBanner: {
+        marginTop: 'auto',
+    },
+    betaBannerCard: {
+        borderBottomLeftRadius: theme.shape.borderRadius,
+        borderBottomRightRadius: theme.shape.borderRadius,
+    },
 }));
 
 const general = [
@@ -134,7 +140,7 @@ function GeneralMenu({ onSelect }) {
             ))}
             <Box className={classes.bannerWrapper}>
                 <MenuInfo
-                    classes={{ wrapper: classes.betaBanner }}
+                    classes={{ wrapper: classes.betaBanner, root: classes.betaBannerCard }}
                     show
                     message={t('settings.betaBanner.title')}
                     description={t('settings.betaBanner.description')}

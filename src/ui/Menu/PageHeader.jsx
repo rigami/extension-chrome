@@ -11,7 +11,11 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
-    root: { backgroundColor: fade(theme.palette.background.paper, 0.8) },
+    root: {
+        backgroundColor: fade(theme.palette.background.paper, 0.8),
+        borderTopLeftRadius: theme.shape.borderRadius,
+        borderTopRightRadius: theme.shape.borderRadius,
+    },
     toolbar: {
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),

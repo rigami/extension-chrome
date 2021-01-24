@@ -3,6 +3,12 @@ import {
     Drawer,
     List,
     Divider,
+    Card,
+    Backdrop,
+    Portal,
+    ClickAwayListener,
+    Slide,
+    Box,
 } from '@material-ui/core';
 import {
     PauseRounded as PauseIcon,
@@ -34,7 +40,15 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '100vh',
+        minHeight: `calc(100vh - ${theme.spacing(4)}px)`,
+        backgroundColor: theme.palette.background.paper,
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+        marginRight: theme.spacing(2),
+        marginLeft: 'auto',
+        borderRadius: theme.shape.borderRadius,
+        boxShadow: theme.shadows[20],
+        pointerEvents: 'auto',
     },
     divider: {
         backgroundColor: fade(theme.palette.common.white, 0.12),
@@ -42,6 +56,27 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(0.5),
     },
     description: { color: theme.palette.text.secondary },
+    trackY: {
+        top: theme.spacing(2),
+        bottom: theme.spacing(2),
+        right: theme.spacing(0.75),
+        pointerEvents: 'auto',
+    },
+    thumbY: {
+        backgroundColor: theme.palette.background.paper,
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer,
+    },
+    drawer: {
+        position: 'absolute !important',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        zIndex: theme.zIndex.modal,
+        pointerEvents: 'none',
+    },
 }));
 
 function Menu({ }) {
@@ -159,31 +194,35 @@ function Menu({ }) {
                 }}
                 fastSettings={fastSettings}
             />
-            <Drawer
-                anchor="right"
-                open={isOpen}
-                onClose={() => handleClose()}
-                disableEnforceFocus
-                PaperProps={{
-                    style: {
-                        width: pageProps.width || 520,
-                    }
-                }}
-            >
-                <Scrollbar>
-                    <List
-                        disablePadding
-                        className={classes.list}
-                        style={{ width: pageProps.width || 520 }}
+            <Portal>
+                <Backdrop
+                    open={isOpen}
+                    onClick={handleClose}
+                    invisible
+                    className={classes.backdrop}
+                />
+                <Slide in={isOpen} direction="left">
+                    <Scrollbar
+                        className={classes.drawer}
+                        classes={{
+                            trackY: classes.trackY,
+                            thumbY: classes.thumbY,
+                        }}
                     >
-                        <Header onBack={handleBack} {...headerProps} />
-                        <Page
-                            onClose={handleBack}
-                            onSelect={(page) => setStack([...stack, page])}
-                        />
-                    </List>
-                </Scrollbar>
-            </Drawer>
+                        <List
+                            disablePadding
+                            className={classes.list}
+                            style={{ width: pageProps.width || 520 }}
+                        >
+                            <Header onBack={handleBack} {...headerProps} />
+                            <Page
+                                onClose={handleBack}
+                                onSelect={(page) => setStack([...stack, page])}
+                            />
+                        </List>
+                    </Scrollbar>
+                </Slide>
+            </Portal>
         </React.Fragment>
     );
 }

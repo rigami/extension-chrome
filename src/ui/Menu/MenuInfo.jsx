@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import { InfoRounded as InfoIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: { backgroundColor: theme.palette.warning.main },
@@ -31,7 +32,7 @@ function MenuInfo(props) {
 
     return (
         <Collapse in={show} className={externalClasses.wrapper}>
-            <ListItem className={classes.root} style={{ width }}>
+            <ListItem className={clsx(classes.root, externalClasses.root)} style={{ width }}>
                 <ListItemIcon>
                     <InfoIcon className={classes.icon} />
                 </ListItemIcon>

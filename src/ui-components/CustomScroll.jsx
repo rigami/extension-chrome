@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Scrollbar from 'react-scrollbars-custom';
 import clsx from 'clsx';
@@ -40,9 +40,15 @@ const exportClasses = (theme) => ({
 
 const useStyles = makeStyles(exportClasses);
 
-function CustomScroll({
-    children, refScroll, reverse, className: externalClassName, ...other
-}) {
+function CustomScroll(props, ref) {
+    const {
+        children,
+        refScroll,
+        reverse,
+        className: externalClassName,
+        classes: externalClasses = {},
+        ...other
+    } = props;
     const classes = useStyles();
 
     return (
@@ -71,14 +77,14 @@ function CustomScroll({
                 renderer: (props) => {
                     const { elementRef, ...restProps } = props;
                     return (
-                        <div {...restProps} ref={elementRef} className={classes.scrollBar} />
+                        <div {...restProps} ref={elementRef} className={clsx(classes.scrollBar, externalClasses.trackY)} />
                     );
                 },
             }}
             thumbYProps={{
                 renderer: (props) => {
                     const { elementRef, ...restProps } = props;
-                    return <div {...restProps} ref={elementRef} className={classes.scrollThumb} />;
+                    return <div {...restProps} ref={elementRef} className={clsx(classes.scrollThumb, externalClasses.thumbY)} />;
                 },
             }}
             momentum
@@ -86,6 +92,7 @@ function CustomScroll({
             {...other}
             ref={refScroll}
             scrollDetectionThreshold={30}
+            elementRef={ref}
         >
             {children}
         </Scrollbar>
@@ -94,4 +101,4 @@ function CustomScroll({
 
 export { exportClasses as classes };
 
-export default CustomScroll;
+export default forwardRef(CustomScroll);
