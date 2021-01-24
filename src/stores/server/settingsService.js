@@ -1,8 +1,8 @@
 import { eventToApp } from '@/stores/server/bus';
 import { assign, throttle, forEach } from 'lodash';
-import defaultSettings from '@/config/settings';
 import FSConnector from '@/utils/fsConnector';
 import { makeAutoObservable, toJS } from 'mobx';
+import defaultSettings from '@/config/settings';
 
 class SettingsService {
     core;
@@ -12,10 +12,10 @@ class SettingsService {
         makeAutoObservable(this);
         this.core = core;
         this.settings = {
-            app: {},
-            bookmarks: {},
-            backgrounds: {},
-            widgets: {},
+            app: defaultSettings.app,
+            bookmarks: defaultSettings.bookmarks,
+            backgrounds: defaultSettings.backgrounds,
+            widgets: {}, // defaultSettings.widgets,
         };
         const changed = {
             backgrounds: false,
@@ -44,12 +44,25 @@ class SettingsService {
 
             FSConnector.getFileAsText('/settings.json')
                 .then((file) => {
+                    const fileSettings = JSON.parse(file);
+
                     this.settings = {
-                        app: {},
-                        bookmarks: {},
-                        backgrounds: {},
-                        widgets: {},
-                        ...JSON.parse(file),
+                        app: {
+                            ...defaultSettings.app,
+                            ...fileSettings.app,
+                        },
+                        bookmarks: {
+                            ...defaultSettings.bookmarks,
+                            ...fileSettings.bookmarks,
+                        },
+                        backgrounds: {
+                            ...defaultSettings.backgrounds,
+                            ...fileSettings.backgrounds,
+                        },
+                        widgets: {
+                            // ...defaultSettings.widgets,
+                            ...fileSettings.widgets,
+                        },
                     };
                     fastSyncSettings();
                 })
@@ -90,7 +103,7 @@ class SettingsService {
         localStorage.setItem('settings', JSON.stringify(this.settings));
         localStorage.setItem('theme', this.settings.app?.theme || defaultSettings.app.theme);
         localStorage.setItem('backdropTheme', this.settings.app?.backdropTheme || defaultSettings.app.backdropTheme);
-        localStorage.setItem('appTabName', this.settings.app?.tabName || defaultSettings.app.tab_name);
+        localStorage.setItem('appTabName', this.settings.app?.tabName || defaultSettings.app.tabName);
 
         if (settings) {
             eventToApp('system/syncSettings/app', {
@@ -131,10 +144,10 @@ class SettingsService {
 
     restore(settings) {
         this.settings = {
-            app: {},
-            bookmarks: {},
-            backgrounds: {},
-            widgets: {},
+            app: defaultSettings.app,
+            bookmarks: defaultSettings.bookmarks,
+            backgrounds: defaultSettings.backgrounds,
+            widgets: {}, // defaultSettings.widgets,
             ...settings,
         };
         this.fastSync({

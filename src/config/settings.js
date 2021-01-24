@@ -14,50 +14,49 @@ import i18n from 'i18next';
 
 export default {
     backgrounds: {
-        change_interval: BG_CHANGE_INTERVAL.HOURS_1,
+        changeInterval: BG_CHANGE_INTERVAL.HOURS_1,
         type: [
             BG_TYPE.IMAGE,
             BG_TYPE.VIDEO,
             BG_TYPE.ANIMATION,
             BG_TYPE.FILL_COLOR,
         ],
-        selection_method: BG_SELECT_MODE.SPECIFIC,
-        current_bg_link: 'default_bg',
-        dimming_power: 25,
+        selectionMethod: BG_SELECT_MODE.STREAM,
+        dimmingPower: 25,
     },
     bookmarks: {
-        fap_style: BKMS_FAP_STYLE.CONTAINED,
-        fap_position: BKMS_FAP_POSITION.BOTTOM,
-        open_on_startup: false,
+        fapStyle: BKMS_FAP_STYLE.CONTAINED,
+        fapPosition: BKMS_FAP_POSITION.BOTTOM,
+        openOnStartup: false,
         favorites: [],
-        sync_with_system: false,
-        sync_default_folder_name: 'google chrome'
+        syncWithSystem: false,
+        syncDefaultFolderName: 'google chrome'
     },
     widgets: {
-        use_widgets: true,
+        useWidgets: true,
         dtw: {
-            place: WIDGET_DTW_POSITION.LEFT_BOTTOM,
+            position: WIDGET_DTW_POSITION.LEFT_BOTTOM,
             size: WIDGET_DTW_SIZE.MIDDLE,
             date: {
-                use_date: true,
-                default_action: '',
+                useDate: true,
+                defaultAction: '',
             },
             time: {
-                use_time: true,
+                useTime: true,
                 format12: false,
             },
             weather: {
-                use_weather: false,
+                useWeather: false,
                 metrics: WIDGET_DTW_UNITS.CELSIUS,
-                default_action: '',
+                defaultAction: '',
             },
         },
     },
     app: {
-        backdrop_theme: THEME.DARK,
+        backdropTheme: THEME.DARK,
         theme: THEME.LIGHT,
-        use_system_font: true,
-        tab_name: i18n.t('tabName.default') || 'Rigami',
-        default_activity: ACTIVITY.DESKTOP,
+        useSystemFont: true,
+        tabName: i18n.t('tabName.default') || 'Rigami',
+        defaultActivity: ACTIVITY.DESKTOP,
     },
 };

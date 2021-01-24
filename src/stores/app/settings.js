@@ -12,10 +12,6 @@ class BackgroundSettingsStore {
 
     constructor() {
         makeAutoObservable(this);
-        this.selectionMethod = defaultSettings.backgrounds.selection_method;
-        this.type = defaultSettings.backgrounds.type;
-        this.changeInterval = defaultSettings.backgrounds.change_interval;
-        this.dimmingPower = defaultSettings.backgrounds.dimming_power;
 
         try {
             this.update(JSON.parse(localStorage.getItem('settings')).backgrounds, false);
@@ -63,16 +59,16 @@ class WidgetsSettingsStore {
 
     constructor() {
         makeAutoObservable(this);
-        this.useWidgets = defaultSettings.widgets.use_widgets;
-        this.dtwPosition = defaultSettings.widgets.dtw.place;
+        this.useWidgets = defaultSettings.widgets.useWidgets;
+        this.dtwPosition = defaultSettings.widgets.dtw.position;
         this.dtwSize = defaultSettings.widgets.dtw.size;
-        this.dtwUseTime = defaultSettings.widgets.dtw.time.use_time;
+        this.dtwUseTime = defaultSettings.widgets.dtw.time.useTime;
         this.dtwTimeFormat12 = defaultSettings.widgets.dtw.time.format12;
-        this.dtwUseDate = defaultSettings.widgets.dtw.date.use_date;
-        this.dtwDateAction = defaultSettings.widgets.dtw.date.default_action;
-        this.dtwUseWeather = defaultSettings.widgets.dtw.weather.use_weather;
+        this.dtwUseDate = defaultSettings.widgets.dtw.date.useDate;
+        this.dtwDateAction = defaultSettings.widgets.dtw.date.defaultAction;
+        this.dtwUseWeather = defaultSettings.widgets.dtw.weather.useWeather;
         this.dtwWeatherMetrics = defaultSettings.widgets.dtw.weather.metrics;
-        this.dtwWeatherAction = defaultSettings.widgets.dtw.weather.default_action;
+        this.dtwWeatherAction = defaultSettings.widgets.dtw.weather.defaultAction;
 
         try {
             this.update(JSON.parse(localStorage.getItem('settings')).widgets, false);
@@ -120,10 +116,6 @@ class BookmarksSettingsStore {
 
     constructor() {
         makeAutoObservable(this);
-        this.fapStyle = defaultSettings.bookmarks.fap_style;
-        this.fapPosition = defaultSettings.bookmarks.fap_position;
-        this.favorites = defaultSettings.bookmarks.favorites;
-        this.syncWithSystem = defaultSettings.bookmarks.sync_with_system;
 
         try {
             this.update(JSON.parse(localStorage.getItem('settings')).bookmarks, false);
@@ -167,11 +159,6 @@ class AppSettingsStore {
 
     constructor() {
         makeAutoObservable(this);
-        this.theme = defaultSettings.app.theme;
-        this.tabName = defaultSettings.app.tab_name;
-        this.useSystemFont = defaultSettings.app.use_system_font;
-        this.backdropTheme = defaultSettings.app.backdrop_theme;
-        this.defaultActivity = defaultSettings.app.default_activity;
         this.lastUsageVersion = null;
 
         try {

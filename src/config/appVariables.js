@@ -1,3 +1,5 @@
+import { BG_SOURCE, BG_TYPE } from '@/enum';
+
 export default {
     extensionId: chrome.runtime.id,
     db: {
