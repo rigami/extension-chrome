@@ -240,9 +240,6 @@ function ChangeQuery({ onClose }) {
                                 ))}
                             </GridList>
                         )}
-                        {store.list.length === 0 && (
-                            <FullscreenStub message={t('bg.notFound')} />
-                        )}
                     </Box>
                     {store.list.length !== 0 && (
                         <FullscreenStub
