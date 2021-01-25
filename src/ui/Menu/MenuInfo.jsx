@@ -16,7 +16,13 @@ const useStyles = makeStyles((theme) => ({
     icon: { color: theme.palette.warning.contrastText },
     messageText: { color: theme.palette.warning.contrastText },
     descriptionText: { color: fade(theme.palette.warning.contrastText, 0.8) },
-    actions: { color: theme.palette.warning.contrastText }
+    actions: { color: theme.palette.warning.contrastText },
+    iconWrapper: {
+        minWidth: theme.spacing(5),
+        alignSelf: 'baseline',
+        marginTop: theme.spacing(0.75),
+        marginBottom: theme.spacing(0.75),
+    },
 }));
 
 function MenuInfo(props) {
@@ -33,7 +39,7 @@ function MenuInfo(props) {
     return (
         <Collapse in={show} className={externalClasses.wrapper}>
             <ListItem className={clsx(classes.root, externalClasses.root)} style={{ width }}>
-                <ListItemIcon>
+                <ListItemIcon className={classes.iconWrapper}>
                     <InfoIcon className={classes.icon} />
                 </ListItemIcon>
                 <ListItemText

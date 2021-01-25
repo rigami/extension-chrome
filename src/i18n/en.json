@@ -345,7 +345,10 @@
     },
     "betaBanner": {
       "title": "The extension is in beta testing",
-      "description": "Help us become better, if you have ideas or you notice a problem, please let us know on the \"About extension\" page"
+      "description": "Help the extension get better, if you have ideas or spot a problem, please let me know",
+      "sendEmail": "Write a letter to the developer",
+      "openIssue": "Open issue on github",
+      "rateExtension": "Rate extension"
     }
   },
   "bg":{

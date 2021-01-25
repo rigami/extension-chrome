@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
     ListItem,
     ListItemText,
@@ -6,6 +6,8 @@ import {
     ListItemAvatar,
     Avatar,
     Box,
+    Link,
+    List,
 } from '@material-ui/core';
 import {
     SettingsRounded as SettingsIcon,
@@ -40,6 +42,10 @@ const useStyles = makeStyles((theme) => ({
     betaBannerCard: {
         borderBottomLeftRadius: theme.shape.borderRadius,
         borderBottomRightRadius: theme.shape.borderRadius,
+    },
+    betaBannerLinks: {
+        marginTop: theme.spacing(1),
+        display: 'grid',
     },
 }));
 
@@ -143,7 +149,36 @@ function GeneralMenu({ onSelect }) {
                     classes={{ wrapper: classes.betaBanner, root: classes.betaBannerCard }}
                     show
                     message={t('settings.betaBanner.title')}
-                    description={t('settings.betaBanner.description')}
+                    description={(
+                        <Fragment>
+                            {t('settings.betaBanner.description')}
+                            <span className={classes.betaBannerLinks}>
+                                <Link
+                                    color="inherit"
+                                    underline="always"
+                                    href="mailto:danilkinkin@gmail.com"
+                                >
+                                    {t('settings.betaBanner.sendEmail')}
+                                </Link>
+                                <Link
+                                    color="inherit"
+                                    underline="always"
+                                    target="_blank"
+                                    href="https://github.com/rigami/readme/issues"
+                                >
+                                    {t('settings.betaBanner.openIssue')}
+                                </Link>
+                                <Link
+                                    color="inherit"
+                                    underline="always"
+                                    target="_blank"
+                                    href="https://chrome.google.com/webstore/detail/rigami-new-tab/hdpjmahlkfndaejogipnepcgdmjiamhd"
+                                >
+                                    {t('settings.betaBanner.rateExtension')}
+                                </Link>
+                            </span>
+                        </Fragment>
+                    )}
                 />
             </Box>
         </React.Fragment>
