@@ -264,6 +264,7 @@ function Background() {
                         sourceLink={store.currentBg?.sourceLink}
                         service={store.currentBg?.source}
                         description={store.currentBg?.description}
+                        type={store.currentBg?.type}
                     />
                 )}
                 {(store.stateLoadBg === FETCH.FAILED || !store.currentBg) && (
