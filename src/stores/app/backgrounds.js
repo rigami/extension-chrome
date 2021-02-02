@@ -88,7 +88,7 @@ class BackgroundsAppService {
         );
 
         if (this._coreService.storage.persistent?.bgCurrent) {
-            setCurrentBg(this._coreService.storage.persistent.bgCurrent);
+            setCurrentBg(this._coreService.storage.persistent.bgCurrent, false);
         }
         this.bgShowMode = this._coreService.storage.persistent?.bgShowMode || BG_SHOW_MODE.LIVE;
 

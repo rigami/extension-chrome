@@ -60,7 +60,11 @@ class BackgroundsServerService {
         this.core.globalBus.on('backgrounds/nextBg', () => this.nextBG());
 
         this.core.globalBus.on('backgrounds/prepareNextBg', () => {
-            if (this.settings.selectionMethod === BG_SELECT_MODE.STREAM) {
+            if (
+                this.settings.selectionMethod === BG_SELECT_MODE.STREAM
+                && !this.storage.prepareBGStream
+                && this.prepareBgState === BG_SHOW_STATE.WAIT
+            ) {
                 console.log('[backgrounds] Request for prepare next background');
                 this.prepareNextBGStream();
             }
