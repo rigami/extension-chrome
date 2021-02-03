@@ -155,6 +155,7 @@ class BackgroundsServerService {
 
     @action('next bg')
     nextBG() {
+        if (this.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC) return;
         console.log(`[backgrounds] Next background request. Selection method: ${this.settings.selectionMethod}`)
 
         eventToApp('backgrounds/state', { state: BG_SHOW_STATE.SEARCH });

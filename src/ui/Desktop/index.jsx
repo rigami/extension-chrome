@@ -18,7 +18,7 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 import Widgets from './Widgets';
 import Background from './Background';
 import { eventToBackground } from '@/stores/server/bus';
-import { BG_SHOW_STATE, BG_SOURCE } from '@/enum';
+import { BG_SELECT_MODE, BG_SHOW_STATE, BG_SOURCE } from '@/enum';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 
 const useStyles = makeStyles((theme) => ({
@@ -46,17 +46,19 @@ function Desktop() {
                 () => backgrounds.bgState,
             ],
             actions: () => [
-                {
-                    type: 'button',
-                    title: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? t('bg.fetchingNextBG') : t('bg.next'),
-                    disabled: backgrounds.bgState === BG_SHOW_STATE.SEARCH,
-                    icon: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? CircularProgress : RefreshIcon,
-                    iconProps: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? {
-                        size: 20,
-                        className: classes.loadBGIcon,
-                    } : {},
-                    onClick: () => eventToBackground('backgrounds/nextBg'),
-                },
+                ...(backgrounds.settings.selectionMethod !== BG_SELECT_MODE.SPECIFIC ? [
+                    {
+                        type: 'button',
+                        title: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? t('bg.fetchingNextBG') : t('bg.next'),
+                        disabled: backgrounds.bgState === BG_SHOW_STATE.SEARCH,
+                        icon: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? CircularProgress : RefreshIcon,
+                        iconProps: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? {
+                            size: 20,
+                            className: classes.loadBGIcon,
+                        } : {},
+                        onClick: () => eventToBackground('backgrounds/nextBg'),
+                    }
+                ] : []),
                 ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
                     {
                         type: 'button',
