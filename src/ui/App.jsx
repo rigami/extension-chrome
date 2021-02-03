@@ -71,13 +71,13 @@ function RootApp({ onChangeTheme }) {
 const MemoRootApp = memo(RootApp);
 
 function App() {
-    const [theme, setTheme] = useState(localStorage.getItem('theme') === THEME.LIGHT ? lightTheme : darkTheme);
+    const [theme, setTheme] = useState(localStorage.getItem('theme') === THEME.DARK ? darkTheme : lightTheme);
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <MemoRootApp
-                onChangeTheme={(newTheme) => setTheme(newTheme === THEME.LIGHT ? lightTheme : darkTheme)}
+                onChangeTheme={(newTheme) => setTheme(newTheme === THEME.DARK ? darkTheme : lightTheme)}
             />
         </ThemeProvider>
     );
