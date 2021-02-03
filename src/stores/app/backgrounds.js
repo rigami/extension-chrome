@@ -11,6 +11,7 @@ import {
     BG_SHOW_STATE,
     FETCH,
     BG_CHANGE_INTERVAL,
+    BG_SELECT_MODE,
 } from '@/enum';
 import DBConnector from '@/utils/dbConnector';
 import getPreview from '@/utils/createPreview';
@@ -101,7 +102,10 @@ class BackgroundsAppService {
 
         });
 
-        if (this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB) eventToBackground('backgrounds/nextBg');
+        if (
+            this.settings.selectionMethod !== BG_SELECT_MODE.SPECIFIC
+            && this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB
+        ) eventToBackground('backgrounds/nextBg');
     }
 
     @action('')
