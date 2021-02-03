@@ -5,6 +5,7 @@ import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { first } from 'lodash';
 import { makeAutoObservable } from 'mobx';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 
 class SyncSystemBookmarksService {
     core;
@@ -144,7 +145,7 @@ class SyncSystemBookmarksService {
         const parseLevel = async (browserNodes, rigamiNodes, parentId) => {
             console.log('parseLevel', browserNodes, rigamiNodes);
 
-            const bookmarks = await this.core.bookmarksService.bookmarks.getAllInFolder(parentId);
+            const bookmarks = await BookmarksUniversalService.getAllInFolder(parentId);
 
             for (let i = 0; i < browserNodes.length; i += 1) {
                 const bind = await DBConnector().getFromIndex(

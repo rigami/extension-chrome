@@ -17,11 +17,6 @@ class BookmarksStore {
         return await BookmarksUniversalService.get(bookmarkId);
     }
 
-    @action('query feature bookmarks')
-    async getAllInFolder(folderId) {
-        return await BookmarksUniversalService.getAllInFolder(folderId);
-    }
-
     @action('query bookmarks')
     async query(searchQuery = {}, notSaveSearch = true) {
         if (!notSaveSearch) {

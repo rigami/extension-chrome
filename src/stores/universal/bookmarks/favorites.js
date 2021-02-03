@@ -23,8 +23,6 @@ class FavoritesUniversalService {
 
     @action('add to favorites')
     static async removeFromFavorites({ type, id }) {
-        this.favorites = this.favorites.filter((fav) => fav.type !== type || fav.id !== id);
-
         const favoriteIds = await DBConnector().getAllFromIndex(
             'favorites',
             'favorite_id',

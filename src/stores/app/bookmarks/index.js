@@ -1,7 +1,6 @@
-import { action, makeAutoObservable, reaction, runInAction } from 'mobx';
+import { action, makeAutoObservable, reaction } from 'mobx';
 import { BKMS_FAP_STYLE, DESTINATION } from '@/enum';
 import { BookmarksSettingsStore } from '@/stores/app/settings';
-import DBConnector from '@/utils/dbConnector';
 import CategoriesStore from './categories';
 import FoldersStore from './folders';
 import BookmarksStore from './bookmarks';
@@ -90,7 +89,11 @@ class BookmarksService {
     async syncFavorites() {
         console.log('Sync fav');
 
-        return await FavoritesUniversalService.getAll();
+        this.favorites = await FavoritesUniversalService.getAll();
+
+        console.log('this.favorites', this.favorites)
+
+        return this.favorites;
     }
 
     @action('add to favorites')
@@ -104,6 +107,8 @@ class BookmarksService {
 
     @action('add to favorites')
     async removeFromFavorites({ type, id }) {
+        this.favorites = this.favorites.filter((fav) => fav.type !== type || fav.id !== id);
+
         const favoriteId = await FavoritesUniversalService.removeFromFavorites({ type, id })
 
         if (this._coreService) this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId: id });

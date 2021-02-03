@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import Link from '@/ui/Bookmarks/FAP/Link';
 import FolderButton from './index';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -124,7 +125,7 @@ function Folder({ id }) {
                 setFolders(foundFolders);
             });
 
-        bookmarksService.bookmarks.getAllInFolder(id)
+        BookmarksUniversalService.getAllInFolder(id)
             .then((searchResult) => {
                 setFindBookmarks(searchResult);
                 setIsSearching(false);

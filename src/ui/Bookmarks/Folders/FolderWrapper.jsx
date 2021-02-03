@@ -28,6 +28,7 @@ import clsx from 'clsx';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 
 const useStyles = makeStyles((theme) => ({
     rootWrapper: {
@@ -112,7 +113,7 @@ function FolderWrapper({ folder, onSelect }) {
                     setFolders(foundFolders);
                 });
 
-            bookmarksService.bookmarks.getAllInFolder(folder?.id)
+            BookmarksUniversalService.getAllInFolder(folder?.id)
                 .then((searchResult) => {
                     setFindBookmarks(searchResult);
                 });

@@ -3,6 +3,7 @@ import DBConnector from '@/utils/dbConnector';
 import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { DESTINATION } from '@/enum';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
+import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 
 class FoldersUniversalService {
     @action('get folders root')
@@ -44,13 +45,14 @@ class FoldersUniversalService {
 
     @action('get folder by id')
     static async get(folderId) {
+        console.log('get folder by id', folderId)
         const folder = await DBConnector().get('folders', folderId);
 
         return new Folder(folder);
     }
 
     @action('save folder')
-    static async save({ name, id, parentId }, pushEvent = true) {
+    static async save({ name, id, parentId }) {
         let newFolderId = id;
 
         if (id) {
@@ -79,7 +81,7 @@ class FoldersUniversalService {
         const removeFolders = async (parentId) => {
             await DBConnector().delete('folders', parentId);
 
-            const removedBookmarks = await this._globalService.bookmarks.getAllInFolder(parentId);
+            const removedBookmarks = await BookmarksUniversalService.getAllInFolder(parentId);
 
             await Promise.all(removedBookmarks.map(({ id }) => this._globalService.bookmarks.remove(id)));
 

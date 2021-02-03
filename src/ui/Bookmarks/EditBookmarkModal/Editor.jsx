@@ -18,6 +18,7 @@ import FieldsEditor from './FieldsEditor';
 import { PreviewSelectorToggleButton } from './Preview/Selector';
 import Preview, { STAGE } from './Preview';
 import SelectorWrapper from './Preview/SelectorWrapper';
+import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -154,7 +155,7 @@ function Editor(props) {
         if (!store.editBookmarkId) return;
         setIsLoading(true);
 
-        bookmarksService.bookmarks.get(editBookmarkId)
+        BookmarksUniversalService.get(editBookmarkId)
             .then((bookmark) => {
                 store.url = bookmark.url;
                 store.name = bookmark.name;
