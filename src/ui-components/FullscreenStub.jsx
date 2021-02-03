@@ -35,6 +35,10 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         wordBreak: 'break-word',
         textAlign: 'center',
+        marginBottom: theme.spacing(2),
+    },
+    content: {
+        marginBottom: theme.spacing(2),
     },
 }));
 
@@ -63,7 +67,11 @@ function FullScreenStub(props) {
                 {description && (
                     <Typography variant="body1" className={classes.description} gutterBottom>{description}</Typography>
                 )}
-                {children}
+                {children && (
+                    <Box className={classes.content}>
+                        {children}
+                    </Box>
+                )}
                 {actions && actions.map(({ title, ...actionProps }) => (
                     <Button {...actionProps} key={title}>{title}</Button>
                 ))}
