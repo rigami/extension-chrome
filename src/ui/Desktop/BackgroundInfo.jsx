@@ -49,7 +49,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function BackgroundInfo({ author, authorName, authorAvatarSrc, sourceLink, service, description, type }) {
+function BackgroundInfo(props) {
+    const {
+        author,
+        authorName,
+        authorAvatarSrc,
+        sourceLink,
+        service,
+        description,
+        type,
+    } = props;
     const { t } = useTranslation();
     const classes = useStyles();
 
@@ -72,7 +81,7 @@ function BackgroundInfo({ author, authorName, authorAvatarSrc, sourceLink, servi
     }
 
     return (
-        <MouseDistanceFade distanceMax={160} distanceMin={16}>
+        <MouseDistanceFade distanceMax={64} distanceMin={8}>
             <Card className={classes.infoCard} elevation={11}>
                 <CardHeader
                     classes={{

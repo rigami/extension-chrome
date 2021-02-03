@@ -73,6 +73,9 @@
           },
           "query": {
             "EDITORS_СHOICE": "Выбор редакции",
+            "CLOUDS": "Облака",
+            "SPACE": "Космос",
+            "NATURE": "Природа",
             "MINIMALISM": "Минимализм",
             "ABSTRACT": "Абстрактные фоны",
             "NIGHT_SKY": "Ночное небо",

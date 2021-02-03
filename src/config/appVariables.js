@@ -48,6 +48,9 @@ export default {
                 'EDITORS_СHOICE',
             ],
             queryPresets: [
+                { id: 'CLOUDS', value: 'Clouds' },
+                { id: 'SPACE', value: 'Space' },
+                { id: 'NATURE', value: 'Nature' },
                 { id: 'MINIMALISM', value: 'Minimalism' },
                 { id: 'ABSTRACT', value: 'Abstract' },
                 { id: 'NIGHT_SKY', value: 'Night sky' },

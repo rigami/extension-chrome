@@ -73,6 +73,9 @@
           },
           "query": {
             "EDITORS_СHOICE": "Editor's Choice",
+            "CLOUDS": "Clouds",
+            "SPACE": "Space",
+            "NATURE": "Nature",
             "MINIMALISM": "Minimalism",
             "ABSTRACT": "Abstract backgrounds",
             "NIGHT_SKY": "Night sky",
