@@ -1,5 +1,6 @@
 import { action, makeAutoObservable, reaction, toJS } from 'mobx';
 import {
+    BG_CHANGE_INTERVAL,
     BG_CHANGE_INTERVAL_MILLISECONDS,
     BG_SELECT_MODE,
     BG_SHOW_MODE,
@@ -115,6 +116,8 @@ class BackgroundsServerService {
 
     @action('run scheduler')
     async _runScheduler() {
+        if (this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB) return;
+
         try {
             console.log('[backgrounds] Run scheduler...')
             this.core.storageService.updatePersistent({ bgNextSwitchTimestamp: Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval] });
@@ -126,6 +129,7 @@ class BackgroundsServerService {
 
     @action('scheduler switch')
     async _schedulerSwitch() {
+        if (this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB) return;
         console.log(`[backgrounds] Call scheduler switch`);
         if (!this.storage?.bgNextSwitchTimestamp || this.storage.bgNextSwitchTimestamp <= Date.now()) {
             console.log('[backgrounds] Run switch scheduler...')

@@ -2,7 +2,7 @@ import {
     action,
     reaction,
     makeAutoObservable,
-    computed, toJS,
+    computed,
 } from 'mobx';
 import appVariables from '@/config/appVariables';
 import {
@@ -10,6 +10,7 @@ import {
     BG_SHOW_MODE,
     BG_SHOW_STATE,
     FETCH,
+    BG_CHANGE_INTERVAL,
 } from '@/enum';
 import DBConnector from '@/utils/dbConnector';
 import getPreview from '@/utils/createPreview';
@@ -99,6 +100,8 @@ class BackgroundsAppService {
         this._coreService.globalEventBus.on('backgrounds/remove', ({ bg }) => {
 
         });
+
+        if (this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB) eventToBackground('backgrounds/nextBg');
     }
 
     @action('')
