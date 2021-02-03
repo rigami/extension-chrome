@@ -23,6 +23,7 @@ import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import Link from '@/ui/Bookmarks/FAP/Link';
 import FolderButton from './index';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -116,9 +117,9 @@ function Folder({ id }) {
     };
 
     useEffect(() => {
-        bookmarksService.folders.get(id).then((findFolder) => setFolder(findFolder));
+        FoldersUniversalService.get(id).then((findFolder) => setFolder(findFolder));
 
-        bookmarksService.folders.getFoldersByParent(id)
+        FoldersUniversalService.getFoldersByParent(id)
             .then((foundFolders) => {
                 setFolders(foundFolders);
             });

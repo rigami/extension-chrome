@@ -1,9 +1,10 @@
 import { BKMS_VARIANT, TYPE } from '@/enum';
 import DBConnector from '@/utils/dbConnector';
-import Bookmark from '@/stores/app/bookmarks/entities/bookmark';
-import Folder from '@/stores/app/bookmarks/entities/folder';
+import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
+import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { first } from 'lodash';
 import { makeAutoObservable } from 'mobx';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 class SyncSystemBookmarksService {
     core;
@@ -170,7 +171,7 @@ class SyncSystemBookmarksService {
             }
         }
 
-        const tree = await this.core.bookmarksService.folders.getTree(this.core.storageService.storage.syncBrowserFolder);
+        const tree = await FoldersUniversalService.getTree(this.core.storageService.storage.syncBrowserFolder);
         const nodes = await new Promise((resolve) => chrome.bookmarks.getTree(resolve));
 
         await parseLevel(first(nodes).children, tree, this.core.storageService.storage.syncBrowserFolder);

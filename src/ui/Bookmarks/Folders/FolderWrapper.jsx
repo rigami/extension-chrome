@@ -27,6 +27,7 @@ import FolderCard from '@/ui/Bookmarks/Folders/Card';
 import clsx from 'clsx';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 const useStyles = makeStyles((theme) => ({
     rootWrapper: {
@@ -80,7 +81,6 @@ function FolderWrapper({ folder, onSelect }) {
     const classes = useStyles();
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
-    const foldersService = bookmarksService.folders;
     const anchorEl = useRef(null);
     const [path, setPath] = useState(t('loading'));
     const [folders, setFolders] = useState([]);
@@ -104,10 +104,10 @@ function FolderWrapper({ folder, onSelect }) {
 
     useEffect(() => {
         if (folder?.id) {
-            foldersService.getPath(folder?.id)
+            FoldersUniversalService.getPath(folder?.id)
                 .then((folderPath) => setPath(folderPath));
 
-            foldersService.getFoldersByParent(folder?.id)
+            FoldersUniversalService.getFoldersByParent(folder?.id)
                 .then((foundFolders) => {
                     setFolders(foundFolders);
                 });

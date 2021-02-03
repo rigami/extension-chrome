@@ -18,6 +18,7 @@ import { useLocalObservable, observer } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import asyncAction from '@/utils/asyncAction';
 import { toJS } from 'mobx';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -104,7 +105,7 @@ function Editor(props) {
             store.expanded.push(store.folderId);
         }
 
-        bookmarksService.folders.getFoldersByParent(store.folderId).then((folders) => {
+        FoldersUniversalService.getFoldersByParent(store.folderId).then((folders) => {
             const folderNames = folders.map(({ name }) => name);
             let newFolderName = t('folder.editor.defaultFolderName');
             let count = 1;
@@ -129,7 +130,7 @@ function Editor(props) {
                 id: store.editId,
             });
 
-            await foldersService.getTree()
+            await FoldersUniversalService.getTree()
                 .then((folders) => {
                     store.folders = folders;
                     store.folderId = newFolderId;
@@ -188,11 +189,13 @@ function Editor(props) {
     useEffect(() => {
         asyncAction(async () => {
             if (editId || selectId) {
-                store.expanded = (await foldersService.getPath(editId || selectId)).map(({ id }) => id);
+                store.expanded = (await FoldersUniversalService.getPath(editId || selectId)).map(({ id }) => id);
             }
-            const tree = editRootFolders ? await foldersService.getFoldersByParent() : await foldersService.getTree();
+            const tree = editRootFolders
+                ? await FoldersUniversalService.getFoldersByParent()
+                : await FoldersUniversalService.getTree();
             if (editId) {
-                const folder = await foldersService.get(editId);
+                const folder = await FoldersUniversalService.get(editId);
                 store.newFolderName = folder.name;
                 store.newFolderRoot = folder.parentId;
             }

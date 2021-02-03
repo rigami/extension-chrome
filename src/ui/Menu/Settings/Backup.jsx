@@ -27,6 +27,7 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import FolderEditor from '@/ui/Bookmarks/Folders/EditModal';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 const useStyles = makeStyles((theme) => ({
     backupButton: {
@@ -67,12 +68,12 @@ function BrowserSync() {
     const [syncing, setSyncing] = useState(false);
 
     useEffect(() => {
-        bookmarksService.folders.getFoldersByParent().then((rootFolders) => setFoldersRoot(rootFolders));
+        FoldersUniversalService.getFoldersByParent().then((rootFolders) => setFoldersRoot(rootFolders));
     }, []);
 
     useEffect(() => {
         setSyncFolderId(coreService.storage.persistent.syncBrowserFolder);
-        bookmarksService.folders.get(coreService.storage.persistent.syncBrowserFolder)
+        FoldersUniversalService.get(coreService.storage.persistent.syncBrowserFolder)
             .then((folder) => setSyncFolderName(folder.name));
     }, [coreService.storage.persistent.syncBrowserFolder]);
 
@@ -124,7 +125,7 @@ function BrowserSync() {
                     editRootFolders
                     addNewFolderByParentId={0}
                     onSave={(folderId) => {
-                        bookmarksService.folders.getFoldersByParent()
+                        FoldersUniversalService.getFoldersByParent()
                             .then((rootFolders) => {
                                 setFoldersRoot(rootFolders);
                             });

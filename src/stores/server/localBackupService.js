@@ -1,9 +1,11 @@
 import { eventToApp } from '@/stores/server/bus';
 import FSConnector from '@/utils/fsConnector';
 import DBConnector from '@/utils/dbConnector';
-import Category from '@/stores/app/bookmarks/entities/category';
-import Folder from '@/stores/app/bookmarks/entities/folder';
+import Category from '@/stores/universal/bookmarks/entities/category';
+import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { makeAutoObservable } from 'mobx';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 
 class LocalBackupService {
     core;
@@ -118,11 +120,11 @@ class LocalBackupService {
 
         const categories = categoriesAll.map((category) => new Category(category));
 
-        const foldersAll = await this.core.bookmarksService.folders.getTree();
+        const foldersAll = await FoldersUniversalService.getTree();
 
         const folders = foldersAll.map((folder) => new Folder(folder));
 
-        const favoritesAll = await DBConnector().getAll('favorites');
+        const favoritesAll = await FavoritesUniversalService.getAll();
 
         const favorites = favoritesAll.map(({ favoriteId, type }) => ({
             id: favoriteId,

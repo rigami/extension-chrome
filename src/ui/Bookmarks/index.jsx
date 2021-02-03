@@ -18,6 +18,7 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import Category from './Categories/CtegoryWrapper';
 import Folder from './Folders/FolderWrapper';
 import BookmarksGrid from './BookmarksGrid';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -68,7 +69,6 @@ function Bookmarks() {
     const theme = useTheme();
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
-    const foldersService = bookmarksService.folders;
     const appService = useAppService();
     const isFirstRun = useRef(true);
     const [isSearching, setIsSearching] = useState(false);
@@ -81,12 +81,12 @@ function Bookmarks() {
 
     const handleLoadFolders = (folderId) => {
         if (folderId) {
-            foldersService.get(folderId)
+            FoldersUniversalService.get(folderId)
                 .then((foundFolder) => {
                     setFolders([foundFolder]);
                 });
         } else {
-            foldersService.getFoldersByParent()
+            FoldersUniversalService.getFoldersByParent()
                 .then((foundFolders) => {
                     setFolders(foundFolders);
                 });

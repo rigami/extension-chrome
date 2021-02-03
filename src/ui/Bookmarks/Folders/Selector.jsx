@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import EditFolderModal from './EditModal';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 const useStyles = makeStyles((theme) => ({
     folderSelectButton: { textTransform: 'unset' },
@@ -24,7 +25,6 @@ function FolderSelector({ value, onChange }) {
     const classes = useStyles();
     const { t } = useTranslation();
     const bookmarksService = useBookmarksService();
-    const foldersService = bookmarksService.folders;
     const store = useLocalObservable(() => ({
         anchorEl: null,
         isOpen: false,
@@ -34,7 +34,7 @@ function FolderSelector({ value, onChange }) {
 
     useEffect(() => {
         if (value) {
-            foldersService.getPath(value)
+            FoldersUniversalService.getPath(value)
                 .then((folderPath) => { store.path = folderPath; });
         }
     }, [value]);

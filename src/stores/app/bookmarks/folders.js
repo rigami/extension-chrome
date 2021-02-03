@@ -1,7 +1,7 @@
 import { action, makeAutoObservable } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
 import { DESTINATION } from '@/enum';
-import Folder from './entities/folder';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 class FoldersStore {
     _coreService;
@@ -20,66 +20,9 @@ class FoldersStore {
         return this._categories;
     }
 
-    @action('get folders root')
-    async getFoldersByParent(parentId = 0) {
-        const folders = await DBConnector().getAllFromIndex('folders', 'parent_id', parentId);
-
-        return folders.map((folder) => new Folder(folder));
-    }
-
-    @action('get folders tree')
-    async getTree(parentId = 0) {
-        const root = await this.getFoldersByParent(parentId);
-
-        return await Promise.all(root.map(async (folder) => {
-            const children = await this.getTree(folder.id);
-
-            return new Folder({
-                ...folder,
-                children,
-            });
-        }));
-    }
-
-    @action('get folders path')
-    async _getPath(folderId = 0, path) {
-        const folder = await this.get(folderId);
-
-        if (folder.parentId === 0) {
-            return [folder, ...path];
-        }
-
-        return await this._getPath(folder.parentId, [folder, ...path]);
-    }
-
-    @action('get folders path')
-    async getPath(folderId = 0) {
-        return await this._getPath(folderId || 0, []);
-    }
-
-    @action('get folder by id')
-    async get(folderId) {
-        const folder = await DBConnector().get('folders', folderId);
-
-        return new Folder(folder);
-    }
-
     @action('save folder')
     async save({ name, id, parentId }, pushEvent = true) {
-        let newFolderId = id;
-
-        if (id) {
-            await DBConnector().put('folders', {
-                id,
-                name: name.trim(),
-                parentId,
-            });
-        } else {
-            newFolderId = await DBConnector().add('folders', {
-                name: name.trim(),
-                parentId,
-            });
-        }
+        let newFolderId = await FoldersUniversalService.save({ name, id, parentId });
 
         if (this._coreService && pushEvent) this._coreService.globalEventBus.call('folder/new', DESTINATION.APP, { folderId: newFolderId });
 
@@ -88,32 +31,11 @@ class FoldersStore {
 
     @action('remove folder')
     async remove(folderId) {
-        await this._globalService.removeFromFavorites({
-            type: 'folder',
-            id: folderId,
-        });
-
-        const removeFolders = async (parentId) => {
-            await DBConnector().delete('folders', parentId);
-
-            const removedBookmarks = await this._globalService.bookmarks.getAllInFolder(parentId);
-
-            await Promise.all(removedBookmarks.map(({ id }) => this._globalService.bookmarks.remove(id)));
-
-            const childFolders = await DBConnector().getAllFromIndex(
-                'folders',
-                'parent_id',
-                parentId,
-            );
-
-            return [parentId, ...((await Promise.all(childFolders.map(({ id }) => removeFolders(id)))).flat())];
-        };
-
-        const removedFolders = await removeFolders(folderId);
-
-        console.log('removedFolders', removedFolders);
+        const removedFolders = await FoldersUniversalService.remove(folderId);
 
         if (this._coreService) this._coreService.globalEventBus.call('folder/remove', DESTINATION.APP, { folderId });
+
+        return removedFolders;
     }
 }
 

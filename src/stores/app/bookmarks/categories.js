@@ -1,9 +1,7 @@
 import { action, computed, makeAutoObservable, runInAction } from 'mobx';
-import DBConnector from '@/utils/dbConnector';
-import getUniqueColor from '@/utils/uniqueColor';
 import { DESTINATION } from '@/enum';
-import Category from '@/stores/app/bookmarks/entities/category';
-import { last } from 'lodash';
+import Category from '@/stores/universal/bookmarks/entities/category';
+import CategoriesUniversalService from '@/stores/universal/bookmarks/categories';
 
 class CategoriesStore {
     _categories = [];
@@ -18,7 +16,7 @@ class CategoriesStore {
 
     @action('sync categories with db')
     async sync() {
-        const categories = await DBConnector().getAll('categories');
+        const categories = await CategoriesUniversalService.getAll();
 
         runInAction(() => {
             this._categories = categories;
@@ -39,36 +37,7 @@ class CategoriesStore {
 
     @action('save category')
     async save({ name, id, color }) {
-        let newColor;
-
-        if (!id) {
-            const allIds = await DBConnector().getAllKeys('categories');
-            newColor = color || getUniqueColor(last(allIds));
-            newColor = color || getUniqueColor((last(allIds) || 0) + 1);
-        } else {
-            newColor = color || this.get(id).color;
-        }
-
-        const similarCategory = await DBConnector().getFromIndex('categories', 'name', name.trim());
-
-        if (similarCategory && similarCategory.id !== id) {
-            return similarCategory?.id;
-        }
-
-        let newCategoryId = id;
-
-        if (id) {
-            await DBConnector().put('categories', {
-                id,
-                name: name.trim(),
-                color: newColor,
-            });
-        } else {
-            newCategoryId = await DBConnector().add('categories', {
-                name: name.trim(),
-                color: newColor,
-            });
-        }
+        let newCategoryId = await CategoriesUniversalService.save({ name, id, color });
 
         if (this._coreService) this._coreService.globalEventBus.call('category/new', DESTINATION.APP, { categoryId: newCategoryId });
 
@@ -77,22 +46,11 @@ class CategoriesStore {
 
     @action('remove category')
     async remove(categoryId) {
-        await this._globalService.removeFromFavorites({
-            type: 'category',
-            id: categoryId,
-        });
-
-        await DBConnector().delete('categories', categoryId);
-
-        const removeBinds = await DBConnector().getAllFromIndex(
-            'bookmarks_by_categories',
-            'category_id',
-            categoryId,
-        );
-
-        await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
+        const removeBinds = await CategoriesUniversalService.remove(categoryId);
 
         if (this._coreService) this._coreService.globalEventBus.call('category/remove', DESTINATION.APP, { categoryId });
+
+        return removeBinds;
     }
 }
 

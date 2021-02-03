@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 import { useLocalObservable, observer } from 'mobx-react-lite';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -50,7 +51,7 @@ function Editor({ onSave, onError, editId }) {
     useEffect(() => {
         if (!editId) return;
 
-        foldersService.get(editId)
+        FoldersUniversalService.get(editId)
             .then((folder) => {
                 store.name = folder.name;
                 store.parentId = folder.parentId;

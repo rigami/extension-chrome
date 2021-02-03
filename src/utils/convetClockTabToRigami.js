@@ -7,8 +7,8 @@ import {
     BKMS_FAP_STYLE, BKMS_VARIANT,
     THEME,
 } from '@/enum';
-import Category from '@/stores/app/bookmarks/entities/category';
-import Bookmark from '@/stores/app/bookmarks/entities/bookmark';
+import Category from '@/stores/universal/bookmarks/entities/category';
+import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 
 function convert(clockTabFile = {}) {
     console.log('clockTabFile', clockTabFile);

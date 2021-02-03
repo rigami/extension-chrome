@@ -5,6 +5,7 @@ import DBConnector from '@/utils/dbConnector';
 import CategoriesStore from './categories';
 import FoldersStore from './folders';
 import BookmarksStore from './bookmarks';
+import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 
 class BookmarksService {
     categories;
@@ -88,24 +89,13 @@ class BookmarksService {
     @action('sync favorites')
     async syncFavorites() {
         console.log('Sync fav');
-        const favorites = await DBConnector().getAll('favorites');
 
-        runInAction(() => {
-            this.favorites = favorites.map(({ favoriteId, type }) => ({
-                id: favoriteId,
-                type,
-            }));
-        });
-
-        return this.favorites;
+        return await FavoritesUniversalService.getAll();
     }
 
     @action('add to favorites')
     async addToFavorites({ type, id }) {
-        const favoriteId = await DBConnector().add('favorites', {
-            type,
-            favoriteId: id,
-        });
+        const favoriteId = await FavoritesUniversalService.addToFavorites({ type, id })
 
         if (this._coreService) this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: id });
 
@@ -114,23 +104,11 @@ class BookmarksService {
 
     @action('add to favorites')
     async removeFromFavorites({ type, id }) {
-        this.favorites = this.favorites.filter((fav) => fav.type !== type || fav.id !== id);
-
-        const favoriteIds = await DBConnector().getAllFromIndex(
-            'favorites',
-            'favorite_id',
-            id,
-        );
-
-        const favorite = favoriteIds.find((checkFavorite) => checkFavorite.type === type);
-
-        if (!favorite) return;
-
-        await DBConnector().delete('favorites', favorite.id);
+        const favoriteId = await FavoritesUniversalService.removeFromFavorites({ type, id })
 
         if (this._coreService) this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId: id });
 
-        return favorite.id;
+        return favoriteId;
     }
 }
 

@@ -21,6 +21,7 @@ import ScrollContainer from 'react-indiana-drag-scroll';
 import Link from './Link';
 import Category from './Category';
 import Folder from './Folder';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -160,7 +161,7 @@ function FAP() {
                 if (fav.type === 'bookmark') {
                     return bookmarksService.bookmarks.get(fav.id);
                 } else if (fav.type === 'folder') {
-                    return bookmarksService.folders.get(fav.id);
+                    return FoldersUniversalService.get(fav.id);
                 } else {
                     return bookmarksService.categories.get(fav.id);
                 }
