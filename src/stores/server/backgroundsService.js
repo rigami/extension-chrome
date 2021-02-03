@@ -37,21 +37,23 @@ class BackgroundsServerService {
         console.log('[backgrounds] Check settings & storage', this.storage, this.settings)
 
         try {
-            if (
-                this.storage.bgNextSwitchTimestamp > Date.now()
-                || this.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC
-            ) {
-                console.log('[backgrounds] Restore current background...');
-                this.bgState = BG_SHOW_STATE.DONE;
+            if (this.storage.lastUsageVersion) {
+                if (
+                    this.storage.bgNextSwitchTimestamp > Date.now()
+                    || this.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC
+                ) {
+                    console.log('[backgrounds] Restore current background...');
+                    this.bgState = BG_SHOW_STATE.DONE;
 
-                const bg = new Background(this.storage.bgCurrent);
+                    const bg = new Background(this.storage.bgCurrent);
 
-                this._currentBG = bg;
-                this.bgShowMode = bg.pause ? BG_SHOW_MODE.STATIC : BG_SHOW_MODE.LIVE;
-                this.currentBGId = this._currentBG.id;
-            } else {
-                console.log('[backgrounds] Current background is expired. Change to next...');
-                this.nextBG();
+                    this._currentBG = bg;
+                    this.bgShowMode = bg.pause ? BG_SHOW_MODE.STATIC : BG_SHOW_MODE.LIVE;
+                    this.currentBGId = this._currentBG.id;
+                } else {
+                    console.log('[backgrounds] Current background is expired. Change to next...');
+                    this.nextBG();
+                }
             }
         } catch (e) {
             console.error('[backgrounds] Error check current background. Change to next...', e);
@@ -111,7 +113,7 @@ class BackgroundsServerService {
             () => this._runScheduler(),
         );
 
-        if (this.settings.changeInterval) this._schedulerSwitch();
+        if (this.settings.changeInterval && this.storage.lastUsageVersion) this._schedulerSwitch();
     }
 
     @action('run scheduler')
@@ -155,6 +157,7 @@ class BackgroundsServerService {
 
     @action('next bg')
     nextBG() {
+        console.log('next bg', this.settings.selectionMethod)
         if (this.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC) return;
         console.log(`[backgrounds] Next background request. Selection method: ${this.settings.selectionMethod}`)
 

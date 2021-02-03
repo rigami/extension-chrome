@@ -53,7 +53,7 @@ function FolderEditor({ value, nodesLevel, onSave, onError }) {
         store.value = value;
     }, [value]);
 
-    return useObserver(() => (
+    return (
         <TextField
             margin="dense"
             variant="outlined"
@@ -73,8 +73,10 @@ function FolderEditor({ value, nodesLevel, onSave, onError }) {
                 if (event.code === 'Enter') handleSave();
             }}
         />
-    ));
+    );
 }
+
+const ObserverFolderEditor = observer(FolderEditor);
 
 function Editor(props) {
     const {
@@ -157,7 +159,7 @@ function Editor(props) {
                 nodeId={nodes.id}
                 label={
                     store.editId === nodes.id ? (
-                        <FolderEditor
+                        <ObserverFolderEditor
                             value={store.newFolderName}
                             onSave={handleSaveNewFolder}
                             nodesLevel={parentLevel}
@@ -172,7 +174,7 @@ function Editor(props) {
                 {[
                     ...(Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node, nodes.children)) : []),
                     store.newFolderRoot === nodes.id && !store.editId ? (
-                        <FolderEditor
+                        <ObserverFolderEditor
                             value={store.newFolderName}
                             onSave={handleSaveNewFolder}
                             nodesLevel={nodes.children}
