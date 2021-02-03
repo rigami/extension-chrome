@@ -1,12 +1,13 @@
 import { action } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
+import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 class FavoritesUniversalService {
     @action('get all favorites')
     static async getAll() {
         const favorites = await DBConnector().getAll('favorites');
 
-        return favorites.map(({ favoriteId, type }) => ({
+        return favorites.map(({ favoriteId, type }) => new Favorite({
             id: favoriteId,
             type,
         }));

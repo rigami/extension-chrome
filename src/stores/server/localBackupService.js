@@ -6,6 +6,8 @@ import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { makeAutoObservable } from 'mobx';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
+import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import CategoriesUniversalService from '@/stores/universal/bookmarks/categories';
 
 class LocalBackupService {
     core;
@@ -97,7 +99,7 @@ class LocalBackupService {
     }
 
     async collectBookmarks() {
-        const bookmarksAll = await this.core.bookmarksService.query();
+        const bookmarksAll = await BookmarksUniversalService.query();
 
         const bookmarks = [];
 
@@ -116,7 +118,7 @@ class LocalBackupService {
             bookmarks.push(bookmark);
         }
 
-        const categoriesAll = await DBConnector().getAll('categories');
+        const categoriesAll = await CategoriesUniversalService.getAll();
 
         const categories = categoriesAll.map((category) => new Category(category));
 
@@ -126,10 +128,9 @@ class LocalBackupService {
 
         const favoritesAll = await FavoritesUniversalService.getAll();
 
-        const favorites = favoritesAll.map(({ favoriteId, type }) => ({
-            id: favoriteId,
-            type,
-        }));
+        console.log('favoritesAll', favoritesAll)
+
+        const favorites = favoritesAll
 
         return {
             bookmarks,
