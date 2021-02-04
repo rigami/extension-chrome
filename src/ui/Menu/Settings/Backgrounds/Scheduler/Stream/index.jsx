@@ -120,6 +120,7 @@ function Stream({ onSelect }) {
                             coreService.storage.updatePersistent({
                                 backgroundStreamQuery: value,
                                 bgsStream: [],
+                                prepareBGStream: null,
                             });
 
                             eventToBackground('backgrounds/nextBg');

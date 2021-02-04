@@ -49,7 +49,7 @@ export default {
             ],
             queryPresets: [
                 { id: 'CLOUDS', value: 'Clouds' },
-                { id: 'SPACE', value: 'Space' },
+                // { id: 'SPACE', value: 'Space' },
                 { id: 'NATURE', value: 'Nature' },
                 { id: 'MINIMALISM', value: 'Minimalism' },
                 { id: 'ABSTRACT', value: 'Abstract' },

@@ -141,6 +141,7 @@ function ChangeQuery({ onClose }) {
                 value: store.searchRequest,
             },
             bgsStream: [],
+            prepareBGStream: null,
         });
 
         eventToBackground('backgrounds/nextBg');

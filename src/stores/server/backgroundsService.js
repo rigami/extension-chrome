@@ -263,6 +263,8 @@ class BackgroundsServerService {
             } catch (e) {
                 console.error('[backgrounds] Failed get background. Get next...', e);
 
+                this.prepareBgState = BG_SHOW_STATE.WAIT;
+
                 this.core.storageService.updatePersistent({
                     bgsStream: queue.splice(1),
                 });
