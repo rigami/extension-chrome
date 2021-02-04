@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
     },
     icon: {
         fontSize: '56px',
-        marginBottom: theme.spacing(1),
     },
     title: {
         color: theme.palette.text.primary,
@@ -35,9 +34,8 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         wordBreak: 'break-word',
         textAlign: 'center',
-        marginBottom: theme.spacing(2),
     },
-    content: {
+    bottomOffset: {
         marginBottom: theme.spacing(2),
     },
 }));
@@ -60,12 +58,30 @@ function FullScreenStub(props) {
     return (
         <Box className={clsx(classes.root, externalClassName)} {...other}>
             <Container className={classes.container} maxWidth="md">
-                {icon && (<Icon {...iconProps} className={clsx(classes.icon, iconProps.className)} />)}
+                {icon && (
+                    <Icon
+                        {...iconProps}
+                        className={clsx(classes.icon, iconProps.className, classes.bottomOffset)}
+                    />
+                    )}
                 {message && (
-                    <Typography variant="h6" className={classes.title}>{message}</Typography>
+                    <Typography
+                        variant="h6"
+                        className={clsx(classes.title, !description && classes.bottomOffset)}
+                    >
+                        {message}
+                    </Typography>
                 )}
                 {description && (
-                    <Typography variant="body1" className={classes.description} gutterBottom>{description}</Typography>
+                    <Typography
+                        variant="body1"
+                        className={clsx(
+                            classes.description,
+                            (children || actions && actions.length !== 0) && classes.bottomOffset,
+                        )}
+                    >
+                        {description}
+                    </Typography>
                 )}
                 {children && (
                     <Box className={classes.content}>
