@@ -114,6 +114,16 @@ class BackgroundsServerService {
         );
 
         if (this.settings.changeInterval && this.storage.lastUsageVersion) this._schedulerSwitch();
+
+        if (!this.storage.lastUsageVersion && !this.storage.backgroundStreamQuery) {
+            console.log('[backgrounds] Not set stream query. Set default...');
+            this.core.storageService.updatePersistent({
+                backgroundStreamQuery: {
+                    type: 'collection',
+                    id: 'EDITORS_СHOICE',
+                },
+            });
+        }
     }
 
     @action('run scheduler')
