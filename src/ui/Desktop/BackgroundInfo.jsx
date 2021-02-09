@@ -23,12 +23,20 @@ const useStyles = makeStyles((theme) => ({
         top: theme.spacing(2),
         maxWidth: 430,
         minWidth: 350,
+        zIndex: theme.zIndex.modal,
+        '&:not(:hover) $subheader': {
+            '-webkit-line-clamp': 4,
+        },
     },
     avatar: {
         alignSelf: 'flex-start',
     },
     subheader: {
         wordBreak: 'break-word',
+        display: '-webkit-box',
+        '-webkit-box-orient': 'vertical',
+        '-webkit-line-clamp': 20,
+        overflow: 'hidden',
     },
     service: {
         color: theme.palette.text.secondary,
