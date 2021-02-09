@@ -55,7 +55,7 @@ const MouseDistanceFade = React.forwardRef(function MouseDistanceFade(props, ref
 
         items[store.id] = 1 - dist / (distanceMax - distanceMin);
 
-        const calcOpacity = max(values(items));
+        const calcOpacity = items[store.id]; // max(values(items));
 
         if (rootAl.current) rootAl.current.style.opacity = calcOpacity;
 
