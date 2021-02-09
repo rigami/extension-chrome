@@ -5,10 +5,23 @@ import { ThemeProvider } from '@material-ui/styles';
 import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
-import Nest from '@/utils/Nest';
-import { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
+import useCoreService, { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
 import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import PopupContent from './PopupEditor';
+import { APP_STATE } from '@/stores/app/core';
+import { observer } from 'mobx-react-lite';
+
+function LoadStoreWait({ children }) {
+    const coreService = useCoreService();
+
+    if (coreService.appState === APP_STATE.WORK) {
+        return children;
+    }
+
+    return null;
+}
+
+const ObserverLoadStoreWait = observer(LoadStoreWait);
 
 function Popup() {
     const [tabName, setTabName] = useState();
@@ -39,15 +52,15 @@ function Popup() {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Nest
-                components={[
-                    ({ children }) => (<BaseStateProvider side={DESTINATION.POPUP}>{children}</BaseStateProvider>),
-                    BookmarksProvider,
-                    ({ children }) => children,
-                ]}
-            >
-                {!isLoading && (<PopupContent tabName={tabName} tabUrl={tabUrl} />)}
-            </Nest>
+            {!isLoading && (
+                <BaseStateProvider side={DESTINATION.POPUP}>
+                    <ObserverLoadStoreWait>
+                        <BookmarksProvider>
+                            <PopupContent tabName={tabName} tabUrl={tabUrl} />
+                        </BookmarksProvider>
+                    </ObserverLoadStoreWait>
+                </BaseStateProvider>
+            )}
         </ThemeProvider>
     );
 }
