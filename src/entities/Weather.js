@@ -6,7 +6,9 @@ class Weather {
     lastUpdateTimestamp;
     status;
 
-    constructor({ location, currTemp, lastUpdateStatus, lastUpdateTimestamp, status, dashboardUrl }) {
+    constructor({
+        location, currTemp, lastUpdateStatus, lastUpdateTimestamp, status, dashboardUrl,
+    }) {
         this.location = location;
         this.currTemp = currTemp;
         this.dashboardUrl = dashboardUrl;

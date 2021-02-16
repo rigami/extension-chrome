@@ -64,7 +64,7 @@ function FolderEditor({ value, nodesLevel, onSave, onError }) {
             helperText={store.error ? t('folder.editor.folderAlreadyExist') : ''}
             onChange={(event) => {
                 store.value = event.target.value;
-                console.log(toJS(store.level), store.level.indexOf(store.value))
+                console.log(toJS(store.level), store.level.indexOf(store.value));
                 store.error = store.level.indexOf(store.value.trim()) !== -1;
                 onError(store.error);
             }}
@@ -150,43 +150,45 @@ function Editor(props) {
         }
         store.forceSave = false;
         onSave(store.folderId);
-    }
-
-    const renderTree = (nodes, parentLevel) => {
-        return (
-            <TreeItem
-                key={nodes.id}
-                nodeId={nodes.id}
-                label={
-                    store.editId === nodes.id ? (
-                        <ObserverFolderEditor
-                            value={store.newFolderName}
-                            onSave={handleSaveNewFolder}
-                            nodesLevel={parentLevel}
-                            onError={(isError) => {
-                                store.error = isError;
-                            }}
-
-                        />
-                    ) : nodes.name
-                }
-            >
-                {[
-                    ...(Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node, nodes.children)) : []),
-                    store.newFolderRoot === nodes.id && !store.editId ? (
-                        <ObserverFolderEditor
-                            value={store.newFolderName}
-                            onSave={handleSaveNewFolder}
-                            nodesLevel={nodes.children}
-                            onError={(isError) => {
-                                store.error = isError;
-                            }}
-                        />
-                    ) : null,
-                ].filter((item) => item)}
-            </TreeItem>
-        );
     };
+
+    const renderTree = (nodes, parentLevel) => (
+        <TreeItem
+            key={nodes.id}
+            nodeId={nodes.id}
+            label={
+                store.editId === nodes.id ? (
+                    <ObserverFolderEditor
+                        value={store.newFolderName}
+                        onSave={handleSaveNewFolder}
+                        nodesLevel={parentLevel}
+                        onError={(isError) => {
+                            store.error = isError;
+                        }}
+
+                    />
+                ) : nodes.name
+            }
+        >
+            {[
+                ...(
+                    Array.isArray(nodes.children)
+                        ? nodes.children.map((node) => renderTree(node, nodes.children))
+                        : []
+                ),
+                store.newFolderRoot === nodes.id && !store.editId ? (
+                    <ObserverFolderEditor
+                        value={store.newFolderName}
+                        onSave={handleSaveNewFolder}
+                        nodesLevel={nodes.children}
+                        onError={(isError) => {
+                            store.error = isError;
+                        }}
+                    />
+                ) : null,
+            ].filter((item) => item)}
+        </TreeItem>
+    );
 
     useEffect(() => {
         asyncAction(async () => {

@@ -18,7 +18,7 @@ async function upgradeOrCreateBackgrounds(db, transaction) {
         store.createIndex('file_name', 'fileName', { unique: false });
     }
 
-    if (!store.indexNames.contains("source")) {
+    if (!store.indexNames.contains('source')) {
         store.createIndex('source', 'source', { unique: false });
 
         try {
@@ -30,21 +30,21 @@ async function upgradeOrCreateBackgrounds(db, transaction) {
                 type: background.sourceLink.substring(background.sourceLink.length - 4) === '.gif'
                     ? BG_TYPE.ANIMATION
                     : background.type,
-            }))
+            }));
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
     }
 
-    if (!store.indexNames.contains("origin_id")) {
+    if (!store.indexNames.contains('origin_id')) {
         store.createIndex('origin_id', 'originId', { unique: false });
     }
 
-    if (!store.indexNames.contains("author")) {
+    if (!store.indexNames.contains('author')) {
         store.createIndex('author', 'originId', { unique: false });
     }
 
-    if (!store.indexNames.contains("download_link")) {
+    if (!store.indexNames.contains('download_link')) {
         store.createIndex('download_link', 'downloadLink', { unique: false });
     }
 
@@ -70,13 +70,13 @@ async function upgradeOrCreateBookmarks(db, transaction) {
         store.createIndex('folder_id', 'folderId', { unique: false });
     }
 
-    if (!store.indexNames.contains("folder_id")) {
+    if (!store.indexNames.contains('folder_id')) {
         store.createIndex('folder_id', 'folderId', { unique: false });
 
         (await store.getAll()).forEach((bookmark) => store.put({
             ...bookmark,
             folderId: bookmark.folderId || 1,
-        }))
+        }));
     }
 
     return store;
@@ -134,7 +134,7 @@ function upgradeOrCreateBookmarksByCategories(db, transaction) {
     return store;
 }
 
-async function upgradeOrCreateFolders(db, transaction, newVersion) {
+async function upgradeOrCreateFolders(db, transaction /* , newVersion */) {
     let store;
 
     if (db.objectStoreNames.contains('folders')) {
@@ -174,7 +174,7 @@ function upgradeOrCreateFavorites(db, transaction) {
 }
 
 async function migrate(version) {
-    console.log('Migrate!')
+    console.log('Migrate!');
 
     if (version === 3) {
         console.log('Rename old folders');
@@ -187,17 +187,17 @@ async function migrate(version) {
                 newFolderName = `${oldName} ${count}`;
             }
 
-            return newFolderName
-        }
+            return newFolderName;
+        };
 
         const findRenamedFolders = async (folderId) => {
-            let folders = await DBConnector().getAllFromIndex('folders', 'parent_id', folderId);
+            const folders = await DBConnector().getAllFromIndex('folders', 'parent_id', folderId);
 
-            console.log('check level', folderId, toJS(folders))
+            console.log('check level', folderId, toJS(folders));
 
             if (folders.length === 0) return [];
 
-            let renamedFolders = [];
+            const renamedFolders = [];
 
             const changedFolders = folders.map(({ name, ...folder }, index) => {
                 const newName = renameFolder(index, [...renamedFolders].splice(0, index), folders[index].name);
@@ -214,20 +214,17 @@ async function migrate(version) {
             const childFolders = (await Promise.all(folders.map((folder) => findRenamedFolders(folder.id)))).flat();
 
             return [...changedFolders, ...childFolders];
-        }
+        };
 
         const changedFolders = await findRenamedFolders(0);
 
-        await Promise.all(changedFolders.map((folder) => {
-            return DBConnector().put('folders', {
-                id: folder.id,
-                name: folder.newName.trim(),
-                parentId: folder.parentId,
-            })
-        }));
+        await Promise.all(changedFolders.map((folder) => DBConnector().put('folders', {
+            id: folder.id,
+            name: folder.newName.trim(),
+            parentId: folder.parentId,
+        })));
     }
 }
-
 
 export default ({ upgrade }) => ({
     upgrade(db, oldVersion, newVersion, transaction) {

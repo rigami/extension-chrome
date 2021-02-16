@@ -1,9 +1,9 @@
-import BaseWeatherConnector from './BaseWeatherConnector';
 import appVariables from '@/config/appVariables';
 import fetchData from '@/utils/xhrPromise';
 import WeatherLocation from '@/entities/WeatherLocation';
 import { FETCH } from '@/enum';
 import Weather from '@/entities/Weather';
+import BaseWeatherConnector from './BaseWeatherConnector';
 
 class OpenWeatherMap extends BaseWeatherConnector {
     constructor(props) {
@@ -15,9 +15,11 @@ class OpenWeatherMap extends BaseWeatherConnector {
     }
 
     async getWeather() {
-        if (!this.location) throw new Error("location not set")
+        if (!this.location) throw new Error('location not set');
 
-        const { response: weather } = await fetchData(`http://api.openweathermap.org/data/2.5/weather?id=${this.location.id}&appid=${this.apiKey}`);
+        const { response: weather } = await fetchData(
+            `http://api.openweathermap.org/data/2.5/weather?id=${this.location.id}&appid=${this.apiKey}`,
+        );
 
         await super.getWeather(new Weather({
             location: this.location,
@@ -31,7 +33,15 @@ class OpenWeatherMap extends BaseWeatherConnector {
 
     async searchLocation(query) {
         if (typeof query === 'object') {
-            const { response } = await fetchData(`http://api.openweathermap.org/data/2.5/weather?lat=${query.latitude}&lon=${query.longitude}&appid=${this.apiKey}`);
+            const { response } = await fetchData(
+                `http://api.openweathermap.org/data/2.5/weather?lat=${
+                    query.latitude
+                }&lon=${
+                    query.longitude
+                }&appid=${
+                    this.apiKey
+                }`,
+            );
 
             return [
                 {
@@ -42,12 +52,18 @@ class OpenWeatherMap extends BaseWeatherConnector {
                         longitude: response.coord.lon,
                     }),
                     currTemp: response.main.temp,
-                }
+                },
             ];
         } else {
             if (query.length < 3) return [];
 
-            const { response } = await fetchData(`https://api.openweathermap.org/data/2.5/find?type=like&sort=population&cnt=5&appid=${this.apiKey}&q=${query}`);
+            const { response } = await fetchData(
+                `https://api.openweathermap.org/data/2.5/find?type=like&sort=population&cnt=5&appid=${
+                    this.apiKey
+                }&q=${
+                    query
+                }`,
+            );
 
             return response.list.map((item) => ({
                 location: new WeatherLocation({

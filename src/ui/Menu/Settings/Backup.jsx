@@ -2,7 +2,7 @@ import React, {
     Fragment,
     useState,
     useRef,
-    useEffect,
+    // useEffect,
 } from 'react';
 import {
     Popper,
@@ -14,7 +14,8 @@ import {
     MenuItem,
     Checkbox,
     ListItemText,
-    ListItemIcon, Collapse,
+    ListItemIcon,
+    // Collapse,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,19 +24,15 @@ import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
 import { eventToBackground } from '@/stores/server/bus';
 import { useSnackbar } from 'notistack';
 import { observer } from 'mobx-react-lite';
-import useCoreService from '@/stores/app/BaseStateProvider';
+/* import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import FolderEditor from '@/ui/Bookmarks/Folders/EditModal';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders'; */
 
 const useStyles = makeStyles((theme) => ({
-    backupButton: {
-        flexShrink: 0,
-    },
-    fullWidth: {
-        width: '100%',
-    },
+    backupButton: { flexShrink: 0 },
+    fullWidth: { width: '100%' },
     saveIcon: { marginLeft: 10 },
     paper: {
         margin: theme.spacing(1),
@@ -47,15 +44,13 @@ const useStyles = makeStyles((theme) => ({
     },
     popper: { zIndex: theme.zIndex.modal },
     input: { display: 'none' },
-    reRunSyncButton: {
-        flexShrink: 0,
-    },
+    reRunSyncButton: { flexShrink: 0 },
 }));
 
 const headerProps = { title: 'settings.backup.title' };
 const pageProps = { width: 750 };
 
-function BrowserSync() {
+/* function BrowserSync() {
     const classes = useStyles();
     const { t } = useTranslation();
     const coreService = useCoreService();
@@ -77,14 +72,13 @@ function BrowserSync() {
             .then((folder) => setSyncFolderName(folder.name));
     }, [coreService.storage.persistent.syncBrowserFolder]);
 
-
     return (
         <React.Fragment>
-            <SectionHeader title={t("settings.backup.systemBookmarks.title")} />
+            <SectionHeader title={t('settings.backup.systemBookmarks.title')} />
             <MenuRow
-                title={t("settings.backup.systemBookmarks.syncSystemBookmarks.title")}
+                title={t('settings.backup.systemBookmarks.syncSystemBookmarks.title')}
                 description={t(
-                    "settings.backup.systemBookmarks.syncSystemBookmarks.description",
+                    'settings.backup.systemBookmarks.syncSystemBookmarks.description',
                     { folderName: syncFolderName || 'load...' },
                 )}
                 action={{
@@ -102,9 +96,9 @@ function BrowserSync() {
                     disabled={foldersRoot === null}
                     action={{
                         type: ROWS_TYPE.SELECT,
-                        format: (value) => value === 'new-folder'
+                        format: (value) => (value === 'new-folder'
                             ? t('settings.backup.systemBookmarks.syncFolder.newFolder')
-                            : (foldersRoot ? foldersRoot.find(({ id }) => id === value)?.name : 'load...'),
+                            : (foldersRoot ? foldersRoot.find(({ id }) => id === value)?.name : 'load...')),
                         value: syncFolderId,
                         onOpen: (event) => setEditorAnchor(event.target),
                         onChange: (event) => {
@@ -155,9 +149,9 @@ function BrowserSync() {
                                 onClick={() => {
                                     setSyncing(true);
                                     eventToBackground('system/parseSystemBookmarks', {}, () => {
-                                        console.log("FINISH SYNC!")
+                                        console.log('FINISH SYNC!');
                                         setSyncing(false);
-                                    })
+                                    });
                                 }}
                             >
                                 {
@@ -172,7 +166,7 @@ function BrowserSync() {
             </Collapse>
         </React.Fragment>
     );
-}
+} */
 
 function LocalBackup() {
     const classes = useStyles();
@@ -293,7 +287,7 @@ function LocalBackup() {
     );
 }
 
-const ObserverBrowserSync = observer(BrowserSync);
+// const ObserverBrowserSync = observer(BrowserSync);
 
 function BackupSettings() {
     const classes = useStyles();
@@ -378,4 +372,3 @@ export default {
     content: ObserverBackupSettings,
     props: pageProps,
 };
-

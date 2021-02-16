@@ -12,9 +12,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 800,
     },
     link: {},
-    offset: {
-        marginRight: theme.spacing(3),
-    },
+    offset: { marginRight: theme.spacing(3) },
 }));
 
 const formatter = new Intl.DateTimeFormat('nu', {
@@ -48,7 +46,8 @@ function DateWidget({ size, dot = false }) {
                 className={clsx(classes.link, dot && classes.offset)}
             >
                 <Typography variant={size} className={classes.root}>
-                    {date}{dot && last(date) !== '.' ? '.' : ''}
+                    {date}
+                    {dot && last(date) !== '.' ? '.' : ''}
                 </Typography>
             </Link>
         );
@@ -56,7 +55,8 @@ function DateWidget({ size, dot = false }) {
 
     return (
         <Typography variant={size} className={clsx(classes.root, dot && classes.offset)}>
-            {date}{dot && last(date) !== '.' ? '.' : ''}
+            {date}
+            {dot && last(date) !== '.' ? '.' : ''}
         </Typography>
     );
 }

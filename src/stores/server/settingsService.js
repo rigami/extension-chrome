@@ -38,7 +38,7 @@ class SettingsService {
                 ...this.settings,
                 ...JSON.parse(localStorage.getItem('settings')),
             };
-            console.log('[settings]', toJS(this.settings))
+            console.log('[settings]', toJS(this.settings));
         } catch (e) {
             console.log('[settings] Not find fast cache or broken. Get from file cache...');
 
@@ -66,7 +66,7 @@ class SettingsService {
                     };
                     fastSyncSettings();
                 })
-                .catch((e) => console.error('[settings] Failed read cache from file:', e));
+                .catch((e2) => console.error('[settings] Failed read cache from file:', e2));
         }
 
         this.core.globalBus.on('system/syncSettings', (settings, { initiatorId }) => {

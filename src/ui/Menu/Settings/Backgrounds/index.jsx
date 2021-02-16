@@ -8,9 +8,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
+import useAppStateService from '@/stores/app/AppStateProvider';
 import libraryPage from './Library';
 import SchedulerSection from './Scheduler';
-import useAppStateService from '@/stores/app/AppStateProvider';
 
 const headerProps = { title: 'settings.bg.title' };
 const pageProps = { width: 750 };
@@ -70,7 +70,7 @@ function BackgroundsSection({ onSelect }) {
 
     useEffect(() => {
         backgrounds.getLastUsage(8)
-            .then((bgs) => setBgs(bgs))
+            .then((lastBgs) => setBgs(lastBgs))
             .catch((e) => {
                 console.error('Failed load bg`s from db:', e);
             });
@@ -127,4 +127,3 @@ export default {
     content: ObserverBackgroundsMenu,
     props: pageProps,
 };
-

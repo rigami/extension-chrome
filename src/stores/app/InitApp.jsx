@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import useService from '@/stores/app/BaseStateProvider';
 import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
-import packageJson from '../../../package.json';
 import FirstLookScreen from '@/ui/FirstLookScreen';
+import packageJson from '../../../package.json';
 
 function InitApp({ children }) {
     const service = useService();

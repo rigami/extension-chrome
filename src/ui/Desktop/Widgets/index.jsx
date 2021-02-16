@@ -1,16 +1,16 @@
 import React from 'react';
-import { Typography, Box, Divider } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import DTW_SIZE from '@/enum/WIDGET/DTW_SIZE';
 import { observer } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { BKMS_FAP_POSITION, BKMS_FAP_STYLE, FETCH } from '@/enum';
+import { BKMS_FAP_POSITION } from '@/enum';
 import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
+import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
 import Time from './Time';
 import Date from './Date';
-import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
 
 const useStyles = makeStyles((theme) => ({
     root: {

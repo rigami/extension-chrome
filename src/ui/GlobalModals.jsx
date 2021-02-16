@@ -132,10 +132,8 @@ function GlobalModals({ children }) {
                     /* { title: t('newVersion.changelog'), onClick: () => {
                             setEdit({ type: 'changelog', action: 'open', });
                         } }, */
-                ]
-            }, {
-                autoHideDuration: 18000,
-            });
+                ],
+            }, { autoHideDuration: 18000 });
             coreService.storage.updateTemp({ newVersion: false });
         }
 

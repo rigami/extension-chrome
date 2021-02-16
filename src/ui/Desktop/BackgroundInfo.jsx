@@ -7,9 +7,7 @@ import {
     Link,
     IconButton,
 } from '@material-ui/core';
-import {
-    OpenInNewRounded as OpenSourceIcon,
-} from '@material-ui/icons';
+import { OpenInNewRounded as OpenSourceIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
@@ -24,13 +22,9 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 430,
         minWidth: 350,
         zIndex: theme.zIndex.modal,
-        '&:not(:hover) $subheader': {
-            '-webkit-line-clamp': 4,
-        },
+        '&:not(:hover) $subheader': { '-webkit-line-clamp': 4 },
     },
-    avatar: {
-        alignSelf: 'flex-start',
-    },
+    avatar: { alignSelf: 'flex-start' },
     subheader: {
         wordBreak: 'break-word',
         display: '-webkit-box',
@@ -38,9 +32,7 @@ const useStyles = makeStyles((theme) => ({
         '-webkit-line-clamp': 20,
         overflow: 'hidden',
     },
-    service: {
-        color: theme.palette.text.secondary,
-    },
+    service: { color: theme.palette.text.secondary },
     action: {
         marginTop: theme.spacing(-1),
         marginBottom: theme.spacing(-1),
@@ -52,9 +44,7 @@ const useStyles = makeStyles((theme) => ({
         width: theme.spacing(4),
         height: theme.spacing(4),
     },
-    header: {
-        padding: theme.spacing(1.5),
-    },
+    header: { padding: theme.spacing(1.5) },
 }));
 
 function BackgroundInfo(props) {
@@ -76,7 +66,7 @@ function BackgroundInfo(props) {
 
     if (service === BG_SOURCE.UNSPLASH) {
         serviceName = 'Unsplash';
-        serviceUrl = `https://unsplash.com/?utm_source=rigami&utm_medium=referral`;
+        serviceUrl = 'https://unsplash.com/?utm_source=rigami&utm_medium=referral';
         authorUrl = `https://unsplash.com/${author}?utm_source=rigami&utm_medium=referral`;
     } else if (service === BG_SOURCE.PIXABAY) {
         serviceName = 'Pixabay';
@@ -103,7 +93,7 @@ function BackgroundInfo(props) {
                     )}
                     action={(
                         <Tooltip title={t('bg.openSource')}>
-                            <IconButton onClick={() => { window.open(sourceLink, "_blank"); }}>
+                            <IconButton onClick={() => { window.open(sourceLink, '_blank'); }}>
                                 <OpenSourceIcon />
                             </IconButton>
                         </Tooltip>

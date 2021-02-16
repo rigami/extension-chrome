@@ -22,9 +22,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         height: '100%',
     },
-    icon: {
-        fontSize: '56px',
-    },
+    icon: { fontSize: '56px' },
     title: {
         color: theme.palette.text.primary,
         wordBreak: 'break-word',
@@ -35,9 +33,7 @@ const useStyles = makeStyles((theme) => ({
         wordBreak: 'break-word',
         textAlign: 'center',
     },
-    bottomOffset: {
-        marginBottom: theme.spacing(2),
-    },
+    bottomOffset: { marginBottom: theme.spacing(2) },
 }));
 
 function FullScreenStub(props) {
@@ -63,7 +59,7 @@ function FullScreenStub(props) {
                         {...iconProps}
                         className={clsx(classes.icon, iconProps.className, classes.bottomOffset)}
                     />
-                    )}
+                )}
                 {message && (
                     <Typography
                         variant="h6"
@@ -77,7 +73,7 @@ function FullScreenStub(props) {
                         variant="body1"
                         className={clsx(
                             classes.description,
-                            (children || actions && actions.length !== 0) && classes.bottomOffset,
+                            (children || actions) && actions.length !== 0 && classes.bottomOffset,
                         )}
                     >
                         {description}

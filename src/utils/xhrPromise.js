@@ -23,13 +23,8 @@ const xhrPromise = (url, options = {}) => new Promise((resolve, reject) => {
             return;
         }
 
+        // eslint-disable-next-line sonarjs/no-small-switch
         switch (options.responseType) {
-        case 'json':
-            resolve({
-                response: xhr.response,
-                xhr,
-            });
-            break;
         case 'document':
             resolve({
                 response: xhr.responseXML,
@@ -45,6 +40,7 @@ const xhrPromise = (url, options = {}) => new Promise((resolve, reject) => {
         }
     };
 
+    // eslint-disable-next-line no-multi-assign
     xhr.onerror = xhr.ontimeout = (e) => {
         reject(e);
     };

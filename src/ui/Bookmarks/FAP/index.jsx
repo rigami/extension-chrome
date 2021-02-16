@@ -1,5 +1,8 @@
 import React, {
-    useState, createRef, useEffect, useRef,
+    useState,
+    createRef,
+    useEffect,
+    useRef,
 } from 'react';
 import {
     Card,
@@ -18,15 +21,14 @@ import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import ScrollContainer from 'react-indiana-drag-scroll';
-import Link from './Link';
-import Category from './Category';
-import Folder from './Folder';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { toJS } from 'mobx';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
+import Folder from './Folder';
+import Category from './Category';
+import Link from './Link';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -163,7 +165,7 @@ function FAP() {
     useEffect(() => {
         Promise.allSettled(
             bookmarksService.favorites.map((fav) => {
-                console.log('fav', toJS(fav))
+                console.log('fav', toJS(fav));
                 if (fav.type === 'bookmark') {
                     return BookmarksUniversalService.get(fav.id);
                 } else if (fav.type === 'folder') {
@@ -174,12 +176,12 @@ function FAP() {
             }),
         )
             .then((findFavorites) => {
-                console.log('findFavorites:', findFavorites)
+                console.log('findFavorites:', findFavorites);
                 setFavorites(
                     findFavorites
-                        .filter(({ status, value }, index) => {
+                        .filter(({ status }, index) => {
                             if (status !== 'fulfilled') {
-                                bookmarksService.removeFromFavorites(bookmarksService.favorites[index])
+                                bookmarksService.removeFromFavorites(bookmarksService.favorites[index]);
                                 return false;
                             } else {
                                 return true;
@@ -196,14 +198,21 @@ function FAP() {
     }, [bookmarksService.favorites.length]);
 
     return (
-        <Fade in={bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && !isLoading && favorites.length !== 0} unmountOnExit>
+        <Fade
+            in={bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && !isLoading && favorites.length !== 0}
+            unmountOnExit
+        >
             <div
                 className={clsx(
                     classes.root,
                     bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
                 )}
                 ref={rootRef}
-                style={{ height: 40 + theme.spacing(3 + (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 3)) }}
+                style={{
+                    height: 40 + theme.spacing(
+                        3 + (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 3),
+                    ),
+                }}
             >
                 <Card
                     elevation={12}
@@ -235,13 +244,14 @@ function FAP() {
                             <LeftIcon />
                         </IconButton>
                         {favorites.map((fav) => {
-                            console.log(fav)
                             if (fav instanceof BookmarkEntity) {
                                 return (
                                     <Link
                                         {...fav}
                                         key={`${fav.type}-${fav.id}`}
-                                        isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
+                                        isBlurBackdrop={
+                                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
+                                        }
                                     />
                                 );
                             } else if (fav instanceof FolderEntity) {
@@ -249,7 +259,9 @@ function FAP() {
                                     <Folder
                                         {...fav}
                                         key={`${fav.type}-${fav.id}`}
-                                        isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
+                                        isBlurBackdrop={
+                                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
+                                        }
                                     />
                                 );
                             } else {
@@ -257,7 +269,9 @@ function FAP() {
                                     <Category
                                         {...fav}
                                         key={`${fav.type}-${fav.id}`}
-                                        isBlurBackdrop={bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT}
+                                        isBlurBackdrop={
+                                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
+                                        }
                                     />
                                 );
                             }

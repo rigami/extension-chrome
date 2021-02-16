@@ -1,3 +1,5 @@
+import EventBus from '@/utils/eventBus';
+import BusApp from '@/stores/server/bus';
 import SettingsService from './settingsService';
 import StorageService from './storageService';
 // import SyncSystemBookmarksService from './syncSystemBookmarksService';
@@ -6,8 +8,6 @@ import LocalBackupService from './localBackupService';
 import BookmarksService from './bookmarksService';
 import WeatherService from './weather/service';
 import BackgroundsService from './backgroundsService';
-import EventBus from '@/utils/eventBus';
-import BusApp from '@/stores/server/bus';
 
 class ServerApp {
     localBus;

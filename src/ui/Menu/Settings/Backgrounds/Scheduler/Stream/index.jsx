@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Collapse, Typography } from '@material-ui/core';
-import { BG_CHANGE_INTERVAL, BG_SELECT_MODE, BG_TYPE, FETCH } from '@/enum';
+import {
+    BG_CHANGE_INTERVAL,
+    BG_SELECT_MODE,
+    BG_TYPE,
+} from '@/enum';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import changeLocationPage from './ChangeQuery';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import appVariables from '@/config/appVariables';
 import { eventToBackground } from '@/stores/server/bus';
+import changeLocationPage from './ChangeQuery';
 
 const useStyles = makeStyles((theme) => ({
     row: {
@@ -23,15 +27,9 @@ const useStyles = makeStyles((theme) => ({
     },
     input: { padding: theme.spacing(2) },
     submit: { flexShrink: 0 },
-    locationRow: {
-        paddingLeft: theme.spacing(4),
-    },
-    geoButtonWrapper: {
-        position: 'relative',
-    },
-    geoButton: {
-
-    },
+    locationRow: { paddingLeft: theme.spacing(4) },
+    geoButtonWrapper: { position: 'relative' },
+    geoButton: {},
     geoButtonProgress: {
         position: 'absolute',
         top: '50%',
@@ -61,7 +59,9 @@ function Stream({ onSelect }) {
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const { t } = useTranslation();
-    const [isCustomQuery, setIsCustomQuery] = useState(coreService.storage.persistent.backgroundStreamQuery?.type === 'custom-query');
+    const [isCustomQuery, setIsCustomQuery] = useState(
+        coreService.storage.persistent.backgroundStreamQuery?.type === 'custom-query',
+    );
 
     return (
         <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM}>
@@ -94,12 +94,9 @@ function Stream({ onSelect }) {
                     onChange: (event) => {
                         if (event.target.value.length === 0) return;
 
-                        backgrounds.settings.update({ type: event.target.value })
+                        backgrounds.settings.update({ type: event.target.value });
                     },
-                    values: [
-                        BG_TYPE.IMAGE,
-                        BG_TYPE.VIDEO,
-                    ],
+                    values: [BG_TYPE.IMAGE, BG_TYPE.VIDEO],
                 }}
             />
             <MenuRow

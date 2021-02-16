@@ -1,10 +1,10 @@
 import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
-import Background from './entities/background';
 import createPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/server/bus';
 import fetchData from '@/utils/xhrPromise';
 import appVariables from '@/config/appVariables';
+import Background from './entities/background';
 
 export const ERRORS = {
     TOO_MANY_FILES: 'TOO_MANY_FILES',
@@ -17,7 +17,7 @@ class BackgroundsUniversalService {
     static PREVIEW_PATH = '/backgrounds/preview';
 
     static async addToLibrary(saveBG) {
-        console.log("[backgrounds] Add bg to library", saveBG);
+        console.log('[backgrounds] Add bg to library', saveBG);
 
         let saveFileName = saveBG.fileName;
 
@@ -31,7 +31,7 @@ class BackgroundsUniversalService {
             fileName: saveFileName,
         });
 
-        console.log('savedBG', savedBG)
+        console.log('savedBG', savedBG);
 
         await DBConnector().add('backgrounds', savedBG);
 
@@ -49,7 +49,7 @@ class BackgroundsUniversalService {
             await DBConnector().delete('backgrounds', removeBG.id);
             console.log('[backgrounds] Remove from db...');
         } catch (e) {
-            console.log(`bg ${removeBG.id} not find in db`)
+            console.log(`bg ${removeBG.id} not find in db`);
         }
 
         try {
@@ -57,7 +57,7 @@ class BackgroundsUniversalService {
             await FSConnector.removeFile(`/backgrounds/preview/${removeBG.fileName}`);
             console.log('[backgrounds] Remove from file system...');
         } catch (e) {
-            console.log(`[backgrounds] BG with id=${removeBG.id} not find in file system`)
+            console.log(`[backgrounds] BG with id=${removeBG.id} not find in file system`);
         }
 
         eventToApp('backgrounds/remove', { bg: removeBG });
@@ -65,7 +65,10 @@ class BackgroundsUniversalService {
 
     static async fetchBG(src) {
         const fileName = Date.now().toString();
-        console.log('[backgrounds] Fetch BG', { src, fileName });
+        console.log('[backgrounds] Fetch BG', {
+            src,
+            fileName,
+        });
 
         let defaultBG;
 

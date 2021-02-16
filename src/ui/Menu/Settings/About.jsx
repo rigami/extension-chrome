@@ -135,4 +135,3 @@ export default {
     header: headerProps,
     content: About,
 };
-

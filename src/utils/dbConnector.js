@@ -5,9 +5,7 @@ import appVariables from '../config/appVariables';
 let _db = null;
 let migrateRequire = false;
 
-const open = () => openDB(appVariables.db.name, appVariables.db.version, dbConfig({
-    upgrade() { migrateRequire = true; }
-}))
+const open = () => openDB(appVariables.db.name, appVariables.db.version, dbConfig({ upgrade() { migrateRequire = true; } }))
     .then((db) => { _db = db; })
     .then(async () => { if (migrateRequire) await migrate(appVariables.db.version); });
 

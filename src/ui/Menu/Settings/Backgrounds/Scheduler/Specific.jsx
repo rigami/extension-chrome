@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Avatar, Collapse } from '@material-ui/core';
 import { BG_SELECT_MODE } from '@/enum';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import libraryPage from '../Library';
 import FSConnector from '@/utils/fsConnector';
 import { BrokenImageRounded as BrokenIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import useAppStateService from '@/stores/app/AppStateProvider';
+import libraryPage from '../Library';
 
 function Specific({ onSelect }) {
     const { backgrounds } = useAppStateService();

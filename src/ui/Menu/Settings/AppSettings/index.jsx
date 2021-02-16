@@ -6,8 +6,8 @@ import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { THEME } from '@/enum';
 import useAppService from '@/stores/app/AppStateProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
-import tabNamePage from './TabName';
 import { observer } from 'mobx-react-lite';
+import tabNamePage from './TabName';
 
 const useStyles = makeStyles((theme) => ({
     defaultTabValue: {
@@ -34,7 +34,7 @@ function AppSettings({ onSelect }) {
                     checked: appService.settings.backdropTheme === THEME.DARK,
                     color: 'primary',
                     onChange: (event, value) => {
-                        appService.settings.update({ backdropTheme: value ? THEME.DARK : THEME.LIGHT })
+                        appService.settings.update({ backdropTheme: value ? THEME.DARK : THEME.LIGHT });
                     },
                 }}
             />

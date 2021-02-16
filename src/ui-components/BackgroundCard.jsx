@@ -105,9 +105,7 @@ const useStyles = makeStyles((theme) => ({
             color: theme.palette.primary.main,
         },
     },
-    addIconOffset: {
-        right: theme.spacing(3),
-    },
+    addIconOffset: { right: theme.spacing(3) },
 }));
 
 function BackgroundCard(props) {
@@ -125,62 +123,60 @@ function BackgroundCard(props) {
     const classes = useStyles();
 
     return (
-            <Box
-                className={classes.bgCard}
-                style={{ backgroundImage: `url('${previewSrc}')` }}
-            >
-                <Avatar variant="square" className={classes.bgStub}>
-                    <WallpaperIcon fontSize="large" />
-                </Avatar>
-                {select && (
-                    <SetIcon className={classes.selectIcon} />
+        <Box
+            className={classes.bgCard}
+            style={{ backgroundImage: `url('${previewSrc}')` }}
+        >
+            <Avatar variant="square" className={classes.bgStub}>
+                <WallpaperIcon fontSize="large" />
+            </Avatar>
+            {select && (
+                <SetIcon className={classes.selectIcon} />
+            )}
+            <Box className={classes.bgActionsWrapper}>
+                {onSet && !select && (
+                    <Tooltip title={t('settings.bg.apply')} placement="top">
+                        <Button className={classes.setIcon} onClick={onSet}>
+                            <SetIcon />
+                        </Button>
+                    </Tooltip>
                 )}
-                <Box className={classes.bgActionsWrapper}>
-                    {onSet && !select && (
-                        <Tooltip title={t('settings.bg.apply')} placement="top">
-                            <Button className={classes.setIcon} onClick={onSet}>
-                                <SetIcon />
-                            </Button>
-                        </Tooltip>
-                    )}
-                    {onRemove && (
-                        <Tooltip title={t('bg.remove')}>
-                            <IconButton className={classes.deleteIcon} onClick={onRemove}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-                    {onAdd && (
-                        <Tooltip title={t('bg.addToLibrary')}>
-                            <IconButton
-                                className={clsx(classes.addIcon, onRemove && classes.addIconOffset)}
-                                onClick={onAdd}
-                            >
-                                <AddIcon />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-                    {source !== BG_SOURCE.USER && (
-                        <Tooltip title={t('settings.bg.openSource')} placement="top">
-                            <Link
-                                className={classes.link}
-                                underline="none"
-                                href={sourceLink}
-                                target="_blank"
-                            >
-                                <GridListTileBar
-                                    className={classes.titleBar}
-                                    classes={{
-                                        actionIcon: classes.icon,
-                                    }}
-                                    subtitle={`by ${author}, ${t(`bg.serviceName.${source || 'unknown'}`)}`}
-                                    actionIcon={(<LeftIcon />)}
-                                />
-                            </Link>
-                        </Tooltip>
-                    )}
-                </Box>
+                {onRemove && (
+                    <Tooltip title={t('bg.remove')}>
+                        <IconButton className={classes.deleteIcon} onClick={onRemove}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </Tooltip>
+                )}
+                {onAdd && (
+                    <Tooltip title={t('bg.addToLibrary')}>
+                        <IconButton
+                            className={clsx(classes.addIcon, onRemove && classes.addIconOffset)}
+                            onClick={onAdd}
+                        >
+                            <AddIcon />
+                        </IconButton>
+                    </Tooltip>
+                )}
+                {source !== BG_SOURCE.USER && (
+                    <Tooltip title={t('settings.bg.openSource')} placement="top">
+                        <Link
+                            className={classes.link}
+                            underline="none"
+                            href={sourceLink}
+                            target="_blank"
+                        >
+                            <GridListTileBar
+                                className={classes.titleBar}
+                                classes={{ actionIcon: classes.icon }}
+                                subtitle={`by ${author}, ${t(`bg.serviceName.${source || 'unknown'}`)}`}
+                                actionIcon={(<LeftIcon />)}
+                            />
+                        </Link>
+                    </Tooltip>
+                )}
             </Box>
+        </Box>
     );
 }
 

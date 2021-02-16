@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { useLocalObservable, Observer } from 'mobx-react-lite';
 import { action } from 'mobx';
 import { useForkRef } from '@material-ui/core/utils';
-import { max, values } from 'lodash';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -17,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 
 const items = {};
 
-const MouseDistanceFade = React.forwardRef(function MouseDistanceFade(props, ref) {
+function MouseDistanceFade(props) {
     const {
         children,
         distanceMax = 750,
@@ -60,7 +59,7 @@ const MouseDistanceFade = React.forwardRef(function MouseDistanceFade(props, ref
         if (rootAl.current) rootAl.current.style.opacity = calcOpacity;
 
         store.hideTimer = setTimeout(action(() => {
-            if (e.path.indexOf(rootAl.current) !== -1 || e.path.indexOf(rootAl.current) !== -1) return;
+            if (e.path.indexOf(rootAl.current) !== -1) return;
 
             store.smooth = true;
             if (rootAl.current) rootAl.current.style.opacity = 0;
@@ -87,6 +86,6 @@ const MouseDistanceFade = React.forwardRef(function MouseDistanceFade(props, ref
             })}
         </Observer>
     );
-});
+}
 
 export default MouseDistanceFade;

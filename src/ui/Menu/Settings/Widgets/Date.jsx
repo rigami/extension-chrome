@@ -11,7 +11,7 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
-    Typography
+    Typography,
 } from '@material-ui/core';
 import { getDomain } from '@/utils/localSiteParse';
 import { observer } from 'mobx-react-lite';

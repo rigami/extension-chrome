@@ -23,9 +23,7 @@ class BaseWeatherConnector {
                 widgetWeather: null,
             });
         } else {
-            this.storageService.updatePersistent({
-                weather,
-            });
+            this.storageService.updatePersistent({ weather });
         }
     }
 
@@ -37,9 +35,7 @@ class BaseWeatherConnector {
         console.log('Set location:', location);
         this.location = location;
 
-        this.storageService.updatePersistent({
-            weatherLocation: location,
-        });
+        this.storageService.updatePersistent({ weatherLocation: location });
     }
 }
 

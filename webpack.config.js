@@ -14,7 +14,7 @@ module.exports = () => ({
         app: './index.js',
         popup: './popup.js',
         server: './server.js',
-        requestPermissions: './requestPermissions.js'
+        requestPermissions: './requestPermissions.js',
     },
     mode: process.env.NODE_ENV || 'development',
     output: {

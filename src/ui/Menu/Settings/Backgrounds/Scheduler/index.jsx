@@ -4,12 +4,11 @@ import { BG_SELECT_MODE, BG_SHOW_STATE, BG_TYPE } from '@/enum';
 import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
+import useAppStateService from '@/stores/app/AppStateProvider';
+import { Collapse, LinearProgress } from '@material-ui/core';
 import Stream from './Stream';
 import Random from './Random';
 import Specific from './Specific';
-import useAppStateService from '@/stores/app/AppStateProvider';
-import { Collapse, LinearProgress } from '@material-ui/core';
-
 
 function SchedulerSection({ onSelect }) {
     const { backgrounds } = useAppStateService();
@@ -26,7 +25,7 @@ function SchedulerSection({ onSelect }) {
                     format: (value) => t(`settings.bg.scheduler.selectionMethod.method.${value}`),
                     value: backgrounds.settings.selectionMethod,
                     onChange: (event) => {
-                        if(event.target.value === BG_SELECT_MODE.STREAM) {
+                        if (event.target.value === BG_SELECT_MODE.STREAM) {
                             backgrounds.settings.update({
                                 type: backgrounds.settings.type.filter((type) => (
                                     type !== BG_TYPE.ANIMATION
@@ -36,12 +35,7 @@ function SchedulerSection({ onSelect }) {
                         }
                         backgrounds.settings.update({ selectionMethod: event.target.value });
                     },
-                    values: [
-                        BG_SELECT_MODE.RANDOM,
-                        BG_SELECT_MODE.SPECIFIC,
-                        // BG_SELECT_MODE.SEQUENCE,
-                        BG_SELECT_MODE.STREAM,
-                    ],
+                    values: [BG_SELECT_MODE.RANDOM, BG_SELECT_MODE.SPECIFIC, BG_SELECT_MODE.STREAM],
                 }}
             />
             <Collapse in={backgrounds.bgState === BG_SHOW_STATE.SEARCH}>

@@ -25,8 +25,8 @@ class SyncSystemBookmarksService {
             } catch (e) {
                 console.error(e);
             }
-            console.log(props, options, callback, other)
-            console.log('finish SYNC!')
+            console.log(props, options, callback, other);
+            console.log('finish SYNC!');
             // await new Promise((resolve) => setTimeout(resolve, 4500))
             callback();
         });
@@ -93,7 +93,10 @@ class SyncSystemBookmarksService {
     }
 
     async createFolder(browserNode, parentId, notyEvent = false) {
-        const folder = new Folder({ name: browserNode.title, parentId });
+        const folder = new Folder({
+            name: browserNode.title,
+            parentId,
+        });
         console.log('create folder:', folder);
         const newFolderId = await this.core.bookmarksService.folders.save({ ...folder }, notyEvent);
 
@@ -123,7 +126,7 @@ class SyncSystemBookmarksService {
             }
 
             return Promise.resolve();
-        }
+        };
 
         const parseNodeFolder = async (browserNode, rigamiNode, parentId) => {
             console.log('parseNodeFolder', browserNode, rigamiNode, parentId);
@@ -154,7 +157,7 @@ class SyncSystemBookmarksService {
                     browserNodes[i].id,
                 );
 
-                console.log('bind', bind, browserNodes[i])
+                console.log('bind', bind, browserNodes[i]);
 
                 if (browserNodes[i].url && !('dateGroupModified' in browserNodes[i])) {
                     await parseNodeBookmark(
@@ -170,7 +173,7 @@ class SyncSystemBookmarksService {
                     );
                 }
             }
-        }
+        };
 
         const tree = await FoldersUniversalService.getTree(this.core.storageService.storage.syncBrowserFolder);
         const nodes = await new Promise((resolve) => chrome.bookmarks.getTree(resolve));

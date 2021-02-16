@@ -8,23 +8,21 @@ import {
     Box,
     GridList,
     Chip,
-    IconButton, Button,
+    Button,
 } from '@material-ui/core';
-import { BG_SOURCE, BG_TYPE, FETCH, } from '@/enum';
+import { BG_SOURCE, BG_TYPE, FETCH } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     ErrorRounded as ErrorIcon,
-    CheckRounded as ApplyIcon,
     ToysRounded as StationIcon,
     WifiTetheringRounded as StreamIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import FullScreenStub from '@/ui-components/FullscreenStub';
+import FullscreenStub from '@/ui-components/FullscreenStub';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { runInAction } from 'mobx';
 import fetchData from '@/utils/xhrPromise';
 import appVariables from '@/config/appVariables';
-import FullscreenStub from '@/ui-components/FullscreenStub';
 import { eventToBackground } from '@/stores/server/bus';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundCard from '@/ui-components/BackgroundCard';
@@ -32,9 +30,7 @@ import BackgroundsUniversalService from '@/stores/universal/backgrounds/service'
 import Background from '@/stores/universal/backgrounds/entities/background';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        marginTop: 4,
-    },
+    root: { marginTop: 4 },
     row: {
         padding: theme.spacing(0, 2),
         display: 'flex',
@@ -50,16 +46,13 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: '900',
         fontFamily: '"Manrope", "Open Sans", sans-serif',
     },
-    submit: { flexShrink: 0, marginLeft: theme.spacing(2) },
-    locationRow: {
-        paddingLeft: theme.spacing(4),
+    submit: {
+        flexShrink: 0,
+        marginLeft: theme.spacing(2),
     },
-    geoButtonWrapper: {
-        position: 'relative',
-    },
-    geoButton: {
-
-    },
+    locationRow: { paddingLeft: theme.spacing(4) },
+    geoButtonWrapper: { position: 'relative' },
+    geoButton: {},
     geoButtonProgress: {
         position: 'absolute',
         top: '50%',
@@ -82,14 +75,10 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         borderRadius: theme.shape.borderRadius,
     },
-    footer: {
-        height: 400,
-    },
+    footer: { height: 400 },
 }));
 
-const headerProps = {
-    title: 'settings.bg.scheduler.query.custom.createTitle',
-};
+const headerProps = { title: 'settings.bg.scheduler.query.custom.createTitle' };
 const pageProps = { width: 960 };
 
 function ChangeQuery({ onClose }) {
@@ -99,7 +88,7 @@ function ChangeQuery({ onClose }) {
     const { backgrounds } = useAppStateService();
     const store = useLocalObservable(() => ({
         searchRequest: coreService.storage.persistent.backgroundStreamQuery?.value,
-        foundRequest: "",
+        foundRequest: '',
         list: [],
         status: FETCH.WAIT,
     }));
@@ -126,12 +115,11 @@ function ChangeQuery({ onClose }) {
                 store.list = list;
                 store.status = FETCH.DONE;
             });
-
         } catch (e) {
             console.error(e);
             store.status = FETCH.FAILED;
         }
-    }
+    };
 
     const handleSelect = () => {
         coreService.storage.updatePersistent({
@@ -147,7 +135,7 @@ function ChangeQuery({ onClose }) {
         eventToBackground('backgrounds/nextBg');
 
         onClose();
-    }
+    };
 
     return (
         <React.Fragment>
@@ -246,34 +234,34 @@ function ChangeQuery({ onClose }) {
                         <FullscreenStub
                             className={classes.footer}
                             icon={StationIcon}
-                            message={t("settings.bg.scheduler.query.search.footerMessage.title")}
+                            message={t('settings.bg.scheduler.query.search.footerMessage.title')}
                             actions={[
                                 {
-                                    title: t("settings.bg.scheduler.query.search.footerMessage.useStream"),
+                                    title: t('settings.bg.scheduler.query.search.footerMessage.useStream'),
                                     variant: 'contained',
                                     color: 'primary',
                                     onClick: handleSelect,
-                                }
+                                },
                             ]}
                         />
                     )}
                 </React.Fragment>
             )}
             {store.status === FETCH.DONE && store.list.length === 0 && (
-                <FullScreenStub
+                <FullscreenStub
                     message={t('settings.bg.scheduler.query.search.notFound.title')}
                     description={t('settings.bg.scheduler.query.search.notFound.description')}
                 />
             )}
             {store.status === FETCH.FAILED && (
-                <FullScreenStub
+                <FullscreenStub
                     icon={ErrorIcon}
                     message={t('settings.bg.scheduler.query.search.failed.title')}
                     description={t('settings.bg.scheduler.query.search.failed.description')}
                 />
             )}
             {store.status === FETCH.WAIT && (
-                <FullScreenStub
+                <FullscreenStub
                     icon={StreamIcon}
                     message={t('settings.bg.scheduler.query.search.wait.title')}
                     description={t('settings.bg.scheduler.query.search.wait.description')}

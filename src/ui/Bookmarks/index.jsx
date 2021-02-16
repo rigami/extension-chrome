@@ -15,10 +15,10 @@ import Categories from '@/ui/Bookmarks/Categories';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import useCoreService from '@/stores/app/BaseStateProvider';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import Category from './Categories/CtegoryWrapper';
 import Folder from './Folders/FolderWrapper';
 import BookmarksGrid from './BookmarksGrid';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -202,19 +202,22 @@ function Bookmarks() {
                                     onSelect={(nextFolderId) => setSelectFolderId(nextFolderId)}
                                 />
                             ))}
-                            {statusSearch === SEARCH_STATUS.DONE_SEARCH && findBookmarks.map(({ category, bookmarks }) => (
-                                <Category {...category} key={category.id}>
-                                    {bookmarks.length === 0 && (
-                                        <Typography
-                                            variant="body1"
-                                            style={{ color: theme.palette.text.secondary }}
-                                        >
-                                            {t('bookmark.noMatchingItems')}
-                                        </Typography>
-                                    )}
-                                    <BookmarksGrid bookmarks={bookmarks} />
-                                </Category>
-                            ))}
+                            {
+                                statusSearch === SEARCH_STATUS.DONE_SEARCH
+                                && findBookmarks.map(({ category, bookmarks }) => (
+                                    <Category {...category} key={category.id}>
+                                        {bookmarks.length === 0 && (
+                                            <Typography
+                                                variant="body1"
+                                                style={{ color: theme.palette.text.secondary }}
+                                            >
+                                                {t('bookmark.noMatchingItems')}
+                                            </Typography>
+                                        )}
+                                        <BookmarksGrid bookmarks={bookmarks} />
+                                    </Category>
+                                ))
+                            }
                         </div>
                     </Fade>
                 </Container>

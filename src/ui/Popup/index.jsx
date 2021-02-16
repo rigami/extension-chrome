@@ -7,9 +7,9 @@ import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import useCoreService, { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
 import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
-import PopupContent from './PopupEditor';
 import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
+import PopupContent from './PopupEditor';
 
 function LoadStoreWait({ children }) {
     const coreService = useCoreService();

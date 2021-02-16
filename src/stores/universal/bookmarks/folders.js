@@ -45,7 +45,7 @@ class FoldersUniversalService {
 
     @action('get folder by id')
     static async get(folderId) {
-        console.log('get folder by id', folderId)
+        console.log('get folder by id', folderId);
         const folder = await DBConnector().get('folders', folderId);
 
         return new Folder(folder);

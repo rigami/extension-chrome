@@ -22,9 +22,10 @@ import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import Link from '@/ui/Bookmarks/FAP/Link';
-import FolderButton from './index';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+// eslint-disable-next-line import/no-cycle
+import FolderButton from './index';
 
 const useStyles = makeStyles((theme) => ({
     root: {

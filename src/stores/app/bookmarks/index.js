@@ -1,10 +1,10 @@
 import { action, makeAutoObservable, reaction } from 'mobx';
 import { BKMS_FAP_STYLE, DESTINATION } from '@/enum';
 import { BookmarksSettingsStore } from '@/stores/app/settings';
+import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import CategoriesStore from './categories';
 import FoldersStore from './folders';
 import BookmarksStore from './bookmarks';
-import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 
 class BookmarksService {
     categories;
@@ -45,7 +45,10 @@ class BookmarksService {
             this._coreService.storage.updatePersistent({
                 bkmsLastSearch: {
                     ...(this._coreService.storage.persistent.categories || {}),
-                    categories: { match: (this._coreService.storage.persistent.categories || []).filter((id) => id !== categoryId) },
+                    categories: {
+                        match: (this._coreService.storage.persistent.categories || [])
+                            .filter((id) => id !== categoryId),
+                    },
                 },
                 bkmsLastTruthSearchTimestamp: Date.now(),
             });
@@ -61,19 +64,14 @@ class BookmarksService {
         this._coreService.globalEventBus.on('favorite/new', () => this.syncFavorites());
         this._coreService.globalEventBus.on('favorite/remove', () => this.syncFavorites());
 
-        /* reaction(
-            () => this.settings.syncWithSystem,
-            () => this.settings.syncWithSystem && this._coreService.globalEventBus.call('system/parseSystemBookmarks', DESTINATION.BACKGROUND),
-        ); */
-
         reaction(
             () => this.settings.fapStyle,
-            () => this.fapIsDisplay = this.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && this.favorites.length
+            () => { this.fapIsDisplay = this.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && this.favorites.length; },
         );
 
         reaction(
             () => this.favorites.length,
-            () => this.fapIsDisplay = this.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && this.favorites.length
+            () => { this.fapIsDisplay = this.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && this.favorites.length; },
         );
     }
 
@@ -91,16 +89,21 @@ class BookmarksService {
 
         this.favorites = await FavoritesUniversalService.getAll();
 
-        console.log('this.favorites', this.favorites)
+        console.log('this.favorites', this.favorites);
 
         return this.favorites;
     }
 
     @action('add to favorites')
     async addToFavorites({ type, id }) {
-        const favoriteId = await FavoritesUniversalService.addToFavorites({ type, id })
+        const favoriteId = await FavoritesUniversalService.addToFavorites({
+            type,
+            id,
+        });
 
-        if (this._coreService) this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: id });
+        if (this._coreService) {
+            this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: id });
+        }
 
         return favoriteId;
     }
@@ -109,9 +112,14 @@ class BookmarksService {
     async removeFromFavorites({ type, id }) {
         this.favorites = this.favorites.filter((fav) => fav.type !== type || fav.id !== id);
 
-        const favoriteId = await FavoritesUniversalService.removeFromFavorites({ type, id })
+        const favoriteId = await FavoritesUniversalService.removeFromFavorites({
+            type,
+            id,
+        });
 
-        if (this._coreService) this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId: id });
+        if (this._coreService) {
+            this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId: id });
+        }
 
         return favoriteId;
     }

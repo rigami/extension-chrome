@@ -135,7 +135,6 @@ function Categories(props) {
         className: externalClassName,
         onCreate,
         autoSelect = false,
-        oneRow,
     } = props;
     const { t } = useTranslation();
     const classes = useStyles();

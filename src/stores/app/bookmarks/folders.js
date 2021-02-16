@@ -22,9 +22,15 @@ class FoldersStore {
 
     @action('save folder')
     async save({ name, id, parentId }, pushEvent = true) {
-        let newFolderId = await FoldersUniversalService.save({ name, id, parentId });
+        const newFolderId = await FoldersUniversalService.save({
+            name,
+            id,
+            parentId,
+        });
 
-        if (this._coreService && pushEvent) this._coreService.globalEventBus.call('folder/new', DESTINATION.APP, { folderId: newFolderId });
+        if (this._coreService && pushEvent) {
+            this._coreService.globalEventBus.call('folder/new', DESTINATION.APP, { folderId: newFolderId });
+        }
 
         return newFolderId;
     }

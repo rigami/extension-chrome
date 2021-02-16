@@ -30,6 +30,7 @@ function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName
         }
 
         const imgCache = document.createElement('img');
+        // eslint-disable-next-line no-multi-assign
         imgCache.onload = imgCache.onerror = () => {
             setIsLoading(false);
         };

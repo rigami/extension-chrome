@@ -9,7 +9,7 @@ import OverscrollPlugin from 'smooth-scrollbar/plugins/overscroll';
 import ViewScrollPlugin from '@/utils/ViewScrollPlugin';
 import { ACTIVITY } from '@/enum';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         height: '100vh',
         width: '100vw',

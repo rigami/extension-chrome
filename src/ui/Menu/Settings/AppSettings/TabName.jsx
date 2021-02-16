@@ -11,9 +11,7 @@ import useAppService from '@/stores/app/AppStateProvider';
 import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
-    row: {
-        padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    },
+    row: { padding: `${theme.spacing(1)}px ${theme.spacing(2)}px` },
     splash: {
         position: 'relative',
         overflow: 'hidden',

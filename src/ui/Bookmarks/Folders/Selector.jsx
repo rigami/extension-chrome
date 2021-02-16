@@ -8,10 +8,9 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useLocalObservable, observer } from 'mobx-react-lite';
-import EditFolderModal from './EditModal';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import EditFolderModal from './EditModal';
 
 const useStyles = makeStyles((theme) => ({
     folderSelectButton: { textTransform: 'unset' },
@@ -24,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
 function FolderSelector({ value, onChange }) {
     const classes = useStyles();
     const { t } = useTranslation();
-    const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
         anchorEl: null,
         isOpen: false,

@@ -49,12 +49,10 @@ class BackgroundsAppService {
             this._currentBG = bg;
             this.currentBGId = this._currentBG?.id;
 
-            this._coreService.storage.updatePersistent({
-                bgCurrent: { ...bg },
-            });
+            this._coreService.storage.updatePersistent({ bgCurrent: { ...bg } });
 
             if (prepareNextEvent) eventToBackground('backgrounds/prepareNextBg');
-        }
+        };
 
         reaction(
             () => this._coreService.storage.persistent?.bgCurrent?.id,
@@ -150,7 +148,6 @@ class BackgroundsAppService {
         };
 
         return Promise.all(Array.prototype.map.call(fileList, (file, index) => {
-
             let computeType;
             let computeAntiAliasing = true;
 
@@ -206,7 +203,7 @@ class BackgroundsAppService {
             downloadLink: URL.createObjectURL(bg.file),
         });
 
-        console.log('saveFromUploadQueue', saveBGId, saveBG, options, this.uploadQueue.find(({ id }) => saveBGId === id))
+        console.log('saveFromUploadQueue', saveBGId, saveBG, options, this.uploadQueue.find(({ id }) => saveBGId === id));
 
         return BackgroundsUniversalService.addToLibrary(saveBG)
             .finally(() => {
@@ -216,13 +213,13 @@ class BackgroundsAppService {
 
     @action('get last usage backgrounds')
     async getLastUsage(limit = 10) {
-        let tx = await DBConnector().transaction('backgrounds', 'readonly');
+        const tx = await DBConnector().transaction('backgrounds', 'readonly');
         let cursor = await tx.objectStore('backgrounds').openCursor();
         let currIndex = 0;
-        let bgs = [];
+        const bgs = [];
 
         while (cursor && currIndex + 1 < limit) {
-            bgs.push(new Background(cursor.value))
+            bgs.push(new Background(cursor.value));
 
             currIndex += 1;
             cursor = await cursor.continue();
@@ -230,7 +227,6 @@ class BackgroundsAppService {
 
         return bgs;
     }
-
 
     @action('get all backgrounds')
     getAll() {

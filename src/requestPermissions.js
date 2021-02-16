@@ -19,4 +19,4 @@ bus.on('requestPermissions/geolocation', async ({}, {}, callback) => {
     } catch (e) {
         callback(false);
     }
-})
+});

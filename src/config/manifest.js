@@ -1,41 +1,39 @@
 const packageJson = require('../../package.json');
 
 module.exports = {
-    "manifest_version": 2,
+    'manifest_version': 2,
 
-    "name": "__MSG_appName__",
-    "description":"__MSG_appDesc__",
-    "default_locale": "en",
-    "short_name": "Rigami",
-    "version": packageJson.version,
-    "homepage_url": "https://rigami.io/",
-    "minimum_chrome_version": "70",
-    "offline_enabled": true,
-    "icons":{
-        "16":"resource/16x16.png",
-        "32":"resource/32x32.png",
-        "64":"resource/64x64.png",
-        "128":"resource/128x128.png"
+    'name': '__MSG_appName__',
+    'description': '__MSG_appDesc__',
+    'default_locale': 'en',
+    'short_name': 'Rigami',
+    'version': packageJson.version,
+    'homepage_url': 'https://rigami.io/',
+    'minimum_chrome_version': '70',
+    'offline_enabled': true,
+    'icons': {
+        '16': 'resource/16x16.png',
+        '32': 'resource/32x32.png',
+        '64': 'resource/64x64.png',
+        '128': 'resource/128x128.png',
     },
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-    "permissions":[
-        "activeTab",
-        "storage",
-        "unlimitedStorage",
-        "*://*/*",
-        "http://danilkinkin.com/",
-        "notifications",
-        "bookmarks"
+    'content_security_policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\'',
+    'permissions': [
+        'activeTab',
+        'storage',
+        'unlimitedStorage',
+        '*://*/*',
+        'http://danilkinkin.com/',
+        'notifications',
+        'bookmarks',
     ],
-    "background": {
-        "page": "server.html",
-        "persistent": false
+    'background': {
+        'page': 'server.html',
+        'persistent': false,
     },
-    "chrome_url_overrides": {
-        "newtab": "index.html"
+    'chrome_url_overrides': { 'newtab': 'index.html' },
+    'browser_action': {
+        'default_title': '__MSG_appAction__',
+        'default_popup': 'popup.html',
     },
-    "browser_action":{
-        "default_title":"__MSG_appAction__",
-        "default_popup": "popup.html"
-    }
 };

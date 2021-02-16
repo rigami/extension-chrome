@@ -41,7 +41,7 @@ function Random() {
                     onChange: (event) => {
                         if (event.target.value.length === 0) return;
 
-                        backgrounds.settings.update({ type: event.target.value })
+                        backgrounds.settings.update({ type: event.target.value });
                     },
                     values: [
                         BG_TYPE.IMAGE,

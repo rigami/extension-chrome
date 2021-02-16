@@ -44,12 +44,10 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.common.black,
         margin: theme.spacing(0.25),
     },
-    loadBgButton: {
-        pointerEvents: 'none',
-    },
+    loadBgButton: { pointerEvents: 'none' },
 }));
 
-function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG }) {
+function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings }) {
     const classes = useStyles();
     const theme = useTheme();
     const { backgrounds } = useAppStateService();
@@ -99,7 +97,7 @@ function FabMenu({ onOpenMenu, onRefreshBackground, fastSettings, useChangeBG })
                                         )}
                                         onClick={() => onRefreshBackground()}
                                     >
-                                        {backgrounds.bgState !== BG_SHOW_STATE.SEARCH &&  (
+                                        {backgrounds.bgState !== BG_SHOW_STATE.SEARCH && (
                                             <RefreshIcon />
                                         )}
                                         {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (

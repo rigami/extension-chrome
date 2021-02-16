@@ -5,11 +5,7 @@ import { Box } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        backgroundColor: theme.palette.background.paper,
-    },
-}));
+const useStyles = makeStyles((theme) => ({ root: { backgroundColor: theme.palette.background.paper } }));
 
 function FAPStub() {
     const classes = useStyles();

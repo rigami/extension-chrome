@@ -10,6 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import FAPButton from '@/ui/Bookmarks/FAP/Button';
 import PopperWrapper from '@/ui-components/PopperWrapper';
+// eslint-disable-next-line import/no-cycle
 import Explorer from './Explorer';
 
 const useStyles = makeStyles((theme) => ({

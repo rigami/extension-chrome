@@ -15,7 +15,7 @@ import {
     DialogTitle,
     LinearProgress,
     TextField,
-    Typography
+    Typography,
 } from '@material-ui/core';
 import { map, round } from 'lodash';
 import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
@@ -139,7 +139,7 @@ function WeatherWidget({ onSelect }) {
                         }, ${
                             round(coreService.storage.persistent.weatherLocation?.longitude, 1) || '-'
                         }]`)
-                        : (
+                            : (
                                 <Typography className={classes.notSetValue}>
                                     {t('settings.widgets.dtw.weather.region.notSet')}
                                 </Typography>

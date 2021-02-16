@@ -1,6 +1,8 @@
 import BusApp, { eventToBackground, initBus, instanceId } from '@/stores/server/bus';
 import { BG_SOURCE, BG_TYPE, DESTINATION } from '@/enum';
-import { reaction, action, makeAutoObservable, runInAction } from 'mobx';
+import {
+    reaction, action, makeAutoObservable, runInAction,
+} from 'mobx';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
@@ -134,11 +136,13 @@ class Core {
         console.log('Fetch BG');
         progressCallback(10, PREPARE_PROGRESS.FETCH_BG);
 
-        const { response } = await fetchData(`${appVariables.rest.url}/backgrounds/get-from-collection?count=1&type=image&collection=best`);
+        const { response } = await fetchData(
+            `${appVariables.rest.url}/backgrounds/get-from-collection?count=1&type=image&collection=best`,
+        );
 
         progressCallback(30, PREPARE_PROGRESS.FETCH_BG);
 
-        let bg
+        let bg;
 
         if (response.length !== 0) {
             bg = await BackgroundsUniversalService.addToLibrary(new Background({
@@ -151,9 +155,7 @@ class Core {
             bg = await BackgroundsUniversalService.addToLibrary(new Background(appVariables.backgrounds.fallback));
         }
 
-        this.storage.updatePersistent({
-            bgCurrent: bg,
-        });
+        this.storage.updatePersistent({ bgCurrent: bg });
 
         this.appState = APP_STATE.WORK;
 

@@ -40,15 +40,9 @@ const useStyles = makeStyles((theme) => ({
     },
     input: { padding: theme.spacing(2) },
     submit: { flexShrink: 0 },
-    locationRow: {
-        paddingLeft: theme.spacing(4),
-    },
-    geoButtonWrapper: {
-        position: 'relative',
-    },
-    geoButton: {
-
-    },
+    locationRow: { paddingLeft: theme.spacing(4) },
+    geoButtonWrapper: { position: 'relative' },
+    geoButton: {},
     geoButtonProgress: {
         position: 'absolute',
         top: '50%',
@@ -57,13 +51,6 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: -12,
     },
 }));
-
-const ObserverHeaderActions = observer(HeaderActions);
-
-const headerProps = {
-    title: 'settings.widgets.dtw.weather.region.title',
-    actions: (<ObserverHeaderActions />),
-};
 
 function HeaderActions() {
     const classes = useStyles();
@@ -81,13 +68,13 @@ function HeaderActions() {
                 <span className={classes.geoButtonWrapper}>
                     <Button
                         className={classes.geoButton}
-                        variant={isAuto ? "contained" : "outlined"}
+                        variant={isAuto ? 'contained' : 'outlined'}
                         color="primary"
                         startIcon={isAuto ? (<MyLocationIcon />) : (<CustomLocationIcon />)}
                         disabled={loading}
                         onClick={() => {
                             if (isAuto) {
-                                coreService.localEventBus.call('system/widgets/weather/focusManualSearchInput')
+                                coreService.localEventBus.call('system/widgets/weather/focusManualSearchInput');
                             } else {
                                 setLoading(true);
                                 widgets.getPermissionsToWeather()
@@ -116,6 +103,13 @@ function HeaderActions() {
     );
 }
 
+const ObserverHeaderActions = observer(HeaderActions);
+
+const headerProps = {
+    title: 'settings.widgets.dtw.weather.region.title',
+    actions: (<ObserverHeaderActions />),
+};
+
 function Location(props) {
     const {
         locationName,
@@ -132,7 +126,7 @@ function Location(props) {
 
     if (widgets.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.FAHRENHEIT) {
         units = '°F';
-        temp = ((currTemp || 0) - 273.15) * (9/5) + 32;
+        temp = ((currTemp || 0) - 273.15) * (9 / 5) + 32;
     } else if (widgets.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.KELVIN) {
         units = 'К';
         temp = currTemp || 0;
@@ -179,16 +173,15 @@ function WeatherChangeLocation({ onClose }) {
                 store.list = list;
                 store.status = FETCH.DONE;
             });
-
         } catch (e) {
             console.error(e);
             store.status = FETCH.FAILED;
         }
-    }
+    };
 
     useEffect(() => {
         const listenId = coreService.localEventBus.on('system/widgets/weather/focusManualSearchInput', () => {
-            console.log('focusManualSearchInput', inputRef)
+            console.log('focusManualSearchInput', inputRef);
             inputRef.current?.focus();
         });
 
@@ -268,15 +261,16 @@ function WeatherChangeLocation({ onClose }) {
                 && coreService.storage.persistent.weatherLocation
                 && !coreService.storage.persistent.weatherLocation?.manual
                 && (
-                <FullScreenStub
-                    icon={MyLocationIcon}
-                    message={t(
-                        'settings.widgets.dtw.weather.region.search.wait.auto.title',
-                        { locationName: coreService.storage.persistent.weatherLocation?.name },
-                    )}
-                    description={t('settings.widgets.dtw.weather.region.search.wait.auto.description')}
-                />
-            )}
+                    <FullScreenStub
+                        icon={MyLocationIcon}
+                        message={t(
+                            'settings.widgets.dtw.weather.region.search.wait.auto.title',
+                            { locationName: coreService.storage.persistent.weatherLocation?.name },
+                        )}
+                        description={t('settings.widgets.dtw.weather.region.search.wait.auto.description')}
+                    />
+                )
+            }
         </React.Fragment>
     );
 }

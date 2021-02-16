@@ -15,11 +15,11 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import Menu from '@/ui/Menu';
 import { useTranslation } from 'react-i18next';
 import useAppStateService from '@/stores/app/AppStateProvider';
-import Widgets from './Widgets';
-import Background from './Background';
 import { eventToBackground } from '@/stores/server/bus';
 import { BG_SELECT_MODE, BG_SHOW_STATE, BG_SOURCE } from '@/enum';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
+import Background from './Background';
+import Widgets from './Widgets';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -28,9 +28,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         position: 'relative',
     },
-    loadBGIcon: {
-        color: theme.palette.text.primary,
-    },
+    loadBGIcon: { color: theme.palette.text.primary },
 }));
 
 function Desktop() {
@@ -42,9 +40,7 @@ function Desktop() {
 
     const openMenu = (position) => {
         coreService.localEventBus.call('system/contextMenu', {
-            reactions: [
-                () => backgrounds.bgState,
-            ],
+            reactions: [() => backgrounds.bgState],
             actions: () => [
                 ...(backgrounds.settings.selectionMethod !== BG_SELECT_MODE.SPECIFIC ? [
                     {
@@ -57,7 +53,7 @@ function Desktop() {
                             className: classes.loadBGIcon,
                         } : {},
                         onClick: () => eventToBackground('backgrounds/nextBg'),
-                    }
+                    },
                 ] : []),
                 ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
                     {
@@ -71,7 +67,7 @@ function Desktop() {
                         type: 'button',
                         title: t('bg.openSource'),
                         icon: OpenSourceIcon,
-                        onClick: () => window.open(backgrounds.currentBG?.sourceLink, "_blank"),
+                        onClick: () => window.open(backgrounds.currentBG?.sourceLink, '_blank'),
                     },
                     { type: 'divider' },
                 ] : []),

@@ -24,7 +24,7 @@ class StorageService {
                     this.storage = { ...JSON.parse(props) };
                     this.fastSync();
                 })
-                .catch((e) => console.error('[storage] Failed read storage from file:', e));
+                .catch((e2) => console.error('[storage] Failed read storage from file:', e2));
         }
 
         this.core.globalBus.on('system/syncStorage', (storage, { initiatorId }) => {

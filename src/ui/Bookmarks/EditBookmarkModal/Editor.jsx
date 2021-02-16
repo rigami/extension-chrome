@@ -14,11 +14,11 @@ import asyncAction from '@/utils/asyncAction';
 import Scrollbar from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
 import ReactResizeDetector from 'react-resize-detector';
+import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FieldsEditor from './FieldsEditor';
 import { PreviewSelectorToggleButton } from './Preview/Selector';
 import Preview, { STAGE } from './Preview';
 import SelectorWrapper from './Preview/SelectorWrapper';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 
 const useStyles = makeStyles((theme) => ({
     container: {

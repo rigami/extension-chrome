@@ -1,4 +1,6 @@
-import { action, computed, makeAutoObservable, runInAction } from 'mobx';
+import {
+    action, computed, makeAutoObservable, runInAction,
+} from 'mobx';
 import { DESTINATION } from '@/enum';
 import Category from '@/stores/universal/bookmarks/entities/category';
 import CategoriesUniversalService from '@/stores/universal/bookmarks/categories';
@@ -20,7 +22,7 @@ class CategoriesStore {
 
         runInAction(() => {
             this._categories = categories;
-        })
+        });
 
         return this._categories;
     }
@@ -37,9 +39,15 @@ class CategoriesStore {
 
     @action('save category')
     async save({ name, id, color }) {
-        let newCategoryId = await CategoriesUniversalService.save({ name, id, color });
+        const newCategoryId = await CategoriesUniversalService.save({
+            name,
+            id,
+            color,
+        });
 
-        if (this._coreService) this._coreService.globalEventBus.call('category/new', DESTINATION.APP, { categoryId: newCategoryId });
+        if (this._coreService) {
+            this._coreService.globalEventBus.call('category/new', DESTINATION.APP, { categoryId: newCategoryId });
+        }
 
         return newCategoryId;
     }
@@ -48,7 +56,9 @@ class CategoriesStore {
     async remove(categoryId) {
         const removeBinds = await CategoriesUniversalService.remove(categoryId);
 
-        if (this._coreService) this._coreService.globalEventBus.call('category/remove', DESTINATION.APP, { categoryId });
+        if (this._coreService) {
+            this._coreService.globalEventBus.call('category/remove', DESTINATION.APP, { categoryId });
+        }
 
         return removeBinds;
     }

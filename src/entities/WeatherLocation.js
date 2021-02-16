@@ -5,7 +5,9 @@ class WeatherLocation {
     longitude;
     manual;
 
-    constructor({ id, name, latitude, longitude, manual }) {
+    constructor({
+        id, name, latitude, longitude, manual,
+    }) {
         this.id = id;
         this.name = name;
         this.latitude = latitude;

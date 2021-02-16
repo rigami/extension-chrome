@@ -10,7 +10,7 @@ import {
     FETCH,
     THEME,
     BG_SHOW_STATE,
-    BG_SOURCE, BG_SHOW_MODE,
+    BG_SOURCE,
 } from '@/enum';
 import clsx from 'clsx';
 import { Fade } from '@material-ui/core';
@@ -19,11 +19,10 @@ import { useSnackbar } from 'notistack';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import useAppStateService from '@/stores/app/AppStateProvider';
-import { action, toJS } from 'mobx';
+import { action } from 'mobx';
 import BackgroundEntity from '@/stores/universal/backgrounds/entities/background';
 import BackgroundInfo from '@/ui/Desktop/BackgroundInfo';
 import { eventToBackground } from '@/stores/server/bus';
-import FSConnector from '@/utils/fsConnector';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -57,9 +56,7 @@ const useStyles = makeStyles((theme) => ({
         bottom: 0,
         backgroundColor: theme.palette.common.black,
     },
-    errorStub: {
-        backgroundColor: theme.palette.background.default,
-    },
+    errorStub: { backgroundColor: theme.palette.background.default },
 }));
 
 function Background() {
@@ -86,7 +83,7 @@ function Background() {
         } else {
             document.documentElement.style.backgroundColor = '#fff';
         }
-    }
+    };
 
     const handleSwitchBg = () => {
         if (!store.requestBg) return;
@@ -100,7 +97,7 @@ function Background() {
             store.stateLoadBg = FETCH.PENDING;
             store.stateRequestLoadBg = FETCH.WAIT;
         }
-    }
+    };
 
     const handleShow = () => {
         store.showBg = true;
@@ -118,7 +115,7 @@ function Background() {
                             bgId: captureBGId,
                             timestamp: pauseTimestamp,
                         }, (data) => {
-                            console.log('backgrounds/pause', data)
+                            console.log('backgrounds/pause', data);
                             if (data.success) {
                                 resolve();
                             } else {
@@ -151,7 +148,7 @@ function Background() {
                         } else {
                             reject();
                         }
-                    }))
+                    }));
                 } catch (e) {
                     console.log(e);
                     return;
@@ -172,13 +169,13 @@ function Background() {
     }, []);
 
     useEffect(action(() => {
-        console.log('store.requestBg 1:', backgrounds.currentBGId, backgrounds.bgState)
+        console.log('store.requestBg 1:', backgrounds.currentBGId, backgrounds.bgState);
         if (!backgrounds.currentBGId || backgrounds.bgState !== BG_SHOW_STATE.DONE) {
             if (!store.isFirstRender && backgrounds.bgState === BG_SHOW_STATE.NOT_FOUND) {
-                console.log('Force reset current bg')
+                console.log('Force reset current bg');
                 store.stateLoadBg = FETCH.FAILED;
                 store.currentBg = null;
-                console.log('store.requestBg clear 1')
+                console.log('store.requestBg clear 1');
                 store.requestBg = null;
             }
 
@@ -217,13 +214,13 @@ function Background() {
                 store.stateLoadBg = FETCH.PENDING;
                 store.stateRequestLoadBg = FETCH.WAIT;
             }
-        }
+        };
 
         const failedLoad = (e) => {
             if (loadBgId !== store.requestBg.id) return;
             console.log('[BACKGROUND] NEW BG FAILED', e);
             store.stateRequestLoadBg = FETCH.FAILED;
-        }
+        };
 
         if (store.requestBg.type === BG_TYPE.VIDEO && store.requestBg.fileName !== 'temporaryVideoFrame') {
             const video = document.createElement('video');
@@ -244,7 +241,10 @@ function Background() {
 
     return (
         <Fade
-            in={(store.stateLoadBg === FETCH.DONE || store.stateLoadBg === FETCH.FAILED) && store.stateRequestLoadBg !== FETCH.DONE}
+            in={
+                (store.stateLoadBg === FETCH.DONE || store.stateLoadBg === FETCH.FAILED)
+                && store.stateRequestLoadBg !== FETCH.DONE
+            }
             onExit={handleStartSwitch}
             onExited={handleSwitchBg}
             onEntered={handleShow}
@@ -315,9 +315,9 @@ function Background() {
                             store.stateLoadBg = FETCH.DONE;
                         })}
                         onError={action(() => {
-                            console.log('Failed load img')
+                            console.log('Failed load img');
                             if (store.currentBg.type === BG_TYPE.VIDEO) {
-                                console.log('store.requestBg 2')
+                                console.log('store.requestBg 2');
                                 store.requestBg = backgrounds.currentBG;
                                 store.stateLoadBg = FETCH.PENDING;
                                 store.currentBg = null;

@@ -14,20 +14,24 @@ import WeatherWidget from './Weather';
 const headerProps = { title: 'settings.widgets.title' };
 const pageProps = { width: 750 };
 
-const numberToEnumSize = (value) => (
-    value === 3
-        ? WIDGET_DTW_SIZE.BIG
-        : value === 2
-            ? WIDGET_DTW_SIZE.MIDDLE
-            : WIDGET_DTW_SIZE.SMALL
-);
-const enumSizeToNumber = (value) => (
-    value === WIDGET_DTW_SIZE.BIG
-        ? 3
-        : value === WIDGET_DTW_SIZE.MIDDLE
-            ? 2
-            : 1
-);
+const numberToEnumSize = (value) => {
+    if (value === 3) {
+        return WIDGET_DTW_SIZE.BIG;
+    } else if (value === 2) {
+        return WIDGET_DTW_SIZE.MIDDLE;
+    } else {
+        return WIDGET_DTW_SIZE.SMALL;
+    }
+};
+const enumSizeToNumber = (value) => {
+    if (value === WIDGET_DTW_SIZE.BIG) {
+        return 3;
+    } else if (value === WIDGET_DTW_SIZE.MIDDLE) {
+        return 2;
+    } else {
+        return 1;
+    }
+};
 
 function Widgets({ onSelect }) {
     const { t } = useTranslation();

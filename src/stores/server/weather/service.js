@@ -1,10 +1,10 @@
-import { makeAutoObservable, reaction, toJS } from 'mobx';
+import { makeAutoObservable, reaction } from 'mobx';
 import appVariables from '@/config/appVariables';
 import { eventToApp } from '@/stores/server/bus';
 import { FETCH } from '@/enum';
-import OpenWeatherMap from './connectors/OpenWeatherMap';
 import WeatherLocation from '@/entities/WeatherLocation';
 import Weather from '@/entities/Weather';
+import OpenWeatherMap from './connectors/OpenWeatherMap';
 
 class WeatherService {
     core;
@@ -60,7 +60,7 @@ class WeatherService {
                         console.log(`[weather] Await ${time}ms`);
                     });
                 });
-        }
+        };
 
         const start = () => {
             clearTimeout(this._timer);
@@ -73,11 +73,14 @@ class WeatherService {
                 || !isFinite(this.weatherConnector.weather?.currTemp)
                 || this.core.storageService.widgetWeather
             ) {
-                console.log('[weather] Start service')
+                console.log('[weather] Start service');
                 updateWeather();
             } else {
                 console.log(`[weather] Await ${this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now()}ms`);
-                this._timer = setTimeout(start, this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now());
+                this._timer = setTimeout(
+                    start,
+                    this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now(),
+                );
                 this.core.storageService.updatePersistent({
                     weather: new Weather({
                         ...this.core.storageService.storage.weather,
@@ -121,7 +124,10 @@ class WeatherService {
                 console.log(`[weather] Last update less ${appVariables.widgets.weather.updateTime.active}ms ago`);
                 clearTimeout(this._timer);
                 console.log(`[weather] Await ${this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now()}ms`);
-                this._timer = setTimeout(updateWeather, this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now());
+                this._timer = setTimeout(
+                    updateWeather,
+                    this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now(),
+                );
             }
         });
 
@@ -131,9 +137,12 @@ class WeatherService {
             try {
                 const result = await this.weatherConnector.searchLocation(query);
 
-                callback({ success: true, result });
+                callback({
+                    success: true,
+                    result,
+                });
             } catch (e) {
-                callback({ success: false })
+                callback({ success: false });
             }
         });
 
@@ -166,13 +175,17 @@ class WeatherService {
 
         console.log('[weather] Geolocation is supported!');
 
-        let currPos;
+        const currPos = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(
+            resolve,
+            reject,
+        ));
 
-        currPos = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject));
+        console.log('[weather] Current position', currPos);
 
-        console.log('[weather] Current position', currPos)
-
-        const coords = { latitude: currPos.coords.latitude, longitude: currPos.coords.longitude };
+        const coords = {
+            latitude: currPos.coords.latitude,
+            longitude: currPos.coords.longitude,
+        };
 
         const locations = await this.weatherConnector.searchLocation(coords);
 

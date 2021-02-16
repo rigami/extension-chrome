@@ -1,6 +1,6 @@
 if (localStorage.getItem('app_tab_name')) {
     localStorage.setItem('appTabName', localStorage.getItem('app_tab_name'));
-    localStorage.removeItem('app_tab_name')
+    localStorage.removeItem('app_tab_name');
 }
 
 document.title = localStorage.getItem('appTabName') || '\u200E';

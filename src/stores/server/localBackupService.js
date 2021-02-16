@@ -1,6 +1,5 @@
 import { eventToApp } from '@/stores/server/bus';
 import FSConnector from '@/utils/fsConnector';
-import DBConnector from '@/utils/dbConnector';
 import Category from '@/stores/universal/bookmarks/entities/category';
 import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { makeAutoObservable } from 'mobx';
@@ -128,9 +127,9 @@ class LocalBackupService {
 
         const favoritesAll = await FavoritesUniversalService.getAll();
 
-        console.log('favoritesAll', favoritesAll)
+        console.log('favoritesAll', favoritesAll);
 
-        const favorites = favoritesAll
+        const favorites = favoritesAll;
 
         return {
             bookmarks,

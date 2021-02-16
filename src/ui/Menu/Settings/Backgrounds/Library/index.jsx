@@ -12,17 +12,15 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import FullscreenStub from '@/ui-components/FullscreenStub';
-import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 import { last } from 'lodash';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import BackgroundCard from '@/ui-components/BackgroundCard';
+import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        overflow: 'hidden',
-    },
+const useStyles = makeStyles(() => ({
+    root: { overflow: 'hidden' },
     centerPage: {
         flexGrow: 1,
         display: 'flex',
@@ -39,23 +37,9 @@ const headerProps = {
 const pageProps = { width: 960 };
 
 function HeaderActions() {
-    const { t } = useTranslation();
-
     return (
         <React.Fragment>
             <LoadBGFromLocalButton />
-            {/* <Tooltip title={t('notAvailableYet')}>
-                <div>
-                    <Button
-                        variant="outlined"
-                        color="primary"
-                        startIcon={<GetFromLibraryIcon />}
-                        disabled
-                    >
-                        {t('settings.bg.general.library.getFromLibrary')}
-                    </Button>
-                </div>
-            </Tooltip> */}
         </React.Fragment>
     );
 }
@@ -72,7 +56,7 @@ function LibraryMenu() {
     const fetchBackgrounds = () => {
         backgrounds.getAll()
             .then((values) => {
-                console.log('getAll', values)
+                console.log('getAll', values);
                 const groups = values.reduce((acc, bg) => {
                     let group = acc.find(({ type }) => type === bg.type);
                     if (!group) {
@@ -106,7 +90,7 @@ function LibraryMenu() {
     useEffect(() => {
         fetchBackgrounds();
 
-        const listeners = []
+        const listeners = [];
 
         listeners.push(coreService.globalEventBus.on('backgrounds/new', () => {
             fetchBackgrounds();
@@ -140,7 +124,7 @@ function LibraryMenu() {
                         <GridList cellHeight={160} cols={4}>
                             {bgs.map((group) => [
                                 (
-                                    <GridListTile cols={4} style={{ height: 'auto' }}>
+                                    <GridListTile cols={4} style={{ height: 'auto' }} key={group.type}>
                                         <ListSubheader component="div">
                                             {t(`settings.bg.general.library.type.${group.type}`)}
                                         </ListSubheader>
@@ -155,7 +139,7 @@ function LibraryMenu() {
                                             onRemove={() => BackgroundsUniversalService.removeFromStore(bg)}
                                         />
                                     </GridListTile>
-                                ))
+                                )),
                             ])}
                         </GridList>
                     )}

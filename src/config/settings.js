@@ -15,10 +15,7 @@ import i18n from 'i18next';
 export default {
     backgrounds: {
         changeInterval: BG_CHANGE_INTERVAL.HOURS_1,
-        type: [
-            BG_TYPE.IMAGE,
-            BG_TYPE.VIDEO,
-        ],
+        type: [BG_TYPE.IMAGE, BG_TYPE.VIDEO],
         selectionMethod: BG_SELECT_MODE.STREAM,
         dimmingPower: 25,
     },
@@ -28,7 +25,7 @@ export default {
         openOnStartup: false,
         favorites: [],
         syncWithSystem: false,
-        syncDefaultFolderName: 'google chrome'
+        syncDefaultFolderName: 'google chrome',
     },
     widgets: {
         useWidgets: true,

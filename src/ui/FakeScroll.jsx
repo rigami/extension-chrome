@@ -20,10 +20,15 @@ function FakeScroll({ children }) {
     const coreService = useCoreService();
 
     useEffect(() => {
-        rootRef.current.style.top = `${Math.max(-coreService.storage.temp.activityScrollOffset, -document.documentElement.clientHeight)}px`;
+        rootRef.current.style.top = `${Math.max(
+            -coreService.storage.temp.activityScrollOffset,
+            -document.documentElement.clientHeight,
+        )}px`;
 
         const listenId = coreService.localEventBus.on('system/scroll', ({ y: offsetY }) => {
-            if (rootRef.current) rootRef.current.style.top = `${Math.max(-offsetY, -document.documentElement.clientHeight)}px`;
+            if (rootRef.current) {
+                rootRef.current.style.top = `${Math.max(-offsetY, -document.documentElement.clientHeight)}px`;
+            }
         });
 
         return () => coreService.localEventBus.removeListener(listenId);

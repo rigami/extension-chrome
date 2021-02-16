@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Drawer,
     List,
     Divider,
-    Card,
     Backdrop,
     Portal,
-    ClickAwayListener,
     Slide,
-    Box,
 } from '@material-ui/core';
 import {
     PauseRounded as PauseIcon,
@@ -28,12 +24,12 @@ import {
 import useCoreService from '@/stores/app/BaseStateProvider';
 import Header from '@/ui/Menu/PageHeader';
 import { useTranslation } from 'react-i18next';
-import HomePage, { header as homePageHeader } from './Settings';
-import FabMenu from './FabMenu';
 import Scrollbar from '@/ui-components/CustomScroll';
 import { eventToBackground } from '@/stores/server/bus';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
+import FabMenu from './FabMenu';
+import HomePage, { header as homePageHeader } from './Settings';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -62,12 +58,8 @@ const useStyles = makeStyles((theme) => ({
         right: theme.spacing(0.75),
         pointerEvents: 'auto',
     },
-    thumbY: {
-        backgroundColor: theme.palette.background.paper,
-    },
-    backdrop: {
-        zIndex: theme.zIndex.drawer,
-    },
+    thumbY: { backgroundColor: theme.palette.background.paper },
+    backdrop: { zIndex: theme.zIndex.drawer },
     drawer: {
         position: 'absolute !important',
         top: 0,
@@ -120,7 +112,7 @@ function Menu({ }) {
             return;
         }
 
-        console.log('menu:', backgrounds.bgShowMode, backgrounds.currentBG.type)
+        console.log('menu:', backgrounds.bgShowMode, backgrounds.currentBG.type);
 
         if (backgrounds.currentBG.type === BG_TYPE.VIDEO && backgrounds.bgShowMode === BG_SHOW_MODE.LIVE) {
             settings.push({

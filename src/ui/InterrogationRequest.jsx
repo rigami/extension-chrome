@@ -9,24 +9,17 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
     CloseRounded as CloseIcon,
     FavoriteRounded as FavoriteIcon,
-    HelpRounded as RequestIcon,
 } from '@material-ui/icons';
 import requestSrc from '@/images/request.png';
 
 const useStyles = makeStyles((theme) => ({
-    rateScreen: {
-        height: 520
-    },
-    endScreen: {
-        height: 360
-    },
+    rateScreen: { height: 520 },
+    endScreen: { height: 360 },
     rateScreenIcon: {
         width: 200,
         height: 200,
     },
-    endScreenIcon: {
-        color: '#f61515'
-    },
+    endScreenIcon: { color: '#f61515' },
     dismissButton: {
         position: 'absolute',
         right: theme.spacing(1),
@@ -63,7 +56,7 @@ function RequestScreen({ onClose, onEnd }) {
                                 setIsRequestScreen(false);
                                 onEnd();
                             },
-                        }
+                        },
                     ]}
                 />
             </Collapse>
@@ -71,9 +64,7 @@ function RequestScreen({ onClose, onEnd }) {
                 <FullScreenStub
                     className={classes.endScreen}
                     icon={FavoriteIcon}
-                    iconProps={{
-                        className: classes.endScreenIcon,
-                    }}
+                    iconProps={{ className: classes.endScreenIcon }}
                     message={t('interrogation.end.title')}
                     description={t('interrogation.end.description')}
                 />
@@ -97,20 +88,14 @@ function InterrogationRequest() {
                 <RequestScreen
                     onClose={() => {
                         closeSnackbar(rateSnackbar);
-                        coreService.storage.updatePersistent({
-                            completedPoll: 'how-do-you-rigami',
-                        });
+                        coreService.storage.updatePersistent({ completedPoll: 'how-do-you-rigami' });
                     }}
                     onEnd={() => {
-                        coreService.storage.updatePersistent({
-                            completedPoll: 'how-do-you-rigami',
-                        });
+                        coreService.storage.updatePersistent({ completedPoll: 'how-do-you-rigami' });
                     }}
                 />
             ),
-        }, {
-            persist: true,
-        });
+        }, { persist: true });
     }, []);
 
     return null;

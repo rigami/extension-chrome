@@ -7,7 +7,6 @@ import {
     Avatar,
     Box,
     Link,
-    List,
 } from '@material-ui/core';
 import {
     SettingsRounded as SettingsIcon,
@@ -20,6 +19,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuInfo from '@/ui/Menu/MenuInfo';
+import appVariables from '@/config/appVariables';
 import backgroundsPage from './Backgrounds';
 import aboutPage from './About';
 import appSettingsPage from './AppSettings';
@@ -36,9 +36,7 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         display: 'contents',
     },
-    betaBanner: {
-        marginTop: 'auto',
-    },
+    betaBanner: { marginTop: 'auto' },
     betaBannerCard: {
         borderBottomLeftRadius: theme.shape.borderRadius,
         borderBottomRightRadius: theme.shape.borderRadius,
@@ -146,7 +144,10 @@ function GeneralMenu({ onSelect }) {
             ))}
             <Box className={classes.bannerWrapper}>
                 <MenuInfo
-                    classes={{ wrapper: classes.betaBanner, root: classes.betaBannerCard }}
+                    classes={{
+                        wrapper: classes.betaBanner,
+                        root: classes.betaBannerCard,
+                    }}
                     show
                     message={t('settings.betaBanner.title')}
                     description={(
@@ -172,7 +173,7 @@ function GeneralMenu({ onSelect }) {
                                     color="inherit"
                                     underline="always"
                                     target="_blank"
-                                    href="https://chrome.google.com/webstore/detail/rigami-new-tab/hdpjmahlkfndaejogipnepcgdmjiamhd"
+                                    href={`https://chrome.google.com/webstore/detail/${appVariables.extensionId}`}
                                 >
                                     {t('settings.betaBanner.rateExtension')}
                                 </Link>
