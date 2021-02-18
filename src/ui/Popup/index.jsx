@@ -9,7 +9,11 @@ import useCoreService, { Provider as BaseStateProvider } from '@/stores/app/Base
 import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
+import initSentry from '@/config/sentry';
+import * as Sentry from '@sentry/react';
 import PopupContent from './PopupEditor';
+
+initSentry(DESTINATION.POPUP);
 
 function LoadStoreWait({ children }) {
     const coreService = useCoreService();
@@ -65,4 +69,6 @@ function Popup() {
     );
 }
 
-render(<Popup />, document.getElementById('root'));
+const ProfilerPopup = Sentry.withProfiler(Popup);
+
+render(<ProfilerPopup />, document.getElementById('root'));

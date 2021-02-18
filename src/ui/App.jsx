@@ -17,6 +17,8 @@ import FAPStub from '@/ui/Bookmarks/FAP/Stub';
 import InitAppProvider from '@/stores/app/InitApp';
 import { makeStyles } from '@material-ui/core/styles';
 import AddBookmarkButton from '@/ui/Bookmarks/EditBookmarkModal/AddButton';
+import initSentry from '@/config/sentry';
+import * as Sentry from '@sentry/react';
 import FAP from './Bookmarks/FAP';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
@@ -31,6 +33,8 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
     },
 }));
+
+initSentry(DESTINATION.APP);
 
 function RootApp({ onChangeTheme }) {
     const classes = useStyles();
@@ -83,4 +87,6 @@ function App() {
     );
 }
 
-render(<App />, document.getElementById('root'));
+const ProfilerApp = Sentry.withProfiler(App);
+
+render(<ProfilerApp />, document.getElementById('root'));
