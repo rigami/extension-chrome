@@ -497,7 +497,7 @@
   },
   "newVersion": {
     "title": "New version {{version}}",
-    "description": "The extension has been updated, now it is even better\n\n  - Fixed bug when opening the add bookmark window\n\n  - Other minor fixes",
+    "description": "The extension has been updated, now it is even better\n\n  - Added collection of critical errors\n\n  - Other minor fixes",
     "ok": "OK",
     "changelog": "List of changes"
   },
