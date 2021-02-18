@@ -8,7 +8,7 @@ export default (destination) => {
     Sentry.init({
         dsn: 'https://dcf285a0b58e41f287ed4e608297150f@o527213.ingest.sentry.io/5643252',
         integrations: [new Integrations.BrowserTracing()],
-        release: `rigami/extension-chrome@${version}`,
+        release: `extension-chrome@${version}`,
         tracesSampleRate: 0.4,
     });
 
