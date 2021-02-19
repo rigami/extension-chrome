@@ -69,6 +69,19 @@ class SettingsService {
                 .catch((e2) => console.error('[settings] Failed read cache from file:', e2));
         }
 
+        // Check valid settings
+        let isNotValid = false;
+        if (!this.settings.backgrounds.type?.map) {
+            console.log('[settings] Not valid this.settings.backgrounds.type. Set default...');
+            this.settings.backgrounds.type = defaultSettings.backgrounds.type;
+            isNotValid = true;
+        }
+
+        if (isNotValid) {
+            syncSettings();
+            fastSyncSettings();
+        }
+
         this.core.globalBus.on('system/syncSettings', (settings, { initiatorId }) => {
             forEach(settings, (value, key) => {
                 if (!(key in this.settings)) return;
