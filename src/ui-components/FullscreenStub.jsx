@@ -73,7 +73,7 @@ function FullScreenStub(props) {
                         variant="body1"
                         className={clsx(
                             classes.description,
-                            (children || actions) && actions.length !== 0 && classes.bottomOffset,
+                            (children || actions) && actions?.length > 0 && classes.bottomOffset,
                         )}
                     >
                         {description}
