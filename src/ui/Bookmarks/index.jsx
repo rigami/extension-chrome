@@ -139,7 +139,6 @@ function Bookmarks() {
 
     useEffect(() => {
         if (isFirstRun.current) {
-            isFirstRun.current = false;
             return;
         }
 
@@ -150,6 +149,10 @@ function Bookmarks() {
     }, [bookmarksService.lastTruthSearchTimestamp]);
 
     useEffect(() => {
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
         handleLoadFolders(selectFolderId);
     }, [selectFolderId]);
 

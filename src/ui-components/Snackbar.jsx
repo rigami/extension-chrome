@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import {
     Card,
     CardHeader,
@@ -123,4 +123,4 @@ function Snackbar(props, ref) {
     );
 }
 
-export default React.forwardRef(Snackbar);
+export default forwardRef(Snackbar);
