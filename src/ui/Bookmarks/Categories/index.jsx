@@ -15,6 +15,7 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import CollapseWrapper from '@/ui/Bookmarks/Categories/CollapseWrapper';
 import AddButton from './AddButton';
+import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -60,7 +61,10 @@ function Category(props) {
     const bookmarksService = useBookmarksService();
     const { t } = useTranslation();
 
-    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'category' && fav.id === id);
+    const isPin = () => bookmarksService.findFavorite({
+        itemType: 'category',
+        itemId: id,
+    });
 
     const handlerContextMenu = (event, anchorEl) => {
         event.preventDefault();
@@ -72,15 +76,15 @@ function Category(props) {
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksService.removeFromFavorites({
-                                type: 'category',
-                                id,
-                            });
+                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
+                                itemType: 'category',
+                                itemId: id,
+                            })?.id);
                         } else {
-                            bookmarksService.addToFavorites({
-                                type: 'category',
-                                id,
-                            });
+                            bookmarksService.addToFavorites(new Favorite({
+                                itemType: 'category',
+                                itemId: id,
+                            }));
                         }
                     },
                 },

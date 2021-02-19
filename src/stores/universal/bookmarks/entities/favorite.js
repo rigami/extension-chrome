@@ -1,10 +1,12 @@
 class Favorite {
     id;
-    type;
+    itemType;
+    itemId;
 
     constructor(favorite = {}) {
         this.id = favorite.id;
-        this.type = favorite.type;
+        this.itemType = favorite.itemType;
+        this.itemId = favorite.itemId;
     }
 }
 

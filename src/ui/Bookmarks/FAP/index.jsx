@@ -166,13 +166,15 @@ function FAP() {
         Promise.allSettled(
             bookmarksService.favorites.map((fav) => {
                 console.log('fav', toJS(fav));
-                if (fav.type === 'bookmark') {
-                    return BookmarksUniversalService.get(fav.id);
-                } else if (fav.type === 'folder') {
-                    return FoldersUniversalService.get(fav.id);
-                } else {
-                    return bookmarksService.categories.get(fav.id);
+                if (fav.itemType === 'bookmark') {
+                    return BookmarksUniversalService.get(fav.itemId);
+                } else if (fav.itemType === 'folder') {
+                    return FoldersUniversalService.get(fav.itemId);
+                } else if (fav.itemType === 'category') {
+                    return bookmarksService.categories.get(fav.itemId);
                 }
+
+                return Promise.reject();
             }),
         )
             .then((findFavorites) => {
@@ -181,7 +183,7 @@ function FAP() {
                     findFavorites
                         .filter(({ status }, index) => {
                             if (status !== 'fulfilled') {
-                                bookmarksService.removeFromFavorites(bookmarksService.favorites[index]);
+                                bookmarksService.removeFromFavorites(bookmarksService.favorites[index]?.id);
                                 return false;
                             } else {
                                 return true;

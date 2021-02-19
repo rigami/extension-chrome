@@ -22,6 +22,7 @@ import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import Link from '@/ui/Bookmarks/FAP/Link';
+import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -49,7 +50,10 @@ function Folder({ id }) {
     const [findBookmarks, setFindBookmarks] = useState(null);
     const buttonRef = useRef(null);
 
-    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'category' && fav.id === id);
+    const isPin = () => bookmarksService.findFavorite({
+        itemType: 'category',
+        itemId: id,
+    });
 
     const handlerContextMenu = (anchorEl) => {
         const { top, left } = buttonRef.current.getBoundingClientRect();
@@ -61,15 +65,15 @@ function Folder({ id }) {
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksService.removeFromFavorites({
-                                type: 'category',
-                                id,
-                            });
+                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
+                                itemType: 'category',
+                                itemId: id,
+                            })?.id);
                         } else {
-                            bookmarksService.addToFavorites({
-                                type: 'category',
-                                id,
-                            });
+                            bookmarksService.addToFavorites(new Favorite({
+                                itemType: 'category',
+                                itemId: id,
+                            }));
                         }
                     },
                 },

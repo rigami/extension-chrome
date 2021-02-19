@@ -156,7 +156,7 @@ async function upgradeOrCreateFolders(db, transaction /* , newVersion */) {
     return store;
 }
 
-function upgradeOrCreateFavorites(db, transaction) {
+async function upgradeOrCreateFavorites(db, transaction) {
     let store;
 
     if (db.objectStoreNames.contains('favorites')) {
@@ -168,6 +168,20 @@ function upgradeOrCreateFavorites(db, transaction) {
         });
         store.createIndex('favorite_id', 'favoriteId', { unique: false });
         store.createIndex('type', 'type', { unique: false });
+    }
+
+    if (store.indexNames.contains('type')) {
+        store.createIndex('item_type', 'itemType', { unique: false });
+        store.createIndex('item_id', 'itemId', { unique: false });
+
+        store.deleteIndex('type');
+        store.deleteIndex('favorite_id');
+
+        (await store.getAll()).forEach((favorite) => store.put({
+            id: favorite.id,
+            itemId: favorite.favoriteId,
+            itemType: favorite.type,
+        }));
     }
 
     return store;

@@ -30,7 +30,7 @@ class LocalBackupService {
                 date: new Date().toISOString(),
                 appVersion: chrome?.runtime?.getManifest?.().version,
                 appType: 'extension.chrome',
-                version: 2,
+                version: 3,
             };
 
             console.log('Backup:', backup);
@@ -62,11 +62,13 @@ class LocalBackupService {
                     return;
                 }
 
-                if (backup.meta.version > 2) {
+                if (backup.meta.version > 3) {
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'settings.backup.localBackup.noty.failed.wrongVersion',
                     });
+
+                    return;
                 }
 
                 if (backup.settings) await this.core.settingsService.restore(backup.settings);

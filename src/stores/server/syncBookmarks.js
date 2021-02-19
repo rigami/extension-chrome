@@ -4,6 +4,7 @@ import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import CategoriesUniversalService from '@/stores/universal/bookmarks/categories';
+import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 class SyncBookmarks {
     core;
@@ -130,19 +131,26 @@ class SyncBookmarks {
         for (const favorite of bookmarks.favorites) {
             console.log('Check favorite:', favorite);
 
+            const favType = favorite.itemType || favorite.type;
+            const favId = favorite.itemId || favorite.id;
+
             const favoriteId = (
-                (favorite.type === 'bookmark' && (replaceBookmarkId[favorite.id] || favorite.id))
-                || (favorite.type === 'category' && (replaceCategoryId[favorite.id] || favorite.id))
+                (favType === 'bookmark' && (replaceBookmarkId[favId] || favId))
+                || (favType === 'category' && (replaceCategoryId[favId] || favId))
+                || (favType === 'folder' && (replaceFolderId[favId] || favId))
             );
 
-            const findBookmark = localFavorites.find(({ type, id }) => favorite.type === type && favoriteId === id);
+            const findBookmark = localFavorites.find(({ itemType, itemId }) => (
+                favType === itemType && favoriteId === itemId
+            ));
 
             if (!findBookmark) {
                 console.log('Save new favorite', favorite);
-                await FavoritesUniversalService.addToFavorites({
-                    ...favorite,
+                await FavoritesUniversalService.addToFavorites(new Favorite({
+                    itemType: favType,
+                    itemId: favId,
                     id: favoriteId,
-                });
+                }));
             }
         }
 

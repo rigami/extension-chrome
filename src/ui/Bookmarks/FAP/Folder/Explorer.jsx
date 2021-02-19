@@ -25,6 +25,7 @@ import Link from '@/ui/Bookmarks/FAP/Link';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 // eslint-disable-next-line import/no-cycle
+import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 import FolderButton from './index';
 
 const useStyles = makeStyles((theme) => ({
@@ -65,7 +66,10 @@ function Folder({ id }) {
     const [folders, setFolders] = useState([]);
     const buttonRef = useRef(null);
 
-    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'folder' && fav.id === id);
+    const isPin = () => bookmarksService.findFavorite({
+        itemType: 'folder',
+        itemId: id,
+    });
 
     const handlerContextMenu = (anchorEl) => {
         const { top, left } = buttonRef.current.getBoundingClientRect();
@@ -77,15 +81,15 @@ function Folder({ id }) {
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksService.removeFromFavorites({
-                                type: 'folder',
-                                id,
-                            });
+                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
+                                itemType: 'folder',
+                                itemId: id,
+                            })?.id);
                         } else {
-                            bookmarksService.addToFavorites({
-                                type: 'folder',
-                                id,
-                            });
+                            bookmarksService.addToFavorites(new Favorite({
+                                itemType: 'folder',
+                                itemId: id,
+                            }));
                         }
                     },
                 },

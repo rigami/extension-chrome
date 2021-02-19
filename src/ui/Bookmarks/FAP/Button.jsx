@@ -12,6 +12,7 @@ import { observer } from 'mobx-react-lite';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
+import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -39,7 +40,10 @@ function FAPButton(props) {
     const bookmarksService = useBookmarksService();
     const { t } = useTranslation();
 
-    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === type && fav.id === id);
+    const isPin = () => bookmarksService.findFavorite({
+        itemType: type,
+        itemId: id,
+    });
 
     const handlerContextMenu = (event) => {
         event.preventDefault();
@@ -51,15 +55,15 @@ function FAPButton(props) {
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksService.removeFromFavorites({
-                                type,
-                                id,
-                            });
+                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
+                                itemType: type,
+                                itemId: id,
+                            })?.id);
                         } else {
-                            bookmarksService.addToFavorites({
-                                type,
-                                id,
-                            });
+                            bookmarksService.addToFavorites(new Favorite({
+                                itemType: type,
+                                itemId: id,
+                            }));
                         }
                     },
                 },

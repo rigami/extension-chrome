@@ -29,6 +29,7 @@ import FullScreenStub from '@/ui-components/FullscreenStub';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 const useStyles = makeStyles((theme) => ({
     rootWrapper: {
@@ -87,19 +88,22 @@ function FolderWrapper({ folder, onSelect }) {
     const [folders, setFolders] = useState([]);
     const [findBookmarks, setFindBookmarks] = useState(null);
 
-    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'folder' && fav.id === folder?.id);
+    const isPin = () => bookmarksService.findFavorite({
+        itemType: 'folder',
+        itemId: folder?.id,
+    });
 
     const handlePin = () => {
         if (isPin()) {
-            bookmarksService.removeFromFavorites({
-                type: 'folder',
-                id: folder?.id,
-            });
+            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
+                itemType: 'folder',
+                itemId: folder?.id,
+            })?.id);
         } else {
-            bookmarksService.addToFavorites({
-                type: 'folder',
-                id: folder?.id,
-            });
+            bookmarksService.addToFavorites(new Favorite({
+                itemType: 'folder',
+                itemId: folder?.id,
+            }));
         }
     };
 

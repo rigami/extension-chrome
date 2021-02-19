@@ -12,6 +12,7 @@ import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
+import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 const useStyles = makeStyles((theme) => ({
     root: { width: 180 },
@@ -32,7 +33,10 @@ function FolderCard({ id, name, className: externalClassName, ...other }) {
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
 
-    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'folder' && fav.id === id);
+    const isPin = () => bookmarksService.findFavorite({
+        itemType: 'folder',
+        itemId: id,
+    });
 
     const handlerContextMenu = (event, anchorEl) => {
         event.preventDefault();
@@ -44,15 +48,15 @@ function FolderCard({ id, name, className: externalClassName, ...other }) {
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksService.removeFromFavorites({
-                                type: 'folder',
-                                id,
-                            });
+                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
+                                itemType: 'folder',
+                                itemId: id,
+                            })?.id);
                         } else {
-                            bookmarksService.addToFavorites({
-                                type: 'folder',
-                                id,
-                            });
+                            bookmarksService.addToFavorites(new Favorite({
+                                itemType: 'folder',
+                                itemId: id,
+                            }));
                         }
                     },
                 },

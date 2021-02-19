@@ -21,6 +21,7 @@ import { BKMS_VARIANT } from '@/enum';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
+import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -123,7 +124,10 @@ function CardLink(props) {
     const buttonRef = useRef(null);
     const { t } = useTranslation();
 
-    const isPin = () => bookmarksService.favorites.find((fav) => fav.type === 'bookmark' && fav.id === id);
+    const isPin = () => bookmarksService.findFavorite({
+        itemType: 'bookmark',
+        itemId: id,
+    });
 
     const openMenu = (position) => {
         coreService.localEventBus.call('system/contextMenu', {
@@ -134,15 +138,15 @@ function CardLink(props) {
                     icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
                     onClick: () => {
                         if (isPin()) {
-                            bookmarksService.removeFromFavorites({
-                                type: 'bookmark',
-                                id,
-                            });
+                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
+                                itemType: 'bookmark',
+                                itemId: id,
+                            })?.id);
                         } else {
-                            bookmarksService.addToFavorites({
-                                type: 'bookmark',
-                                id,
-                            });
+                            bookmarksService.addToFavorites(new Favorite({
+                                itemType: 'bookmark',
+                                itemId: id,
+                            }));
                         }
                     },
                 },

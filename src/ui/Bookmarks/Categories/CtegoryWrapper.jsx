@@ -19,6 +19,7 @@ import {
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { observer } from 'mobx-react-lite';
+import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -55,23 +56,26 @@ const useStyles = makeStyles((theme) => ({
 
 function CategoryHeader({ id, color, name, children }) {
     const classes = useStyles();
-    const bookmarksStore = useBookmarksService();
+    const bookmarksService = useBookmarksService();
     const coreService = useCoreService();
     const anchorEl = useRef(null);
 
-    const isPin = () => bookmarksStore.favorites.find((fav) => fav.type === 'category' && fav.id === id);
+    const isPin = () => bookmarksService.findFavorite({
+        itemType: 'category',
+        itemId: id,
+    });
 
     const handlePin = () => {
         if (isPin()) {
-            bookmarksStore.removeFromFavorites({
-                type: 'category',
-                id,
-            });
+            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
+                itemType: 'category',
+                itemId: id,
+            })?.id);
         } else {
-            bookmarksStore.addToFavorites({
-                type: 'category',
-                id,
-            });
+            bookmarksService.addToFavorites(new Favorite({
+                itemType: 'category',
+                itemId: id,
+            }));
         }
     };
 

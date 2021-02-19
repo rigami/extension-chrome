@@ -94,31 +94,32 @@ class BookmarksService {
         return this.favorites;
     }
 
+    @action('find favorite')
+    findFavorite({ itemType, itemId }) {
+        return this.favorites.find((fav) => fav.itemId === itemId && fav.itemType === itemType);
+    }
+
     @action('add to favorites')
-    async addToFavorites({ type, id }) {
-        const favoriteId = await FavoritesUniversalService.addToFavorites({
-            type,
-            id,
-        });
+    async addToFavorites(favorite) {
+        console.log('addToFavorites', favorite);
+        const favoriteId = await FavoritesUniversalService.addToFavorites(favorite);
+        console.log('new favorite id:', favoriteId);
 
         if (this._coreService) {
-            this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: id });
+            this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: favorite.id });
         }
 
         return favoriteId;
     }
 
     @action('add to favorites')
-    async removeFromFavorites({ type, id }) {
-        this.favorites = this.favorites.filter((fav) => fav.type !== type || fav.id !== id);
+    async removeFromFavorites(favoriteId) {
+        this.favorites = this.favorites.filter((fav) => fav.id !== favoriteId);
 
-        const favoriteId = await FavoritesUniversalService.removeFromFavorites({
-            type,
-            id,
-        });
+        await FavoritesUniversalService.removeFromFavorites(favoriteId);
 
         if (this._coreService) {
-            this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId: id });
+            this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId });
         }
 
         return favoriteId;
