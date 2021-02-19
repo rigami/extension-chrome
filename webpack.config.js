@@ -6,6 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const GenerateJsonPlugin = require('generate-json-from-js-webpack-plugin');
+const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const paths = require('./alias.config.js');
 
 module.exports = () => ({
@@ -93,6 +94,15 @@ module.exports = () => ({
             filename: './manifest.json',
         }),
         new webpack.DefinePlugin({ PRODUCTION_MODE: JSON.stringify(process.env.NODE_ENV === 'production') }),
+        ...(process.env.RELEASE === 'true' ? [
+            new SentryWebpackPlugin({
+                authToken: 'e553e6efe10f4122bbcc0ba70067adb88c5e2042ca4842fca1977360c9b80dfa',
+                org: 'rigami',
+                project: 'extension-chrome',
+                include: '.',
+                ignore: ['node_modules', 'webpack.config.js'],
+            }),
+        ] : []),
     ],
     module: {
         rules: [
