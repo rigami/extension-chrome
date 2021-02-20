@@ -109,6 +109,9 @@ function GlobalModals({ children }) {
                         action: 'prompt',
                         file: data.file,
                     });
+                } else if (data.result === 'done') {
+                    coreService.storage.updatePersistent({ showBackupSuccessRestoreMessage: true });
+                    location.reload();
                 } else {
                     enqueueSnackbar({
                         message: t(data.message || 'settings.backup.localBackup.noty.success'),
@@ -117,6 +120,14 @@ function GlobalModals({ children }) {
                 }
             }),
         ];
+
+        if (coreService.storage.persistent.showBackupSuccessRestoreMessage) {
+            coreService.storage.updatePersistent({ showBackupSuccessRestoreMessage: null });
+            enqueueSnackbar({
+                message: t('settings.backup.localBackup.noty.success'),
+                variant: 'success',
+            });
+        }
 
         if (coreService.storage.temp.newVersion) {
             const snackbar = enqueueSnackbar({
