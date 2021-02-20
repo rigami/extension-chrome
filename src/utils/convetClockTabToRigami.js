@@ -7,8 +7,9 @@ import {
     BKMS_FAP_STYLE, BKMS_VARIANT,
     THEME,
 } from '@/enum';
-import Category from '@/stores/universal/bookmarks/entities/category';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
+import Folder from '@/stores/universal/bookmarks/entities/folder';
+import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 function convert(clockTabFile = {}) {
     console.log('clockTabFile', clockTabFile);
@@ -18,9 +19,11 @@ function convert(clockTabFile = {}) {
     if (clockTabFile.typeData.settings) {
         const types = [BG_TYPE.ANIMATION];
 
-        if (clockTabFile.data.settings.switching_background_in_special.random_selection.type[0]) types.push(BG_TYPE.VIDEO);
-        if (clockTabFile.data.settings.switching_background_in_special.random_selection.type[1]) types.push(BG_TYPE.IMAGE);
-        if (clockTabFile.data.settings.switching_background_in_special.random_selection.type[2]) types.push(BG_TYPE.FILL_COLOR);
+        const randomSection = clockTabFile.data.settings.switching_background_in_special.random_selection;
+
+        if (randomSection.type[0]) types.push(BG_TYPE.VIDEO);
+        if (randomSection.type[1]) types.push(BG_TYPE.IMAGE);
+        if (randomSection.type[2]) types.push(BG_TYPE.FILL_COLOR);
 
         let changeInterval = BG_CHANGE_INTERVAL.OPEN_TAB;
 
@@ -32,10 +35,22 @@ function convert(clockTabFile = {}) {
             ];
         }
 
+        let fapStyle;
+
+        if (!clockTabFile.data.settings.use_site_panel) {
+            fapStyle = BKMS_FAP_STYLE.HIDDEN;
+        } else if (!clockTabFile.data.settings.site_panel_substrate) {
+            fapStyle = BKMS_FAP_STYLE.TRANSPARENT;
+        } else {
+            fapStyle = BKMS_FAP_STYLE.CONTAINED;
+        }
+
         settings = {
             app: {
                 backdropTheme: THEME.DARK,
-                defaultActivity: clockTabFile.data.settings.open_site_panel_start ? ACTIVITY.BOOKMARKS : ACTIVITY.DESKTOP,
+                defaultActivity: clockTabFile.data.settings.open_site_panel_start
+                    ? ACTIVITY.BOOKMARKS
+                    : ACTIVITY.DESKTOP,
                 theme: clockTabFile.data.settings.dark_theme ? THEME.DARK : THEME.LIGHT,
             },
             backgrounds: {
@@ -50,11 +65,7 @@ function convert(clockTabFile = {}) {
                 fapPosition: clockTabFile.data.settings.site_panel_position === 1
                     ? BKMS_FAP_POSITION.TOP
                     : BKMS_FAP_POSITION.BOTTOM,
-                fapStyle: clockTabFile.data.settings.use_site_panel
-                    ? BKMS_FAP_STYLE.HIDDEN
-                    : clockTabFile.data.settings.site_panel_substrate
-                        ? BKMS_FAP_STYLE.CONTAINED
-                        : BKMS_FAP_STYLE.TRANSPARENT,
+                fapStyle,
             },
         };
     }
@@ -65,16 +76,19 @@ function convert(clockTabFile = {}) {
         const bookmarks = [];
         const categories = [];
         const favorites = [];
+        const folders = [];
 
         clockTabFile.data.sites.all.forEach((group) => {
-            const category = new Category({
-                id: categories.length,
+            const folder = new Folder({
+                id: folders.length + 2,
                 name: group.name_group,
+                parentId: 1,
             });
-            categories.push(category);
+            folders.push(folder);
 
             group.sites.forEach((bookmark) => {
-                const imageBase64 = bookmark.image && clockTabFile.data.sitesIcons?.find(({ name }) => bookmark.image.indexOf(name) !== -1)?.file;
+                const imageBase64 = bookmark.image && clockTabFile.data.sitesIcons
+                    ?.find(({ name }) => bookmark.image.indexOf(name) !== -1)?.file;
 
                 bookmarks.push(
                     new Bookmark({
@@ -82,7 +96,8 @@ function convert(clockTabFile = {}) {
                         url: bookmark.url,
                         name: bookmark.name,
                         description: bookmark.description,
-                        categories: [category.id],
+                        categories: [],
+                        folderId: folder.id,
                         icoVariant: imageBase64 ? BKMS_VARIANT.SMALL : BKMS_VARIANT.SYMBOL,
                         imageBase64,
                     }),
@@ -94,13 +109,15 @@ function convert(clockTabFile = {}) {
             let favBookmark = bookmarks.find(({ url }) => url === bookmark.url);
 
             if (!favBookmark) {
-                const imageBase64 = bookmark.image && clockTabFile.data.sitesIcons?.find(({ name }) => bookmark.image.indexOf(name) !== -1)?.file;
+                const imageBase64 = bookmark.image && clockTabFile.data.sitesIcons
+                    ?.find(({ name }) => bookmark.image.indexOf(name) !== -1)?.file;
 
                 favBookmark = new Bookmark({
                     id: bookmarks.length,
                     url: bookmark.url,
                     name: bookmark.name,
                     description: bookmark.description,
+                    folderId: 1,
                     icoVariant: imageBase64 ? BKMS_VARIANT.SMALL : BKMS_VARIANT.SYMBOL,
                     imageBase64,
                 });
@@ -108,17 +125,21 @@ function convert(clockTabFile = {}) {
                 bookmarks.push(favBookmark);
             }
 
-            favorites.push({
-                id: favBookmark.id,
-                type: 'bookmark',
-            });
+            favorites.push(new Favorite({
+                id: favorites.length,
+                itemId: favBookmark.id,
+                itemType: 'bookmark',
+            }));
         });
 
         bookmarksData = {
             bookmarks,
             favorites,
             categories,
+            folders,
         };
+
+        console.log('bookmarksData:', bookmarksData)
     }
 
     return {

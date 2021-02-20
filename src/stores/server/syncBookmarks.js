@@ -134,22 +134,27 @@ class SyncBookmarks {
             const favType = favorite.itemType || favorite.type;
             const favId = favorite.itemId || favorite.id;
 
+            const favoriteItemId = (
+                (favType === 'bookmark' && (replaceBookmarkId[favId] || favId))
+                || (favType === 'category' && (replaceCategoryId[favId] || favId))
+                || (favType === 'folder' && (replaceFolderId[favId] || favId))
+            );
+
             const favoriteId = (
                 (favType === 'bookmark' && (replaceBookmarkId[favId] || favId))
                 || (favType === 'category' && (replaceCategoryId[favId] || favId))
                 || (favType === 'folder' && (replaceFolderId[favId] || favId))
             );
 
-            const findBookmark = localFavorites.find(({ itemType, itemId }) => (
+            const findFavorite = localFavorites.find(({ itemType, itemId }) => (
                 favType === itemType && favoriteId === itemId
             ));
 
-            if (!findBookmark) {
+            if (!findFavorite) {
                 console.log('Save new favorite', favorite);
                 await FavoritesUniversalService.addToFavorites(new Favorite({
                     itemType: favType,
-                    itemId: favId,
-                    id: favoriteId,
+                    itemId: favoriteItemId,
                 }));
             }
         }

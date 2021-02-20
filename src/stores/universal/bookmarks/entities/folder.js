@@ -7,7 +7,7 @@ class Folder {
     constructor(folder = {}) {
         this.id = folder.id;
         this.name = folder.name;
-        this.parentId = folder.parentId;
+        this.parentId = folder.parentId || 0;
         this.children = folder.children;
     }
 }

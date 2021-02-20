@@ -1,14 +1,16 @@
 import { BG_SOURCE, BG_TYPE } from '@/enum';
+import packageFile from '@/../package.json';
 
 export default {
     extensionId: chrome.runtime.id,
+    version: packageFile.version,
     db: {
         name: 'rigami',
         version: 6,
     },
     fs: { root: `chrome-extension://${chrome.runtime.id}/persistent/` },
     maxUploadFiles: 15,
-    rest: { url: 'https://api.rigami.io' /* `${PRODUCTION_MODE ? 'https://api.rigami.io' : 'http://localhost:8080'}` */ },
+    rest: { url: `${PRODUCTION_MODE ? 'https://api.rigami.io' : 'http://localhost:8080'}` },
     widgets: {
         weather: {
             updateTime: {

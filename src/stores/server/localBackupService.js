@@ -7,6 +7,7 @@ import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import CategoriesUniversalService from '@/stores/universal/bookmarks/categories';
+import appVariables from '@/config/appVariables';
 
 class LocalBackupService {
     core;
@@ -28,7 +29,7 @@ class LocalBackupService {
 
             backup.meta = {
                 date: new Date().toISOString(),
-                appVersion: chrome?.runtime?.getManifest?.().version,
+                appVersion: appVariables.version,
                 appType: 'extension.chrome',
                 version: 3,
             };
