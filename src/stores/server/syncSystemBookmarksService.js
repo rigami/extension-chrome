@@ -162,7 +162,11 @@ class SyncSystemBookmarksService {
                 if (browserNodes[i].url && !('dateGroupModified' in browserNodes[i])) {
                     await parseNodeBookmark(
                         browserNodes[i],
-                        bookmarks.find(({ name, url, id }) => id === bind?.rigamiId || name === browserNodes[i].title || url === browserNodes[i].url),
+                        bookmarks.find(({ name, url, id }) => (
+                            id === bind?.rigamiId
+                            || name === browserNodes[i].title
+                            || url === browserNodes[i].url
+                        )),
                         parentId,
                     );
                 } else {

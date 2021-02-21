@@ -139,7 +139,7 @@ function convert(clockTabFile = {}) {
             folders,
         };
 
-        console.log('bookmarksData:', bookmarksData)
+        console.log('bookmarksData:', bookmarksData);
     }
 
     return {

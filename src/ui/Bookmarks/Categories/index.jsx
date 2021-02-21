@@ -14,8 +14,8 @@ import clsx from 'clsx';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import CollapseWrapper from '@/ui/Bookmarks/Categories/CollapseWrapper';
-import AddButton from './AddButton';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import AddButton from './AddButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {

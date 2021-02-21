@@ -16,11 +16,10 @@ import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import Category from './Categories/CtegoryWrapper';
 import Folder from './Folders/FolderWrapper';
 import BookmarksGrid from './BookmarksGrid';
-import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
-import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     chipContainer: { },
@@ -42,9 +41,6 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: theme.spacing(3),
-    },
-    offsetTop: {
-        // paddingTop: 40 + theme.spacing(3 + (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 3))
     },
 }));
 
@@ -190,9 +186,6 @@ function Bookmarks() {
                             setIsSearching(true);
                         }}
                     />
-                    {/* <IconButton>
-                                <SearchIcon />
-                            </IconButton> */}
                 </Box>
                 <Fade
                     in={!isSearching}

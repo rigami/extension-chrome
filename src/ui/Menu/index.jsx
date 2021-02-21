@@ -7,7 +7,6 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import Header from '@/ui/Menu/PageHeader';
 import Scrollbar from '@/ui-components/CustomScroll';

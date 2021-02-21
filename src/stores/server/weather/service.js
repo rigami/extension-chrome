@@ -76,7 +76,9 @@ class WeatherService {
                 console.log('[weather] Start service');
                 updateWeather();
             } else {
-                console.log(`[weather] Await ${this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now()}ms`);
+                console.log(`[weather] Await ${
+                    this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now()
+                }ms`);
                 this._timer = setTimeout(
                     start,
                     this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now(),
@@ -123,7 +125,9 @@ class WeatherService {
             } else {
                 console.log(`[weather] Last update less ${appVariables.widgets.weather.updateTime.active}ms ago`);
                 clearTimeout(this._timer);
-                console.log(`[weather] Await ${this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now()}ms`);
+                console.log(`[weather] Await ${
+                    this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now()
+                }ms`);
                 this._timer = setTimeout(
                     updateWeather,
                     this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now(),

@@ -1,7 +1,6 @@
 import { action } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
 import Folder from '@/stores/universal/bookmarks/entities/folder';
-import { DESTINATION } from '@/enum';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 
@@ -17,7 +16,7 @@ class FoldersUniversalService {
     static async getTree(parentId = 0) {
         const root = await this.getFoldersByParent(parentId);
 
-        return await Promise.all(root.map(async (folder) => {
+        return Promise.all(root.map(async (folder) => {
             const children = await this.getTree(folder.id);
 
             return new Folder({
@@ -35,12 +34,12 @@ class FoldersUniversalService {
             return [folder, ...path];
         }
 
-        return await this._getPath(folder.parentId, [folder, ...path]);
+        return this._getPath(folder.parentId, [folder, ...path]);
     }
 
     @action('get folders path')
     static async getPath(folderId = 0) {
-        return await this._getPath(folderId || 0, []);
+        return this._getPath(folderId || 0, []);
     }
 
     @action('get folder by id')

@@ -40,7 +40,7 @@ const exportClasses = (theme) => ({
 
 const useStyles = makeStyles(exportClasses);
 
-function CustomScroll(props, ref) {
+function CustomScroll(rootProps, ref) {
     const {
         children,
         refScroll,
@@ -48,7 +48,7 @@ function CustomScroll(props, ref) {
         className: externalClassName,
         classes: externalClasses = {},
         ...other
-    } = props;
+    } = rootProps;
     const classes = useStyles();
 
     return (
@@ -77,14 +77,24 @@ function CustomScroll(props, ref) {
                 renderer: (props) => {
                     const { elementRef, ...restProps } = props;
                     return (
-                        <div {...restProps} ref={elementRef} className={clsx(classes.scrollBar, externalClasses.trackY)} />
+                        <div
+                            {...restProps}
+                            ref={elementRef}
+                            className={clsx(classes.scrollBar, externalClasses.trackY)}
+                        />
                     );
                 },
             }}
             thumbYProps={{
                 renderer: (props) => {
                     const { elementRef, ...restProps } = props;
-                    return <div {...restProps} ref={elementRef} className={clsx(classes.scrollThumb, externalClasses.thumbY)} />;
+                    return (
+                        <div
+                            {...restProps}
+                            ref={elementRef}
+                            className={clsx(classes.scrollThumb, externalClasses.thumbY)}
+                        />
+                    );
                 },
             }}
             momentum

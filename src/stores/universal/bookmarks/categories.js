@@ -7,12 +7,12 @@ import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 class CategoriesUniversalService {
     @action
     static async getAll() {
-        return await DBConnector().getAll('categories');
+        return DBConnector().getAll('categories');
     }
 
     @action('get category by id')
     static async get(categoryId) {
-        return await DBConnector().get('categories', categoryId);
+        return DBConnector().get('categories', categoryId);
     }
 
     @action('save category')

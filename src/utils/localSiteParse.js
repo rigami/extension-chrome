@@ -47,7 +47,7 @@ function parseSite(xml, urlOrigin) {
             if (sizes !== '' && sizes !== 'any') {
                 try {
                     const separator = sizes.indexOf('x');
-                    if (separator === -1) throw Exception('Is not size');
+                    if (separator === -1) throw new Exception('Is not size');
                     const width = Number.parseInt(sizes.substring(0, separator));
                     const height = Number.parseInt(sizes.substring(separator + 1));
 
@@ -57,7 +57,7 @@ function parseSite(xml, urlOrigin) {
                     score += wScore;
                     score += hScore;
                 } catch (e) {
-
+                    console.error(e);
                 }
             }
         } else if (element.tagName === 'META') {
