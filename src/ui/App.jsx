@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import { render } from 'react-dom';
-import { Box, CssBaseline } from '@material-ui/core';
+import { CssBaseline } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
 import Snackbar from '@/ui-components/Snackbar';
@@ -13,19 +13,17 @@ import { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
 import { Provider as AppStateProvider } from '@/stores/app/AppStateProvider';
 import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import InitAppProvider from '@/stores/app/InitApp';
-import AddBookmarkButton from '@/ui/Bookmarks/EditBookmarkModal/AddButton';
 import initSentry from '@/config/sentry';
 import * as Sentry from '@sentry/react';
 import ScrollView from '@/ui-components/ScrollView';
-import Scrollbar from '@/ui-components/CustomScroll';
+import { makeStyles } from '@material-ui/core/styles';
+import FabMenu from '@/ui/Menu/FabMenu';
+import Menu from '@/ui/Menu';
 import FAP from './Bookmarks/FAP';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
 import GlobalScroll from './GlobalScroll';
 import GlobalModals from './GlobalModals';
-import { makeStyles } from '@material-ui/core/styles';
-import FabMenu from '@/ui/Menu/FabMenu';
-import Menu from '@/ui/Menu';
 
 initSentry(DESTINATION.APP);
 
@@ -61,7 +59,7 @@ function RootApp({ onChangeTheme }) {
             ]}
         >
             <GlobalScroll>
-                <ScrollView value="desktop">
+                <ScrollView value="desktop" disableScroll>
                     <Desktop />
                 </ScrollView>
                 <ScrollView value="bookmarks" classes={{ content: classes.bookmarks }}>
@@ -71,7 +69,6 @@ function RootApp({ onChangeTheme }) {
             <FAP />
             <FabMenu />
             <Menu />
-            {/* <AddBookmarkButton /> */}
         </Nest>
     );
 }

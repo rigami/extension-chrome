@@ -15,7 +15,15 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function ScrollView({ children, value, onScroll, active, classes: externalClassName = {} }, ref) {
+function ScrollView(props, ref) {
+    const {
+        children,
+        value,
+        onScroll,
+        active,
+        classes: externalClassName = {},
+        disableScroll = false,
+    } = props;
     const classes = useStyles();
     const scrollRef = useRef(null);
 
@@ -31,19 +39,33 @@ function ScrollView({ children, value, onScroll, active, classes: externalClassN
     };
 
     useEffect(() => {
-        scrollHandler(scrollRef.current.scrollValues);
+        if (disableScroll) {
+            onScroll({
+                isTop: true,
+                isBottom: true,
+            });
+        } else {
+            scrollHandler(scrollRef.current.scrollValues);
+        }
     }, [active]);
 
     return (
         <Box id={value} ref={ref} className={classes.root}>
-            <Scrollbar
-                onScroll={scrollHandler}
-                refScroll={(scrollInstance) => { scrollRef.current = scrollInstance; }}
-            >
+            {disableScroll && (
                 <Box className={clsx(classes.contentWrapper, externalClassName.content)}>
                     {children}
                 </Box>
-            </Scrollbar>
+            )}
+            {!disableScroll && (
+                <Scrollbar
+                    onScroll={scrollHandler}
+                    refScroll={(scrollInstance) => { scrollRef.current = scrollInstance; }}
+                >
+                    <Box className={clsx(classes.contentWrapper, externalClassName.content)}>
+                        {children}
+                    </Box>
+                </Scrollbar>
+            )}
         </Box>
     );
 }

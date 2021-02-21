@@ -51,8 +51,8 @@ const useStyles = makeStyles((theme) => ({
     card: {
         margin: 'auto',
         pointerEvents: 'auto',
-        borderRadius: 16,
-        backdropFilter: 'blur(20px) brightness(98%)  contrast(1.2) invert(0.1)',
+        borderRadius: 8,
+        backdropFilter: 'blur(40px) brightness(110%)  contrast(1.2) invert(0.02)',
         background: 'none',
     },
     panel: {
@@ -217,7 +217,7 @@ function FAP() {
                 }}
             >
                 <Card
-                    elevation={12}
+                    elevation={0}
                     className={clsx(
                         classes.card,
                         bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.cardTransparent,

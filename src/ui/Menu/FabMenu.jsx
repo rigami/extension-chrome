@@ -61,21 +61,23 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.common.black,
         margin: theme.spacing(0.25),
     },
-    loadBgButton: { pointerEvents: 'none' },
+    notActive: { pointerEvents: 'none' },
     divider: {
         backgroundColor: fade(theme.palette.common.white, 0.12),
         marginTop: theme.spacing(0.5),
         marginBottom: theme.spacing(0.5),
     },
+    outline: { boxShadow: `0px 0px 0px 1px ${theme.palette.divider}` },
 }));
 
 function Group({ children, ...other }) {
     const classes = useStyles();
+    const appService = useAppService();
 
     return (
         <Card
-            className={classes.card}
-            elevation={6}
+            className={clsx(classes.card, appService.activity !== 'desktop' && classes.outline)}
+            elevation={0}
             {...other}
         >
             {children}
@@ -104,106 +106,111 @@ function FabMenu() {
     const { backgrounds } = appService;
     const { t } = useTranslation();
 
+    const bgShowMode = backgrounds.currentBG.type === BG_TYPE.VIDEO;
+    const saveBgLocal = (
+        backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
+        && backgrounds.currentBG.source !== BG_SOURCE.USER
+    );
+    const nextBg = (
+        backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM
+        || backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
+    );
+
     return (
         <React.Fragment>
-            <MouseDistanceFade>
-                <Box className={classes.root}>
+            {/* <MouseDistanceFade> */}
+            <Box className={classes.root}>
+                <Group>
+                    <Button
+                        tooltip={t('settings.title')}
+                        onClick={() => coreService.localEventBus.call('settings/open')}
+                        icon={SettingsIcon}
+                    />
+                </Group>
+                <Group>
+                    <Button
+                        tooltip={t('bookmark.addShort')}
+                        onClick={() => coreService.localEventBus.call('bookmark/create')}
+                        icon={AddIcon}
+                    />
+                </Group>
+                <Collapse
+                    in={appService.activity === 'desktop' && (bgShowMode || saveBgLocal || nextBg)}
+                    unmountOnExit
+                >
                     <Group>
-                        <Button
-                            tooltip={t('settings.title')}
-                            onClick={() => coreService.localEventBus.call('settings/open')}
-                            icon={SettingsIcon}
-                        />
-                    </Group>
-                    <Group>
-                        <Button
-                            tooltip={t('bookmark.addShort')}
-                            onClick={() => coreService.localEventBus.call('bookmark/create')}
-                            icon={AddIcon}
-                        />
-                    </Group>
-                    <Collapse in={appService.activity === 'desktop'}>
-                        <Group>
-                            {backgrounds.currentBG.type === BG_TYPE.VIDEO && (
+                        {bgShowMode && (
+                            <Button
+                                tooltip={
+                                    backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
+                                        ? (
+                                            <React.Fragment>
+                                                <b>{t('bg.pauseVideo')}</b>
+                                                <Divider className={classes.divider} />
+                                                {t('bg.pauseVideoDescription')}
+                                            </React.Fragment>
+                                        )
+                                        : t('bg.playVideo')
+                                }
+                                onClick={() => {
+                                    if (backgrounds.bgShowMode === BG_SHOW_MODE.LIVE) {
+                                        coreService.localEventBus.call('background/pause');
+                                    } else {
+                                        coreService.localEventBus.call('background/play');
+                                    }
+                                }}
+                                icon={backgrounds.bgShowMode === BG_SHOW_MODE.LIVE ? PauseIcon : PlayIcon}
+                            />
+                        )}
+                        {saveBgLocal && (
+                            <React.Fragment>
+                                {backgrounds.currentBG.type === BG_TYPE.VIDEO && (<Divider />)}
                                 <Button
                                     tooltip={
-                                        backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
-                                            ? (
-                                                <React.Fragment>
-                                                    <b>{t('bg.pauseVideo')}</b>
-                                                    <Divider className={classes.divider} />
-                                                    {t('bg.pauseVideoDescription')}
-                                                </React.Fragment>
-                                            )
-                                            : t('bg.playVideo')
+                                        backgrounds.currentBG.isSaved
+                                            ? t('bg.addedToLibrary')
+                                            : t('bg.addToLibrary')
                                     }
-                                    onClick={() => {
-                                        if (backgrounds.bgShowMode === BG_SHOW_MODE.LIVE) {
-                                            coreService.localEventBus.call('background/pause');
-                                        } else {
-                                            coreService.localEventBus.call('background/play');
-                                        }
-                                    }}
-                                    icon={backgrounds.bgShowMode === BG_SHOW_MODE.LIVE ? PauseIcon : PlayIcon}
+                                    className={clsx(
+                                        backgrounds.currentBG.isSaved && classes.notActive,
+                                    )}
+                                    onClick={() => (
+                                        !backgrounds.currentBG.isSaved
+                                            && BackgroundsUniversalService.addToLibrary(backgrounds.currentBG)
+                                    )}
+                                    icon={backgrounds.currentBG.isSaved ? AddedIcon : AddIcon}
                                 />
-                            )}
-                            {(
-                                backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
-                                && backgrounds.currentBG.source !== BG_SOURCE.USER
-                                && (
-                                    <React.Fragment>
-                                        {backgrounds.currentBG.type === BG_TYPE.VIDEO && (<Divider />)}
-                                        <Button
-                                            tooltip={
-                                                backgrounds.currentBG.isSaved
-                                                    ? t('bg.addedToLibrary')
-                                                    : t('bg.addToLibrary')
-                                            }
-                                            onClick={() => (
-                                                !backgrounds.currentBG.isSaved
-                                                && BackgroundsUniversalService.addToLibrary(backgrounds.currentBG)
+                            </React.Fragment>
+                        )}
+                        {nextBg && (
+                            <React.Fragment>
+                                {saveBgLocal && (<Divider />)}
+                                <Button
+                                    tooltip={t('bg.next')}
+                                    className={clsx(
+                                        backgrounds.bgState === BG_SHOW_STATE.SEARCH && classes.notActive,
+                                    )}
+                                    onClick={() => eventToBackground('backgrounds/nextBg')}
+                                    icon={() => (
+                                        <React.Fragment>
+                                            {backgrounds.bgState !== BG_SHOW_STATE.SEARCH && (
+                                                <RefreshIcon />
                                             )}
-                                            icon={backgrounds.currentBG.isSaved ? AddedIcon : AddIcon}
-                                        />
-                                    </React.Fragment>
-                                )
-                            )}
-                            {(
-                                backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM
-                                || backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
-                            ) && (
-                                <React.Fragment>
-                                    {
-                                        backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
-                                        && backgrounds.currentBG.source !== BG_SOURCE.USER
-                                        && (<Divider />)
-                                    }
-                                    <Button
-                                        tooltip={t('bg.next')}
-                                        className={clsx(
-                                            backgrounds.bgState === BG_SHOW_STATE.SEARCH && classes.loadBgButton,
-                                        )}
-                                        onClick={() => eventToBackground('backgrounds/nextBg')}
-                                        icon={() => (
-                                            <React.Fragment>
-                                                {backgrounds.bgState !== BG_SHOW_STATE.SEARCH && (
-                                                    <RefreshIcon />
-                                                )}
-                                                {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
-                                                    <CircularProgress
-                                                        className={classes.loadBGIcon}
-                                                        size={20}
-                                                    />
-                                                )}
-                                            </React.Fragment>
-                                        )}
-                                    />
-                                </React.Fragment>
-                            )}
-                        </Group>
-                    </Collapse>
-                </Box>
-            </MouseDistanceFade>
+                                            {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
+                                                <CircularProgress
+                                                    className={classes.loadBGIcon}
+                                                    size={20}
+                                                />
+                                            )}
+                                        </React.Fragment>
+                                    )}
+                                />
+                            </React.Fragment>
+                        )}
+                    </Group>
+                </Collapse>
+            </Box>
+            {/* </MouseDistanceFade> */}
         </React.Fragment>
     );
 }

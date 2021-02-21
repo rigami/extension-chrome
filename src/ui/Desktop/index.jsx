@@ -30,8 +30,8 @@ const useStyles = makeStyles((theme) => ({
     loadBGIcon: { color: theme.palette.text.primary },
     loadBGIconWhite: {
         position: 'absolute',
-        bottom: theme.spacing(4.25),
-        right: theme.spacing(4.25),
+        bottom: theme.spacing(4.5),
+        right: theme.spacing(4.5),
         zIndex: 1,
         color: theme.palette.common.white,
     },
