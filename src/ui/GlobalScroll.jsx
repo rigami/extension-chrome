@@ -7,7 +7,7 @@ import { useResizeDetector } from 'react-resize-detector';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        height: '100vh',
+        minHeight: '100vh',
         width: '100vw',
         transition: theme.transitions.create(['transform'], {
             duration: theme.transitions.duration.complex,
@@ -61,6 +61,8 @@ function GlobalScroll({ children }) {
     };
 
     const wheelHandler = (e) => {
+        if (e.path.indexOf(rootRef.current) === -1) return;
+
         scrollHandler(e.deltaY);
     };
 
