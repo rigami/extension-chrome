@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import {
+    ACTIVITY,
     BG_SELECT_MODE,
     BG_SHOW_MODE,
     BG_SHOW_STATE,
@@ -76,7 +77,7 @@ function Group({ children, ...other }) {
 
     return (
         <Card
-            className={clsx(classes.card, appService.activity !== 'desktop' && classes.outline)}
+            className={clsx(classes.card, appService.activity !== ACTIVITY.DESKTOP && classes.outline)}
             elevation={0}
             {...other}
         >
@@ -135,7 +136,7 @@ function FabMenu() {
                         />
                     </Group>
                     <Collapse
-                        in={appService.activity === 'desktop' && (bgShowMode || saveBgLocal || nextBg)}
+                        in={appService.activity === ACTIVITY.DESKTOP && (bgShowMode || saveBgLocal || nextBg)}
                         unmountOnExit
                     >
                         <Group>
