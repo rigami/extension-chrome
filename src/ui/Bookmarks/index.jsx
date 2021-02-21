@@ -19,16 +19,10 @@ import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import Category from './Categories/CtegoryWrapper';
 import Folder from './Folders/FolderWrapper';
 import BookmarksGrid from './BookmarksGrid';
+import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        width: '100vw',
-        backgroundColor: theme.palette.background.paper,
-        transform: 'translate3d(0,0,0)',
-        flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'column',
-    },
     chipContainer: { },
     container: {
         paddingTop: theme.spacing(3),
@@ -49,10 +43,13 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         marginBottom: theme.spacing(3),
     },
+    offsetTop: {
+        // paddingTop: 40 + theme.spacing(3 + (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 3))
+    },
 }));
 
 const maxColumnCalc = () => Math.min(
-    Math.floor((document.getElementById('bookmarks-container').clientWidth + 16 - 48) / 196),
+    Math.floor((document.documentElement.clientWidth + 16 - 48) / 196),
     6,
 );
 
@@ -156,81 +153,100 @@ function Bookmarks() {
         handleLoadFolders(selectFolderId);
     }, [selectFolderId]);
 
+    let fapPositionStyle;
+
+    if (bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM) {
+        fapPositionStyle = 'paddingBottom';
+    } else {
+        fapPositionStyle = 'paddingTop';
+    }
+
+    let fapSizeStyle;
+
+    if (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED) {
+        fapSizeStyle = theme.spacing(9) + 40;
+    } else if (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT) {
+        fapSizeStyle = theme.spacing(3) + 40;
+    } else {
+        fapSizeStyle = 0;
+    }
+
     return (
         <React.Fragment>
-            <Box id="bookmarks-container" className={classes.root}>
-                <Container
-                    className={classes.container}
-                    fixed
-                    style={{ maxWidth: coreService.storage.temp.columnsCount * 196 - 16 + 48 }}
-                >
-                    <Box className={classes.header}>
-                        <Categories
-                            className={classes.chipContainer}
-                            value={searchCategories}
-                            onChange={(categories) => {
-                                setSearchCategories(categories);
-                                setIsSearching(true);
-                            }}
-                        />
-                        {/* <IconButton>
-                            <SearchIcon />
-                        </IconButton> */}
-                    </Box>
-                    <Fade
-                        in={!isSearching}
-                        onExited={() => {
-                            // setFindBookmarks(null);
-                            if (searchCategories) handleSearch({ categories: { match: searchCategories } });
+            <Container
+                className={classes.container}
+                fixed
+                style={{
+                    maxWidth: coreService.storage.temp.columnsCount * 196 - 16 + 48,
+                    [fapPositionStyle]: fapSizeStyle,
+                }}
+            >
+                <Box className={classes.header}>
+                    <Categories
+                        className={classes.chipContainer}
+                        value={searchCategories}
+                        onChange={(categories) => {
+                            setSearchCategories(categories);
+                            setIsSearching(true);
                         }}
-                    >
-                        <div className={classes.fadeWrapper}>
-                            {statusSearch === SEARCH_STATUS.NOTHING_FOUND && (
-                                <FullScreenStub
-                                    icon={ReFoundIcon}
-                                    message={t('bookmark.nothingFound.title')}
-                                    description={t('bookmark.nothingFound.description')}
-                                />
-                            )}
-                            {statusSearch === SEARCH_STATUS.NO_BOOKMARKS && (
-                                <FullScreenStub
-                                    message={t('bookmark.noBookmarks.title')}
-                                    description={t('bookmark.noBookmarks.description')}
-                                />
-                            )}
-                            {statusSearch === SEARCH_STATUS.WAIT && folders.map((folder) => (
-                                <Folder
-                                    key={folder.id}
-                                    folder={folder}
-                                    onSelect={(nextFolderId) => setSelectFolderId(nextFolderId)}
-                                />
-                            ))}
-                            {
-                                statusSearch === SEARCH_STATUS.DONE_SEARCH
-                                && findBookmarks.map(({ category, bookmarks }) => (
-                                    <Category {...category} key={category.id}>
-                                        {bookmarks.length === 0 && (
-                                            <Typography
-                                                variant="body1"
-                                                style={{ color: theme.palette.text.secondary }}
-                                            >
-                                                {t('bookmark.noMatchingItems')}
-                                            </Typography>
-                                        )}
-                                        <BookmarksGrid bookmarks={bookmarks} />
-                                    </Category>
-                                ))
-                            }
-                        </div>
-                    </Fade>
-                </Container>
-                <ReactResizeDetector
-                    handleWidth
-                    onResize={() => {
-                        coreService.storage.updateTemp({ columnsCount: maxColumnCalc() });
+                    />
+                    {/* <IconButton>
+                                <SearchIcon />
+                            </IconButton> */}
+                </Box>
+                <Fade
+                    in={!isSearching}
+                    onExited={() => {
+                        // setFindBookmarks(null);
+                        if (searchCategories) handleSearch({ categories: { match: searchCategories } });
                     }}
-                />
-            </Box>
+                >
+                    <div className={classes.fadeWrapper}>
+                        {statusSearch === SEARCH_STATUS.NOTHING_FOUND && (
+                            <FullScreenStub
+                                icon={ReFoundIcon}
+                                message={t('bookmark.nothingFound.title')}
+                                description={t('bookmark.nothingFound.description')}
+                            />
+                        )}
+                        {statusSearch === SEARCH_STATUS.NO_BOOKMARKS && (
+                            <FullScreenStub
+                                message={t('bookmark.noBookmarks.title')}
+                                description={t('bookmark.noBookmarks.description')}
+                            />
+                        )}
+                        {statusSearch === SEARCH_STATUS.WAIT && folders.map((folder) => (
+                            <Folder
+                                key={folder.id}
+                                folder={folder}
+                                onSelect={(nextFolderId) => setSelectFolderId(nextFolderId)}
+                            />
+                        ))}
+                        {
+                            statusSearch === SEARCH_STATUS.DONE_SEARCH
+                            && findBookmarks.map(({ category, bookmarks }) => (
+                                <Category {...category} key={category.id}>
+                                    {bookmarks.length === 0 && (
+                                        <Typography
+                                            variant="body1"
+                                            style={{ color: theme.palette.text.secondary }}
+                                        >
+                                            {t('bookmark.noMatchingItems')}
+                                        </Typography>
+                                    )}
+                                    <BookmarksGrid bookmarks={bookmarks} />
+                                </Category>
+                            ))
+                        }
+                    </div>
+                </Fade>
+            </Container>
+            <ReactResizeDetector
+                handleWidth
+                onResize={() => {
+                    coreService.storage.updateTemp({ columnsCount: maxColumnCalc() });
+                }}
+            />
         </React.Fragment>
     );
 }

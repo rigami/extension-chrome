@@ -1,90 +1,103 @@
 import React, { useRef, useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { observer } from 'mobx-react-lite';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import usAppService from '@/stores/app/AppStateProvider';
-import Scrollbar from 'smooth-scrollbar';
-import OverscrollPlugin from 'smooth-scrollbar/plugins/overscroll';
-import ViewScrollPlugin from '@/utils/ViewScrollPlugin';
-import { ACTIVITY } from '@/enum';
+import { useResizeDetector } from 'react-resize-detector';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         height: '100vh',
         width: '100vw',
-        // backgroundColor: theme.palette.background.paper,
+        transition: theme.transitions.create(['transform'], {
+            duration: theme.transitions.duration.complex,
+            easing: theme.transitions.easing.easeInOut,
+        }),
     },
-    // scrollBar: scrollbarClasses(theme).scrollBar,
     hideScroll: { opacity: 0 },
 }));
 
+const DIRECTION = {
+    UP: 'UP',
+    DOWN: 'DOWN',
+};
+
 function GlobalScroll({ children }) {
     const classes = useStyles();
-    const coreService = useCoreService();
     const appService = usAppService();
-    const rootRef = useRef(null);
+    const { width, height, ref: rootRef } = useResizeDetector();
+    const store = useLocalObservable(() => ({
+        scroll: null,
+        speed: 0,
+        direction: 0,
+        active: false,
+        aimScroll: null,
+        scrollNow: 0,
+        oldTime: 0,
+        userActive: false,
+        scrollTopBefore: 0,
+        scrollTopNow: 0,
+        views: [],
+        activeView: 0,
+    }));
+
+    const scrollHandler = (delta) => {
+        store.direction = delta > 0 ? DIRECTION.DOWN : DIRECTION.UP;
+
+        const { activeView } = store;
+
+        if (store.direction === DIRECTION.UP && store.activeViewTop) {
+            store.activeView = Math.max(store.activeView - 1, 0);
+        } else if (store.direction === DIRECTION.DOWN && store.activeViewBottom) {
+            store.activeView = Math.min(store.activeView + 1, store.views.length - 1);
+        }
+        if (activeView === store.activeView) return;
+
+        const view = store.views[store.activeView];
+
+        rootRef.current.style.transform = `translateY(${-view.ref.current.offsetTop}px)`;
+
+        appService.setActivity(view.value);
+    };
+
+    const wheelHandler = (e) => {
+        scrollHandler(e.deltaY);
+    };
 
     useEffect(() => {
-        Scrollbar.use(ViewScrollPlugin, OverscrollPlugin);
+        addEventListener('wheel', wheelHandler, true);
 
-        const scrollbar = Scrollbar.init(rootRef.current, {
-            damping: 0.2,
-            thumbMinSize: 0,
-            continuousScrolling: true,
-            syncCallbacks: true,
-            plugins: {
-                overscroll: {
-                    effect: 'bounce',
-                    maxOverscroll: 150,
-                },
-                viewScrollPlugin: {
-                    breakpoints: [
-                        {
-                            id: 'desktop',
-                            value: 0,
-                            block: true,
-                        },
-                        {
-                            id: 'bookmarks',
-                            value: document.documentElement.clientHeight,
-                        },
-                    ],
-                    detectOffset: 70,
-                    onBreakpoint: (breakpoint) => {
-                        if (breakpoint?.id === 'desktop') {
-                            appService.setActivity('desktop');
-                        } else if (breakpoint?.id === 'bookmarks') {
-                            appService.setActivity('bookmarks');
-                        }
-                    },
-                },
-            },
-        });
-
-        Scrollbar.detachStyle();
-
-        scrollbar.track.xAxis.element.remove();
-
-        scrollbar.addListener(({ offset }) => {
-            coreService.localEventBus.call('system/scroll', offset);
-            // coreService.storage.updateTemp({ activityScrollOffset: offset });
-        });
-
-        if (appService.settings.defaultActivity === ACTIVITY.BOOKMARKS) {
-            scrollbar.setPosition(0, document.documentElement.clientHeight);
-            coreService.storage.updateTemp({ activityScrollOffset: document.documentElement.clientHeight });
-        }
-
-        console.log('scrollbar', scrollbar);
+        return () => removeEventListener('wheel', wheelHandler);
     }, []);
 
+    const views = children.map((child) => ({
+        value: child.props.value,
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        ref: useRef(),
+    }));
+
+    useEffect(() => {
+        store.views = views;
+    }, [children.length]);
+
+    useEffect(() => {
+        const view = store.views[store.activeView];
+
+        rootRef.current.style.transform = `translateY(${-view.ref.current.offsetTop}px)`;
+    }, [width, height]);
+
     return (
-        <Box
-            className={classes.root}
-            ref={rootRef}
-        >
-            {children}
+        <Box className={classes.root} ref={rootRef}>
+            {children.map((item, index) => React.cloneElement(item, {
+                ref: views[index].ref,
+                active: store.activeView === index,
+                onScroll: ({ isTop, isBottom }) => {
+                    if (store.activeView === index) {
+                        store.activeViewTop = isTop;
+                        store.activeViewBottom = isBottom;
+                    }
+                },
+            }))}
         </Box>
     );
 }

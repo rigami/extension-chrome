@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import { render } from 'react-dom';
-import { CssBaseline, Box } from '@material-ui/core';
+import { CssBaseline } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
 import Snackbar from '@/ui-components/Snackbar';
@@ -12,62 +12,64 @@ import Nest from '@/utils/Nest';
 import { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
 import { Provider as AppStateProvider } from '@/stores/app/AppStateProvider';
 import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
-import FakeScroll from '@/ui/FakeScroll';
-import FAPStub from '@/ui/Bookmarks/FAP/Stub';
 import InitAppProvider from '@/stores/app/InitApp';
-import { makeStyles } from '@material-ui/core/styles';
 import AddBookmarkButton from '@/ui/Bookmarks/EditBookmarkModal/AddButton';
 import initSentry from '@/config/sentry';
 import * as Sentry from '@sentry/react';
+import ScrollView from '@/ui-components/ScrollView';
+import Scrollbar from '@/ui-components/CustomScroll';
 import FAP from './Bookmarks/FAP';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
 import GlobalScroll from './GlobalScroll';
 import GlobalModals from './GlobalModals';
+import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(() => ({
-    bookmarkWrapper: {
-        minHeight: '100vh',
-        width: '100vw',
+initSentry(DESTINATION.APP);
+
+
+
+const useStyles = makeStyles((theme) => ({
+    bookmarks: {
+        backgroundColor: theme.palette.background.paper,
+        transform: 'translate3d(0,0,0)',
         display: 'flex',
         flexDirection: 'column',
     },
 }));
 
-initSentry(DESTINATION.APP);
-
 function RootApp({ onChangeTheme }) {
     const classes = useStyles();
 
     return (
-        <Nest components={[
-            ({ children }) => (
-                <SnackbarProvider
-                    maxSnack={4}
-                    content={(key, options) => (<Snackbar id={key} {...options} />)}
-                >
-                    {children}
-                </SnackbarProvider>
-            ),
-            ({ children }) => (<BaseStateProvider side={DESTINATION.APP}>{children}</BaseStateProvider>),
-            InitAppProvider,
-            ({ children }) => (<AppStateProvider onChangeTheme={onChangeTheme}>{children}</AppStateProvider>),
-            BookmarksProvider,
-            UploadBGForm,
-            GlobalModals,
-        ]}
+        <Nest
+            components={[
+                ({ children }) => (
+                    <SnackbarProvider
+                        maxSnack={4}
+                        content={(key, options) => (<Snackbar id={key} {...options} />)}
+                    >
+                        {children}
+                    </SnackbarProvider>
+                ),
+                ({ children }) => (<BaseStateProvider side={DESTINATION.APP}>{children}</BaseStateProvider>),
+                InitAppProvider,
+                ({ children }) => (<AppStateProvider onChangeTheme={onChangeTheme}>{children}</AppStateProvider>),
+                BookmarksProvider,
+                UploadBGForm,
+                GlobalModals,
+            ]}
         >
             <GlobalScroll>
-                <Desktop />
-                <Box className={classes.bookmarkWrapper}>
-                    <FAPStub />
+                <ScrollView value="desktop">
+                    <Desktop />
+                </ScrollView>
+                <ScrollView value="bookmarks" classes={{ content: classes.bookmarks }}>
                     <Bookmarks />
-                </Box>
+                </ScrollView>
             </GlobalScroll>
-            <FakeScroll>
-                <FAP />
-                <AddBookmarkButton />
-            </FakeScroll>
+            <FAP />
+            <AddBookmarkButton />
         </Nest>
     );
 }
