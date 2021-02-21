@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "0.2.20",
+    "version": "0.2.21",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
@@ -50,8 +50,7 @@
         "react-i18next": "^11.8.7",
         "react-indiana-drag-scroll": "^1.8.0",
         "react-resize-detector": "^6.6.0",
-        "react-scrollbars-custom": "^4.0.25",
-        "smooth-scrollbar": "^8.6.0"
+        "react-scrollbars-custom": "^4.0.25"
     },
     "devDependencies": {
         "@babel/core": "^7.12.17",
