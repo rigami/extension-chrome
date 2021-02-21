@@ -12,7 +12,6 @@ import {
 import { Box, CircularProgress } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import Menu from '@/ui/Menu';
 import { useTranslation } from 'react-i18next';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import { eventToBackground } from '@/stores/server/bus';
@@ -29,6 +28,13 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
     },
     loadBGIcon: { color: theme.palette.text.primary },
+    loadBGIconWhite: {
+        position: 'absolute',
+        bottom: theme.spacing(4.25),
+        right: theme.spacing(4.25),
+        zIndex: 1,
+        color: theme.palette.common.white,
+    },
 }));
 
 function Desktop() {
@@ -123,7 +129,12 @@ function Desktop() {
             {widgets.settings.useWidgets && (
                 <Widgets />
             )}
-            <Menu />
+            {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
+                <CircularProgress
+                    className={classes.loadBGIconWhite}
+                    size={20}
+                />
+            )}
         </Box>
     );
 }

@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import { render } from 'react-dom';
-import { CssBaseline } from '@material-ui/core';
+import { Box, CssBaseline } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
 import Snackbar from '@/ui-components/Snackbar';
@@ -24,10 +24,10 @@ import Desktop from './Desktop';
 import GlobalScroll from './GlobalScroll';
 import GlobalModals from './GlobalModals';
 import { makeStyles } from '@material-ui/core/styles';
+import FabMenu from '@/ui/Menu/FabMenu';
+import Menu from '@/ui/Menu';
 
 initSentry(DESTINATION.APP);
-
-
 
 const useStyles = makeStyles((theme) => ({
     bookmarks: {
@@ -69,7 +69,9 @@ function RootApp({ onChangeTheme }) {
                 </ScrollView>
             </GlobalScroll>
             <FAP />
-            <AddBookmarkButton />
+            <FabMenu />
+            <Menu />
+            {/* <AddBookmarkButton /> */}
         </Nest>
     );
 }
