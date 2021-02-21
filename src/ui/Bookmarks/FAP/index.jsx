@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1.5, 0),
         paddingLeft: theme.spacing(0.5),
         paddingRight: theme.spacing(0.5),
-        maxWidth: 1400,
+        // maxWidth: 1400,
         display: 'block',
         whiteSpace: 'nowrap',
         '&::-webkit-scrollbar': {

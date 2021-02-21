@@ -77,7 +77,7 @@ function Snackbar(props, ref) {
     };
 
     return (
-        <Card className={classes.root} ref={ref}>
+        <Card className={classes.root} ref={ref} elevation={16}>
             {(message || description || closeButton) && (
                 <CardHeader
                     classes={{

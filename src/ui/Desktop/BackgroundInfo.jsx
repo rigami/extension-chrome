@@ -80,7 +80,7 @@ function BackgroundInfo(props) {
 
     return (
         <MouseDistanceFade distanceMax={64} distanceMin={8}>
-            <Card className={classes.infoCard} elevation={11}>
+            <Card className={classes.infoCard} elevation={0}>
                 <CardHeader
                     classes={{
                         root: classes.header,
