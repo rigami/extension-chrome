@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import usAppService from '@/stores/app/AppStateProvider';
 import { useResizeDetector } from 'react-resize-detector';
+import { ACTIVITY } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -38,7 +39,10 @@ function GlobalScroll({ children }) {
         scrollTopBefore: 0,
         scrollTopNow: 0,
         views: [],
-        activeView: 0,
+        activeView: appService.settings.defaultActivity === ACTIVITY.BOOKMARKS ? 1 : 0,
+        topOffset: appService.settings.defaultActivity === ACTIVITY.BOOKMARKS
+            ? -document.documentElement.clientHeight
+            : 0,
     }));
 
     const scrollHandler = (delta) => {
@@ -55,7 +59,7 @@ function GlobalScroll({ children }) {
 
         const view = store.views[store.activeView];
 
-        rootRef.current.style.transform = `translateY(${-view.ref.current.offsetTop}px)`;
+        store.topOffset = -view.ref.current.offsetTop;
 
         appService.setActivity(view.value);
     };
@@ -83,13 +87,15 @@ function GlobalScroll({ children }) {
     }, [children.length]);
 
     useEffect(() => {
-        const view = store.views[store.activeView];
-
-        rootRef.current.style.transform = `translateY(${-view.ref.current.offsetTop}px)`;
+        store.topOffset = -store.views[store.activeView].ref.current.offsetTop;
     }, [width, height]);
 
     return (
-        <Box className={classes.root} ref={rootRef}>
+        <Box
+            className={classes.root}
+            ref={rootRef}
+            style={{ transform: `translateY(${store.topOffset}px)` }}
+        >
             {children.map((item, index) => React.cloneElement(item, {
                 ref: views[index].ref,
                 active: store.activeView === index,

@@ -2,10 +2,11 @@ import { action, makeAutoObservable } from 'mobx';
 import { AppSettingsStore } from '@/stores/app/settings';
 import WidgetsService from '@/stores/app/widgets';
 import BackgroundsService from '@/stores/app/backgrounds';
+import { ACTIVITY } from '@/enum';
 
 class AppStateStore {
     coreService;
-    activity = 'desktop';
+    activity = ACTIVITY.DESKTOP;
     settings;
     widgets;
     backgrounds;
@@ -16,6 +17,8 @@ class AppStateStore {
         this.settings = new AppSettingsStore();
         this.widgets = new WidgetsService(coreService);
         this.backgrounds = new BackgroundsService(coreService);
+
+        this.activity = this.settings.defaultActivity;
     }
 
     @action('set activity')

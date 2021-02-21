@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
 import Snackbar from '@/ui-components/Snackbar';
 import UploadBGForm from '@/ui-components/UploadBGForm';
-import { DESTINATION, THEME } from '@/enum';
+import { ACTIVITY, DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
@@ -59,10 +59,10 @@ function RootApp({ onChangeTheme }) {
             ]}
         >
             <GlobalScroll>
-                <ScrollView value="desktop" disableScroll>
+                <ScrollView value={ACTIVITY.DESKTOP} disableScroll>
                     <Desktop />
                 </ScrollView>
-                <ScrollView value="bookmarks" classes={{ content: classes.bookmarks }}>
+                <ScrollView value={ACTIVITY.BOOKMARKS} classes={{ content: classes.bookmarks }}>
                     <Bookmarks />
                 </ScrollView>
             </GlobalScroll>

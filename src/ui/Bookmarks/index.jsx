@@ -16,7 +16,7 @@ import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
+import { ACTIVITY, BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import Category from './Categories/CtegoryWrapper';
 import Folder from './Folders/FolderWrapper';
 import BookmarksGrid from './BookmarksGrid';
@@ -120,7 +120,7 @@ function Bookmarks() {
     }, []);
 
     useEffect(() => {
-        if (appService.activity === 'bookmarks') {
+        if (appService.activity === ACTIVITY.BOOKMARKS) {
             if (!findBookmarks) {
                 setIsSearching(true);
                 handleSearch(bookmarksService.lastSearch);
