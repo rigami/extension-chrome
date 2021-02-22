@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         pointerEvents: 'auto',
         borderRadius: 8,
-        backdropFilter: 'blur(40px) brightness(110%)  contrast(1.2) invert(0.02)',
+        backdropFilter: 'blur(40px) brightness(110%)  contrast(1.2) invert(0.06)',
         background: 'none',
     },
     panel: {
