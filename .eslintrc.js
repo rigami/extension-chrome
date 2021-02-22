@@ -13,6 +13,10 @@ module.exports = {
         'ecmaVersion': 2020,
         'sourceType': 'module',
     },
+    'globals': {
+        'PRODUCTION_MODE': true,
+        'COLLECT_LOGS': true,
+    },
     'settings': {
         'import/resolver': {
             alias: {

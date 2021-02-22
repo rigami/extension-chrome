@@ -1,3 +1,5 @@
+import packageFile from '@/package.json';
+
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -93,12 +95,16 @@ module.exports = () => ({
             path: './config/manifest.js',
             filename: './manifest.json',
         }),
-        new webpack.DefinePlugin({ PRODUCTION_MODE: JSON.stringify(process.env.NODE_ENV === 'production') }),
-        ...(process.env.RELEASE === 'true' ? [
+        new webpack.DefinePlugin({
+            PRODUCTION_MODE: JSON.stringify(process.env.NODE_ENV === 'production'),
+            COLLECT_LOGS: process.env.COLLECT_LOGS,
+        }),
+        ...(process.env.COLLECT_LOGS === 'true' ? [
             new SentryWebpackPlugin({
                 authToken: 'e553e6efe10f4122bbcc0ba70067adb88c5e2042ca4842fca1977360c9b80dfa',
                 org: 'rigami',
                 project: 'extension-chrome',
+                release: `extension-chrome@${packageFile.version}`,
                 include: '.',
                 ignore: ['node_modules', 'webpack.config.js'],
             }),
