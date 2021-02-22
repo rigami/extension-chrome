@@ -4,6 +4,7 @@ import createPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/server/bus';
 import fetchData from '@/utils/xhrPromise';
 import appVariables from '@/config/appVariables';
+import { BG_SOURCE } from '@/enum';
 import Background from './entities/background';
 
 export const ERRORS = {
@@ -37,7 +38,10 @@ class BackgroundsUniversalService {
 
         eventToApp('backgrounds/new', { bg: savedBG });
 
-        fetchData(`${appVariables.rest.url}/backgrounds/mark-download/${savedBG.source}/${savedBG.originId}`);
+        if (savedBG.source !== BG_SOURCE.USER) {
+            fetchData(`${appVariables.rest.url}/backgrounds/mark-download/${savedBG.source}/${savedBG.originId}`)
+                .catch(console.error);
+        }
 
         return savedBG;
     }
