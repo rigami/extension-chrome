@@ -1,5 +1,5 @@
 import EventBus from '@/utils/eventBus';
-import BusApp from '@/stores/server/bus';
+import BusApp, { eventToApp, eventToPopup } from '@/stores/server/bus';
 import SettingsService from './settingsService';
 import StorageService from './storageService';
 // import SyncSystemBookmarksService from './syncSystemBookmarksService';
@@ -41,6 +41,14 @@ class ServerApp {
 
         // Backgrounds
         this.backgroundsService = new BackgroundsService(this);
+
+        // eslint-disable-next-line sonarjs/no-duplicate-string
+        this.globalBus.on('system.forceReload', () => {
+            eventToApp('system.forceReload');
+            eventToPopup('system.forceReload');
+
+            location.reload();
+        });
     }
 }
 

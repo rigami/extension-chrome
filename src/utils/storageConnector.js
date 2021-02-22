@@ -1,42 +1,27 @@
-import { eventToBackground } from '@/stores/server/bus';
-
 class StorageConnector {
-    static getItem(key) {
-        return new Promise((resolve, reject) => {
-            try {
-                if (localStorage.getItem(key) === null) {
-                    reject(new Error('Not set value'));
-                } else {
-                    resolve(localStorage.getItem(key));
-                }
-            } catch (e) {
-                reject(e);
-            }
-        });
+    static get(key, defaultValue) {
+        return localStorage.getItem(key) || defaultValue;
     }
 
-    static getJSONItem(key) {
-        return StorageConnector.getItem(key)
-            .then((value) => (typeof value === 'string' ? JSON.parse(value) : value));
+    static getJSON(key, defaultValue) {
+        try {
+            return JSON.parse(StorageConnector.get(key)) || defaultValue;
+        } catch (e) {
+            console.error(e);
+            return defaultValue;
+        }
     }
 
-    static setJSONItem(key, value) {
-        return StorageConnector.setItem(key, JSON.stringify(value));
+    static setJSON(key, value) {
+        return StorageConnector.set(key, JSON.stringify(value));
     }
 
-    static setItem(key, value) {
+    static set(key, value) {
         localStorage.setItem(key, value);
-
-        eventToBackground('system/syncSettings/set', {
-            key,
-            value,
-        });
     }
 
-    static removeItem(key) {
+    static remove(key) {
         localStorage.removeItem(key);
-
-        eventToBackground('system/syncSettings/remove', { key });
     }
 }
 

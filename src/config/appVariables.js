@@ -1,5 +1,6 @@
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 import packageFile from '@/../package.json';
+import StorageConnector from '@/utils/storageConnector';
 
 export default {
     extensionId: chrome.runtime.id,
@@ -10,7 +11,11 @@ export default {
     },
     fs: { root: `chrome-extension://${chrome.runtime.id}/persistent/` },
     maxUploadFiles: 15,
-    rest: { url: `${PRODUCTION_MODE ? 'https://api.rigami.io' : 'http://localhost:8080'}` },
+    rest: {
+        url: StorageConnector.getJSON('devTools', {}).productionEnv || PRODUCTION_MODE
+            ? 'https://api.rigami.io'
+            : 'http://localhost:8080',
+    },
     widgets: {
         weather: {
             updateTime: {

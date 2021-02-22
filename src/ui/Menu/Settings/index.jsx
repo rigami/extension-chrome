@@ -15,6 +15,7 @@ import {
     HelpRounded as AboutIcon,
     BackupRounded as BackupIcon,
     WidgetsRounded as WidgetsIcon,
+    DeveloperBoardRounded as DevToolsIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
@@ -26,6 +27,7 @@ import appSettingsPage from './AppSettings';
 import bookmarksPage from './Bookmarks';
 import backupPage from './Backup';
 import widgetsPage from './Widgets';
+import devTools from './DevTools';
 
 const useStyles = makeStyles((theme) => ({
     divider: {
@@ -87,6 +89,13 @@ const general = [
         id: 'backup',
         page: backupPage,
         color: '#0f9d58',
+    },
+    !PRODUCTION_MODE && {
+        title: 'DevTools',
+        icon: <DevToolsIcon />,
+        id: 'devTools',
+        page: devTools,
+        color: '#49C5B6',
     },
 ];
 const additional = [

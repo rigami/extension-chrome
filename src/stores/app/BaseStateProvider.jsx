@@ -20,6 +20,10 @@ function BaseStateProvider({ side, children }) {
             mouseEvent.preventDefault();
             mouseEvent.stopPropagation();
         }, true);
+
+        store.globalEventBus.on('system.forceReload', () => {
+            location.reload();
+        });
     }, []);
 
     return (
