@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.standard,
         }), */
     },
-    bottomOffset: { bottom: theme.spacing(6) + theme.spacing(8) },
+    bottomOffset: { bottom: theme.spacing(14) },
     topOffset: {},
     leftMiddlePos: {
         top: 0,
@@ -79,11 +79,11 @@ function Widgets() {
             className={clsx(
                 classes.root,
                 bookmarksService.fapIsDisplay
-              && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
-              && classes.bottomOffset,
+                  && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
+                  && classes.bottomOffset,
                 bookmarksService.fapIsDisplay
-              && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
-              && classes.topOffset,
+                  && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
+                  && classes.topOffset,
                 widgets.settings.dtwPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddlePos,
                 widgets.settings.dtwPosition === DTW_POSITION.CENTER_TOP && classes.centerTopPos,
             )}

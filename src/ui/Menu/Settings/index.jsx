@@ -97,7 +97,7 @@ const general = [
         page: devTools,
         color: '#49C5B6',
     },
-];
+].filter((isAvailable) => isAvailable);
 const additional = [
     {
         title: 'settings.about.title',

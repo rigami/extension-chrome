@@ -33,19 +33,19 @@ import Link from './Link';
 const useStyles = makeStyles((theme) => ({
     root: {
         padding: theme.spacing(11),
-        paddingTop: theme.spacing(3),
+        paddingTop: 0,
         paddingBottom: 0,
         width: '100%',
         zIndex: theme.zIndex.speedDial,
         display: 'flex',
         pointerEvents: 'none',
         justifyContent: 'center',
-        position: 'relative',
+        position: 'absolute',
         boxSizing: 'border-box',
+        top: theme.spacing(3),
     },
     stickyRoot: {
-        position: 'sticky',
-        top: 0,
+        top: 'auto',
         bottom: theme.spacing(3),
     },
     card: {
@@ -70,10 +70,6 @@ const useStyles = makeStyles((theme) => ({
     disablePadding: {
         padding: 0,
         paddingLeft: theme.spacing(1),
-    },
-    absoluteCard: {
-        position: 'fixed',
-        top: theme.spacing(3),
     },
     cardTransparent: {
         background: 'none',
@@ -115,7 +111,6 @@ const useStyles = makeStyles((theme) => ({
 
 function FAP() {
     const classes = useStyles();
-    const theme = useTheme();
     const bookmarksService = useBookmarksService();
     const scrollRef = createRef();
     const rootRef = useRef(null);
@@ -210,18 +205,12 @@ function FAP() {
                     bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
                 )}
                 ref={rootRef}
-                style={{
-                    height: 40 + theme.spacing(
-                        3 + (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT ? 0 : 3),
-                    ),
-                }}
             >
                 <Card
                     elevation={0}
                     className={clsx(
                         classes.card,
                         bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.cardTransparent,
-                        bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP && classes.absoluteCard,
                     )}
                 >
                     <ScrollContainer

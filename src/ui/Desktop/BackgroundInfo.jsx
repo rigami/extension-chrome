@@ -12,18 +12,21 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
-import { BG_SOURCE } from '@/enum';
+import { BG_SOURCE, BKMS_FAP_POSITION } from '@/enum';
+import clsx from 'clsx';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 
 const useStyles = makeStyles((theme) => ({
     infoCard: {
         position: 'absolute',
-        right: theme.spacing(2),
-        top: theme.spacing(2),
+        right: theme.spacing(3),
+        top: theme.spacing(3),
         maxWidth: 430,
         minWidth: 350,
         zIndex: theme.zIndex.modal,
         '&:not(:hover) $subheader': { '-webkit-line-clamp': 4 },
     },
+    topOffset: { top: theme.spacing(14) },
     avatar: { alignSelf: 'flex-start' },
     subheader: {
         wordBreak: 'break-word',
@@ -57,8 +60,9 @@ function BackgroundInfo(props) {
         description,
         type,
     } = props;
-    const { t } = useTranslation();
     const classes = useStyles();
+    const bookmarksService = useBookmarksService();
+    const { t } = useTranslation();
 
     let serviceName = 'Unknown';
     let serviceUrl = '#';
@@ -80,7 +84,15 @@ function BackgroundInfo(props) {
 
     return (
         <MouseDistanceFade distanceMax={64} distanceMin={8}>
-            <Card className={classes.infoCard} elevation={0}>
+            <Card
+                className={clsx(
+                    classes.infoCard,
+                    bookmarksService.fapIsDisplay
+                    && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
+                    && classes.topOffset,
+                )}
+                elevation={0}
+            >
                 <CardHeader
                     classes={{
                         root: classes.header,
