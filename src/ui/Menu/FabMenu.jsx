@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(0.25),
     },
     notActive: { pointerEvents: 'none' },
+    notClickable: { cursor: 'default' },
     divider: {
         backgroundColor: fade(theme.palette.common.white, 0.12),
         marginTop: theme.spacing(0.5),
@@ -87,14 +88,18 @@ function Group({ children, ...other }) {
     );
 }
 
-function Button({ tooltip, onClick, icon, className: externalClassName }) {
+function Button({ tooltip, icon, className: externalClassName, ...other }) {
     const classes = useStyles();
 
     const Icon = icon;
 
     return (
         <Tooltip title={tooltip} placement="left">
-            <ButtonBase size="small" className={clsx(classes.button, externalClassName)} onClick={onClick}>
+            <ButtonBase
+                size="small"
+                className={clsx(classes.button, externalClassName)}
+                {...other}
+            >
                 <Icon />
             </ButtonBase>
         </Tooltip>
@@ -174,8 +179,9 @@ function FabMenu() {
                                                 : t('bg.addToLibrary')
                                         }
                                         className={clsx(
-                                            backgrounds.currentBG.isSaved && classes.notActive,
+                                            backgrounds.currentBG.isSaved && classes.notClickable,
                                         )}
+                                        disableRipple={backgrounds.currentBG.isSaved}
                                         onClick={() => (
                                             !backgrounds.currentBG.isSaved
                                                 && BackgroundsUniversalService.addToLibrary(backgrounds.currentBG)
@@ -188,11 +194,19 @@ function FabMenu() {
                                 <React.Fragment>
                                     {saveBgLocal && (<Divider />)}
                                     <Button
-                                        tooltip={t('bg.next')}
+                                        tooltip={
+                                            backgrounds.bgState === BG_SHOW_STATE.SEARCH
+                                                ? t('bg.fetchingNextBG')
+                                                : t('bg.next')
+                                        }
                                         className={clsx(
-                                            backgrounds.bgState === BG_SHOW_STATE.SEARCH && classes.notActive,
+                                            backgrounds.bgState === BG_SHOW_STATE.SEARCH && classes.notClickable,
                                         )}
-                                        onClick={() => eventToBackground('backgrounds/nextBg')}
+                                        disableRipple={backgrounds.bgState === BG_SHOW_STATE.SEARCH}
+                                        onClick={() => (
+                                            backgrounds.bgState !== BG_SHOW_STATE.SEARCH
+                                            && eventToBackground('backgrounds/nextBg')
+                                        )}
                                         icon={() => (
                                             <React.Fragment>
                                                 {backgrounds.bgState !== BG_SHOW_STATE.SEARCH && (
