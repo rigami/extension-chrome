@@ -404,10 +404,14 @@ class BookmarksUniversalService {
 
     @action('remove bookmark')
     static async remove(bookmarkId) {
-        await FavoritesUniversalService.removeFromFavorites({
-            type: 'bookmark',
-            id: bookmarkId,
+        const favoriteItem = FavoritesUniversalService.findFavorite({
+            itemType: 'bookmark',
+            itemId: bookmarkId,
         });
+
+        if (favoriteItem) {
+            await FavoritesUniversalService.removeFromFavorites(favoriteItem.id);
+        }
 
         const oldBookmark = await DBConnector().get('bookmarks', bookmarkId);
         await DBConnector().delete('bookmarks', bookmarkId);

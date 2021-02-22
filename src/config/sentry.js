@@ -12,6 +12,7 @@ export default (destination) => {
         sampleRate: 0.4,
         sendDefaultPii: true,
         autoSessionTracking: true,
+        // ignoreErrors: ['ResizeObserver loop limit exceeded'],
     });
 
     Sentry.setTag('destination', destination.toLowerCase());

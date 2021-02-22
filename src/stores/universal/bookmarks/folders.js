@@ -72,17 +72,21 @@ class FoldersUniversalService {
 
     @action('remove folder')
     static async remove(folderId) {
-        await FavoritesUniversalService.removeFromFavorites({
-            type: 'folder',
-            id: folderId,
+        const favoriteItem = FavoritesUniversalService.findFavorite({
+            itemType: 'folder',
+            itemId: folderId,
         });
+
+        if (favoriteItem) {
+            await FavoritesUniversalService.removeFromFavorites(favoriteItem.id);
+        }
 
         const removeFolders = async (parentId) => {
             await DBConnector().delete('folders', parentId);
 
             const removedBookmarks = await BookmarksUniversalService.getAllInFolder(parentId);
 
-            await Promise.all(removedBookmarks.map(({ id }) => this._globalService.bookmarks.remove(id)));
+            await Promise.all(removedBookmarks.map(({ id }) => BookmarksUniversalService.remove(id)));
 
             const childFolders = await DBConnector().getAllFromIndex(
                 'folders',

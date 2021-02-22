@@ -1,5 +1,3 @@
-import packageFile from '@/package.json';
-
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -10,6 +8,7 @@ const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const GenerateJsonPlugin = require('generate-json-from-js-webpack-plugin');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const paths = require('./alias.config.js');
+const packageFile = require('./package.json');
 
 module.exports = () => ({
     context: path.resolve(__dirname, 'src'),

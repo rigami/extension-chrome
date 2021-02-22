@@ -53,10 +53,14 @@ class CategoriesUniversalService {
 
     @action('remove category')
     static async remove(categoryId) {
-        await FavoritesUniversalService.removeFromFavorites({
-            type: 'category',
-            id: categoryId,
+        const favoriteItem = FavoritesUniversalService.findFavorite({
+            itemType: 'category',
+            itemId: categoryId,
         });
+
+        if (favoriteItem) {
+            await FavoritesUniversalService.removeFromFavorites(favoriteItem.id);
+        }
 
         await DBConnector().delete('categories', categoryId);
 

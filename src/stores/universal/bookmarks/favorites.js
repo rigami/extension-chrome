@@ -2,19 +2,32 @@ import { action } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
+let cacheFavorites = [];
+
 class FavoritesUniversalService {
     @action('get all favorites')
     static async getAll() {
         const favorites = await DBConnector().getAll('favorites');
 
-        return favorites.map((favorite) => new Favorite(favorite));
+        cacheFavorites = favorites.map((favorite) => new Favorite(favorite));
+
+        return cacheFavorites;
     }
 
     @action('add to favorites')
     static async addToFavorites(favorite) {
         delete favorite.id;
 
-        return DBConnector().add('favorites', favorite);
+        const addedFavorite = await DBConnector().add('favorites', favorite);
+
+        await this.getAll();
+
+        return addedFavorite;
+    }
+
+    @action('find favorite')
+    static findFavorite({ itemType, itemId }) {
+        return cacheFavorites.find((fav) => fav.itemId === itemId && fav.itemType === itemType);
     }
 
     @action('remove favorite')
@@ -24,6 +37,8 @@ class FavoritesUniversalService {
         if (!favorite) return null;
 
         await DBConnector().delete('favorites', favoriteId);
+
+        await this.getAll();
 
         return favorite;
     }

@@ -95,8 +95,8 @@ class BookmarksService {
     }
 
     @action('find favorite')
-    findFavorite({ itemType, itemId }) {
-        return this.favorites.find((fav) => fav.itemId === itemId && fav.itemType === itemType);
+    findFavorite(favorite) {
+        return FavoritesUniversalService.findFavorite(favorite);
     }
 
     @action('add to favorites')
