@@ -497,7 +497,7 @@
   },
   "newVersion": {
     "title": "New version {{version}}",
-    "description": "The extension has been updated, now it is even better\n\n  - Changed the scrolling behavior of the main screen\n\n  - Changed design and order of control buttons\n\n  - The quick access bar is no longer 'jumping' when switching between interfaces, but is rigidly attached\n\n  - Increased the maximum width of the quick access panel\n\n  - Changed the main color of the application",
+    "description": "The extension has been updated, now it is even better\n\n  - Changed icons for saving the background and adding a new bookmark\n\n  - Fixed pinning the quick access bar when it is at the top\n\n  - Fixed some critical bugs",
     "ok": "OK",
     "changelog": "List of changes"
   },
