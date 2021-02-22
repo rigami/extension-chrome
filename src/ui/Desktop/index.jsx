@@ -4,11 +4,11 @@ import { observer } from 'mobx-react-lite';
 import {
     RefreshRounded as RefreshIcon,
     AddPhotoAlternateRounded as UploadFromComputerIcon,
-    AddRounded as AddBookmarkIcon,
-    AddRounded as AddIcon,
-    CheckRounded as AddedIcon,
+    SaveAltRounded as SaveBgIcon,
+    CheckRounded as SavedBgIcon,
     OpenInNewRounded as OpenSourceIcon,
 } from '@material-ui/icons';
+import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { Box, CircularProgress } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import useCoreService from '@/stores/app/BaseStateProvider';
@@ -48,6 +48,15 @@ function Desktop() {
         coreService.localEventBus.call('system/contextMenu', {
             reactions: [() => backgrounds.bgState],
             actions: () => [
+                {
+                    type: 'button',
+                    title: t('bookmark.addShort'),
+                    icon: AddBookmarkIcon,
+                    onClick: () => {
+                        coreService.localEventBus.call('bookmark/create');
+                    },
+                },
+                { type: 'divider' },
                 ...(backgrounds.settings.selectionMethod !== BG_SELECT_MODE.SPECIFIC ? [
                     {
                         type: 'button',
@@ -60,22 +69,6 @@ function Desktop() {
                         } : {},
                         onClick: () => eventToBackground('backgrounds/nextBg'),
                     },
-                ] : []),
-                ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
-                    {
-                        type: 'button',
-                        title: backgrounds.currentBG?.isSaved ? t('bg.addedToLibrary') : t('bg.addToLibrary'),
-                        disabled: backgrounds.currentBG?.isSaved,
-                        icon: backgrounds.currentBG?.isSaved ? AddedIcon : AddIcon,
-                        onClick: () => BackgroundsUniversalService.addToLibrary(backgrounds.currentBG),
-                    },
-                    {
-                        type: 'button',
-                        title: t('bg.openSource'),
-                        icon: OpenSourceIcon,
-                        onClick: () => window.open(backgrounds.currentBG?.sourceLink, '_blank'),
-                    },
-                    { type: 'divider' },
                 ] : []),
                 {
                     type: 'button',
@@ -102,14 +95,21 @@ function Desktop() {
                         shadowInput.click();
                     },
                 },
-                {
-                    type: 'button',
-                    title: t('bookmark.addShort'),
-                    icon: AddBookmarkIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('bookmark/create');
+                ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
+                    {
+                        type: 'button',
+                        title: backgrounds.currentBG?.isSaved ? t('bg.addedToLibrary') : t('bg.addToLibrary'),
+                        disabled: backgrounds.currentBG?.isSaved,
+                        icon: backgrounds.currentBG?.isSaved ? SavedBgIcon : SaveBgIcon,
+                        onClick: () => BackgroundsUniversalService.addToLibrary(backgrounds.currentBG),
                     },
-                },
+                    {
+                        type: 'button',
+                        title: t('bg.openSource'),
+                        icon: OpenSourceIcon,
+                        onClick: () => window.open(backgrounds.currentBG?.sourceLink, '_blank'),
+                    },
+                ] : []),
             ],
             position,
         });

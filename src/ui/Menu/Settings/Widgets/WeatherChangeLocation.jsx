@@ -18,7 +18,7 @@ import {
     PlaceRounded as PlaceIcon,
 } from '@material-ui/icons';
 import {
-    NearMeRoundedDisabled as CustomLocationIcon,
+    NearMeDisabledRounded as CustomLocationIcon,
     WrongLocationRounded as WrongLocationIcon,
 } from '@/icons';
 import { makeStyles } from '@material-ui/core/styles';

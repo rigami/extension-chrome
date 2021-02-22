@@ -1,7 +1,9 @@
-import NearMeRoundedDisabled from './NearMeRoundedDisabled';
+import NearMeDisabledRounded from './NearMeDisabledRounded';
 import WrongLocationRounded from './WrongLocationRounded';
+import BookmarkAddRounded from './BookmarkAddRounded';
 
 export {
-    NearMeRoundedDisabled,
+    NearMeDisabledRounded,
     WrongLocationRounded,
+    BookmarkAddRounded,
 };

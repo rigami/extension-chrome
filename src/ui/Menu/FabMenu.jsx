@@ -9,13 +9,14 @@ import {
     Collapse,
 } from '@material-ui/core';
 import {
-    Refresh as RefreshIcon,
-    Settings as SettingsIcon,
+    RefreshRounded as RefreshIcon,
+    SettingsRounded as SettingsIcon,
     PauseRounded as PauseIcon,
     PlayArrowRounded as PlayIcon,
-    AddRounded as AddIcon,
-    CheckRounded as AddedIcon,
+    SaveAltRounded as SaveBgIcon,
+    CheckRounded as SavedBgIcon,
 } from '@material-ui/icons';
+import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { useTranslation } from 'react-i18next';
@@ -132,7 +133,7 @@ function FabMenu() {
                         <Button
                             tooltip={t('bookmark.addShort')}
                             onClick={() => coreService.localEventBus.call('bookmark/create')}
-                            icon={AddIcon}
+                            icon={AddBookmarkIcon}
                         />
                     </Group>
                     <Collapse
@@ -179,7 +180,7 @@ function FabMenu() {
                                             !backgrounds.currentBG.isSaved
                                                 && BackgroundsUniversalService.addToLibrary(backgrounds.currentBG)
                                         )}
-                                        icon={backgrounds.currentBG.isSaved ? AddedIcon : AddIcon}
+                                        icon={backgrounds.currentBG.isSaved ? SavedBgIcon : SaveBgIcon}
                                     />
                                 </React.Fragment>
                             )}
