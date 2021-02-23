@@ -22,7 +22,7 @@ function EditCategoryModal(props) {
         >
             <Editor
                 onSave={(categoryId) => onSave && onSave(categoryId)}
-                onError={() => store.popperRef.update()}
+                onError={() => { if (store.popperRef) store.popperRef.update(); }}
                 {...other}
             />
         </PopperWrapper>
