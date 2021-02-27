@@ -94,13 +94,13 @@ function About() {
                 primary={t('settings.about.homePage')}
             />
             <Row
-                href="https://rigami.io/review?service=chrome-extension"
+                href="https://github.com/rigami/readme/blob/main/REVIEW.md"
                 icon={ReviewIcon}
                 primary={t('settings.about.review.title')}
                 secondary={t('settings.about.review.description')}
             />
             <Row
-                href="https://rigami.io/bug-report?service=chrome-extension"
+                href="https://github.com/rigami/readme/blob/main/BUG_REPORT.md"
                 icon={BugIcon}
                 primary={t('settings.about.bugReport.title')}
                 secondary={t('settings.about.bugReport.description')}
@@ -117,7 +117,7 @@ function About() {
                 primary={t('settings.about.policy')}
             />
             <Row
-                href="https://chrome.google.com/webstore/detail/rigami-new-tab/hdpjmahlkfndaejogipnepcgdmjiamhd"
+                href="https://chrome.google.com/webstore/detail/hdpjmahlkfndaejogipnepcgdmjiamhd"
                 icon={StarIcon}
                 primary={t('settings.about.rate')}
             />

@@ -346,6 +346,11 @@
       "policy":"privacy policy",
       "rate": "Оцените расширение в магазине Chrome"
     },
+    "shareBanner": {
+      "title": "Help the project",
+      "description": "Find out how you can help. For example, tell your friends or take a survey",
+      "action": "See how you can help"
+    },
     "betaBanner": {
       "title": "The extension is in beta testing",
       "description": "Help the extension get better, if you have ideas or spot a problem, please let me know",
@@ -497,7 +502,7 @@
   },
   "newVersion": {
     "title": "New version {{version}}",
-    "description": "The extension has been updated, now it is even better\n\n  - Changed icons for saving the background and adding a new bookmark\n\n  - Fixed pinning the quick access bar when it is at the top\n\n  - Fixed some critical bugs",
+    "description": "The extension has been updated, now it is even better",
     "ok": "OK",
     "changelog": "List of changes"
   },

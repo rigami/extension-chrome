@@ -61,6 +61,8 @@ function Category(props) {
     const bookmarksService = useBookmarksService();
     const { t } = useTranslation();
 
+    const repairColor = color || '#000';
+
     const isPin = () => bookmarksService.findFavorite({
         itemType: 'category',
         itemId: id,
@@ -118,12 +120,12 @@ function Category(props) {
     return (
         <Chip
             key={id}
-            icon={<div className={classes.chipIcon} style={{ backgroundColor: color }} />}
+            icon={<div className={classes.chipIcon} style={{ backgroundColor: repairColor }} />}
             label={name}
             className={clsx(classes.chip, isSelect && classes.chipActive, externalClassName)}
             style={{
-                backgroundColor: isSelect && fade(color, 0.14),
-                borderColor: isSelect && color,
+                backgroundColor: isSelect && fade(repairColor, 0.14),
+                borderColor: isSelect && repairColor,
             }}
             variant="outlined"
             onClick={onClick}
