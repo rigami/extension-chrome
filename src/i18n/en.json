@@ -502,7 +502,7 @@
   },
   "newVersion": {
     "title": "New version {{version}}",
-    "description": "The extension has been updated, now it is even better\n\n  - Changed icons for saving the background and adding a new bookmark\n\n  - Fixed pinning the quick access bar when it is at the top\n\n  - Fixed some critical bugs",
+    "description": "The extension has been updated, now it is even better",
     "ok": "OK",
     "changelog": "List of changes"
   },

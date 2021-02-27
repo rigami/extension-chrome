@@ -3,6 +3,7 @@ import useService from '@/stores/app/BaseStateProvider';
 import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
 import FirstLookScreen from '@/ui/FirstLookScreen';
+import appVariables from '@/config/appVariables';
 import packageJson from '../../../package.json';
 
 function InitApp({ children }) {
@@ -18,7 +19,7 @@ function InitApp({ children }) {
                 service.storage.persistent.lastUsageVersion
                 && service.storage.persistent.lastUsageVersion !== packageJson.version
             ) {
-                service.storage.updateTemp({ newVersion: true });
+                if (appVariables.notifyNewVersion) service.storage.updateTemp({ newVersion: true });
                 service.storage.updatePersistent({ lastUsageVersion: packageJson.version });
             }
         } else if (service.appState === APP_STATE.REQUIRE_SETUP) {
