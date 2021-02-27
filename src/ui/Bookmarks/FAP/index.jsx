@@ -26,6 +26,7 @@ import { toJS } from 'mobx';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Folder from './Folder';
 import Category from './Category';
 import Link from './Link';
@@ -108,6 +109,26 @@ const useStyles = makeStyles((theme) => ({
     rightArrow: { right: theme.spacing(1) },
     rightArrowHide: { transform: `translateX(calc(100% + ${theme.spacing(1)}px))` },
 }));
+
+const getItemStyle = (isDragging, draggableStyle) => ({
+    // some basic styles to make the items look a bit nicer
+    userSelect: 'none',
+    padding: 16,
+    margin: `0 ${16}px 0 0`,
+
+    // change background colour if dragging
+    background: isDragging ? 'lightgreen' : 'grey',
+
+    // styles we need to apply on draggables
+    ...draggableStyle,
+});
+
+const getListStyle = (isDraggingOver) => ({
+    background: isDraggingOver ? 'lightblue' : 'lightgrey',
+    display: 'flex',
+    padding: 16,
+    overflow: 'auto',
+});
 
 function FAP() {
     const classes = useStyles();
@@ -199,88 +220,86 @@ function FAP() {
             in={bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && !isLoading && favorites.length !== 0}
             unmountOnExit
         >
-            <div
-                className={clsx(
-                    classes.root,
-                    bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
-                )}
-                ref={rootRef}
-            >
-                <Card
-                    elevation={0}
+            <DragDropContext>
+                <div
                     className={clsx(
-                        classes.card,
-                        bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.cardTransparent,
+                        classes.root,
+                        bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
                     )}
+                    ref={rootRef}
                 >
-                    <ScrollContainer
-                        vertical={false}
-                        horizontal
-                        hideScrollbars
-                        onScroll={scrollHandle}
+                    <Card
+                        elevation={0}
                         className={clsx(
-                            classes.panel,
-                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.disablePadding,
+                            classes.card,
+                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.cardTransparent,
                         )}
-                        ref={scrollRef}
                     >
-                        <IconButton
-                            className={clsx(
-                                classes.arrowButton,
-                                classes.leftArrow,
-                                !isLeft && classes.leftArrowHide,
+                        <Droppable droppableId="droppable" direction="horizontal">
+                            {(provided, snapshot) => (
+                                <div
+                                    ref={provided.innerRef}
+                                    style={getListStyle(snapshot.isDraggingOver)}
+                                    {...provided.droppableProps}
+                                >
+                                    {favorites.map((fav, index) => {
+                                        if (fav instanceof BookmarkEntity) {
+                                            return (
+                                                <Draggable key={`${fav.type}-${fav.id}`} draggableId={`${fav.type}-${fav.id}`} index={index}>
+                                                    {(provided, snapshot) => (
+                                                        <div
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            style={getItemStyle(
+                                                                snapshot.isDragging,
+                                                                provided.draggableProps.style,
+                                                            )}
+                                                        >
+                                                            <Link
+                                                                {...fav}
+                                                                key={`${fav.type}-${fav.id}`}
+                                                                isBlurBackdrop={
+                                                                    bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
+                                                                }
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            );
+                                        } /* else if (fav instanceof FolderEntity) {
+                                        return (
+                                            <Draggable key={`${fav.type}-${fav.id}`}>
+                                                <Folder
+                                                    {...fav}
+                                                    key={`${fav.type}-${fav.id}`}
+                                                    isBlurBackdrop={
+                                                        bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
+                                                    }
+                                                />
+                                            </Draggable>
+                                        );
+                                    } else {
+                                        return (
+                                            <Draggable key={`${fav.type}-${fav.id}`}>
+                                                <Category
+                                                    {...fav}
+                                                    key={`${fav.type}-${fav.id}`}
+                                                    isBlurBackdrop={
+                                                        bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
+                                                    }
+                                                />
+                                            </Draggable>
+                                        );
+                                    } */
+                                    })}
+                                    {provided.placeholder}
+                                </div>
                             )}
-                            onClick={scrollToStartHandle}
-                        >
-                            <LeftIcon />
-                        </IconButton>
-                        {favorites.map((fav) => {
-                            if (fav instanceof BookmarkEntity) {
-                                return (
-                                    <Link
-                                        {...fav}
-                                        key={`${fav.type}-${fav.id}`}
-                                        isBlurBackdrop={
-                                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
-                                        }
-                                    />
-                                );
-                            } else if (fav instanceof FolderEntity) {
-                                return (
-                                    <Folder
-                                        {...fav}
-                                        key={`${fav.type}-${fav.id}`}
-                                        isBlurBackdrop={
-                                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
-                                        }
-                                    />
-                                );
-                            } else {
-                                return (
-                                    <Category
-                                        {...fav}
-                                        key={`${fav.type}-${fav.id}`}
-                                        isBlurBackdrop={
-                                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
-                                        }
-                                    />
-                                );
-                            }
-                        })}
-                        <IconButton
-                            className={clsx(
-                                classes.arrowButton,
-                                classes.rightArrow,
-                                !isRight && classes.rightArrowHide,
-                            )}
-                            onClick={scrollToEndHandle}
-                        >
-                            <RightIcon />
-                        </IconButton>
-                    </ScrollContainer>
-                    <ReactResizeDetector handleWidth onResize={resizeHandle} />
-                </Card>
-            </div>
+                        </Droppable>
+                    </Card>
+                </div>
+            </DragDropContext>
         </Fade>
     );
 }

@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "0.3.8",
+    "version": "0.3.9",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
@@ -46,6 +46,7 @@
         "notistack": "^1.0.3",
         "prop-types": "^15.7.2",
         "react": "^17.0.1",
+        "react-beautiful-dnd": "^13.0.0",
         "react-dom": "^17.0.1",
         "react-i18next": "^11.8.7",
         "react-indiana-drag-scroll": "^1.8.0",
