@@ -17,6 +17,7 @@ import {
     WidgetsRounded as WidgetsIcon,
     DeveloperBoardRounded as DevToolsIcon,
 } from '@material-ui/icons';
+import { VolunteerActivismRounded as ShareIcon } from '@/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuInfo from '@/ui/Menu/MenuInfo';
@@ -36,12 +37,12 @@ const useStyles = makeStyles((theme) => ({
     },
     bannerWrapper: {
         height: '100%',
-        display: 'contents',
-    },
-    betaBanner: { marginTop: 'auto' },
-    betaBannerCard: {
+        display: 'flex',
+        flexDirection: 'column',
+        marginTop: 'auto',
         borderBottomLeftRadius: theme.shape.borderRadius,
         borderBottomRightRadius: theme.shape.borderRadius,
+        overflow: 'hidden',
     },
     betaBannerLinks: {
         marginTop: theme.spacing(1),
@@ -153,41 +154,55 @@ function GeneralMenu({ onSelect }) {
             ))}
             <Box className={classes.bannerWrapper}>
                 <MenuInfo
-                    classes={{
-                        wrapper: classes.betaBanner,
-                        root: classes.betaBannerCard,
-                    }}
                     show
-                    message={t('settings.betaBanner.title')}
+                    variant="default"
+                    icon={ShareIcon}
+                    message={t('settings.shareBanner.title')}
                     description={(
                         <Fragment>
-                            {t('settings.betaBanner.description')}
+                            {t('settings.shareBanner.description')}
                             <span className={classes.betaBannerLinks}>
                                 <Link
                                     color="inherit"
                                     underline="always"
-                                    href="mailto:danilkinkin@gmail.com"
+                                    href="https://rigami.io/help-for-the-project"
                                 >
-                                    {t('settings.betaBanner.sendEmail')}
-                                </Link>
-                                <Link
-                                    color="inherit"
-                                    underline="always"
-                                    target="_blank"
-                                    href="https://github.com/rigami/readme/issues"
-                                >
-                                    {t('settings.betaBanner.openIssue')}
-                                </Link>
-                                <Link
-                                    color="inherit"
-                                    underline="always"
-                                    target="_blank"
-                                    href={`https://chrome.google.com/webstore/detail/${appVariables.extensionId}`}
-                                >
-                                    {t('settings.betaBanner.rateExtension')}
+                                    {t('settings.shareBanner.action')}
                                 </Link>
                             </span>
                         </Fragment>
+                    )}
+                />
+                <MenuInfo
+                    show
+                    variant="warn"
+                    message={t('settings.betaBanner.title')}
+                    description={(
+                        <span className={classes.betaBannerLinks}>
+                            <Link
+                                color="inherit"
+                                underline="always"
+                                href="mailto:danilkinkin@gmail.com"
+                            >
+                                {t('settings.betaBanner.sendEmail')}
+                            </Link>
+                            <Link
+                                color="inherit"
+                                underline="always"
+                                target="_blank"
+                                href="https://github.com/rigami/readme/issues"
+                            >
+                                {t('settings.betaBanner.openIssue')}
+                            </Link>
+                            <Link
+                                color="inherit"
+                                underline="always"
+                                target="_blank"
+                                href={`https://chrome.google.com/webstore/detail/${appVariables.extensionId}`}
+                            >
+                                {t('settings.betaBanner.rateExtension')}
+                            </Link>
+                        </span>
                     )}
                 />
             </Box>

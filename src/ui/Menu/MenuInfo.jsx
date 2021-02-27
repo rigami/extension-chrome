@@ -7,16 +7,40 @@ import {
     Collapse,
     ListItemSecondaryAction,
 } from '@material-ui/core';
-import { InfoRounded as InfoIcon } from '@material-ui/icons';
+import {
+    InfoRounded as InfoIcon,
+    WarningRounded as WarnIcon,
+    ErrorRounded as ErrorIcon,
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
-    root: { backgroundColor: theme.palette.warning.main },
-    icon: { color: theme.palette.warning.contrastText },
-    messageText: { color: theme.palette.warning.contrastText },
-    descriptionText: { color: fade(theme.palette.warning.contrastText, 0.8) },
-    actions: { color: theme.palette.warning.contrastText },
+    info: {
+        backgroundColor: theme.palette.info.main,
+        '& $icon': { color: theme.palette.info.contrastText },
+        '& $messageText': { color: theme.palette.info.contrastText },
+        '& $descriptionText': { color: fade(theme.palette.info.contrastText, 0.8) },
+        '& $actions': { color: theme.palette.info.contrastText },
+    },
+    warn: {
+        backgroundColor: theme.palette.warning.main,
+        '& $icon': { color: theme.palette.warning.contrastText },
+        '& $messageText': { color: theme.palette.warning.contrastText },
+        '& $descriptionText': { color: fade(theme.palette.warning.contrastText, 0.8) },
+        '& $actions': { color: theme.palette.warning.contrastText },
+    },
+    error: {
+        backgroundColor: theme.palette.error.main,
+        '& $icon': { color: theme.palette.error.contrastText },
+        '& $messageText': { color: theme.palette.error.contrastText },
+        '& $descriptionText': { color: fade(theme.palette.error.contrastText, 0.8) },
+        '& $actions': { color: theme.palette.error.contrastText },
+    },
+    icon: {},
+    messageText: {},
+    descriptionText: {},
+    actions: {},
     iconWrapper: {
         minWidth: theme.spacing(5),
         alignSelf: 'baseline',
@@ -31,17 +55,43 @@ function MenuInfo(props) {
         message,
         description,
         width,
+        variant = 'info',
+        icon,
         classes: externalClasses = {},
         actions,
     } = props;
     const classes = useStyles();
 
+    let Icon;
+
+    if (variant === 'info') {
+        Icon = InfoIcon;
+    } else if (variant === 'warn') {
+        Icon = WarnIcon;
+    } else if (variant === 'error') {
+        Icon = ErrorIcon;
+    }
+
+    if (icon) {
+        Icon = icon;
+    }
+
     return (
         <Collapse in={show} className={externalClasses.wrapper}>
-            <ListItem className={clsx(classes.root, externalClasses.root)} style={{ width }}>
-                <ListItemIcon className={classes.iconWrapper}>
-                    <InfoIcon className={classes.icon} />
-                </ListItemIcon>
+            <ListItem
+                className={clsx(
+                    variant === 'info' && classes.info,
+                    variant === 'warn' && classes.warn,
+                    variant === 'error' && classes.error,
+                    externalClasses.root,
+                )}
+                style={{ width }}
+            >
+                {Icon && (
+                    <ListItemIcon className={classes.iconWrapper}>
+                        <Icon className={classes.icon} />
+                    </ListItemIcon>
+                )}
                 <ListItemText
                     classes={{
                         primary: classes.messageText,

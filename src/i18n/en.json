@@ -346,6 +346,11 @@
       "policy":"privacy policy",
       "rate": "Оцените расширение в магазине Chrome"
     },
+    "shareBanner": {
+      "title": "Help the project",
+      "description": "Find out how you can help. For example, tell your friends or take a survey",
+      "action": "See how you can help"
+    },
     "betaBanner": {
       "title": "The extension is in beta testing",
       "description": "Help the extension get better, if you have ideas or spot a problem, please let me know",
