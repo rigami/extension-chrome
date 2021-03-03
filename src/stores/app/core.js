@@ -123,6 +123,7 @@ class Core {
                 debug: !PRODUCTION_MODE,
                 interpolation: { escapeValue: false },
                 backend: { loadPath: 'resource/i18n/{{lng}}.json' },
+                react: { useSuspense: false },
             });
 
         await openDB();
