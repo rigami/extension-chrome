@@ -205,7 +205,7 @@ function FabMenu() {
                             )}
                             {nextBg && (
                                 <React.Fragment>
-                                    {saveBgLocal && (<Divider />)}
+                                    {(saveBgLocal || bgShowMode) && (<Divider />)}
                                     <Button
                                         tooltip={
                                             backgrounds.bgState === BG_SHOW_STATE.SEARCH
