@@ -19,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import useAppStateService from '@/stores/app/AppStateProvider';
-import { action } from 'mobx';
+import { action, toJS } from 'mobx';
 import BackgroundEntity from '@/stores/universal/backgrounds/entities/background';
 import BackgroundInfo from '@/ui/Desktop/BackgroundInfo';
 import { eventToBackground } from '@/stores/server/bus';
@@ -73,6 +73,7 @@ function Background() {
         captureFrameTimer: null,
         isFirstRender: true,
         showBg: false,
+        loadBgId: null,
     }));
 
     const bgRef = useRef(null);
@@ -87,6 +88,7 @@ function Background() {
 
     const handleSwitchBg = () => {
         if (!store.requestBg) return;
+        console.log('[BACKGROUND] hide bg');
         store.showBg = false;
         console.log('[BACKGROUND] SWITCH BG', store.currentBg, store.requestBg);
 
@@ -94,12 +96,13 @@ function Background() {
             store.currentBg = store.requestBg;
             console.log('store.requestBg clear 2');
             store.requestBg = null;
-            store.stateLoadBg = FETCH.PENDING;
+            store.stateLoadBg = FETCH.DONE;
             store.stateRequestLoadBg = FETCH.WAIT;
         }
     };
 
     const handleShow = () => {
+        console.log('[BACKGROUND] show bg');
         store.showBg = true;
     };
 
@@ -198,9 +201,10 @@ function Background() {
 
     useEffect(() => {
         if (!store.requestBg) return;
-        console.log('[BACKGROUND] NEW BG REQUEST');
+        console.log('[BACKGROUND] NEW BG REQUEST', store.requestBg?.id, toJS(store.requestBg), toJS(store.currentBg));
 
         const loadBgId = store.requestBg.id;
+        store.loadBgId = loadBgId;
 
         store.stateRequestLoadBg = FETCH.PENDING;
 
@@ -208,6 +212,7 @@ function Background() {
             if (loadBgId !== store.requestBg.id) return;
             console.log('[BACKGROUND] NEW BG DONE', store.showBg, store.requestBg, store.stateLoadBg);
             store.stateRequestLoadBg = FETCH.DONE;
+            store.loadBgId = null;
 
             if (!store.showBg) {
                 store.currentBg = store.requestBg;
@@ -220,6 +225,7 @@ function Background() {
             if (loadBgId !== store.requestBg.id) return;
             console.log('[BACKGROUND] NEW BG FAILED', e);
             store.stateRequestLoadBg = FETCH.FAILED;
+            store.loadBgId = null;
         };
 
         if (store.requestBg.type === BG_TYPE.VIDEO && store.requestBg.fileName !== 'temporaryVideoFrame') {
@@ -238,6 +244,14 @@ function Background() {
             image.src = store.requestBg.fullSrc;
         }
     }, [store.requestBg]);
+
+    useEffect(() => {
+        if (store.stateLoadBg !== FETCH.DONE) return () => {};
+
+        const timer = setTimeout(() => eventToBackground('backgrounds/prepareNextBg'), 3000);
+
+        return () => clearTimeout(timer);
+    }, [store.stateLoadBg]);
 
     return (
         <Fade

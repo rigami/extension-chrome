@@ -38,20 +38,19 @@ class BackgroundsAppService {
             this.bgState = state;
         });
 
-        const setCurrentBg = (setBG, prepareNextEvent = true) => {
+        const setCurrentBg = (setBG) => {
             const bg = new Background({
                 ...setBG,
                 id: setBG.originId,
             });
 
-            console.log('[backgrounds] Change current background:', bg);
+            if (this._currentBG) console.log('[backgrounds] Change current background:', bg);
+            else console.log('[backgrounds] Set current background:', bg);
 
             this._currentBG = bg;
             this.currentBGId = this._currentBG?.id;
 
-            this._coreService.storage.updatePersistent({ bgCurrent: { ...bg } });
-
-            if (prepareNextEvent) eventToBackground('backgrounds/prepareNextBg');
+            // this._coreService.storage.updatePersistent({ bgCurrent: { ...bg } });
         };
 
         reaction(
@@ -88,12 +87,12 @@ class BackgroundsAppService {
         );
 
         if (this._coreService.storage.persistent?.bgCurrent) {
-            setCurrentBg(this._coreService.storage.persistent.bgCurrent, false);
+            setCurrentBg(this._coreService.storage.persistent.bgCurrent);
         }
         this.bgShowMode = this._coreService.storage.persistent?.bgShowMode || BG_SHOW_MODE.LIVE;
 
         this._coreService.globalEventBus.on('backgrounds/new', ({ bg }) => {
-            setCurrentBg(bg, false);
+            setCurrentBg(bg);
         });
 
         this._coreService.globalEventBus.on('backgrounds/remove', ({ bg }) => {
@@ -103,7 +102,16 @@ class BackgroundsAppService {
         if (
             this.settings.selectionMethod !== BG_SELECT_MODE.SPECIFIC
             && this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB
-        ) eventToBackground('backgrounds/nextBg');
+            && (
+                (
+                    this.settings.selectionMethod === BG_SELECT_MODE.STREAM
+                    && this._coreService.storage.persistent?.prepareBGStream
+                )
+                || this.settings.selectionMethod === BG_SELECT_MODE.RANDOM
+            )
+        ) {
+            eventToBackground('backgrounds/nextBg');
+        }
     }
 
     @action('')
