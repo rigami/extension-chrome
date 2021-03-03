@@ -99,6 +99,7 @@ function Button({ tooltip, icon, className: externalClassName, ...other }) {
                 size="small"
                 className={clsx(classes.button, externalClassName)}
                 {...other}
+                data-ui-path={`fab.${other['data-ui-path']}`}
             >
                 <Icon />
             </ButtonBase>
@@ -130,6 +131,7 @@ function FabMenu() {
                     <Group>
                         <Button
                             tooltip={t('settings.title')}
+                            data-ui-path="settings.open"
                             onClick={() => coreService.localEventBus.call('settings/open')}
                             icon={SettingsIcon}
                         />
@@ -137,6 +139,7 @@ function FabMenu() {
                     <Group>
                         <Button
                             tooltip={t('bookmark.addShort')}
+                            data-ui-path="bookmark.add"
                             onClick={() => coreService.localEventBus.call('bookmark/create')}
                             icon={AddBookmarkIcon}
                         />
@@ -159,6 +162,11 @@ function FabMenu() {
                                             )
                                             : t('bg.playVideo')
                                     }
+                                    data-ui-path={
+                                        backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
+                                            ? 'bg.pauseVideo'
+                                            : 'bg.playVideo'
+                                    }
                                     onClick={() => {
                                         if (backgrounds.bgShowMode === BG_SHOW_MODE.LIVE) {
                                             coreService.localEventBus.call('background/pause');
@@ -177,6 +185,11 @@ function FabMenu() {
                                             backgrounds.currentBG.isSaved
                                                 ? t('bg.addedToLibrary')
                                                 : t('bg.addToLibrary')
+                                        }
+                                        data-ui-path={
+                                            backgrounds.currentBG.isSaved
+                                                ? 'bg.addedToLibrary'
+                                                : 'bg.addToLibrary'
                                         }
                                         className={clsx(
                                             backgrounds.currentBG.isSaved && classes.notClickable,
@@ -199,6 +212,7 @@ function FabMenu() {
                                                 ? t('bg.fetchingNextBG')
                                                 : t('bg.next')
                                         }
+                                        data-ui-path="bg.next"
                                         className={clsx(
                                             backgrounds.bgState === BG_SHOW_STATE.SEARCH && classes.notClickable,
                                         )}

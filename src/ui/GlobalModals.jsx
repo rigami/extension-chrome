@@ -204,10 +204,15 @@ function GlobalModals({ children }) {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setEdit(null)} color="primary">
+                        <Button
+                            data-ui-path={`dialog.${type}.cancelRemove`}
+                            onClick={() => setEdit(null)}
+                            color="primary"
+                        >
                             {t('cancel')}
                         </Button>
                         <Button
+                            data-ui-path={`dialog.${type}.remove`}
                             onClick={() => {
                                 if (type === 'bookmark') {
                                     bookmarksStore.bookmarks.remove(edit.id);
@@ -239,10 +244,15 @@ function GlobalModals({ children }) {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setEdit(null)} color="primary">
+                    <Button
+                        data-ui-path="dialog.backup.localBackup.oldAppBackupFile.cancel"
+                        onClick={() => setEdit(null)}
+                        color="primary"
+                    >
                         {t('cancel')}
                     </Button>
                     <Button
+                        data-ui-path="dialog.backup.localBackup.oldAppBackupFile.continue"
                         onClick={() => {
                             eventToBackground(
                                 'system/backup/local/restore',

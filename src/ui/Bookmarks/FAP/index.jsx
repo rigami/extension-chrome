@@ -26,6 +26,7 @@ import { toJS } from 'mobx';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
+import { useTranslation } from 'react-i18next';
 import Folder from './Folder';
 import Category from './Category';
 import Link from './Link';
@@ -111,6 +112,7 @@ const useStyles = makeStyles((theme) => ({
 
 function FAP() {
     const classes = useStyles();
+    const { t } = useTranslation();
     const bookmarksService = useBookmarksService();
     const scrollRef = createRef();
     const rootRef = useRef(null);
@@ -225,6 +227,7 @@ function FAP() {
                         ref={scrollRef}
                     >
                         <IconButton
+                            data-ui-path="fap.left"
                             className={clsx(
                                 classes.arrowButton,
                                 classes.leftArrow,
@@ -268,6 +271,7 @@ function FAP() {
                             }
                         })}
                         <IconButton
+                            data-ui-path="fap.right"
                             className={clsx(
                                 classes.arrowButton,
                                 classes.rightArrow,

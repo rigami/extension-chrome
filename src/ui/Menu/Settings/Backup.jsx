@@ -206,6 +206,7 @@ function LocalBackup() {
     return (
         <Fragment>
             <Button
+                data-ui-path="settings.backup.localBackup.create"
                 ref={anchorRef}
                 onClick={handleToggle}
                 color="primary"
@@ -342,6 +343,7 @@ function BackupSettings() {
                             />
                             <label htmlFor="upload-from-system" className={classes.fullWidth}>
                                 <Button
+                                    data-ui-path="settings.backup.localBackup.restore"
                                     variant="contained"
                                     component="span"
                                     color="primary"

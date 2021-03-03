@@ -60,7 +60,12 @@ function PreviewSelectorToggleButton({ isOpen, onOpen, onClose, imagesCount }) {
 
     return (
         <Badge badgeContent={imagesCount} color="primary" className={classes.badgeButton}>
-            <Button onClick={() => (isOpen ? onClose() : onOpen())} fullWidth variant="outlined">
+            <Button
+                data-ui-path={`bookmark.editor.alternativeIcons.${!isOpen ? 'open' : 'close'}`}
+                onClick={() => (isOpen ? onClose() : onOpen())}
+                fullWidth
+                variant="outlined"
+            >
                 {!isOpen && t('bookmark.editor.alternativeIconsOpen')}
                 {isOpen && t('bookmark.editor.alternativeIconsClose')}
             </Button>

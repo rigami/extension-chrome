@@ -160,6 +160,7 @@ function Search({ query = '', onSelect }) {
                             <ListItem>
                                 {t('bookmark.editor.URLNotRecognize')}
                                 <Button
+                                    data-ui-path="bookmark.editor.forceAddURL"
                                     className={classes.forceAdd}
                                     onClick={() => onSelect({
                                         url: query,

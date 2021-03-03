@@ -194,6 +194,7 @@ function FieldsEditor(props) {
                 )}
                 {!store.useDescription && (
                     <Button
+                        data-ui-path="bookmark.editor.addDescription"
                         startIcon={<AddIcon />}
                         className={classes.addDescriptionButton}
                         onClick={() => {
@@ -208,6 +209,7 @@ function FieldsEditor(props) {
             <div className={classes.controls}>
                 {onCancel && (
                     <Button
+                        data-ui-path="bookmark.editor.cancel"
                         variant="text"
                         color="default"
                         className={classes.button}
@@ -219,6 +221,7 @@ function FieldsEditor(props) {
                 <div className={classes.button}>
                     {saveState === FETCH.WAIT && (
                         <Button
+                            data-ui-path="bookmark.editor.save"
                             variant="contained"
                             color="primary"
                             disabled={!searchRequest || !store.name.trim()}

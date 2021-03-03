@@ -73,6 +73,7 @@ function Editor({ onSave, onError, editId }) {
                     }}
                 />
                 <Button
+                    data-ui-path="folder.editor.newFolder.save"
                     className={classes.saveButton}
                     onClick={handlerSubmit}
                     variant="contained"

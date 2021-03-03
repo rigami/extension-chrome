@@ -147,6 +147,7 @@ function Folder({ id }) {
                 classes={{ avatar: classes.avatar }}
                 action={(
                     <IconButton
+                        data-ui-path="folder.explorer.menu"
                         onClick={(event) => handlerContextMenu(event.currentTarget)}
                         ref={buttonRef}
                     >

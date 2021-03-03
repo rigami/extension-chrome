@@ -39,6 +39,7 @@ function LoadBGFromLocalButton() {
             />
             <label htmlFor="upload-from-system">
                 <Button
+                    data-ui-path="settings.bg.general.library.uploadFromComputer"
                     variant="contained"
                     component="span"
                     disableElevation

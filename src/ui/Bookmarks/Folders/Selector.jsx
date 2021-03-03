@@ -54,6 +54,7 @@ function FolderSelector({ value, onChange }) {
             />
             <Tooltip title={t('folder.editor.changeTooltip')}>
                 <Button
+                    data-ui-path="folder.editor.change"
                     endIcon={<EditIcon />}
                     className={classes.folderSelectButton}
                     onClick={(event) => {

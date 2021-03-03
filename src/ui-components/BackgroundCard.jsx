@@ -136,14 +136,22 @@ function BackgroundCard(props) {
             <Box className={classes.bgActionsWrapper}>
                 {onSet && !select && (
                     <Tooltip title={t('settings.bg.apply')} placement="top">
-                        <Button className={classes.setIcon} onClick={onSet}>
+                        <Button
+                            data-ui-path="bgCard.apply"
+                            className={classes.setIcon}
+                            onClick={onSet}
+                        >
                             <SetIcon />
                         </Button>
                     </Tooltip>
                 )}
                 {onRemove && (
                     <Tooltip title={t('bg.remove')}>
-                        <IconButton className={classes.deleteIcon} onClick={onRemove}>
+                        <IconButton
+                            data-ui-path="bgCard.remove"
+                            className={classes.deleteIcon}
+                            onClick={onRemove}
+                        >
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip>
@@ -151,6 +159,7 @@ function BackgroundCard(props) {
                 {onAdd && (
                     <Tooltip title={t('bg.addToLibrary')}>
                         <IconButton
+                            data-ui-path="bgCard.addToLibrary"
                             className={clsx(classes.addIcon, onRemove && classes.addIconOffset)}
                             onClick={onAdd}
                         >

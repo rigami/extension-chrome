@@ -77,12 +77,14 @@ function DateWidget() {
                     </DialogContent>
                     <DialogActions>
                         <Button
+                            data-ui-path="settings.widgets.dtw.date.clickAction.cancel"
                             color="primary"
                             onClick={() => { setActionEditorOpen(false); }}
                         >
                             {t('cancel')}
                         </Button>
                         <Button
+                            data-ui-path="settings.widgets.dtw.date.clickAction.save"
                             color="primary"
                             onClick={() => {
                                 setActionEditorOpen(false);

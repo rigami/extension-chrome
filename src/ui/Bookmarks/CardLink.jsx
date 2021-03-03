@@ -251,6 +251,7 @@ function CardLink(props) {
                 {!preview && (
                     <React.Fragment>
                         <IconButton
+                            data-ui-path="bookmark.menu"
                             className={classes.menuIconButton}
                             onClick={handleOpenMenu}
                             ref={buttonRef}

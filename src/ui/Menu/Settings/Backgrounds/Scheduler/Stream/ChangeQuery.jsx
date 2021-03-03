@@ -154,6 +154,7 @@ function ChangeQuery({ onClose }) {
                 />
                 {(store.foundRequest !== store.searchRequest || store.status === FETCH.FAILED) && (
                     <Button
+                        data-ui-path="settings.bg.scheduler.query.custom.search"
                         type="submit"
                         variant="text"
                         className={classes.submit}
@@ -173,6 +174,7 @@ function ChangeQuery({ onClose }) {
                 )}
                 {store.foundRequest === store.searchRequest && store.status === FETCH.DONE && (
                     <Button
+                        data-ui-path="settings.bg.scheduler.query.custom.save"
                         type="submit"
                         color="primary"
                         variant="contained"

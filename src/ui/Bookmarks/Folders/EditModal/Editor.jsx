@@ -241,14 +241,21 @@ function Editor(props) {
             </DialogContent>
             <DialogActions>
                 <Button
+                    data-ui-path="folder.editor.newFolder"
                     onClick={handleCreateNewFolder}
                     className={classes.createNewFolderButton}
                     disabled={!store.folderId}
                 >
                     {t('folder.editor.create')}
                 </Button>
-                <Button onClick={onCancel}>{t('cancel')}</Button>
                 <Button
+                    data-ui-path="folder.editor.cancel"
+                    onClick={onCancel}
+                >
+                    {t('cancel')}
+                </Button>
+                <Button
+                    data-ui-path="folder.editor.save"
                     onClick={handleSave}
                     color="primary"
                     variant="contained"

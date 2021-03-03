@@ -20,6 +20,7 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { observer } from 'mobx-react-lite';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -56,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
 
 function CategoryHeader({ id, color, name, children }) {
     const classes = useStyles();
+    const { t } = useTranslation();
     const bookmarksService = useBookmarksService();
     const coreService = useCoreService();
     const anchorEl = useRef(null);
@@ -112,12 +114,16 @@ function CategoryHeader({ id, color, name, children }) {
                                         : 'Закрепить на панели быстрого доступа'
                                 }
                             >
-                                <IconButton onClick={handlePin}>
+                                <IconButton
+                                    data-ui-path={isPin() ? 'category.unpin' : 'category.pin'}
+                                    onClick={handlePin}
+                                >
                                     {isPin() ? (<UnpinnedFavoriteIcon />) : (<PinnedFavoriteIcon />)}
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Изменить">
                                 <IconButton
+                                    data-ui-path="category.edit"
                                     buttonRef={anchorEl}
                                     onClick={() => coreService.localEventBus.call(
                                         'category/edit',
@@ -132,6 +138,7 @@ function CategoryHeader({ id, color, name, children }) {
                             </Tooltip>
                             <Tooltip title="Удалить">
                                 <IconButton
+                                    data-ui-path="category.remove"
                                     onClick={() => coreService.localEventBus.call(
                                         'category/remove',
                                         { id },

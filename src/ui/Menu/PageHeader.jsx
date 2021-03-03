@@ -51,6 +51,7 @@ function PageHeader({ title, onBack, actions, ...other }) {
         >
             <Toolbar className={classes.toolbar}>
                 <IconButton
+                    data-ui-path="settings.back"
                     className={classes.backButton}
                     onClick={() => onBack()}
                 >

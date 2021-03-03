@@ -180,7 +180,10 @@ function FolderWrapper({ folder, onSelect }) {
                                 : 'Закрепить на панели быстрого доступа'
                         }
                     >
-                        <IconButton onClick={handlePin}>
+                        <IconButton
+                            data-ui-path={isPin() ? 'folder.unpin' : 'folder.pin'}
+                            onClick={handlePin}
+                        >
                             {isPin() ? (<UnpinnedFavoriteIcon />) : (<PinnedFavoriteIcon />)}
                         </IconButton>
                     </Tooltip>
@@ -188,6 +191,7 @@ function FolderWrapper({ folder, onSelect }) {
                         <React.Fragment>
                             <Tooltip title="Изменить">
                                 <IconButton
+                                    data-ui-path="folder.edit"
                                     buttonRef={anchorEl}
                                     onClick={() => coreService.localEventBus.call(
                                         'folder/edit',
@@ -202,6 +206,7 @@ function FolderWrapper({ folder, onSelect }) {
                             </Tooltip>
                             <Tooltip title="Удалить">
                                 <IconButton
+                                    data-ui-path="folder.remove"
                                     onClick={() => coreService.localEventBus.call(
                                         'folder/remove',
                                         { id: folder?.id },

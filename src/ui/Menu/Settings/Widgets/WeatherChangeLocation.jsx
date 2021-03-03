@@ -60,13 +60,19 @@ function HeaderActions() {
     const { enqueueSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
 
-    const isAuto = coreService.storage.persistent.weatherLocation && !coreService.storage.persistent.weatherLocation?.manual;
+    const isAuto = (
+        coreService.storage.persistent.weatherLocation
+        && !coreService.storage.persistent.weatherLocation?.manual
+    );
 
     return (
         <React.Fragment>
-            <Tooltip title={t(`settings.widgets.dtw.weather.region.autoGeolocation.${isAuto ? 'onTooltip' : 'offTooltip'}`)}>
+            <Tooltip
+                title={t(`settings.widgets.dtw.weather.region.autoGeolocation.${isAuto ? 'onTooltip' : 'offTooltip'}`)}
+            >
                 <span className={classes.geoButtonWrapper}>
                     <Button
+                        data-ui-path={`settings.widgets.dtw.weather.region.autoGeolocation.${isAuto ? 'on' : 'off'}`}
                         className={classes.geoButton}
                         variant={isAuto ? 'contained' : 'outlined'}
                         color="primary"
@@ -203,6 +209,7 @@ function WeatherChangeLocation({ onClose }) {
                     }}
                 />
                 <Button
+                    data-ui-path="settings.widgets.dtw.weather.region.search"
                     type="submit"
                     color="primary"
                     variant="contained"

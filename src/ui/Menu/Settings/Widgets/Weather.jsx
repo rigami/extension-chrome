@@ -78,6 +78,7 @@ function WeatherWidget({ onSelect }) {
                     description={t('settings.widgets.dtw.weather.region.notDetected.description')}
                     actions={(
                         <Button
+                            data-ui-path="settings.widgets.dtw.weather.region.notDetected.changeRegion"
                             variant="outlined"
                             color="inherit"
                             onClick={() => onSelect(changeLocationPage)}
@@ -179,12 +180,14 @@ function WeatherWidget({ onSelect }) {
                     </DialogContent>
                     <DialogActions>
                         <Button
+                            data-ui-path="settings.widgets.dtw.weather.clickAction.cancel"
                             color="primary"
                             onClick={() => { setActionEditorOpen(false); }}
                         >
                             {t('cancel')}
                         </Button>
                         <Button
+                            data-ui-path="settings.widgets.dtw.weather.clickAction.save"
                             color="primary"
                             onClick={() => {
                                 setActionEditorOpen(false);

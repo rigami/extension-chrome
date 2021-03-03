@@ -105,7 +105,10 @@ function BackgroundInfo(props) {
                     )}
                     action={(
                         <Tooltip title={t('bg.openSource')}>
-                            <IconButton onClick={() => { window.open(sourceLink, '_blank'); }}>
+                            <IconButton
+                                data-ui-path="desktop.bgInfo.openSource"
+                                onClick={() => { window.open(sourceLink, '_blank'); }}
+                            >
                                 <OpenSourceIcon />
                             </IconButton>
                         </Tooltip>

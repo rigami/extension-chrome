@@ -15,6 +15,7 @@ import {
 } from '@material-ui/icons';
 import { useSnackbar } from 'notistack';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -61,8 +62,9 @@ function Snackbar(props, ref) {
         closeButton,
     } = props;
 
-    const theme = useTheme();
     const classes = useStyles();
+    const theme = useTheme();
+    const { t } = useTranslation();
     const { closeSnackbar } = useSnackbar();
     const [progress, setProgress] = useState(0);
     const [description, setDescription] = useState(defaultDescription);
@@ -103,7 +105,11 @@ function Snackbar(props, ref) {
                         </React.Fragment>
                     )}
                     action={closeButton && (
-                        <IconButton className={classes.expand} onClick={handleDismiss}>
+                        <IconButton
+                            data-ui-path="snackbar.close"
+                            className={classes.expand}
+                            onClick={handleDismiss}
+                        >
                             <CloseIcon />
                         </IconButton>
                     )}
@@ -114,8 +120,14 @@ function Snackbar(props, ref) {
             {content}
             {buttons && (
                 <CardActions className={classes.buttons}>
-                    {buttons.map(({ title, onClick }) => (
-                        <Button onClick={onClick} key={title}>{title}</Button>
+                    {buttons.map(({ title, onClick, dataUiPath }) => (
+                        <Button
+                            onClick={onClick}
+                            key={title}
+                            data-ui-path={dataUiPath || `snackbar.${title}`}
+                        >
+                            {title}
+                        </Button>
                     ))}
                 </CardActions>
             )}

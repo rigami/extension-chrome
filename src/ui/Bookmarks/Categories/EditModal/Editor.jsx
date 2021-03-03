@@ -58,6 +58,7 @@ function Editor({ onSave, onError, editId }) {
                     }}
                 />
                 <Button
+                    data-ui-path="category.editor.save"
                     className={classes.saveButton}
                     onClick={handlerSubmit}
                     variant="contained"

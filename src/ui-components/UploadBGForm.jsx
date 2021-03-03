@@ -171,6 +171,7 @@ function BGCard(props) {
                 </CardContent>
                 <div className={classes.controls}>
                     <Button
+                        data-ui-path="uploadBG.bg.cancel"
                         variant="text"
                         color="default"
                         disabled={save}
@@ -182,6 +183,7 @@ function BGCard(props) {
                     </Button>
                     <div className={classes.button}>
                         <Button
+                            data-ui-path="uploadBG.bg.addToLibrary"
                             variant="contained"
                             color="primary"
                             disabled={save}
@@ -318,6 +320,7 @@ function UploadBGForm({ children }) {
             {(backgrounds.uploadQueue.length !== 0) && (
                 <Tooltip title={t('uploadBG.discardAll')}>
                     <IconButton
+                        data-ui-path="uploadBG.discardAll"
                         className={classes.closeIcon}
                         onClick={() => backgrounds.resetUploadQueue()}
                     >
