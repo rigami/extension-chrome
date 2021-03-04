@@ -25,16 +25,10 @@ import Link from '@/ui/Bookmarks/FAP/Link';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        width: 310,
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-        backdropFilter: 'blur(15px) brightness(130%)',
-        backgroundColor: fade(theme.palette.background.default, 0.70),
-    },
+    root: { width: 450 },
     avatar: { display: 'flex' },
     list: {
-        height: 300,
+        height: 550,
         overflow: 'auto',
     },
 }));
@@ -133,13 +127,13 @@ function Folder({ id }) {
             <List disablePadding className={classes.list}>
                 <Scrollbar>
                     {isSearching && (
-                        <FullScreenStub style={{ height: 300 }}>
+                        <FullScreenStub style={{ height: 550 }}>
                             <CircularProgress />
                         </FullScreenStub>
                     )}
                     {!isSearching && findBookmarks.length === 0 && (
                         <FullScreenStub
-                            style={{ height: 300 }}
+                            style={{ height: 550 }}
                             message={t('fap.category.emptyTitle')}
                             description={t('fap.category.emptyDescription')}
                         />

@@ -1,195 +1,37 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-    Card,
-    CardHeader,
-    List,
-    CircularProgress,
-    IconButton,
-} from '@material-ui/core';
-import {
-    FolderRounded as FolderIcon,
-    BookmarkBorderRounded as PinnedFavoriteIcon,
-    BookmarkRounded as UnpinnedFavoriteIcon,
-    EditRounded as EditIcon,
-    DeleteRounded as RemoveIcon,
-    MoreVertRounded as MoreIcon,
-} from '@material-ui/icons';
+import React, { useState } from 'react';
+import { Card } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import Scrollbar from '@/ui-components/CustomScroll';
-import FullScreenStub from '@/ui-components/FullscreenStub';
-import { useTranslation } from 'react-i18next';
-import Link from '@/ui/Bookmarks/FAP/Link';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-// eslint-disable-next-line import/no-cycle
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
-import FolderButton from './index';
+import Folder from './Folder';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        width: 310,
-        backdropFilter: 'blur(15px) brightness(130%)',
-        backgroundColor: fade(theme.palette.background.default, 0.70),
-    },
-    avatar: { display: 'flex' },
-    list: {
-        height: 300,
-        overflow: 'auto',
-    },
-    primaryText: {
-        display: '-webkit-box',
-        '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 2,
-        overflow: 'hidden',
-        wordBreak: 'break-word',
-    },
-    secondaryText: {
-        display: '-webkit-box',
-        '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 2,
-        overflow: 'hidden',
-        wordBreak: 'break-word',
-    },
-}));
+const useStyles = makeStyles(() => ({ root: { display: 'flex' } }));
 
-function Folder({ id }) {
+function Explorer({ id: rootId }) {
     const classes = useStyles();
-    const { t } = useTranslation();
-    const bookmarksService = useBookmarksService();
-    const coreService = useCoreService();
-    const [folder, setFolder] = useState(null);
-    const [isSearching, setIsSearching] = useState(true);
-    const [findBookmarks, setFindBookmarks] = useState(null);
-    const [folders, setFolders] = useState([]);
-    const buttonRef = useRef(null);
-
-    const isPin = () => bookmarksService.findFavorite({
-        itemType: 'folder',
-        itemId: id,
-    });
-
-    const handlerContextMenu = (anchorEl) => {
-        const { top, left } = buttonRef.current.getBoundingClientRect();
-        coreService.localEventBus.call('system/contextMenu', {
-            actions: [
-                {
-                    type: 'button',
-                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
-                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
-                    onClick: () => {
-                        if (isPin()) {
-                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
-                                itemType: 'folder',
-                                itemId: id,
-                            })?.id);
-                        } else {
-                            bookmarksService.addToFavorites(new Favorite({
-                                itemType: 'folder',
-                                itemId: id,
-                            }));
-                        }
-                    },
-                },
-                ...(folder.parentId !== 0 ? [
-                    {
-                        type: 'button',
-                        title: t('edit'),
-                        icon: EditIcon,
-                        onClick: () => {
-                            coreService.localEventBus.call('folder/edit', {
-                                id,
-                                anchorEl,
-                            });
-                        },
-                    },
-                    {
-                        type: 'button',
-                        title: t('remove'),
-                        icon: RemoveIcon,
-                        onClick: () => {
-                            coreService.localEventBus.call('folder/remove', { id });
-                        },
-                    },
-                ] : []),
-            ],
-            position: {
-                top,
-                left,
-            },
-        });
-    };
-
-    useEffect(() => {
-        FoldersUniversalService.get(id).then((findFolder) => setFolder(findFolder));
-
-        FoldersUniversalService.getFoldersByParent(id)
-            .then((foundFolders) => {
-                setFolders(foundFolders);
-            });
-
-        BookmarksUniversalService.getAllInFolder(id)
-            .then((searchResult) => {
-                setFindBookmarks(searchResult);
-                setIsSearching(false);
-            });
-    }, []);
+    const [path, setPath] = useState([rootId]);
 
     return (
         <Card className={classes.root} elevation={16}>
-            <CardHeader
-                avatar={(
-                    <FolderIcon />
-                )}
-                title={folder?.name}
-                classes={{ avatar: classes.avatar }}
-                action={(
-                    <IconButton
-                        data-ui-path="folder.explorer.menu"
-                        onClick={(event) => handlerContextMenu(event.currentTarget)}
-                        ref={buttonRef}
-                    >
-                        <MoreIcon />
-                    </IconButton>
-                )}
-            />
-            <List disablePadding className={classes.list}>
-                <Scrollbar>
-                    {isSearching && (
-                        <FullScreenStub style={{ height: 300 }}>
-                            <CircularProgress />
-                        </FullScreenStub>
-                    )}
-                    {!isSearching && (findBookmarks.length === 0 && folders.length === 0) && (
-                        <FullScreenStub
-                            style={{ height: 300 }}
-                            message={t('fap.folder.emptyTitle')}
-                            description={t('fap.folder.emptyDescription')}
-                        />
-                    )}
-                    {folders && folders.map((currFolder, index) => (
-                        <FolderButton
-                            offset
-                            key={folder.id}
-                            {...currFolder}
-                            variant="row"
-                            divider={index !== folders.length - 1}
-                        />
-                    ))}
-                    {findBookmarks && findBookmarks.map((bookmark, index) => (
-                        <Link
-                            key={bookmark.id}
-                            {...bookmark}
-                            variant="row"
-                            divider={index !== findBookmarks.length - 1}
-                        />
-                    ))}
-                </Scrollbar>
-            </List>
+            {path.map((id, index) => (
+                <Folder
+                    key={id}
+                    id={id}
+                    openFolderId={path[index + 1]}
+                    shrink={index < path.length - 2}
+                    rootFolder={index === path.length - 1}
+                    onOpenFolder={(folderId) => {
+                        if (index === path.length - 1) {
+                            setPath([...path, folderId]);
+                        } else {
+                            setPath([...path.slice(0, index + 1), folderId]);
+                        }
+                    }}
+                    onBack={() => {
+                        setPath([...path.slice(0, index + 1)]);
+                    }}
+                />
+            ))}
         </Card>
     );
 }
 
-export default Folder;
+export default Explorer;

@@ -19,6 +19,18 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1, 2),
         borderRadius: 0,
     },
+    primaryText: {
+        display: '-webkit-box',
+        '-webkit-box-orient': 'vertical',
+        '-webkit-line-clamp': 2,
+        overflow: 'hidden',
+    },
+    secondaryText: {
+        display: '-webkit-box',
+        '-webkit-box-orient': 'vertical',
+        '-webkit-line-clamp': 2,
+        overflow: 'hidden',
+    },
 }));
 
 function LinkButton(props) {
@@ -29,8 +41,8 @@ function LinkButton(props) {
         url,
         imageUrl,
         icoVariant,
-        isBlurBackdrop,
         variant = 'icon',
+        className: externalClassName,
     } = props;
     const classes = useStyles();
     const { t } = useTranslation();
@@ -47,6 +59,7 @@ function LinkButton(props) {
 
     return (
         <FAPButton
+            className={externalClassName}
             id={id}
             tooltip={(
                 <React.Fragment>
@@ -55,7 +68,6 @@ function LinkButton(props) {
                     <Typography variant="caption">{url || t('bookmark.urlNotValid')}</Typography>
                 </React.Fragment>
             )}
-            isBlurBackdrop={isBlurBackdrop}
         >
             {variant === 'row' ? (
                 <ListItem
@@ -79,7 +91,6 @@ function LinkButton(props) {
                 <ButtonBase onMouseUp={handleClick}>
                     <Image
                         src={imageUrl}
-                        className={classes.icon}
                         alternativeIcon={icoVariant === BKMS_VARIANT.SYMBOL ? name[0].toUpperCase() : undefined}
                     />
                 </ButtonBase>

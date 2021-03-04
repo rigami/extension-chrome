@@ -9,8 +9,6 @@ import Explorer from './Explorer';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
         borderRadius: theme.shape.borderRadiusBold,
         backgroundColor: theme.palette.common.white,
         // '&:hover': { backgroundColor: fade(theme.palette.common.white, 0.52) },
@@ -20,13 +18,26 @@ const useStyles = makeStyles((theme) => ({
         // '&:hover': { backgroundColor: theme.palette.common.white },
     },
     icon: {
-        width: 32,
-        height: 32,
-        margin: theme.spacing(0.5),
+        width: 28,
+        height: 28,
+        margin: theme.spacing(0.75),
     },
+    button: {
+        transition: theme.transitions.create(['transform'], {
+            duration: theme.transitions.duration.short,
+            easing: theme.transitions.easing.easeInOut,
+        }),
+    },
+    offsetButton: { transform: 'translateY(-12px)' },
 }));
 
-function Category({ id, name, color, isBlurBackdrop }) {
+function Category(props) {
+    const {
+        id,
+        name,
+        color,
+        className: externalClassName,
+    } = props;
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -42,14 +53,21 @@ function Category({ id, name, color, isBlurBackdrop }) {
 
                     setIsOpen(false);
                 }}
+                modifiers={{
+                    // inner: { enabled: offset },
+                    offset: {
+                        enabled: true,
+                        offset: '0px, 32px',
+                    },
+                }}
             >
                 <Explorer id={id} />
             </PopperWrapper>
             <FAPButton
+                className={clsx(externalClassName, classes.button, isOpen && classes.offsetButton)}
                 id={id}
                 name={name}
                 tooltip={name}
-                isBlurBackdrop={isBlurBackdrop}
                 type="category"
             >
                 <ButtonBase

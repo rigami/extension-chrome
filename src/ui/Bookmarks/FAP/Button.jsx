@@ -14,25 +14,17 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-        padding: 0,
-        borderRadius: theme.shape.borderRadiusBold,
-    },
-    rootBlur: { backdropFilter: 'blur(10px) brightness(130%)' },
-}));
+const useStyles = makeStyles((theme) => ({ root: { borderRadius: theme.shape.borderRadiusBold } }));
 
 function FAPButton(props) {
     const {
         id,
         tooltip,
-        isBlurBackdrop,
         type = 'bookmark',
         children,
         disableEdit = false,
         disableRemove = false,
+        className: externalClassName,
         ...other
     } = props;
     const classes = useStyles();
@@ -108,8 +100,8 @@ function FAPButton(props) {
                 ...other,
                 className: clsx(
                     classes.root,
-                    isBlurBackdrop && classes.rootBlur,
                     children.props.className,
+                    externalClassName,
                 ),
                 onContextMenu: handlerContextMenu,
             }) : children}

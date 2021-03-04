@@ -1,22 +1,14 @@
 import React, { useState } from 'react';
-import {
-    ButtonBase,
-    ListItemAvatar,
-    ListItemText,
-    ListItem,
-} from '@material-ui/core';
+import { ButtonBase } from '@material-ui/core';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import FAPButton from '@/ui/Bookmarks/FAP/Button';
 import PopperWrapper from '@/ui-components/PopperWrapper';
-// eslint-disable-next-line import/no-cycle
 import Explorer from './Explorer';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
         borderRadius: theme.shape.borderRadiusBold,
         backgroundColor: theme.palette.common.white,
         // '&:hover': { backgroundColor: fade(theme.palette.common.white, 0.52) },
@@ -26,9 +18,9 @@ const useStyles = makeStyles((theme) => ({
         // '&:hover': { backgroundColor: theme.palette.common.white },
     },
     icon: {
-        width: 32,
-        height: 32,
-        margin: theme.spacing(0.5),
+        width: 28,
+        height: 28,
+        margin: theme.spacing(0.75),
     },
     primaryText: {
         display: '-webkit-box',
@@ -49,6 +41,13 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1, 2),
         borderRadius: 0,
     },
+    button: {
+        transition: theme.transitions.create(['transform'], {
+            duration: theme.transitions.duration.short,
+            easing: theme.transitions.easing.easeInOut,
+        }),
+    },
+    offsetButton: { transform: 'translateY(-12px)' },
 }));
 
 function Folder(props) {
@@ -56,9 +55,7 @@ function Folder(props) {
         id,
         parentId,
         name,
-        isBlurBackdrop,
-        variant = 'icon',
-        offset = false,
+        className: externalClassName,
     } = props;
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -79,19 +76,19 @@ function Folder(props) {
                     // inner: { enabled: offset },
                     offset: {
                         enabled: true,
-                        offset: `${offset ? 128 : 0}px, ${offset ? 8 : 16}px`,
+                        offset: '0px, 32px',
                     },
                 }}
             >
                 <Explorer id={id} />
             </PopperWrapper>
             <FAPButton
+                className={clsx(externalClassName, classes.button, isOpen && classes.offsetButton)}
                 id={id}
                 name={name}
                 tooltip={name}
                 disableEdit={parentId === 0}
                 disableRemove={parentId === 0}
-                isBlurBackdrop={isBlurBackdrop}
                 type="folder"
                 onMouseDown={() => {
                     if (!isOpen) setIsBlockEvent(true);
@@ -102,32 +99,12 @@ function Folder(props) {
                     setIsBlockEvent(false);
                 }}
             >
-                {variant === 'row' ? (
-                    <ListItem
-                        ref={anchorEl}
-                        button
-                        className={classes.row}
-                        selected={isOpen}
-                    >
-                        <ListItemAvatar>
-                            <FolderIcon />
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={name}
-                            classes={{
-                                primary: classes.primaryText,
-                                secondary: classes.secondaryText,
-                            }}
-                        />
-                    </ListItem>
-                ) : (
-                    <ButtonBase
-                        ref={anchorEl}
-                        className={clsx(classes.root, isOpen && classes.activeIconButton)}
-                    >
-                        <FolderIcon className={classes.icon} />
-                    </ButtonBase>
-                )}
+                <ButtonBase
+                    ref={anchorEl}
+                    className={clsx(classes.root, isOpen && classes.activeIconButton)}
+                >
+                    <FolderIcon className={classes.icon} />
+                </ButtonBase>
             </FAPButton>
         </React.Fragment>
     );
