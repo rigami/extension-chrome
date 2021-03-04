@@ -5,10 +5,12 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 import DTW_SIZE from '@/enum/WIDGET/DTW_SIZE';
 import { observer } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { BKMS_FAP_POSITION } from '@/enum';
+import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
+import { useTheme } from '@material-ui/styles';
+import { toJS } from 'mobx';
 import Time from './Time';
 import Date from './Date';
 
@@ -16,34 +18,32 @@ const useStyles = makeStyles((theme) => ({
     root: {
         position: 'absolute',
         zIndex: 1,
+        top: theme.spacing(3),
+        right: theme.spacing(11),
+        bottom: theme.spacing(3),
         left: theme.spacing(11),
-        bottom: theme.spacing(6),
         color: theme.palette.common.white,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'end',
-        /* transition: theme.transitions.create(['bottom', 'top'], {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.standard,
-        }), */
-    },
-    bottomOffset: { bottom: theme.spacing(14) },
-    topOffset: {},
-    leftMiddlePos: {
-        top: 0,
+        alignItems: 'center',
         justifyContent: 'center',
     },
-    centerTopPos: {
-        bottom: 'auto',
-        top: '30%',
-        right: theme.spacing(11),
+    widget: {
+        display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        '&$bottomOffset': { top: '24%' },
-        '&$topOffset': {
-            top: 'auto',
-            bottom: '24%',
-        },
+        justifyContent: 'center',
     },
+    leftBottom: {
+        alignItems: 'end',
+        justifyContent: 'flex-end',
+        '& $widget': { alignItems: 'end' },
+    },
+    leftMiddle: {
+        alignItems: 'end',
+        '& $widget': { alignItems: 'end' },
+    },
+    centerTop: { '& $widget': { marginBottom: '16%' } },
     row: {
         display: 'flex',
         alignItems: 'center',
@@ -71,39 +71,55 @@ const calcFontSize = (size, dict) => {
 
 function Widgets() {
     const classes = useStyles();
+    const theme = useTheme();
     const { widgets } = useAppStateService();
     const bookmarksService = useBookmarksService();
+
+    if (!bookmarksService.settings.isSync) return null;
+
+    let offset = 0;
+    let positionOffset = '';
+
+    if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED) {
+        offset = 40 + theme.spacing(6) + theme.spacing(2.5);
+    } else if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT) {
+        offset = 40 + theme.spacing(6);
+    }
+
+    if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM) {
+        positionOffset = 'bottom';
+    } else if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP) {
+        positionOffset = 'top';
+    }
 
     return (
         <Box
             className={clsx(
                 classes.root,
-                bookmarksService.fapIsDisplay
-                  && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
-                  && classes.bottomOffset,
-                bookmarksService.fapIsDisplay
-                  && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
-                  && classes.topOffset,
-                widgets.settings.dtwPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddlePos,
-                widgets.settings.dtwPosition === DTW_POSITION.CENTER_TOP && classes.centerTopPos,
+                widgets.settings.dtwPosition === DTW_POSITION.LEFT_BOTTOM && classes.leftBottom,
+                widgets.settings.dtwPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddle,
+                widgets.settings.dtwPosition === DTW_POSITION.CENTER_TOP && classes.centerTop,
             )}
+            style={{ [positionOffset]: offset }}
         >
-            {widgets.settings.dtwUseTime && (
-                <Time size={calcFontSize(widgets.settings.dtwSize, timeFontSize)} />
-            )}
-            {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) && (
-                <Box className={classes.row}>
-                    {widgets.settings.dtwUseDate && (
-                        <Date
-                            size={calcFontSize(widgets.settings.dtwSize, dateFontSize)}
-                            dot={widgets.showWeather}
-                        />
-                    )}
-                    {widgets.settings.dtwUseWeather && (
-                        <WeatherWidget size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
-                    )}
-                </Box>
-            )}
+            <Box className={classes.widget}>
+                {widgets.settings.dtwUseTime && (
+                    <Time size={calcFontSize(widgets.settings.dtwSize, timeFontSize)} />
+                )}
+                {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) && (
+                    <Box className={classes.row}>
+                        {widgets.settings.dtwUseDate && (
+                            <Date
+                                size={calcFontSize(widgets.settings.dtwSize, dateFontSize)}
+                                dot={widgets.showWeather}
+                            />
+                        )}
+                        {widgets.settings.dtwUseWeather && (
+                            <WeatherWidget size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
+                        )}
+                    </Box>
+                )}
+            </Box>
         </Box>
     );
 }

@@ -7,6 +7,7 @@ import BG_SHOW_MODE from './BG/SHOW_MODE';
 import BG_SHOW_STATE from './BG/SHOW_STATE';
 import BKMS_FAP_POSITION from './BKMS/FAP_POSITION';
 import BKMS_FAP_STYLE from './BKMS/FAP_STYLE';
+import BKMS_FAP_ALIGN from './BKMS/FAP_ALIGN';
 import BKMS_VARIANT from './BKMS/VARIANT';
 import THEME from './THEME';
 import FETCH from './FETCH';
@@ -27,6 +28,7 @@ export {
     BG_SHOW_STATE,
     BKMS_FAP_POSITION,
     BKMS_FAP_STYLE,
+    BKMS_FAP_ALIGN,
     BKMS_VARIANT,
     THEME,
     FETCH,

@@ -9,6 +9,7 @@ import {
     WIDGET_DTW_POSITION,
     WIDGET_DTW_SIZE,
     WIDGET_DTW_UNITS,
+    BKMS_FAP_ALIGN,
 } from '@/enum';
 import i18n from 'i18next';
 
@@ -22,6 +23,7 @@ export default {
     bookmarks: {
         fapStyle: BKMS_FAP_STYLE.CONTAINED,
         fapPosition: BKMS_FAP_POSITION.BOTTOM,
+        fapAlign: BKMS_FAP_ALIGN.CENTER,
         openOnStartup: false,
         favorites: [],
         syncWithSystem: false,

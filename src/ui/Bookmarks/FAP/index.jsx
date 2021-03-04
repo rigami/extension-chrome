@@ -1,32 +1,27 @@
 import React, {
     useState,
-    createRef,
     useEffect,
-    useRef,
+    useCallback,
 } from 'react';
 import {
     Card,
-    IconButton,
     Fade,
+    Box,
+    ButtonBase,
 } from '@material-ui/core';
-import {
-    NavigateBeforeRounded as LeftIcon,
-    NavigateNextRounded as RightIcon,
-} from '@material-ui/icons';
-import ReactResizeDetector from 'react-resize-detector';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { ExpandLessRounded as MoreIcon } from '@material-ui/icons';
+import { useResizeDetector } from 'react-resize-detector';
+import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
-import ScrollContainer from 'react-indiana-drag-scroll';
+import { BKMS_FAP_ALIGN, BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import { toJS } from 'mobx';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
-import { useTranslation } from 'react-i18next';
+import CategoryEntity from '@/stores/universal/bookmarks/entities/category';
 import Folder from './Folder';
 import Category from './Category';
 import Link from './Link';
@@ -53,116 +48,55 @@ const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         pointerEvents: 'auto',
         borderRadius: 8,
+        overflow: 'unset',
+        display: 'flex',
+        background: 'none',
+    },
+    leftAlign: { marginLeft: 0 },
+    backdrop: {
         backdropFilter: 'blur(40px) brightness(110%)  contrast(1.2) invert(0.06)',
-        background: 'none',
+        backgroundColor: fade(theme.palette.background.default, 0.12),
+        padding: theme.spacing(1.25),
     },
-    panel: {
-        padding: theme.spacing(1.5, 0),
-        paddingLeft: theme.spacing(0.5),
-        paddingRight: theme.spacing(0.5),
-        // maxWidth: 1400,
-        display: 'block',
-        whiteSpace: 'nowrap',
-        '&::-webkit-scrollbar': {
-            width: 0,
-            height: 0,
-        },
-    },
-    disablePadding: {
-        padding: 0,
-        paddingLeft: theme.spacing(1),
-    },
-    cardTransparent: {
-        background: 'none',
-        backdropFilter: 'none',
-        boxShadow: 'none',
-    },
-    iconButton: {
-        marginRight: theme.spacing(1),
-        padding: theme.spacing(1),
-        backgroundColor: fade(theme.palette.common.white, 0.32),
-        '&:hover': { backgroundColor: fade(theme.palette.common.white, 0.52) },
-    },
-    popper: {
-        width: 310,
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-        backdropFilter: 'blur(15px) brightness(130%)',
-        backgroundColor: fade(theme.palette.background.default, 0.70),
-    },
-    emptyTitle: {
-        marginLeft: theme.spacing(1),
+    link: {
         marginRight: theme.spacing(2),
+        padding: 0,
+        '&:last-child': { marginRight: 0 },
     },
-    arrowButton: {
-        padding: theme.spacing(1),
-        position: 'absolute',
-        zIndex: 1,
-        backgroundColor: fade(theme.palette.common.black, 0.52),
-        transition: theme.transitions.create('transform', {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.short,
-        }),
+    linkBackdrop: { backgroundColor: theme.palette.background.default },
+    linkBackdropBlur: {
+        backdropFilter: 'blur(10px) brightness(200%)',
+        backgroundColor: fade(theme.palette.background.default, 0.52),
     },
-    leftArrow: { left: theme.spacing(1) },
-    leftArrowHide: { transform: `translateX(calc(-100% - ${theme.spacing(1)}px))` },
-    rightArrow: { right: theme.spacing(1) },
-    rightArrowHide: { transform: `translateX(calc(100% + ${theme.spacing(1)}px))` },
+    overload: {
+        width: 40,
+        height: 40,
+        borderRadius: theme.shape.borderRadiusBold,
+    },
 }));
 
 function FAP() {
     const classes = useStyles();
-    const { t } = useTranslation();
     const bookmarksService = useBookmarksService();
-    const scrollRef = createRef();
-    const rootRef = useRef(null);
-    const [isLeft, setIsLeft] = useState(false);
-    const [isRight, setIsRight] = useState(false);
     const [favorites, setFavorites] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [maxCount, setMaxCount] = useState(null);
+    const fapSettings = bookmarksService.settings;
 
-    const resizeHandle = () => {
-        const container = scrollRef.current.container.current;
-        if (!container) return;
-        if (container.clientWidth < container.scrollWidth) {
-            setIsLeft(container.scrollLeft !== 0);
-            setIsRight(
-                container.scrollLeft + container.clientWidth
-                !== container.scrollWidth,
-            );
-        } else {
-            setIsLeft(false);
-            setIsRight(false);
-        }
-    };
+    const onResize = useCallback((width) => {
+        setMaxCount(Math.max(Math.floor((width + 16) / 56) - 1, 0));
+    }, []);
 
-    const scrollHandle = (left) => {
-        const container = scrollRef.current.container.current;
-        if (!container) return;
-        setIsLeft(left !== 0);
-        setIsRight(left + container.clientWidth !== container.scrollWidth);
-    };
-
-    const scrollToStartHandle = () => {
-        scrollRef.current.container.current.scrollTo({
-            behavior: 'smooth',
-            left: 0,
-            top: 0,
-        });
-    };
-
-    const scrollToEndHandle = () => {
-        scrollRef.current.container.current.scrollTo({
-            behavior: 'smooth',
-            left: scrollRef.current.container.current.scrollWidth,
-            top: 0,
-        });
-    };
+    const { ref } = useResizeDetector({ onResize });
 
     useEffect(() => {
+        if (bookmarksService.favorites.length === 0) {
+            setFavorites([]);
+            return;
+        }
+
         Promise.allSettled(
             bookmarksService.favorites.map((fav) => {
-                console.log('fav', toJS(fav));
                 if (fav.itemType === 'bookmark') {
                     return BookmarksUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'folder') {
@@ -175,7 +109,6 @@ function FAP() {
             }),
         )
             .then((findFavorites) => {
-                console.log('findFavorites:', findFavorites);
                 setFavorites(
                     findFavorites
                         .filter(({ status }, index) => {
@@ -196,97 +129,79 @@ function FAP() {
             });
     }, [bookmarksService.favorites.length]);
 
+    const overload = maxCount < favorites.length;
+
     return (
-        <Fade
-            in={bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && !isLoading && favorites.length !== 0}
-            unmountOnExit
-        >
-            <div
+        <Fade in={!isLoading}>
+            <Box
+                ref={ref}
                 className={clsx(
                     classes.root,
-                    bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
+                    fapSettings.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
                 )}
-                ref={rootRef}
             >
                 <Card
                     elevation={0}
                     className={clsx(
                         classes.card,
-                        bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.cardTransparent,
+                        fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.backdrop,
+                        fapSettings.fapAlign === BKMS_FAP_ALIGN.LEFT && classes.leftAlign,
                     )}
                 >
-                    <ScrollContainer
-                        vertical={false}
-                        horizontal
-                        hideScrollbars
-                        onScroll={scrollHandle}
-                        className={clsx(
-                            classes.panel,
-                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.disablePadding,
-                        )}
-                        ref={scrollRef}
-                    >
-                        <IconButton
-                            data-ui-path="fap.left"
+                    {maxCount && favorites.slice(0, maxCount).map((fav) => {
+                        let a11props = {
+                            ...fav,
+                            key: `${fav.type}-${fav.id}`,
+                            className: classes.link,
+                            isBlurBackdrop: fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT,
+                        };
+
+                        if (fav instanceof FolderEntity || fav instanceof CategoryEntity) {
+                            a11props = {
+                                ...a11props,
+                                className: clsx(
+                                    a11props.className,
+                                    fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.linkBackdropBlur,
+                                    fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.linkBackdrop,
+                                ),
+                            };
+                        }
+
+                        if (fav instanceof BookmarkEntity) {
+                            return (<Link {...a11props} />);
+                        } else if (fav instanceof FolderEntity) {
+                            return (<Folder {...a11props} />);
+                        } else if (fav instanceof CategoryEntity) {
+                            return (<Category {...a11props} />);
+                        }
+
+                        return null;
+                    })}
+                    {overload && (
+                        <ButtonBase
                             className={clsx(
-                                classes.arrowButton,
-                                classes.leftArrow,
-                                !isLeft && classes.leftArrowHide,
+                                classes.overload,
+                                fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.linkBackdropBlur,
+                                fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.linkBackdrop,
                             )}
-                            onClick={scrollToStartHandle}
                         >
-                            <LeftIcon />
-                        </IconButton>
-                        {favorites.map((fav) => {
-                            if (fav instanceof BookmarkEntity) {
-                                return (
-                                    <Link
-                                        {...fav}
-                                        key={`${fav.type}-${fav.id}`}
-                                        isBlurBackdrop={
-                                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
-                                        }
-                                    />
-                                );
-                            } else if (fav instanceof FolderEntity) {
-                                return (
-                                    <Folder
-                                        {...fav}
-                                        key={`${fav.type}-${fav.id}`}
-                                        isBlurBackdrop={
-                                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
-                                        }
-                                    />
-                                );
-                            } else {
-                                return (
-                                    <Category
-                                        {...fav}
-                                        key={`${fav.type}-${fav.id}`}
-                                        isBlurBackdrop={
-                                            bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
-                                        }
-                                    />
-                                );
-                            }
-                        })}
-                        <IconButton
-                            data-ui-path="fap.right"
-                            className={clsx(
-                                classes.arrowButton,
-                                classes.rightArrow,
-                                !isRight && classes.rightArrowHide,
-                            )}
-                            onClick={scrollToEndHandle}
-                        >
-                            <RightIcon />
-                        </IconButton>
-                    </ScrollContainer>
-                    <ReactResizeDetector handleWidth onResize={resizeHandle} />
+                            <MoreIcon />
+                        </ButtonBase>
+                    )}
                 </Card>
-            </div>
+            </Box>
         </Fade>
     );
 }
 
-export default observer(FAP);
+const ObserverFAP = observer(FAP);
+
+function FAPWrapper() {
+    const bookmarksService = useBookmarksService();
+
+    if (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.HIDDEN) return null;
+
+    return (<ObserverFAP />);
+}
+
+export default observer(FAPWrapper);

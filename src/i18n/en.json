@@ -142,6 +142,13 @@
             "TOP":"From above",
             "BOTTOM":"From below"
           }
+        },
+        "fapAlign":{
+          "title":"Panel align",
+          "align":{
+            "LEFT":"Be left side",
+            "CENTER":"Center"
+          }
         }
       }
     },

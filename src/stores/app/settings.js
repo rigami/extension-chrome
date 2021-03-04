@@ -110,6 +110,7 @@ class WidgetsSettingsStore {
 class BookmarksSettingsStore {
     fapStyle;
     fapPosition;
+    fapAlign;
     favorites;
     syncWithSystem;
     isSync = false;
@@ -138,6 +139,7 @@ class BookmarksSettingsStore {
         const updProps = pick(props, [
             'fapStyle',
             'fapPosition',
+            'fapAlign',
             'favorites',
             'syncWithSystem',
         ]);

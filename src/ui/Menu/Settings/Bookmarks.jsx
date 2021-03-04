@@ -3,6 +3,7 @@ import {
     ACTIVITY,
     BKMS_FAP_POSITION,
     BKMS_FAP_STYLE,
+    BKMS_FAP_ALIGN,
 } from '@/enum';
 import { Collapse } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
@@ -71,6 +72,16 @@ function BookmarksSettings() {
                         value: bookmarksService.settings.fapPosition,
                         onChange: (event) => bookmarksService.settings.update({ fapPosition: event.target.value }),
                         values: [BKMS_FAP_POSITION.TOP, BKMS_FAP_POSITION.BOTTOM],
+                    }}
+                />
+                <MenuRow
+                    title={t('settings.bookmarks.FAP.fapAlign.title')}
+                    action={{
+                        type: ROWS_TYPE.SELECT,
+                        format: (value) => t(`settings.bookmarks.FAP.fapAlign.align.${value}`),
+                        value: bookmarksService.settings.fapAlign,
+                        onChange: (event) => bookmarksService.settings.update({ fapAlign: event.target.value }),
+                        values: [BKMS_FAP_ALIGN.LEFT, BKMS_FAP_ALIGN.CENTER],
                     }}
                 />
             </Collapse>
