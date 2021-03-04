@@ -11,6 +11,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+export const TARGET_CLICK = {
+    OUTSIDE: 'OUTSIDE',
+    ANCHOR: 'ANCHOR',
+};
+
 function PopperWrapper(props) {
     const {
         anchorEl,
@@ -25,6 +30,10 @@ function PopperWrapper(props) {
     const [listenId, setListenId] = useState(null);
     const store = useLocalObservable(() => ({ popperRef: null }));
 
+    const handleClose = (event) => {
+        onClose(event.path.indexOf(anchorEl) !== -1 ? TARGET_CLICK.ANCHOR : TARGET_CLICK.OUTSIDE);
+    };
+
     useEffect(() => {
         if (isOpen) {
             setListenId(coreService.localEventBus.on('system/scroll', () => {
@@ -37,7 +46,7 @@ function PopperWrapper(props) {
 
     return (
         <ClickAwayListener
-            onClickAway={onClose}
+            onClickAway={handleClose}
             mouseEvent="onMouseDown"
         >
             <Popper

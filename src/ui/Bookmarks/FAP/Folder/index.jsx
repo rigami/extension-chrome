@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { ButtonBase } from '@material-ui/core';
-import { FolderRounded as FolderIcon } from '@material-ui/icons';
+import {
+    FolderRounded as FolderIcon,
+    CloseRounded as CloseIcon,
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import FAPButton from '@/ui/Bookmarks/FAP/Button';
-import PopperWrapper from '@/ui-components/PopperWrapper';
+import PopperWrapper, { TARGET_CLICK } from '@/ui-components/PopperWrapper';
+import { useTranslation } from 'react-i18next';
 import Explorer from './Explorer';
 
 const useStyles = makeStyles((theme) => ({
@@ -58,6 +62,7 @@ function Folder(props) {
         className: externalClassName,
     } = props;
     const classes = useStyles();
+    const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
@@ -67,10 +72,12 @@ function Folder(props) {
             <PopperWrapper
                 isOpen={isOpen}
                 anchorEl={anchorEl}
-                onClose={() => {
+                onClose={(reason) => {
                     if (isBlockEvent) return;
 
-                    setIsOpen(false);
+                    if (reason === TARGET_CLICK.ANCHOR) {
+                        setIsOpen(false);
+                    }
                 }}
                 modifiers={{
                     // inner: { enabled: offset },
@@ -86,7 +93,7 @@ function Folder(props) {
                 className={clsx(externalClassName, classes.button, isOpen && classes.offsetButton)}
                 id={id}
                 name={name}
-                tooltip={name}
+                tooltip={isOpen ? t('close') : name}
                 disableEdit={parentId === 0}
                 disableRemove={parentId === 0}
                 type="folder"
@@ -103,7 +110,11 @@ function Folder(props) {
                     ref={anchorEl}
                     className={clsx(classes.root, isOpen && classes.activeIconButton)}
                 >
-                    <FolderIcon className={classes.icon} />
+                    {isOpen ? (
+                        <CloseIcon className={classes.icon} />
+                    ) : (
+                        <FolderIcon className={classes.icon} />
+                    )}
                 </ButtonBase>
             </FAPButton>
         </React.Fragment>

@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { ButtonBase } from '@material-ui/core';
-import { LabelRounded as TagIcon } from '@material-ui/icons';
+import {
+    CloseRounded as CloseIcon,
+    LabelRounded as TagIcon,
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import FAPButton from '@/ui/Bookmarks/FAP/Button';
-import PopperWrapper from '@/ui-components/PopperWrapper';
+import PopperWrapper, { TARGET_CLICK } from '@/ui-components/PopperWrapper';
+import { useTranslation } from 'react-i18next';
 import Explorer from './Explorer';
 
 const useStyles = makeStyles((theme) => ({
@@ -39,6 +43,7 @@ function Category(props) {
         className: externalClassName,
     } = props;
     const classes = useStyles();
+    const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
@@ -48,10 +53,12 @@ function Category(props) {
             <PopperWrapper
                 isOpen={isOpen}
                 anchorEl={anchorEl}
-                onClose={() => {
+                onClose={(reason) => {
                     if (isBlockEvent) return;
 
-                    setIsOpen(false);
+                    if (reason === TARGET_CLICK.ANCHOR) {
+                        setIsOpen(false);
+                    }
                 }}
                 modifiers={{
                     // inner: { enabled: offset },
@@ -67,7 +74,7 @@ function Category(props) {
                 className={clsx(externalClassName, classes.button, isOpen && classes.offsetButton)}
                 id={id}
                 name={name}
-                tooltip={name}
+                tooltip={isOpen ? t('close') : name}
                 type="category"
             >
                 <ButtonBase
@@ -82,7 +89,11 @@ function Category(props) {
                         setIsBlockEvent(false);
                     }}
                 >
-                    <TagIcon style={{ color }} className={classes.icon} />
+                    {isOpen ? (
+                        <CloseIcon className={classes.icon} />
+                    ) : (
+                        <TagIcon style={{ color }} className={classes.icon} />
+                    )}
                 </ButtonBase>
             </FAPButton>
         </React.Fragment>
