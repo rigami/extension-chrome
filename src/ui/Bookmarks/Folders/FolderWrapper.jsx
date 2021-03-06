@@ -73,7 +73,10 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(2),
         display: 'inline-block',
     },
-    foldersBlock: { width: '100%' },
+    foldersBlock: {
+        width: '100%',
+        fontSize: 0,
+    },
     bookmarksBlock: {
         width: '100%',
         display: 'flex',

@@ -7,21 +7,22 @@ import {
     Card,
     Fade,
     Box,
-    ButtonBase,
 } from '@material-ui/core';
-import { ExpandLessRounded as MoreIcon } from '@material-ui/icons';
 import { useResizeDetector } from 'react-resize-detector';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { BKMS_FAP_ALIGN, BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
+import {
+    ACTIVITY, BKMS_FAP_ALIGN, BKMS_FAP_POSITION, BKMS_FAP_STYLE,
+} from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
 import CategoryEntity from '@/stores/universal/bookmarks/entities/category';
+import useAppService from '@/stores/app/AppStateProvider';
 import Folder from './Folder';
 import Category from './Category';
 import Link from './Link';
@@ -39,13 +40,14 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         position: 'absolute',
         boxSizing: 'border-box',
-        top: theme.spacing(3),
+        top: 0,
+        height: theme.spacing(6) + 40,
     },
     stickyRoot: {
         top: 'auto',
         bottom: 0,
-        height: theme.spacing(6) + 40,
     },
+    contained: { height: theme.spacing(6) + theme.spacing(2.5) + 40 },
     card: {
         margin: 'auto',
         pointerEvents: 'auto',
@@ -53,13 +55,18 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'unset',
         display: 'flex',
         background: 'none',
-        marginBottom: theme.spacing(3),
+        marginBottom: theme.spacing(1.75),
+        padding: theme.spacing(1.25),
+        transition: theme.transitions.create(['background-color'], {
+            duration: theme.transitions.duration.short,
+            easing: theme.transitions.easing.easeInOut,
+        }),
     },
     leftAlign: { marginLeft: 0 },
     backdrop: {
         backdropFilter: 'blur(40px) brightness(110%)  contrast(1.2) invert(0.06)',
         backgroundColor: fade(theme.palette.background.default, 0.12),
-        padding: theme.spacing(1.25),
+        marginBottom: theme.spacing(3),
     },
     link: {
         marginRight: theme.spacing(2),
@@ -76,10 +83,12 @@ const useStyles = makeStyles((theme) => ({
         height: 40,
         borderRadius: theme.shape.borderRadiusBold,
     },
+    contrastBackdrop: { backgroundColor: fade(theme.palette.background.backdrop, 0.95) },
 }));
 
 function FAP() {
     const classes = useStyles();
+    const appService = useAppService();
     const bookmarksService = useBookmarksService();
     const [favorites, setFavorites] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -148,6 +157,7 @@ function FAP() {
                 className={clsx(
                     classes.root,
                     fapSettings.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
+                    fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.contained,
                 )}
             >
                 <Card
@@ -156,6 +166,7 @@ function FAP() {
                         classes.card,
                         fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.backdrop,
                         fapSettings.fapAlign === BKMS_FAP_ALIGN.LEFT && classes.leftAlign,
+                        appService.activity === ACTIVITY.BOOKMARKS && classes.contrastBackdrop,
                     )}
                 >
                     {maxCount.length !== 0 && favorites.slice(0, maxCount).map((fav) => {

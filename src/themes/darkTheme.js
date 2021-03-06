@@ -17,7 +17,10 @@ export default createMuiTheme(merge(
                 contrastText: '#fff',
             },
             snackbar: { default: fade('#fff', 0.95) },
-            background: { paper: '#151515' },
+            background: {
+                paper: '#151515',
+                backdrop: '#dadada',
+            },
         },
         overrides: {
             MuiPaper: { root: { color: '#d7d7d7' } },
