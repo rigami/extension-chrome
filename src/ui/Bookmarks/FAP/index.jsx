@@ -152,23 +152,24 @@ function FAP() {
                         let a11props = {
                             ...fav,
                             key: `${fav.type}-${fav.id}`,
-                            className: classes.link,
                             isBlurBackdrop: fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT,
                         };
 
                         if (fav instanceof FolderEntity || fav instanceof CategoryEntity) {
                             a11props = {
                                 ...a11props,
-                                className: clsx(
-                                    a11props.className,
-                                    fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.linkBackdropBlur,
-                                    fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.linkBackdrop,
-                                ),
+                                classes: {
+                                    root: classes.link,
+                                    backdrop: clsx(
+                                        fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.linkBackdropBlur,
+                                        fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.linkBackdrop,
+                                    ),
+                                },
                             };
                         }
 
                         if (fav instanceof BookmarkEntity) {
-                            return (<Link {...a11props} />);
+                            return (<Link {...a11props} className={classes.link} />);
                         } else if (fav instanceof FolderEntity) {
                             return (<Folder {...a11props} />);
                         } else if (fav instanceof CategoryEntity) {

@@ -25,6 +25,32 @@ class AppStateStore {
     setActivity(activity) {
         this.activity = activity;
     }
+
+    @action('open context menu')
+    contextMenu(computeActions, { useAnchorEl = false, reactions } = {}) {
+        return (event) => {
+            event.preventDefault();
+
+            let position = {
+                top: event.nativeEvent.clientY,
+                left: event.nativeEvent.clientX,
+            };
+
+            if (useAnchorEl) {
+                const { top, left } = event.currentTarget.getBoundingClientRect();
+                position = {
+                    top,
+                    left,
+                };
+            }
+
+            this.coreService.localEventBus.call('system/contextMenu', {
+                actions: () => computeActions().filter((isExist) => isExist),
+                position,
+                reactions,
+            });
+        };
+    }
 }
 
 export default AppStateStore;

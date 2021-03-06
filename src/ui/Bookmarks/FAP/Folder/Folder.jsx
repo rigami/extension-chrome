@@ -13,10 +13,6 @@ import {
 } from '@material-ui/core';
 import {
     FolderRounded as FolderIcon,
-    BookmarkBorderRounded as PinnedFavoriteIcon,
-    BookmarkRounded as UnpinnedFavoriteIcon,
-    EditRounded as EditIcon,
-    DeleteRounded as RemoveIcon,
     MoreVertRounded as MoreIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -28,8 +24,11 @@ import { useTranslation } from 'react-i18next';
 import Link from '@/ui/Bookmarks/FAP/Link';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 import clsx from 'clsx';
+import useAppService from '@/stores/app/AppStateProvider';
+import pin from '@/utils/contextMenu/pin';
+import edit from '@/utils/contextMenu/edit';
+import remove from '@/utils/contextMenu/remove';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -80,6 +79,7 @@ function Folder(props) {
     } = props;
     const classes = useStyles();
     const { t } = useTranslation();
+    const appService = useAppService();
     const bookmarksService = useBookmarksService();
     const coreService = useCoreService();
     const [folder, setFolder] = useState(null);
@@ -88,61 +88,29 @@ function Folder(props) {
     const [folders, setFolders] = useState([]);
     const buttonRef = useRef(null);
 
-    const isPin = () => bookmarksService.findFavorite({
-        itemType: 'folder',
-        itemId: id,
-    });
-
-    const handlerContextMenu = (anchorEl) => {
-        const { top, left } = buttonRef.current.getBoundingClientRect();
-        coreService.localEventBus.call('system/contextMenu', {
-            actions: [
-                {
-                    type: 'button',
-                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
-                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
-                    onClick: () => {
-                        if (isPin()) {
-                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
-                                itemType: 'folder',
-                                itemId: id,
-                            })?.id);
-                        } else {
-                            bookmarksService.addToFavorites(new Favorite({
-                                itemType: 'folder',
-                                itemId: id,
-                            }));
-                        }
-                    },
-                },
-                ...(folder.parentId !== 0 ? [
-                    {
-                        type: 'button',
-                        title: t('edit'),
-                        icon: EditIcon,
-                        onClick: () => {
-                            coreService.localEventBus.call('folder/edit', {
-                                id,
-                                anchorEl,
-                            });
-                        },
-                    },
-                    {
-                        type: 'button',
-                        title: t('remove'),
-                        icon: RemoveIcon,
-                        onClick: () => {
-                            coreService.localEventBus.call('folder/remove', { id });
-                        },
-                    },
-                ] : []),
-            ],
-            position: {
-                top,
-                left,
-            },
-        });
-    };
+    const contextMenu = (event) => [
+        pin({
+            itemId: id,
+            itemType: 'folder',
+            t,
+            bookmarksService,
+        }),
+        ...(folder.parentId !== 0 ? [
+            edit({
+                itemId: id,
+                itemType: 'folder',
+                t,
+                coreService,
+                anchorEl: event.currentTarget,
+            }),
+            remove({
+                itemId: id,
+                itemType: 'folder',
+                t,
+                coreService,
+            }),
+        ] : []),
+    ];
 
     useEffect(() => {
         FoldersUniversalService.get(id).then((findFolder) => setFolder(findFolder));
@@ -189,7 +157,7 @@ function Folder(props) {
                 action={(
                     <IconButton
                         data-ui-path="folder.explorer.menu"
-                        onClick={(event) => handlerContextMenu(event.currentTarget)}
+                        onClick={appService.contextMenu(contextMenu, { useAnchorEl: true })}
                         ref={buttonRef}
                     >
                         <MoreIcon />

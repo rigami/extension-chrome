@@ -7,13 +7,7 @@ import {
     Box,
     IconButton,
 } from '@material-ui/core';
-import {
-    BookmarkBorderRounded as PinnedFavoriteIcon,
-    BookmarkRounded as UnpinnedFavoriteIcon,
-    EditRounded as EditIcon,
-    DeleteRounded as RemoveIcon,
-    MoreVertRounded as MoreIcon,
-} from '@material-ui/icons';
+import { MoreVertRounded as MoreIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Image from '@/ui-components/Image';
@@ -21,7 +15,10 @@ import { BKMS_VARIANT } from '@/enum';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import useAppService from '@/stores/app/AppStateProvider';
+import pin from '@/utils/contextMenu/pin';
+import edit from '@/utils/contextMenu/edit';
+import remove from '@/utils/contextMenu/remove';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -119,73 +116,32 @@ function CardLink(props) {
         ...other
     } = props;
     const classes = useStyles();
+    const appService = useAppService();
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
     const buttonRef = useRef(null);
     const { t } = useTranslation();
 
-    const isPin = () => bookmarksService.findFavorite({
-        itemType: 'bookmark',
-        itemId: id,
-    });
-
-    const openMenu = (position) => {
-        coreService.localEventBus.call('system/contextMenu', {
-            actions: [
-                {
-                    type: 'button',
-                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
-                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
-                    onClick: () => {
-                        if (isPin()) {
-                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
-                                itemType: 'bookmark',
-                                itemId: id,
-                            })?.id);
-                        } else {
-                            bookmarksService.addToFavorites(new Favorite({
-                                itemType: 'bookmark',
-                                itemId: id,
-                            }));
-                        }
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('edit'),
-                    icon: EditIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('bookmark/edit', { id });
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('remove'),
-                    icon: RemoveIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('bookmark/remove', { id });
-                    },
-                },
-            ],
-            position,
-        });
-    };
-
-    const handlerContextMenu = (event) => {
-        event.preventDefault();
-        openMenu({
-            top: event.nativeEvent.clientY,
-            left: event.nativeEvent.clientX,
-        });
-    };
-
-    const handleOpenMenu = () => {
-        const { top, left } = buttonRef.current.getBoundingClientRect();
-        openMenu({
-            top,
-            left,
-        });
-    };
+    const contextMenu = () => [
+        pin({
+            itemId: id,
+            itemType: 'bookmark',
+            t,
+            bookmarksService,
+        }),
+        edit({
+            itemId: id,
+            itemType: 'bookmark',
+            t,
+            coreService,
+        }),
+        remove({
+            itemId: id,
+            itemType: 'bookmark',
+            t,
+            coreService,
+        }),
+    ];
 
     const handleClick = (event) => {
         if (onClick) {
@@ -215,7 +171,7 @@ function CardLink(props) {
                 <CardActionArea
                     className={classes.rootActionWrapper}
                     onMouseUp={handleClick}
-                    onContextMenu={!preview ? handlerContextMenu : undefined}
+                    onContextMenu={!preview ? appService.contextMenu(contextMenu) : undefined}
                 >
                     {icoVariant === BKMS_VARIANT.POSTER && (
                         <Image variant={BKMS_VARIANT.POSTER} src={imageUrl} className={classes.extendBanner} />
@@ -253,7 +209,7 @@ function CardLink(props) {
                         <IconButton
                             data-ui-path="bookmark.menu"
                             className={classes.menuIconButton}
-                            onClick={handleOpenMenu}
+                            onClick={appService.contextMenu(contextMenu, { useAnchorEl: true })}
                             ref={buttonRef}
                         >
                             <MoreIcon className={classes.menuIcon} />

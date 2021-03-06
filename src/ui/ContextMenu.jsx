@@ -19,16 +19,26 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function ContextMenu({
-    isOpen, onClose, position, actions = [], reactions = [],
-}) {
+function ContextMenu(props) {
+    const {
+        isOpen,
+        onClose,
+        position,
+        actions = [],
+        reactions = [],
+    } = props;
     const { t } = useTranslation();
     const classes = useStyles();
     const [, setForceRender] = useState(0);
 
+    console.log('reactions:', reactions);
+
     useEffect(() => {
         reactions.forEach((rule) => {
-            reaction(rule, () => setForceRender((old) => (old > 10 ? 0 : old + 1)));
+            reaction(rule, () => {
+                console.log('Reaction:', rule);
+                setForceRender((old) => (old > 10 ? 0 : old + 1));
+            });
         });
     }, [reactions.length]);
 

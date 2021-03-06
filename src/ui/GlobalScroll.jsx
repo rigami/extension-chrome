@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import usAppService from '@/stores/app/AppStateProvider';
+import useAppService from '@/stores/app/AppStateProvider';
 import { useResizeDetector } from 'react-resize-detector';
 import { ACTIVITY } from '@/enum';
 
@@ -25,7 +25,7 @@ const DIRECTION = {
 
 function GlobalScroll({ children }) {
     const classes = useStyles();
-    const appService = usAppService();
+    const appService = useAppService();
     const { width, height, ref: rootRef } = useResizeDetector();
     const store = useLocalObservable(() => ({
         scroll: null,

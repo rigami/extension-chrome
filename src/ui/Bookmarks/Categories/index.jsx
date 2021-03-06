@@ -2,19 +2,16 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box, Chip } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { makeStyles, fade } from '@material-ui/core/styles';
-import {
-    BookmarkBorderRounded as PinnedFavoriteIcon,
-    BookmarkRounded as UnpinnedFavoriteIcon,
-    EditRounded as EditIcon,
-    DeleteRounded as RemoveIcon,
-    ArrowBackRounded as ArrowIcon,
-} from '@material-ui/icons';
+import { ArrowBackRounded as ArrowIcon } from '@material-ui/icons';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import clsx from 'clsx';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import CollapseWrapper from '@/ui/Bookmarks/Categories/CollapseWrapper';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import useAppService from '@/stores/app/AppStateProvider';
+import pin from '@/utils/contextMenu/pin';
+import edit from '@/utils/contextMenu/edit';
+import remove from '@/utils/contextMenu/remove';
 import AddButton from './AddButton';
 
 const useStyles = makeStyles((theme) => ({
@@ -57,65 +54,34 @@ function Category(props) {
         className: externalClassName,
     } = props;
     const classes = useStyles();
+    const appService = useAppService();
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
     const { t } = useTranslation();
 
     const repairColor = color || '#000';
 
-    const isPin = () => bookmarksService.findFavorite({
-        itemType: 'category',
-        itemId: id,
-    });
-
-    const handlerContextMenu = (event, anchorEl) => {
-        event.preventDefault();
-        coreService.localEventBus.call('system/contextMenu', {
-            actions: [
-                {
-                    type: 'button',
-                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
-                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
-                    onClick: () => {
-                        if (isPin()) {
-                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
-                                itemType: 'category',
-                                itemId: id,
-                            })?.id);
-                        } else {
-                            bookmarksService.addToFavorites(new Favorite({
-                                itemType: 'category',
-                                itemId: id,
-                            }));
-                        }
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('edit'),
-                    icon: EditIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('category/edit', {
-                            id,
-                            anchorEl,
-                        });
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('remove'),
-                    icon: RemoveIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('category/remove', { id });
-                    },
-                },
-            ],
-            position: {
-                top: event.nativeEvent.clientY,
-                left: event.nativeEvent.clientX,
-            },
-        });
-    };
+    const contextMenu = (event) => [
+        pin({
+            itemId: id,
+            itemType: 'category',
+            t,
+            bookmarksService,
+        }),
+        edit({
+            itemId: id,
+            itemType: 'category',
+            t,
+            coreService,
+            anchorEl: event.currentTarget,
+        }),
+        remove({
+            itemId: id,
+            itemType: 'category',
+            t,
+            coreService,
+        }),
+    ];
 
     return (
         <Chip
@@ -129,7 +95,7 @@ function Category(props) {
             }}
             variant="outlined"
             onClick={onClick}
-            onContextMenu={(event) => handlerContextMenu(event, event.currentTarget)}
+            onContextMenu={appService.contextMenu(contextMenu)}
         />
     );
 }

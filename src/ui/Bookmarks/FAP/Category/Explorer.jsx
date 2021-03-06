@@ -8,23 +8,21 @@ import {
 } from '@material-ui/core';
 import {
     LabelRounded as LabelIcon,
-    BookmarkBorderRounded as PinnedFavoriteIcon,
-    BookmarkRounded as UnpinnedFavoriteIcon,
-    EditRounded as EditIcon,
-    DeleteRounded as RemoveIcon,
     MoreVertRounded as MoreIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
 import Link from '@/ui/Bookmarks/FAP/Link';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import useAppService from '@/stores/app/AppStateProvider';
+import pin from '@/utils/contextMenu/pin';
+import edit from '@/utils/contextMenu/edit';
+import remove from '@/utils/contextMenu/remove';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: { width: 450 },
     avatar: { display: 'flex' },
     list: {
@@ -35,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Folder({ id }) {
     const classes = useStyles();
+    const appService = useAppService();
     const bookmarksService = useBookmarksService();
     const coreService = useCoreService();
     const { t } = useTranslation();
@@ -44,59 +43,27 @@ function Folder({ id }) {
     const [findBookmarks, setFindBookmarks] = useState(null);
     const buttonRef = useRef(null);
 
-    const isPin = () => bookmarksService.findFavorite({
-        itemType: 'category',
-        itemId: id,
-    });
-
-    const handlerContextMenu = (anchorEl) => {
-        const { top, left } = buttonRef.current.getBoundingClientRect();
-        coreService.localEventBus.call('system/contextMenu', {
-            actions: [
-                {
-                    type: 'button',
-                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
-                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
-                    onClick: () => {
-                        if (isPin()) {
-                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
-                                itemType: 'category',
-                                itemId: id,
-                            })?.id);
-                        } else {
-                            bookmarksService.addToFavorites(new Favorite({
-                                itemType: 'category',
-                                itemId: id,
-                            }));
-                        }
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('edit'),
-                    icon: EditIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('category/edit', {
-                            id,
-                            anchorEl,
-                        });
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('remove'),
-                    icon: RemoveIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('category/remove', { id });
-                    },
-                },
-            ],
-            position: {
-                top,
-                left,
-            },
-        });
-    };
+    const contextMenu = (event) => [
+        pin({
+            itemId: id,
+            itemType: 'category',
+            t,
+            bookmarksService,
+        }),
+        edit({
+            itemId: id,
+            itemType: 'category',
+            t,
+            coreService,
+            anchorEl: event.currentTarget,
+        }),
+        remove({
+            itemId: id,
+            itemType: 'category',
+            t,
+            coreService,
+        }),
+    ];
 
     useEffect(() => {
         bookmarksService.bookmarks.query({ categories: { match: [id] } })
@@ -117,7 +84,7 @@ function Folder({ id }) {
                 action={(
                     <IconButton
                         data-ui-path="category.explorer.menu"
-                        onClick={(event) => handlerContextMenu(event.currentTarget)}
+                        onClick={appService.contextMenu(contextMenu, { useAnchorEl: true })}
                         ref={buttonRef}
                     >
                         <MoreIcon />

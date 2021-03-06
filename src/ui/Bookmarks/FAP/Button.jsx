@@ -1,18 +1,15 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import {
-    BookmarkBorderRounded as PinnedFavoriteIcon,
-    BookmarkRounded as UnpinnedFavoriteIcon,
-    EditRounded as EditIcon,
-    DeleteRounded as RemoveIcon,
-} from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import useAppService from '@/stores/app/AppStateProvider';
+import pin from '@/utils/contextMenu/pin';
+import edit from '@/utils/contextMenu/edit';
+import remove from '@/utils/contextMenu/remove';
 
 const useStyles = makeStyles((theme) => ({ root: { borderRadius: theme.shape.borderRadiusBold } }));
 
@@ -27,68 +24,34 @@ function FAPButton(props) {
         className: externalClassName,
         ...other
     } = props;
+    const ref = useRef();
     const classes = useStyles();
+    const appService = useAppService();
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
     const { t } = useTranslation();
 
-    const isPin = () => bookmarksService.findFavorite({
-        itemType: type,
-        itemId: id,
-    });
-
-    const handlerContextMenu = (event) => {
-        event.preventDefault();
-        coreService.localEventBus.call('system/contextMenu', {
-            actions: [
-                {
-                    type: 'button',
-                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
-                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
-                    onClick: () => {
-                        if (isPin()) {
-                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
-                                itemType: type,
-                                itemId: id,
-                            })?.id);
-                        } else {
-                            bookmarksService.addToFavorites(new Favorite({
-                                itemType: type,
-                                itemId: id,
-                            }));
-                        }
-                    },
-                },
-                ...(!disableEdit ? [
-                    {
-                        type: 'button',
-                        title: t('edit'),
-                        icon: EditIcon,
-                        onClick: () => {
-                            coreService.localEventBus.call(`${type}/edit`, {
-                                id,
-                                anchorEl: event.currentTarget,
-                            });
-                        },
-                    },
-                ] : []),
-                ...(!disableRemove ? [
-                    {
-                        type: 'button',
-                        title: t('remove'),
-                        icon: RemoveIcon,
-                        onClick: () => {
-                            coreService.localEventBus.call(`${type}/remove`, { id });
-                        },
-                    },
-                ] : []),
-            ],
-            position: {
-                top: event.nativeEvent.clientY,
-                left: event.nativeEvent.clientX,
-            },
-        });
-    };
+    const contextMenu = () => [
+        pin({
+            itemId: id,
+            itemType: type,
+            t,
+            bookmarksService,
+        }),
+        !disableEdit && edit({
+            itemId: id,
+            itemType: type,
+            t,
+            coreService,
+            anchorEl: ref.current,
+        }),
+        !disableRemove && remove({
+            itemId: id,
+            itemType: type,
+            t,
+            coreService,
+        }),
+    ];
 
     return (
         <Tooltip
@@ -103,7 +66,8 @@ function FAPButton(props) {
                     children.props.className,
                     externalClassName,
                 ),
-                onContextMenu: handlerContextMenu,
+                ref,
+                onContextMenu: appService.contextMenu(contextMenu),
             }) : children}
         </Tooltip>
     );

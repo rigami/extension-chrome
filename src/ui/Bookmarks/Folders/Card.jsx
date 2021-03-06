@@ -1,18 +1,15 @@
 import React from 'react';
 import { Card, CardActionArea, CardHeader } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import {
-    BookmarkBorderRounded as PinnedFavoriteIcon,
-    BookmarkRounded as UnpinnedFavoriteIcon,
-    DeleteRounded as RemoveIcon,
-    EditRounded as EditIcon,
-    FolderRounded as FolderIcon,
-} from '@material-ui/icons';
+import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import useAppService from '@/stores/app/AppStateProvider';
+import pin from '@/utils/contextMenu/pin';
+import edit from '@/utils/contextMenu/edit';
+import remove from '@/utils/contextMenu/remove';
 
 const useStyles = makeStyles((theme) => ({
     root: { width: 180 },
@@ -30,68 +27,36 @@ const useStyles = makeStyles((theme) => ({
 function FolderCard({ id, name, className: externalClassName, ...other }) {
     const { t } = useTranslation();
     const classes = useStyles();
+    const appService = useAppService();
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
 
-    const isPin = () => bookmarksService.findFavorite({
-        itemType: 'folder',
-        itemId: id,
-    });
+    const contextMenu = (event) => [
+        pin({
+            itemId: id,
+            itemType: 'folder',
+            t,
+            bookmarksService,
+        }),
 
-    const handlerContextMenu = (event, anchorEl) => {
-        event.preventDefault();
-        coreService.localEventBus.call('system/contextMenu', {
-            actions: [
-                {
-                    type: 'button',
-                    title: isPin() ? t('fap.unpin') : t('fap.pin'),
-                    icon: isPin() ? UnpinnedFavoriteIcon : PinnedFavoriteIcon,
-                    onClick: () => {
-                        if (isPin()) {
-                            bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
-                                itemType: 'folder',
-                                itemId: id,
-                            })?.id);
-                        } else {
-                            bookmarksService.addToFavorites(new Favorite({
-                                itemType: 'folder',
-                                itemId: id,
-                            }));
-                        }
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('edit'),
-                    icon: EditIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('folder/edit', {
-                            id,
-                            anchorEl,
-                        });
-                    },
-                },
-                {
-                    type: 'button',
-                    title: t('remove'),
-                    icon: RemoveIcon,
-                    onClick: () => {
-                        coreService.localEventBus.call('folder/remove', { id });
-                    },
-                },
-            ],
-            position: {
-                top: event.nativeEvent.clientY,
-                left: event.nativeEvent.clientX,
-            },
-        });
-    };
+        edit({
+            itemId: id,
+            itemType: 'folder',
+            t,
+            coreService,
+            anchorEl: event.currentTarget,
+        }),
+        remove({
+            itemId: id,
+            itemType: 'folder',
+            t,
+            coreService,
+        }),
+    ];
 
     return (
         <Card variant="outlined" className={clsx(classes.root, externalClassName)} {...other}>
-            <CardActionArea
-                onContextMenu={(event) => handlerContextMenu(event, event.currentTarget)}
-            >
+            <CardActionArea onContextMenu={appService.contextMenu(contextMenu)}>
                 <CardHeader
                     avatar={<FolderIcon />}
                     title={name}
