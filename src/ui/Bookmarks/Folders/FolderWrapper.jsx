@@ -13,7 +13,8 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-    FolderRounded as FolderIcon,
+    HomeRounded as HomeIcon,
+    ArrowBackRounded as BackIcon,
     BookmarkBorderRounded as PinnedFavoriteIcon,
     BookmarkRounded as UnpinnedFavoriteIcon,
     EditRounded as EditIcon,
@@ -44,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
     root: {},
     container: {
         marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(1),
         listStyle: 'none',
     },
     text: { maxWidth: 700 },
@@ -75,6 +77,10 @@ const useStyles = makeStyles((theme) => ({
     bookmarksBlock: {
         width: '100%',
         display: 'flex',
+    },
+    backButton: {
+        margin: theme.spacing(-1.5),
+        marginRight: theme.spacing(2),
     },
 }));
 
@@ -135,7 +141,17 @@ function FolderWrapper({ folder, onSelect }) {
                 }}
             >
                 <ListItemIcon style={{ minWidth: 36 }}>
-                    <FolderIcon style={{ }} />
+                    {folder?.id !== 1 && (
+                        <IconButton
+                            className={classes.backButton}
+                            onClick={() => onSelect(folder?.parentId || 1)}
+                        >
+                            <BackIcon />
+                        </IconButton>
+                    )}
+                    {folder?.id === 1 && (
+                        <HomeIcon />
+                    )}
                 </ListItemIcon>
                 <ListItemText
                     classes={{
