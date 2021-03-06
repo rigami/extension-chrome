@@ -23,10 +23,17 @@ import edit from '@/utils/contextMenu/edit';
 import remove from '@/utils/contextMenu/remove';
 
 const useStyles = makeStyles(() => ({
-    root: { width: 450 },
+    root: {
+        width: 450,
+        height: 620,
+        maxHeight: 'inherit',
+        maxWeight: 'inherit',
+        display: 'flex',
+        flexDirection: 'column',
+    },
     avatar: { display: 'flex' },
     list: {
-        height: 550,
+        flexGrow: 1,
         overflow: 'auto',
     },
 }));

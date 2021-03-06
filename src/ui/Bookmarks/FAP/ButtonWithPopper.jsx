@@ -91,7 +91,6 @@ function ButtonWithPopper(props) {
                     }
                 }}
                 modifiers={{
-                    // inner: { enabled: offset },
                     offset: {
                         enabled: true,
                         offset: '0px, 32px',

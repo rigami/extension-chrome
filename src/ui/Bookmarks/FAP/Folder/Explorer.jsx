@@ -3,7 +3,14 @@ import { Card } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Folder from './Folder';
 
-const useStyles = makeStyles(() => ({ root: { display: 'flex' } }));
+const useStyles = makeStyles(() => ({
+    root: {
+        display: 'flex',
+        height: 620,
+        maxHeight: 'inherit',
+        maxWidth: 'inherit',
+    },
+}));
 
 function Explorer({ id: rootId }) {
     const classes = useStyles();

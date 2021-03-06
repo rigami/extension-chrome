@@ -43,7 +43,8 @@ const useStyles = makeStyles((theme) => ({
     },
     stickyRoot: {
         top: 'auto',
-        bottom: theme.spacing(3),
+        bottom: 0,
+        height: theme.spacing(6) + 40,
     },
     card: {
         margin: 'auto',
@@ -52,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'unset',
         display: 'flex',
         background: 'none',
+        marginBottom: theme.spacing(3),
     },
     leftAlign: { marginLeft: 0 },
     backdrop: {
@@ -67,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     linkBackdrop: { backgroundColor: theme.palette.background.default },
     linkBackdropBlur: {
         backdropFilter: 'blur(10px) brightness(200%)',
-        backgroundColor: fade(theme.palette.background.default, 0.52),
+        backgroundColor: fade(theme.palette.background.default, 0.82),
     },
     overload: {
         width: 40,

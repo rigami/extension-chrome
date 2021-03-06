@@ -17,11 +17,14 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         paddingBottom: 0,
         paddingRight: 0,
+        display: 'flex',
+        flexWrap: 'wrap',
     },
     link: {
         marginRight: theme.spacing(2),
         marginBottom: theme.spacing(2),
         padding: 0,
+        display: 'block',
     },
 }));
 

@@ -8,6 +8,8 @@ const useStyles = makeStyles((theme) => ({
     popper: {
         zIndex: theme.zIndex.modal,
         willChange: 'auto !important',
+        maxWidth: 'calc(100vw - 32px)',
+        maxHeight: 'calc(100vh - 32px)',
     },
 }));
 
@@ -66,8 +68,14 @@ function PopperWrapper(props) {
                     },
                     preventOverflow: {
                         enabled: true,
-                        padding: 8,
-                        boundariesElement: 'window',
+                        padding: 16,
+                        boundariesElement: 'viewport',
+                        priority: [
+                            'left',
+                            'right',
+                            'top',
+                            'bottom',
+                        ],
                     },
                     offset: {
                         enabled: true,

@@ -33,17 +33,20 @@ import remove from '@/utils/contextMenu/remove';
 const useStyles = makeStyles((theme) => ({
     root: {
         width: 450,
+        maxWeight: 'inherit',
         borderRadius: 0,
+        zIndex: 1,
+        display: 'flex',
+        flexDirection: 'column',
         transition: theme.transitions.create(['width'], {
             duration: theme.transitions.duration.short,
             easing: theme.transitions.easing.easeInOut,
         }),
-        zIndex: 1,
     },
     avatar: { display: 'flex' },
     list: {
-        height: 550,
         overflow: 'auto',
+        flexGrow: 1,
     },
     primaryText: {
         overflow: 'hidden',
