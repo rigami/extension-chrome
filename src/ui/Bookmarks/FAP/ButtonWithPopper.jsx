@@ -48,6 +48,8 @@ function ButtonWithPopper(props) {
         iconOpenProps = {},
         iconClose = CloseIcon,
         children,
+        popperModifiers = {},
+        popperProps = {},
         ...otherProps
     } = props;
     const classes = useStyles();
@@ -94,7 +96,9 @@ function ButtonWithPopper(props) {
                         enabled: true,
                         offset: '0px, 32px',
                     },
+                    ...popperModifiers,
                 }}
+                popperProps={popperProps}
                 onService={(popperInstance) => { store.popper = popperInstance; }}
             >
                 <ReactResizeDetector handleWidth handleHeight onResize={updatePopper}>

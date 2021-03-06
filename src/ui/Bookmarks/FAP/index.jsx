@@ -25,6 +25,7 @@ import CategoryEntity from '@/stores/universal/bookmarks/entities/category';
 import Folder from './Folder';
 import Category from './Category';
 import Link from './Link';
+import CollapseTray from './CollapseTray';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -96,7 +97,7 @@ function FAP() {
         }
 
         Promise.allSettled(
-            bookmarksService.favorites.map((fav) => {
+            bookmarksService.favorites.slice(0, maxCount).map((fav) => {
                 if (fav.itemType === 'bookmark') {
                     return BookmarksUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'folder') {
@@ -127,9 +128,9 @@ function FAP() {
                 console.error('Failed load favorites', e);
                 setIsLoading(false);
             });
-    }, [bookmarksService.favorites.length]);
+    }, [bookmarksService.favorites.length, maxCount]);
 
-    const overload = maxCount < favorites.length;
+    const overload = maxCount < bookmarksService.favorites.length;
 
     return (
         <Fade in={!isLoading}>
@@ -179,15 +180,16 @@ function FAP() {
                         return null;
                     })}
                     {overload && (
-                        <ButtonBase
-                            className={clsx(
-                                classes.overload,
-                                fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.linkBackdropBlur,
-                                fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.linkBackdrop,
-                            )}
-                        >
-                            <MoreIcon />
-                        </ButtonBase>
+                        <CollapseTray
+                            offsetLoad={maxCount}
+                            classes={{
+                                backdrop: clsx(
+                                    classes.overload,
+                                    fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.linkBackdropBlur,
+                                    fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.linkBackdrop,
+                                ),
+                            }}
+                        />
                     )}
                 </Card>
             </Box>

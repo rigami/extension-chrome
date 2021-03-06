@@ -21,6 +21,7 @@ function PopperWrapper(props) {
         anchorEl,
         isOpen,
         modifiers = {},
+        popperProps = {},
         onClose,
         onService,
         children,
@@ -74,6 +75,7 @@ function PopperWrapper(props) {
                     },
                     ...modifiers,
                 }}
+                {...popperProps}
             >
                 {children}
             </Popper>
