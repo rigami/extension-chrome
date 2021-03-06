@@ -83,7 +83,7 @@ function FAP() {
     const bookmarksService = useBookmarksService();
     const [favorites, setFavorites] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [maxCount, setMaxCount] = useState(null);
+    const [maxCount, setMaxCount] = useState(0);
     const fapSettings = bookmarksService.settings;
 
     const onResize = useCallback((width) => {
@@ -98,8 +98,14 @@ function FAP() {
             return;
         }
 
+        if (favorites.length >= maxCount) {
+            setFavorites(favorites.slice(0, maxCount));
+
+            return;
+        }
+
         Promise.allSettled(
-            bookmarksService.favorites.slice(0, maxCount).map((fav) => {
+            bookmarksService.favorites.slice(favorites.length, maxCount).map((fav) => {
                 if (fav.itemType === 'bookmark') {
                     return BookmarksUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'folder') {
@@ -112,8 +118,9 @@ function FAP() {
             }),
         )
             .then((findFavorites) => {
-                setFavorites(
-                    findFavorites
+                setFavorites([
+                    ...favorites,
+                    ...findFavorites
                         .filter(({ status }, index) => {
                             if (status !== 'fulfilled') {
                                 bookmarksService.removeFromFavorites(bookmarksService.favorites[index]?.id);
@@ -123,7 +130,7 @@ function FAP() {
                             }
                         })
                         .map(({ value }) => value),
-                );
+                ]);
                 setIsLoading(false);
             })
             .catch((e) => {
@@ -151,7 +158,7 @@ function FAP() {
                         fapSettings.fapAlign === BKMS_FAP_ALIGN.LEFT && classes.leftAlign,
                     )}
                 >
-                    {maxCount && favorites.slice(0, maxCount).map((fav) => {
+                    {maxCount.length !== 0 && favorites.slice(0, maxCount).map((fav) => {
                         let a11props = {
                             ...fav,
                             key: `${fav.type}-${fav.id}`,
