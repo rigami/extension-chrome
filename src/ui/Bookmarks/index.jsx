@@ -160,9 +160,9 @@ function Bookmarks() {
     let fapSizeStyle;
 
     if (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED) {
-        fapSizeStyle = theme.spacing(9) + 40;
+        fapSizeStyle = 40 + theme.spacing(6) + theme.spacing(2.5);
     } else if (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT) {
-        fapSizeStyle = theme.spacing(3) + 40;
+        fapSizeStyle = 40 + theme.spacing(6);
     } else {
         fapSizeStyle = 0;
     }
