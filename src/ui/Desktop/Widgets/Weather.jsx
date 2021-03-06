@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import {
     Link,
-    Typography,
     Tooltip,
     Fade,
     CircularProgress,
@@ -15,9 +14,8 @@ import { eventToBackground } from '@/stores/server/bus';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        textShadow: '0 2px 17px #00000029',
-        fontFamily: '"Manrope", "Open Sans", sans-serif',
-        fontWeight: 800,
+        display: 'inline-block',
+        whiteSpace: 'nowrap',
     },
     link: { position: 'relative' },
     loader: {
@@ -28,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function WeatherWidget({ size }) {
+function WeatherWidget() {
     const classes = useStyles();
     const { t } = useTranslation();
     const { widgets } = useAppStateService();
@@ -54,20 +52,20 @@ function WeatherWidget({ size }) {
     return (
         <Fade in={widgets.showWeather}>
             <Tooltip title={t('widgets.weather.openInNewTab')}>
-                <Link
-                    href={widgets.settings.dtwWeatherAction || widgets.weather?.dashboardUrl}
-                    target="_blank"
-                    underline="none"
-                    color="inherit"
-                    className={classes.link}
-                >
-                    {widgets.weather?.status === FETCH.PENDING && (
-                        <CircularProgress className={classes.loader} size={15} />
-                    )}
-                    <Typography variant={size} className={classes.root}>
+                <span className={classes.root}>
+                    <Link
+                        href={widgets.settings.dtwWeatherAction || widgets.weather?.dashboardUrl}
+                        target="_blank"
+                        underline="none"
+                        color="inherit"
+                        className={classes.link}
+                    >
+                        {widgets.weather?.status === FETCH.PENDING && (
+                            <CircularProgress className={classes.loader} size={15} />
+                        )}
                         {widgets.weather?.currTemp ? `${Math.round(temp)} ${units}` : 'Failed get weather data'}
-                    </Typography>
-                </Link>
+                    </Link>
+                </span>
             </Tooltip>
         </Fade>
     );

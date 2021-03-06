@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import DTW_SIZE from '@/enum/WIDGET/DTW_SIZE';
@@ -44,13 +44,15 @@ const useStyles = makeStyles((theme) => ({
         '& $widget': { alignItems: 'end' },
     },
     centerTop: { '& $widget': { marginBottom: '16%' } },
-    row: {
-        display: 'flex',
-        alignItems: 'center',
-    },
+    row: { alignItems: 'center' },
     divider: {
         margin: theme.spacing(0, 2),
         backgroundColor: theme.palette.common.white,
+    },
+    text: {
+        textShadow: '0 2px 17px #00000029',
+        fontFamily: '"Manrope", "Open Sans", sans-serif',
+        fontWeight: 800,
     },
 }));
 
@@ -104,10 +106,18 @@ function Widgets() {
         >
             <Box className={classes.widget}>
                 {widgets.settings.dtwUseTime && (
-                    <Time size={calcFontSize(widgets.settings.dtwSize, timeFontSize)} />
+                    <Typography
+                        variant={calcFontSize(widgets.settings.dtwSize, timeFontSize)}
+                        className={classes.text}
+                    >
+                        <Time />
+                    </Typography>
                 )}
                 {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) && (
-                    <Box className={classes.row}>
+                    <Typography
+                        variant={calcFontSize(widgets.settings.dtwSize, timeFontSize)}
+                        className={clsx(classes.row, classes.text)}
+                    >
                         {widgets.settings.dtwUseDate && (
                             <Date
                                 size={calcFontSize(widgets.settings.dtwSize, dateFontSize)}
@@ -117,7 +127,7 @@ function Widgets() {
                         {widgets.settings.dtwUseWeather && (
                             <WeatherWidget size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
                         )}
-                    </Box>
+                    </Typography>
                 )}
             </Box>
         </Box>
