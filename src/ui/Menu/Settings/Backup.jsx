@@ -350,7 +350,7 @@ function BackupSettings() {
                                     fullWidth
                                     className={classes.backupButton}
                                 >
-                                    {t('settings.backup.localBackup.restore')}
+                                    {t('settings.backup.localBackup.restore.title')}
                                 </Button>
                             </label>
                         </React.Fragment>
