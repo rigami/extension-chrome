@@ -85,6 +85,15 @@ function GlobalModals({ children }) {
 
         const globalListeners = [
             coreService.globalEventBus.on('system/backup/local/create/progress', (data) => {
+                if (data.stage === 'error') {
+                    enqueueSnackbar({
+                        message: t('settings.backup.localBackup.create.failed'),
+                        variant: 'error',
+                    });
+
+                    return;
+                }
+
                 console.log('system/backup/local/progress', data);
 
                 console.log(FSConnector.getURL(data.path));
@@ -96,11 +105,15 @@ function GlobalModals({ children }) {
                 link.click();
 
                 enqueueSnackbar({
-                    message: t('settings.backup.localBackup.noty.success'),
+                    message: t('settings.backup.localBackup.create.success'),
                     variant: 'success',
                 });
             }),
             coreService.globalEventBus.on('system/backup/local/restore/progress', (data) => {
+                if (coreService.storage.temp.progressRestoreSnackbar) {
+                    closeSnackbar(coreService.storage.temp.progressRestoreSnackbar);
+                }
+
                 if (data.type === 'oldAppBackupFile') {
                     console.log(data.file);
 
@@ -109,12 +122,19 @@ function GlobalModals({ children }) {
                         action: 'prompt',
                         file: data.file,
                     });
+                } else if (data.result === 'start') {
+                    const snackId = enqueueSnackbar({
+                        message: t('settings.backup.localBackup.restore.progress'),
+                        variant: 'progress',
+                    });
+
+                    coreService.storage.updateTemp({ progressRestoreSnackbar: snackId });
                 } else if (data.result === 'done') {
                     coreService.storage.updatePersistent({ showBackupSuccessRestoreMessage: true });
                     location.reload();
-                } else {
+                } else if (data.result === 'error') {
                     enqueueSnackbar({
-                        message: t(data.message || 'settings.backup.localBackup.noty.success'),
+                        message: t(`settings.backup.localBackup.restore.failed.${data.message}`),
                         variant: data.result,
                     });
                 }
@@ -124,7 +144,7 @@ function GlobalModals({ children }) {
         if (coreService.storage.persistent.showBackupSuccessRestoreMessage) {
             coreService.storage.updatePersistent({ showBackupSuccessRestoreMessage: null });
             enqueueSnackbar({
-                message: t('settings.backup.localBackup.noty.success'),
+                message: t('settings.backup.localBackup.restore.success'),
                 variant: 'success',
             });
         }

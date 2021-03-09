@@ -305,24 +305,27 @@
         "create": {
           "title": "Create backup",
           "description": "Save application settings and bookmarks on your computer",
-          "button": "Create backup"
+          "button": "Create backup",
+          "success": "Save created successfully",
+          "failed": "Save creation error"
         },
         "item": {
           "settings": "Settings",
           "bookmarks": "Bookmarks"
         },
-        "noty": {
+        "save": "Save",
+        "restore": {
+          "title": "Restore data",
+          "progress": "Data recovering",
           "success": "Save successfully restored",
           "failed": {
             "wrongVersion": "Mistake. Saving this version is not supported",
             "wrongSchema": "Mistake. Invalid save file structure"
           }
         },
-        "save": "Save",
-        "restore": "Restore data",
         "oldAppBackupFile": {
           "title": "This is the legacy extension save file",
-          "description": "These are saves from the ClockTab application. Not all settings can be appliedь",
+          "description": "These are saves from the ClockTab application. Not all settings can be applied",
           "continue": "Apply this save"
         }
       }
