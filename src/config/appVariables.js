@@ -3,7 +3,7 @@ import packageFile from '@/../package.json';
 import StorageConnector from '@/utils/storageConnector';
 
 export default {
-    notifyNewVersion: false,
+    notifyNewVersion: true,
     extensionId: chrome.runtime.id,
     version: packageFile.version,
     db: {
