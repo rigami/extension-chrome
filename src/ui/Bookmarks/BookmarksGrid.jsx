@@ -3,6 +3,7 @@ import CardLink from '@/ui/Bookmarks/CardLink';
 import React from 'react';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTheme } from '@material-ui/core/styles';
+import { BKMS_VARIANT } from '@/enum';
 
 function BookmarksGrid({ bookmarks }) {
     const theme = useTheme();
@@ -16,16 +17,8 @@ function BookmarksGrid({ bookmarks }) {
             if (columnStabilizer[column] > element) column = index;
         });
 
-        columnStabilizer[column] += curr.type === 'extend' ? 0.8 : 0.6;
-        columnStabilizer[column] += Math.min(
-            Math.ceil(curr.name.length / 15),
-            2,
-        ) * 0.2 || 0.4;
-        columnStabilizer[column] += (
-            curr.description
-            && Math.min(Math.ceil(curr.description.length / 20), 4) * 0.17
-        ) || 0;
-        columnStabilizer[column] += 0.12;
+        columnStabilizer[column] += curr.variant === BKMS_VARIANT.POSTER ? 2 : 1;
+        columnStabilizer[column] += curr.description ? 1 : 0;
 
         if (typeof acc[column] === 'undefined') acc[column] = [];
 
