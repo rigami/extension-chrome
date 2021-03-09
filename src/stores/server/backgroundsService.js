@@ -377,7 +377,7 @@ class BackgroundsServerService {
     async setBG(setBG) {
         console.log('[backgrounds] Set background', setBG);
 
-        if (!setBG.fileName) {
+        if (setBG && !setBG?.fileName) {
             console.log('[backgrounds] Bg not load background. Fetch...');
             let fileName;
 
