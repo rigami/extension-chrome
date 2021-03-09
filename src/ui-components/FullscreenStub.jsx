@@ -27,11 +27,15 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.primary,
         wordBreak: 'break-word',
         textAlign: 'center',
+        fontWeight: 800,
+        fontFamily: theme.typography.primaryFontFamily,
     },
     description: {
         color: theme.palette.text.secondary,
         wordBreak: 'break-word',
         textAlign: 'center',
+        fontWeight: 800,
+        fontFamily: theme.typography.primaryFontFamily,
     },
     bottomOffset: { marginBottom: theme.spacing(2) },
 }));
@@ -45,6 +49,7 @@ function FullScreenStub(props) {
         actions,
         children,
         className: externalClassName,
+        classes: externalClasses = {},
         ...other
     } = props;
     const classes = useStyles();
@@ -63,7 +68,11 @@ function FullScreenStub(props) {
                 {message && (
                     <Typography
                         variant="h6"
-                        className={clsx(classes.title, !description && classes.bottomOffset)}
+                        className={clsx(
+                            classes.title,
+                            !description && classes.bottomOffset,
+                            externalClasses.title,
+                        )}
                     >
                         {message}
                     </Typography>
@@ -74,6 +83,7 @@ function FullScreenStub(props) {
                         className={clsx(
                             classes.description,
                             (children || actions) && actions?.length > 0 && classes.bottomOffset,
+                            externalClasses.description,
                         )}
                     >
                         {description}

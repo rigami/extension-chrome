@@ -16,7 +16,7 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
-import Link from '@/ui/Bookmarks/FAP/Link';
+import Link from '@/ui/Desktop/FAP/Link';
 import useAppService from '@/stores/app/AppStateProvider';
 import pin from '@/utils/contextMenu/pin';
 import edit from '@/utils/contextMenu/edit';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ExpandLessRounded as MoreIcon } from '@material-ui/icons';
-import ButtonWithPopper from '@/ui/Bookmarks/FAP/ButtonWithPopper';
+import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
 import Explorer from './Explorer';
 
 function CollapseTray(props) {

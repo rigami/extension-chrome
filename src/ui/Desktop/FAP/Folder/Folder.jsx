@@ -21,7 +21,7 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
-import Link from '@/ui/Bookmarks/FAP/Link';
+import Link from '@/ui/Desktop/FAP/Link';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import clsx from 'clsx';

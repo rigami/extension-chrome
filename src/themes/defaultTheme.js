@@ -27,6 +27,7 @@ const theme = {
         fontFamily: localStorage.getItem('app_use_system_font') === 'true'
             ? 'system-ui'
             : 'Roboto, "Open Sans", sans-serif',
+        primaryFontFamily: '"Manrope", "Open Sans", sans-serif',
         // h5: { fontWeight: 700 },
         // h6: { fontWeight: 700 },
     },

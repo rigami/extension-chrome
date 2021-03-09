@@ -1,6 +1,16 @@
-import React, { useState, createRef, useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
-import { Box, Chip, Tooltip } from '@material-ui/core';
+import React, {
+    createRef,
+    useEffect,
+    useRef,
+    forwardRef,
+} from 'react';
+import { observer, useLocalObservable } from 'mobx-react-lite';
+import {
+    Box,
+    Chip,
+    Tooltip,
+    Card,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
 import ResizeDetector from 'react-resize-detector';
@@ -8,6 +18,7 @@ import {
     KeyboardArrowDownRounded as ArrowDownIcon,
     KeyboardArrowUpRounded as ArrowUpIcon,
 } from '@material-ui/icons';
+import PopperWrapper from '@/ui-components/PopperWrapper';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -44,9 +55,15 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 3,
     },
     expandTitle: { display: 'none' },
+    popperCard: {
+        width: 600,
+        padding: theme.spacing(1),
+        paddingTop: theme.spacing(2),
+        paddingLeft: theme.spacing(2),
+    },
 }));
 
-function ExpandButton({ tooltip, icon, onClick }) {
+const ExpandButton = forwardRef(({ tooltip, icon, onClick }, ref) => {
     const classes = useStyles();
 
     const Icon = icon;
@@ -54,6 +71,7 @@ function ExpandButton({ tooltip, icon, onClick }) {
     return (
         <Tooltip title={tooltip}>
             <Chip
+                ref={ref}
                 icon={<Icon />}
                 classes={{
                     root: clsx(classes.tag, classes.expandButton),
@@ -65,55 +83,32 @@ function ExpandButton({ tooltip, icon, onClick }) {
             />
         </Tooltip>
     );
-}
+});
 
 function CollapseWrapper(props) {
     const {
         list = [],
         renderComponent = () => {},
         classes: externalClasses = {},
-        expandButtonLabel = 'Показать все',
-        collapseButtonLabel = 'Свернуть',
         actions,
+        usePopper = false,
     } = props;
     const classes = useStyles();
-    const [isCollapse, setIsCollapse] = useState(true);
-    const [isUseExpand, setIsUseExpand] = useState(false);
-    const [expandLabel, setExpandLabel] = useState('Показать все');
-    const [collapseLabel, setCollapseLabel] = useState('Свернуть');
+    const anchorEl = useRef();
     const rootRef = createRef();
     const tagsRef = createRef();
-
-    const calcExpandLabel = (visibleCount) => {
-        if (typeof expandButtonLabel === 'function') {
-            return expandButtonLabel(visibleCount, list.length);
-        }
-        return expandButtonLabel;
-    };
-
-    const calcCollapseLabel = (visibleCount) => {
-        if (typeof collapseButtonLabel === 'function') {
-            return collapseButtonLabel(visibleCount, list.length);
-        }
-        return collapseButtonLabel;
-    };
+    const store = useLocalObservable(() => ({
+        isCollapse: true,
+        isUseExpand: false,
+        isPopperOpen: false,
+        isBlockEvent: false,
+    }));
 
     const handleResize = () => {
-        if (isCollapse) setIsUseExpand(tagsRef.current.scrollWidth > tagsRef.current.clientWidth);
-
-        if (!tagsRef.current) return;
-
-        const invisibleIndex = Array.prototype.findIndex.call(
-            tagsRef.current.children,
-            (tagEl) => tagEl.offsetLeft + (tagEl.clientWidth * 0.6) > tagsRef.current.clientWidth,
-        );
-        const visibleCount = list.length - (invisibleIndex >= 0 ? invisibleIndex : list.length);
-
-        setExpandLabel(calcExpandLabel(visibleCount));
-        setCollapseLabel(calcCollapseLabel(visibleCount));
+        if (store.isCollapse) store.isUseExpand = tagsRef.current.scrollWidth > tagsRef.current.clientWidth;
     };
 
-    useEffect(handleResize, [isCollapse, list.length]);
+    useEffect(handleResize, [store.isCollapse, list.length]);
 
     const RenderComponent = renderComponent;
 
@@ -128,8 +123,8 @@ function CollapseWrapper(props) {
             <Box
                 className={clsx(
                     classes.list,
-                    !isCollapse && classes.wrap,
-                    isUseExpand && classes.gradient,
+                    !store.isCollapse && classes.wrap,
+                    store.isUseExpand && classes.gradient,
                 )}
                 ref={tagsRef}
             >
@@ -140,23 +135,64 @@ function CollapseWrapper(props) {
                         {...component}
                     />
                 ))}
-                {!isCollapse && (
+                {!store.isCollapse && (
                     <ExpandButton
                         tooltip="Показать меньше"
                         icon={ArrowUpIcon}
-                        onClick={() => setIsCollapse(true)}
+                        onClick={() => { store.isCollapse = true; }}
                     />
                 )}
-                {!isCollapse && actions}
+                {!store.isCollapse && actions}
             </Box>
-            {isCollapse && isUseExpand && (
+            {store.isCollapse && store.isUseExpand && (
                 <ExpandButton
-                    tooltip="Показать больше"
-                    icon={ArrowDownIcon}
-                    onClick={() => setIsCollapse(false)}
+                    ref={anchorEl}
+                    tooltip={store.isPopperOpen ? 'Показать меньше' : 'Показать больше'}
+                    icon={store.isPopperOpen ? ArrowUpIcon : ArrowDownIcon}
+                    onMouseDown={() => {
+                        if (!store.isPopperOpen) store.isBlockEvent = true;
+                    }}
+                    onClick={() => {
+                        if (usePopper) {
+                            store.isPopperOpen = !store.isPopperOpen;
+                        } else {
+                            store.isCollapse = false;
+                        }
+                        if (store.isBlockEvent) {
+                        }
+                        store.isBlockEvent = false;
+                    }}
                 />
             )}
-            {isCollapse && actions}
+            {store.isCollapse && actions}
+            {usePopper && (
+                <PopperWrapper
+                    isOpen={store.isPopperOpen}
+                    anchorEl={anchorEl.current}
+                    onClose={() => {
+                        if (store.isBlockEvent) return;
+
+                        store.isPopperOpen = false;
+                    }}
+                    placement="bottom"
+                    modifiers={{
+                        offset: {
+                            enabled: true,
+                            offset: '0px, 16px',
+                        },
+                    }}
+                >
+                    <Card className={classes.popperCard} elevation={18}>
+                        {list.length !== 0 && list.map((component) => (
+                            <RenderComponent
+                                key={component.id}
+                                className={clsx(classes.tag, externalClasses.chip)}
+                                {...component}
+                            />
+                        ))}
+                    </Card>
+                </PopperWrapper>
+            )}
             <ResizeDetector handleWidth onResize={handleResize} />
         </Box>
     );

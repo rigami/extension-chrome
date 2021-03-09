@@ -19,7 +19,7 @@ import ScrollView from '@/ui-components/ScrollView';
 import { makeStyles } from '@material-ui/core/styles';
 import FabMenu from '@/ui/Menu/FabMenu';
 import Menu from '@/ui/Menu';
-import FAP from './Bookmarks/FAP';
+import FAP from './Desktop/FAP';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
 import GlobalScroll from './GlobalScroll';
@@ -59,14 +59,13 @@ function RootApp({ onChangeTheme }) {
             ]}
         >
             <GlobalScroll>
-                <ScrollView value={ACTIVITY.DESKTOP} disableScroll>
+                <ScrollView value={ACTIVITY.DESKTOP}>
                     <Desktop />
                 </ScrollView>
                 <ScrollView value={ACTIVITY.BOOKMARKS} classes={{ content: classes.bookmarks }}>
                     <Bookmarks />
                 </ScrollView>
             </GlobalScroll>
-            <FAP />
             <FabMenu />
             <Menu />
         </Nest>

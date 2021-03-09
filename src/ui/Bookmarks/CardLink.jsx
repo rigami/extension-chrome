@@ -27,36 +27,33 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         position: 'relative',
+        height: 62,
         '&:hover $menuIconButton': {
             opacity: 1,
             pointerEvents: 'auto',
         },
     },
+    middle: { height: 140 },
+    large: { height: 218 },
     rootActionWrapper: {
         width: '100%',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'stretch',
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-start',
     },
-    icon: { margin: 'auto' },
+    icon: {
+        marginRight: theme.spacing(1.5),
+        width: 36,
+        height: 36,
+        flexShrink: 0,
+    },
     body: {
         width: '100%',
         padding: theme.spacing(1, 2),
         paddingTop: 0,
         boxSizing: 'border-box',
-    },
-    categoriesWrapper: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
-    category: {
-        width: theme.spacing(1),
-        height: theme.spacing(1),
-        borderRadius: theme.spacing(0.5),
-        marginRight: theme.spacing(0.6),
-        marginBottom: theme.spacing(0.5),
     },
     title: {
         display: '-webkit-box',
@@ -66,39 +63,44 @@ const useStyles = makeStyles((theme) => ({
         lineHeight: 1.2,
         wordBreak: 'break-word',
     },
-    banner: {
+    banner: {},
+    imageWrapper: {
         width: '100%',
-        height: 64,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        padding: theme.spacing(1.5),
+        paddingBottom: theme.spacing(1.25),
+        height: 60,
+        boxSizing: 'border-box',
     },
     extendBanner: {
         width: '100%',
-        height: 90,
+        height: 84,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: theme.spacing(1),
     },
+    extendBannerTitle: { margin: theme.spacing(1, 1.5) },
     description: {
         color: theme.palette.text.secondary,
         display: '-webkit-box',
         '-webkit-box-orient': 'vertical',
         '-webkit-line-clamp': 4,
         overflow: 'hidden',
-        marginTop: theme.spacing(0.6),
+        marginTop: theme.spacing(-0.5),
+        margin: theme.spacing(1.25, 1.5),
+        lineHeight: 1.357,
         wordBreak: 'break-word',
+        height: 72,
     },
     menuIconButton: {
         position: 'absolute',
         right: theme.spacing(0.5),
-        top: theme.spacing(0.5),
+        top: theme.spacing(0.75),
         opacity: 0,
         pointerEvents: 'none',
     },
     menuIcon: { '& path': { backdropFilter: 'invert(1)' } },
-    borderIcon: { boxShadow: '0 0 0 1px #e0e0e0' },
 }));
 
 function CardLink(props) {
@@ -167,17 +169,23 @@ function CardLink(props) {
             enterDelay={400}
             enterNextDelay={400}
         >
-            <Card className={clsx(classes.root, externalClassName)} variant="outlined" {...other}>
+            <Card
+                className={clsx(
+                    classes.root,
+                    icoVariant !== BKMS_VARIANT.POSTER && description && classes.middle,
+                    icoVariant === BKMS_VARIANT.POSTER && !description && classes.middle,
+                    icoVariant === BKMS_VARIANT.POSTER && description && classes.large,
+                    externalClassName,
+                )}
+                variant="outlined" {...other}
+            >
                 <CardActionArea
                     className={classes.rootActionWrapper}
                     onMouseUp={handleClick}
                     onContextMenu={!preview ? appService.contextMenu(contextMenu) : undefined}
                 >
-                    {icoVariant === BKMS_VARIANT.POSTER && (
-                        <Image variant={BKMS_VARIANT.POSTER} src={imageUrl} className={classes.extendBanner} />
-                    )}
                     {icoVariant !== BKMS_VARIANT.POSTER && (
-                        <Box className={classes.banner}>
+                        <Box className={classes.imageWrapper}>
                             <Image
                                 variant={icoVariant}
                                 src={imageUrl}
@@ -186,23 +194,24 @@ function CardLink(props) {
                                         ? name[0]?.toUpperCase()
                                         : undefined
                                 }
-                                className={clsx(classes.icon, classes.borderIcon)}
+                                className={classes.icon}
                             />
+                            <Typography className={classes.title}>{name}</Typography>
                         </Box>
                     )}
-                    <div className={classes.body}>
-                        <div className={classes.categoriesWrapper}>
-                            {categories && categories.map(({ name: categoryName, color, id: categoryId }) => (
-                                <Tooltip key={categoryId} title={categoryName}>
-                                    <div className={classes.category} style={{ backgroundColor: color }} />
-                                </Tooltip>
-                            ))}
-                        </div>
-                        <Typography className={classes.title}>{name}</Typography>
-                        {description && (
-                            <Typography variant="body2" className={classes.description}>{description}</Typography>
-                        )}
-                    </div>
+                    {icoVariant === BKMS_VARIANT.POSTER && (
+                        <Box className={classes.banner}>
+                            <Image variant={BKMS_VARIANT.POSTER} src={imageUrl} className={classes.extendBanner} />
+                            <Typography
+                                className={clsx(classes.title, classes.extendBannerTitle)}
+                            >
+                                {name}
+                            </Typography>
+                        </Box>
+                    )}
+                    {description && (
+                        <Typography variant="body2" className={classes.description}>{description}</Typography>
+                    )}
                 </CardActionArea>
                 {!preview && (
                     <React.Fragment>

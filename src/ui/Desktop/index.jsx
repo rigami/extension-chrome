@@ -22,8 +22,11 @@ import BackgroundsUniversalService from '@/stores/universal/backgrounds/service'
 import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem, ContextMenuDivider } from '@/stores/app/entities/contextMenu';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
-import Widgets from './Widgets';
+import GlobalScroll from '@/ui/GlobalScroll';
+import FAP from '@/ui/Desktop/FAP';
+import Nest from '@/utils/Nest';
 import Background from './Background';
+import Widgets from './Widgets';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -119,6 +122,7 @@ function Desktop() {
             {widgets.settings.useWidgets && (
                 <Widgets />
             )}
+            <FAP />
             {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
                 <CircularProgress
                     className={classes.loadBGIconWhite}

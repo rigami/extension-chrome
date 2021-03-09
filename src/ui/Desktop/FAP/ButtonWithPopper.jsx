@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import { ButtonBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import FAPButton from '@/ui/Bookmarks/FAP/Button';
 import PopperWrapper, { TARGET_CLICK } from '@/ui-components/PopperWrapper';
 import { useTranslation } from 'react-i18next';
 import { CloseRounded as CloseIcon } from '@material-ui/icons';
@@ -10,6 +9,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import ReactResizeDetector from 'react-resize-detector';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { BKMS_FAP_POSITION } from '@/enum';
+import FAPButton from './Button';
 
 const useStyles = makeStyles((theme) => ({
     root: {

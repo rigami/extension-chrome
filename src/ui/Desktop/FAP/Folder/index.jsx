@@ -1,13 +1,13 @@
 import React from 'react';
-import { LabelRounded as TagIcon } from '@material-ui/icons';
-import ButtonWithPopper from '@/ui/Bookmarks/FAP/ButtonWithPopper';
+import { FolderRounded as FolderIcon } from '@material-ui/icons';
+import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
 import Explorer from './Explorer';
 
-function Category(props) {
+function Folder(props) {
     const {
         id,
+        parentId,
         name,
-        color,
         classes: externalClasses,
     } = props;
 
@@ -15,14 +15,15 @@ function Category(props) {
         <ButtonWithPopper
             id={id}
             name={name}
-            type="category"
+            disableEdit={parentId === 0}
+            disableRemove={parentId === 0}
+            type="folder"
+            iconOpen={FolderIcon}
             classes={externalClasses}
-            iconOpen={TagIcon}
-            iconOpenProps={{ style: { color } }}
         >
             <Explorer id={id} />
         </ButtonWithPopper>
     );
 }
 
-export default Category;
+export default Folder;

@@ -95,7 +95,7 @@ function Category(props) {
             }}
             variant="outlined"
             onClick={onClick}
-            onContextMenu={appService.contextMenu(contextMenu)}
+            onContextMenu={appService?.contextMenu && appService.contextMenu(contextMenu)}
         />
     );
 }
@@ -107,6 +107,7 @@ function Categories(props) {
         className: externalClassName,
         onCreate,
         autoSelect = false,
+        usePopper = false,
     } = props;
     const { t } = useTranslation();
     const classes = useStyles();
@@ -129,46 +130,51 @@ function Categories(props) {
         if (value) setSelectedCategories(value || []);
     }, [value && value.length]);
 
+    const renderCategory = ({ id, name, color, className }) => (
+        <Category
+            key={id}
+            id={id}
+            name={name}
+            color={color}
+            className={className}
+            isSelect={selectedCategories.indexOf(id) !== -1}
+            onClick={() => {
+                if (~selectedCategories.indexOf(id)) {
+                    setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
+                } else {
+                    setSelectedCategories([...selectedCategories, id]);
+                }
+            }}
+        />
+    );
+
+    const AddCategory = () => (
+        <React.Fragment>
+            <AddButton
+                isShowTitle={bookmarksService.categories.length === 0}
+                onCreate={(newId) => {
+                    if (autoSelect) setSelectedCategories([...selectedCategories, newId]);
+                    if (onCreate) onCreate(newId);
+                }}
+            />
+            {bookmarksService.categories.all.length === 0 && (
+                <Box className={classes.arrowBlock}>
+                    <ArrowIcon />
+                    {t('category.createFirstHelper')}
+                </Box>
+            )}
+        </React.Fragment>
+    );
+
     return (
         <Box className={clsx(classes.root, externalClassName)}>
             <CollapseWrapper
                 list={bookmarksService.categories.all}
-                renderComponent={({ id, name, color, className }) => (
-                    <Category
-                        key={id}
-                        id={id}
-                        name={name}
-                        color={color}
-                        className={className}
-                        isSelect={selectedCategories.indexOf(id) !== -1}
-                        onClick={() => {
-                            if (~selectedCategories.indexOf(id)) {
-                                setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
-                            } else {
-                                setSelectedCategories([...selectedCategories, id]);
-                            }
-                        }}
-                    />
-                )}
+                renderComponent={renderCategory}
                 expandButtonLabel="Показать все"
                 collapseButtonLabel="Свернуть"
-                actions={(
-                    <React.Fragment>
-                        <AddButton
-                            isShowTitle={bookmarksService.categories.length === 0}
-                            onCreate={(newId) => {
-                                if (autoSelect) setSelectedCategories([...selectedCategories, newId]);
-                                if (onCreate) onCreate(newId);
-                            }}
-                        />
-                        {bookmarksService.categories.all.length === 0 && (
-                            <Box className={classes.arrowBlock}>
-                                <ArrowIcon />
-                                {t('category.createFirstHelper')}
-                            </Box>
-                        )}
-                    </React.Fragment>
-                )}
+                actions={(<AddCategory />)}
+                usePopper={usePopper}
             />
         </Box>
     );

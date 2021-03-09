@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     },
     text: {
         textShadow: '0 2px 17px #00000029',
-        fontFamily: '"Manrope", "Open Sans", sans-serif',
+        fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 800,
     },
 }));

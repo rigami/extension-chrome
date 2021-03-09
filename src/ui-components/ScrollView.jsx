@@ -1,7 +1,6 @@
-import React, { forwardRef, useEffect, useRef } from 'react';
+import React, { forwardRef } from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Scrollbar from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
 
 const useStyles = makeStyles(() => ({
@@ -19,53 +18,15 @@ function ScrollView(props, ref) {
     const {
         children,
         value,
-        onScroll,
-        active,
         classes: externalClassName = {},
-        disableScroll = false,
     } = props;
     const classes = useStyles();
-    const scrollRef = useRef(null);
-
-    const scrollHandler = (now) => {
-        const isTop = now.scrollTop === 0;
-        const isBottom = now.scrollTop + now.clientHeight === now.contentScrollHeight;
-
-        onScroll({
-            isTop,
-            isBottom,
-            state: now,
-        });
-    };
-
-    useEffect(() => {
-        if (disableScroll) {
-            onScroll({
-                isTop: true,
-                isBottom: true,
-            });
-        } else {
-            scrollHandler(scrollRef.current.scrollValues);
-        }
-    }, [active]);
 
     return (
         <Box id={value} ref={ref} className={classes.root}>
-            {disableScroll && (
-                <Box className={clsx(classes.contentWrapper, externalClassName.content)}>
-                    {children}
-                </Box>
-            )}
-            {!disableScroll && (
-                <Scrollbar
-                    onScroll={scrollHandler}
-                    refScroll={(scrollInstance) => { scrollRef.current = scrollInstance; }}
-                >
-                    <Box className={clsx(classes.contentWrapper, externalClassName.content)}>
-                        {children}
-                    </Box>
-                </Scrollbar>
-            )}
+            <Box className={clsx(classes.contentWrapper, externalClassName.content)}>
+                {children}
+            </Box>
         </Box>
     );
 }

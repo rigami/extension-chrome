@@ -7,9 +7,9 @@ import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
 import CategoryEntity from '@/stores/universal/bookmarks/entities/category';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
-import Link from '@/ui/Bookmarks/FAP/Link';
-import Folder from '@/ui/Bookmarks/FAP/Folder';
-import Category from '@/ui/Bookmarks/FAP/Category';
+import Link from '@/ui/Desktop/FAP/Link';
+import Folder from '@/ui/Desktop/FAP/Folder';
+import Category from '@/ui/Desktop/FAP/Category';
 
 const useStyles = makeStyles((theme) => ({
     root: {

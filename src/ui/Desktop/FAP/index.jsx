@@ -15,7 +15,10 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import {
-    ACTIVITY, BKMS_FAP_ALIGN, BKMS_FAP_POSITION, BKMS_FAP_STYLE,
+    ACTIVITY,
+    BKMS_FAP_ALIGN,
+    BKMS_FAP_POSITION,
+    BKMS_FAP_STYLE,
 } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
