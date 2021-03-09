@@ -1,20 +1,18 @@
 import React, { useEffect } from 'react';
 import {
     Box,
-    Breadcrumbs,
-    CardHeader, IconButton,
-    Link,
+    CardHeader,
+    IconButton,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
-    Typography,
+    Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ArrowBackRounded as BackIcon, FavoriteRounded as FavIcon } from '@material-ui/icons';
 import clsx from 'clsx';
 import LogoIcon from '@/images/logo-icon.svg';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import FullScreenStub from '@/ui-components/FullscreenStub';
@@ -58,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function FoldersPanel({ selectFolderId, onSelectFolder }) {
+function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false }) {
     const classes = useStyles();
     const store = useLocalObservable(() => ({
         folder: null,
@@ -91,20 +89,22 @@ function FoldersPanel({ selectFolderId, onSelectFolder }) {
         <Box className={classes.root} pt={1} pb={2}>
             <CardHeader
                 avatar={(
-                    selectFolderId === 1 ? (
+                    selectFolderId === 1 || searchEverywhere ? (
                         <LogoIcon className={classes.icon} />
                     ) : (
-                        <IconButton
-                            className={classes.backButton}
-                            onClick={() => onSelectFolder(store.folder?.parentId || 1)}
-                        >
-                            <BackIcon className={classes.icon} />
-                        </IconButton>
+                        <Tooltip title="Back">
+                            <IconButton
+                                className={classes.backButton}
+                                onClick={() => onSelectFolder(store.folder?.parentId || 1)}
+                            >
+                                <BackIcon className={classes.icon} />
+                            </IconButton>
+                        </Tooltip>
                     )
                 )}
                 title={stateRender(
                     store.folderState,
-                    store.folder?.name || 'unknown',
+                    searchEverywhere ? 'rigami' : (store.folder?.name || 'unknown'),
                     'loading...',
                     'failed load',
                 )}
@@ -114,7 +114,7 @@ function FoldersPanel({ selectFolderId, onSelectFolder }) {
                     title: classes.title,
                 }}
             />
-            {store.childFolders && store.childFolders.length !== 0 && (
+            {!searchEverywhere && store.childFolders && store.childFolders.length !== 0 && (
                 <List disablePadding>
                     {store.childFolders.map((folder) => (
                         <ListItem
@@ -128,7 +128,12 @@ function FoldersPanel({ selectFolderId, onSelectFolder }) {
                     ))}
                 </List>
             )}
-            {store.childFolders && store.childFolders.length === 0 && (
+            {searchEverywhere && (
+                <FullScreenStub
+                    message="Search for bookmarks throughout the system"
+                />
+            )}
+            {!searchEverywhere && store.childFolders && store.childFolders.length === 0 && (
                 <FullScreenStub
                     message="No folders"
                 />

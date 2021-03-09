@@ -62,6 +62,7 @@ function Bookmarks() {
         <Box className={classes.root} display="flex" flexGrow={1}>
             <FoldersPanel
                 selectFolderId={store.activeFolderId}
+                searchEverywhere={store.draftSearchRequest.searchEverywhere}
                 onSelectFolder={(id) => {
                     store.activeFolderId = id;
                     handleResearch(store.searchRequest);
@@ -78,7 +79,10 @@ function Bookmarks() {
                                 handleResearch(store.searchRequest);
                             }}
                         />
-                        <BookmarksViewer searchRequest={store.searchRequest} />
+                        <BookmarksViewer
+                            activeFolderId={store.activeFolderId}
+                            searchRequest={store.searchRequest}
+                        />
                     </Box>
                 </Scrollbar>
             </Box>

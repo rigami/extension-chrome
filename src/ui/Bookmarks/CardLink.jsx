@@ -7,7 +7,10 @@ import {
     Box,
     IconButton,
 } from '@material-ui/core';
-import { MoreVertRounded as MoreIcon } from '@material-ui/icons';
+import {
+    FavoriteRounded as FavoriteIcon,
+    MoreVertRounded as MoreIcon,
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Image from '@/ui-components/Image';
@@ -28,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         position: 'relative',
         height: 62,
+        overflow: 'unset',
         '&:hover $menuIconButton': {
             opacity: 1,
             pointerEvents: 'auto',
@@ -101,6 +105,25 @@ const useStyles = makeStyles((theme) => ({
         pointerEvents: 'none',
     },
     menuIcon: { '& path': { backdropFilter: 'invert(1)' } },
+    favoriteWrapper: {
+        position: 'relative',
+        width: '100%',
+    },
+    favorite: {
+        borderRadius: '50%',
+        padding: theme.spacing(0.5),
+        boxShadow: theme.shadows[5],
+        position: 'absolute',
+        display: 'flex',
+        top: -14,
+        right: -7,
+        backgroundColor: theme.palette.background.default,
+        '& svg': {
+            color: theme.palette.error.main,
+            width: 12,
+            height: 12,
+        },
+    },
 }));
 
 function CardLink(props) {
@@ -123,6 +146,11 @@ function CardLink(props) {
     const bookmarksService = useBookmarksService();
     const buttonRef = useRef(null);
     const { t } = useTranslation();
+
+    const isPin = bookmarksService.findFavorite({
+        itemId: id,
+        itemType: 'bookmark',
+    });
 
     const contextMenu = () => [
         pin({
@@ -207,6 +235,13 @@ function CardLink(props) {
                             >
                                 {name}
                             </Typography>
+                        </Box>
+                    )}
+                    {isPin && (
+                        <Box className={classes.favoriteWrapper}>
+                            <Box className={classes.favorite}>
+                                <FavoriteIcon />
+                            </Box>
                         </Box>
                     )}
                     {description && (

@@ -1,12 +1,8 @@
 import React, { useCallback, useEffect, Fragment } from 'react';
 import {
     Box,
+    Button,
     CircularProgress,
-    IconButton, ListItem,
-    ListItemIcon,
-    ListItemSecondaryAction,
-    ListItemText,
-    Tooltip,
 } from '@material-ui/core';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { makeStyles } from '@material-ui/core/styles';
@@ -18,12 +14,8 @@ import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import { useResizeDetector } from 'react-resize-detector';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import clsx from 'clsx';
-import {
-    BookmarkBorderRounded as PinnedFavoriteIcon,
-    BookmarkRounded as UnpinnedFavoriteIcon, DeleteRounded as RemoveIcon, EditRounded as EditIcon,
-    LabelRounded as LabelIcon,
-} from '@material-ui/icons';
 import Header from '@/ui/Bookmarks/BookmarksViewer/Header';
+import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -43,7 +35,7 @@ const maxColumnCalc = (width) => Math.min(
     7,
 );
 
-function BookmarksViewer({ searchRequest }) {
+function BookmarksViewer({ activeFolderId, searchRequest }) {
     const classes = useStyles();
     const coreService = useCoreService();
     const store = useLocalObservable(() => ({
@@ -112,7 +104,19 @@ function BookmarksViewer({ searchRequest }) {
                         <FullScreenStub
                             message="There are no bookmarks here yet"
                             classes={{ title: classes.title }}
-                        />
+                        >
+                            <Button
+                                onClick={() => coreService.localEventBus.call(
+                                    'bookmark/create',
+                                    { defaultFolderId: activeFolderId },
+                                )}
+                                startIcon={<AddBookmarkIcon />}
+                                variant="contained"
+                                color="primary"
+                            >
+                                Create first bookmark
+                            </Button>
+                        </FullScreenStub>
                     ),
                 ],
                 <FullScreenStub>

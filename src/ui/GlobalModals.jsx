@@ -38,9 +38,10 @@ function GlobalModals({ children }) {
                 setContextMenuActions(() => actions);
                 setContextMenuReactions(reactions);
             }),
-            coreService.localEventBus.on('bookmark/create', () => setEdit({
+            coreService.localEventBus.on('bookmark/create', (options = {}) => setEdit({
                 type: 'bookmark',
                 action: 'create',
+                options,
             })),
             coreService.localEventBus.on('bookmark/edit', ({ id }) => setEdit({
                 type: 'bookmark',
@@ -189,6 +190,7 @@ function GlobalModals({ children }) {
                 isOpen={edit && edit.type === 'bookmark' && edit.action !== 'remove'}
                 editBookmarkId={edit && edit.id}
                 onClose={() => setEdit(null)}
+                {...((edit && edit.options) || {})}
             />
             <EditCategoryModal
                 anchorEl={edit && edit.anchorEl}
