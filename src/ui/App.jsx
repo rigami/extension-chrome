@@ -19,7 +19,6 @@ import ScrollView from '@/ui-components/ScrollView';
 import { makeStyles } from '@material-ui/core/styles';
 import FabMenu from '@/ui/Menu/FabMenu';
 import Menu from '@/ui/Menu';
-import FAP from './Desktop/FAP';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
 import GlobalScroll from './GlobalScroll';

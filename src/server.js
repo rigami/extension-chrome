@@ -4,11 +4,23 @@ import { DESTINATION } from '@/enum';
 import asyncAction from '@/utils/asyncAction';
 import { open as openDB } from '@/utils/dbConnector';
 import initSentry from '@/config/sentry';
+import generateUUID from '@/utils/generateUUID';
+import * as Sentry from '@sentry/react';
+import StorageConnector from '@/utils/storageConnector';
 
 console.log('Server app running...');
 let background;
 
+if (!StorageConnector.getJSON('storage', {}).userId) {
+    StorageConnector.setJSON('storage', {
+        ...StorageConnector.getJSON('storage', {}),
+        userId: generateUUID(),
+    });
+}
+
 initSentry(DESTINATION.BACKGROUND);
+
+Sentry.setUser({ id: StorageConnector.getJSON('storage', {}).userId });
 
 asyncAction(async () => {
     initBus(DESTINATION.BACKGROUND);
