@@ -1,10 +1,10 @@
 {
     "name": "rigami",
-    "version": "0.3.36",
+    "version": "0.3.37",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
-        "build": "COLLECT_LOGS=true NODE_ENV=production webpack",
+        "build": "NODE_ENV=production webpack",
         "build:zip": "yarn build && yarn rimraf ./release/* && mkdirp ./release && zip -r release/rigami-$npm_package_version.zip build",
         "build:release": "COLLECT_LOGS=true yarn build:zip && yarn release",
         "build:analyze": "ANALYZE=true yarn build",

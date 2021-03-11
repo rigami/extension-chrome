@@ -23,7 +23,7 @@ module.exports = () => ({
         filename: '[name].[contenthash].bundle.js',
         path: path.resolve(__dirname, 'build'),
     },
-    devtool: process.env.NODE_ENV === 'production' ? false : 'eval-source-map',
+    // devtool: process.env.NODE_ENV === 'production' ? false : 'eval-source-map',
     devServer: {
         contentBase: path.resolve(__dirname, 'public'),
         hot: true,
