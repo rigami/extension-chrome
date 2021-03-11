@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
@@ -34,12 +34,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Bookmarks() {
+function Bookmarks({ onScroll }) {
     const classes = useStyles();
     const store = useLocalObservable(() => ({
         activeFolderId: 1,
         searchRequest: new SearchQuery({ folderId: 1 }),
         draftSearchRequest: {},
+        lastScrollEventTime: 0,
+        scroll: null,
     }));
 
     const search = debounce(() => {
@@ -58,6 +60,21 @@ function Bookmarks() {
         search();
     };
 
+    const wheelHandler = () => {
+        const nowScrollEventTime = performance.now();
+        const delta = nowScrollEventTime - store.lastScrollEventTime;
+        store.lastScrollEventTime = nowScrollEventTime;
+
+        if (store.scroll.scrollerElement.scrollTop === 0) onScroll({ blockTop: delta < 400 });
+        else onScroll({ blockTop: true });
+    };
+
+    useEffect(() => {
+        addEventListener('wheel', wheelHandler, true);
+
+        return () => removeEventListener('wheel', wheelHandler);
+    }, []);
+
     return (
         <Box className={classes.root} display="flex" flexGrow={1}>
             <FoldersPanel
@@ -69,7 +86,7 @@ function Bookmarks() {
                 }}
             />
             <Box flexGrow={1} overflow="auto">
-                <Scrollbar>
+                <Scrollbar refScroll={(scroll) => { store.scroll = scroll; }}>
                     <Box minHeight="100vh" display="flex" flexDirection="column">
                         <ToolsPanel onResearch={handleResearch} />
                         <FolderBreadcrumbs
