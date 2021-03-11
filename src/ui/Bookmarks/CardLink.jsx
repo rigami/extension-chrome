@@ -1,4 +1,9 @@
-import React, { useRef } from 'react';
+import React, {
+    useRef,
+    memo,
+    useEffect,
+    useState,
+} from 'react';
 import {
     Card,
     Typography,
@@ -22,6 +27,7 @@ import useAppService from '@/stores/app/AppStateProvider';
 import pin from '@/utils/contextMenu/pin';
 import edit from '@/utils/contextMenu/edit';
 import remove from '@/utils/contextMenu/remove';
+import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -111,17 +117,19 @@ const useStyles = makeStyles((theme) => ({
     },
     favorite: {
         borderRadius: '50%',
-        padding: theme.spacing(0.5),
-        boxShadow: theme.shadows[5],
+        padding: theme.spacing(0.375),
+        border: `1px solid ${theme.palette.divider}`,
         position: 'absolute',
         display: 'flex',
         top: -14,
         right: -7,
+        zIndex: 1,
         backgroundColor: theme.palette.background.default,
         '& svg': {
             color: theme.palette.error.main,
             width: 12,
             height: 12,
+            transform: 'translateY(0.5px)',
         },
     },
 }));
@@ -146,11 +154,10 @@ function CardLink(props) {
     const bookmarksService = useBookmarksService();
     const buttonRef = useRef(null);
     const { t } = useTranslation();
-
-    const isPin = bookmarksService.findFavorite({
+    const [isPin, setIsPin] = useState(bookmarksService.findFavorite({
         itemId: id,
         itemType: 'bookmark',
-    });
+    }));
 
     const contextMenu = () => [
         pin({
@@ -184,6 +191,13 @@ function CardLink(props) {
             window.open(url, '_self');
         }
     };
+
+    useEffect(() => {
+        setIsPin(bookmarksService.findFavorite({
+            itemId: id,
+            itemType: 'bookmark',
+        }));
+    }, [bookmarksService.favorites.length]);
 
     return (
         <Tooltip
@@ -249,20 +263,18 @@ function CardLink(props) {
                     )}
                 </CardActionArea>
                 {!preview && (
-                    <React.Fragment>
-                        <IconButton
-                            data-ui-path="bookmark.menu"
-                            className={classes.menuIconButton}
-                            onClick={appService.contextMenu(contextMenu, { useAnchorEl: true })}
-                            ref={buttonRef}
-                        >
-                            <MoreIcon className={classes.menuIcon} />
-                        </IconButton>
-                    </React.Fragment>
+                    <IconButton
+                        data-ui-path="bookmark.menu"
+                        className={classes.menuIconButton}
+                        onClick={appService.contextMenu(contextMenu, { useAnchorEl: true })}
+                        ref={buttonRef}
+                    >
+                        <MoreIcon className={classes.menuIcon} />
+                    </IconButton>
                 )}
             </Card>
         </Tooltip>
     );
 }
 
-export default CardLink;
+export default memo(observer(CardLink));

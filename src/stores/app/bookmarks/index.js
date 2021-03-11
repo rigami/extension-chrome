@@ -85,11 +85,8 @@ class BookmarksService {
 
     @action('sync favorites')
     async syncFavorites() {
-        console.log('Sync fav');
-
+        console.log('Sync favorites');
         this.favorites = await FavoritesUniversalService.getAll();
-
-        console.log('this.favorites', this.favorites);
 
         return this.favorites;
     }
@@ -103,7 +100,6 @@ class BookmarksService {
     async addToFavorites(favorite) {
         console.log('addToFavorites', favorite);
         const favoriteId = await FavoritesUniversalService.addToFavorites(favorite);
-        console.log('new favorite id:', favoriteId);
 
         if (this._coreService) {
             this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: favorite.id });
@@ -114,8 +110,7 @@ class BookmarksService {
 
     @action('add to favorites')
     async removeFromFavorites(favoriteId) {
-        this.favorites = this.favorites.filter((fav) => fav.id !== favoriteId);
-
+        console.log('removeFromFavorites', favoriteId);
         await FavoritesUniversalService.removeFromFavorites(favoriteId);
 
         if (this._coreService) {
