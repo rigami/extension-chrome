@@ -1,8 +1,5 @@
-import {
-    action, computed, makeAutoObservable, toJS,
-} from 'mobx';
+import { action, computed } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
-import { cachingDecorator } from '@/utils/decorators';
 import FSConnector from '@/utils/fsConnector';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 import Category from '@/stores/universal/bookmarks/entities/category';
@@ -16,6 +13,109 @@ export const COMPARE = {
     NONE: 'NONE',
     IGNORE: 'IGNORE',
 };
+
+export class SearchQuery {
+    tags = [];
+    folderId = null;
+    query = '';
+
+    constructor(request = {}) {
+        if ('tags' in request) this.tags = request.tags;
+        if ('folderId' in request) this.folderId = request.folderId;
+        if ('query' in request) this.query = request.query.toLowerCase();
+    }
+
+    @computed
+    get searchEverywhere() {
+        return !this.folderId;
+    }
+
+    @computed
+    get usedFields() {
+        return {
+            tags: this.tags.length !== 0,
+            folder: !!this.folderId,
+            query: this.query.length !== 0,
+        };
+    }
+
+    compare(bookmark) {
+        let tags;
+
+        const sameTagsCount = difference(this.tags, bookmark.categories.map(({ id }) => id)).length;
+        if (this.tags.length === 0) {
+            tags = COMPARE.IGNORE;
+        } else if (sameTagsCount === 0 && bookmark.categories.length !== 0) {
+            tags = COMPARE.FULL;
+        } else if (sameTagsCount !== bookmark.categories.length && bookmark.categories.length !== 0) {
+            tags = COMPARE.PART;
+        } else {
+            tags = COMPARE.NONE;
+        }
+
+        let query;
+
+        if (this.query.length === 0) {
+            query = COMPARE.IGNORE;
+        } else {
+            query = [bookmark.url, bookmark.name, bookmark.description]
+                .map((bookmarkValue) => {
+                    if (bookmarkValue.toLowerCase() === this.query) {
+                        return COMPARE.FULL;
+                    } else if (bookmarkValue.toLowerCase().indexOf(this.query) !== -1) {
+                        return COMPARE.PART;
+                    } else {
+                        return COMPARE.NONE;
+                    }
+                });
+
+            if (query.some((value) => value === COMPARE.FULL)) {
+                query = COMPARE.FULL;
+            } else if (query.some((value) => value === COMPARE.PART)) {
+                query = COMPARE.PART;
+            } else {
+                query = COMPARE.NONE;
+            }
+        }
+
+        let folder;
+
+        if (!this.folderId) {
+            folder = COMPARE.IGNORE;
+        } else if (bookmark.folderId === this.folderId) {
+            folder = COMPARE.FULL;
+        } else {
+            folder = COMPARE.NONE;
+        }
+
+        let summary;
+
+        if (folder !== COMPARE.IGNORE && folder === COMPARE.NONE) {
+            summary = COMPARE.NONE;
+        } else if (
+            (tags === COMPARE.IGNORE || tags === COMPARE.FULL)
+            && (query === COMPARE.IGNORE || query === COMPARE.FULL)
+            && (tags !== COMPARE.IGNORE || query !== COMPARE.IGNORE)
+        ) {
+            summary = COMPARE.FULL;
+        } else if (
+            (tags !== COMPARE.IGNORE && tags !== COMPARE.NONE)
+            || (query !== COMPARE.IGNORE && query !== COMPARE.NONE)
+            || (query === COMPARE.IGNORE && tags === COMPARE.IGNORE)
+        ) {
+            summary = COMPARE.PART;
+        } else {
+            summary = COMPARE.NONE;
+        }
+
+        return {
+            tags,
+            query,
+            folder,
+            summary,
+        };
+    }
+}
 
 class BookmarksUniversalService {
     @action('get bookmark')
@@ -71,11 +171,9 @@ class BookmarksUniversalService {
     }
 
     @action('query bookmarks')
-    static async query(searchRequest = null) {
+    static async query(searchRequest = new SearchQuery()) {
         const bestMatches = {};
         const allMatches = {};
-
-        console.log('DBConnector():', DBConnector());
 
         let bookmarksKeys;
 
@@ -255,109 +353,6 @@ class BookmarksUniversalService {
         } catch (e) {
             console.log('Failed remove bookmark icon', e);
         }
-    }
-}
-
-export class SearchQuery {
-    tags = [];
-    folderId = null;
-    query = '';
-
-    constructor(request) {
-        if ('tags' in request) this.tags = request.tags;
-        if ('folderId' in request) this.folderId = request.folderId;
-        if ('query' in request) this.query = request.query.toLowerCase();
-    }
-
-    @computed
-    get searchEverywhere() {
-        return !this.folderId;
-    }
-
-    @computed
-    get usedFields() {
-        return {
-            tags: this.tags.length !== 0,
-            folder: !!this.folderId,
-            query: this.query.length !== 0,
-        };
-    }
-
-    compare(bookmark) {
-        let tags;
-
-        const sameTagsCount = difference(this.tags, bookmark.categories.map(({ id }) => id)).length;
-        if (this.tags.length === 0) {
-            tags = COMPARE.IGNORE;
-        } else if (sameTagsCount === 0 && bookmark.categories.length !== 0) {
-            tags = COMPARE.FULL;
-        } else if (sameTagsCount !== bookmark.categories.length && bookmark.categories.length !== 0) {
-            tags = COMPARE.PART;
-        } else {
-            tags = COMPARE.NONE;
-        }
-
-        let query;
-
-        if (this.query.length === 0) {
-            query = COMPARE.IGNORE;
-        } else {
-            query = [bookmark.url, bookmark.name, bookmark.description]
-                .map((bookmarkValue) => {
-                    if (bookmarkValue.toLowerCase() === this.query) {
-                        return COMPARE.FULL;
-                    } else if (bookmarkValue.toLowerCase().indexOf(this.query) !== -1) {
-                        return COMPARE.PART;
-                    } else {
-                        return COMPARE.NONE;
-                    }
-                });
-
-            if (query.some((value) => value === COMPARE.FULL)) {
-                query = COMPARE.FULL;
-            } else if (query.some((value) => value === COMPARE.PART)) {
-                query = COMPARE.PART;
-            } else {
-                query = COMPARE.NONE;
-            }
-        }
-
-        let folder;
-
-        if (!this.folderId) {
-            folder = COMPARE.IGNORE;
-        } else if (bookmark.folderId === this.folderId) {
-            folder = COMPARE.FULL;
-        } else {
-            folder = COMPARE.NONE;
-        }
-
-        let summary;
-
-        if (folder !== COMPARE.IGNORE && folder === COMPARE.NONE) {
-            summary = COMPARE.NONE;
-        } else if (
-            (tags === COMPARE.IGNORE || tags === COMPARE.FULL)
-            && (query === COMPARE.IGNORE || query === COMPARE.FULL)
-            && (tags !== COMPARE.IGNORE || query !== COMPARE.IGNORE)
-        ) {
-            summary = COMPARE.FULL;
-        } else if (
-            (tags !== COMPARE.IGNORE && tags !== COMPARE.NONE)
-            || (query !== COMPARE.IGNORE && query !== COMPARE.NONE)
-            || (query === COMPARE.IGNORE && tags === COMPARE.IGNORE)
-        ) {
-            summary = COMPARE.PART;
-        } else {
-            summary = COMPARE.NONE;
-        }
-
-        return {
-            tags,
-            query,
-            folder,
-            summary,
-        };
     }
 }
 

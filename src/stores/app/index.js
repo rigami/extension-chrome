@@ -45,7 +45,7 @@ class AppStateStore {
             }
 
             this.coreService.localEventBus.call('system/contextMenu', {
-                actions: () => computeActions().filter((isExist) => isExist),
+                actions: () => computeActions(event).filter((isExist) => isExist),
                 position,
                 reactions,
             });

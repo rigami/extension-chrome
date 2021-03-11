@@ -95,7 +95,7 @@ function Category(props) {
             }}
             variant="outlined"
             onClick={onClick}
-            onContextMenu={appService?.contextMenu && appService.contextMenu(contextMenu)}
+            onContextMenu={appService?.contextMenu?.(contextMenu)}
         />
     );
 }

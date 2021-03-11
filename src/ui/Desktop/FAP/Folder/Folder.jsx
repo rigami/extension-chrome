@@ -117,16 +117,20 @@ function Folder(props) {
 
     useEffect(() => {
         FoldersUniversalService.get(id).then((findFolder) => setFolder(findFolder));
+        let load = false;
 
         FoldersUniversalService.getFoldersByParent(id)
             .then((foundFolders) => {
                 setFolders(foundFolders);
+                setIsSearching(load);
+                load = true;
             });
 
         BookmarksUniversalService.getAllInFolder(id)
             .then((searchResult) => {
                 setFindBookmarks(searchResult);
-                setIsSearching(false);
+                setIsSearching(load);
+                load = true;
             });
     }, []);
 
@@ -167,54 +171,56 @@ function Folder(props) {
                     </IconButton>
                 )}
             />
-            <List disablePadding className={classes.list}>
-                <Scrollbar>
-                    {isSearching && (
-                        <FullScreenStub style={{ height: 550 }}>
-                            <CircularProgress />
-                        </FullScreenStub>
-                    )}
-                    {!isSearching && (findBookmarks.length === 0 && folders.length === 0) && (
-                        <FullScreenStub
-                            style={{ height: 550 }}
-                            message={t('fap.folder.emptyTitle')}
-                            description={t('fap.folder.emptyDescription')}
-                        />
-                    )}
-                    {folders && folders.map((currFolder, index) => (
-                        <Tooltip key={currFolder.id} title={currFolder.name}>
-                            <ListItem
-                                button
-                                className={classes.row}
-                                divider={index !== folders.length - 1}
-                                onClick={() => onOpenFolder(currFolder.id)}
-                                selected={openFolderId === currFolder.id}
-                            >
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <FolderIcon />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={currFolder.name}
-                                    classes={{
-                                        primary: classes.primaryText,
-                                        secondary: classes.secondaryText,
-                                    }}
-                                />
-                            </ListItem>
-                        </Tooltip>
-                    ))}
-                    {findBookmarks && findBookmarks.map((bookmark, index) => (
-                        <Link
-                            key={bookmark.id}
-                            {...bookmark}
-                            variant="row"
-                            divider={index !== findBookmarks.length - 1}
-                        />
-                    ))}
-                </Scrollbar>
-            </List>
+            {isSearching && (
+                <FullScreenStub style={{ height: 550 }}>
+                    <CircularProgress />
+                </FullScreenStub>
+            )}
+            {!isSearching && (findBookmarks.length === 0 && folders.length === 0) && (
+                <FullScreenStub
+                    style={{ height: 550 }}
+                    message={t('fap.folder.emptyTitle')}
+                    description={t('fap.folder.emptyDescription')}
+                />
+            )}
+            {folders?.length > 0 && findBookmarks?.length > 0 && (
+                <List disablePadding className={classes.list}>
+                    <Scrollbar>
+                        {folders.map((currFolder, index) => (
+                            <Tooltip key={currFolder.id} title={currFolder.name}>
+                                <ListItem
+                                    button
+                                    className={classes.row}
+                                    divider={index !== folders.length - 1}
+                                    onClick={() => onOpenFolder(currFolder.id)}
+                                    selected={openFolderId === currFolder.id}
+                                >
+                                    <ListItemAvatar>
+                                        <Avatar>
+                                            <FolderIcon />
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={currFolder.name}
+                                        classes={{
+                                            primary: classes.primaryText,
+                                            secondary: classes.secondaryText,
+                                        }}
+                                    />
+                                </ListItem>
+                            </Tooltip>
+                        ))}
+                        {findBookmarks.map((bookmark, index) => (
+                            <Link
+                                key={bookmark.id}
+                                {...bookmark}
+                                variant="row"
+                                divider={index !== findBookmarks.length - 1}
+                            />
+                        ))}
+                    </Scrollbar>
+                </List>
+            )}
         </Card>
     );
 }

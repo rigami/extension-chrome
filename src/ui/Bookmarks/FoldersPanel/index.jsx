@@ -133,12 +133,12 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
                     message="Search for bookmarks throughout the system"
                 />
             )}
-            {!searchEverywhere && store.childFolders && store.childFolders.length === 0 && (
+            {/* !searchEverywhere && store.childFolders && store.childFolders.length === 0 && (
                 <FullScreenStub
                     message="No folders"
                 />
-            )}
-            <Box className={classes.bottomOffset}>
+            ) */}
+            {/* <Box className={classes.bottomOffset}>
                 <ListItem
                     button
                     component="button"
@@ -152,7 +152,7 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
                         classes={{ primary: classes.primaryFont }}
                     />
                 </ListItem>
-            </Box>
+            </Box> */}
         </Box>
     );
 }

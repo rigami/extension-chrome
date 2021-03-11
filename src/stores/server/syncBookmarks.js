@@ -17,8 +17,7 @@ class SyncBookmarks {
     async restore(bookmarks) {
         console.log('restore bookmarks', bookmarks, this.core);
 
-        const bookmarksQuery = await BookmarksUniversalService.query();
-        const localBookmarks = bookmarksQuery[0].bookmarks;
+        const { all: localBookmarks } = await BookmarksUniversalService.query();
         const localCategories = await CategoriesUniversalService.getAll();
         const localFolders = await FoldersUniversalService.getTree();
         const localFavorites = await FavoritesUniversalService.getAll();

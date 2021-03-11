@@ -21,6 +21,7 @@ import useAppService from '@/stores/app/AppStateProvider';
 import pin from '@/utils/contextMenu/pin';
 import edit from '@/utils/contextMenu/edit';
 import remove from '@/utils/contextMenu/remove';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -73,9 +74,9 @@ function Folder({ id }) {
     ];
 
     useEffect(() => {
-        bookmarksService.bookmarks.query({ categories: { match: [id] } })
-            .then((searchResult) => {
-                setFindBookmarks(searchResult[0]?.bookmarks || []);
+        BookmarksUniversalService.query(new SearchQuery({ tags: [id] }))
+            .then(({ all }) => {
+                setFindBookmarks(all);
                 setIsSearching(false);
             });
     }, []);
@@ -98,30 +99,31 @@ function Folder({ id }) {
                     </IconButton>
                 )}
             />
-            <List disablePadding className={classes.list}>
-                <Scrollbar>
-                    {isSearching && (
-                        <FullScreenStub style={{ height: 550 }}>
-                            <CircularProgress />
-                        </FullScreenStub>
-                    )}
-                    {!isSearching && findBookmarks.length === 0 && (
-                        <FullScreenStub
-                            style={{ height: 550 }}
-                            message={t('fap.category.emptyTitle')}
-                            description={t('fap.category.emptyDescription')}
-                        />
-                    )}
-                    {findBookmarks && findBookmarks.map((bookmark, index) => (
-                        <Link
-                            key={bookmark.id}
-                            {...bookmark}
-                            variant="row"
-                            divider={index !== findBookmarks.length - 1}
-                        />
-                    ))}
-                </Scrollbar>
-            </List>
+            {isSearching && (
+                <FullScreenStub>
+                    <CircularProgress />
+                </FullScreenStub>
+            )}
+            {!isSearching && findBookmarks.length === 0 && (
+                <FullScreenStub
+                    message={t('fap.category.emptyTitle')}
+                    description={t('fap.category.emptyDescription')}
+                />
+            )}
+            {findBookmarks && findBookmarks.length !== 0 && (
+                <List disablePadding className={classes.list}>
+                    <Scrollbar>
+                        {findBookmarks.map((bookmark, index) => (
+                            <Link
+                                key={bookmark.id}
+                                {...bookmark}
+                                variant="row"
+                                divider={index !== findBookmarks.length - 1}
+                            />
+                        ))}
+                    </Scrollbar>
+                </List>
+            )}
         </Card>
     );
 }
