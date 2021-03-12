@@ -13,7 +13,7 @@ import remove from '@/utils/contextMenu/remove';
 
 const useStyles = makeStyles((theme) => ({
     root: { width: 180 },
-    header: { padding: theme.spacing(1, 2) },
+    header: { padding: theme.spacing(2) },
     headerContent: {
         overflow: 'hidden',
         whiteSpace: 'nowrap',
@@ -22,9 +22,18 @@ const useStyles = makeStyles((theme) => ({
         textOverflow: 'ellipsis',
         overflow: 'hidden',
     },
+    active: { backgroundColor: theme.palette.action.selected },
 }));
 
-function FolderCard({ id, name, className: externalClassName, ...other }) {
+function FolderCard(props) {
+    const {
+        id,
+        name,
+        active = false,
+        className: externalClassName,
+        onClick,
+        ...other
+    } = props;
     const { t } = useTranslation();
     const classes = useStyles();
     const appService = useAppService();
@@ -55,8 +64,12 @@ function FolderCard({ id, name, className: externalClassName, ...other }) {
     ];
 
     return (
-        <Card variant="outlined" className={clsx(classes.root, externalClassName)} {...other}>
-            <CardActionArea onContextMenu={appService.contextMenu(contextMenu)}>
+        <Card
+            variant="outlined"
+            className={clsx(classes.root, active && classes.active, externalClassName)}
+            {...other}
+        >
+            <CardActionArea onClick={onClick} onContextMenu={appService.contextMenu(contextMenu)}>
                 <CardHeader
                     avatar={<FolderIcon />}
                     title={name}

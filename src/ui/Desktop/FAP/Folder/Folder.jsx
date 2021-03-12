@@ -2,14 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     Card,
     CardHeader,
-    List,
     CircularProgress,
     IconButton,
-    ListItemAvatar,
-    ListItemText,
-    ListItem,
-    Avatar,
     Tooltip,
+    Box,
 } from '@material-ui/core';
 import {
     FolderRounded as FolderIcon,
@@ -21,7 +17,6 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
-import Link from '@/ui/Desktop/FAP/Link';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import clsx from 'clsx';
@@ -29,10 +24,12 @@ import useAppService from '@/stores/app/AppStateProvider';
 import pin from '@/utils/contextMenu/pin';
 import edit from '@/utils/contextMenu/edit';
 import remove from '@/utils/contextMenu/remove';
+import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
+import FolderCard from '@/ui/Bookmarks/Folders/Card';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: 450,
+        width: 409,
         maxWeight: 'inherit',
         borderRadius: 0,
         zIndex: 1,
@@ -44,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         }),
     },
     avatar: { display: 'flex' },
-    list: {
+    bookmarks: {
         overflow: 'auto',
         flexGrow: 1,
     },
@@ -67,6 +64,10 @@ const useStyles = makeStyles((theme) => ({
     shrink: {
         width: 72,
         zIndex: 0,
+    },
+    folderCard: {
+        marginRight: theme.spacing(2),
+        marginBottom: theme.spacing(2),
     },
 }));
 
@@ -117,20 +118,22 @@ function Folder(props) {
 
     useEffect(() => {
         FoldersUniversalService.get(id).then((findFolder) => setFolder(findFolder));
-        let load = false;
+        let load = true;
 
         FoldersUniversalService.getFoldersByParent(id)
             .then((foundFolders) => {
+                console.log('foundFolders:', foundFolders, load);
                 setFolders(foundFolders);
                 setIsSearching(load);
-                load = true;
+                load = false;
             });
 
         BookmarksUniversalService.getAllInFolder(id)
             .then((searchResult) => {
+                console.log('searchResult:', searchResult, load);
                 setFindBookmarks(searchResult);
                 setIsSearching(load);
-                load = true;
+                load = false;
             });
     }, []);
 
@@ -176,7 +179,7 @@ function Folder(props) {
                     <CircularProgress />
                 </FullScreenStub>
             )}
-            {!isSearching && (findBookmarks.length === 0 && folders.length === 0) && (
+            {!isSearching && (findBookmarks?.length === 0 && folders?.length === 0) && (
                 <FullScreenStub
                     style={{ height: 550 }}
                     message={t('fap.folder.emptyTitle')}
@@ -184,42 +187,28 @@ function Folder(props) {
                 />
             )}
             {folders?.length > 0 && findBookmarks?.length > 0 && (
-                <List disablePadding className={classes.list}>
+                <Box display="flex" className={classes.bookmarks}>
                     <Scrollbar>
-                        {folders.map((currFolder, index) => (
-                            <Tooltip key={currFolder.id} title={currFolder.name}>
-                                <ListItem
-                                    button
-                                    className={classes.row}
-                                    divider={index !== folders.length - 1}
+                        <Box display="flex" flexWrap="wrap" ml={2}>
+                            {folders.map((currFolder) => (
+                                <FolderCard
+                                    active={openFolderId === currFolder.id}
+                                    key={currFolder.id}
+                                    id={currFolder.id}
+                                    name={currFolder.name}
+                                    className={classes.folderCard}
                                     onClick={() => onOpenFolder(currFolder.id)}
-                                    selected={openFolderId === currFolder.id}
-                                >
-                                    <ListItemAvatar>
-                                        <Avatar>
-                                            <FolderIcon />
-                                        </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={currFolder.name}
-                                        classes={{
-                                            primary: classes.primaryText,
-                                            secondary: classes.secondaryText,
-                                        }}
-                                    />
-                                </ListItem>
-                            </Tooltip>
-                        ))}
-                        {findBookmarks.map((bookmark, index) => (
-                            <Link
-                                key={bookmark.id}
-                                {...bookmark}
-                                variant="row"
-                                divider={index !== findBookmarks.length - 1}
+                                />
+                            ))}
+                        </Box>
+                        <Box display="flex" ml={2}>
+                            <BookmarksGrid
+                                bookmarks={findBookmarks}
+                                columns={2}
                             />
-                        ))}
+                        </Box>
                     </Scrollbar>
-                </List>
+                </Box>
             )}
         </Card>
     );

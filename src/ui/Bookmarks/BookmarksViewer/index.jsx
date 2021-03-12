@@ -44,9 +44,10 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
         existMatches: false,
         requestId: 0,
         loadState: FETCH.WAIT,
+        columnsCount: 0,
     }));
     const onResize = useCallback((width) => {
-        coreService.storage.updateTemp({ columnsCount: maxColumnCalc(width) });
+        store.columnsCount = maxColumnCalc(width);
     }, []);
 
     const { ref } = useResizeDetector({ onResize });
@@ -81,7 +82,10 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                                     <Header title="Best matches" />
                                     {store.bestBookmarks && store.bestBookmarks.length !== 0 ? (
                                         <Box display="flex" className={classes.bookmarks}>
-                                            <BookmarksGrid bookmarks={store.bestBookmarks} />
+                                            <BookmarksGrid
+                                                bookmarks={store.bestBookmarks}
+                                                columns={store.columnsCount}
+                                            />
                                         </Box>
                                     ) : (
                                         <Header subtitle="Nothing found" />
@@ -90,7 +94,10 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                                 </Fragment>
                             )}
                             <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
-                                <BookmarksGrid bookmarks={store.allBookmarks} />
+                                <BookmarksGrid
+                                    bookmarks={store.allBookmarks}
+                                    columns={store.columnsCount}
+                                />
                             </Box>
                         </Fragment>
                     ),

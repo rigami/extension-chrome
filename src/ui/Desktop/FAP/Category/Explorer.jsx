@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     Card,
     CardHeader,
-    List,
     CircularProgress,
     IconButton,
+    Box,
 } from '@material-ui/core';
 import {
     LabelRounded as LabelIcon,
@@ -16,16 +16,16 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
 import FullScreenStub from '@/ui-components/FullscreenStub';
 import { useTranslation } from 'react-i18next';
-import Link from '@/ui/Desktop/FAP/Link';
 import useAppService from '@/stores/app/AppStateProvider';
 import pin from '@/utils/contextMenu/pin';
 import edit from '@/utils/contextMenu/edit';
 import remove from '@/utils/contextMenu/remove';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 
 const useStyles = makeStyles(() => ({
     root: {
-        width: 450,
+        width: 409,
         height: 620,
         maxHeight: 'inherit',
         maxWeight: 'inherit',
@@ -33,7 +33,7 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
     },
     avatar: { display: 'flex' },
-    list: {
+    bookmarks: {
         flexGrow: 1,
         overflow: 'auto',
     },
@@ -111,18 +111,16 @@ function Folder({ id }) {
                 />
             )}
             {findBookmarks && findBookmarks.length !== 0 && (
-                <List disablePadding className={classes.list}>
+                <Box display="flex" className={classes.bookmarks}>
                     <Scrollbar>
-                        {findBookmarks.map((bookmark, index) => (
-                            <Link
-                                key={bookmark.id}
-                                {...bookmark}
-                                variant="row"
-                                divider={index !== findBookmarks.length - 1}
+                        <Box display="flex" ml={2}>
+                            <BookmarksGrid
+                                bookmarks={findBookmarks}
+                                columns={2}
                             />
-                        ))}
+                        </Box>
                     </Scrollbar>
-                </List>
+                </Box>
             )}
         </Card>
     );

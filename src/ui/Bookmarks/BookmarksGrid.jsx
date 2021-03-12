@@ -1,15 +1,12 @@
 import { Box } from '@material-ui/core';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import React from 'react';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTheme } from '@material-ui/core/styles';
 import { BKMS_VARIANT } from '@/enum';
 
-function BookmarksGrid({ bookmarks }) {
+function BookmarksGrid({ bookmarks, columns }) {
     const theme = useTheme();
-    const coreService = useCoreService();
-
-    const columnStabilizer = [...Array.from({ length: coreService.storage.temp.columnsCount }, () => 0)];
+    const columnStabilizer = [...Array.from({ length: columns }, () => 0)];
 
     return bookmarks && bookmarks.reduce((acc, curr) => {
         let column = 0;
