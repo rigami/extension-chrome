@@ -1,18 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Chip } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
-import { makeStyles, fade } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { ArrowBackRounded as ArrowIcon } from '@material-ui/icons';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import clsx from 'clsx';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import CollapseWrapper from '@/ui/Bookmarks/Categories/CollapseWrapper';
-import useAppService from '@/stores/app/AppStateProvider';
-import pin from '@/utils/contextMenu/pin';
-import edit from '@/utils/contextMenu/edit';
-import remove from '@/utils/contextMenu/remove';
 import AddButton from './AddButton';
+import Category from './Chip';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -20,17 +16,6 @@ const useStyles = makeStyles((theme) => ({
         maxHeight: 130,
         display: 'flex',
         flexWrap: 'wrap',
-    },
-    chip: {
-        maxWidth: 290,
-        boxShadow: 'none !important',
-    },
-    chipIcon: {
-        width: theme.spacing(2),
-        height: theme.spacing(2),
-        borderRadius: '50%',
-        marginLeft: `${theme.spacing(1)}px !important`,
-        flexShrink: 0,
     },
     arrowBlock: {
         marginLeft: theme.spacing(2),
@@ -43,62 +28,6 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 }));
-
-function Category(props) {
-    const {
-        id,
-        name,
-        color,
-        onClick,
-        isSelect,
-        className: externalClassName,
-    } = props;
-    const classes = useStyles();
-    const appService = useAppService();
-    const coreService = useCoreService();
-    const bookmarksService = useBookmarksService();
-    const { t } = useTranslation();
-
-    const repairColor = color || '#000';
-
-    const contextMenu = (event) => [
-        pin({
-            itemId: id,
-            itemType: 'category',
-            t,
-            bookmarksService,
-        }),
-        edit({
-            itemId: id,
-            itemType: 'category',
-            t,
-            coreService,
-            anchorEl: event.currentTarget,
-        }),
-        remove({
-            itemId: id,
-            itemType: 'category',
-            t,
-            coreService,
-        }),
-    ];
-
-    return (
-        <Chip
-            key={id}
-            icon={<div className={classes.chipIcon} style={{ backgroundColor: repairColor }} />}
-            label={name}
-            className={clsx(classes.chip, isSelect && classes.chipActive, externalClassName)}
-            style={{
-                backgroundColor: isSelect && fade(repairColor, 0.14),
-                borderColor: isSelect && repairColor,
-            }}
-            variant="outlined"
-            onClick={onClick}
-            onContextMenu={appService?.contextMenu?.(contextMenu)}
-        />
-    );
-}
 
 function Categories(props) {
     const {
@@ -132,7 +61,6 @@ function Categories(props) {
 
     const renderCategory = ({ id, name, color, className }) => (
         <Category
-            key={id}
             id={id}
             name={name}
             color={color}
