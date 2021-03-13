@@ -119,13 +119,11 @@ export class SearchQuery {
 
 class BookmarksUniversalService {
     @action('get bookmark')
-    static async get(bookmarkId) {
-        // console.log('get bookmark by id:', bookmarkId);
-        const bookmark = await DBConnector().get('bookmarks', bookmarkId);
-
-        const storesName = ['bookmarks_by_categories', 'categories'];
+    static async get(bookmarkId, isFullLoad = true) {
+        const storesName = ['bookmarks', 'bookmarks_by_categories', 'categories'];
         const tx = DBConnector().transaction(storesName, 'readonly');
         const stores = {
+            bookmarks: tx.objectStore('bookmarks'),
             bookmarks_by_categories: tx.objectStore('bookmarks_by_categories'),
             categories: tx.objectStore('categories'),
         };
@@ -137,20 +135,24 @@ class BookmarksUniversalService {
 
         const findCategories = [];
 
-        let cursor = await stores.bookmarks_by_categories.openCursor();
+        const bookmark = await stores.bookmarks.get(bookmarkId);
 
-        let cursorCategoryId;
-        let cursorBookmarkId;
+        if (isFullLoad) {
+            let cursor = await stores.bookmarks_by_categories.openCursor();
 
-        while (cursor) {
-            cursorCategoryId = cursor.value.categoryId;
-            cursorBookmarkId = cursor.value.bookmarkId;
+            let cursorCategoryId;
+            let cursorBookmarkId;
 
-            if (cursorBookmarkId === bookmark.id) {
-                const category = await getCategory(cursorCategoryId);
-                findCategories.push(category);
+            while (cursor) {
+                cursorCategoryId = cursor.value.categoryId;
+                cursorBookmarkId = cursor.value.bookmarkId;
+
+                if (cursorBookmarkId === bookmark.id) {
+                    const category = await getCategory(cursorCategoryId);
+                    findCategories.push(category);
+                }
+                cursor = await cursor.continue();
             }
-            cursor = await cursor.continue();
         }
 
         return new Bookmark({
@@ -172,6 +174,7 @@ class BookmarksUniversalService {
 
     @action('query bookmarks')
     static async query(searchRequest = new SearchQuery()) {
+        console.time('query');
         const bestMatches = {};
         const allMatches = {};
 
@@ -184,9 +187,12 @@ class BookmarksUniversalService {
                 searchRequest.folderId,
             );
         } else {
+            console.time('get bookmarks');
             bookmarksKeys = await DBConnector().getAll('bookmarks');
+            console.timeEnd('get bookmarks');
         }
 
+        console.time('enrich');
         const bookmarks = await Promise.all(bookmarksKeys.map(({ id }) => this.get(id)));
 
         bookmarks.forEach((bookmark) => {
@@ -204,6 +210,8 @@ class BookmarksUniversalService {
 
         const { usedFields } = searchRequest;
 
+        console.timeEnd('enrich');
+        console.timeEnd('query');
         return {
             best: usedFields.query || usedFields.tags ? values(bestMatches) : null,
             all: values(allMatches),
