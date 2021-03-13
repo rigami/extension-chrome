@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
     bookmarks: {
         overflow: 'auto',
         flexGrow: 1,
+        width: 409,
     },
     primaryText: {
         overflow: 'hidden',
@@ -64,10 +65,21 @@ const useStyles = makeStyles((theme) => ({
     shrink: {
         width: 72,
         zIndex: 0,
+        cursor: 'pointer',
+        '&:hover $notActiveFolder': { opacity: 1 },
     },
     folderCard: {
         marginRight: theme.spacing(2),
         marginBottom: theme.spacing(2),
+    },
+    action: {
+        marginTop: theme.spacing(-0.5),
+        marginRight: theme.spacing(-0.5),
+        marginBottom: theme.spacing(-0.5),
+    },
+    notActiveFolder: {
+        opacity: 0.5,
+        pointerEvents: 'none',
     },
 }));
 
@@ -138,7 +150,12 @@ function Folder(props) {
     }, []);
 
     return (
-        <Card className={clsx(classes.root, shrink && classes.shrink, externalClassName)}>
+        <Card
+            className={clsx(classes.root, shrink && classes.shrink, externalClassName)}
+            onClick={() => {
+                if (shrink) onBack();
+            }}
+        >
             <CardHeader
                 avatar={(
                     shrink ? (
@@ -163,7 +180,10 @@ function Folder(props) {
 
                 )}
                 title={!shrink && folder?.name}
-                classes={{ avatar: classes.avatar }}
+                classes={{
+                    avatar: classes.avatar,
+                    action: classes.action,
+                }}
                 action={(
                     <IconButton
                         data-ui-path="folder.explorer.menu"
@@ -186,8 +206,11 @@ function Folder(props) {
                     description={t('fap.folder.emptyDescription')}
                 />
             )}
-            {folders?.length > 0 && findBookmarks?.length > 0 && (
-                <Box display="flex" className={classes.bookmarks}>
+            {!isSearching && (folders?.length > 0 || findBookmarks?.length > 0) && (
+                <Box
+                    display="flex"
+                    className={clsx(classes.bookmarks, shrink && classes.notActiveFolder)}
+                >
                     <Scrollbar>
                         <Box display="flex" flexWrap="wrap" ml={2}>
                             {folders.map((currFolder) => (
