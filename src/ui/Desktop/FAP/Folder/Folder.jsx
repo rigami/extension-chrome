@@ -25,7 +25,7 @@ import pin from '@/utils/contextMenu/pin';
 import edit from '@/utils/contextMenu/edit';
 import remove from '@/utils/contextMenu/remove';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
-import FolderCard from '@/ui/Bookmarks/Folders/Card';
+import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
 
 const useStyles = makeStyles((theme) => ({
     root: {
