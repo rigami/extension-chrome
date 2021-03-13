@@ -20,6 +20,7 @@ function ScrollView(props, ref) {
         value,
         active,
         onScroll,
+        onTryScrollCallback,
         classes: externalClassName = {},
     } = props;
     const classes = useStyles();
@@ -30,6 +31,7 @@ function ScrollView(props, ref) {
                 {React.cloneElement(children, {
                     active,
                     onScroll,
+                    onTryScrollCallback,
                 })}
             </Box>
         </Box>

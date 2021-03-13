@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ButtonBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -9,6 +9,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import ReactResizeDetector from 'react-resize-detector';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { BKMS_FAP_POSITION } from '@/enum';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import FAPButton from './Button';
 
 const useStyles = makeStyles((theme) => ({
@@ -58,6 +59,7 @@ function ButtonWithPopper(props) {
     } = props;
     const classes = useStyles();
     const { t } = useTranslation();
+    const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
     const anchorEl = useRef();
     const store = useLocalObservable(() => ({
@@ -80,6 +82,14 @@ function ButtonWithPopper(props) {
 
     const offsetToTop = bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP;
 
+    useEffect(() => {
+        if (!store.isShake) return;
+
+        setTimeout(() => {
+            store.isShake = false;
+        }, 400);
+    }, [store.isShake]);
+
     return (
         <React.Fragment>
             <PopperWrapper
@@ -90,11 +100,12 @@ function ButtonWithPopper(props) {
 
                     if (reason === TARGET_CLICK.ANCHOR) {
                         store.isOpen = false;
+                        coreService.storage.updateTemp({
+                            closeFapPopper: null,
+                            shakeFapPopper: null,
+                        });
                     } else {
                         store.isShake = true;
-                        setTimeout(() => {
-                            store.isShake = false;
-                        }, 400);
                     }
                 }}
                 modifiers={{
@@ -131,7 +142,25 @@ function ButtonWithPopper(props) {
                             if (!store.isOpen) store.isBlockEvent = true;
                         }}
                         onClick={() => {
-                            if (store.isBlockEvent) store.isOpen = true;
+                            if (store.isBlockEvent) {
+                                if (coreService.storage.temp.closeFapPopper) {
+                                    coreService.storage.temp.closeFapPopper();
+                                }
+
+                                coreService.storage.updateTemp({
+                                    closeFapPopper: () => {
+                                        store.isOpen = false;
+                                        coreService.storage.updateTemp({
+                                            closeFapPopper: null,
+                                            shakeFapPopper: null,
+                                        });
+                                    },
+                                    shakeFapPopper: () => {
+                                        store.isShake = true;
+                                    },
+                                });
+                                store.isOpen = true;
+                            }
                             store.isBlockEvent = false;
                         }}
                     >

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import {
@@ -7,24 +7,19 @@ import {
     SaveAltRounded as SaveBgIcon,
     CheckRounded as SavedBgIcon,
     OpenInNewRounded as OpenSourceIcon,
-    BookmarkRounded as UnpinnedFavoriteIcon,
-    BookmarkBorderRounded as PinnedFavoriteIcon, EditRounded as EditIcon, DeleteRounded as RemoveIcon,
 } from '@material-ui/icons';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { Box, CircularProgress } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
-import useAppStateService from '@/stores/app/AppStateProvider';
 import { eventToBackground } from '@/stores/server/bus';
 import { BG_SELECT_MODE, BG_SHOW_STATE, BG_SOURCE } from '@/enum';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem, ContextMenuDivider } from '@/stores/app/entities/contextMenu';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
-import GlobalScroll from '@/ui/GlobalScroll';
 import FAP from '@/ui/Desktop/FAP';
-import Nest from '@/utils/Nest';
+import { DIRECTION } from '@/ui/GlobalScroll';
 import Background from './Background';
 import Widgets from './Widgets';
 
@@ -45,12 +40,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Desktop() {
+function Desktop({ active, onScroll, onTryScrollCallback }) {
     const { t } = useTranslation();
     const classes = useStyles();
     const appService = useAppService();
+    const { widgets, backgrounds } = appService;
     const { enqueueSnackbar } = useSnackbar();
-    const { widgets, backgrounds } = useAppStateService();
     const coreService = useCoreService();
 
     const contextMenu = () => [
@@ -112,6 +107,20 @@ function Desktop() {
             }),
         ] : []),
     ];
+
+    useEffect(() => {
+        if (coreService.storage.temp.closeFapPopper && active) {
+            onScroll({ blockBottom: true });
+            onTryScrollCallback((scrollDirection) => {
+                if (scrollDirection === DIRECTION.DOWN && coreService.storage.temp.shakeFapPopper) {
+                    coreService.storage.temp.shakeFapPopper();
+                }
+            });
+        } else {
+            onScroll({ blockBottom: false });
+            onTryScrollCallback(null);
+        }
+    }, [coreService.storage.temp.closeFapPopper]);
 
     return (
         <Box className={classes.root}>

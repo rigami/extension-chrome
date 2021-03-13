@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     hideScroll: { opacity: 0 },
 }));
 
-const DIRECTION = {
+export const DIRECTION = {
     UP: 'UP',
     DOWN: 'DOWN',
 };
@@ -31,6 +31,7 @@ function GlobalScroll({ children }) {
         activeView: appService.settings.defaultActivity === ACTIVITY.BOOKMARKS ? 1 : 0,
         blockViewTop: false,
         blockViewBottom: false,
+        viewsCallbacks: {},
     }));
 
     const scrollHandler = (delta) => {
@@ -38,6 +39,7 @@ function GlobalScroll({ children }) {
 
         const { activeView } = store;
 
+        if (store.viewsCallbacks[activeView]) store.viewsCallbacks[activeView](store.direction);
         if (store.direction === DIRECTION.UP && !store.blockViewTop) {
             store.activeView = Math.max(store.activeView - 1, 0);
         } else if (store.direction === DIRECTION.DOWN && !store.blockViewBottom) {
@@ -76,6 +78,9 @@ function GlobalScroll({ children }) {
                         store.blockViewTop = blockTop;
                         store.blockViewBottom = blockBottom;
                     }
+                },
+                onTryScrollCallback: (callback) => {
+                    store.viewsCallbacks[index] = callback;
                 },
             }))}
         </Box>
