@@ -117,7 +117,7 @@ function FAP() {
         }
 
         Promise.allSettled(
-            bookmarksService.favorites.slice(favorites.length, maxCount).map((fav) => {
+            bookmarksService.favorites.slice(0, maxCount).map((fav) => {
                 if (fav.itemType === 'bookmark') {
                     return BookmarksUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'folder') {
@@ -131,7 +131,6 @@ function FAP() {
         )
             .then((findFavorites) => {
                 setFavorites([
-                    ...favorites,
                     ...findFavorites
                         .filter(({ status }, index) => {
                             if (status !== 'fulfilled') {

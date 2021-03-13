@@ -5,19 +5,18 @@ import {
     IconButton,
     List,
     ListItem,
-    ListItemIcon,
     ListItemText,
     Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { ArrowBackRounded as BackIcon, FavoriteRounded as FavIcon } from '@material-ui/icons';
-import clsx from 'clsx';
+import { ArrowBackRounded as BackIcon } from '@material-ui/icons';
 import LogoIcon from '@/images/logo-icon.svg';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import Stub from '@/ui-components/Stub';
 import { FETCH } from '@/enum';
 import stateRender from '@/utils/stateRender';
+import FolderItem from '@/ui/Bookmarks/FoldersPanel/FolderItem';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -117,14 +116,12 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
             {!searchEverywhere && store.childFolders && store.childFolders.length !== 0 && (
                 <List disablePadding>
                     {store.childFolders.map((folder) => (
-                        <ListItem
-                            button
+                        <FolderItem
                             key={folder.id}
-                            className={classes.padding}
+                            id={folder.id}
+                            name={folder.name}
                             onClick={() => onSelectFolder(folder.id)}
-                        >
-                            <ListItemText primary={folder.name} />
-                        </ListItem>
+                        />
                     ))}
                 </List>
             )}
