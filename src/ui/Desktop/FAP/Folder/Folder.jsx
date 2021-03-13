@@ -15,7 +15,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
-import FullScreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import { useTranslation } from 'react-i18next';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
@@ -195,12 +195,12 @@ function Folder(props) {
                 )}
             />
             {isSearching && (
-                <FullScreenStub style={{ height: 550 }}>
+                <Stub style={{ height: 550 }}>
                     <CircularProgress />
-                </FullScreenStub>
+                </Stub>
             )}
             {!isSearching && (findBookmarks?.length === 0 && folders?.length === 0) && (
-                <FullScreenStub
+                <Stub
                     style={{ height: 550 }}
                     message={t('fap.folder.emptyTitle')}
                     description={t('fap.folder.emptyDescription')}

@@ -15,7 +15,7 @@ import clsx from 'clsx';
 import LogoIcon from '@/images/logo-icon.svg';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import FullScreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import { FETCH } from '@/enum';
 import stateRender from '@/utils/stateRender';
 
@@ -128,16 +128,7 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
                     ))}
                 </List>
             )}
-            {searchEverywhere && (
-                <FullScreenStub
-                    message="Search for bookmarks throughout the system"
-                />
-            )}
-            {/* !searchEverywhere && store.childFolders && store.childFolders.length === 0 && (
-                <FullScreenStub
-                    message="No folders"
-                />
-            ) */}
+            {searchEverywhere && (<Stub message="Search for bookmarks throughout the system" />)}
             {/* <Box className={classes.bottomOffset}>
                 <ListItem
                     button

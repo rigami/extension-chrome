@@ -3,7 +3,7 @@ import { Box, Fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import EditorBookmark from '@/ui/Bookmarks/EditBookmarkModal/Editor';
 import clsx from 'clsx';
-import FullScreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 
 const useStyles = makeStyles((theme) => ({
     editor: { padding: 0 },
@@ -37,7 +37,7 @@ function Popup({ tabName, tabUrl }) {
         }}
         >
             <Fade in={isChecking}>
-                <FullScreenStub
+                <Stub
                     className={classes.stub}
                     message="Загрузка информцаии..."
                 />

@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     bottomOffset: { marginBottom: theme.spacing(2) },
 }));
 
-function FullScreenStub(props) {
+function Stub(props) {
     const {
         icon,
         iconProps = {},
@@ -102,4 +102,4 @@ function FullScreenStub(props) {
     );
 }
 
-export default FullScreenStub;
+export default Stub;

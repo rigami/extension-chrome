@@ -23,7 +23,7 @@ import {
 } from '@/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { round } from 'lodash';
-import FullScreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { runInAction } from 'mobx';
 import { useSnackbar } from 'notistack';
@@ -234,27 +234,27 @@ function WeatherChangeLocation({ onClose }) {
                 />
             ))}
             {store.status === FETCH.DONE && store.list.length === 0 && (
-                <FullScreenStub
+                <Stub
                     message={t('settings.widgets.dtw.weather.region.search.notFound.title')}
                     description={t('settings.widgets.dtw.weather.region.search.notFound.description')}
                 />
             )}
             {store.status === FETCH.FAILED && (
-                <FullScreenStub
+                <Stub
                     icon={ErrorIcon}
                     message={t('settings.widgets.dtw.weather.region.search.failed.title')}
                     description={t('settings.widgets.dtw.weather.region.search.failed.description')}
                 />
             )}
             {store.status === FETCH.WAIT && !coreService.storage.persistent.weatherLocation && (
-                <FullScreenStub
+                <Stub
                     icon={WrongLocationIcon}
                     message={t('settings.widgets.dtw.weather.region.search.wait.failed.title')}
                     description={t('settings.widgets.dtw.weather.region.search.wait.failed.description')}
                 />
             )}
             {store.status === FETCH.WAIT && coreService.storage.persistent.weatherLocation?.manual && (
-                <FullScreenStub
+                <Stub
                     icon={PlaceIcon}
                     message={t(
                         'settings.widgets.dtw.weather.region.search.wait.manual.title',
@@ -268,7 +268,7 @@ function WeatherChangeLocation({ onClose }) {
                 && coreService.storage.persistent.weatherLocation
                 && !coreService.storage.persistent.weatherLocation?.manual
                 && (
-                    <FullScreenStub
+                    <Stub
                         icon={MyLocationIcon}
                         message={t(
                             'settings.widgets.dtw.weather.region.search.wait.auto.title',

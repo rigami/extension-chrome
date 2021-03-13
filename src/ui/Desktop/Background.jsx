@@ -14,7 +14,7 @@ import {
 } from '@/enum';
 import clsx from 'clsx';
 import { Fade } from '@material-ui/core';
-import FullscreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import { useSnackbar } from 'notistack';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
@@ -282,7 +282,7 @@ function Background() {
                     />
                 )}
                 {(store.stateLoadBg === FETCH.FAILED || !store.currentBg) && (
-                    <FullscreenStub
+                    <Stub
                         className={classes.errorStub}
                         icon={BrokenIcon}
                         message={t('bg.errorLoad')}

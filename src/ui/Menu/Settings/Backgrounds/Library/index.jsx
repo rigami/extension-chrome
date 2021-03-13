@@ -11,7 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import FullscreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import { last } from 'lodash';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
@@ -106,9 +106,9 @@ function LibraryMenu() {
     return (
         <React.Fragment>
             {state === FETCH.PENDING && (
-                <FullscreenStub>
+                <Stub>
                     <CircularProgress />
-                </FullscreenStub>
+                </Stub>
             )}
             {state === FETCH.FAILED && (
                 <Box className={classes.centerPage}>
@@ -144,7 +144,7 @@ function LibraryMenu() {
                         </GridList>
                     )}
                     {bgs.length === 0 && (
-                        <FullscreenStub message={t('bg.notFound')} />
+                        <Stub message={t('bg.notFound')} />
                     )}
                 </Box>
             )}

@@ -18,7 +18,7 @@ import {
     WifiTetheringRounded as StreamIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import FullscreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { runInAction } from 'mobx';
 import fetchData from '@/utils/xhrPromise';
@@ -233,7 +233,7 @@ function ChangeQuery({ onClose }) {
                         )}
                     </Box>
                     {store.list.length !== 0 && (
-                        <FullscreenStub
+                        <Stub
                             className={classes.footer}
                             icon={StationIcon}
                             message={t('settings.bg.scheduler.query.search.footerMessage.title')}
@@ -250,20 +250,20 @@ function ChangeQuery({ onClose }) {
                 </React.Fragment>
             )}
             {store.status === FETCH.DONE && store.list.length === 0 && (
-                <FullscreenStub
+                <Stub
                     message={t('settings.bg.scheduler.query.search.notFound.title')}
                     description={t('settings.bg.scheduler.query.search.notFound.description')}
                 />
             )}
             {store.status === FETCH.FAILED && (
-                <FullscreenStub
+                <Stub
                     icon={ErrorIcon}
                     message={t('settings.bg.scheduler.query.search.failed.title')}
                     description={t('settings.bg.scheduler.query.search.failed.description')}
                 />
             )}
             {store.status === FETCH.WAIT && (
-                <FullscreenStub
+                <Stub
                     icon={StreamIcon}
                     message={t('settings.bg.scheduler.query.search.wait.title')}
                     description={t('settings.bg.scheduler.query.search.wait.description')}

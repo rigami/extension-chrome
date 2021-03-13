@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { LinearProgress, Fade } from '@material-ui/core';
-import FullscreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import useService from '@/stores/app/BaseStateProvider';
@@ -33,16 +33,16 @@ function FirstLookScreen({ onStart, onLoad }) {
     return (
         <React.Fragment>
             <Fade in={stage !== PREPARE_PROGRESS.DONE}>
-                <FullscreenStub
+                <Stub
                     message={t('firstView.prepareApp')}
                     description={`${t('firstView.pleaseWait')} ${t(`firstView.stage.${stage}`)}`}
                     style={{ height: '100vh' }}
                 >
                     <LinearProgress variant="determinate" style={{ width: 240 }} value={progress} />
-                </FullscreenStub>
+                </Stub>
             </Fade>
             <Fade in={stage === PREPARE_PROGRESS.DONE}>
-                <FullscreenStub
+                <Stub
                     message={t('firstView.allDone')}
                     description={t('firstView.prepareAppDoneDescription')}
                     style={{

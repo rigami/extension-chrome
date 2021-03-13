@@ -8,7 +8,7 @@ import { WarningRounded as WarnIcon, LinkRounded as URLIcon } from '@material-ui
 
 import { makeStyles } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
-import FullScreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import { useTranslation } from 'react-i18next';
 import { BKMS_VARIANT, FETCH } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -105,19 +105,19 @@ function Preview(props) {
             className={classes.cover}
         >
             {stage === STAGE.WAIT_REQUEST && (
-                <FullScreenStub
+                <Stub
                     icon={URLIcon}
                     description={t('bookmark.editor.helper.writeURL')}
                 />
             )}
             {stage === STAGE.WAIT_RESULT && (
-                <FullScreenStub
+                <Stub
                     icon={URLIcon}
                     description={t('bookmark.editor.helper.selectResult')}
                 />
             )}
             {stage === STAGE.WAIT_NAME && (
-                <FullScreenStub
+                <Stub
                     icon={URLIcon}
                     description={t('bookmark.editor.helper.writeName')}
                 />
@@ -131,9 +131,9 @@ function Preview(props) {
                         && (store.stateImageLoad === FETCH.PENDING || store.stateImageLoad === FETCH.WAIT)
                     )
                 ) && (
-                    <FullScreenStub>
+                    <Stub>
                         <CircularProgress color="primary" />
-                    </FullScreenStub>
+                    </Stub>
                 )
             }
             {(stage === STAGE.DONE || stage === STAGE.FAILED_PARSE_SITE) && store.stateImageLoad === FETCH.DONE && (

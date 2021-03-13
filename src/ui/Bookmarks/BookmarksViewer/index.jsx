@@ -4,7 +4,7 @@ import {
     Button,
     CircularProgress,
 } from '@material-ui/core';
-import FullScreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
@@ -102,13 +102,13 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                         </Fragment>
                     ),
                     (searchRequest.usedFields.query || searchRequest.usedFields.tags) && !store.existMatches && (
-                        <FullScreenStub
+                        <Stub
                             message="Nothing found"
                             classes={{ title: classes.title }}
                         />
                     ),
                     !searchRequest.usedFields.query && !searchRequest.usedFields.tags && !store.existMatches && (
-                        <FullScreenStub
+                        <Stub
                             message="There are no bookmarks here yet"
                             classes={{ title: classes.title }}
                         >
@@ -123,12 +123,12 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                             >
                                 Create first bookmark
                             </Button>
-                        </FullScreenStub>
+                        </Stub>
                     ),
                 ],
-                <FullScreenStub>
+                <Stub>
                     <CircularProgress />
-                </FullScreenStub>,
+                </Stub>,
             )}
         </Box>
     );
