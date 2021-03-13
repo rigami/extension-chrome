@@ -114,14 +114,13 @@ function Desktop() {
     ];
 
     return (
-        <Box
-            className={classes.root}
-            onContextMenu={appService.contextMenu(contextMenu, { reactions: [() => backgrounds.bgState] })}
-        >
-            <Background />
-            {widgets.settings.useWidgets && (
-                <Widgets />
-            )}
+        <Box className={classes.root}>
+            <Box onContextMenu={appService.contextMenu(contextMenu, { reactions: [() => backgrounds.bgState] })}>
+                <Background />
+                {widgets.settings.useWidgets && (
+                    <Widgets />
+                )}
+            </Box>
             <FAP />
             {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
                 <CircularProgress
