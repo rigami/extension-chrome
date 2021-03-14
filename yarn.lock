@@ -3670,18 +3670,18 @@ eslint-config-rigami@rigami/eslint-config-rigami:
   version "1.0.1"
   resolved "https://codeload.github.com/rigami/eslint-config-rigami/tar.gz/768c0a661e90c54090b06fc06a41bdcb4c567842"
   dependencies:
-    eslint-config-airbnb "^18.2.1"
+    eslint-config-airbnb "^18.2.0"
     eslint-import-resolver-node "^0.3.4"
-    eslint-plugin-compat "^3.9.0"
-    eslint-plugin-import "^2.22.1"
-    eslint-plugin-jest "^24.1.5"
+    eslint-plugin-compat "^3.8.0"
+    eslint-plugin-import "^2.22.0"
+    eslint-plugin-jest "^23.20.0"
     eslint-plugin-json "^2.1.2"
-    eslint-plugin-jsx-a11y "^6.4.1"
+    eslint-plugin-jsx-a11y "^6.3.1"
     eslint-plugin-no-use-extend-native "^0.5.0"
-    eslint-plugin-promise "^4.3.1"
-    eslint-plugin-react "^7.22.0"
-    eslint-plugin-react-hooks "^4.2.0"
-    eslint-plugin-sonarjs "^0.6.0"
+    eslint-plugin-promise "^4.2.1"
+    eslint-plugin-react "^7.20.6"
+    eslint-plugin-react-hooks "^4.1.0"
+    eslint-plugin-sonarjs "^0.5.0"
 
 eslint-import-resolver-alias@^1.1.2:
   version "1.1.2"
@@ -4718,13 +4718,6 @@ hyphenate-style-name@^1.0.3:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.0.4.tgz#691879af8e220aea5750e8827db4ef62a54e361d"
   integrity sha512-ygGZLjmXfPHj+ZWh6LwbC37l43MhfztxetbFCoYTM2VjkIUpeHgSNn7QIyVFj7YQ1Wl9Cbw5sholVJPzWvC2MQ==
-
-i18next-browser-languagedetector@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/i18next-browser-languagedetector/-/i18next-browser-languagedetector-6.0.1.tgz#83654bc87302be2a6a5a75146ffea97b4ca268cf"
-  integrity sha512-3H+OsNQn3FciomUU0d4zPFHsvJv4X66lBelXk9hnIDYDsveIgT7dWZ3/VvcSlpKk9lvCK770blRZ/CwHMXZqWw==
-  dependencies:
-    "@babel/runtime" "^7.5.5"
 
 i18next-http-backend@^1.1.1:
   version "1.1.1"

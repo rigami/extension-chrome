@@ -4,7 +4,6 @@ import {
     reaction, action, makeAutoObservable, runInAction,
 } from 'mobx';
 import i18n from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import { open as openDB } from '@/utils/dbConnector';
@@ -115,9 +114,9 @@ class Core {
     async initialization() {
         await i18n
             .use(initReactI18next)
-            .use(LanguageDetector)
             .use(Backend)
             .init({
+                lng: (chrome?.i18n?.getUILanguage?.() || 'en').substring(0, 2),
                 load: 'languageOnly',
                 fallbackLng: PRODUCTION_MODE ? 'en' : 'dev',
                 debug: !PRODUCTION_MODE,
