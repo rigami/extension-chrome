@@ -49,12 +49,13 @@ const useStyles = makeStyles((theme) => ({
         transform: 'translateY(0px)',
         transition: '0.3s ease',
         minHeight: 200,
+        paddingBottom: theme.spacing(2),
     },
     moreIcons: { marginTop: 'auto' },
     moreWrapper: {
         width: '100%',
         padding: theme.spacing(2),
-        paddingTop: 0,
+        paddingBottom: 0,
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
@@ -156,6 +157,8 @@ function Preview(props) {
         imagesDraftList: images,
         imagesShortList: [],
         imagesShortListState: FETCH.WAIT,
+        imagesSecondList: [],
+        imagesSecondListState: FETCH.WAIT,
         heightContainer: 0,
         heightCard: 0,
         lockIconsList: true,
@@ -191,6 +194,18 @@ function Preview(props) {
             if (img) store.imagesShortList.push(img);
         } while (img && store.imagesShortList.length < 4 && store.imagesDraftList.length !== 0);
         store.imagesShortListState = FETCH.DONE;
+    };
+
+    const handleLoadSecondList = async () => {
+        store.imagesSecondListState = FETCH.PENDING;
+        let img;
+
+        do {
+            img = await getNextImage(store.imagesDraftList, (list) => { store.imagesDraftList = list; });
+
+            if (img) store.imagesSecondList.push(img);
+        } while (img && store.imagesDraftList.length !== 0);
+        store.imagesSecondListState = FETCH.DONE;
     };
 
     useEffect(() => {
@@ -259,7 +274,7 @@ function Preview(props) {
                     <Box
                         display="flex"
                         flexDirection="column"
-                        height={store.heightContainer}
+                        minHeight={store.heightContainer}
                         ref={listRef}
                     >
                         <ResizeDetector
@@ -293,7 +308,7 @@ function Preview(props) {
                                 }px)`,
                             }}
                         >
-                            {store.imagesShortList.map(({ url, icoVariant }, index) => (
+                            {store.imagesShortList.map(({ url, icoVariant }) => (
                                 <PreviewCard
                                     key={url}
                                     active={selectUrl === url}
@@ -301,22 +316,43 @@ function Preview(props) {
                                     description={description}
                                     icoVariant={icoVariant}
                                     imageUrl={url}
-                                    className={clsx(
-                                        index === store.imagesShortList.length - 1 && classes.bottomOffset,
-                                    )}
                                     onClick={() => onClickPreview({
                                         url,
                                         icoVariant,
                                     })}
                                 />
                             ))}
-                            {store.imagesDraftList.length !== 0 && (
-                                <Box className={classes.moreWrapper}>
-                                    <Button variant="outlined">
-                                        More images
-                                    </Button>
-                                </Box>
-                            )}
+                            {store.imagesSecondList.map(({ url, icoVariant }) => (
+                                <PreviewCard
+                                    key={url}
+                                    active={selectUrl === url}
+                                    name={name}
+                                    description={description}
+                                    icoVariant={icoVariant}
+                                    imageUrl={url}
+                                    onClick={() => onClickPreview({
+                                        url,
+                                        icoVariant,
+                                    })}
+                                />
+                            ))}
+                            {
+                                store.imagesDraftList.length !== 0
+                                && store.imagesSecondListState !== FETCH.DONE
+                                && store.imagesSecondListState !== FETCH.FAILED
+                                && (
+                                    <Box className={classes.moreWrapper}>
+                                        <Button
+                                            variant="outlined"
+                                            disabled={store.imagesSecondListState !== FETCH.WAIT}
+                                            onClick={handleLoadSecondList}
+                                        >
+                                            {store.imagesSecondListState === FETCH.WAIT && 'More images'}
+                                            {store.imagesSecondListState === FETCH.PENDING && 'Search...'}
+                                        </Button>
+                                    </Box>
+                                )
+                            }
                         </Box>
                         <Fade in={store.lockIconsList}>
                             <Typography variant="body2" className={clsx(classes.moreIcons, classes.helper)}>
