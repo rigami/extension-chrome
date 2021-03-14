@@ -17,6 +17,7 @@ import clsx from 'clsx';
 import ResizeDetector, { useResizeDetector } from 'react-resize-detector';
 import { getNextImage } from '@/utils/checkIcons';
 import asyncAction from '@/utils/asyncAction';
+import { toJS } from 'mobx';
 
 const useStyles = makeStyles((theme) => ({
     cover: {
@@ -193,6 +194,12 @@ function Preview(props) {
 
             if (img) store.imagesShortList.push(img);
         } while (img && store.imagesShortList.length < 4 && store.imagesDraftList.length !== 0);
+
+        store.imagesShortList.splice(1, 0, {
+            url: '',
+            icoVariant: BKMS_VARIANT.SYMBOL,
+        });
+
         store.imagesShortListState = FETCH.DONE;
     };
 
@@ -209,8 +216,11 @@ function Preview(props) {
     };
 
     useEffect(() => {
+        console.log('stage:', stage);
+        if (images.length === 0) return;
+
         asyncAction(async () => {
-            console.log('images:', images);
+            console.log('images:', toJS(images));
             store.imagesDraftList = images;
             if (!store.primaryImage) await loadPrimaryImage();
 
@@ -224,11 +234,22 @@ function Preview(props) {
 
     useEffect(() => {
         console.log('stage:', stage);
-        if (stage === STAGE.FAILED_PARSE_SITE && !store.primaryImage) {
-            store.primaryImage = {
-                url: '',
-                icoVariant: BKMS_VARIANT.SYMBOL,
-            };
+        if ((stage === STAGE.FAILED_PARSE_SITE) || (images.length === 0 && stage === STAGE.DONE)) {
+            if (!store.primaryImage) {
+                store.primaryImage = {
+                    url: '',
+                    icoVariant: BKMS_VARIANT.SYMBOL,
+                };
+            } else {
+                store.imagesShortList = [
+                    {
+                        url: '',
+                        icoVariant: BKMS_VARIANT.SYMBOL,
+                    },
+                ];
+
+                store.imagesShortListState = FETCH.DONE;
+            }
         }
     }, [stage]);
 
@@ -359,8 +380,7 @@ function Preview(props) {
                                 {stage === STAGE.PARSING_SITE && 'Search other variants...'}
                                 {store.imagesShortListState === FETCH.PENDING && 'Analyze other variants...'}
                                 {
-                                    stage === STAGE.DONE
-                                    && store.imagesShortListState === FETCH.DONE
+                                    store.imagesShortListState === FETCH.DONE
                                     && store.imagesShortList.length !== 0
                                     && 'Scroll to more'
                                 }

@@ -3,7 +3,6 @@ import {
     Container,
     CircularProgress,
     Card,
-    Box,
 } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,15 +10,10 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { getSiteInfo, getImageRecalc } from '@/utils/siteSearch';
 import { FETCH, BKMS_VARIANT } from '@/enum';
 import asyncAction from '@/utils/asyncAction';
-import Scrollbar from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
-import ReactResizeDetector from 'react-resize-detector';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import { getNextImage } from '@/utils/checkIcons';
 import FieldsEditor from './FieldsEditor';
-import { PreviewSelectorToggleButton } from './Preview/Selector';
 import Preview, { STAGE } from './Preview';
-import SelectorWrapper from './Preview/SelectorWrapper';
 
 const useStyles = makeStyles((theme) => ({
     container: {
