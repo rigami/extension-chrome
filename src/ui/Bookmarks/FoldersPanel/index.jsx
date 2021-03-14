@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false }) {
+function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false, onlyFavorites = false }) {
     const classes = useStyles();
     const store = useLocalObservable(() => ({
         folder: null,
@@ -126,21 +126,6 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
                 </List>
             )}
             {searchEverywhere && (<Stub message="Search for bookmarks throughout the system" />)}
-            {/* <Box className={classes.bottomOffset}>
-                <ListItem
-                    button
-                    component="button"
-                    className={clsx(classes.padding, classes.favorite)}
-                >
-                    <ListItemIcon className={classes.favorite}>
-                        <FavIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary="Favorite"
-                        classes={{ primary: classes.primaryFont }}
-                    />
-                </ListItem>
-            </Box> */}
         </Box>
     );
 }

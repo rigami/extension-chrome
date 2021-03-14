@@ -18,11 +18,15 @@ export class SearchQuery {
     tags = [];
     folderId = null;
     query = '';
+    onlyFavorites = false;
+    _draftRequest;
 
     constructor(request = {}) {
+        this._draftRequest = request;
         if ('tags' in request) this.tags = request.tags;
         if ('folderId' in request) this.folderId = request.folderId;
         if ('query' in request) this.query = request.query.toLowerCase();
+        if ('onlyFavorites' in request) this.onlyFavorites = request.onlyFavorites;
     }
 
     @computed
@@ -36,10 +40,46 @@ export class SearchQuery {
             tags: this.tags.length !== 0,
             folder: !!this.folderId,
             query: this.query.length !== 0,
+            onlyFavorites: 'onlyFavorites' in this._draftRequest,
         };
     }
 
     compare(bookmark) {
+        let folder;
+
+        if (!this.folderId) {
+            folder = COMPARE.IGNORE;
+        } else if (bookmark.folderId === this.folderId) {
+            folder = COMPARE.FULL;
+        } else {
+            return {
+                tags: COMPARE.IGNORE,
+                query: COMPARE.IGNORE,
+                favCompare: COMPARE.IGNORE,
+                folder: COMPARE.NONE,
+                summary: COMPARE.NONE,
+            };
+        }
+
+        let favCompare;
+
+        if (!('onlyFavorites' in this._draftRequest) || !this.onlyFavorites) {
+            favCompare = COMPARE.IGNORE;
+        } else if (this.onlyFavorites && FavoritesUniversalService.findFavorite({
+            itemType: 'bookmark',
+            itemId: bookmark.id,
+        })) {
+            favCompare = COMPARE.FULL;
+        } else {
+            return {
+                tags: COMPARE.IGNORE,
+                query: COMPARE.IGNORE,
+                favCompare: COMPARE.NONE,
+                folder,
+                summary: COMPARE.NONE,
+            };
+        }
+
         let tags;
 
         const sameTagsCount = difference(this.tags, bookmark.categories.map(({ id }) => id)).length;
@@ -78,21 +118,9 @@ export class SearchQuery {
             }
         }
 
-        let folder;
-
-        if (!this.folderId) {
-            folder = COMPARE.IGNORE;
-        } else if (bookmark.folderId === this.folderId) {
-            folder = COMPARE.FULL;
-        } else {
-            folder = COMPARE.NONE;
-        }
-
         let summary;
 
-        if (folder !== COMPARE.IGNORE && folder === COMPARE.NONE) {
-            summary = COMPARE.NONE;
-        } else if (
+        if (
             (tags === COMPARE.IGNORE || tags === COMPARE.FULL)
             && (query === COMPARE.IGNORE || query === COMPARE.FULL)
             && (tags !== COMPARE.IGNORE || query !== COMPARE.IGNORE)
@@ -111,6 +139,7 @@ export class SearchQuery {
         return {
             tags,
             query,
+            favCompare,
             folder,
             summary,
         };

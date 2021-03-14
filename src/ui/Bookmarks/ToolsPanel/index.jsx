@@ -3,6 +3,7 @@ import { AppBar, Toolbar } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { debounce } from 'lodash';
+import ShowFavoriteSwitcher from '@/ui/Bookmarks/ToolsPanel/ShowFavoriteSwitcher';
 import Search from './Search';
 import Tags from './Tags';
 import SearchPlace from './SearchPlace';
@@ -43,6 +44,7 @@ function ToolsPanel({ onResearch }) {
                 <Search onResearch={handleChangeRequest} />
                 <Tags onResearch={handleChangeRequest} />
                 <SearchPlace onResearch={handleChangeRequest} />
+                <ShowFavoriteSwitcher onResearch={handleChangeRequest} />
             </Toolbar>
         </AppBar>
     );
