@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { ButtonBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import PopperWrapper, { TARGET_CLICK } from '@/ui-components/PopperWrapper';
@@ -129,10 +128,12 @@ function ButtonWithPopper(props) {
                 <span className={clsx(classes.shakeWrapper, classes.transition, store.isShake && classes.buttonShake)}>
                     <FAPButton
                         className={clsx(
+                            classes.root,
                             externalClasses.backdrop,
                             classes.transition,
                             store.isOpen && offsetToTop && classes.offsetButtonTop,
                             store.isOpen && !offsetToTop && classes.offsetButtonBottom,
+                            store.isOpen && classes.activeIconButton,
                         )}
                         id={id}
                         name={name}
@@ -164,18 +165,11 @@ function ButtonWithPopper(props) {
                             store.isBlockEvent = false;
                         }}
                     >
-                        <ButtonBase
-                            className={clsx(
-                                classes.root,
-                                store.isOpen && classes.activeIconButton,
-                            )}
-                        >
-                            {store.isOpen ? (
-                                <IconClose className={classes.icon} />
-                            ) : (
-                                <IconOpen {...iconOpenProps} className={classes.icon} />
-                            )}
-                        </ButtonBase>
+                        {store.isOpen ? (
+                            <IconClose className={classes.icon} />
+                        ) : (
+                            <IconOpen {...iconOpenProps} className={classes.icon} />
+                        )}
                     </FAPButton>
                 </span>
             </span>

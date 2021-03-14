@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Tooltip } from '@material-ui/core';
+import { ButtonBase, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
@@ -59,16 +59,17 @@ function FAPButton(props) {
             enterDelay={400}
             enterNextDelay={400}
         >
-            {React.isValidElement(children) ? React.cloneElement(children, {
-                ...other,
-                className: clsx(
+            <ButtonBase
+                ref={ref}
+                className={clsx(
                     classes.root,
-                    children.props.className,
                     externalClassName,
-                ),
-                ref,
-                onContextMenu: appService.contextMenu(contextMenu),
-            }) : children}
+                )}
+                onContextMenu={appService.contextMenu(contextMenu)}
+                {...other}
+            >
+                {children}
+            </ButtonBase>
         </Tooltip>
     );
 }

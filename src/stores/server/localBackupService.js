@@ -109,9 +109,9 @@ class LocalBackupService {
     }
 
     async collectBookmarks() {
-        const bookmarksAll = await BookmarksUniversalService.query();
+        const { all: bookmarksAll } = await BookmarksUniversalService.query();
 
-        const bookmarks = await Promise.all(bookmarksAll[0].bookmarks.map(async (bookmark) => {
+        const bookmarks = await Promise.all(bookmarksAll.map(async (bookmark) => {
             let image;
 
             try {

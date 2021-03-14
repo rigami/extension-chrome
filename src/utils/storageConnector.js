@@ -7,7 +7,7 @@ class StorageConnector {
         try {
             return JSON.parse(StorageConnector.get(key)) || defaultValue;
         } catch (e) {
-            console.error('Failed get json from', key, e);
+            console.warn(`Failed get json from '${key}' apply default value:`, defaultValue);
             return defaultValue;
         }
     }
