@@ -89,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
     },
     extendBannerTitle: { margin: theme.spacing(1, 1.5) },
     description: {
@@ -139,7 +140,6 @@ function CardLink(props) {
         id,
         name = '',
         url,
-        categories,
         icoVariant,
         description,
         imageUrl,
@@ -210,6 +210,7 @@ function CardLink(props) {
             )}
             enterDelay={400}
             enterNextDelay={400}
+            open={preview ? false : undefined}
         >
             <Card
                 className={clsx(

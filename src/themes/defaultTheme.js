@@ -1,5 +1,7 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
+import { CardHeader } from '@material-ui/core';
+import React from 'react';
 
 const theme = {
     palette: {
@@ -34,11 +36,18 @@ const theme = {
     overrides: {
         MuiButton: {
             label: {
-                // fontWeight: 700,
+                fontWeight: 800,
+                fontFamily: '"Manrope", "Open Sans", sans-serif',
                 wordBreak: 'break-word',
             },
         },
-        MuiTypography: { gutterBottom: { marginBottom: '0.8em' } },
+        MuiTypography: {
+            gutterBottom: { marginBottom: '0.8em' },
+            h6: {
+                fontWeight: 800,
+                fontFamily: '"Manrope", "Open Sans", sans-serif',
+            },
+        },
         MuiTooltip: {
             tooltip: {
                 backgroundColor: fade('#000', 0.82),
@@ -50,6 +59,7 @@ const theme = {
             thumb: { boxShadow: 'none' },
             switchBase: { color: '#5e5e5e' },
         },
+        MuiCardHeader: { titleTypographyProps: { variant: 'h6' } },
     },
     props: { MuiButton: { disableElevation: true } },
     zIndex: { dropFiles: 1350 },

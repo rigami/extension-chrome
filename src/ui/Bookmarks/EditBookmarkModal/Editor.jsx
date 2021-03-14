@@ -34,7 +34,12 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
     },
     editor: { display: 'flex' },
-    fieldsWrapper: { overflow: 'auto' },
+    fieldsWrapper: {
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        overflow: 'auto',
+    },
 }));
 
 function Editor(props) {
@@ -70,11 +75,12 @@ function Editor(props) {
         fullCategories: [],
         url: defaultUrl || '',
         forceAdded: false,
-        stage: STAGE.WAIT_REQUEST,
+        stage: editBookmarkId ? STAGE.DONE : STAGE.WAIT_REQUEST,
         saveStage: FETCH.WAIT,
         isOpenSelectorPreview: false,
         images: [],
         preFetchSiteData: null,
+        isChange: false,
     }));
 
     const handlerSave = () => {
@@ -142,7 +148,6 @@ function Editor(props) {
             })
             .catch((e) => {
                 if (e.code === 404) {
-                    store.stage = STAGE.FAILED_PARSE_SITE;
                     store.imageURL = '';
                     store.icoVariant = BKMS_VARIANT.SYMBOL;
                     store.images = [];
@@ -191,177 +196,83 @@ function Editor(props) {
     }
 
     return (
-        <Scrollbar
-            reverse
-            style={{ height: bringToEditorHeight && store.editorHeight }}
-            className={externalClasses.scrollWrapper}
+        <Container
+            maxWidth={false}
+            className={clsx(classes.container, externalClassName)}
+            style={{ padding: marginThreshold }}
         >
-            <Container
-                maxWidth={false}
-                className={clsx(classes.container, externalClassName)}
-                style={{ padding: marginThreshold }}
-            >
+            <Card className={classes.editor}>
+                <Preview
+                    stage={store.stage}
+                    defaultImage={{
+                        url: store.imageURL,
+                        icoVariant: store.icoVariant,
+                    }}
+                    name={store.name}
+                    description={store.useDescription && store.description}
+                    onClickPreview={({ url, icoVariant }) => {
+                        console.log('Select preview', {
+                            url,
+                            icoVariant,
+                        });
+                    }}
+                    selectUrl={null}
+                    images={store.images}
+                />
+                <FieldsEditor
+                    isEdit={!!store.editBookmarkId}
+                    searchRequest={store.url}
+                    name={store.name}
+                    description={store.description}
+                    useDescription={store.useDescription}
+                    categories={store.categories}
+                    folderId={store.folderId}
+                    saveState={store.saveStage}
+                    marginThreshold={marginThreshold}
+                    onChangeFields={(value) => {
+                        console.log('onChangeFields', value);
 
-                <ReactResizeDetector
-                    handleHeight
-                    onResize={(width, height) => { store.editorHeight = height; }}
-                >
-                    <Card className={classes.editor}>
-                        <Preview
-                            stage={store.stage}
-                            name={store.name}
-                            imageUrl={store.imageURL}
-                            icoVariant={store.icoVariant}
-                            description={store.useDescription && store.description}
-                            categories={store.fullCategories}
-                            header={(
-                                <PreviewSelectorToggleButton
-                                    imagesCount={store.images.filter(({ failedLoad }) => !failedLoad).length}
-                                    isOpen={store.isOpenSelectorPreview}
-                                    onOpen={() => { store.isOpenSelectorPreview = true; }}
-                                    onClose={() => { store.isOpenSelectorPreview = false; }}
-                                />
-                            )}
-                            onClickPreview={() => { store.isOpenSelectorPreview = true; }}
-                            getNextValidImage={() => {
-                                store.images = store.images.filter(({ url }) => url !== store.imageURL);
+                        store.isChange = true;
 
-                                if (store.images.length === 0) {
-                                    store.imageURL = null;
-                                    store.icoVariant = BKMS_VARIANT.SYMBOL;
+                        if ('searchRequest' in value) {
+                            store.stage = value.searchRequest ? STAGE.WAIT_RESULT : STAGE.WAIT_REQUEST;
+                        }
+                        if ('url' in value) {
+                            store.url = value.url;
+                            store.stage = STAGE.WAIT_NAME;
+                        }
+                        if ('forceAdded' in value) {
+                            store.forceAdded = value.forceAdded;
+                        }
+                        if ('name' in value) {
+                            store.name = value.name || store.name;
+                            store.stage = store.name ? STAGE.DONE : STAGE.WAIT_NAME;
+                        }
+                        if ('description' in value) {
+                            store.description = value.description;
+                        }
+                        if ('useDescription' in value) {
+                            store.useDescription = value.useDescription;
+                        }
 
-                                    return {
-                                        url: store.imageURL,
-                                        type: store.icoVariant,
-                                    };
-                                }
+                        if ('categories' in value) {
+                            store.categories = value.categories;
+                        }
+                        if ('folderId' in value) {
+                            store.folderId = value.folderId;
+                        }
+                        store.saveStage = FETCH.WAIT;
 
-                                let maxScoreId = 0;
-
-                                store.images.forEach(({ score }, id) => {
-                                    if (store.images[maxScoreId].score < score) maxScoreId = id;
-                                });
-
-                                store.imageURL = store.images[maxScoreId].url;
-                                store.icoVariant = store.images[maxScoreId].type;
-
-                                console.log('Next image', store.images[maxScoreId]);
-
-                                return store.images[maxScoreId];
-                            }}
-                        />
-                        <Box
-                            display="flex"
-                            flexDirection="column"
-                            flexGrow={1}
-                            className={classes.fieldsWrapper}
-                        >
-                            <SelectorWrapper
-                                isOpen={store.isOpenSelectorPreview}
-                                name={store.name}
-                                description={store.useDescription && store.description}
-                                categories={store.fullCategories}
-                                images={store.images}
-                                minHeight={store.editorHeight}
-                                marginThreshold={marginThreshold}
-                                onSelect={(url, type) => {
-                                    store.imageURL = url;
-                                    store.icoVariant = type;
-                                    store.isOpenSelectorPreview = false;
-                                }}
-                                onClose={() => {
-                                    store.isOpenSelectorPreview = false;
-                                }}
-                                onFailedLoadImage={(imageUrl) => {
-                                    console.log('onFailedLoadImage', imageUrl);
-                                    store.images = store.images.map(({ url, ...other }) => {
-                                        if (url === imageUrl) {
-                                            return {
-                                                url,
-                                                ...other,
-                                                failedLoad: true,
-                                            };
-                                        }
-
-                                        return {
-                                            url,
-                                            ...other,
-                                        };
-                                    });
-                                }}
-                                onLoadImage={(imageUrl, data) => {
-                                    console.log('onLoadImage', imageUrl, data);
-                                    store.images = store.images.map(({ url, ...other }) => {
-                                        if (url === imageUrl) {
-                                            return {
-                                                ...other,
-                                                ...data,
-                                                url: imageUrl,
-                                            };
-                                        }
-
-                                        return {
-                                            url,
-                                            ...other,
-                                        };
-                                    });
-                                }}
-                            />
-                            <FieldsEditor
-                                isEdit={!!store.editBookmarkId}
-                                searchRequest={store.url}
-                                name={store.name}
-                                description={store.description}
-                                useDescription={store.useDescription}
-                                categories={store.categories}
-                                folderId={store.folderId}
-                                saveState={store.saveStage}
-                                marginThreshold={marginThreshold}
-                                onChangeFields={(value) => {
-                                    console.log('onChangeFields', value);
-
-                                    if ('searchRequest' in value) {
-                                        store.stage = value.searchRequest ? STAGE.WAIT_RESULT : STAGE.WAIT_REQUEST;
-                                    }
-                                    if ('url' in value) {
-                                        store.url = value.url;
-                                        store.stage = STAGE.WAIT_NAME;
-                                    }
-                                    if ('forceAdded' in value) {
-                                        store.forceAdded = value.forceAdded;
-                                    }
-                                    if ('name' in value) {
-                                        store.name = value.name || store.name;
-                                        store.stage = store.name ? STAGE.DONE : STAGE.WAIT_NAME;
-                                    }
-                                    if ('description' in value) {
-                                        store.description = value.description;
-                                    }
-                                    if ('useDescription' in value) {
-                                        store.useDescription = value.useDescription;
-                                    }
-
-                                    if ('categories' in value) {
-                                        store.categories = value.categories;
-                                    }
-                                    if ('folderId' in value) {
-                                        store.folderId = value.folderId;
-                                    }
-                                    store.saveStage = FETCH.WAIT;
-
-                                    if ('icons' in value && 'bestIcon' in value) {
-                                        store.preFetchSiteData = value;
-                                        handleGetSiteInfo();
-                                    }
-                                }}
-                                onSave={handlerSave}
-                                onCancel={onCancel}
-                            />
-                        </Box>
-                    </Card>
-                </ReactResizeDetector>
-            </Container>
-        </Scrollbar>
+                        if ('icons' in value && 'bestIcon' in value) {
+                            store.preFetchSiteData = value;
+                            handleGetSiteInfo();
+                        }
+                    }}
+                    onSave={handlerSave}
+                    onCancel={onCancel}
+                />
+            </Card>
+        </Container>
     );
 }
 

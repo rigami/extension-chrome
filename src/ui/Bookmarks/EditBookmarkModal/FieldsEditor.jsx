@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
+        overflow: 'auto',
     },
     input: { marginTop: theme.spacing(2) },
     inputDescription: { marginTop: theme.spacing(2) },
@@ -106,9 +107,9 @@ function FieldsEditor(props) {
     }, [useDescription]);
 
     return (
-        <div className={classes.details}>
+        <Box className={classes.details}>
             <CardContent className={classes.content}>
-                <Typography variant="h5" className={classes.header}>
+                <Typography variant="h6" className={classes.header}>
                     {isEdit ? t('bookmark.editor.editTitle') : t('bookmark.editor.addTitle')}
                 </Typography>
                 <SearchSiteField
@@ -245,7 +246,7 @@ function FieldsEditor(props) {
                     )}
                 </div>
             </div>
-        </div>
+        </Box>
     );
 }
 

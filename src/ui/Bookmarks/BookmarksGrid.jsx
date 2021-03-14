@@ -4,9 +4,23 @@ import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { BKMS_VARIANT } from '@/enum';
 
-function BookmarksGrid({ bookmarks, columns }) {
+function BookmarksGrid({ bookmarks, columns, renderCard }) {
     const theme = useTheme();
     const columnStabilizer = [...Array.from({ length: columns }, () => 0)];
+
+    const render = renderCard || ((card) => (
+        <CardLink
+            id={card.id}
+            name={card.name}
+            url={card.url}
+            categories={card.categories}
+            icoVariant={card.icoVariant}
+            description={card.description}
+            imageUrl={card.imageUrl}
+            key={card.id}
+            style={{ marginBottom: theme.spacing(2) }}
+        />
+    ));
 
     return bookmarks && bookmarks.reduce((acc, curr) => {
         let column = 0;
@@ -30,21 +44,12 @@ function BookmarksGrid({ bookmarks, columns }) {
                         arr.length - 1 !== index ? 2 : 0,
                     ),
                 }}
-                key={index}
+                key={`column-${column.length}`}
             >
-                {column.map((card) => (
-                    <CardLink
-                        id={card.id}
-                        name={card.name}
-                        url={card.url}
-                        categories={card.categories}
-                        icoVariant={card.icoVariant}
-                        description={card.description}
-                        imageUrl={card.imageUrl}
-                        key={card.id}
-                        style={{ marginBottom: theme.spacing(2) }}
-                    />
-                ))}
+                {column.map((card) => render({
+                    ...card,
+                    style: { marginBottom: theme.spacing(2) },
+                }))}
             </Box>
         ));
 }

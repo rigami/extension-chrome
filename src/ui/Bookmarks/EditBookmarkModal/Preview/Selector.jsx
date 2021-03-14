@@ -14,6 +14,8 @@ import CardLink from '@/ui/Bookmarks/CardLink';
 import { getImageRecalc } from '@/utils/siteSearch';
 import { BKMS_VARIANT } from '@/enum';
 import { useLocalObservable, observer } from 'mobx-react-lite';
+import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
+import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 
 const useStyles = makeStyles((theme) => ({
     root: { position: 'relative' },
@@ -29,10 +31,6 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: '0 !important',
         display: 'flex',
         flexWrap: 'wrap',
-    },
-    card: {
-        marginRight: theme.spacing(2),
-        marginBottom: theme.spacing(2),
     },
     loadStatus: {
         position: 'absolute',
@@ -118,6 +116,7 @@ function PreviewSelector(props) {
     return (
         <Card className={classes.root} elevation={8} {...other}>
             <CardHeader
+                titleTypographyProps={{ variant: 'h6' }}
                 title={t('bookmark.editor.alternativeIconsTitle')}
                 classes={{
                     title: classes.headerTitle,
@@ -125,28 +124,28 @@ function PreviewSelector(props) {
                 }}
             />
             <CardContent className={classes.content}>
-                {store.loadedImages.map(({ url, type, score }) => (
-                    <CardLink
-                        key={url}
-                        name={PRODUCTION_MODE ? name : `[${score}] ${name}`}
-                        description={description}
-                        categories={categories}
-                        icoVariant={type}
-                        imageUrl={url}
-                        preview
-                        className={classes.card}
-                        onClick={() => onSelect(url, type)}
-                    />
-                ))}
-                <CardLink
-                    name={name}
-                    description={description}
-                    imageUrl={null}
-                    categories={categories}
-                    icoVariant={BKMS_VARIANT.SYMBOL}
-                    preview
-                    className={classes.card}
-                    onClick={() => onSelect(null, BKMS_VARIANT.SYMBOL)}
+                <BookmarksGrid
+                    bookmarks={[
+                        ...store.loadedImages,
+                        new Bookmark({
+                            name,
+                            description,
+                            categories,
+                            icoVariant: BKMS_VARIANT.SYMBOL,
+                        }),
+                    ]}
+                    columns={4}
+                    renderCard={({ url, type, score, ...otherCardProps }) => (
+                        <CardLink
+                            key={url}
+                            {...otherCardProps}
+                            name={PRODUCTION_MODE ? name : `[${score || 0}] ${name}`}
+                            icoVariant={type}
+                            imageUrl={url}
+                            preview
+                            onClick={() => onSelect(url, type)}
+                        />
+                    )}
                 />
             </CardContent>
             {store.size !== store.loadedImages.length && (
