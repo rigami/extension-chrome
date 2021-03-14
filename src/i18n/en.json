@@ -276,10 +276,9 @@
     },
     "app":{
       "title":"Application settings",
-      "description":"Enable dark theme. Change fonts and tab name",
+      "description":"Enable dark theme. Change tab name",
       "darkThemeBackdrop":"Dark matte background",
       "darkThemeApp":"Application dark theme",
-      "useSystemFont":"Use system font",
       "tabName":{
         "title":"Tab name",
         "description":"Enter your tab name",

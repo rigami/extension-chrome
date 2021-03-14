@@ -52,7 +52,6 @@ export default {
     app: {
         backdropTheme: THEME.DARK,
         theme: THEME.LIGHT,
-        useSystemFont: true,
         tabName: i18n.t('tabName.default') || 'Rigami',
         defaultActivity: ACTIVITY.DESKTOP,
     },

@@ -154,7 +154,6 @@ class AppSettingsStore {
     theme;
     tabName;
     defaultActivity;
-    useSystemFont;
     backdropTheme;
     lastUsageVersion;
     isSync = false;
@@ -184,7 +183,6 @@ class AppSettingsStore {
         const updProps = pick(props, [
             'theme',
             'tabName',
-            'useSystemFont',
             'backdropTheme',
             'lastUsageVersion',
             'defaultActivity',

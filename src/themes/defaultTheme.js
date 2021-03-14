@@ -1,7 +1,8 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { CardHeader } from '@material-ui/core';
-import React from 'react';
+
+const primaryFontFamily = '"Manrope", "Open Sans", sans-serif';
+const secondaryFontFamily = 'Roboto, "Open Sans", sans-serif';
 
 const theme = {
     palette: {
@@ -26,18 +27,15 @@ const theme = {
         borderRadiusBold: 8,
     },
     typography: {
-        fontFamily: localStorage.getItem('app_use_system_font') === 'true'
-            ? 'system-ui'
-            : 'Roboto, "Open Sans", sans-serif',
-        primaryFontFamily: '"Manrope", "Open Sans", sans-serif',
-        // h5: { fontWeight: 700 },
-        // h6: { fontWeight: 700 },
+        fontFamily: secondaryFontFamily,
+        primaryFontFamily,
+        secondaryFontFamily,
     },
     overrides: {
         MuiButton: {
             label: {
                 fontWeight: 800,
-                fontFamily: '"Manrope", "Open Sans", sans-serif',
+                fontFamily: primaryFontFamily,
                 wordBreak: 'break-word',
             },
         },
@@ -45,7 +43,7 @@ const theme = {
             gutterBottom: { marginBottom: '0.8em' },
             h6: {
                 fontWeight: 800,
-                fontFamily: '"Manrope", "Open Sans", sans-serif',
+                fontFamily: primaryFontFamily,
             },
         },
         MuiTooltip: {
