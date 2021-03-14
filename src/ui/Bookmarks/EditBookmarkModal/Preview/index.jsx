@@ -2,9 +2,9 @@ import React, { useEffect, Fragment, useCallback } from 'react';
 import {
     CardMedia,
     Box,
-    CircularProgress, Typography, Button, Collapse, Fade,
+    CircularProgress, Typography, Button, Collapse, Fade, Badge,
 } from '@material-ui/core';
-import { WarningRounded as WarnIcon, LinkRounded as URLIcon } from '@material-ui/icons';
+import { WarningRounded as WarnIcon, LinkRounded as URLIcon, DoneRounded as SelectIcon } from '@material-ui/icons';
 
 import { makeStyles } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
@@ -14,7 +14,9 @@ import { BKMS_VARIANT, FETCH } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import Scrollbar from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
-import { useResizeDetector } from 'react-resize-detector';
+import ResizeDetector, { useResizeDetector } from 'react-resize-detector';
+import { getNextImage } from '@/utils/checkIcons';
+import asyncAction from '@/utils/asyncAction';
 
 const useStyles = makeStyles((theme) => ({
     cover: {
@@ -42,7 +44,12 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 0,
     },
     bottomOffset: { marginBottom: theme.spacing(2) },
-    shortList: { marginTop: 'auto' },
+    shortList: {
+        // marginTop: 'auto',
+        transform: 'translateY(0px)',
+        transition: '0.3s ease',
+        minHeight: 200,
+    },
     moreIcons: { marginTop: 'auto' },
     moreWrapper: {
         width: '100%',
@@ -59,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
         bottom: theme.spacing(2),
         zIndex: 1,
         fontFamily: theme.typography.primaryFontFamily,
-        fontWeight: 800,
+        fontWeight: 600,
     },
     lockIconsList: {
         opacity: 0.5,
@@ -72,6 +79,10 @@ const useStyles = makeStyles((theme) => ({
         display: 'none',
     },
     thumbY: { backgroundColor: theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[400] },
+    activeCard: { borderColor: theme.palette.primary.main },
+    badge: { '& svg': { fontSize: '1rem' } },
+    badgePlace: { transform: 'scale(1) translate(30%, -40%)' },
+    badgeInvisiblePlace: { transform: 'scale(0) translate(30%, -40%) !important' },
 }));
 
 const STAGE = {
@@ -82,6 +93,49 @@ const STAGE = {
     WAIT_NAME: 'WAIT_NAME',
     DONE: 'DONE',
 };
+
+function PreviewCard(props) {
+    const {
+        active,
+        imageUrl,
+        icoVariant,
+        onClick,
+        name,
+        description,
+        className: externalClassName,
+    } = props;
+    const classes = useStyles();
+
+    return (
+        <Badge
+            invisible={!active}
+            badgeContent={<SelectIcon />}
+            color="primary"
+            classes={{
+                root: clsx(
+                    classes.card,
+                    externalClassName,
+                ),
+                badge: classes.badge,
+                anchorOriginTopRightRectangle: classes.badgePlace,
+                invisible: classes.badgeInvisiblePlace,
+            }}
+        >
+            <CardLink
+                name={name}
+                description={description}
+                icoVariant={icoVariant}
+                imageUrl={imageUrl}
+                preview
+                onClick={() => onClick({
+                    url: imageUrl,
+                    icoVariant,
+                })}
+                className={clsx(active && classes.activeCard)}
+            />
+        </Badge>
+    );
+}
 
 function Preview(props) {
     const {
@@ -97,13 +151,15 @@ function Preview(props) {
     const classes = useStyles();
     const { t } = useTranslation();
     const store = useLocalObservable(() => ({
-        stateImageLoad: defaultImage ? FETCH.DONE : FETCH.WAIT,
         loadUrl: '',
+        primaryImage: defaultImage || null,
         imagesDraftList: images,
         imagesShortList: [],
         imagesShortListState: FETCH.WAIT,
         heightContainer: 0,
+        heightCard: 0,
         lockIconsList: true,
+        showShortList: false,
     }));
 
     const onResize = useCallback((width, height) => {
@@ -111,46 +167,18 @@ function Preview(props) {
     }, []);
 
     const { ref } = useResizeDetector({ onResize });
+    const { ref: listRef, height: listHeight } = useResizeDetector();
 
-    const handleScrollStart = (e) => {
-        if (store.imagesShortListState === FETCH.DONE && e.deltaY > 0) {
+    const handleScrollStart = ({ scrollTop: scrollTopNow }, { scrollTop: scrollTopBefore }) => {
+        if (store.imagesShortListState === FETCH.DONE && scrollTopNow - scrollTopBefore > 0) {
             store.lockIconsList = false;
         }
     };
 
-    const checkValidImage = async ({ url }) => new Promise(((resolve, reject) => {
-        const imgCache = document.createElement('img');
-        imgCache.onload = resolve;
-        imgCache.onerror = reject;
-        imgCache.src = url;
-    }));
-
-    const getNextBestImage = () => {
-        if (store.imagesDraftList.length === 0) {
-            return null;
-        }
-
-        let maxScoreId = 0;
-
-        store.imagesDraftList.forEach(({ score }, id) => {
-            if (store.imagesDraftList[maxScoreId].score < score) maxScoreId = id;
-        });
-
-        const bestImage = store.imagesDraftList[maxScoreId];
-
-        store.imagesDraftList = store.imagesDraftList.filter(({ url }) => url !== bestImage.url);
-
-        return {
-            url: bestImage.url,
-            icoVariant: bestImage.type,
-        };
-    };
-
-    const getNextImage = async () => {
-        const nextImage = getNextBestImage();
-        const isValid = nextImage && await checkValidImage(nextImage);
-
-        return !nextImage || isValid ? nextImage : getNextImage();
+    const loadPrimaryImage = async () => {
+        do {
+            store.primaryImage = await getNextImage(store.imagesDraftList, (list) => { store.imagesDraftList = list; });
+        } while (!store.primaryImage && store.imagesDraftList.length !== 0);
     };
 
     const loadShortList = async () => {
@@ -158,29 +186,49 @@ function Preview(props) {
         let img;
 
         do {
-            img = await getNextImage();
+            img = await getNextImage(store.imagesDraftList, (list) => { store.imagesDraftList = list; });
 
             if (img) store.imagesShortList.push(img);
-        } while (img && store.imagesShortList.length < 4);
+        } while (img && store.imagesShortList.length < 4 && store.imagesDraftList.length !== 0);
         store.imagesShortListState = FETCH.DONE;
     };
 
     useEffect(() => {
-        console.log('images:', images);
-        store.imagesDraftList = images;
-        loadShortList()
-            .then(() => {
-                console.log('store.imagesShortList:', store.imagesShortList);
-            })
-            .catch((e) => console.error(e));
+        asyncAction(async () => {
+            console.log('images:', images);
+            store.imagesDraftList = images;
+            if (!store.primaryImage) await loadPrimaryImage();
+
+            loadShortList()
+                .then(() => {
+                    console.log('store.imagesShortList:', store.imagesShortList);
+                })
+                .catch((e) => console.error(e));
+        }).catch((e) => console.error(e));
     }, [images.length]);
 
     useEffect(() => {
         console.log('stage:', stage);
+        if (stage === STAGE.FAILED_PARSE_SITE && !store.primaryImage) {
+            store.primaryImage = {
+                url: '',
+                icoVariant: BKMS_VARIANT.SYMBOL,
+            };
+        }
     }, [stage]);
 
+    useEffect(() => {
+        if (store.imagesShortListState === FETCH.DONE && store.imagesShortList.length !== 0) {
+            setTimeout(() => {
+                store.showShortList = true;
+            }, 300);
+        } else {
+            store.showShortList = false;
+        }
+    }, [store.imagesShortListState, store.imagesShortList.length]);
+
     return (
-        <CardMedia className={classes.cover} ref={ref} onWheel={handleScrollStart}>
+        <CardMedia className={classes.cover} ref={ref}>
             {stage === STAGE.WAIT_REQUEST && (
                 <Stub icon={URLIcon} description={t('bookmark.editor.helper.writeURL')} />
             )}
@@ -190,94 +238,101 @@ function Preview(props) {
             {stage === STAGE.WAIT_NAME && (
                 <Stub icon={URLIcon} description={t('bookmark.editor.helper.writeName')} />
             )}
-            {
-                (
-                    (stage === STAGE.PARSING_SITE && !defaultImage)
-                    || (
-                        (stage === STAGE.DONE || stage === STAGE.FAILED_PARSE_SITE)
-                        && (store.stateImageLoad === FETCH.PENDING || store.stateImageLoad === FETCH.WAIT)
-                    )
-                ) && (
-                    <Stub description="Search site favicon">
-                        <CircularProgress color="primary" />
-                    </Stub>
-                )
-            }
-            {(stage === STAGE.DONE || stage === STAGE.FAILED_PARSE_SITE) && store.stateImageLoad === FETCH.FAILED && (
-                <Box className={classes.warnMessage}>
-                    <WarnIcon className={classes.warnIcon} />
-                    {t('bookmark.editor.errorLoadIcon')}
-                </Box>
+            {stage === STAGE.PARSING_SITE && !store.primaryImage && (
+                <Stub description="Getting site info">
+                    <CircularProgress color="primary" />
+                </Stub>
             )}
-            {
-                (stage === STAGE.DONE || stage === STAGE.FAILED_PARSE_SITE || defaultImage)
-                && store.stateImageLoad === FETCH.DONE
-                && (
-                    <Scrollbar
-                        classes={{
-                            trackY: classes.trackY,
-                            thumbY: classes.thumbY,
-                        }}
+            {stage === STAGE.DONE && !store.primaryImage && (
+                <Stub description="Search site favicon">
+                    <CircularProgress color="primary" />
+                </Stub>
+            )}
+            {store.primaryImage && (
+                <Scrollbar
+                    onScroll={handleScrollStart}
+                    classes={{
+                        trackY: classes.trackY,
+                        thumbY: classes.thumbY,
+                    }}
+                >
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        height={store.heightContainer}
+                        ref={listRef}
                     >
-                        <Box display="flex" flexDirection="column" height={store.heightContainer}>
-                            {defaultImage && (
-                                <CardLink
+                        <ResizeDetector
+                            handleHeight
+                            onResize={(width, height) => {
+                                console.log('card height:', height);
+                                store.heightCard = height + 2 + 16;
+                            }}
+                        >
+                            {() => (
+                                <PreviewCard
+                                    active={selectUrl === store.primaryImage.url}
                                     name={name}
                                     description={description}
-                                    icoVariant={defaultImage.icoVariant}
-                                    imageUrl={defaultImage.url}
-                                    preview
-                                    className={classes.card}
-                                    onClick={() => onClickPreview(defaultImage)}
+                                    icoVariant={store.primaryImage.icoVariant}
+                                    imageUrl={store.primaryImage.url}
+                                    onClick={() => onClickPreview(store.primaryImage)}
                                 />
                             )}
-                            <Fade in={store.lockIconsList}>
-                                <Typography className={clsx(classes.moreIcons, classes.helper)}>
-                                    {stage === STAGE.PARSING_SITE && 'Search more icons...'}
-                                    {store.imagesShortListState === FETCH.PENDING && 'Loading more icons...'}
-                                    {
-                                        stage === STAGE.DONE
-                                        && store.imagesShortListState === FETCH.DONE
-                                        && store.imagesShortList.length !== 0
-                                        && 'Scroll to more'
-                                    }
-                                </Typography>
-                            </Fade>
-                            {store.imagesShortListState === FETCH.DONE && store.imagesShortList.length !== 0 && (
-                                <Box className={clsx(classes.shortList, store.lockIconsList && classes.lockIconsList)}>
-                                    <Collapse in={!store.lockIconsList} collapsedHeight={190}>
-                                        {store.imagesShortList.map(({ url, icoVariant }, index) => (
-                                            <CardLink
-                                                key={url}
-                                                name={name}
-                                                description={description}
-                                                icoVariant={icoVariant}
-                                                imageUrl={url}
-                                                preview
-                                                className={clsx(
-                                                    classes.card,
-                                                    index === store.imagesShortList.length - 1 && classes.bottomOffset,
-                                                )}
-                                                onClick={() => onClickPreview({
-                                                    url,
-                                                    icoVariant,
-                                                })}
-                                            />
-                                        ))}
-                                        {store.imagesDraftList.length !== 0 && (
-                                            <Box className={classes.moreWrapper}>
-                                                <Button variant="outlined">
-                                                    More images
-                                                </Button>
-                                            </Box>
-                                        )}
-                                    </Collapse>
+                        </ResizeDetector>
+                        <Box
+                            className={clsx(
+                                classes.shortList,
+                                store.lockIconsList && classes.lockIconsList,
+                            )}
+                            style={{
+                                transform: `translateY(${
+                                    store.lockIconsList
+                                        ? (store.heightContainer - store.heightCard - (store.showShortList ? 120 : 0))
+                                        : 0
+                                }px)`,
+                            }}
+                        >
+                            {store.imagesShortList.map(({ url, icoVariant }, index) => (
+                                <PreviewCard
+                                    key={url}
+                                    active={selectUrl === url}
+                                    name={name}
+                                    description={description}
+                                    icoVariant={icoVariant}
+                                    imageUrl={url}
+                                    className={clsx(
+                                        index === store.imagesShortList.length - 1 && classes.bottomOffset,
+                                    )}
+                                    onClick={() => onClickPreview({
+                                        url,
+                                        icoVariant,
+                                    })}
+                                />
+                            ))}
+                            {store.imagesDraftList.length !== 0 && (
+                                <Box className={classes.moreWrapper}>
+                                    <Button variant="outlined">
+                                        More images
+                                    </Button>
                                 </Box>
                             )}
                         </Box>
-                    </Scrollbar>
-                )
-            }
+                        <Fade in={store.lockIconsList}>
+                            <Typography variant="body2" className={clsx(classes.moreIcons, classes.helper)}>
+                                {stage === STAGE.PARSING_SITE && 'Search other variants...'}
+                                {store.imagesShortListState === FETCH.PENDING && 'Analyze other variants...'}
+                                {
+                                    stage === STAGE.DONE
+                                    && store.imagesShortListState === FETCH.DONE
+                                    && store.imagesShortList.length !== 0
+                                    && 'Scroll to more'
+                                }
+                            </Typography>
+                        </Fade>
+                    </Box>
+                </Scrollbar>
+            )}
         </CardMedia>
     );
 }

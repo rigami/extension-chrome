@@ -15,6 +15,7 @@ import Scrollbar from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
 import ReactResizeDetector from 'react-resize-detector';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import { getNextImage } from '@/utils/checkIcons';
 import FieldsEditor from './FieldsEditor';
 import { PreviewSelectorToggleButton } from './Preview/Selector';
 import Preview, { STAGE } from './Preview';
@@ -80,6 +81,7 @@ function Editor(props) {
         isOpenSelectorPreview: false,
         images: [],
         preFetchSiteData: null,
+        defaultImage: null,
         isChange: false,
     }));
 
@@ -135,11 +137,8 @@ function Editor(props) {
                     console.error(e);
                 }
             }
-
-            store.imageURL = siteData.bestIcon?.url;
-            store.icoVariant = siteData.bestIcon?.type;
             if (!store.forceAdded) store.url = siteData.url;
-            store.images = siteData.icons;
+            store.images = [siteData.bestIcon, ...siteData.icons];
             if (!store.forceAdded) store.name = store.name || siteData.name;
             store.description = store.description || siteData.description;
         })
@@ -147,13 +146,14 @@ function Editor(props) {
                 if (parseUrl === store.url) store.stage = STAGE.DONE;
             })
             .catch((e) => {
-                if (e.code === 404) {
+                console.error('Failed getSiteInfo', e);
+                if (!store.editBookmarkId) {
                     store.imageURL = '';
                     store.icoVariant = BKMS_VARIANT.SYMBOL;
-                    store.images = [];
-                    // store.name = store.name || '';
-                    store.stage = store.name ? STAGE.FAILED_PARSE_SITE : STAGE.WAIT_NAME;
                 }
+                store.images = [];
+                // store.name = store.name || '';
+                store.stage = store.name ? STAGE.FAILED_PARSE_SITE : STAGE.WAIT_NAME;
             });
     };
 
@@ -166,11 +166,15 @@ function Editor(props) {
                 store.url = bookmark.url;
                 store.name = bookmark.name;
                 store.imageURL = bookmark.imageUrl;
+                store.icoVariant = bookmark.icoVariant;
                 store.useDescription = !!bookmark.description?.trim();
                 if (store.useDescription) store.description = bookmark.description;
                 store.folderId = bookmark.folderId;
-                store.icoVariant = bookmark.icoVariant;
                 store.categories = (bookmark.categories || []).map((category) => category.id);
+                store.defaultImage = {
+                    url: bookmark.imageUrl,
+                    icoVariant: bookmark.icoVariant,
+                };
                 setIsLoading(false);
             })
             .catch((e) => {
@@ -204,10 +208,7 @@ function Editor(props) {
             <Card className={classes.editor}>
                 <Preview
                     stage={store.stage}
-                    defaultImage={{
-                        url: store.imageURL,
-                        icoVariant: store.icoVariant,
-                    }}
+                    defaultImage={store.defaultImage}
                     name={store.name}
                     description={store.useDescription && store.description}
                     onClickPreview={({ url, icoVariant }) => {
@@ -215,8 +216,10 @@ function Editor(props) {
                             url,
                             icoVariant,
                         });
+                        store.imageURL = url;
+                        store.icoVariant = icoVariant;
                     }}
-                    selectUrl={null}
+                    selectUrl={store.imageURL}
                     images={store.images}
                 />
                 <FieldsEditor
