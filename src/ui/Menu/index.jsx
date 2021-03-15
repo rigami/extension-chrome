@@ -5,11 +5,14 @@ import {
     Portal,
     Slide,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import Header from '@/ui/Menu/PageHeader';
 import Scrollbar from '@/ui-components/CustomScroll';
+import clsx from 'clsx';
+import useAppService from '@/stores/app/AppStateProvider';
+import { ACTIVITY } from '@/enum';
 import HomePage, { header as homePageHeader } from './Settings';
 
 const useStyles = makeStyles((theme) => ({
@@ -35,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
     },
     thumbY: { backgroundColor: theme.palette.background.paper },
     backdrop: { zIndex: theme.zIndex.drawer },
+    darkBackdrop: { backgroundColor: fade(theme.palette.common.black, 0.5) },
     drawer: {
         position: 'absolute !important',
         top: 0,
@@ -47,9 +51,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Menu({ }) {
-    const coreService = useCoreService();
-
     const classes = useStyles();
+    const coreService = useCoreService();
+    const appService = useAppService();
     const [isOpen, setIsOpen] = useState(false);
     const [stack, setStack] = useState([
         {
@@ -94,7 +98,7 @@ function Menu({ }) {
                 open={isOpen}
                 onClick={handleClose}
                 invisible
-                className={classes.backdrop}
+                className={clsx(classes.backdrop, appService.activity === ACTIVITY.BOOKMARKS && classes.darkBackdrop)}
             />
             <Slide in={isOpen} direction="left">
                 <Scrollbar
