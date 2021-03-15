@@ -3,10 +3,11 @@ import { Box, FormControlLabel, Checkbox } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
+    root: { marginRight: 0 },
     label: {
         fontFamily: theme.typography.primaryFontFamily,
-        fontSize: '1.095rem',
-        fontWeight: 800,
+        fontSize: '1rem',
+        fontWeight: 700,
     },
 }));
 
@@ -23,7 +24,10 @@ function SearchPlace({ onResearch }) {
                 )}
                 onChange={(event, value) => onResearch({ searchEverywhere: value })}
                 label="Search everywhere"
-                classes={{ label: classes.label }}
+                classes={{
+                    label: classes.label,
+                    root: classes.root,
+                }}
             />
         </Box>
     );

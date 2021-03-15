@@ -8,6 +8,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'flex-end',
         marginLeft: theme.spacing(4),
         maxWidth: 620,
         flexGrow: 1,

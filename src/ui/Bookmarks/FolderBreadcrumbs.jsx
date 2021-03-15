@@ -32,7 +32,7 @@ function FolderBreadcrumbs({ selectFolderId, onSelectFolder }) {
     }, [selectFolderId]);
 
     return (
-        <Box px={4} visibility={selectFolderId === 1 ? 'hidden' : 'unset'}>
+        <Box px={2} visibility={selectFolderId === 1 ? 'hidden' : 'unset'}>
             <Breadcrumbs>
                 {store.path && store.path.map((folder, index) => (index === store.path.length - 1 ? (
                     <Typography

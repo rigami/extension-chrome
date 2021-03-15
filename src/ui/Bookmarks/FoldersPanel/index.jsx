@@ -4,8 +4,6 @@ import {
     CardHeader,
     IconButton,
     List,
-    ListItem,
-    ListItemText,
     Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -42,8 +40,18 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '1.5rem',
         fontWeight: 800,
         fontFamily: theme.typography.primaryFontFamily,
+        display: '-webkit-box',
+        overflow: 'hidden',
+        wordBreak: 'break-word',
+        lineHeight: 1.2,
+        '-webkit-box-orient': 'vertical',
+        '-webkit-line-clamp': 3,
+        minHeight: theme.spacing(4),
     },
-    avatar: { display: 'flex' },
+    avatar: {
+        display: 'flex',
+        alignSelf: 'flex-start',
+    },
     icon: {
         width: 28,
         height: 28,

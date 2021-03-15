@@ -7,8 +7,9 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         alignItems: 'center',
-        maxWidth: 380,
+        maxWidth: 560,
         flexGrow: 1,
+        marginRight: 'auto',
     },
     icon: { margin: theme.spacing(2) },
     input: {
