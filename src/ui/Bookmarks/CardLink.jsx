@@ -10,12 +10,8 @@ import {
     CardActionArea,
     Tooltip,
     Box,
-    IconButton,
 } from '@material-ui/core';
-import {
-    FavoriteRounded as FavoriteIcon,
-    MoreVertRounded as MoreIcon,
-} from '@material-ui/icons';
+import { FavoriteRounded as FavoriteIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Image from '@/ui-components/Image';
@@ -263,16 +259,6 @@ function CardLink(props) {
                         <Typography variant="body2" className={classes.description}>{description}</Typography>
                     )}
                 </CardActionArea>
-                {!preview && (
-                    <IconButton
-                        data-ui-path="bookmark.menu"
-                        className={classes.menuIconButton}
-                        onClick={appService.contextMenu(contextMenu, { useAnchorEl: true })}
-                        ref={buttonRef}
-                    >
-                        <MoreIcon className={classes.menuIcon} />
-                    </IconButton>
-                )}
             </Card>
         </Tooltip>
     );

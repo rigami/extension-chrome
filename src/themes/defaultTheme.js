@@ -57,9 +57,17 @@ const theme = {
             thumb: { boxShadow: 'none' },
             switchBase: { color: '#5e5e5e' },
         },
-        MuiCardHeader: { titleTypographyProps: { variant: 'h6' } },
+        MuiCardHeader: {
+            title: {
+                fontFamily: primaryFontFamily,
+                fontWeight: 600,
+            },
+        },
     },
-    props: { MuiButton: { disableElevation: true } },
+    props: {
+        MuiButton: { disableElevation: true },
+        // MuiCardHeader: { titleTypographyProps: { variant: 'h6' } },
+    },
     zIndex: { dropFiles: 1350 },
 };
 

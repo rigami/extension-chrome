@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Card,
     CardHeader,
@@ -7,23 +7,14 @@ import {
     Tooltip,
     Box,
 } from '@material-ui/core';
-import {
-    FolderRounded as FolderIcon,
-    MoreVertRounded as MoreIcon,
-} from '@material-ui/icons';
+import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
 import Stub from '@/ui-components/Stub';
 import { useTranslation } from 'react-i18next';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import clsx from 'clsx';
-import useAppService from '@/stores/app/AppStateProvider';
-import pin from '@/utils/contextMenu/pin';
-import edit from '@/utils/contextMenu/edit';
-import remove from '@/utils/contextMenu/remove';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
 
@@ -40,7 +31,11 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.easeInOut,
         }),
     },
-    avatar: { display: 'flex' },
+    avatar: {
+        display: 'flex',
+        height: theme.spacing(4),
+        alignItems: 'center',
+    },
     bookmarks: {
         overflow: 'auto',
         flexGrow: 1,
@@ -95,38 +90,10 @@ function Folder(props) {
     } = props;
     const classes = useStyles();
     const { t } = useTranslation();
-    const appService = useAppService();
-    const bookmarksService = useBookmarksService();
-    const coreService = useCoreService();
     const [folder, setFolder] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
     const [folders, setFolders] = useState([]);
-    const buttonRef = useRef(null);
-
-    const contextMenu = (event) => [
-        pin({
-            itemId: id,
-            itemType: 'folder',
-            t,
-            bookmarksService,
-        }),
-        ...(folder.parentId !== 0 ? [
-            edit({
-                itemId: id,
-                itemType: 'folder',
-                t,
-                coreService,
-                anchorEl: event.currentTarget,
-            }),
-            remove({
-                itemId: id,
-                itemType: 'folder',
-                t,
-                coreService,
-            }),
-        ] : []),
-    ];
 
     useEffect(() => {
         FoldersUniversalService.get(id).then((findFolder) => setFolder(findFolder));
@@ -184,15 +151,6 @@ function Folder(props) {
                     avatar: classes.avatar,
                     action: classes.action,
                 }}
-                action={(
-                    <IconButton
-                        data-ui-path="folder.explorer.menu"
-                        onClick={appService.contextMenu(contextMenu, { useAnchorEl: true })}
-                        ref={buttonRef}
-                    >
-                        <MoreIcon />
-                    </IconButton>
-                )}
             />
             {isSearching && (
                 <Stub style={{ height: 550 }}>
