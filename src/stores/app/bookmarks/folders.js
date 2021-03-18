@@ -15,9 +15,9 @@ class FoldersStore {
 
     @action('sync folders with db')
     async sync() {
-        this._categories = await DBConnector().getAll('folders');
+        this._tags = await DBConnector().getAll('folders');
 
-        return this._categories;
+        return this._tags;
     }
 
     @action('save folder')

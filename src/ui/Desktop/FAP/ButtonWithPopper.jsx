@@ -137,7 +137,7 @@ function ButtonWithPopper(props) {
                         )}
                         id={id}
                         name={name}
-                        tooltip={store.isOpen ? t('close') : name}
+                        tooltip={store.isOpen ? t('button.close') : name}
                         {...otherProps}
                         onMouseDown={() => {
                             if (!store.isOpen) store.isBlockEvent = true;

@@ -8,13 +8,13 @@ import asyncAction from '@/utils/asyncAction';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
 
 function FirstLookScreen({ onStart, onLoad }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['firstLook']);
     const service = useService();
     const [progress, setProgress] = useState(0);
     const [stage, setStage] = useState(PREPARE_PROGRESS.WAIT);
 
     useEffect(() => {
-        document.title = i18n.t('tabName.prepare') || 'Rigami';
+        document.title = i18n.t('common:prepare');
 
         asyncAction(async () => {
             await service.setDefaultState((progressValue, stageValue) => {
@@ -22,7 +22,7 @@ function FirstLookScreen({ onStart, onLoad }) {
                 setStage(stageValue);
 
                 if (stageValue === PREPARE_PROGRESS.DONE) {
-                    document.title = i18n.t('tabName.default') || 'Rigami';
+                    document.title = 'Rigami';
                     localStorage.setItem('appTabName', document.title);
                     onLoad();
                 }
@@ -34,8 +34,8 @@ function FirstLookScreen({ onStart, onLoad }) {
         <React.Fragment>
             <Fade in={stage !== PREPARE_PROGRESS.DONE}>
                 <Stub
-                    message={t('firstView.prepareApp')}
-                    description={`${t('firstView.pleaseWait')} ${t(`firstView.stage.${stage}`)}`}
+                    message={t('prepareApp')}
+                    description={`${t('pleaseWait')} ${t(`stage.${stage}`)}`}
                     style={{ height: '100vh' }}
                 >
                     <LinearProgress variant="determinate" style={{ width: 240 }} value={progress} />
@@ -43,8 +43,8 @@ function FirstLookScreen({ onStart, onLoad }) {
             </Fade>
             <Fade in={stage === PREPARE_PROGRESS.DONE}>
                 <Stub
-                    message={t('firstView.allDone')}
-                    description={t('firstView.prepareAppDoneDescription')}
+                    message={t('allDone')}
+                    description={t('prepareAppDoneDescription')}
                     style={{
                         position: 'absolute',
                         top: 0,
@@ -55,7 +55,7 @@ function FirstLookScreen({ onStart, onLoad }) {
                     }}
                     actions={[
                         {
-                            title: t('firstView.continue'),
+                            title: t('button.continue'),
                             color: 'primary',
                             variant: 'contained',
                             onClick: onStart,

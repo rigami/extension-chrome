@@ -15,6 +15,7 @@ import Stub from '@/ui-components/Stub';
 import { FETCH } from '@/enum';
 import stateRender from '@/utils/stateRender';
 import FolderItem from '@/ui/Bookmarks/FoldersPanel/FolderItem';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -65,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
 
 function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false, onlyFavorites = false }) {
     const classes = useStyles();
+    const { t } = useTranslation(['folder', 'bookmark']);
     const store = useLocalObservable(() => ({
         folder: null,
         childFolders: null,
@@ -99,7 +101,7 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
                     selectFolderId === 1 || searchEverywhere ? (
                         <LogoIcon className={classes.icon} />
                     ) : (
-                        <Tooltip title="Back">
+                        <Tooltip title={t('common:button.back')}>
                             <IconButton
                                 className={classes.backButton}
                                 onClick={() => onSelectFolder(store.folder?.parentId || 1)}
@@ -111,8 +113,8 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
                 )}
                 title={stateRender(
                     store.folderState,
-                    searchEverywhere ? 'rigami' : (store.folder?.name || 'unknown'),
-                    'loading...',
+                    searchEverywhere ? 'rigami' : (store.folder?.name || t('unknown')),
+                    t('common:loading'),
                     'failed load',
                 )}
                 classes={{
@@ -133,7 +135,7 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
                     ))}
                 </List>
             )}
-            {searchEverywhere && (<Stub message="Search for bookmarks throughout the system" />)}
+            {searchEverywhere && (<Stub message={t('bookmark:search.everywhere', { context: 'description' })} />)}
         </Box>
     );
 }

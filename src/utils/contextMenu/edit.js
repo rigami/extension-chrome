@@ -8,7 +8,7 @@ export default ({
     t,
     anchorEl,
 }) => new ContextMenuItem({
-    title: t('edit'),
+    title: t('common:button.edit'),
     icon: EditIcon,
     onClick: () => {
         coreService.localEventBus.call(`${itemType}/edit`, {

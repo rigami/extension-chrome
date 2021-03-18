@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 
 function HeaderActions() {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsWidget']);
     const { widgets } = useAppStateService();
     const coreService = useCoreService();
     const { enqueueSnackbar } = useSnackbar();
@@ -68,11 +68,11 @@ function HeaderActions() {
     return (
         <React.Fragment>
             <Tooltip
-                title={t(`settings.widgets.dtw.weather.region.autoGeolocation.${isAuto ? 'onTooltip' : 'offTooltip'}`)}
+                title={t(`weather.region.autoGeolocation.${isAuto ? 'on' : 'off'}`, { context: 'helper' })}
             >
                 <span className={classes.geoButtonWrapper}>
                     <Button
-                        data-ui-path={`settings.widgets.dtw.weather.region.autoGeolocation.${isAuto ? 'on' : 'off'}`}
+                        data-ui-path={`weather.region.autoGeolocation.${isAuto ? 'on' : 'off'}`}
                         className={classes.geoButton}
                         variant={isAuto ? 'contained' : 'outlined'}
                         color="primary"
@@ -89,8 +89,8 @@ function HeaderActions() {
                                         console.error(e);
 
                                         enqueueSnackbar({
-                                            message: t('settings.widgets.dtw.weather.failedGeolocation.title'),
-                                            description: t('settings.widgets.dtw.weather.failedGeolocation.description'),
+                                            message: t('weather.error.failedGeolocation'),
+                                            description: t('weather.error.failedGeolocation', { context: 'description' }),
                                             variant: 'error',
                                         });
                                     })
@@ -100,7 +100,7 @@ function HeaderActions() {
                             }
                         }}
                     >
-                        {t(`settings.widgets.dtw.weather.region.autoGeolocation.${isAuto ? 'onTitle' : 'offTitle'}`)}
+                        {t(`weather.region.autoGeolocation.${isAuto ? 'on' : 'off'}`)}
                     </Button>
                     {loading && <CircularProgress size={24} className={classes.geoButtonProgress} />}
                 </span>
@@ -112,7 +112,7 @@ function HeaderActions() {
 const ObserverHeaderActions = observer(HeaderActions);
 
 const headerProps = {
-    title: 'settings.widgets.dtw.weather.region.title',
+    title: 'settingsWidget:weather.region.title',
     actions: (<ObserverHeaderActions />),
 };
 
@@ -157,7 +157,7 @@ function Location(props) {
 
 function WeatherChangeLocation({ onClose }) {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsWidget']);
     const { widgets } = useAppStateService();
     const coreService = useCoreService();
     const store = useLocalObservable(() => ({
@@ -209,13 +209,13 @@ function WeatherChangeLocation({ onClose }) {
                     }}
                 />
                 <Button
-                    data-ui-path="settings.widgets.dtw.weather.region.search"
+                    data-ui-path="weather.region.search"
                     type="submit"
                     color="primary"
                     variant="contained"
                     className={classes.submit}
                 >
-                    {t('settings.widgets.dtw.weather.region.search.button')}
+                    {t('common:button.search')}
                 </Button>
             </form>
             <Divider />
@@ -235,32 +235,32 @@ function WeatherChangeLocation({ onClose }) {
             ))}
             {store.status === FETCH.DONE && store.list.length === 0 && (
                 <Stub
-                    message={t('settings.widgets.dtw.weather.region.search.notFound.title')}
-                    description={t('settings.widgets.dtw.weather.region.search.notFound.description')}
+                    message={t('weather.region.search.error.notFound')}
+                    description={t('weather.region.search.error.notFound', { context: 'description' })}
                 />
             )}
             {store.status === FETCH.FAILED && (
                 <Stub
                     icon={ErrorIcon}
-                    message={t('settings.widgets.dtw.weather.region.search.failed.title')}
-                    description={t('settings.widgets.dtw.weather.region.search.failed.description')}
+                    message={t('weather.region.search.error.failed')}
+                    description={t('weather.region.search.error.failed', { context: 'description' })}
                 />
             )}
             {store.status === FETCH.WAIT && !coreService.storage.persistent.weatherLocation && (
                 <Stub
                     icon={WrongLocationIcon}
-                    message={t('settings.widgets.dtw.weather.region.search.wait.failed.title')}
-                    description={t('settings.widgets.dtw.weather.region.search.wait.failed.description')}
+                    message={t('weather.region.search.wait.failed')}
+                    description={t('weather.region.search.wait.failed', { context: 'description' })}
                 />
             )}
             {store.status === FETCH.WAIT && coreService.storage.persistent.weatherLocation?.manual && (
                 <Stub
                     icon={PlaceIcon}
                     message={t(
-                        'settings.widgets.dtw.weather.region.search.wait.manual.title',
+                        'weather.region.search.wait.manual',
                         { locationName: coreService.storage.persistent.weatherLocation?.name },
                     )}
-                    description={t('settings.widgets.dtw.weather.region.search.wait.manual.description')}
+                    description={t('weather.region.search.wait.manual', { context: 'description' })}
                 />
             )}
             {
@@ -271,10 +271,10 @@ function WeatherChangeLocation({ onClose }) {
                     <Stub
                         icon={MyLocationIcon}
                         message={t(
-                            'settings.widgets.dtw.weather.region.search.wait.auto.title',
+                            'weather.region.search.wait.auto',
                             { locationName: coreService.storage.persistent.weatherLocation?.name },
                         )}
-                        description={t('settings.widgets.dtw.weather.region.search.wait.auto.description')}
+                        description={t('weather.region.search.wait.auto', { context: 'description' })}
                     />
                 )
             }

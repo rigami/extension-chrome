@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 function WeatherWidget() {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['desktop']);
     const { widgets } = useAppStateService();
 
     useEffect(() => {
@@ -51,7 +51,7 @@ function WeatherWidget() {
 
     return (
         <Fade in={widgets.showWeather}>
-            <Tooltip title={t('widgets.weather.openInNewTab')}>
+            <Tooltip title={t('widget.weather.button.openInNewTab')}>
                 <span className={classes.root}>
                     <Link
                         href={widgets.settings.dtwWeatherAction || widgets.weather?.dashboardUrl}
@@ -63,7 +63,11 @@ function WeatherWidget() {
                         {widgets.weather?.status === FETCH.PENDING && (
                             <CircularProgress className={classes.loader} size={15} />
                         )}
-                        {widgets.weather?.currTemp ? `${Math.round(temp)} ${units}` : 'Failed get weather data'}
+                        {
+                            widgets.weather?.currTemp
+                                ? `${Math.round(temp)} ${units}`
+                                : t('widget.weather.error.unavailable')
+                        }
                     </Link>
                 </span>
             </Tooltip>

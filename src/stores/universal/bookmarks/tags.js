@@ -4,76 +4,76 @@ import getUniqueColor from '@/utils/uniqueColor';
 import { last } from 'lodash';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 
-class CategoriesUniversalService {
+class TagsUniversalService {
     @action
     static async getAll() {
-        return DBConnector().getAll('categories');
+        return DBConnector().getAll('tags');
     }
 
-    @action('get category by id')
-    static async get(categoryId) {
-        return DBConnector().get('categories', categoryId);
+    @action('get tag by id')
+    static async get(tagId) {
+        return DBConnector().get('tags', tagId);
     }
 
-    @action('save category')
+    @action('save tag')
     static async save({ name, id, color }) {
         let newColor;
 
         if (!id) {
-            const allIds = await DBConnector().getAllKeys('categories');
+            const allIds = await DBConnector().getAllKeys('tags');
             newColor = color || getUniqueColor(last(allIds));
             newColor = color || getUniqueColor((last(allIds) || 0) + 1);
         } else {
             newColor = color || this.get(id).color;
         }
 
-        const similarCategory = await DBConnector().getFromIndex('categories', 'name', name.trim());
+        const similarTag = await DBConnector().getFromIndex('tags', 'name', name.trim());
 
-        if (similarCategory && similarCategory.id !== id) {
-            return similarCategory?.id;
+        if (similarTag && similarTag.id !== id) {
+            return similarTag?.id;
         }
 
-        let newCategoryId = id;
+        let newTagId = id;
 
         if (id) {
-            await DBConnector().put('categories', {
+            await DBConnector().put('tags', {
                 id,
                 name: name.trim(),
                 color: newColor,
             });
         } else {
-            newCategoryId = await DBConnector().add('categories', {
+            newTagId = await DBConnector().add('tags', {
                 name: name.trim(),
                 color: newColor,
             });
         }
 
-        return newCategoryId;
+        return newTagId;
     }
 
-    @action('remove category')
-    static async remove(categoryId) {
+    @action('remove tag')
+    static async remove(tagId) {
         const favoriteItem = FavoritesUniversalService.findFavorite({
-            itemType: 'category',
-            itemId: categoryId,
+            itemType: 'tag',
+            itemId: tagId,
         });
 
         if (favoriteItem) {
             await FavoritesUniversalService.removeFromFavorites(favoriteItem.id);
         }
 
-        await DBConnector().delete('categories', categoryId);
+        await DBConnector().delete('tags', tagId);
 
         const removeBinds = await DBConnector().getAllFromIndex(
-            'bookmarks_by_categories',
-            'category_id',
-            categoryId,
+            'bookmarks_by_tags',
+            'tag_id',
+            tagId,
         );
 
-        await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
+        await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_tags', id)));
 
         return removeBinds;
     }
 }
 
-export default CategoriesUniversalService;
+export default TagsUniversalService;

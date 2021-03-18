@@ -65,9 +65,9 @@ function Editor(props) {
         name: defaultName || '',
         description: '',
         useDescription: false,
-        categories: [],
+        tags: [],
         folderId: defaultFolderId || 1,
-        fullCategories: [],
+        fullTags: [],
         url: defaultUrl || '',
         forceAdded: false,
         stage: editBookmarkId ? STAGE.DONE : STAGE.WAIT_REQUEST,
@@ -164,7 +164,7 @@ function Editor(props) {
                 store.useDescription = !!bookmark.description?.trim();
                 if (store.useDescription) store.description = bookmark.description;
                 store.folderId = bookmark.folderId;
-                store.categories = (bookmark.categories || []).map((category) => category.id);
+                store.tags = (bookmark.tags || []).map((tag) => tag.id);
                 store.defaultImage = {
                     url: bookmark.imageUrl,
                     icoVariant: bookmark.icoVariant,
@@ -182,8 +182,8 @@ function Editor(props) {
     }, [store.url]);
 
     useEffect(() => {
-        store.fullCategories = store.categories.map((categoryId) => bookmarksService.categories.get(categoryId));
-    }, [store.categories.length]);
+        store.fullTags = store.tags.map((tagId) => bookmarksService.tags.get(tagId));
+    }, [store.tags.length]);
 
     useEffect(() => onStage(store.stage), [store.stage]);
 
@@ -222,7 +222,7 @@ function Editor(props) {
                     name={store.name}
                     description={store.description}
                     useDescription={store.useDescription}
-                    categories={store.categories}
+                    tags={store.tags}
                     folderId={store.folderId}
                     saveState={store.saveStage}
                     marginThreshold={marginThreshold}
@@ -252,8 +252,8 @@ function Editor(props) {
                             store.useDescription = value.useDescription;
                         }
 
-                        if ('categories' in value) {
-                            store.categories = value.categories;
+                        if ('tags' in value) {
+                            store.tags = value.tags;
                         }
                         if ('folderId' in value) {
                             store.folderId = value.folderId;

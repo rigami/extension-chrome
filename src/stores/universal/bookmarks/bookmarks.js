@@ -2,7 +2,7 @@ import { action, computed } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
-import Category from '@/stores/universal/bookmarks/entities/category';
+import Tag from '@/stores/universal/bookmarks/entities/tag';
 import { difference, values } from 'lodash';
 import asyncAction from '@/utils/asyncAction';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
@@ -82,12 +82,12 @@ export class SearchQuery {
 
         let tags;
 
-        const sameTagsCount = difference(this.tags, bookmark.categories.map(({ id }) => id)).length;
+        const sameTagsCount = difference(this.tags, bookmark.tags.map(({ id }) => id)).length;
         if (this.tags.length === 0) {
             tags = COMPARE.IGNORE;
-        } else if (sameTagsCount === 0 && bookmark.categories.length !== 0) {
+        } else if (sameTagsCount === 0 && bookmark.tags.length !== 0) {
             tags = COMPARE.FULL;
-        } else if (sameTagsCount !== bookmark.categories.length && bookmark.categories.length !== 0) {
+        } else if (sameTagsCount !== bookmark.tags.length && bookmark.tags.length !== 0) {
             tags = COMPARE.PART;
         } else {
             tags = COMPARE.NONE;
@@ -149,36 +149,36 @@ export class SearchQuery {
 class BookmarksUniversalService {
     @action('get bookmark')
     static async get(bookmarkId, isFullLoad = true) {
-        const storesName = ['bookmarks', 'bookmarks_by_categories', 'categories'];
+        const storesName = ['bookmarks', 'bookmarks_by_tags', 'tags'];
         const tx = DBConnector().transaction(storesName, 'readonly');
         const stores = {
             bookmarks: tx.objectStore('bookmarks'),
-            bookmarks_by_categories: tx.objectStore('bookmarks_by_categories'),
-            categories: tx.objectStore('categories'),
+            bookmarks_by_tags: tx.objectStore('bookmarks_by_tags'),
+            tags: tx.objectStore('tags'),
         };
 
-        const getCategory = (categoryId) => asyncAction(async () => {
-            const category = await stores.categories.get(categoryId);
-            return new Category(category);
+        const getTag = (tagId) => asyncAction(async () => {
+            const tag = await stores.tags.get(tagId);
+            return new Tag(tag);
         });
 
-        const findCategories = [];
+        const findTags = [];
 
         const bookmark = await stores.bookmarks.get(bookmarkId);
 
         if (isFullLoad) {
-            let cursor = await stores.bookmarks_by_categories.openCursor();
+            let cursor = await stores.bookmarks_by_tags.openCursor();
 
-            let cursorCategoryId;
+            let cursorTagId;
             let cursorBookmarkId;
 
             while (cursor) {
-                cursorCategoryId = cursor.value.categoryId;
+                cursorTagId = cursor.value.tagId;
                 cursorBookmarkId = cursor.value.bookmarkId;
 
                 if (cursorBookmarkId === bookmark.id) {
-                    const category = await getCategory(cursorCategoryId);
-                    findCategories.push(category);
+                    const tag = await getTag(cursorTagId);
+                    findTags.push(tag);
                 }
                 cursor = await cursor.continue();
             }
@@ -186,7 +186,7 @@ class BookmarksUniversalService {
 
         return new Bookmark({
             ...bookmark,
-            categories: findCategories,
+            tags: findTags,
         });
     }
 
@@ -255,7 +255,7 @@ class BookmarksUniversalService {
             description,
             imageURL,
             imageBase64,
-            categories = [],
+            tags = [],
             folderId,
             icoVariant,
             id,
@@ -273,11 +273,11 @@ class BookmarksUniversalService {
 
         let saveBookmarkId;
         let icoName = `${Date.now().toString()}`;
-        let oldCategories = [];
+        let oldTags = [];
 
         if (id) {
             const oldBookmark = await this.get(id);
-            oldCategories = oldBookmark.categories.map((category) => category.id);
+            oldTags = oldBookmark.tags.map((tag) => tag.id);
 
             icoName = oldBookmark.icoFileName || icoName;
 
@@ -297,26 +297,26 @@ class BookmarksUniversalService {
             }
         }
 
-        const categoriesNow = await DBConnector().getAllFromIndex(
-            'bookmarks_by_categories',
+        const tagsNow = await DBConnector().getAllFromIndex(
+            'bookmarks_by_tags',
             'bookmark_id',
             saveBookmarkId,
         );
 
         await Promise.all(
-            categoriesNow.map(({ categoryId, id: bindId }) => {
-                if (~categories.indexOf(categoryId)) return Promise.resolve();
+            tagsNow.map(({ tagId, id: bindId }) => {
+                if (~tags.indexOf(tagId)) return Promise.resolve();
 
-                return DBConnector().delete('bookmarks_by_categories', bindId);
+                return DBConnector().delete('bookmarks_by_tags', bindId);
             }),
         );
 
         await Promise.all(
-            categories.map((categoryId) => {
-                if (~oldCategories.indexOf(categoryId)) return Promise.resolve();
+            tags.map((tagId) => {
+                if (~oldTags.indexOf(tagId)) return Promise.resolve();
 
-                return DBConnector().add('bookmarks_by_categories', {
-                    categoryId,
+                return DBConnector().add('bookmarks_by_tags', {
+                    tagId,
                     bookmarkId: saveBookmarkId,
                 });
             }),
@@ -378,12 +378,12 @@ class BookmarksUniversalService {
         await DBConnector().delete('bookmarks', bookmarkId);
 
         const removeBinds = await DBConnector().getAllFromIndex(
-            'bookmarks_by_categories',
+            'bookmarks_by_tags',
             'bookmark_id',
             bookmarkId,
         );
 
-        await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_categories', id)));
+        await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_tags', id)));
 
         try {
             await FSConnector.removeFile('/bookmarksIcons', oldBookmark.icoFileName);

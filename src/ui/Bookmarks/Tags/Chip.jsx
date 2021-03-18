@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Category(props) {
+function Tag(props) {
     const {
         id,
         name,
@@ -68,7 +68,7 @@ function Category(props) {
     const { t } = useTranslation();
     const [isPin, setIsPin] = useState(bookmarksService.findFavorite({
         itemId: id,
-        itemType: 'category',
+        itemType: 'tag',
     }));
 
     const repairColor = color || '#000';
@@ -76,20 +76,20 @@ function Category(props) {
     const contextMenu = (event) => [
         pin({
             itemId: id,
-            itemType: 'category',
+            itemType: 'tag',
             t,
             bookmarksService,
         }),
         edit({
             itemId: id,
-            itemType: 'category',
+            itemType: 'tag',
             t,
             coreService,
             anchorEl: event.currentTarget,
         }),
         remove({
             itemId: id,
-            itemType: 'category',
+            itemType: 'tag',
             t,
             coreService,
         }),
@@ -98,7 +98,7 @@ function Category(props) {
     useEffect(() => {
         setIsPin(bookmarksService.findFavorite({
             itemId: id,
-            itemType: 'category',
+            itemType: 'tag',
         }));
     }, [bookmarksService.favorites.length]);
 
@@ -125,4 +125,4 @@ function Category(props) {
     );
 }
 
-export default observer(Category);
+export default observer(Tag);

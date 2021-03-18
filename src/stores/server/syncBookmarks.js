@@ -3,7 +3,7 @@ import { makeAutoObservable } from 'mobx';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import CategoriesUniversalService from '@/stores/universal/bookmarks/categories';
+import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 
 class SyncBookmarks {
@@ -18,13 +18,13 @@ class SyncBookmarks {
         console.log('restore bookmarks', bookmarks, this.core);
 
         const { all: localBookmarks } = await BookmarksUniversalService.query();
-        const localCategories = await CategoriesUniversalService.getAll();
+        const localTags = await TagsUniversalService.getAll();
         const localFolders = await FoldersUniversalService.getTree();
         const localFavorites = await FavoritesUniversalService.getAll();
 
         console.log('localBookmarks', {
             localBookmarks,
-            localCategories,
+            localTags,
             localFavorites,
             localFolders,
         });
@@ -62,32 +62,32 @@ class SyncBookmarks {
 
         if (bookmarks.folders) await compareLevel(bookmarks.folders, localFolders);
 
-        console.log('Restore categories...');
+        console.log('Restore tags...');
 
-        const replaceCategoryId = {};
+        const replaceTagId = {};
 
-        for (const category of bookmarks.categories) {
-            console.log('Check category:', category);
-            const findCategory = localCategories.find(({ name }) => category.name === name);
+        for (const tag of (bookmarks.categories || bookmarks.tags)) {
+            console.log('Check tag:', tag);
+            const findTag = localTags.find(({ name }) => tag.name === name);
 
-            if (findCategory) {
-                console.log(`Category '${category.name}' find in local store. Rewrite local`);
-                await CategoriesUniversalService.save({
-                    ...findCategory,
-                    ...category,
-                    id: findCategory.id,
-                    color: findCategory.color,
+            if (findTag) {
+                console.log(`Tag '${tag.name}' find in local store. Rewrite local`);
+                await TagsUniversalService.save({
+                    ...findTag,
+                    ...tag,
+                    id: findTag.id,
+                    color: findTag.color,
                 });
 
-                replaceCategoryId[category.id] = findCategory.id;
+                replaceTagId[tag.id] = findTag.id;
             } else {
-                console.log(`Category '${category.name}' not find in local store. Save as new`);
-                replaceCategoryId[category.id] = await CategoriesUniversalService.save({
-                    ...category,
+                console.log(`Tag '${tag.name}' not find in local store. Save as new`);
+                replaceTagId[tag.id] = await TagsUniversalService.save({
+                    ...tag,
                     color: null,
                     id: null,
                 });
-                console.log('Category id', replaceCategoryId[category.id]);
+                console.log('Tag id', replaceTagId[tag.id]);
             }
         }
 
@@ -108,7 +108,12 @@ class SyncBookmarks {
                     id: findBookmark.id,
                     folderId: replaceFolderId[bookmark.folderId] || bookmark.folderId || findBookmark.folderId,
                     imageBase64: bookmark.image || bookmark.imageBase64,
-                    categories: uniq([...findBookmark.categories.map(({ id }) => id), ...bookmark.categories.map((id) => replaceCategoryId[id] || id)]),
+                    tags: uniq([
+                        ...findBookmark.tags.map(({ id }) => id),
+                        ...(bookmark.categories || bookmark.tags).map((id) => replaceTagId[id] || id),
+                        ...[],
+                        ...[],
+                    ]),
                 });
 
                 replaceBookmarkId[bookmark.id] = findBookmark.id;
@@ -118,7 +123,7 @@ class SyncBookmarks {
                     ...bookmark,
                     folderId: replaceFolderId[bookmark.folderId] || bookmark.folderId || 1,
                     imageBase64: bookmark.image || bookmark.imageBase64,
-                    categories: bookmark.categories.map((id) => replaceCategoryId[id] || id),
+                    tags: (bookmark.categories || bookmark.tags).map((id) => replaceTagId[id] || id),
                     id: null,
                 });
                 console.log('Bookmark id', replaceBookmarkId[bookmark.id]);
@@ -135,13 +140,13 @@ class SyncBookmarks {
 
             const favoriteItemId = (
                 (favType === 'bookmark' && (replaceBookmarkId[favId] || favId))
-                || (favType === 'category' && (replaceCategoryId[favId] || favId))
+                || (favType === 'tag' && (replaceTagId[favId] || favId))
                 || (favType === 'folder' && (replaceFolderId[favId] || favId))
             );
 
             const favoriteId = (
                 (favType === 'bookmark' && (replaceBookmarkId[favId] || favId))
-                || (favType === 'category' && (replaceCategoryId[favId] || favId))
+                || (favType === 'tag' && (replaceTagId[favId] || favId))
                 || (favType === 'folder' && (replaceFolderId[favId] || favId))
             );
 

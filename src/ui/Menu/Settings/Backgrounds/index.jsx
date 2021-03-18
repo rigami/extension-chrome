@@ -12,7 +12,7 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 import libraryPage from './Library';
 import SchedulerSection from './Scheduler';
 
-const headerProps = { title: 'settings.bg.title' };
+const headerProps = { title: 'settings:backgrounds' };
 const pageProps = { width: 750 };
 
 function BGCard({ src }) {
@@ -32,12 +32,12 @@ function BGCard({ src }) {
 const MemoBGCard = memo(BGCard);
 
 function LibraryRow({ bgs, onSelect }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsBackground']);
 
     return (
         <MenuRow
-            title={t('settings.bg.general.library.title')}
-            description={t('settings.bg.general.library.description', bgs && bgs.length)}
+            title={t('library.title')}
+            description={t('library.description')}
             action={{
                 type: ROWS_TYPE.LINK,
                 onClick: () => onSelect(libraryPage),
@@ -65,7 +65,7 @@ const MemoLibraryRow = memo(LibraryRow);
 
 function BackgroundsSection({ onSelect }) {
     const { backgrounds } = useAppStateService();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsBackground']);
     const [bgs, setBgs] = useState(null);
 
     useEffect(() => {
@@ -78,11 +78,11 @@ function BackgroundsSection({ onSelect }) {
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('settings.bg.general.title')} />
+            <SectionHeader title={t('general')} />
             <MemoLibraryRow bgs={bgs} onSelect={onSelect} />
             <MenuRow
-                title={t('settings.bg.general.dimmingPower.title')}
-                description={t('settings.bg.general.dimmingPower.description')}
+                title={t('dimmingPower.title')}
+                description={t('dimmingPower.description')}
                 action={{
                     type: ROWS_TYPE.SLIDER,
                     value: typeof backgrounds.settings.dimmingPower === 'number'

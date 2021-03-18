@@ -21,20 +21,20 @@ const useStyles = makeStyles((theme) => ({
 
 function Editor({ onSave, onError, editId }) {
     const classes = useStyles();
-    const { t } = useTranslation();
-    const [categoryName, setCategoryName] = useState('');
+    const { t } = useTranslation(['tag']);
+    const [tagName, setTagName] = useState('');
     const [error, setError] = useState(null);
     const bookmarksService = useBookmarksService();
-    const categoryStore = bookmarksService.categories.get(editId);
+    const tagStore = bookmarksService.tags.get(editId);
 
     const handlerSubmit = (event) => {
         event.preventDefault();
-        if (categoryName.trim() !== '') {
-            bookmarksService.categories.save({
-                name: categoryName,
+        if (tagName.trim() !== '') {
+            bookmarksService.tags.save({
+                name: tagName,
                 id: editId,
             })
-                .then((categoryId) => onSave(categoryId))
+                .then((tagId) => onSave(tagId))
                 .catch((e) => {
                     onError(e.message);
                     setError(e.message);
@@ -47,30 +47,30 @@ function Editor({ onSave, onError, editId }) {
             <form onSubmit={handlerSubmit}>
                 <InputBase
                     className={classes.input}
-                    placeholder={t('category.createPlaceholder')}
+                    placeholder={t('editor.name', { context: 'placeholder' })}
                     variant="outlined"
                     autoFocus
-                    defaultValue={categoryStore?.name}
+                    defaultValue={tagStore?.name}
                     onChange={(event) => {
-                        setCategoryName(event.target.value);
+                        setTagName(event.target.value);
                         onError(null);
                         setError(null);
                     }}
                 />
                 <Button
-                    data-ui-path="category.editor.save"
+                    data-ui-path="tag.editor.save"
                     className={classes.saveButton}
                     onClick={handlerSubmit}
                     variant="contained"
                     color="primary"
                     type="submit"
                 >
-                    {t('save')}
+                    {editId ? t('common:button.save') : t('common:button.add')}
                 </Button>
             </form>
-            {error && error === 'category_already_exist' && (
+            {error && (
                 <Typography className={classes.errorMessage} variant="body2" color="error">
-                    {t('category.categoryAlreadyExist')}
+                    {t(`editor.error.${error}`, 'editor.error.unknown')}
                 </Typography>
             )}
         </Card>

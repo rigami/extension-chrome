@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function FolderEditor({ value, nodesLevel, onSave, onError }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['folder']);
     const store = useLocalObservable(() => ({
         value,
         error: false,
@@ -61,10 +61,9 @@ function FolderEditor({ value, nodesLevel, onSave, onError }) {
             value={store.value}
             autoFocus
             error={store.error}
-            helperText={store.error ? t('folder.editor.folderAlreadyExist') : ''}
+            helperText={store.error ? t('editor.error.alreadyExist') : ''}
             onChange={(event) => {
                 store.value = event.target.value;
-                console.log(toJS(store.level), store.level.indexOf(store.value));
                 store.error = store.level.indexOf(store.value.trim()) !== -1;
                 onError(store.error);
             }}
@@ -88,7 +87,7 @@ function Editor(props) {
         onCancel,
     } = props;
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['folder']);
     const bookmarksService = useBookmarksService();
     const foldersService = bookmarksService.folders;
     const store = useLocalObservable(() => ({
@@ -109,12 +108,12 @@ function Editor(props) {
 
         FoldersUniversalService.getFoldersByParent(store.folderId).then((folders) => {
             const folderNames = folders.map(({ name }) => name);
-            let newFolderName = t('folder.editor.defaultFolderName');
+            let newFolderName = t('defaultName');
             let count = 1;
 
             while (folderNames.indexOf(newFolderName) !== -1) {
                 count += 1;
-                newFolderName = `${t('folder.editor.defaultFolderName')} ${count}`;
+                newFolderName = `${t('defaultName')} ${count}`;
             }
             store.newFolderRoot = store.folderId;
             store.newFolderName = newFolderName;
@@ -214,7 +213,7 @@ function Editor(props) {
 
     return (
         <Card className={classes.popper} elevation={16}>
-            <DialogTitle>{t('folder.editor.title')}</DialogTitle>
+            <DialogTitle>{t('editor', { context: 'select' })}</DialogTitle>
             <DialogContent className={classes.tree}>
                 {store.folders && (
                     <TreeView
@@ -246,13 +245,13 @@ function Editor(props) {
                     className={classes.createNewFolderButton}
                     disabled={!store.folderId}
                 >
-                    {t('folder.editor.create')}
+                    {t('editor.button.create')}
                 </Button>
                 <Button
                     data-ui-path="folder.editor.cancel"
                     onClick={onCancel}
                 >
-                    {t('cancel')}
+                    {t('common:button.cancel')}
                 </Button>
                 <Button
                     data-ui-path="folder.editor.save"
@@ -261,7 +260,7 @@ function Editor(props) {
                     variant="contained"
                     disabled={store.error}
                 >
-                    {t('save')}
+                    {t('common:button.save')}
                 </Button>
             </DialogActions>
         </Card>

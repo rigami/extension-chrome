@@ -2,6 +2,7 @@ import React from 'react';
 import { SearchRounded as SearchIcon } from '@material-ui/icons';
 import { Box, InputBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -21,13 +22,14 @@ const useStyles = makeStyles((theme) => ({
 
 function Search({ onResearch }) {
     const classes = useStyles();
+    const { t } = useTranslation(['bookmark']);
 
     return (
         <Box className={classes.root}>
             <SearchIcon className={classes.icon} />
             <InputBase
                 className={classes.input}
-                placeholder="Search bookmark"
+                placeholder={t('search.bookmarks', { context: 'placeholder' })}
                 fullWidth
                 onChange={(event) => onResearch({ query: event.currentTarget.value })}
             />

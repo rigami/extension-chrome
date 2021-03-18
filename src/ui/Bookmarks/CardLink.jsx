@@ -1,5 +1,4 @@
 import React, {
-    useRef,
     memo,
     useEffect,
     useState,
@@ -100,14 +99,6 @@ const useStyles = makeStyles((theme) => ({
         wordBreak: 'break-word',
         height: 72,
     },
-    menuIconButton: {
-        position: 'absolute',
-        right: theme.spacing(0.5),
-        top: theme.spacing(0.75),
-        opacity: 0,
-        pointerEvents: 'none',
-    },
-    menuIcon: { '& path': { backdropFilter: 'invert(1)' } },
     favoriteWrapper: {
         position: 'relative',
         width: '100%',
@@ -148,7 +139,6 @@ function CardLink(props) {
     const appService = useAppService();
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
-    const buttonRef = useRef(null);
     const { t } = useTranslation();
     const [isPin, setIsPin] = useState(bookmarksService.findFavorite({
         itemId: id,

@@ -10,7 +10,6 @@ import {
 } from '@material-ui/icons';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { Box, CircularProgress } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import { eventToBackground } from '@/stores/server/bus';
@@ -41,16 +40,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Desktop({ active, onScroll, onTryScrollCallback }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['bookmark', 'background']);
     const classes = useStyles();
     const appService = useAppService();
     const { widgets, backgrounds } = appService;
-    const { enqueueSnackbar } = useSnackbar();
     const coreService = useCoreService();
 
     const contextMenu = () => [
         new ContextMenuItem({
-            title: t('bookmark.addShort'),
+            title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
             onClick: () => {
                 coreService.localEventBus.call('bookmark/create');
@@ -59,7 +57,9 @@ function Desktop({ active, onScroll, onTryScrollCallback }) {
         new ContextMenuDivider(),
         ...(backgrounds.settings.selectionMethod !== BG_SELECT_MODE.SPECIFIC ? [
             new ContextMenuItem({
-                title: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? t('bg.fetchingNextBG') : t('bg.next'),
+                title: backgrounds.bgState === BG_SHOW_STATE.SEARCH
+                    ? t('background:fetchingNextBG')
+                    : t('background:button.next'),
                 disabled: backgrounds.bgState === BG_SHOW_STATE.SEARCH,
                 icon: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? CircularProgress : RefreshIcon,
                 iconProps: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? {
@@ -70,7 +70,7 @@ function Desktop({ active, onScroll, onTryScrollCallback }) {
             }),
         ] : []),
         new ContextMenuItem({
-            title: t('bg.addShort'),
+            title: t('background:button.add'),
             icon: UploadFromComputerIcon,
             onClick: () => {
                 const shadowInput = document.createElement('input');
@@ -82,10 +82,6 @@ function Desktop({ active, onScroll, onTryScrollCallback }) {
                     if (form.files.length === 0) return;
 
                     backgrounds.addToUploadQueue(form.files)
-                        .catch(() => enqueueSnackbar({
-                            ...t('locale.settings.backgrounds.general.library[e]'),
-                            variant: 'error',
-                        }))
                         .finally(() => {
                             form.value = '';
                         });
@@ -95,13 +91,15 @@ function Desktop({ active, onScroll, onTryScrollCallback }) {
         }),
         ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
             new ContextMenuItem({
-                title: backgrounds.currentBG?.isSaved ? t('bg.addedToLibrary') : t('bg.addToLibrary'),
+                title: backgrounds.currentBG?.isSaved
+                    ? t('background:addedToLibrary')
+                    : t('background:button.addToLibrary'),
                 disabled: backgrounds.currentBG?.isSaved,
                 icon: backgrounds.currentBG?.isSaved ? SavedBgIcon : SaveBgIcon,
                 onClick: () => BackgroundsUniversalService.addToLibrary(backgrounds.currentBG),
             }),
             new ContextMenuItem({
-                title: t('bg.openSource'),
+                title: t('background:button.openSource'),
                 icon: OpenSourceIcon,
                 onClick: () => window.open(backgrounds.currentBG?.sourceLink, '_blank'),
             }),

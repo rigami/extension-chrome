@@ -112,7 +112,7 @@ function FabMenu() {
     const coreService = useCoreService();
     const appService = useAppService();
     const { backgrounds } = appService;
-    const { t } = useTranslation();
+    const { t } = useTranslation(['bookmark', 'settings', 'background']);
 
     const bgShowMode = backgrounds.currentBG.type === BG_TYPE.VIDEO;
     const saveBgLocal = (
@@ -130,7 +130,7 @@ function FabMenu() {
                 <Box className={classes.root}>
                     <Group>
                         <Button
-                            tooltip={t('settings.title')}
+                            tooltip={t('settings:title')}
                             data-ui-path="settings.open"
                             onClick={() => coreService.localEventBus.call('settings/open')}
                             icon={SettingsIcon}
@@ -138,7 +138,7 @@ function FabMenu() {
                     </Group>
                     <Group>
                         <Button
-                            tooltip={t('bookmark.addShort')}
+                            tooltip={t('bookmark:button.add', { context: 'short' })}
                             data-ui-path="bookmark.add"
                             onClick={() => coreService.localEventBus.call('bookmark/create')}
                             icon={AddBookmarkIcon}
@@ -153,14 +153,8 @@ function FabMenu() {
                                 <Button
                                     tooltip={
                                         backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
-                                            ? (
-                                                <React.Fragment>
-                                                    <b>{t('bg.pauseVideo')}</b>
-                                                    <Divider className={classes.divider} />
-                                                    {t('bg.pauseVideoDescription')}
-                                                </React.Fragment>
-                                            )
-                                            : t('bg.playVideo')
+                                            ? t('background:button.pause')
+                                            : t('background:button.play')
                                     }
                                     data-ui-path={
                                         backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
@@ -183,8 +177,8 @@ function FabMenu() {
                                     <Button
                                         tooltip={
                                             backgrounds.currentBG.isSaved
-                                                ? t('bg.addedToLibrary')
-                                                : t('bg.addToLibrary')
+                                                ? t('background:addedToLibrary')
+                                                : t('background:button.addToLibrary')
                                         }
                                         data-ui-path={
                                             backgrounds.currentBG.isSaved
@@ -209,8 +203,8 @@ function FabMenu() {
                                     <Button
                                         tooltip={
                                             backgrounds.bgState === BG_SHOW_STATE.SEARCH
-                                                ? t('bg.fetchingNextBG')
-                                                : t('bg.next')
+                                                ? t('background:fetchingNextBG')
+                                                : t('background:button.next')
                                         }
                                         data-ui-path="bg.next"
                                         className={clsx(

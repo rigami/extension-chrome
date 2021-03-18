@@ -5,11 +5,11 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
-import CategoryEntity from '@/stores/universal/bookmarks/entities/category';
+import TagEntity from '@/stores/universal/bookmarks/entities/tag';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import Link from '@/ui/Desktop/FAP/Link';
 import Folder from '@/ui/Desktop/FAP/Folder';
-import Category from '@/ui/Desktop/FAP/Category';
+import Tag from '@/ui/Desktop/FAP/Tag';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -46,8 +46,8 @@ function Explorer({ offsetLoad }) {
                     return BookmarksUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'folder') {
                     return FoldersUniversalService.get(fav.itemId);
-                } else if (fav.itemType === 'category') {
-                    return bookmarksService.categories.get(fav.itemId);
+                } else if (fav.itemType === 'tag') {
+                    return bookmarksService.tags.get(fav.itemId);
                 }
 
                 return Promise.reject();
@@ -82,7 +82,7 @@ function Explorer({ offsetLoad }) {
                     key: `${fav.type}-${fav.id}`,
                 };
 
-                if (fav instanceof FolderEntity || fav instanceof CategoryEntity) {
+                if (fav instanceof FolderEntity || fav instanceof TagEntity) {
                     a11props = {
                         ...a11props,
                         classes: { root: classes.link },
@@ -93,8 +93,8 @@ function Explorer({ offsetLoad }) {
                     return (<Link {...a11props} className={classes.link} />);
                 } else if (fav instanceof FolderEntity) {
                     return (<Folder {...a11props} />);
-                } else if (fav instanceof CategoryEntity) {
-                    return (<Category {...a11props} />);
+                } else if (fav instanceof TagEntity) {
+                    return (<Tag {...a11props} />);
                 }
 
                 return null;

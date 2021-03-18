@@ -12,17 +12,17 @@ import Specific from './Specific';
 
 function SchedulerSection({ onSelect }) {
     const { backgrounds } = useAppStateService();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsBackground']);
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('settings.bg.scheduler.title')} />
+            <SectionHeader title={t('scheduler')} />
             <MenuRow
-                title={t('settings.bg.scheduler.selectionMethod.title')}
-                description={t('settings.bg.scheduler.selectionMethod.description')}
+                title={t('selectionMethod.title')}
+                description={t('selectionMethod.description')}
                 action={{
                     type: ROWS_TYPE.SELECT,
-                    format: (value) => t(`settings.bg.scheduler.selectionMethod.method.${value}`),
+                    format: (value) => t(`selectionMethod.value.${value}`),
                     value: backgrounds.settings.selectionMethod,
                     onChange: (event) => {
                         if (event.target.value === BG_SELECT_MODE.STREAM) {

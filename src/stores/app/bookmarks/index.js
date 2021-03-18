@@ -2,12 +2,12 @@ import { action, makeAutoObservable, reaction } from 'mobx';
 import { BKMS_FAP_STYLE, DESTINATION } from '@/enum';
 import { BookmarksSettingsStore } from '@/stores/app/settings';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
-import CategoriesStore from './categories';
+import TagsStore from './tags';
 import FoldersStore from './folders';
 import BookmarksStore from './bookmarks';
 
 class BookmarksService {
-    categories;
+    tags;
     bookmarks;
     folders;
     favorites = [];
@@ -18,14 +18,14 @@ class BookmarksService {
     constructor(coreService) {
         makeAutoObservable(this);
         this._coreService = coreService;
-        this.categories = new CategoriesStore(coreService, this);
+        this.tags = new TagsStore(coreService, this);
         this.folders = new FoldersStore(coreService, this);
         this.bookmarks = new BookmarksStore(coreService, this);
         this.settings = new BookmarksSettingsStore();
 
         if (!this._coreService) return;
 
-        this.categories.sync();
+        this.tags.sync();
         this.syncFavorites();
 
         this._coreService.globalEventBus.on('bookmark/new', () => {
@@ -34,20 +34,20 @@ class BookmarksService {
         this._coreService.globalEventBus.on('bookmark/remove', () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
-        this._coreService.globalEventBus.on('category/new', async () => {
-            await this.categories.sync();
+        this._coreService.globalEventBus.on('tag/new', async () => {
+            await this.tags.sync();
 
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
-        this._coreService.globalEventBus.on('category/remove', async ({ categoryId }) => {
-            await this.categories.sync();
+        this._coreService.globalEventBus.on('tag/remove', async ({ tagId }) => {
+            await this.tags.sync();
 
             this._coreService.storage.updatePersistent({
                 bkmsLastSearch: {
-                    ...(this._coreService.storage.persistent.categories || {}),
-                    categories: {
-                        match: (this._coreService.storage.persistent.categories || [])
-                            .filter((id) => id !== categoryId),
+                    ...(this._coreService.storage.persistent.tags || {}),
+                    tags: {
+                        match: (this._coreService.storage.persistent.tags || [])
+                            .filter((id) => id !== tagId),
                     },
                 },
                 bkmsLastTruthSearchTimestamp: Date.now(),

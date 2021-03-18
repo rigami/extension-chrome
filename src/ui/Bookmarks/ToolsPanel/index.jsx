@@ -44,7 +44,7 @@ function ToolsPanel({ onResearch }) {
                 <Search onResearch={handleChangeRequest} />
                 <Tags onResearch={handleChangeRequest} />
                 <SearchPlace onResearch={handleChangeRequest} />
-                <ShowFavoriteSwitcher onResearch={handleChangeRequest} />
+                <ShowFavoriteSwitcher searchRequest={store.searchRequest} onResearch={handleChangeRequest} />
             </Toolbar>
         </AppBar>
     );

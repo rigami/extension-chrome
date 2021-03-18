@@ -22,12 +22,12 @@ const useStyles = makeStyles((theme) => ({
 
 function FolderSelector({ value, onChange }) {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['folder']);
     const store = useLocalObservable(() => ({
         anchorEl: null,
         isOpen: false,
         isBlockEvent: false,
-        path: t('loading'),
+        path: t('common:loading'),
     }));
 
     useEffect(() => {
@@ -52,7 +52,7 @@ function FolderSelector({ value, onChange }) {
                     store.isOpen = false;
                 }}
             />
-            <Tooltip title={t('folder.editor.changeTooltip')}>
+            <Tooltip title={t('change', { context: 'helper' })}>
                 <Button
                     data-ui-path="folder.editor.change"
                     endIcon={<EditIcon />}
@@ -79,7 +79,7 @@ function FolderSelector({ value, onChange }) {
                         </Breadcrumbs>
                     )) || (value && store.path) || (
                         <Typography className={classes.notSelect}>
-                            {t('folder.editor.notSelect')}
+                            {t('notSelect')}
                         </Typography>
                     )}
                 </Button>

@@ -1,7 +1,10 @@
 import BusApp, { eventToBackground, initBus, instanceId } from '@/stores/server/bus';
 import { BG_SOURCE, BG_TYPE, DESTINATION } from '@/enum';
 import {
-    reaction, action, makeAutoObservable, runInAction,
+    reaction,
+    action,
+    makeAutoObservable,
+    runInAction,
 } from 'mobx';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
@@ -112,20 +115,29 @@ class Core {
     }
 
     async initialization() {
+        openDB(); // setTimeout(() => openDB(), 15000);
         await i18n
             .use(initReactI18next)
             .use(Backend)
             .init({
                 lng: (chrome?.i18n?.getUILanguage?.() || 'en').substring(0, 2),
                 load: 'languageOnly',
-                fallbackLng: PRODUCTION_MODE ? 'en' : 'dev',
+                fallbackLng: 'en',
                 debug: !PRODUCTION_MODE,
-                interpolation: { escapeValue: false },
-                backend: { loadPath: 'resource/i18n/{{lng}}.json' },
+                ns: [
+                    'common',
+                    'bookmark',
+                    'background',
+                    'tag',
+                    'desktop',
+                    'settings',
+                    'settingsBackup',
+                    'newVersion',
+                ],
+                defaultNS: 'common',
+                backend: { loadPath: 'resource/i18n/{{lng}}/{{ns}}.json' },
                 react: { useSuspense: false },
             });
-
-        await openDB();
     }
 
     async setDefaultState(progressCallback) {

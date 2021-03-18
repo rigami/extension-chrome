@@ -58,7 +58,7 @@ function Stream({ onSelect }) {
     const classes = useStyles();
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsBackground']);
     const [isCustomQuery, setIsCustomQuery] = useState(
         coreService.storage.persistent.backgroundStreamQuery?.type === 'custom-query',
     );
@@ -66,11 +66,11 @@ function Stream({ onSelect }) {
     return (
         <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM}>
             <MenuRow
-                title={t('settings.bg.scheduler.changeInterval.title')}
-                description={t('settings.bg.scheduler.changeInterval.description')}
+                title={t('changeInterval.title')}
+                description={t('changeInterval.description')}
                 action={{
                     type: ROWS_TYPE.SELECT,
-                    format: (value) => t(`settings.bg.scheduler.changeInterval.interval.${value}`),
+                    format: (value) => t(`changeInterval.value.${value}`),
                     value: backgrounds.settings.changeInterval,
                     onChange: (event) => backgrounds.settings.update({ changeInterval: event.target.value }),
                     values: [
@@ -85,11 +85,11 @@ function Stream({ onSelect }) {
                 }}
             />
             <MenuRow
-                title={t('settings.bg.scheduler.BGType.title')}
-                description={t('settings.bg.scheduler.BGType.description')}
+                title={t('bgType.title')}
+                description={t('bgType.description')}
                 action={{
                     type: ROWS_TYPE.MULTISELECT,
-                    format: (value) => t(`settings.bg.scheduler.BGType.type.${value}`),
+                    format: (value) => t(`bgType.value.${value}`),
                     value: backgrounds.settings.type || [],
                     onChange: (event) => {
                         if (event.target.value.length === 0) return;
@@ -100,11 +100,11 @@ function Stream({ onSelect }) {
                 }}
             />
             <MenuRow
-                title={t('settings.bg.scheduler.query.title')}
-                description={t('settings.bg.scheduler.query.description')}
+                title={t('query.title')}
+                description={t('query.description')}
                 action={{
                     type: ROWS_TYPE.SELECT,
-                    format: (value) => t(`settings.bg.scheduler.query.query.${value}`),
+                    format: (value) => t(`query.value.${value}`),
                     value: isCustomQuery ? 'CUSTOM_QUERY' : coreService.storage.persistent.backgroundStreamQuery?.id,
                     onChange: (event) => {
                         if (event.target.value === 'CUSTOM_QUERY') {
@@ -128,8 +128,8 @@ function Stream({ onSelect }) {
             />
             <Collapse in={isCustomQuery}>
                 <MenuRow
-                    title={t('settings.bg.scheduler.query.custom.title')}
-                    description={t('settings.bg.scheduler.query.custom.description')}
+                    title={t('query.custom.title')}
+                    description={t('query.custom.description')}
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => onSelect(changeLocationPage),
@@ -139,7 +139,7 @@ function Stream({ onSelect }) {
                             }`)
                             : (
                                 <Typography className={classes.notSetValue}>
-                                    {t('settings.bg.scheduler.query.notSet')}
+                                    {t('query.notSet')}
                                 </Typography>
                             ),
                     }}

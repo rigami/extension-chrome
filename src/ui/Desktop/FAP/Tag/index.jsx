@@ -3,7 +3,7 @@ import { LabelRounded as TagIcon } from '@material-ui/icons';
 import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
 import Explorer from './Explorer';
 
-function Category(props) {
+function Tag(props) {
     const {
         id,
         name,
@@ -15,7 +15,7 @@ function Category(props) {
         <ButtonWithPopper
             id={id}
             name={name}
-            type="category"
+            type="tag"
             classes={externalClasses}
             iconOpen={TagIcon}
             iconOpenProps={{ style: { color } }}
@@ -25,4 +25,4 @@ function Category(props) {
     );
 }
 
-export default Category;
+export default Tag;

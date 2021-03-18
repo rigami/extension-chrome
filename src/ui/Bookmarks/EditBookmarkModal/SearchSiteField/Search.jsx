@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Search({ query = '', onSelect }) {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['bookmark', 'common']);
     const [timer, setTimer] = useState(undefined);
     const [globalResults, setGlobalResults] = React.useState([]);
     const [straightResults, setStraightResults] = React.useState(null);
@@ -121,14 +121,13 @@ function Search({ query = '', onSelect }) {
             <Box className={classes.root}>
                 <Fade in={straightLoading && globalLoading}>
                     <Box className={clsx(classes.search)}>
-                        {t('search')}
-                        ...
+                        {t('common:search')}
                     </Box>
                 </Fade>
                 <Collapse in={(!globalLoading || !straightLoading) && isOpen}>
                     <List disablePadding>
                         <ListSubheader className={classes.subheader}>
-                            {t('bookmark.editor.searchURLTitle')}
+                            {t('editor.search', { context: 'url' })}
                         </ListSubheader>
                         {!straightLoading && straightResults && (
                             <ListItem
@@ -158,7 +157,7 @@ function Search({ query = '', onSelect }) {
                         )}
                         {!straightLoading && !straightResults && (
                             <ListItem>
-                                {t('bookmark.editor.URLNotRecognize')}
+                                {t('editor.search.urlNotRecognize')}
                                 <Button
                                     data-ui-path="bookmark.editor.forceAddURL"
                                     className={classes.forceAdd}
@@ -167,18 +166,17 @@ function Search({ query = '', onSelect }) {
                                         title: '',
                                     }, true)}
                                 >
-                                    {t('bookmark.editor.forceAddURL')}
+                                    {t('editor.button.forceAdd')}
                                 </Button>
                             </ListItem>
                         )}
                         {straightLoading && (
                             <ListItem>
-                                {t('search')}
-                                ...
+                                {t('common:search')}
                             </ListItem>
                         )}
                         <ListSubheader className={classes.subheader}>
-                            {t('bookmark.editor.searchInWEBTitle')}
+                            {t('editor.search', { context: 'web' })}
                         </ListSubheader>
                         {!globalLoading && globalResults && globalResults.map((option) => (
                             <ListItem
@@ -210,13 +208,12 @@ function Search({ query = '', onSelect }) {
                         ))}
                         {!globalLoading && globalResults && globalResults.length === 0 && (
                             <ListItem>
-                                {t('bookmark.editor.notFound')}
+                                {t('common:nothingFound')}
                             </ListItem>
                         )}
                         {globalLoading && (
                             <ListItem>
-                                {t('search')}
-                                ...
+                                {t('common:search')}
                             </ListItem>
                         )}
                     </List>

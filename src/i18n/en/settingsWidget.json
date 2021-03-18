@@ -1,0 +1,114 @@
+{
+  "useWidgets": {
+    "title": "Use desktop widgets",
+    "description": "Widgets help you get quick access to time, date and weather"
+  },
+  "dtw": "Date, time and weather",
+  "dtwPlace": {
+    "title": "Position",
+    "value": {
+      "LEFT_BOTTOM": "Lower left corner",
+      "CENTER_TOP": "Top center",
+      "LEFT_MIDDLE": "Left in the middle"
+    }
+  },
+  "dtwSize": {
+    "title": "Size",
+    "value": {
+      "SMALL": "Less",
+      "MIDDLE": "Average",
+      "BIG": "More"
+    }
+  },
+  "time": {
+    "title": "Time",
+    "useTime": "Show current time",
+    "format12": "Use 12 hour format"
+  },
+  "date": {
+    "title": "Date",
+    "useDate": "Show current date",
+    "clickAction": {
+      "title": "Widget click action",
+      "description": "Configure so that when you click on the widget, the desired site opens",
+      "dialog": {
+        "title": "Configuring click action on date widget",
+        "description": "Insert the url you want here, or leave it blank if you don't need to perform any action",
+        "url": "Url address"
+      }
+    }
+  },
+  "weather": {
+    "title": "Weather",
+    "useWeather": "Show current weather",
+    "state": {
+      "pendingData": "Receiving data..."
+    },
+    "error": {
+      "serviceUnavailable": "Weather service not available",
+      "failedGeolocation": "Can't determine your geolocation",
+      "failedGeolocation_description": "Perhaps you are denied access to geolocation, or the weather service does not supply weather for this place"
+    },
+    "units": {
+      "title": "Measurement system",
+      "value": {
+        "FAHRENHEIT": "Fahrenheit",
+        "CELSIUS": "Celsius",
+        "KELVIN": "Kelvin"
+      }
+    },
+    "provider": {
+      "title": "Weather forecast provider",
+      "value": {
+        "openweathermap": "OpenWeatherMap"
+      }
+    },
+    "region": {
+      "title": "Region",
+      "notSet": "Region not selected",
+      "select": {
+        "auto": "The region is determined automatically by your location, click here to change it",
+        "manual": "Region set manually, click here to change it",
+        "failed": "Could not determine your region, click here to set it manually"
+      },
+      "button": {
+        "change": "Change region"
+      },
+      "search": {
+        "wait": {
+          "manual": "The weather is shown for the region \"{{locationName}}\"",
+          "manual_description": "Enter the place name to change the region",
+          "auto": "Weather shown for your location \"{{locationName}}\"",
+          "auto_description": "Enter the place name to set the region manually",
+          "failed": "Can't find your location",
+          "failed_description": "Enter the name of the place to set the region manually, or try turning on geolocation"
+        },
+        "error": {
+          "notFound": "Place not found",
+          "notFound_description": "Try changing your request and try again",
+          "failed": "Search error",
+          "failed_description": "Something went wrong, please try again later"
+        }
+      },
+      "notDetected": {
+        "title": "Region not defined",
+        "description": "Failed to determine the region, please try to select it manually"
+      },
+      "autoGeolocation": {
+        "on": "Geolocation enabled",
+        "off": "Geolocation is off",
+        "on_helper": "Click to turn off automatic location",
+        "off_helper": "Click to turn on automatic location"
+      }
+    },
+    "clickAction": {
+      "title": "Widget click action",
+      "description": "Configure so that when you click on the widget, the desired site opens",
+      "dialog": {
+        "title": "Configuring click action on weather widget",
+        "description": "Insert the url you want here, or leave it blank if you don't need to perform any action",
+        "url": "Url address"
+      }
+    }
+  }
+}

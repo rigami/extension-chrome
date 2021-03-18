@@ -11,7 +11,7 @@ import TimeWidget from './Time';
 import DateWidget from './Date';
 import WeatherWidget from './Weather';
 
-const headerProps = { title: 'settings.widgets.title' };
+const headerProps = { title: 'settings:widgets' };
 const pageProps = { width: 750 };
 
 const numberToEnumSize = (value) => {
@@ -34,14 +34,14 @@ const enumSizeToNumber = (value) => {
 };
 
 function Widgets({ onSelect }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsWidget']);
     const { widgets } = useAppStateService();
 
     return (
         <React.Fragment>
             <MenuRow
-                title={t('settings.widgets.useWidgets.title')}
-                description={t('settings.widgets.useWidgets.description')}
+                title={t('useWidgets.title')}
+                description={t('useWidgets.description')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     value: widgets.settings.useWidgets,
@@ -52,13 +52,13 @@ function Widgets({ onSelect }) {
                 type={ROWS_TYPE.CHECKBOX}
             />
             <Collapse in={widgets.settings.useWidgets}>
-                <SectionHeader title={t('settings.widgets.dtw.title')} />
+                <SectionHeader title={t('dtw')} />
                 <MenuRow
-                    title={t('settings.widgets.dtw.dtwPlace.title')}
-                    // description={t('settings.widgets.dtw.dtwPlace.description')}
+                    title={t('dtwPlace.title')}
+                    // description={t('dtwPlace.description')}
                     action={{
                         type: ROWS_TYPE.SELECT,
-                        format: (value) => t(`settings.widgets.dtw.dtwPlace.place.${value}`),
+                        format: (value) => t(`dtwPlace.value.${value}`),
                         value: widgets.settings.dtwPosition,
                         onChange: (event) => {
                             widgets.settings.update({ dtwPosition: event.target.value });
@@ -67,8 +67,8 @@ function Widgets({ onSelect }) {
                     }}
                 />
                 <MenuRow
-                    title={t('settings.widgets.dtw.dtwSize.title')}
-                    // description={t('settings.widgets.dtw.dtwSize.description')}
+                    title={t('dtwSize.title')}
+                    // description={t('dtwSize.description')}
                     action={{
                         type: ROWS_TYPE.SLIDER,
                         value: enumSizeToNumber(widgets.settings.dtwSize),
@@ -84,15 +84,15 @@ function Widgets({ onSelect }) {
                         marks: [
                             {
                                 value: 1,
-                                label: t(`settings.widgets.dtw.dtwSize.size.${WIDGET_DTW_SIZE.SMALL}`),
+                                label: t(`dtwSize.value.${WIDGET_DTW_SIZE.SMALL}`),
                             },
                             {
                                 value: 2,
-                                label: t(`settings.widgets.dtw.dtwSize.size.${WIDGET_DTW_SIZE.MIDDLE}`),
+                                label: t(`dtwSize.value.${WIDGET_DTW_SIZE.MIDDLE}`),
                             },
                             {
                                 value: 3,
-                                label: t(`settings.widgets.dtw.dtwSize.size.${WIDGET_DTW_SIZE.BIG}`),
+                                label: t(`dtwSize.value.${WIDGET_DTW_SIZE.BIG}`),
                             },
                         ],
                         step: 1,

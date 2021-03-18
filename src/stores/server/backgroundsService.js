@@ -136,7 +136,7 @@ class BackgroundsServerService {
             this.core.storageService.updatePersistent({
                 backgroundStreamQuery: {
                     type: 'collection',
-                    id: 'EDITORS_СHOICE',
+                    id: 'EDITORS_CHOICE',
                 },
             });
         }
@@ -253,7 +253,7 @@ class BackgroundsServerService {
             this.core.storageService.updatePersistent({
                 backgroundStreamQuery: {
                     type: 'collection',
-                    id: 'EDITORS_СHOICE',
+                    id: 'EDITORS_CHOICE',
                 },
             });
         }

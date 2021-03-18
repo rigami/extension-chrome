@@ -1,0 +1,9 @@
+{
+  "darkThemeBackdrop":"Dark matte under backgrounds",
+  "darkThemeApp":"Application dark theme",
+  "tabName":{
+    "title":"Tab name",
+    "description":"Enter your tab name",
+    "emptyName_placeholder": "Blank tab with no name"
+  }
+}

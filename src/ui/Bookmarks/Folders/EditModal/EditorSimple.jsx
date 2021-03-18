@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Editor({ onSave, onError, editId }) {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['folder']);
     const bookmarksService = useBookmarksService();
     const foldersService = bookmarksService.folders;
     const store = useLocalObservable(() => ({
@@ -41,7 +41,7 @@ function Editor({ onSave, onError, editId }) {
                 parentId: store.parentId,
                 id: store.editId,
             })
-                .then((categoryId) => onSave(categoryId))
+                .then((tagId) => onSave(tagId))
                 .catch((e) => {
                     onError(e.message);
                 });
@@ -63,7 +63,7 @@ function Editor({ onSave, onError, editId }) {
             <form onSubmit={handlerSubmit}>
                 <InputBase
                     className={classes.input}
-                    placeholder={t('folder.createPlaceholder')}
+                    placeholder={t('editor.name', { context: 'placeholder' })}
                     variant="outlined"
                     autoFocus
                     value={store.name}
@@ -80,7 +80,7 @@ function Editor({ onSave, onError, editId }) {
                     color="primary"
                     type="submit"
                 >
-                    {t('save')}
+                    {t('common:save')}
                 </Button>
             </form>
         </Card>

@@ -39,7 +39,7 @@ function Folder({ id }) {
     const bookmarksService = useBookmarksService();
     const { t } = useTranslation();
 
-    const [category] = useState(bookmarksService.categories.get(id));
+    const [tag] = useState(bookmarksService.tags.get(id));
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
 
@@ -55,9 +55,9 @@ function Folder({ id }) {
         <Card className={classes.root} elevation={16}>
             <CardHeader
                 avatar={(
-                    <LabelIcon style={{ color: category.color }} />
+                    <LabelIcon style={{ color: tag.color }} />
                 )}
-                title={category.name}
+                title={tag.name}
                 classes={{ avatar: classes.avatar }}
             />
             {isSearching && (
@@ -67,8 +67,8 @@ function Folder({ id }) {
             )}
             {!isSearching && findBookmarks.length === 0 && (
                 <Stub
-                    message={t('fap.category.emptyTitle')}
-                    description={t('fap.category.emptyDescription')}
+                    message={t('fap.tag.emptyTitle')}
+                    description={t('fap.tag.emptyDescription')}
                 />
             )}
             {findBookmarks && findBookmarks.length !== 0 && (

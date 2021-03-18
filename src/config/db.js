@@ -1,5 +1,3 @@
-import DBConnector from '@/utils/dbConnector';
-import { toJS } from 'mobx';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 
 async function upgradeOrCreateBackgrounds(db, transaction) {
@@ -100,13 +98,13 @@ function upgradeOrCreateSystemBookmarks(db, transaction) {
     return store;
 }
 
-function upgradeOrCreateCategories(db, transaction) {
+function upgradeOrCreateTags(db, transaction) {
     let store;
 
-    if (db.objectStoreNames.contains('categories')) {
-        store = transaction.objectStore('categories');
+    if (db.objectStoreNames.contains('tags')) {
+        store = transaction.objectStore('tags');
     } else {
-        store = db.createObjectStore('categories', {
+        store = db.createObjectStore('tags', {
             keyPath: 'id',
             autoIncrement: true,
         });
@@ -117,24 +115,24 @@ function upgradeOrCreateCategories(db, transaction) {
     return store;
 }
 
-function upgradeOrCreateBookmarksByCategories(db, transaction) {
+function upgradeOrCreateBookmarksByTags(db, transaction) {
     let store;
 
-    if (db.objectStoreNames.contains('bookmarks_by_categories')) {
-        store = transaction.objectStore('bookmarks_by_categories');
+    if (db.objectStoreNames.contains('bookmarks_by_tags')) {
+        store = transaction.objectStore('bookmarks_by_tags');
     } else {
-        store = db.createObjectStore('bookmarks_by_categories', {
+        store = db.createObjectStore('bookmarks_by_tags', {
             keyPath: 'id',
             autoIncrement: true,
         });
-        store.createIndex('category_id', 'categoryId', { unique: false });
+        store.createIndex('tag_id', 'tagId', { unique: false });
         store.createIndex('bookmark_id', 'bookmarkId', { unique: false });
     }
 
     return store;
 }
 
-async function upgradeOrCreateFolders(db, transaction /* , newVersion */) {
+async function upgradeOrCreateFolders(db, transaction) {
     let store;
 
     if (db.objectStoreNames.contains('folders')) {
@@ -187,56 +185,28 @@ async function upgradeOrCreateFavorites(db, transaction) {
     return store;
 }
 
-async function migrate(version) {
+async function migrate(db, version) {
     console.log('Migrate!');
 
-    if (version === 3) {
-        console.log('Rename old folders');
-        const renameFolder = (folderIndex, folderNames, oldName) => {
-            let newFolderName = oldName;
-            let count = 1;
+    if (version === 7) {
+        console.log('Rename tags to tags');
+        const categories = await db.getAll('categories');
+        const bookmarksByCategories = await db.getAll('bookmarks_by_categories');
 
-            while (folderNames.indexOf(newFolderName) !== -1) {
-                count += 1;
-                newFolderName = `${oldName} ${count}`;
-            }
-
-            return newFolderName;
-        };
-
-        const findRenamedFolders = async (folderId) => {
-            const folders = await DBConnector().getAllFromIndex('folders', 'parent_id', folderId);
-
-            console.log('check level', folderId, toJS(folders));
-
-            if (folders.length === 0) return [];
-
-            const renamedFolders = [];
-
-            const changedFolders = folders.map(({ name, ...folder }, index) => {
-                const newName = renameFolder(index, [...renamedFolders].splice(0, index), folders[index].name);
-
-                renamedFolders.push(newName);
-
-                return {
-                    ...folder,
-                    name,
-                    newName,
-                };
-            }).filter(({ name, newName }) => name !== newName);
-
-            const childFolders = (await Promise.all(folders.map((folder) => findRenamedFolders(folder.id)))).flat();
-
-            return [...changedFolders, ...childFolders];
-        };
-
-        const changedFolders = await findRenamedFolders(0);
-
-        await Promise.all(changedFolders.map((folder) => DBConnector().put('folders', {
-            id: folder.id,
-            name: folder.newName.trim(),
-            parentId: folder.parentId,
+        await Promise.all(categories.map((tag) => db.put('tags', {
+            id: tag.id,
+            name: tag.name,
+            color: tag.color,
         })));
+
+        await Promise.all(bookmarksByCategories.map((bind) => db.put('bookmarks_by_tags', {
+            id: bind.id,
+            tagId: bind.categoryId,
+            bookmarkId: bind.bookmarkId,
+        })));
+
+        await db.deleteObjectStore('categories');
+        await db.deleteObjectStore('bookmarks_by_categories');
     }
 }
 
@@ -246,9 +216,9 @@ export default ({ upgrade }) => ({
         upgradeOrCreateBackgrounds(db, transaction);
         upgradeOrCreateBookmarks(db, transaction);
         upgradeOrCreateSystemBookmarks(db, transaction);
-        upgradeOrCreateCategories(db, transaction);
-        upgradeOrCreateBookmarksByCategories(db, transaction);
-        upgradeOrCreateFolders(db, transaction, newVersion).catch(console.error);
+        upgradeOrCreateTags(db, transaction);
+        upgradeOrCreateBookmarksByTags(db, transaction);
+        upgradeOrCreateFolders(db, transaction).catch(console.error);
         upgradeOrCreateFavorites(db, transaction);
 
         upgrade();

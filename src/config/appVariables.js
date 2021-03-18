@@ -8,7 +8,7 @@ export default {
     version: packageFile.version,
     db: {
         name: 'rigami',
-        version: 6,
+        version: 7,
     },
     fs: { root: `chrome-extension://${chrome.runtime.id}/persistent/` },
     maxUploadFiles: 15,
@@ -48,7 +48,7 @@ export default {
         stream: {
             preloadBGCount: 2,
             preloadMetaCount: 10,
-            collections: ['EDITORS_СHOICE'],
+            collections: ['EDITORS_CHOICE'],
             queryPresets: [
                 {
                     id: 'CLOUDS',

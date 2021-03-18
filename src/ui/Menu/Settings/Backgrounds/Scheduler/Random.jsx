@@ -8,16 +8,16 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 
 function Random() {
     const { backgrounds } = useAppStateService();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsBackground']);
 
     return (
         <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM}>
             <MenuRow
-                title={t('settings.bg.scheduler.changeInterval.title')}
-                description={t('settings.bg.scheduler.changeInterval.description')}
+                title={t('changeInterval.title')}
+                description={t('changeInterval.description')}
                 action={{
                     type: ROWS_TYPE.SELECT,
-                    format: (value) => t(`settings.bg.scheduler.changeInterval.interval.${value}`),
+                    format: (value) => t(`changeInterval.value.${value}`),
                     value: backgrounds.settings.changeInterval,
                     onChange: (event) => backgrounds.settings.update({ changeInterval: event.target.value }),
                     values: [
@@ -32,11 +32,11 @@ function Random() {
                 }}
             />
             <MenuRow
-                title={t('settings.bg.scheduler.BGType.title')}
-                description={t('settings.bg.scheduler.BGType.description')}
+                title={t('bgType.title')}
+                description={t('bgType.description')}
                 action={{
                     type: ROWS_TYPE.MULTISELECT,
-                    format: (value) => t(`settings.bg.scheduler.BGType.type.${value}`),
+                    format: (value) => t(`bgType.value.${value}`),
                     value: backgrounds.settings.type || [],
                     onChange: (event) => {
                         if (event.target.value.length === 0) return;

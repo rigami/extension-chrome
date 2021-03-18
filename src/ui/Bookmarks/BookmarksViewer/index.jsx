@@ -16,6 +16,7 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import clsx from 'clsx';
 import Header from '@/ui/Bookmarks/BookmarksViewer/Header';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -38,6 +39,7 @@ const maxColumnCalc = (width) => Math.min(
 function BookmarksViewer({ activeFolderId, searchRequest }) {
     const classes = useStyles();
     const coreService = useCoreService();
+    const { t } = useTranslation(['bookmark']);
     const store = useLocalObservable(() => ({
         bestBookmarks: null,
         allBookmarks: null,
@@ -79,7 +81,7 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                         <Fragment>
                             {(searchRequest.usedFields.query || searchRequest.usedFields.tags) && (
                                 <Fragment>
-                                    <Header title="Best matches" />
+                                    <Header title={t('search.bestMatches')} />
                                     {store.bestBookmarks && store.bestBookmarks.length !== 0 ? (
                                         <Box display="flex" className={classes.bookmarks}>
                                             <BookmarksGrid
@@ -88,9 +90,9 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                                             />
                                         </Box>
                                     ) : (
-                                        <Header subtitle="Nothing found" />
+                                        <Header subtitle={t('search.nothingFound')} />
                                     )}
-                                    <Header title="All matches" />
+                                    <Header title={t('search.allMatches')} />
                                 </Fragment>
                             )}
                             <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
@@ -103,13 +105,14 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                     ),
                     (searchRequest.usedFields.query || searchRequest.usedFields.tags) && !store.existMatches && (
                         <Stub
-                            message="Nothing found"
+                            message={t('search.nothingFound')}
+                            description={t('search.nothingFound', { context: 'description' })}
                             classes={{ title: classes.title }}
                         />
                     ),
                     !searchRequest.usedFields.query && !searchRequest.usedFields.tags && !store.existMatches && (
                         <Stub
-                            message="There are no bookmarks here yet"
+                            message={t('empty')}
                             classes={{ title: classes.title }}
                         >
                             <Button
@@ -121,7 +124,7 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                                 variant="contained"
                                 color="primary"
                             >
-                                Create first bookmark
+                                {t('button.add', { context: 'first' })}
                             </Button>
                         </Stub>
                     ),

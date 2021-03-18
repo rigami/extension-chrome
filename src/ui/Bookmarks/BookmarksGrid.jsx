@@ -13,7 +13,7 @@ function BookmarksGrid({ bookmarks, columns, renderCard }) {
             id={card.id}
             name={card.name}
             url={card.url}
-            categories={card.categories}
+            tags={card.tags}
             icoVariant={card.icoVariant}
             description={card.description}
             imageUrl={card.imageUrl}

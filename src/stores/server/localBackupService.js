@@ -1,12 +1,12 @@
 import { eventToApp } from '@/stores/server/bus';
 import FSConnector from '@/utils/fsConnector';
-import Category from '@/stores/universal/bookmarks/entities/category';
+import Tag from '@/stores/universal/bookmarks/entities/tag';
 import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { makeAutoObservable } from 'mobx';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import CategoriesUniversalService from '@/stores/universal/bookmarks/categories';
+import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import appVariables from '@/config/appVariables';
 import { omit } from 'lodash';
 
@@ -122,14 +122,14 @@ class LocalBackupService {
 
             return {
                 ...omit(bookmark, ['icoFileName', 'imageUrl']),
-                categories: bookmark.categories.map(({ id }) => id),
+                tags: bookmark.tags.map(({ id }) => id),
                 image,
             };
         }));
 
-        const categoriesAll = await CategoriesUniversalService.getAll();
+        const tagsAll = await TagsUniversalService.getAll();
 
-        const categories = categoriesAll.map((category) => new Category(category));
+        const tags = tagsAll.map((tag) => new Tag(tag));
 
         const foldersAll = await FoldersUniversalService.getTree();
 
@@ -144,7 +144,7 @@ class LocalBackupService {
         return {
             bookmarks,
             favorites,
-            categories,
+            tags,
             folders,
         };
     }

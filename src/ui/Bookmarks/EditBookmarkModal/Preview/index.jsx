@@ -151,7 +151,7 @@ function Preview(props) {
         onClickPreview,
     } = props;
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['bookmark']);
     const store = useLocalObservable(() => ({
         loadUrl: '',
         primaryImage: defaultImage || null,
@@ -266,13 +266,13 @@ function Preview(props) {
     return (
         <CardMedia className={classes.cover} ref={ref}>
             {stage === STAGE.WAIT_REQUEST && (
-                <Stub icon={URLIcon} description={t('bookmark.editor.helper.writeURL')} />
+                <Stub icon={URLIcon} description={t('editor.helper.enterRequest')} />
             )}
             {stage === STAGE.WAIT_RESULT && (
-                <Stub icon={URLIcon} description={t('bookmark.editor.helper.selectResult')} />
+                <Stub icon={URLIcon} description={t('editor.helper.selectResult')} />
             )}
             {stage === STAGE.WAIT_NAME && (
-                <Stub icon={URLIcon} description={t('bookmark.editor.helper.writeName')} />
+                <Stub icon={URLIcon} description={t('editor.helper.enterName')} />
             )}
             {stage === STAGE.PARSING_SITE && !store.primaryImage && (
                 <Stub description="Getting site info">
@@ -368,8 +368,8 @@ function Preview(props) {
                                             disabled={store.imagesSecondListState !== FETCH.WAIT}
                                             onClick={handleLoadSecondList}
                                         >
-                                            {store.imagesSecondListState === FETCH.WAIT && 'More images'}
-                                            {store.imagesSecondListState === FETCH.PENDING && 'Search...'}
+                                            {store.imagesSecondListState === FETCH.WAIT && t('editor.button.moreIcons')}
+                                            {store.imagesSecondListState === FETCH.PENDING && t('common:search')}
                                         </Button>
                                     </Box>
                                 )
@@ -377,12 +377,12 @@ function Preview(props) {
                         </Box>
                         <Fade in={store.lockIconsList}>
                             <Typography variant="body2" className={clsx(classes.moreIcons, classes.helper)}>
-                                {stage === STAGE.PARSING_SITE && 'Search other variants...'}
-                                {store.imagesShortListState === FETCH.PENDING && 'Analyze other variants...'}
+                                {stage === STAGE.PARSING_SITE && t('editor.search.preview.parsing')}
+                                {store.imagesShortListState === FETCH.PENDING && t('editor.search.preview.download')}
                                 {
                                     store.imagesShortListState === FETCH.DONE
                                     && store.imagesShortList.length !== 0
-                                    && 'Scroll to more'
+                                    && t('editor.button.scrollToMore')
                                 }
                             </Typography>
                         </Fade>

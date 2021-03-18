@@ -15,6 +15,9 @@ function InitApp({ children }) {
         console.log('INIT APP STATE', service.appState);
         if (service.appState === APP_STATE.WORK) {
             setIsConfig(true);
+
+            // service.storage.updateTemp({ newVersion: true });
+
             if (
                 service.storage.persistent.lastUsageVersion
                 && service.storage.persistent.lastUsageVersion !== packageJson.version

@@ -13,7 +13,7 @@ import {
     LabelRounded as LabelIcon,
     FolderRounded as FolderIcon,
 } from '@material-ui/icons';
-import Categories from '@/ui/Bookmarks/Categories';
+import Tags from '@/ui/Bookmarks/Tags';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -67,7 +67,7 @@ function FieldsEditor(props) {
         name = '',
         description = '',
         useDescription = false,
-        categories,
+        tags,
         folderId,
         saveState = FETCH.WAIT,
         marginThreshold = 24,
@@ -76,7 +76,7 @@ function FieldsEditor(props) {
         onCancel,
     } = props;
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['bookmark']);
 
     const store = useLocalObservable(() => ({
         searchRequest,
@@ -110,7 +110,7 @@ function FieldsEditor(props) {
         <Box className={classes.details}>
             <CardContent className={classes.content}>
                 <Typography variant="h6" className={classes.header}>
-                    {isEdit ? t('bookmark.editor.editTitle') : t('bookmark.editor.addTitle')}
+                    {t('editor', { context: isEdit ? 'edit' : 'add' })}
                 </Typography>
                 <SearchSiteField
                     searchRequest={store.searchRequest}
@@ -142,7 +142,7 @@ function FieldsEditor(props) {
                     }}
                 />
                 <TextField
-                    label={t('bookmark.editor.nameFieldLabel')}
+                    label={t('editor.bookmarkName')}
                     variant="outlined"
                     size="small"
                     disabled={store.searchRequest === ''}
@@ -167,17 +167,17 @@ function FieldsEditor(props) {
                         className={clsx(classes.identBlockIcon, classes.identBlockIconTopAlign)}
                         color="primary"
                     />
-                    <Categories
+                    <Tags
                         sortByPopular
-                        value={categories}
-                        onChange={(newCategories) => onChangeFields({ categories: newCategories })}
+                        value={tags}
+                        onChange={(newTags) => onChangeFields({ tags: newTags })}
                         autoSelect
                         oneRow
                     />
                 </Box>
                 {store.useDescription && (
                     <TextField
-                        label={t('bookmark.editor.descriptionFieldLabel')}
+                        label={t('editor.bookmarkDescription')}
                         variant="outlined"
                         size="small"
                         fullWidth
@@ -195,7 +195,7 @@ function FieldsEditor(props) {
                 )}
                 {!store.useDescription && (
                     <Button
-                        data-ui-path="bookmark.editor.addDescription"
+                        data-ui-path="editor.description.add"
                         startIcon={<AddIcon />}
                         className={classes.addDescriptionButton}
                         onClick={() => {
@@ -203,45 +203,45 @@ function FieldsEditor(props) {
                             onChangeFields({ useDescription: true });
                         }}
                     >
-                        {t('bookmark.editor.addDescription')}
+                        {t('editor.button.addDescription')}
                     </Button>
                 )}
             </CardContent>
             <div className={classes.controls}>
                 {onCancel && (
                     <Button
-                        data-ui-path="bookmark.editor.cancel"
+                        data-ui-path="cancel"
                         variant="text"
                         color="default"
                         className={classes.button}
                         onClick={onCancel}
                     >
-                        {t('cancel')}
+                        {t('common:button.cancel')}
                     </Button>
                 )}
                 <div className={classes.button}>
                     {saveState === FETCH.WAIT && (
                         <Button
-                            data-ui-path="bookmark.editor.save"
+                            data-ui-path="save"
                             variant="contained"
                             color="primary"
                             disabled={!searchRequest || !store.name.trim()}
                             onClick={onSave}
                         >
-                            {t('save')}
+                            {t('common:button.save')}
                         </Button>
                     )}
                     {saveState === FETCH.PENDING && (
                         <Box display="flex" alignItems="center">
                             <CircularProgress size={24} color="primary" className={classes.saveIcon} />
-                            {t('bookmark.editor.saving')}
+                            {t('editor.save.saving')}
                             ...
                         </Box>
                     )}
                     {saveState === FETCH.DONE && (
                         <Box display="flex" alignItems="center">
                             <DoneIcon color="primary" className={classes.saveIcon} />
-                            {t('bookmark.editor.saveSuccess')}
+                            {t('editor.save.success')}
                         </Box>
                     )}
                 </div>

@@ -1,0 +1,41 @@
+{
+  "localBackup": "Local backup",
+  "createLocalBackup": {
+    "title": "Create backup",
+    "description": "Save extension settings and bookmarks on your computer",
+    "state": {
+      "success": "Save created successfully"
+    },
+    "error": {
+      "unknown": "Save creation error"
+    },
+    "button": {
+      "create": "Create backup"
+    }
+  },
+  "syncItem": {
+    "settings": "Settings",
+    "bookmarks": "Bookmarks"
+  },
+  "restoreLocalBackup": {
+    "state": {
+      "restoring": "Data recovering...",
+      "success": "Save successfully restored"
+    },
+    "button": {
+      "restore": "Recover data"
+    },
+    "error": {
+      "brokenFile": "Broken restore file",
+      "wrongVersion": "Mistake. Saving this version is not supported",
+      "wrongSchema": "Mistake. Invalid save file structure"
+    }
+  },
+  "oldAppBackupFile": {
+    "title": "This is the legacy extension save file",
+    "description": "These are saves from the ClockTab application. Not all settings can be applied",
+    "button": {
+      "continue": "Apply this save"
+    }
+  }
+}

@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import LogoIcon from '@/images/logo-icon.svg';
 import LogoText from '@/images/logo-text.svg';
+import appVariables from '@/config/appVariables';
 
 const useStyles = makeStyles((theme) => ({
     splash: {
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     appVersion: { color: theme.palette.text.secondary },
 }));
 
-const headerProps = { title: 'settings.about.title' };
+const headerProps = { title: 'settings:about' };
 
 function Row({ href, primary, secondary, icon }) {
     const Icon = icon;
@@ -73,7 +74,7 @@ function Row({ href, primary, secondary, icon }) {
 
 function About() {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsAbout']);
 
     return (
         <React.Fragment>
@@ -81,45 +82,42 @@ function About() {
                 <LogoIcon className={classes.appLogoIcon} />
                 <LogoText className={classes.appLogoText} />
                 <Typography className={classes.appVersion} variant="body2">
-                    v
-                    {chrome?.runtime?.getManifest?.().version || '-'}
-                    {' '}
-                    (BETA)
+                    {`v${appVariables.version || '-'} (BETA)`}
                 </Typography>
             </Box>
             <Divider />
             <Row
                 href="https://rigami.io/"
                 icon={HomeIcon}
-                primary={t('settings.about.homePage')}
+                primary={t('homePage')}
             />
             <Row
                 href="https://github.com/rigami/readme/blob/main/REVIEW.md"
                 icon={ReviewIcon}
-                primary={t('settings.about.review.title')}
-                secondary={t('settings.about.review.description')}
+                primary={t('review')}
+                secondary={t('review', { context: 'description' })}
             />
             <Row
                 href="https://github.com/rigami/readme/blob/main/BUG_REPORT.md"
                 icon={BugIcon}
-                primary={t('settings.about.bugReport.title')}
-                secondary={t('settings.about.bugReport.description')}
+                primary={t('bugReport')}
+                secondary={t('bugReport', { context: 'description' })}
             />
             <Row
                 href="mailto:danilkinkin@gmail.com"
                 icon={EmailIcon}
-                primary={t('settings.about.contact.title')}
-                secondary={t('settings.about.contact.description')}
+                primary={t('contact')}
+                secondary={t('contact', { context: 'description' })}
             />
             <Row
                 href="https://github.com/rigami/readme/blob/main/POLICY.md"
                 icon={PolicyIcon}
-                primary={t('settings.about.policy')}
+                primary={t('policy')}
             />
             <Row
                 href="https://chrome.google.com/webstore/detail/hdpjmahlkfndaejogipnepcgdmjiamhd"
                 icon={StarIcon}
-                primary={t('settings.about.rate')}
+                primary={t('rate')}
             />
             <ListItem className={classes.row}>
                 <ListItemIcon />

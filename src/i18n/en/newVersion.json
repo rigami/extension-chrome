@@ -1,0 +1,7 @@
+{
+  "title": "New version {{version}}",
+  "description": "The extension has been updated, now it is even better\n\n  - Changed the design of cards, now they are more compact and aligned on one line\n\n  - Fixed some critical bugs",
+  "button": {
+    "ok": "Good"
+  }
+}

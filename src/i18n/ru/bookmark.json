@@ -1,0 +1,52 @@
+{
+  "editor_add": "Добавление новой закладки",
+  "editor_edit": "Редактирование закладки",
+  "editor": {
+    "bookmarkUrl": "URL или запрос",
+    "bookmarkName": "Имя закладки",
+    "bookmarkDescription": "Описание",
+    "button": {
+      "addDescription": "Добавить описание",
+      "forceAdd": "Все равно добавить",
+      "moreIcons": "Еще значки",
+      "scrollToMore": "Прокрутите до других"
+    },
+    "search_url": "Поиск по адресу",
+    "search_web": "Искать в Интернете",
+    "search": {
+      "urlNotRecognize": "Адрес не распознан",
+      "preview": {
+        "parsing": "Поиск других вариантов...",
+        "download": "Анализ вариантов..."
+      }
+    },
+    "save": {
+      "success": "Закладка успешно сохранена",
+      "saving": "Сохранение..."
+    },
+    "helper": {
+      "enterRequest": "Введите адрес",
+      "selectResult": "Выберите результат поиска",
+      "enterName": "Введите название закладки"
+    }
+  },
+  "button": {
+    "add":"Добавить новую закладку",
+    "add_short":"Добавить закладку",
+    "add_first": "Создать первую закладку"
+  },
+  "remove": {
+    "confirm": "Удалить закладку?",
+    "confirm_description": "Закладка будет удалена навсегда, вы уверены?"
+  },
+  "search": {
+    "nothingFound": "Ничего не найдено",
+    "nothingFound_description": "Попробуйте изменить свой запрос",
+    "everywhere": "Искать везде",
+    "everywhere_description": "Поиск закладок по всей системе",
+    "bookmarks_placeholder": "Поиск закладок",
+    "bestMatches": "Лучшие совпадения",
+    "allMatches": "Все совпадения"
+  },
+  "empty": "Здесь пока нет закладок"
+}

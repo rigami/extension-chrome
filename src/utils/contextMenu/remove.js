@@ -7,7 +7,7 @@ export default ({
     coreService,
     t,
 }) => new ContextMenuItem({
-    title: t('remove'),
+    title: t('common:button.remove'),
     icon: RemoveIcon,
     onClick: () => {
         coreService.localEventBus.call(`${itemType}/remove`, { id: itemId });

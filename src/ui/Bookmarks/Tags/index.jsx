@@ -6,9 +6,9 @@ import { ArrowBackRounded as ArrowIcon } from '@material-ui/icons';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import CollapseWrapper from '@/ui/Bookmarks/Categories/CollapseWrapper';
+import CollapseWrapper from '@/ui/Bookmarks/Tags/CollapseWrapper';
 import AddButton from './AddButton';
-import Category from './Chip';
+import Tag from './Chip';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Categories(props) {
+function Tags(props) {
     const {
         value,
         onChange,
@@ -38,10 +38,10 @@ function Categories(props) {
         autoSelect = false,
         usePopper = false,
     } = props;
-    const { t } = useTranslation();
+    const { t } = useTranslation(['tag']);
     const classes = useStyles();
     const bookmarksService = useBookmarksService();
-    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedTags, setSelectedTags] = useState([]);
     const isFirstRun = useRef(true);
 
     useEffect(() => {
@@ -50,45 +50,45 @@ function Categories(props) {
             return;
         }
 
-        onChange(selectedCategories);
-    }, [selectedCategories.length]);
+        onChange(selectedTags);
+    }, [selectedTags.length]);
 
     useEffect(() => {
         if (isFirstRun.current) return;
 
-        if (value) setSelectedCategories(value || []);
+        if (value) setSelectedTags(value || []);
     }, [value && value.length]);
 
-    const renderCategory = ({ id, name, color, className }) => (
-        <Category
+    const renderTag = ({ id, name, color, className }) => (
+        <Tag
             id={id}
             name={name}
             color={color}
             className={className}
-            isSelect={selectedCategories.indexOf(id) !== -1}
+            isSelect={selectedTags.indexOf(id) !== -1}
             onClick={() => {
-                if (~selectedCategories.indexOf(id)) {
-                    setSelectedCategories(selectedCategories.filter((cId) => cId !== id));
+                if (~selectedTags.indexOf(id)) {
+                    setSelectedTags(selectedTags.filter((cId) => cId !== id));
                 } else {
-                    setSelectedCategories([...selectedCategories, id]);
+                    setSelectedTags([...selectedTags, id]);
                 }
             }}
         />
     );
 
-    const AddCategory = () => (
+    const AddTag = () => (
         <React.Fragment>
             <AddButton
-                isShowTitle={bookmarksService.categories.length === 0}
+                isShowTitle={bookmarksService.tags.length === 0}
                 onCreate={(newId) => {
-                    if (autoSelect) setSelectedCategories([...selectedCategories, newId]);
+                    if (autoSelect) setSelectedTags([...selectedTags, newId]);
                     if (onCreate) onCreate(newId);
                 }}
             />
-            {bookmarksService.categories.all.length === 0 && (
+            {bookmarksService.tags.all.length === 0 && (
                 <Box className={classes.arrowBlock}>
                     <ArrowIcon />
-                    {t('category.createFirstHelper')}
+                    {t('button.add', { context: 'first' })}
                 </Box>
             )}
         </React.Fragment>
@@ -97,15 +97,15 @@ function Categories(props) {
     return (
         <Box className={clsx(classes.root, externalClassName)}>
             <CollapseWrapper
-                list={bookmarksService.categories.all}
-                renderComponent={renderCategory}
-                expandButtonLabel="Показать все"
-                collapseButtonLabel="Свернуть"
-                actions={(<AddCategory />)}
+                list={bookmarksService.tags.all}
+                renderComponent={renderTag}
+                expandButtonLabel={t('button.showAll')}
+                collapseButtonLabel={t('button.showLess')}
+                actions={(<AddTag />)}
                 usePopper={usePopper}
             />
         </Box>
     );
 }
 
-export default observer(Categories);
+export default observer(Tags);

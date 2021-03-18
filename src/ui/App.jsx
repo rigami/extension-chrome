@@ -4,7 +4,7 @@ import { CssBaseline } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
 import Snackbar from '@/ui-components/Snackbar';
-import UploadBGForm from '@/ui-components/UploadBGForm';
+import UploadBGForm from '@/ui/UploadBackground';
 import { ACTIVITY, DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';

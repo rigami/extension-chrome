@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 
 function WeatherWidget({ onSelect }) {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsWidget']);
     const { widgets } = useAppStateService();
     const coreService = useCoreService();
     const [dtwUseWeather, setDtwUseWeather] = useState(widgets.settings.dtwUseWeather);
@@ -44,9 +44,9 @@ function WeatherWidget({ onSelect }) {
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('settings.widgets.dtw.weather.title')} />
+            <SectionHeader title={t('weather.title')} />
             <MenuRow
-                title={t('settings.widgets.dtw.weather.useWeather')}
+                title={t('weather.useWeather')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     value: dtwUseWeather,
@@ -74,16 +74,16 @@ function WeatherWidget({ onSelect }) {
                         !coreService.storage.persistent.weatherLocation
                         && coreService.storage.persistent.weather?.status === FETCH.FAILED
                     }
-                    message={t('settings.widgets.dtw.weather.region.notDetected.title')}
-                    description={t('settings.widgets.dtw.weather.region.notDetected.description')}
+                    message={t('weather.region.notDetected.title')}
+                    description={t('weather.region.notDetected.description')}
                     actions={(
                         <Button
-                            data-ui-path="settings.widgets.dtw.weather.region.notDetected.changeRegion"
+                            data-ui-path="weather.region.notDetected.changeRegion"
                             variant="outlined"
                             color="inherit"
                             onClick={() => onSelect(changeLocationPage)}
                         >
-                            {t('settings.widgets.dtw.weather.region.notDetected.changeRegion')}
+                            {t('weather.region.button.change')}
                         </Button>
                     )}
                 />
@@ -92,13 +92,13 @@ function WeatherWidget({ onSelect }) {
                         coreService.storage.persistent.weatherLocation
                         && coreService.storage.persistent.weather?.status === FETCH.FAILED
                     }
-                    message={t('settings.widgets.dtw.weather.serviceUnavailable')}
+                    message={t('weather.error.serviceUnavailable')}
                 />
                 <MenuRow
-                    title={t('settings.widgets.dtw.weather.units.title')}
+                    title={t('weather.units.title')}
                     action={{
                         type: ROWS_TYPE.SELECT,
-                        format: (value) => t(`settings.widgets.dtw.weather.units.unit.${value}`),
+                        format: (value) => t(`weather.units.value.${value}`),
                         value: widgets.settings.dtwWeatherMetrics,
                         onChange: (event) => {
                             widgets.settings.update({ dtwWeatherMetrics: event.target.value });
@@ -107,10 +107,10 @@ function WeatherWidget({ onSelect }) {
                     }}
                 />
                 <MenuRow
-                    title={t('settings.widgets.dtw.weather.provider.title')}
+                    title={t('weather.provider.title')}
                     action={{
                         type: ROWS_TYPE.SELECT,
-                        format: (value) => t(`settings.widgets.dtw.weather.provider.provider.${value}`),
+                        format: (value) => t(`weather.provider.value.${value}`),
                         value: 'openweathermap',
                         disabled: true,
                         values: ['openweathermap'],
@@ -118,15 +118,15 @@ function WeatherWidget({ onSelect }) {
                 />
                 <MenuRow
                     icon={PlaceIcon}
-                    title={t('settings.widgets.dtw.weather.region.title')}
+                    title={t('weather.region.title')}
                     description={
                         coreService.storage.persistent.weatherLocation
                             ? (
                                 !coreService.storage.persistent.weatherLocation?.manual
-                                    ? t('settings.widgets.dtw.weather.region.autoDescription')
-                                    : t('settings.widgets.dtw.weather.region.manualDescription')
+                                    ? t('weather.region.select.auto')
+                                    : t('weather.region.select.manual')
                             )
-                            : t('settings.widgets.dtw.weather.region.failedDescription')
+                            : t('weather.region.select.failed')
 
                     }
                     action={{
@@ -142,15 +142,15 @@ function WeatherWidget({ onSelect }) {
                         }]`)
                             : (
                                 <Typography className={classes.notSetValue}>
-                                    {t('settings.widgets.dtw.weather.region.notSet')}
+                                    {t('common:notSet')}
                                 </Typography>
                             ),
                     }}
                 />
                 {coreService.storage.persistent.weather?.status === FETCH.PENDING && (<LinearProgress />)}
                 <MenuRow
-                    title={t('settings.widgets.dtw.weather.clickAction.title')}
-                    description={t('settings.widgets.dtw.weather.clickAction.description')}
+                    title={t('weather.clickAction.title')}
+                    description={t('weather.clickAction.description')}
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => { setActionEditorOpen(true); },
@@ -158,43 +158,43 @@ function WeatherWidget({ onSelect }) {
                             ? `open: ${getDomain(widgets.settings.dtwWeatherAction)}`
                             : (
                                 <Typography className={classes.notSetValue}>
-                                    {t('settings.widgets.dtw.weather.clickAction.notSet')}
+                                    {t('common:notSet')}
                                 </Typography>
                             ),
                     }}
                 />
                 <Dialog open={actionEditorOpen} onClose={() => { setActionEditorOpen(false); }}>
-                    <DialogTitle>{t('settings.widgets.dtw.weather.clickAction.titleFull')}</DialogTitle>
+                    <DialogTitle>{t('weather.clickAction.dialog.title')}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            {t('settings.widgets.dtw.weather.clickAction.descriptionFull')}
+                            {t('weather.clickAction.dialog.description')}
                         </DialogContentText>
                         <TextField
                             autoFocus
                             margin="dense"
                             defaultValue={widgets.settings.dtwWeatherAction}
                             fullWidth
-                            label={t('settings.widgets.dtw.weather.clickAction.textFieldLabelUrl')}
+                            label={t('weather.clickAction.dialog.url')}
                             onChange={(event) => { setActionUrl(event.target.value); }}
                         />
                     </DialogContent>
                     <DialogActions>
                         <Button
-                            data-ui-path="settings.widgets.dtw.weather.clickAction.cancel"
+                            data-ui-path="weather.clickAction.cancel"
                             color="primary"
                             onClick={() => { setActionEditorOpen(false); }}
                         >
-                            {t('cancel')}
+                            {t('common:button.cancel')}
                         </Button>
                         <Button
-                            data-ui-path="settings.widgets.dtw.weather.clickAction.save"
+                            data-ui-path="weather.clickAction.save"
                             color="primary"
                             onClick={() => {
                                 setActionEditorOpen(false);
                                 widgets.settings.update({ dtwWeatherAction: actionUrl });
                             }}
                         >
-                            {t('save')}
+                            {t('common:button.save')}
                         </Button>
                     </DialogActions>
                 </Dialog>

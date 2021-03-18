@@ -3,8 +3,9 @@ import {
     FavoriteBorderRounded as UncheckIcon,
     FavoriteRounded as CheckIcon,
 } from '@material-ui/icons';
-import { Checkbox } from '@material-ui/core';
+import { Checkbox, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -14,17 +15,26 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function ShowFavoriteSwitcher({ onResearch }) {
+function ShowFavoriteSwitcher({ searchRequest = {}, onResearch }) {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     return (
-        <Checkbox
-            className={classes.root}
-            color="error"
-            icon={<UncheckIcon />}
-            checkedIcon={<CheckIcon />}
-            onChange={(event, value) => onResearch({ onlyFavorites: value })}
-        />
+        <Tooltip
+            title={
+                searchRequest.onlyFavorites
+                    ? t('favorites.all', { context: 'helper' })
+                    : t('favorites.onlyFavorites', { context: 'helper' })
+            }
+        >
+            <Checkbox
+                className={classes.root}
+                color="error"
+                icon={<UncheckIcon />}
+                checkedIcon={<CheckIcon />}
+                onChange={(event, value) => onResearch({ onlyFavorites: value })}
+            />
+        </Tooltip>
     );
 }
 

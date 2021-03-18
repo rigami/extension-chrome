@@ -1,0 +1,30 @@
+{
+  "title": "Settings",
+  "backgrounds": "Backgrounds",
+  "backgrounds_description": "Select, add or remove a background. Configure switching",
+  "bookmarks": "Bookmarks",
+  "bookmarks_description": "Customize your favorites bar. Choose the default interfacу",
+  "widgets": "Widgets",
+  "widgets_description": "Customize desktop widgets: time, date and weather",
+  "app": "App",
+  "app_description": "Enable dark theme. Change tab name",
+  "backup": "Backup",
+  "backup_description": "Save app data to computer",
+  "about": "About",
+  "about_description": "Email the developer, submit a bug report, suggest an idea",
+  "shareBanner": {
+    "message": "Help the project",
+    "description": "Find out how you can help. For example, tell your friends or take a survey",
+    "button": {
+      "openPage": "See how you can help",
+      "rateExtension": "Rate extension"
+    }
+  },
+  "betaBanner": {
+    "message": "The extension is in beta testing",
+    "button": {
+      "sendEmail": "Write a letter to the developer",
+      "openIssue": "Open issue on github"
+    }
+  }
+}

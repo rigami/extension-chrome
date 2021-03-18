@@ -62,7 +62,7 @@ function BackgroundInfo(props) {
     } = props;
     const classes = useStyles();
     const bookmarksService = useBookmarksService();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['background']);
 
     let serviceName = 'Unknown';
     let serviceUrl = '#';
@@ -104,7 +104,7 @@ function BackgroundInfo(props) {
                         <Avatar className={classes.avatarIcon} src={authorAvatarSrc} />
                     )}
                     action={(
-                        <Tooltip title={t('bg.openSource')}>
+                        <Tooltip title={t('button.openSource')}>
                             <IconButton
                                 data-ui-path="desktop.bgInfo.openSource"
                                 onClick={() => { window.open(sourceLink, '_blank'); }}
@@ -115,7 +115,7 @@ function BackgroundInfo(props) {
                     )}
                     title={(
                         <Fragment>
-                            {`${t(`bg.type.${type}`)} `}
+                            {`${t(`type.${type}`)} `}
                             <Link
                                 color="inherit"
                                 underline="always"
@@ -124,7 +124,7 @@ function BackgroundInfo(props) {
                             >
                                 {authorName}
                             </Link>
-                            {' с '}
+                            {` ${t('common:from')} `}
                             <Link
                                 color="inherit"
                                 underline="always"

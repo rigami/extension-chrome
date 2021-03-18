@@ -1,0 +1,36 @@
+{
+  "button": {
+    "add": "Add",
+    "save":"Save",
+    "cancel":"Cancel",
+    "close": "Close",
+    "remove":"Remove",
+    "edit":"Edit",
+    "search":"Search",
+    "back": "Back",
+    "more": "Show more",
+    "less": "Show less",
+    "favorite": {
+      "add": "Add to favorites",
+      "remove": "Remove from favorites"
+    }
+  },
+  "select": {
+    "all":"All",
+    "nothing":"Nothing selected"
+  },
+  "prepare": "Prepare...",
+  "loading": "Loading...",
+  "search":"Search...",
+  "nothingFound": "Nothing found",
+  "notSet": "Not installed",
+  "unknown": "Unknown",
+  "from": "from",
+  "favorites": {
+    "onlyFavorites_helper": "Show only favorites",
+    "all_helper": "Show all"
+  },
+  "error": {
+    "notFound": "Nothing found"
+  }
+}

@@ -15,17 +15,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const headerProps = { title: 'settings.app.title' };
+const headerProps = { title: 'settings:app' };
 
 function AppSettings({ onSelect }) {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsApp']);
     const appService = useAppService();
 
     return (
         <React.Fragment>
             <MenuRow
-                title={t('settings.app.darkThemeBackdrop')}
+                title={t('darkThemeBackdrop')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     width: 72,
@@ -37,7 +37,7 @@ function AppSettings({ onSelect }) {
                 }}
             />
             <MenuRow
-                title={t('settings.app.darkThemeApp')}
+                title={t('darkThemeApp')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     width: 72,
@@ -47,13 +47,13 @@ function AppSettings({ onSelect }) {
                 }}
             />
             <MenuRow
-                title={t('settings.app.tabName.title')}
+                title={t('tabName.title')}
                 action={{
                     type: ROWS_TYPE.LINK,
                     onClick: () => onSelect(tabNamePage),
                     component: (
                         <Typography className={(!appService.settings.tabName && classes.defaultTabValue) || ''}>
-                            {appService.settings.tabName || t('default')}
+                            {appService.settings.tabName || 'Rigami'}
                         </Typography>
                     ),
                 }}

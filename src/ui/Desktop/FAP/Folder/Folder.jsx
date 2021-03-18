@@ -5,7 +5,7 @@ import {
     CircularProgress,
     IconButton,
     Tooltip,
-    Box,
+    Box, Button,
 } from '@material-ui/core';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,6 +17,8 @@ import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import clsx from 'clsx';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
+import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -89,7 +91,8 @@ function Folder(props) {
         onBack,
     } = props;
     const classes = useStyles();
-    const { t } = useTranslation();
+    const coreService = useCoreService();
+    const { t } = useTranslation(['folder', 'bookmark']);
     const [folder, setFolder] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
@@ -153,16 +156,24 @@ function Folder(props) {
                 }}
             />
             {isSearching && (
-                <Stub style={{ height: 550 }}>
+                <Stub>
                     <CircularProgress />
                 </Stub>
             )}
             {!isSearching && (findBookmarks?.length === 0 && folders?.length === 0) && (
-                <Stub
-                    style={{ height: 550 }}
-                    message={t('fap.folder.emptyTitle')}
-                    description={t('fap.folder.emptyDescription')}
-                />
+                <Stub message={t('bookmark:empty')}>
+                    <Button
+                        onClick={() => coreService.localEventBus.call(
+                            'bookmark/create',
+                            { defaultFolderId: id },
+                        )}
+                        startIcon={<AddBookmarkIcon />}
+                        variant="contained"
+                        color="primary"
+                    >
+                        {t('bookmark:button.add', { context: 'first' })}
+                    </Button>
+                </Stub>
             )}
             {!isSearching && (folders?.length > 0 || findBookmarks?.length > 0) && (
                 <Box

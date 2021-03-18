@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, onChange }) {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['bookmark']);
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
@@ -73,7 +73,7 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
                 }}
             >
                 <TextField
-                    label={t('bookmark.editor.urlFieldLabel')}
+                    label={t('editor.bookmarkUrl')}
                     variant="outlined"
                     size="small"
                     fullWidth
@@ -127,7 +127,7 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
                             <Paper elevation={8} style={{ width: store.filedWidth + 32 }} className={classes.paper}>
                                 <Box className={classes.inputWrapper}>
                                     <TextField
-                                        label={t('bookmark.editor.urlFieldLabel')}
+                                        label={t('editor.bookmarkUrl')}
                                         variant="outlined"
                                         size="small"
                                         fullWidth

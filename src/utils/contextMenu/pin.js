@@ -12,7 +12,7 @@ export default ({ itemId, itemType, bookmarksService, t }) => {
     });
 
     return new ContextMenuItem({
-        title: isPin() ? t('fap.unpin') : t('fap.pin'),
+        title: isPin() ? t('common:button.favorite.remove') : t('common:button.favorite.add'),
         icon: isPin() ? RemoveFavoriteIcon : AddFavoriteIcon,
         onClick: () => {
             if (isPin()) {

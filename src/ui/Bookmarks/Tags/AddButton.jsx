@@ -7,15 +7,15 @@ import { AddRounded as AddIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import EditCategoryModal from './EditModal';
+import EditTagModal from './EditModal';
 
 const useStyles = makeStyles((theme) => ({
     chip: { boxShadow: 'none !important' },
-    addCategory: {
+    addTag: {
         marginLeft: '3px !important',
         marginRight: 3,
     },
-    addCategoryTitle: { display: 'none' },
+    addTagTitle: { display: 'none' },
     chipActive: {
         backgroundColor: theme.palette.action.selected,
         borderColor: theme.palette.divider,
@@ -30,28 +30,28 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function AddCategoryButton({ isShowTitle, onCreate }) {
+function AddTagButton({ isShowTitle, onCreate }) {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['tag']);
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
 
     return (
         <React.Fragment>
-            <EditCategoryModal
+            <EditTagModal
                 isOpen={isOpen}
                 anchorEl={anchorEl}
                 onClose={() => {
                     if (isBlockEvent) return;
                     setIsOpen(false);
                 }}
-                onSave={(categoryId) => {
-                    onCreate(categoryId);
+                onSave={(tagId) => {
+                    onCreate(tagId);
                     setIsOpen(false);
                 }}
             />
-            <Tooltip title={t('category.add')}>
+            <Tooltip title={t('button.add')}>
                 <Chip
                     onMouseDown={() => {
                         if (!isOpen) setIsBlockEvent(true);
@@ -63,16 +63,16 @@ function AddCategoryButton({ isShowTitle, onCreate }) {
                     }}
                     classes={{
                         root: clsx(classes.chip, isOpen && classes.chipActive),
-                        icon: !isShowTitle && classes.addCategory,
-                        label: !isShowTitle && classes.addCategoryTitle,
+                        icon: !isShowTitle && classes.addTag,
+                        label: !isShowTitle && classes.addTagTitle,
                     }}
                     icon={<AddIcon />}
                     variant="outlined"
-                    label={isShowTitle && t('category.addShort')}
+                    label={isShowTitle && t('button.add', { context: 'short' })}
                 />
             </Tooltip>
         </React.Fragment>
     );
 }
 
-export default AddCategoryButton;
+export default AddTagButton;

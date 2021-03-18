@@ -119,7 +119,7 @@ function BackgroundCard(props) {
         onRemove,
         onAdd,
     } = props;
-    const { t } = useTranslation();
+    const { t } = useTranslation(['background']);
     const classes = useStyles();
 
     return (
@@ -135,7 +135,7 @@ function BackgroundCard(props) {
             )}
             <Box className={classes.bgActionsWrapper}>
                 {onSet && !select && (
-                    <Tooltip title={t('settings.bg.apply')} placement="top">
+                    <Tooltip title={t('button.apply')} placement="top">
                         <Button
                             data-ui-path="bgCard.apply"
                             className={classes.setIcon}
@@ -146,7 +146,7 @@ function BackgroundCard(props) {
                     </Tooltip>
                 )}
                 {onRemove && (
-                    <Tooltip title={t('bg.remove')}>
+                    <Tooltip title={t('button.remove')}>
                         <IconButton
                             data-ui-path="bgCard.remove"
                             className={classes.deleteIcon}
@@ -157,7 +157,7 @@ function BackgroundCard(props) {
                     </Tooltip>
                 )}
                 {onAdd && (
-                    <Tooltip title={t('bg.addToLibrary')}>
+                    <Tooltip title={t('button.addToLibrary')}>
                         <IconButton
                             data-ui-path="bgCard.addToLibrary"
                             className={clsx(classes.addIcon, onRemove && classes.addIconOffset)}
@@ -168,7 +168,7 @@ function BackgroundCard(props) {
                     </Tooltip>
                 )}
                 {source !== BG_SOURCE.USER && (
-                    <Tooltip title={t('settings.bg.openSource')} placement="top">
+                    <Tooltip title={t('button.openSource')} placement="top">
                         <Link
                             className={classes.link}
                             underline="none"
@@ -178,7 +178,10 @@ function BackgroundCard(props) {
                             <GridListTileBar
                                 className={classes.titleBar}
                                 classes={{ actionIcon: classes.icon }}
-                                subtitle={`by ${author}, ${t(`bg.serviceName.${source || 'unknown'}`)}`}
+                                subtitle={t('backgroundSource', {
+                                    author,
+                                    source,
+                                })}
                                 actionIcon={(<LeftIcon />)}
                             />
                         </Link>

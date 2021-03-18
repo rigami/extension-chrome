@@ -285,17 +285,17 @@ function Background() {
                     <Stub
                         className={classes.errorStub}
                         icon={BrokenIcon}
-                        message={t('bg.errorLoad')}
-                        description={(store.currentBg && t('bg.errorLoadUnknownReason')) || t('bg.notFound')}
+                        message={t(`error.${store.currentBg ? 'unknown' : 'notFound'}`)}
+                        description={t(`error.${store.currentBg ? 'unknown' : 'notFound'}`, { context: 'description' })}
                         style={{ height: '100vh' }}
                         actions={store.currentBg && [
                             {
-                                title: t('bg.remove'),
+                                title: t('button.remove'),
                                 onClick: () => {
                                     backgrounds.removeFromStore(store.currentBg.id)
                                         .then(() => backgrounds.nextBG())
                                         .then(() => enqueueSnackbar({
-                                            message: t('bg.brokenRemovedSuccess'),
+                                            message: t('removedBrokenBG'),
                                             variant: 'warning',
                                         }));
                                 },

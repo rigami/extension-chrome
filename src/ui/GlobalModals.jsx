@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import EditCategoryModal from '@/ui/Bookmarks/Categories/EditModal';
+import EditTagModal from '@/ui/Bookmarks/Tags/EditModal';
 import { useTranslation } from 'react-i18next';
 import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
@@ -19,7 +19,6 @@ import { useSnackbar } from 'notistack';
 import FSConnector from '@/utils/fsConnector';
 import { eventToBackground } from '@/stores/server/bus';
 import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
-// import InterrogationRequest from '@/ui/InterrogationRequest';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation();
@@ -53,14 +52,14 @@ function GlobalModals({ children }) {
                 action: 'remove',
                 id,
             })),
-            coreService.localEventBus.on('category/edit', ({ id, anchorEl }) => setEdit({
-                type: 'category',
+            coreService.localEventBus.on('tag/edit', ({ id, anchorEl }) => setEdit({
+                type: 'tag',
                 action: 'edit',
                 id,
                 anchorEl,
             })),
-            coreService.localEventBus.on('category/remove', ({ id }) => setEdit({
-                type: 'category',
+            coreService.localEventBus.on('tag/remove', ({ id }) => setEdit({
+                type: 'tag',
                 action: 'remove',
                 id,
             })),
@@ -88,7 +87,7 @@ function GlobalModals({ children }) {
             coreService.globalEventBus.on('system/backup/local/create/progress', (data) => {
                 if (data.stage === 'error') {
                     enqueueSnackbar({
-                        message: t('settings.backup.localBackup.create.failed'),
+                        message: t('settingsBackup:createLocalBackup.error.unknown'),
                         variant: 'error',
                     });
 
@@ -106,7 +105,7 @@ function GlobalModals({ children }) {
                 link.click();
 
                 enqueueSnackbar({
-                    message: t('settings.backup.localBackup.create.success'),
+                    message: t('settingsBackup:createLocalBackup.state.success'),
                     variant: 'success',
                 });
             }),
@@ -125,7 +124,7 @@ function GlobalModals({ children }) {
                     });
                 } else if (data.result === 'start') {
                     const snackId = enqueueSnackbar({
-                        message: t('settings.backup.localBackup.restore.progress'),
+                        message: t('settingsBackup:restoreLocalBackup.state.restoring'),
                         variant: 'progress',
                     });
 
@@ -135,7 +134,7 @@ function GlobalModals({ children }) {
                     location.reload();
                 } else if (data.result === 'error') {
                     enqueueSnackbar({
-                        message: t(`settings.backup.localBackup.restore.failed.${data.message}`),
+                        message: t(`settingsBackup:restoreLocalBackup.error.${data.message}`),
                         variant: data.result,
                     });
                 }
@@ -145,18 +144,18 @@ function GlobalModals({ children }) {
         if (coreService.storage.persistent.showBackupSuccessRestoreMessage) {
             coreService.storage.updatePersistent({ showBackupSuccessRestoreMessage: null });
             enqueueSnackbar({
-                message: t('settings.backup.localBackup.restore.success'),
+                message: t('settingsBackup:restoreLocalBackup.state.success'),
                 variant: 'success',
             });
         }
 
         if (coreService.storage.temp.newVersion) {
             const snackbar = enqueueSnackbar({
-                message: t('newVersion.title', { version: coreService.storage.persistent.lastUsageVersion }),
-                description: t('newVersion.description'),
+                message: t('newVersion:title', { version: coreService.storage.persistent.lastUsageVersion }),
+                description: t('newVersion:description'),
                 buttons: [
                     {
-                        title: t('newVersion.ok'),
+                        title: t('newVersion:button.ok'),
                         onClick: () => {
                             closeSnackbar(snackbar);
                         },
@@ -192,9 +191,9 @@ function GlobalModals({ children }) {
                 onClose={() => setEdit(null)}
                 {...((edit && edit.options) || {})}
             />
-            <EditCategoryModal
+            <EditTagModal
                 anchorEl={edit && edit.anchorEl}
-                isOpen={edit && edit.type === 'category' && edit.action !== 'remove'}
+                isOpen={edit && edit.type === 'tag' && edit.action !== 'remove'}
                 onSave={() => setEdit(null)}
                 onClose={() => setEdit(null)}
                 editId={edit && edit.id}
@@ -211,18 +210,18 @@ function GlobalModals({ children }) {
                 open={edit && edit.type === 'changelog' && edit.action === 'open'}
                 onClose={() => setEdit(null)}
             /> */}
-            {['bookmark', 'category', 'folder'].map((type) => (
+            {['bookmark', 'tag', 'folder'].map((type) => (
                 <Dialog
                     key={type}
                     open={(edit && edit.action === 'remove' && edit.type === type) || false}
                     onClose={() => setEdit(null)}
                 >
                     <DialogTitle>
-                        {t(`${type}.remove.title`)}
+                        {t(`${type}:remove.confirm`)}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            {t(`${type}.remove.description`)}
+                            {t(`${type}:remove.confirm`, { context: 'description' })}
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -231,15 +230,15 @@ function GlobalModals({ children }) {
                             onClick={() => setEdit(null)}
                             color="primary"
                         >
-                            {t('cancel')}
+                            {t('common:button.cancel')}
                         </Button>
                         <Button
                             data-ui-path={`dialog.${type}.remove`}
                             onClick={() => {
                                 if (type === 'bookmark') {
                                     bookmarksStore.bookmarks.remove(edit.id);
-                                } else if (type === 'category') {
-                                    bookmarksStore.categories.remove(edit.id);
+                                } else if (type === 'tag') {
+                                    bookmarksStore.tags.remove(edit.id);
                                 } else if (type === 'folder') {
                                     bookmarksStore.folders.remove(edit.id);
                                 }
@@ -248,7 +247,7 @@ function GlobalModals({ children }) {
                             color="primary"
                             autoFocus
                         >
-                            {t('remove')}
+                            {t('common:button.remove')}
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -258,20 +257,20 @@ function GlobalModals({ children }) {
                 onClose={() => setEdit(null)}
             >
                 <DialogTitle>
-                    {t('settings.backup.localBackup.oldAppBackupFile.title')}
+                    {t('settingsBackup:oldAppBackupFile.title')}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {t('settings.backup.localBackup.oldAppBackupFile.description')}
+                        {t('settingsBackup:oldAppBackupFile.description')}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        data-ui-path="dialog.backup.localBackup.oldAppBackupFile.cancel"
+                        data-ui-path="dialog.backup.oldAppBackupFile.cancel"
                         onClick={() => setEdit(null)}
                         color="primary"
                     >
-                        {t('cancel')}
+                        {t('common:button.cancel')}
                     </Button>
                     <Button
                         data-ui-path="dialog.backup.localBackup.oldAppBackupFile.continue"
@@ -285,7 +284,7 @@ function GlobalModals({ children }) {
                         color="primary"
                         autoFocus
                     >
-                        {t('settings.backup.localBackup.oldAppBackupFile.continue')}
+                        {t('settingsBackup:oldAppBackupFile.button.continue')}
                     </Button>
                 </DialogActions>
             </Dialog>

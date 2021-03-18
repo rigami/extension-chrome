@@ -1,5 +1,8 @@
 import React, {
-    useEffect, useRef, useState, memo,
+    useEffect,
+    useRef,
+    useState,
+    memo,
 } from 'react';
 import {
     Button,
@@ -111,7 +114,7 @@ function BGCard(props) {
         onDone,
         ...other
     } = props;
-    const { t } = useTranslation();
+    const { t } = useTranslation(['background']);
     const classes = useStyles();
     const theme = useTheme();
 
@@ -134,28 +137,18 @@ function BGCard(props) {
             <div className={classes.details}>
                 <CardContent className={classes.content}>
                     <Typography component="h5" variant="h5">
-                        {t(`bg.type.${type}`)}
+                        {t(`type.${type}`)}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
-                        {t('uploadBG.labelFile')}
-                        :
-                        {' '}
-                        {name}
+                        {`${t('upload.file')}: ${name}`}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
-                        {t('uploadBG.labelSize')}
-                        :
-                        {' '}
-                        {BeautifulFileSize(size)[0]}
-                        {BeautifulFileSize(size)[1]}
+                        {`${t('upload.size')}: ${BeautifulFileSize(size)[0]}${BeautifulFileSize(size)[1]}`}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
-                        {t('uploadBG.labelFileType')}
-                        :
-                        {' '}
-                        {format}
+                        {`${t('upload.fileType')}: ${format}`}
                     </Typography>
-                    <Tooltip title={t('uploadBG.antiAliasing.tooltip')}>
+                    <Tooltip title={t('upload.button.antiAliasing', { context: 'helper' })}>
                         <FormControlLabel
                             control={(
                                 <Switch
@@ -165,7 +158,7 @@ function BGCard(props) {
                                     defaultChecked={antiAliasing}
                                 />
                             )}
-                            label={t('uploadBG.antiAliasing.label')}
+                            label={t('upload.button.antiAliasing')}
                         />
                     </Tooltip>
                 </CardContent>
@@ -179,7 +172,7 @@ function BGCard(props) {
                         className={classes.button}
                         onClick={onRemove}
                     >
-                        {t('cancel')}
+                        {t('common:button.cancel')}
                     </Button>
                     <div className={classes.button}>
                         <Button
@@ -193,7 +186,7 @@ function BGCard(props) {
                                 onDone({ antiAliasing });
                             }}
                         >
-                            {t('uploadBG.addToLibrary')}
+                            {t('button.addToLibrary')}
                         </Button>
                         {save && <CircularProgress size={24} className={classes.buttonProgress} />}
                     </div>
@@ -205,10 +198,10 @@ function BGCard(props) {
 
 const MemoBGCard = memo(BGCard);
 
-function UploadBGForm({ children }) {
+function UploadBackground({ children }) {
     const { backgrounds } = useAppStateService();
     const { enqueueSnackbar } = useSnackbar();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['background']);
 
     const classes = useStyles();
     const theme = useTheme();
@@ -245,7 +238,7 @@ function UploadBGForm({ children }) {
             setDragFiles(null);
             backgrounds.addToUploadQueue(event.dataTransfer.files)
                 .catch((e) => enqueueSnackbar({
-                    ...t(e),
+                    ...t(`upload.error.${e}`),
                     variant: 'error',
                 }));
         };
@@ -269,8 +262,7 @@ function UploadBGForm({ children }) {
                     }}
                     />
                     <Typography variant="h6">
-                        {dragFiles.length === 1 && t('uploadBG.dropToAddBG')}
-                        {dragFiles.length > 1 && t('uploadBG.dropToAddBGs')}
+                        {t('upload.dropToAdd', { count: dragFiles.length })}
                     </Typography>
                 </Box>
             )}
@@ -318,7 +310,7 @@ function UploadBGForm({ children }) {
                 </Scrollbar>
             </Drawer>
             {(backgrounds.uploadQueue.length !== 0) && (
-                <Tooltip title={t('uploadBG.discardAll')}>
+                <Tooltip title={t('upload.button.discardAll')}>
                     <IconButton
                         data-ui-path="uploadBG.discardAll"
                         className={classes.closeIcon}
@@ -332,4 +324,4 @@ function UploadBGForm({ children }) {
     );
 }
 
-export default observer(UploadBGForm);
+export default observer(UploadBackground);

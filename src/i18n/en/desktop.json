@@ -1,0 +1,12 @@
+{
+  "widget": {
+    "weather": {
+      "button": {
+        "openInNewTab": "Click to open more detailed summary"
+      },
+      "error": {
+        "unavailable": "Weather forecast not available"
+      }
+    }
+  }
+}

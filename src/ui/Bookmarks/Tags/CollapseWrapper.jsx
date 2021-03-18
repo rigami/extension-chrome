@@ -19,6 +19,7 @@ import {
     KeyboardArrowUpRounded as ArrowUpIcon,
 } from '@material-ui/icons';
 import PopperWrapper from '@/ui-components/PopperWrapper';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -94,6 +95,7 @@ function CollapseWrapper(props) {
         usePopper = false,
     } = props;
     const classes = useStyles();
+    const { t } = useTranslation();
     const anchorEl = useRef();
     const rootRef = createRef();
     const tagsRef = createRef();
@@ -137,7 +139,7 @@ function CollapseWrapper(props) {
                 ))}
                 {!store.isCollapse && (
                     <ExpandButton
-                        tooltip="Показать меньше"
+                        tooltip={t('button.more')}
                         icon={ArrowUpIcon}
                         onClick={() => { store.isCollapse = true; }}
                     />
@@ -147,7 +149,7 @@ function CollapseWrapper(props) {
             {store.isCollapse && store.isUseExpand && (
                 <ExpandButton
                     ref={anchorEl}
-                    tooltip={store.isPopperOpen ? 'Показать меньше' : 'Показать больше'}
+                    tooltip={store.isPopperOpen ? t('button.less') : t('button.more')}
                     icon={store.isPopperOpen ? ArrowUpIcon : ArrowDownIcon}
                     onMouseDown={() => {
                         if (!store.isPopperOpen) store.isBlockEvent = true;
@@ -157,8 +159,6 @@ function CollapseWrapper(props) {
                             store.isPopperOpen = !store.isPopperOpen;
                         } else {
                             store.isCollapse = false;
-                        }
-                        if (store.isBlockEvent) {
                         }
                         store.isBlockEvent = false;
                     }}

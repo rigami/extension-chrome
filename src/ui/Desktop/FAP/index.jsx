@@ -24,10 +24,10 @@ import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
-import CategoryEntity from '@/stores/universal/bookmarks/entities/category';
+import TagEntity from '@/stores/universal/bookmarks/entities/tag';
 import useAppService from '@/stores/app/AppStateProvider';
 import Folder from './Folder';
-import Category from './Category';
+import Tag from './Tag';
 import Link from './Link';
 import CollapseTray from './CollapseTray';
 
@@ -122,8 +122,8 @@ function FAP() {
                     return BookmarksUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'folder') {
                     return FoldersUniversalService.get(fav.itemId);
-                } else if (fav.itemType === 'category') {
-                    return bookmarksService.categories.get(fav.itemId);
+                } else if (fav.itemType === 'tag') {
+                    return bookmarksService.tags.get(fav.itemId);
                 }
 
                 return Promise.reject();
@@ -178,7 +178,7 @@ function FAP() {
                             isBlurBackdrop: fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT,
                         };
 
-                        if (fav instanceof FolderEntity || fav instanceof CategoryEntity) {
+                        if (fav instanceof FolderEntity || fav instanceof TagEntity) {
                             a11props = {
                                 ...a11props,
                                 classes: {
@@ -195,8 +195,8 @@ function FAP() {
                             return (<Link {...a11props} className={classes.link} />);
                         } else if (fav instanceof FolderEntity) {
                             return (<Folder {...a11props} />);
-                        } else if (fav instanceof CategoryEntity) {
-                            return (<Category {...a11props} />);
+                        } else if (fav instanceof TagEntity) {
+                            return (<Tag {...a11props} />);
                         }
 
                         return null;

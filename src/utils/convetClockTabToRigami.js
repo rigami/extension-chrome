@@ -74,7 +74,7 @@ function convert(clockTabFile = {}) {
 
     if (clockTabFile.typeData.sites) {
         const bookmarks = [];
-        const categories = [];
+        const tags = [];
         const favorites = [];
         const folders = [];
 
@@ -96,7 +96,7 @@ function convert(clockTabFile = {}) {
                         url: bookmark.url,
                         name: bookmark.name,
                         description: bookmark.description,
-                        categories: [],
+                        tags: [],
                         folderId: folder.id,
                         icoVariant: imageBase64 ? BKMS_VARIANT.SMALL : BKMS_VARIANT.SYMBOL,
                         imageBase64,
@@ -135,7 +135,7 @@ function convert(clockTabFile = {}) {
         bookmarksData = {
             bookmarks,
             favorites,
-            categories,
+            tags,
             folders,
         };
 

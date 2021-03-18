@@ -26,11 +26,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const headerProps = { title: 'settings.app.tabName.title' };
+const headerProps = { title: 'settingsApp:tabName.title' };
 
 function TabName() {
     const appService = useAppService();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsApp']);
     const classes = useStyles();
 
     return (
@@ -58,14 +58,14 @@ function TabName() {
             </Box>
             <Box className={classes.row}>
                 <Typography>
-                    {t('settings.app.tabName.description')}
+                    {t('tabName.description')}
                 </Typography>
             </Box>
             <Box className={classes.row}>
                 <TextField
                     variant="outlined"
                     fullWidth
-                    placeholder={t('settings.app.tabName.emptyName')}
+                    placeholder={t('tabName.emptyName', { context: 'placeholder' })}
                     defaultValue={appService.settings.tabName}
                     onChange={(event) => {
                         document.title = event.target.value || '\u200E';

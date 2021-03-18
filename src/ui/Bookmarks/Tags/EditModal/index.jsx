@@ -3,7 +3,7 @@ import { useLocalObservable, observer } from 'mobx-react-lite';
 import PopperWrapper from '@/ui-components/PopperWrapper';
 import Editor from './Editor';
 
-function EditCategoryModal(props) {
+function EditTagModal(props) {
     const {
         anchorEl,
         isOpen,
@@ -21,7 +21,7 @@ function EditCategoryModal(props) {
             onService={(service) => { store.popperRef = service; }}
         >
             <Editor
-                onSave={(categoryId) => onSave && onSave(categoryId)}
+                onSave={(tagId) => onSave && onSave(tagId)}
                 onError={() => { if (store.popperRef) store.popperRef.update(); }}
                 {...other}
             />
@@ -29,4 +29,4 @@ function EditCategoryModal(props) {
     );
 }
 
-export default observer(EditCategoryModal);
+export default observer(EditTagModal);

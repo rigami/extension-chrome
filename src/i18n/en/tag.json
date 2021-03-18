@@ -1,0 +1,20 @@
+{
+  "button": {
+    "add":"Create new tag",
+    "add_short":"Add tag",
+    "add_first": "Create the first tag",
+    "showAll": "Show all",
+    "showLess": "Show less"
+  },
+  "editor": {
+    "name_placeholder": "Tag name",
+    "error": {
+      "alreadyExist": "Tag already exist",
+      "unknown": "Unknown error"
+    }
+  },
+  "remove": {
+    "confirm": "Delete tag?",
+    "confirm_description": "The tag will be removed from all linked bookmarks, are you sure?"
+  }
+}

@@ -74,7 +74,7 @@ class SyncSystemBookmarksService {
             image_url: '',
             icoVariant: BKMS_VARIANT.SYMBOL,
             ...bookmark,
-            categories: [],
+            tags: [],
         }, notyEvent);
 
         console.log('add bind:', {
