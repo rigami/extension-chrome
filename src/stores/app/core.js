@@ -17,6 +17,7 @@ import { assign, first } from 'lodash';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import fetchData from '@/utils/xhrPromise';
+import StorageConnector from '@/utils/storageConnector';
 
 const APP_STATE = {
     WAIT_INIT: 'WAIT_INIT',
@@ -120,7 +121,8 @@ class Core {
             .use(initReactI18next)
             .use(Backend)
             .init({
-                lng: (chrome?.i18n?.getUILanguage?.() || 'en').substring(0, 2),
+                lng: StorageConnector.getJSON('devTools', {}).locale
+                    || (chrome?.i18n?.getUILanguage?.() || 'en').substring(0, 2),
                 load: 'languageOnly',
                 fallbackLng: 'en',
                 debug: !PRODUCTION_MODE,

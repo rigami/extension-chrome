@@ -7,6 +7,7 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import StorageConnector from '@/utils/storageConnector';
 import { Button } from '@material-ui/core';
 import { eventToBackground } from '@/stores/server/bus';
+import { BKMS_FAP_STYLE } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({ headerButton: { marginLeft: theme.spacing(2) } }));
 
@@ -80,6 +81,18 @@ function DevTools() {
                         store.settings.productionEnv = value;
                         store.hasChange = true;
                     },
+                }}
+            />
+            <MenuRow
+                title={t('Locale')}
+                action={{
+                    type: ROWS_TYPE.SELECT,
+                    value: store.settings.locale,
+                    onChange: (event) => {
+                        store.settings.locale = event.target.value;
+                        store.hasChange = true;
+                    },
+                    values: ['ru', 'en'],
                 }}
             />
         </React.Fragment>
