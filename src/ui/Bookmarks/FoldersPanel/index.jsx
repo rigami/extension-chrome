@@ -16,6 +16,7 @@ import { FETCH } from '@/enum';
 import stateRender from '@/utils/stateRender';
 import FolderItem from '@/ui/Bookmarks/FoldersPanel/FolderItem';
 import { useTranslation } from 'react-i18next';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -67,6 +68,7 @@ const useStyles = makeStyles((theme) => ({
 function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false, onlyFavorites = false }) {
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
+    const bookmarksStore = useBookmarksService();
     const store = useLocalObservable(() => ({
         folder: null,
         childFolders: null,
@@ -92,7 +94,7 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
                 store.childFolders = folders;
                 store.childFoldersState = FETCH.DONE;
             });
-    }, [selectFolderId]);
+    }, [selectFolderId, bookmarksStore.lastTruthSearchTimestamp]);
 
     return (
         <Box className={classes.root} pt={1} pb={2}>

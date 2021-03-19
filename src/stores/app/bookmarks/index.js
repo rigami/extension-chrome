@@ -101,9 +101,7 @@ class BookmarksService {
         console.log('addToFavorites', favorite);
         const favoriteId = await FavoritesUniversalService.addToFavorites(favorite);
 
-        if (this._coreService) {
-            this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: favorite.id });
-        }
+        this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: favorite.id });
 
         return favoriteId;
     }
@@ -113,9 +111,7 @@ class BookmarksService {
         console.log('removeFromFavorites', favoriteId);
         await FavoritesUniversalService.removeFromFavorites(favoriteId);
 
-        if (this._coreService) {
-            this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId });
-        }
+        this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId });
 
         return favoriteId;
     }

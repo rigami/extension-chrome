@@ -18,21 +18,17 @@ class BookmarksStore {
     }
 
     @action('query bookmarks')
-    async query(searchQuery = {}, notSaveSearch = true) {
-        if (!notSaveSearch) {
-            this._coreService.storage.updatePersistent({ bkmsLastSearch: searchQuery });
-        }
+    async query(searchQuery = {}) {
+        this._coreService.storage.updatePersistent({ bkmsLastSearch: searchQuery });
 
         return BookmarksUniversalService.query(searchQuery);
     }
 
     @action('save bookmarks')
-    async save(props, pushEvent = true) {
+    async save(props) {
         const saveBookmarkId = await BookmarksUniversalService.save(props);
 
-        if (this._coreService && pushEvent) {
-            this._coreService.globalEventBus.call('bookmark/new', DESTINATION.APP, { bookmarkId: saveBookmarkId });
-        }
+        this._coreService.globalEventBus.call('bookmark/new', DESTINATION.APP, { bookmarkId: saveBookmarkId });
 
         return saveBookmarkId;
     }
@@ -41,9 +37,7 @@ class BookmarksStore {
     async remove(bookmarkId) {
         await BookmarksUniversalService.remove(bookmarkId);
 
-        if (this._coreService) {
-            this._coreService.globalEventBus.call('bookmark/remove', DESTINATION.APP, { bookmarkId });
-        }
+        this._coreService.globalEventBus.call('bookmark/remove', DESTINATION.APP, { bookmarkId });
     }
 }
 

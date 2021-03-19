@@ -9,6 +9,8 @@ import FolderBreadcrumbs from '@/ui/Bookmarks/FolderBreadcrumbs';
 import Scrollbar from '@/ui-components/CustomScroll';
 import { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { debounce } from 'lodash';
+import useCoreService from '@/stores/app/BaseStateProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {},
@@ -36,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Bookmarks({ onScroll }) {
     const classes = useStyles();
+    const bookmarksStore = useBookmarksService();
     const store = useLocalObservable(() => ({
         activeFolderId: 1,
         searchRequest: new SearchQuery({ folderId: 1 }),

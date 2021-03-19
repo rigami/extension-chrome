@@ -17,6 +17,7 @@ import clsx from 'clsx';
 import Header from '@/ui/Bookmarks/BookmarksViewer/Header';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { useTranslation } from 'react-i18next';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -38,6 +39,7 @@ const maxColumnCalc = (width) => Math.min(
 
 function BookmarksViewer({ activeFolderId, searchRequest }) {
     const classes = useStyles();
+    const bookmarksStore = useBookmarksService();
     const coreService = useCoreService();
     const { t } = useTranslation(['bookmark']);
     const store = useLocalObservable(() => ({
@@ -70,7 +72,7 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                 store.existMatches = ((result.best?.length || 0) + result.all.length) !== 0;
                 store.loadState = FETCH.DONE;
             });
-    }, [searchRequest]);
+    }, [searchRequest, bookmarksStore.lastTruthSearchTimestamp]);
 
     return (
         <Box className={classes.root} ref={ref}>

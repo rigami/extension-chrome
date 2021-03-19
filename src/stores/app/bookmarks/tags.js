@@ -14,6 +14,10 @@ class TagsStore {
         makeAutoObservable(this);
         this._coreService = coreService;
         this._globalService = globalService;
+
+        this._coreService.globalEventBus.on('tag/remove', () => {
+            // this._globalService.
+        });
     }
 
     @action('sync tags with db')
@@ -45,9 +49,7 @@ class TagsStore {
             color,
         });
 
-        if (this._coreService) {
-            this._coreService.globalEventBus.call('tag/new', DESTINATION.APP, { tagId: newTagId });
-        }
+        this._coreService.globalEventBus.call('tag/new', DESTINATION.APP, { tagId: newTagId });
 
         return newTagId;
     }
@@ -56,9 +58,7 @@ class TagsStore {
     async remove(tagId) {
         const removeBinds = await TagsUniversalService.remove(tagId);
 
-        if (this._coreService) {
-            this._coreService.globalEventBus.call('tag/remove', DESTINATION.APP, { tagId });
-        }
+        this._coreService.globalEventBus.call('tag/remove', DESTINATION.APP, { tagId });
 
         return removeBinds;
     }
