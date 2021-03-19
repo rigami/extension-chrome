@@ -7,9 +7,10 @@ import {
     Divider,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { reaction } from 'mobx';
 import { useTranslation } from 'react-i18next';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     menu: { width: 230 },
@@ -19,38 +20,52 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function ContextMenu(props) {
-    const {
-        isOpen,
-        onClose,
-        position,
-        actions = [],
-        reactions = [],
-    } = props;
+function ContextMenu() {
     const { t } = useTranslation();
     const classes = useStyles();
+    const coreService = useCoreService();
+    const store = useLocalObservable(() => ({
+        position: null,
+        actions: [],
+        reactions: [],
+    }));
     const [, setForceRender] = useState(0);
 
-    console.log('reactions:', reactions);
+    useEffect(() => {
+        const listenId = coreService.localEventBus.on('system/contextMenu', (props) => {
+            if (store.position) return;
+
+            store.position = props.position;
+            store.actions = props.actions;
+            store.reactions = props.reactions || [];
+        });
+
+        return () => coreService.localEventBus.removeListener(listenId);
+    }, []);
 
     useEffect(() => {
-        reactions.forEach((rule) => {
+        store.reactions.forEach((rule) => {
             reaction(rule, () => {
-                console.log('Reaction:', rule);
                 setForceRender((old) => (old > 10 ? 0 : old + 1));
             });
         });
-    }, [reactions.length]);
+    }, [store.reactions.length]);
 
-    const calcActions = typeof actions === 'function' ? actions() : actions;
+    const calcActions = typeof store.actions === 'function' ? store.actions() : store.actions;
 
     return (
         <Menu
-            open={isOpen}
-            onClose={onClose}
+            open={store.position !== null}
+            onClose={() => {
+                store.position = null;
+            }}
             anchorReference="anchorPosition"
-            anchorPosition={position}
+            anchorPosition={store.position}
             classes={{ list: classes.menu }}
+            onContextMenu={(event) => {
+                event.preventDefault();
+                store.position = null;
+            }}
         >
             {calcActions.length === 0 && (
                 <ListItem
@@ -77,7 +92,7 @@ function ContextMenu(props) {
                             disabled={element.disabled}
                             onClick={() => {
                                 element.onClick();
-                                onClose();
+                                store.position = null;
                             }}
                         >
                             <ListItemIcon>

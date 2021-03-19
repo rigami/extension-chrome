@@ -71,7 +71,10 @@ function FolderCard(props) {
             className={clsx(classes.root, active && classes.active, externalClassName)}
             {...other}
         >
-            <CardActionArea onClick={onClick} onContextMenu={appService.contextMenu(contextMenu)}>
+            <CardActionArea
+                onClick={onClick}
+                onContextMenu={appService.contextMenu(contextMenu)}
+            >
                 <CardHeader
                     avatar={<FolderIcon />}
                     title={name}

@@ -26,17 +26,9 @@ function GlobalModals({ children }) {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const coreService = useCoreService();
     const [edit, setEdit] = useState(null);
-    const [contextMenuPosition, setContextMenuPosition] = useState(null);
-    const [contextMenuActions, setContextMenuActions] = useState([]);
-    const [contextMenuReactions, setContextMenuReactions] = useState([]);
 
     useEffect(() => {
         const localListeners = [
-            coreService.localEventBus.on('system/contextMenu', ({ actions, position, reactions }) => {
-                setContextMenuPosition(position);
-                setContextMenuActions(() => actions);
-                setContextMenuReactions(reactions);
-            }),
             coreService.localEventBus.on('bookmark/create', (options = {}) => setEdit({
                 type: 'bookmark',
                 action: 'create',
@@ -178,13 +170,7 @@ function GlobalModals({ children }) {
         <React.Fragment>
             {children}
             {/* <InterrogationRequest /> */}
-            <ContextMenu
-                isOpen={contextMenuPosition !== null}
-                position={contextMenuPosition}
-                actions={contextMenuActions}
-                reactions={contextMenuReactions}
-                onClose={() => setContextMenuPosition(null)}
-            />
+            <ContextMenu />
             <EditBookmarkModal
                 isOpen={edit && edit.type === 'bookmark' && edit.action !== 'remove'}
                 editBookmarkId={edit && edit.id}

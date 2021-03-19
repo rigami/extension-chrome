@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, CircularProgress } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import FoldersPanel from '@/ui/Bookmarks/FoldersPanel';
@@ -11,6 +11,18 @@ import { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { debounce } from 'lodash';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
+import useAppService from '@/stores/app/AppStateProvider';
+import { ContextMenuDivider, ContextMenuItem } from '@/stores/app/entities/contextMenu';
+import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
+import { BG_SELECT_MODE, BG_SHOW_STATE, BG_SOURCE } from '@/enum';
+import {
+    AddPhotoAlternateRounded as UploadFromComputerIcon,
+    CheckRounded as SavedBgIcon, OpenInNewRounded as OpenSourceIcon,
+    RefreshRounded as RefreshIcon, SaveAltRounded as SaveBgIcon,
+} from '@material-ui/icons';
+import { eventToBackground } from '@/stores/server/bus';
+import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {},
@@ -38,7 +50,9 @@ const useStyles = makeStyles((theme) => ({
 
 function Bookmarks({ onScroll }) {
     const classes = useStyles();
-    const bookmarksStore = useBookmarksService();
+    const { t } = useTranslation(['bookmark']);
+    const coreService = useCoreService();
+    const appService = useAppService();
     const store = useLocalObservable(() => ({
         activeFolderId: 1,
         searchRequest: new SearchQuery({ folderId: 1 }),
@@ -46,6 +60,16 @@ function Bookmarks({ onScroll }) {
         lastScrollEventTime: 0,
         scroll: null,
     }));
+
+    const contextMenu = () => [
+        new ContextMenuItem({
+            title: t('bookmark:button.add'),
+            icon: AddBookmarkIcon,
+            onClick: () => {
+                coreService.localEventBus.call('bookmark/create');
+            },
+        }),
+    ];
 
     const search = debounce(() => {
         store.searchRequest = new SearchQuery({
@@ -79,7 +103,10 @@ function Bookmarks({ onScroll }) {
     }, []);
 
     return (
-        <Box className={classes.root} display="flex" flexGrow={1}>
+        <Box
+            className={classes.root} display="flex" flexGrow={1}
+            onContextMenu={appService.contextMenu(contextMenu)}
+        >
             <FoldersPanel
                 selectFolderId={store.activeFolderId}
                 searchEverywhere={store.draftSearchRequest.searchEverywhere}
