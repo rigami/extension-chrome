@@ -29,7 +29,6 @@ function ShowFavoriteSwitcher({ searchRequest = {}, onResearch }) {
         >
             <Checkbox
                 className={classes.root}
-                color="error"
                 icon={<UncheckIcon />}
                 checkedIcon={<CheckIcon />}
                 onChange={(event, value) => onResearch({ onlyFavorites: value })}

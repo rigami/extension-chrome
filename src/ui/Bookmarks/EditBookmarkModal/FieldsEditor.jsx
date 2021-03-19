@@ -147,7 +147,6 @@ function FieldsEditor(props) {
                     size="small"
                     disabled={store.searchRequest === ''}
                     fullWidth
-                    InputLabelProps={{ shrink: store.name }}
                     value={store.name}
                     className={classes.input}
                     onChange={(event) => {

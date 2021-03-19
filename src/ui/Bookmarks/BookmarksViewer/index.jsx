@@ -78,7 +78,7 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                 store.loadState,
                 [
                     store.existMatches && (
-                        <Fragment>
+                        <Fragment key="exist-matches">
                             {(searchRequest.usedFields.query || searchRequest.usedFields.tags) && (
                                 <Fragment>
                                     <Header title={t('search.bestMatches')} />
@@ -105,6 +105,7 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                     ),
                     (searchRequest.usedFields.query || searchRequest.usedFields.tags) && !store.existMatches && (
                         <Stub
+                            key="nothing-found"
                             message={t('search.nothingFound')}
                             description={t('search.nothingFound', { context: 'description' })}
                             classes={{ title: classes.title }}
@@ -112,6 +113,7 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                     ),
                     !searchRequest.usedFields.query && !searchRequest.usedFields.tags && !store.existMatches && (
                         <Stub
+                            key="empty"
                             message={t('empty')}
                             classes={{ title: classes.title }}
                         >

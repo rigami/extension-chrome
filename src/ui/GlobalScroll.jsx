@@ -72,6 +72,7 @@ function GlobalScroll({ children }) {
             }}
         >
             {children.map((item, index) => React.cloneElement(item, {
+                key: item.props.value,
                 active: store.activeView === index,
                 onScroll: ({ blockTop, blockBottom }) => {
                     if (store.activeView === index) {
