@@ -43,6 +43,7 @@ function Editor(props) {
         defaultUrl,
         defaultName,
         defaultFolderId,
+        defaultTagsIds,
         bringToEditorHeight = false,
         marginThreshold = 24,
         className: externalClassName,
@@ -65,9 +66,8 @@ function Editor(props) {
         name: defaultName || '',
         description: '',
         useDescription: false,
-        tags: [],
+        tags: defaultTagsIds || [],
         folderId: defaultFolderId || 1,
-        fullTags: [],
         url: defaultUrl || '',
         forceAdded: false,
         stage: editBookmarkId ? STAGE.DONE : STAGE.WAIT_REQUEST,
@@ -180,10 +180,6 @@ function Editor(props) {
     useEffect(() => {
         handleGetSiteInfo();
     }, [store.url]);
-
-    useEffect(() => {
-        store.fullTags = store.tags.map((tagId) => bookmarksService.tags.get(tagId));
-    }, [store.tags.length]);
 
     useEffect(() => onStage(store.stage), [store.stage]);
 

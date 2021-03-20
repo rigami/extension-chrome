@@ -66,7 +66,13 @@ function Bookmarks({ onScroll }) {
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
             onClick: () => {
-                coreService.localEventBus.call('bookmark/create');
+                coreService.localEventBus.call(
+                    'bookmark/create',
+                    {
+                        defaultFolderId: store.searchRequest.folderId,
+                        defaultTagsIds: store.searchRequest.tags,
+                    },
+                );
             },
         }),
     ];

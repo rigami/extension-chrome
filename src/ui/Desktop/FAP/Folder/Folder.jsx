@@ -5,7 +5,8 @@ import {
     CircularProgress,
     IconButton,
     Tooltip,
-    Box, Button,
+    Box,
+    Button,
 } from '@material-ui/core';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -19,6 +20,9 @@ import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import useCoreService from '@/stores/app/BaseStateProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
+import useAppService from '@/stores/app/AppStateProvider';
+import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -91,20 +95,32 @@ function Folder(props) {
         onBack,
     } = props;
     const classes = useStyles();
-    const coreService = useCoreService();
     const { t } = useTranslation(['folder', 'bookmark']);
+    const appService = useAppService();
+    const bookmarksService = useBookmarksService();
+    const coreService = useCoreService();
     const [folder, setFolder] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
     const [folders, setFolders] = useState([]);
 
+    const contextMenu = () => [
+        new ContextMenuItem({
+            title: t('bookmark:button.add'),
+            icon: AddBookmarkIcon,
+            onClick: () => {
+                coreService.localEventBus.call('bookmark/create', { defaultFolderId: id });
+            },
+        }),
+    ];
+
     useEffect(() => {
+        setIsSearching(true);
         FoldersUniversalService.get(id).then((findFolder) => setFolder(findFolder));
         let load = true;
 
         FoldersUniversalService.getFoldersByParent(id)
             .then((foundFolders) => {
-                console.log('foundFolders:', foundFolders, load);
                 setFolders(foundFolders);
                 setIsSearching(load);
                 load = false;
@@ -112,12 +128,11 @@ function Folder(props) {
 
         BookmarksUniversalService.getAllInFolder(id)
             .then((searchResult) => {
-                console.log('searchResult:', searchResult, load);
                 setFindBookmarks(searchResult);
                 setIsSearching(load);
                 load = false;
             });
-    }, []);
+    }, [bookmarksService.lastTruthSearchTimestamp]);
 
     return (
         <Card
@@ -125,6 +140,7 @@ function Folder(props) {
             onClick={() => {
                 if (shrink) onBack();
             }}
+            onContextMenu={appService.contextMenu(contextMenu)}
         >
             <CardHeader
                 avatar={(

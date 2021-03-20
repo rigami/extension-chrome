@@ -10,9 +10,11 @@ import { useTranslation } from 'react-i18next';
 const useStyles = makeStyles((theme) => ({
     root: {
         color: theme.palette.error.main,
+        '&$checked': { color: theme.palette.error.main },
         marginLeft: theme.spacing(4),
         marginRight: theme.spacing(4),
     },
+    checked: {},
 }));
 
 function ShowFavoriteSwitcher({ searchRequest = {}, onResearch }) {
@@ -28,7 +30,10 @@ function ShowFavoriteSwitcher({ searchRequest = {}, onResearch }) {
             }
         >
             <Checkbox
-                className={classes.root}
+                classes={{
+                    root: classes.root,
+                    checked: classes.checked,
+                }}
                 icon={<UncheckIcon />}
                 checkedIcon={<CheckIcon />}
                 onChange={(event, value) => onResearch({ onlyFavorites: value })}
