@@ -56,8 +56,8 @@ function FAPButton(props) {
     return (
         <Tooltip
             title={tooltip}
-            enterDelay={400}
-            enterNextDelay={400}
+            enterDelay={0}
+            enterNextDelay={0}
         >
             <ButtonBase
                 ref={ref}
