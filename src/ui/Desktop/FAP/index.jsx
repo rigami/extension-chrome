@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
     },
     contained: { height: theme.spacing(6) + theme.spacing(2.5) + 40 },
     card: {
+        minWidth: (40 + theme.spacing(2)) * 6 + 40 + theme.spacing(1.25) * 2,
         margin: 'auto',
         pointerEvents: 'auto',
         borderRadius: 8,
