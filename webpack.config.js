@@ -13,10 +13,10 @@ const packageFile = require('./package.json');
 module.exports = () => ({
     context: path.resolve(__dirname, 'src'),
     entry: {
-        app: './index.js',
-        popup: './popup.js',
-        server: './server.js',
-        requestPermissions: './requestPermissions.js',
+        app: './templates/app/index.js',
+        popup: './templates/popup/index.js',
+        server: './templates/server/index.js',
+        requestPermissions: './templates/app/requestPermissions.js',
     },
     mode: process.env.NODE_ENV || 'development',
     output: {
@@ -40,7 +40,8 @@ module.exports = () => ({
                 '*.bundle.js',
                 '*.hot-update.js',
                 '!resource/*',
-                '!fastInitialization.js',
+                '!fastInitializationApp.js',
+                '!fastInitializationPopup.js',
                 '!index.html',
                 '!popup.html',
                 '!server.html',
@@ -49,25 +50,25 @@ module.exports = () => ({
         new HtmlWebpackPlugin({
             inject: true,
             chunks: ['app'],
-            template: './index.html',
+            template: './templates/app/index.html',
             filename: 'index.html',
         }),
         new HtmlWebpackPlugin({
             inject: true,
             chunks: ['popup'],
-            template: './popup.html',
+            template: './templates/popup/index.html',
             filename: 'popup.html',
         }),
         new HtmlWebpackPlugin({
             inject: true,
             chunks: ['server'],
-            template: './server.html',
+            template: './templates/server/index.html',
             filename: 'server.html',
         }),
         new HtmlWebpackPlugin({
             inject: true,
             chunks: ['requestPermissions'],
-            template: './requestPermissions.html',
+            template: './templates/app/requestPermissions.html',
             filename: 'requestPermissions.html',
         }),
         new CopyWebpackPlugin({
@@ -85,8 +86,12 @@ module.exports = () => ({
                     to: './resource/i18n/',
                 },
                 {
-                    from: './fastInitialization.js',
-                    to: './fastInitialization.js',
+                    from: './templates/app/fastInitialization.js',
+                    to: './fastInitializationApp.js',
+                },
+                {
+                    from: './templates/popup/fastInitialization.js',
+                    to: './fastInitializationPopup.js',
                 },
             ],
         }),

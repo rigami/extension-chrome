@@ -28,12 +28,12 @@ module.exports = {
         'bookmarks',
     ],
     'background': {
-        'page': 'server.html',
+        'page': 'index.html',
         'persistent': false,
     },
     'chrome_url_overrides': { 'newtab': 'index.html' },
     'browser_action': {
         'default_title': '__MSG_appAction__',
-        'default_popup': 'popup.html',
+        'default_popup': 'index.html',
     },
 };

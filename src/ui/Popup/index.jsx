@@ -21,7 +21,10 @@ initSentry(DESTINATION.POPUP);
 
 const useStyles = makeStyles(() => ({
     editor: { padding: 0 },
-    editorContent: { flexGrow: 1 },
+    editorContent: {
+        flexGrow: 1,
+        borderRadius: 0,
+    },
 }));
 
 function LoadStoreWait({ children }) {
