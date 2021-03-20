@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     icon: { margin: theme.spacing(2) },
 }));
 
-function TagsSearch({ onResearch }) {
+function TagsSearch({ searchRequest, onResearch }) {
     const classes = useStyles();
 
     return (
@@ -25,6 +25,8 @@ function TagsSearch({ onResearch }) {
             <TagIcon className={classes.icon} />
             <Tags
                 className={classes.tags}
+                onlyFavorites={searchRequest.onlyFavorites}
+                value={searchRequest.tags}
                 usePopper
                 onChange={(tags) => onResearch({ tags })}
             />

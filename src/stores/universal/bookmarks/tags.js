@@ -3,16 +3,21 @@ import DBConnector from '@/utils/dbConnector';
 import getUniqueColor from '@/utils/uniqueColor';
 import { last } from 'lodash';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
+import Tag from '@/stores/universal/bookmarks/entities/tag';
 
 class TagsUniversalService {
     @action
     static async getAll() {
-        return DBConnector().getAll('tags');
+        const tags = await DBConnector().getAll('tags');
+
+        return tags.map((tag) => new Tag(tag));
     }
 
     @action('get tag by id')
     static async get(tagId) {
-        return DBConnector().get('tags', tagId);
+        const tag = await DBConnector().get('tags', tagId);
+
+        return new Tag(tag);
     }
 
     @action('save tag')

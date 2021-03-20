@@ -42,7 +42,7 @@ function ToolsPanel({ onResearch }) {
         >
             <Toolbar disableGutters className={classes.toolbar}>
                 <Search onResearch={handleChangeRequest} />
-                <Tags onResearch={handleChangeRequest} />
+                <Tags searchRequest={store.searchRequest} onResearch={handleChangeRequest} />
                 <SearchPlace onResearch={handleChangeRequest} />
                 <ShowFavoriteSwitcher searchRequest={store.searchRequest} onResearch={handleChangeRequest} />
             </Toolbar>

@@ -25,38 +25,26 @@ class BookmarksService {
 
         if (!this._coreService) return;
 
-        this.tags.sync();
         this.syncFavorites();
 
         this._coreService.globalEventBus.on('bookmark/new', () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
-        this._coreService.globalEventBus.on('bookmark/remove', () => {
+        this._coreService.globalEventBus.on('bookmark/remove', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
+            await this.syncFavorites();
         });
         this._coreService.globalEventBus.on('tag/new', async () => {
-            await this.tags.sync();
-
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
-        this._coreService.globalEventBus.on('tag/remove', async ({ tagId }) => {
-            await this.tags.sync();
-
-            this._coreService.storage.updatePersistent({
-                bkmsLastSearch: {
-                    ...(this._coreService.storage.persistent.tags || {}),
-                    tags: {
-                        match: (this._coreService.storage.persistent.tags || [])
-                            .filter((id) => id !== tagId),
-                    },
-                },
-                bkmsLastTruthSearchTimestamp: Date.now(),
-            });
+        this._coreService.globalEventBus.on('tag/remove', async () => {
+            this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
 
             await this.syncFavorites();
         });
         this._coreService.globalEventBus.on('folder/remove', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
+            await this.syncFavorites();
         });
         this._coreService.globalEventBus.on('folder/new', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });

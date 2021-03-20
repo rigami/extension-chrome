@@ -26,6 +26,7 @@ import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
 import TagEntity from '@/stores/universal/bookmarks/entities/tag';
 import useAppService from '@/stores/app/AppStateProvider';
+import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import Folder from './Folder';
 import Tag from './Tag';
 import Link from './Link';
@@ -124,7 +125,7 @@ function FAP() {
                 } else if (fav.itemType === 'folder') {
                     return FoldersUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'tag') {
-                    return bookmarksService.tags.get(fav.itemId);
+                    return TagsUniversalService.get(fav.itemId);
                 }
 
                 return Promise.reject();

@@ -12,11 +12,6 @@ class BookmarksStore {
         this._globalService = globalService;
     }
 
-    @action('get bookmark')
-    async get(bookmarkId) {
-        return BookmarksUniversalService.get(bookmarkId);
-    }
-
     @action('query bookmarks')
     async query(searchQuery = {}) {
         this._coreService.storage.updatePersistent({ bkmsLastSearch: searchQuery });

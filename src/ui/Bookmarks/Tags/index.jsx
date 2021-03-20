@@ -7,6 +7,7 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import CollapseWrapper from '@/ui/Bookmarks/Tags/CollapseWrapper';
+import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import AddButton from './AddButton';
 import Tag from './Chip';
 
@@ -32,17 +33,30 @@ const useStyles = makeStyles((theme) => ({
 function Tags(props) {
     const {
         value,
-        onChange,
-        className: externalClassName,
-        onCreate,
+        onlyFavorites = false,
         autoSelect = false,
         usePopper = false,
+        className: externalClassName,
+        onCreate,
+        onChange,
     } = props;
     const { t } = useTranslation(['tag']);
     const classes = useStyles();
     const bookmarksService = useBookmarksService();
     const [selectedTags, setSelectedTags] = useState(value || []);
+    const [tags, setTags] = useState(() => []);
     const isFirstRun = useRef(true);
+
+    const filterTags = (tagsList) => {
+        if (onlyFavorites) {
+            return tagsList.filter(({ id }) => bookmarksService.findFavorite({
+                itemId: id,
+                itemType: 'tag',
+            }));
+        } else {
+            return tagsList;
+        }
+    };
 
     useEffect(() => {
         if (isFirstRun.current) {
@@ -58,6 +72,14 @@ function Tags(props) {
 
         if (value) setSelectedTags(value || []);
     }, [value && value.length]);
+
+    useEffect(() => {
+        TagsUniversalService.getAll()
+            .then((allTags) => {
+                setTags(filterTags(allTags));
+                setSelectedTags(filterTags(selectedTags.map((id) => ({ id }))).map(({ id }) => id));
+            });
+    }, [bookmarksService.lastTruthSearchTimestamp, onlyFavorites]);
 
     const renderTag = ({ id, name, color, className }) => (
         <Tag
@@ -79,13 +101,13 @@ function Tags(props) {
     const AddTag = () => (
         <React.Fragment>
             <AddButton
-                isShowTitle={bookmarksService.tags.length === 0}
+                isShowTitle={tags.length === 0}
                 onCreate={(newId) => {
                     if (autoSelect) setSelectedTags([...selectedTags, newId]);
                     if (onCreate) onCreate(newId);
                 }}
             />
-            {bookmarksService.tags.all.length === 0 && (
+            {tags.length === 0 && (
                 <Box className={classes.arrowBlock}>
                     <ArrowIcon />
                     {t('button.add', { context: 'first' })}
@@ -97,7 +119,7 @@ function Tags(props) {
     return (
         <Box className={clsx(classes.root, externalClassName)}>
             <CollapseWrapper
-                list={bookmarksService.tags.all}
+                list={tags}
                 renderComponent={renderTag}
                 expandButtonLabel={t('button.showAll')}
                 collapseButtonLabel={t('button.showLess')}

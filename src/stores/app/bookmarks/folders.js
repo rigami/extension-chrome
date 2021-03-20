@@ -1,5 +1,4 @@
 import { action, makeAutoObservable } from 'mobx';
-import DBConnector from '@/utils/dbConnector';
 import { DESTINATION } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
@@ -11,13 +10,6 @@ class FoldersStore {
         makeAutoObservable(this);
         this._coreService = coreService;
         this._globalService = globalService;
-    }
-
-    @action('sync folders with db')
-    async sync() {
-        this._tags = await DBConnector().getAll('folders');
-
-        return this._tags;
     }
 
     @action('save folder')
