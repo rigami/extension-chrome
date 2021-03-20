@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import { PublicRounded as WebSiteIcon } from '@material-ui/icons';
 import { AbortController } from '@/utils/xhrPromise';
-import { getFaviconUrl, getSiteInfo, search } from '@/utils/siteSearch';
+import { getFaviconUrl, getSiteInfoLocal, search } from '@/utils/siteSearch';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -58,10 +58,10 @@ function Search({ query = '', onSelect }) {
     const [controller, setController] = React.useState(null);
     const [isOpen, setIsOpen] = React.useState(false);
 
-    const handleSelect = (option, forceAdded = false) => {
+    const handleSelect = (option, allowChangeUrl = false) => {
         onSelect({
             ...option,
-            forceAdded,
+            allowChangeUrl,
         });
     };
 
@@ -90,7 +90,7 @@ function Search({ query = '', onSelect }) {
             const currController = new AbortController();
             setController(currController);
 
-            getSiteInfo(query.trim(), currController)
+            getSiteInfoLocal(query.trim())
                 .then((siteData) => {
                     setStraightResults({ ...siteData });
                 })
@@ -130,30 +130,59 @@ function Search({ query = '', onSelect }) {
                             {t('editor.search', { context: 'url' })}
                         </ListSubheader>
                         {!straightLoading && straightResults && (
-                            <ListItem
-                                className={classes.row}
-                                button
-                                onClick={() => handleSelect(straightResults, true)}
-                            >
-                                <ListItemAvatar className={classes.avatar}>
-                                    <Avatar
-                                        variant="rounded"
-                                        key={straightResults.url}
-                                        src={getFaviconUrl(straightResults.url)}
-                                        className={classes.favicon}
+                            <React.Fragment>
+                                {straightResults.baseUrl !== straightResults.url && (
+                                    <ListItem
+                                        className={classes.row}
+                                        button
+                                        onClick={() => handleSelect({
+                                            ...straightResults,
+                                            url: straightResults.baseUrl,
+                                        }, false)}
                                     >
-                                        <WebSiteIcon />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    classes={{
-                                        primary: classes.overflowText,
-                                        secondary: classes.overflowText,
-                                    }}
-                                    primary={straightResults.title}
-                                    secondary={straightResults.url}
-                                />
-                            </ListItem>
+                                        <ListItemAvatar className={classes.avatar}>
+                                            <Avatar
+                                                variant="rounded"
+                                                src={getFaviconUrl(straightResults.baseUrl)}
+                                                className={classes.favicon}
+                                            >
+                                                <WebSiteIcon />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            classes={{
+                                                primary: classes.overflowText,
+                                                secondary: classes.overflowText,
+                                            }}
+                                            primary={straightResults.title}
+                                            secondary={straightResults.baseUrl}
+                                        />
+                                    </ListItem>
+                                )}
+                                <ListItem
+                                    className={classes.row}
+                                    button
+                                    onClick={() => handleSelect(straightResults, true)}
+                                >
+                                    <ListItemAvatar className={classes.avatar}>
+                                        <Avatar
+                                            variant="rounded"
+                                            src={getFaviconUrl(straightResults.url)}
+                                            className={classes.favicon}
+                                        >
+                                            <WebSiteIcon />
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        classes={{
+                                            primary: classes.overflowText,
+                                            secondary: classes.overflowText,
+                                        }}
+                                        primary={straightResults.title}
+                                        secondary={straightResults.url}
+                                    />
+                                </ListItem>
+                            </React.Fragment>
                         )}
                         {!straightLoading && !straightResults && (
                             <ListItem>
@@ -161,10 +190,7 @@ function Search({ query = '', onSelect }) {
                                 <Button
                                     data-ui-path="bookmark.editor.forceAddURL"
                                     className={classes.forceAdd}
-                                    onClick={() => onSelect({
-                                        url: query,
-                                        title: '',
-                                    }, true)}
+                                    onClick={() => onSelect({ url: query }, true)}
                                 >
                                     {t('editor.button.forceAdd')}
                                 </Button>
@@ -184,7 +210,7 @@ function Search({ query = '', onSelect }) {
                                 className={classes.row}
                                 divider
                                 button
-                                onClick={() => handleSelect(option)}
+                                onClick={() => handleSelect(option, false)}
                             >
                                 <ListItemAvatar className={classes.avatar}>
                                     <Avatar

@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, onChange }) {
+function SearchSiteField({ url = '', marginThreshold = 24, onSelect }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -45,24 +45,30 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
     const secondInput = createRef();
 
     const store = useLocalObservable(() => ({
-        searchRequest,
+        url,
         popperRef: null,
         filedWidth: 0,
     }));
 
     const handleChange = (event) => {
-        store.searchRequest = event.target.value;
-        onChange(store.searchRequest);
-        if (store.searchRequest) {
+        store.url = event.target.value;
+        if (store.url) {
             setIsOpen(true);
         } else {
             setIsOpen(false);
         }
+        console.log('handleChange:', store.url);
+    };
+
+    const handleSelect = (data) => {
+        console.log('handleSelect:', data);
+        onSelect(data);
+        setIsOpen(false);
     };
 
     useEffect(() => {
-        store.searchRequest = searchRequest;
-    }, [searchRequest]);
+        store.url = url;
+    }, [url]);
 
     return (
         <React.Fragment>
@@ -77,13 +83,13 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
                     variant="outlined"
                     size="small"
                     fullWidth
-                    value={store.searchRequest}
+                    value={store.url}
                     className={classes.input}
                     onChange={handleChange}
                     onMouseDown={() => setIsBlockEvent(true)}
                     onClick={(event) => {
                         setAnchorEl(event.currentTarget);
-                        if (store.searchRequest) setIsOpen(true);
+                        if (store.url) setIsOpen(true);
                         setIsBlockEvent(false);
                     }}
                 />
@@ -120,7 +126,10 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
                         <ClickAwayListener
                             onClickAway={() => {
                                 if (isBlockEvent) return;
-                                setIsOpen(false);
+                                handleSelect({
+                                    url: store.url,
+                                    allowChangeUrl: true,
+                                });
                             }}
                             mouseEvent="onMouseDown"
                         >
@@ -133,31 +142,27 @@ function SearchSiteField({ searchRequest = '', marginThreshold = 24, onSelect, o
                                         fullWidth
                                         autoFocus
                                         ref={secondInput}
-                                        value={store.searchRequest || ' '}
+                                        value={store.url || ' '}
                                         className={classes.input}
                                         onChange={handleChange}
                                         onMouseDown={() => setIsBlockEvent(true)}
                                         onClick={() => {
-                                            if (store.searchRequest) setIsOpen(true);
+                                            if (store.url) setIsOpen(true);
                                             setIsBlockEvent(false);
                                         }}
                                         onKeyDown={(event) => {
                                             if (event.nativeEvent.code === 'Enter') {
-                                                onSelect({
-                                                    url: store.searchRequest,
-                                                    forceAdded: true,
+                                                handleSelect({
+                                                    url: store.url,
+                                                    allowChangeUrl: true,
                                                 });
-                                                setIsOpen(false);
                                             }
                                         }}
                                     />
                                 </Box>
                                 <Search
-                                    query={store.searchRequest}
-                                    onSelect={(result) => {
-                                        onSelect(result);
-                                        setIsOpen(false);
-                                    }}
+                                    query={store.url}
+                                    onSelect={(result) => handleSelect(result)}
                                 />
                             </Paper>
                         </ClickAwayListener>

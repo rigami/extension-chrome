@@ -41,7 +41,7 @@ function Tags(props) {
     const { t } = useTranslation(['tag']);
     const classes = useStyles();
     const bookmarksService = useBookmarksService();
-    const [selectedTags, setSelectedTags] = useState([]);
+    const [selectedTags, setSelectedTags] = useState(value || []);
     const isFirstRun = useRef(true);
 
     useEffect(() => {

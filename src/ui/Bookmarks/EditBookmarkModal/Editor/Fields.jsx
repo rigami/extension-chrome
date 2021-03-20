@@ -59,106 +59,48 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function FieldsEditor(props) {
+function Fields(props) {
     const {
-        isEdit,
-        searchRequest = '',
-        url = '',
-        name = '',
-        description = '',
-        useDescription = false,
-        tags,
-        folderId,
-        saveState = FETCH.WAIT,
+        editorService: service,
         marginThreshold = 24,
-        onChangeFields = (value) => value,
         onSave,
         onCancel,
     } = props;
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
-
-    const store = useLocalObservable(() => ({
-        searchRequest,
-        url,
-        name,
-        description,
-        useDescription,
-    }));
+    const store = useLocalObservable(() => ({ saveState: FETCH.WAIT }));
 
     useEffect(() => {
-        store.searchRequest = searchRequest;
-    }, [searchRequest]);
-
-    useEffect(() => {
-        store.url = url || '';
-    }, [url]);
-
-    useEffect(() => {
-        store.name = name || '';
-    }, [name]);
-
-    useEffect(() => {
-        store.description = description;
-    }, [description]);
-
-    useEffect(() => {
-        store.useDescription = useDescription;
-    }, [useDescription]);
+        if (service.isChange) store.saveState = FETCH.WAIT;
+    }, [service.isChange]);
 
     return (
         <Box className={classes.details}>
             <CardContent className={classes.content}>
                 <Typography variant="h6" className={classes.header}>
-                    {t('editor', { context: isEdit ? 'edit' : 'add' })}
+                    {t('editor', { context: service.editBookmarkId ? 'edit' : 'add' })}
                 </Typography>
                 <SearchSiteField
-                    searchRequest={store.searchRequest}
+                    url={service.url}
                     marginThreshold={marginThreshold}
-                    onChange={(value) => {
-                        store.searchRequest = value;
-                        onChangeFields({ searchRequest: value });
-                    }}
-                    onSelect={({
-                        title, url: requestUrl, icons, forceAdded, ...other
-                    }) => {
-                        store.searchRequest = requestUrl;
-                        store.name = title || store.name || '';
-
-                        let result = {
-                            forceAdded,
-                            url: requestUrl,
-                            name: title,
-                        };
-
-                        if (icons) {
-                            result = {
-                                ...result,
-                                icons,
-                                ...other,
-                            };
-                        }
-                        onChangeFields(result);
-                    }}
+                    onSelect={(selectProps) => service.updateValues(selectProps)}
                 />
                 <TextField
                     label={t('editor.bookmarkName')}
                     variant="outlined"
                     size="small"
-                    disabled={store.searchRequest === ''}
+                    disabled={service.url === ''}
+                    InputLabelProps={{ shrink: Boolean(service.url) }}
                     fullWidth
-                    value={store.name}
+                    value={service.name}
                     className={classes.input}
-                    onChange={(event) => {
-                        store.name = event.target.value;
-                        onChangeFields({ name: event.target.value });
-                    }}
+                    onChange={(event) => service.updateValues({ name: event.target.value })}
                 />
                 <Box className={classes.identBlock}>
                     <FolderIcon className={classes.identBlockIcon} color="primary" />
                     <FolderSelector
-                        value={folderId}
-                        onChange={(newFolder) => onChangeFields({ folderId: newFolder })}
+                        value={service.folderId}
+                        onChange={(newFolder) => service.updateValues({ folderId: newFolder })}
                     />
                 </Box>
                 <Box className={classes.identBlock}>
@@ -168,39 +110,33 @@ function FieldsEditor(props) {
                     />
                     <Tags
                         sortByPopular
-                        value={tags}
-                        onChange={(newTags) => onChangeFields({ tags: newTags })}
+                        value={service.tags}
+                        onChange={(newTags) => service.updateValues({ tags: newTags })}
                         autoSelect
                         oneRow
                     />
                 </Box>
-                {store.useDescription && (
+                {service.useDescription && (
                     <TextField
                         label={t('editor.bookmarkDescription')}
                         variant="outlined"
                         size="small"
                         fullWidth
-                        value={store.description}
+                        value={service.description}
                         className={classes.inputDescription}
-                        disabled={store.searchRequest === ''}
+                        disabled={service.url === ''}
                         multiline
                         rows={3}
                         rowsMax={6}
-                        onChange={(event) => {
-                            store.description = event.target.value;
-                            onChangeFields({ description: event.target.value });
-                        }}
+                        onChange={(event) => service.updateValues({ description: event.target.value })}
                     />
                 )}
-                {!store.useDescription && (
+                {!service.useDescription && (
                     <Button
                         data-ui-path="editor.description.add"
                         startIcon={<AddIcon />}
                         className={classes.addDescriptionButton}
-                        onClick={() => {
-                            store.useDescription = true;
-                            onChangeFields({ useDescription: true });
-                        }}
+                        onClick={() => service.updateValues({ useDescription: true })}
                     >
                         {t('editor.button.addDescription')}
                     </Button>
@@ -219,25 +155,29 @@ function FieldsEditor(props) {
                     </Button>
                 )}
                 <div className={classes.button}>
-                    {saveState === FETCH.WAIT && (
+                    {store.saveState === FETCH.WAIT && (
                         <Button
                             data-ui-path="save"
                             variant="contained"
                             color="primary"
-                            disabled={!searchRequest || !store.name.trim()}
-                            onClick={onSave}
+                            disabled={!service.url || !service.name.trim()}
+                            onClick={() => {
+                                service.save()
+                                    .then(() => { store.saveState = FETCH.DONE; onSave(); })
+                                    .catch(() => { store.saveState = FETCH.FAILED; });
+                            }}
                         >
                             {t('common:button.save')}
                         </Button>
                     )}
-                    {saveState === FETCH.PENDING && (
+                    {store.saveState === FETCH.PENDING && (
                         <Box display="flex" alignItems="center">
                             <CircularProgress size={24} color="primary" className={classes.saveIcon} />
                             {t('editor.save.saving')}
                             ...
                         </Box>
                     )}
-                    {saveState === FETCH.DONE && (
+                    {store.saveState === FETCH.DONE && (
                         <Box display="flex" alignItems="center">
                             <DoneIcon color="primary" className={classes.saveIcon} />
                             {t('editor.save.success')}
@@ -249,4 +189,4 @@ function FieldsEditor(props) {
     );
 }
 
-export default observer(FieldsEditor);
+export default observer(Fields);

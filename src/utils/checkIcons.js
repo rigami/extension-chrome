@@ -1,3 +1,5 @@
+import { BKMS_VARIANT } from '@/enum';
+
 export const checkValidImage = async (url) => new Promise(((resolve, reject) => {
     const imgCache = document.createElement('img');
     imgCache.onload = resolve;
@@ -39,4 +41,28 @@ export const getNextImage = async (list, onChangeList) => {
         currList = newList;
         onChangeList(newList);
     });
+};
+
+export const getDefaultImage = async (images) => {
+    let img;
+    let allImages = images.slice();
+
+    do {
+        img = await getNextImage(
+            allImages,
+            (list) => { allImages = list; },
+        );
+    } while (!img && allImages.length !== 0);
+
+    if (!img) {
+        img = {
+            url: '',
+            icoVariant: BKMS_VARIANT.SYMBOL,
+        };
+    }
+
+    return {
+        image: img,
+        list: allImages,
+    };
 };
