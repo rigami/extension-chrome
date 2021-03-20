@@ -33,7 +33,7 @@ class LocalBackupService {
                     date: new Date().toISOString(),
                     appVersion: appVariables.version,
                     appType: 'extension.chrome',
-                    version: 3,
+                    version: 4,
                 };
 
                 console.log('Backup:', backup);
@@ -69,7 +69,7 @@ class LocalBackupService {
                     return;
                 }
 
-                if (backup.meta.version > 3) {
+                if (backup.meta.version > 4) {
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'wrongVersion',
