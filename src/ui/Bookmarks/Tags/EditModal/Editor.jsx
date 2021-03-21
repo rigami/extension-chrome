@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Card,
     InputBase,
@@ -8,6 +8,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
+import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -25,7 +26,8 @@ function Editor({ onSave, onError, editId }) {
     const [tagName, setTagName] = useState('');
     const [error, setError] = useState(null);
     const bookmarksService = useBookmarksService();
-    const tagStore = bookmarksService.tags.get(editId);
+    const [editTag, setEditTag] = useState();
+    const [isLoading, setIsLoading] = useState(Boolean(editId));
 
     const handlerSubmit = (event) => {
         event.preventDefault();
@@ -42,7 +44,18 @@ function Editor({ onSave, onError, editId }) {
         }
     };
 
-    return (
+    useEffect(() => {
+        if (!editId) return;
+
+        TagsUniversalService.get(editId)
+            .then((tag) => {
+                setEditTag(tag);
+                setIsLoading(false);
+            })
+            .catch(console.error);
+    }, []);
+
+    return !isLoading && (
         <Card className={classes.popper} elevation={16}>
             <form onSubmit={handlerSubmit}>
                 <InputBase
@@ -50,7 +63,7 @@ function Editor({ onSave, onError, editId }) {
                     placeholder={t('editor.name', { context: 'placeholder' })}
                     variant="outlined"
                     autoFocus
-                    defaultValue={tagStore?.name}
+                    defaultValue={editTag?.name}
                     onChange={(event) => {
                         setTagName(event.target.value);
                         onError(null);

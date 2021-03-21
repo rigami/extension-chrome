@@ -28,6 +28,12 @@ class BookmarksSearchService {
         makeAutoObservable(this);
 
         this._applyRequest = debounce(this.applyRequest, 400, { leading: true });
+        this.searchRequest = new SearchQuery({
+            query: this.query,
+            tags: this.tags,
+            folderId: !this.searchEverywhere && this.activeFolderId,
+            onlyFavorites: this.onlyFavorites,
+        });
     }
 
     setActiveFolder(folderId) {
