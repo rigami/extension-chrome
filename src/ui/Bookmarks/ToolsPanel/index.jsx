@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite';
 import Search from './Search';
 import Tags from './Tags';
 import SearchPlace from './SearchPlace';
+import ShowFavoriteSwitcher from './ShowFavoriteSwitcher';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -31,7 +32,7 @@ function ToolsPanel({ searchService: service }) {
                 <Search searchService={service} />
                 <Tags searchService={service} />
                 <SearchPlace searchService={service} />
-                {/* <ShowFavoriteSwitcher searchRequest={store.searchRequest} onResearch={handleChangeRequest} /> */}
+                <ShowFavoriteSwitcher searchService={service} />
             </Toolbar>
         </AppBar>
     );

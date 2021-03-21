@@ -16,14 +16,14 @@ const useStyles = makeStyles((theme) => ({
     checked: {},
 }));
 
-function ShowFavoriteSwitcher({ searchRequest = {}, onResearch }) {
+function ShowFavoriteSwitcher({ searchService: service }) {
     const classes = useStyles();
     const { t } = useTranslation();
 
     return (
         <Tooltip
             title={
-                searchRequest.onlyFavorites
+                service.onlyFavorites
                     ? t('favorites.all', { context: 'helper' })
                     : t('favorites.onlyFavorites', { context: 'helper' })
             }
@@ -35,7 +35,7 @@ function ShowFavoriteSwitcher({ searchRequest = {}, onResearch }) {
                 }}
                 icon={<UncheckIcon />}
                 checkedIcon={<CheckIcon />}
-                onChange={(event, value) => onResearch({ onlyFavorites: value })}
+                onChange={(event, value) => service.updateRequest({ onlyFavorites: value })}
             />
         </Tooltip>
     );

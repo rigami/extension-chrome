@@ -28,7 +28,7 @@ function TagsSearch({ searchService: service }) {
         <Box className={classes.root}>
             <TagIcon className={classes.icon} />
             <Tags
-                // onlyFavorites={service.onlyFavorites}
+                onlyFavorites={service.onlyFavorites}
                 value={service.tags}
                 usePopper
                 onChange={(tags) => service.updateRequest({ tags })}
