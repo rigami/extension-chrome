@@ -10,11 +10,14 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'flex-end',
         marginLeft: theme.spacing(4),
-        maxWidth: 620,
+        maxWidth: 1000,
         flexGrow: 1,
+        overflow: 'auto',
     },
-    tags: { maxWidth: 600 },
-    icon: { margin: theme.spacing(2) },
+    icon: {
+        margin: theme.spacing(2),
+        marginLeft: 0,
+    },
 }));
 
 function TagsSearch({ searchRequest, onResearch }) {
@@ -24,7 +27,6 @@ function TagsSearch({ searchRequest, onResearch }) {
         <Box className={classes.root}>
             <TagIcon className={classes.icon} />
             <Tags
-                className={classes.tags}
                 onlyFavorites={searchRequest.onlyFavorites}
                 value={searchRequest.tags}
                 usePopper
