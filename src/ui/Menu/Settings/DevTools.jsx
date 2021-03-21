@@ -7,7 +7,6 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import StorageConnector from '@/utils/storageConnector';
 import { Button } from '@material-ui/core';
 import { eventToBackground } from '@/stores/server/bus';
-import { BKMS_FAP_STYLE } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({ headerButton: { marginLeft: theme.spacing(2) } }));
 
@@ -51,6 +50,14 @@ function HeaderActions() {
                 }}
             >
                 Reset
+            </Button>
+            <Button
+                className={classes.headerButton}
+                onClick={() => {
+                    eventToBackground('system.forceReload');
+                }}
+            >
+                Force reload
             </Button>
         </React.Fragment>
     );
