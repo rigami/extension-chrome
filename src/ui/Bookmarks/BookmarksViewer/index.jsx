@@ -39,7 +39,7 @@ const maxColumnCalc = (width) => Math.min(
 
 function BookmarksViewer({ searchService: service }) {
     const classes = useStyles();
-    const bookmarksStore = useBookmarksService();
+    const bookmarksService = useBookmarksService();
     const coreService = useCoreService();
     const { t } = useTranslation(['bookmark']);
     const store = useLocalObservable(() => ({
@@ -56,6 +56,22 @@ function BookmarksViewer({ searchService: service }) {
 
     const { ref } = useResizeDetector({ onResize });
 
+    const sortByFavorites = (list) => list.sort((bookmarkA, bookmarkB) => {
+        const isFavoriteA = bookmarksService.findFavorite({
+            itemId: bookmarkA.id,
+            itemType: 'bookmark',
+        });
+        const isFavoriteB = bookmarksService.findFavorite({
+            itemId: bookmarkB.id,
+            itemType: 'bookmark',
+        });
+
+        if (isFavoriteA && !isFavoriteB) return -1;
+        else if (!isFavoriteA && isFavoriteB) return 1;
+
+        return 0;
+    });
+
     useEffect(() => {
         store.loadState = FETCH.PENDING;
         store.requestId += 1;
@@ -67,12 +83,12 @@ function BookmarksViewer({ searchService: service }) {
 
                 console.log('query:', result, service.searchRequest);
 
-                store.bestBookmarks = result.best;
-                store.allBookmarks = result.all;
+                store.bestBookmarks = result.best && sortByFavorites(result.best);
+                store.allBookmarks = result.all && sortByFavorites(result.all);
                 store.existMatches = ((result.best?.length || 0) + result.all.length) !== 0;
                 store.loadState = FETCH.DONE;
             });
-    }, [service.searchRequest, bookmarksStore.lastTruthSearchTimestamp]);
+    }, [service.searchRequest, bookmarksService.lastTruthSearchTimestamp]);
 
     return (
         <Box className={classes.root} ref={ref}>

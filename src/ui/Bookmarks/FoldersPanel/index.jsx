@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
 function FoldersPanel({ searchService: service }) {
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
-    const bookmarksStore = useBookmarksService();
+    const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
         folder: null,
         childFolders: null,
@@ -91,10 +91,24 @@ function FoldersPanel({ searchService: service }) {
 
         FoldersUniversalService.getFoldersByParent(service.activeFolderId)
             .then((folders) => {
-                store.childFolders = folders;
+                store.childFolders = folders.sort((folderA, folderB) => {
+                    const isFavoriteA = bookmarksService.findFavorite({
+                        itemId: folderA.id,
+                        itemType: 'folder',
+                    });
+                    const isFavoriteB = bookmarksService.findFavorite({
+                        itemId: folderB.id,
+                        itemType: 'folder',
+                    });
+
+                    if (isFavoriteA && !isFavoriteB) return -1;
+                    else if (!isFavoriteA && isFavoriteB) return 1;
+
+                    return 0;
+                });
                 store.childFoldersState = FETCH.DONE;
             });
-    }, [service.activeFolderId, bookmarksStore.lastTruthSearchTimestamp]);
+    }, [service.activeFolderId, bookmarksService.lastTruthSearchTimestamp]);
 
     return (
         <Box className={classes.root} pt={1} pb={2}>

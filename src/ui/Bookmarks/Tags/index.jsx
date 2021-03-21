@@ -76,7 +76,21 @@ function Tags(props) {
     useEffect(() => {
         TagsUniversalService.getAll()
             .then((allTags) => {
-                setTags(filterTags(allTags));
+                setTags(filterTags(allTags).sort((tagA, tagB) => {
+                    const isFavoriteA = bookmarksService.findFavorite({
+                        itemId: tagA.id,
+                        itemType: 'tag',
+                    });
+                    const isFavoriteB = bookmarksService.findFavorite({
+                        itemId: tagB.id,
+                        itemType: 'tag',
+                    });
+
+                    if (isFavoriteA && !isFavoriteB) return -1;
+                    else if (!isFavoriteA && isFavoriteB) return 1;
+
+                    return 0;
+                }));
                 setSelectedTags(filterTags(selectedTags.map((id) => ({ id }))).map(({ id }) => id));
             });
     }, [bookmarksService.lastTruthSearchTimestamp, onlyFavorites]);
