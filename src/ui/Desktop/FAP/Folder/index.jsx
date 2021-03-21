@@ -1,6 +1,7 @@
 import React from 'react';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
+import { useTheme, fade } from '@material-ui/core/styles';
 import Explorer from './Explorer';
 
 function Folder(props) {
@@ -10,6 +11,7 @@ function Folder(props) {
         name,
         classes: externalClasses,
     } = props;
+    const theme = useTheme();
 
     return (
         <ButtonWithPopper
@@ -20,6 +22,7 @@ function Folder(props) {
             type="folder"
             iconOpen={FolderIcon}
             classes={externalClasses}
+            iconOpenProps={{ style: { color: fade(theme.palette.text.secondary, 0.23) } }}
         >
             <Explorer id={id} />
         </ButtonWithPopper>

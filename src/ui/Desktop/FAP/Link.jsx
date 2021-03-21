@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonBase, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
