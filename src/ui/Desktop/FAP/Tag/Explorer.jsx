@@ -19,6 +19,8 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import { observer } from 'mobx-react-lite';
 import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -46,7 +48,7 @@ function Folder({ id }) {
     const appService = useAppService();
     const bookmarksService = useBookmarksService();
     const coreService = useCoreService();
-    const [tag] = useState(bookmarksService.tags.get(id));
+    const [tag, setTag] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
 
@@ -62,6 +64,7 @@ function Folder({ id }) {
 
     useEffect(() => {
         setIsSearching(true);
+        TagsUniversalService.get(id).then((findTag) => setTag(findTag));
         BookmarksUniversalService.query(new SearchQuery({ tags: [id] }))
             .then(({ all }) => {
                 setFindBookmarks(all);
@@ -76,9 +79,9 @@ function Folder({ id }) {
         >
             <CardHeader
                 avatar={(
-                    <LabelIcon style={{ color: tag.color }} />
+                    <LabelIcon style={{ color: tag?.color }} />
                 )}
-                title={tag.name}
+                title={tag?.name}
                 classes={{ avatar: classes.avatar }}
             />
             {isSearching && (

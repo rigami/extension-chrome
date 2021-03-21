@@ -10,6 +10,7 @@ import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import Link from '@/ui/Desktop/FAP/Link';
 import Folder from '@/ui/Desktop/FAP/Folder';
 import Tag from '@/ui/Desktop/FAP/Tag';
+import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -47,7 +48,7 @@ function Explorer({ offsetLoad }) {
                 } else if (fav.itemType === 'folder') {
                     return FoldersUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'tag') {
-                    return bookmarksService.tags.get(fav.itemId);
+                    return TagsUniversalService.get(fav.itemId);
                 }
 
                 return Promise.reject();
