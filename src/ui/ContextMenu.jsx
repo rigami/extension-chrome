@@ -18,6 +18,10 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         fontStyle: 'italic',
     },
+    divider: {
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
 }));
 
 function ContextMenu() {
@@ -79,7 +83,7 @@ function ContextMenu() {
             {calcActions.map((element) => {
                 if (element.type === 'divider') {
                     return (
-                        <Divider key="divider" />
+                        <Divider key="divider" className={classes.divider} />
                     );
                 } else {
                     const Icon = element.icon;
