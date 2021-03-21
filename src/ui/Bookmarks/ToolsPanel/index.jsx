@@ -1,9 +1,7 @@
 import React from 'react';
 import { AppBar, Toolbar } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import { observer, useLocalObservable } from 'mobx-react-lite';
-import { debounce } from 'lodash';
-import ShowFavoriteSwitcher from '@/ui/Bookmarks/ToolsPanel/ShowFavoriteSwitcher';
+import { observer } from 'mobx-react-lite';
 import Search from './Search';
 import Tags from './Tags';
 import SearchPlace from './SearchPlace';
@@ -13,25 +11,14 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: fade(theme.palette.background.paper, 0.95),
         overflow: 'hidden',
     },
-    toolbar: { minHeight: theme.spacing(10.5) },
+    toolbar: {
+        minHeight: theme.spacing(10.5),
+        paddingRight: theme.spacing(4),
+    },
 }));
 
-function ToolsPanel({ onResearch }) {
+function ToolsPanel({ searchService: service }) {
     const classes = useStyles();
-    const store = useLocalObservable(() => ({ searchRequest: {} }));
-
-    const search = debounce(() => {
-        onResearch(store.searchRequest);
-    }, 400);
-
-    const handleChangeRequest = (changeRequest) => {
-        store.searchRequest = {
-            ...store.searchRequest,
-            ...changeRequest,
-        };
-
-        search();
-    };
 
     return (
         <AppBar
@@ -41,10 +28,10 @@ function ToolsPanel({ onResearch }) {
             className={classes.root}
         >
             <Toolbar disableGutters className={classes.toolbar}>
-                <Search onResearch={handleChangeRequest} />
-                <Tags searchRequest={store.searchRequest} onResearch={handleChangeRequest} />
-                <SearchPlace onResearch={handleChangeRequest} />
-                <ShowFavoriteSwitcher searchRequest={store.searchRequest} onResearch={handleChangeRequest} />
+                <Search searchService={service} />
+                <Tags searchService={service} />
+                <SearchPlace searchService={service} />
+                {/* <ShowFavoriteSwitcher searchRequest={store.searchRequest} onResearch={handleChangeRequest} /> */}
             </Toolbar>
         </AppBar>
     );

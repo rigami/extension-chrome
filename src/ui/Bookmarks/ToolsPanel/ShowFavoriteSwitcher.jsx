@@ -12,7 +12,6 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.error.main,
         '&$checked': { color: theme.palette.error.main },
         marginLeft: theme.spacing(4),
-        marginRight: theme.spacing(4),
     },
     checked: {},
 }));

@@ -3,6 +3,7 @@ import { SearchRounded as SearchIcon } from '@material-ui/icons';
 import { Box, InputBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
+import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -21,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Search({ onResearch }) {
+function Search({ searchService: service }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
 
@@ -32,10 +33,11 @@ function Search({ onResearch }) {
                 className={classes.input}
                 placeholder={t('search.bookmarks', { context: 'placeholder' })}
                 fullWidth
-                onChange={(event) => onResearch({ query: event.currentTarget.value })}
+                value={service.query}
+                onChange={(event) => service.updateRequest({ query: event.currentTarget.value })}
             />
         </Box>
     );
 }
 
-export default Search;
+export default observer(Search);

@@ -7,6 +7,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
+import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: { marginRight: 0 },
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function SearchPlace({ onResearch }) {
+function SearchPlace({ searchService: service }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
 
@@ -34,7 +35,8 @@ function SearchPlace({ onResearch }) {
                             color="primary"
                         />
                     )}
-                    onChange={(event, value) => onResearch({ searchEverywhere: value })}
+                    checked={service.searchEverywhere}
+                    onChange={(event, value) => service.updateRequest({ searchEverywhere: value })}
                     label={t('search.everywhere')}
                     classes={{
                         label: classes.label,
@@ -46,4 +48,4 @@ function SearchPlace({ onResearch }) {
     );
 }
 
-export default SearchPlace;
+export default observer(SearchPlace);

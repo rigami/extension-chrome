@@ -37,7 +37,7 @@ const maxColumnCalc = (width) => Math.min(
     7,
 );
 
-function BookmarksViewer({ activeFolderId, searchRequest }) {
+function BookmarksViewer({ searchService: service }) {
     const classes = useStyles();
     const bookmarksStore = useBookmarksService();
     const coreService = useCoreService();
@@ -61,18 +61,18 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
         store.requestId += 1;
         const currentRequestId = store.requestId;
 
-        BookmarksUniversalService.query(searchRequest)
+        BookmarksUniversalService.query(service.searchRequest)
             .then((result) => {
                 if (currentRequestId !== store.requestId) return;
 
-                console.log('query:', result, searchRequest);
+                console.log('query:', result, service.searchRequest);
 
                 store.bestBookmarks = result.best;
                 store.allBookmarks = result.all;
                 store.existMatches = ((result.best?.length || 0) + result.all.length) !== 0;
                 store.loadState = FETCH.DONE;
             });
-    }, [searchRequest, bookmarksStore.lastTruthSearchTimestamp]);
+    }, [service.searchRequest, bookmarksStore.lastTruthSearchTimestamp]);
 
     return (
         <Box className={classes.root} ref={ref}>
@@ -81,7 +81,7 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                 [
                     store.existMatches && (
                         <Fragment key="exist-matches">
-                            {(searchRequest.usedFields.query || searchRequest.usedFields.tags) && (
+                            {(service.searchRequest.usedFields.query || service.searchRequest.usedFields.tags) && (
                                 <Fragment>
                                     <Header title={t('search.bestMatches')} />
                                     {store.bestBookmarks && store.bestBookmarks.length !== 0 ? (
@@ -105,7 +105,7 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                             </Box>
                         </Fragment>
                     ),
-                    (searchRequest.usedFields.query || searchRequest.usedFields.tags) && !store.existMatches && (
+                    (service.searchRequest.usedFields.query || service.searchRequest.usedFields.tags) && !store.existMatches && (
                         <Stub
                             key="nothing-found"
                             message={t('search.nothingFound')}
@@ -113,7 +113,7 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                             classes={{ title: classes.title }}
                         />
                     ),
-                    !searchRequest.usedFields.query && !searchRequest.usedFields.tags && !store.existMatches && (
+                    !service.searchRequest.usedFields.query && !service.searchRequest.usedFields.tags && !store.existMatches && (
                         <Stub
                             key="empty"
                             message={t('empty')}
@@ -122,7 +122,7 @@ function BookmarksViewer({ activeFolderId, searchRequest }) {
                             <Button
                                 onClick={() => coreService.localEventBus.call(
                                     'bookmark/create',
-                                    { defaultFolderId: activeFolderId },
+                                    { defaultFolderId: service.activeFolderId },
                                 )}
                                 startIcon={<AddBookmarkIcon />}
                                 variant="contained"

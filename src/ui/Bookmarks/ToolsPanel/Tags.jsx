@@ -3,6 +3,7 @@ import { Box } from '@material-ui/core';
 import Tags from '@/ui/Bookmarks/Tags';
 import { makeStyles } from '@material-ui/core/styles';
 import { LabelRounded as TagIcon } from '@material-ui/icons';
+import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -20,20 +21,20 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function TagsSearch({ searchRequest, onResearch }) {
+function TagsSearch({ searchService: service }) {
     const classes = useStyles();
 
     return (
         <Box className={classes.root}>
             <TagIcon className={classes.icon} />
             <Tags
-                onlyFavorites={searchRequest.onlyFavorites}
-                value={searchRequest.tags}
+                // onlyFavorites={service.onlyFavorites}
+                value={service.tags}
                 usePopper
-                onChange={(tags) => onResearch({ tags })}
+                onChange={(tags) => service.updateRequest({ tags })}
             />
         </Box>
     );
 }
 
-export default TagsSearch;
+export default observer(TagsSearch);

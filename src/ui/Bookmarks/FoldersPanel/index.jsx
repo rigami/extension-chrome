@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false, onlyFavorites = false }) {
+function FoldersPanel({ searchService: service }) {
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
     const bookmarksStore = useBookmarksService();
@@ -77,36 +77,36 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
     }));
 
     useEffect(() => {
-        if (selectFolderId === null) return;
+        if (service.activeFolderId === null) return;
 
         store.folderState = FETCH.PENDING;
         store.childFoldersState = FETCH.PENDING;
         store.pathState = FETCH.PENDING;
 
-        FoldersUniversalService.get(selectFolderId)
+        FoldersUniversalService.get(service.activeFolderId)
             .then((folder) => {
                 store.folder = folder;
                 store.folderState = FETCH.DONE;
             });
 
-        FoldersUniversalService.getFoldersByParent(selectFolderId)
+        FoldersUniversalService.getFoldersByParent(service.activeFolderId)
             .then((folders) => {
                 store.childFolders = folders;
                 store.childFoldersState = FETCH.DONE;
             });
-    }, [selectFolderId, bookmarksStore.lastTruthSearchTimestamp]);
+    }, [service.activeFolderId, bookmarksStore.lastTruthSearchTimestamp]);
 
     return (
         <Box className={classes.root} pt={1} pb={2}>
             <CardHeader
                 avatar={(
-                    selectFolderId === 1 || searchEverywhere ? (
+                    service.activeFolderId === 1 || service.searchEverywhere ? (
                         <LogoIcon className={classes.icon} />
                     ) : (
                         <Tooltip title={t('common:button.back')}>
                             <IconButton
                                 className={classes.backButton}
-                                onClick={() => onSelectFolder(store.folder?.parentId || 1)}
+                                onClick={() => service.setActiveFolder(store.folder?.parentId || 1)}
                             >
                                 <BackIcon className={classes.icon} />
                             </IconButton>
@@ -115,7 +115,7 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
                 )}
                 title={stateRender(
                     store.folderState,
-                    searchEverywhere ? 'rigami' : (store.folder?.name || t('unknown')),
+                    service.searchEverywhere ? 'rigami' : (store.folder?.name || t('unknown')),
                     t('common:loading'),
                     'failed load',
                 )}
@@ -125,19 +125,21 @@ function FoldersPanel({ selectFolderId, onSelectFolder, searchEverywhere = false
                     title: classes.title,
                 }}
             />
-            {!searchEverywhere && store.childFolders && store.childFolders.length !== 0 && (
+            {!service.searchEverywhere && store.childFolders && store.childFolders.length !== 0 && (
                 <List disablePadding>
                     {store.childFolders.map((folder) => (
                         <FolderItem
                             key={folder.id}
                             id={folder.id}
                             name={folder.name}
-                            onClick={() => onSelectFolder(folder.id)}
+                            onClick={() => service.setActiveFolder(folder.id)}
                         />
                     ))}
                 </List>
             )}
-            {searchEverywhere && (<Stub message={t('bookmark:search.everywhere', { context: 'description' })} />)}
+            {service.searchEverywhere && (
+                <Stub message={t('bookmark:search.everywhere', { context: 'description' })} />
+            )}
         </Box>
     );
 }
