@@ -121,12 +121,6 @@ function Tags(props) {
                     if (onCreate) onCreate(newId);
                 }}
             />
-            {tags.length === 0 && (
-                <Box className={classes.arrowBlock}>
-                    <ArrowIcon />
-                    {t('button.add', { context: 'first' })}
-                </Box>
-            )}
         </React.Fragment>
     );
 

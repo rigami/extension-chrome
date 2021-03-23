@@ -2,7 +2,6 @@ import React from 'react';
 import { Box } from '@material-ui/core';
 import Tags from '@/ui/Bookmarks/Tags';
 import { makeStyles } from '@material-ui/core/styles';
-import { LabelRounded as TagIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
@@ -26,7 +25,6 @@ function TagsSearch({ searchService: service }) {
 
     return (
         <Box className={classes.root}>
-            <TagIcon className={classes.icon} />
             <Tags
                 onlyFavorites={service.onlyFavorites}
                 value={service.tags}
