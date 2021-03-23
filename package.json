@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "0.3.81",
+    "version": "0.3.82",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
@@ -43,6 +43,7 @@
         "mobx": "^6.1.8",
         "mobx-react-lite": "^3.2.0",
         "notistack": "^1.0.5",
+        "object-hash": "^2.1.1",
         "prop-types": "^15.7.2",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",

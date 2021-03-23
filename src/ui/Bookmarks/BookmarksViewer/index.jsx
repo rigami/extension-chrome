@@ -73,26 +73,28 @@ function BookmarksViewer({ searchService: service }) {
     });
 
     useEffect(() => {
+        store.loadState = FETCH.PENDING;
         store.requestId += 1;
         const currentRequestId = store.requestId;
-        let isDoneRequest = false;
+        // let isDoneRequest = false;
 
-        setTimeout(() => {
+        // TODO Wait before re-render. Now BookmarksGrid is slowly render
+        /* setTimeout(() => {
             if (currentRequestId !== store.requestId || isDoneRequest) return;
 
             store.loadState = FETCH.PENDING;
-        }, 100);
+        }, 100); */
 
         BookmarksUniversalService.query(service.searchRequest)
             .then((result) => {
                 if (currentRequestId !== store.requestId) return;
 
-                isDoneRequest = true;
+                // isDoneRequest = true;
                 console.log('query:', result, service.searchRequest);
 
-                store.existMatches = ((result.best?.length || 0) + result.all.length) !== 0;
                 store.bestBookmarks = result.best && sortByFavorites(result.best);
                 store.allBookmarks = result.all && sortByFavorites(result.all);
+                store.existMatches = ((result.best?.length || 0) + result.all.length) !== 0;
                 store.loadState = FETCH.DONE;
             });
     }, [service.searchRequest, bookmarksService.lastTruthSearchTimestamp]);
