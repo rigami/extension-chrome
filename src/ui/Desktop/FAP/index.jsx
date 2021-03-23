@@ -167,7 +167,7 @@ function FAP() {
                     {store.maxCount.length !== 0 && store.favorites.slice(0, store.maxCount).map((fav) => {
                         let a11props = {
                             ...fav,
-                            key: `${fav.type}-${fav.id}`,
+                            key: `${fav.constructor.name}-${fav.id}`,
                             isBlurBackdrop: fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT,
                         };
 
