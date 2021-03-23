@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Bookmarks({ onScroll }) {
+function Bookmarks({ onScroll, active }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const coreService = useCoreService();
@@ -50,6 +50,7 @@ function Bookmarks({ onScroll }) {
         draftSearchRequest: {},
         lastScrollEventTime: 0,
         scroll: null,
+        isRender: active,
     }));
 
     const contextMenu = () => [
@@ -82,6 +83,14 @@ function Bookmarks({ onScroll }) {
 
         return () => removeEventListener('wheel', wheelHandler);
     }, []);
+
+    useEffect(() => {
+        if (active) store.isRender = true;
+    }, [active]);
+
+    if (!store.isRender) {
+        return null;
+    }
 
     return (
         <Box

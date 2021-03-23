@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     RefreshRounded as RefreshIcon,
     AddPhotoAlternateRounded as UploadFromComputerIcon,
@@ -19,6 +19,7 @@ import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem, ContextMenuDivider } from '@/stores/app/entities/contextMenu';
 import FAP from '@/ui/Desktop/FAP';
 import { DIRECTION } from '@/ui/GlobalScroll';
+import { SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
 import Background from './Background';
 import Widgets from './Widgets';
 
@@ -45,6 +46,7 @@ function Desktop({ active, onScroll, onTryScrollCallback }) {
     const appService = useAppService();
     const { widgets, backgrounds } = appService;
     const coreService = useCoreService();
+    const store = useLocalObservable(() => ({ isRender: active }));
 
     const contextMenu = () => [
         new ContextMenuItem({
@@ -119,6 +121,14 @@ function Desktop({ active, onScroll, onTryScrollCallback }) {
             onTryScrollCallback(null);
         }
     }, [coreService.storage.temp.closeFapPopper]);
+
+    useEffect(() => {
+        if (active) store.isRender = true;
+    }, [active]);
+
+    if (!store.isRender) {
+        return null;
+    }
 
     return (
         <Box className={classes.root}>
