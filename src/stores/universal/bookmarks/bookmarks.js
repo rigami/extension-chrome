@@ -1,4 +1,4 @@
-import { action, toJS } from 'mobx';
+import { action } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
@@ -11,8 +11,6 @@ import { SearchQuery } from './searchQuery';
 class BookmarksUniversalService {
     @action('get bookmark')
     static async get(bookmarkId) {
-        console.log('get bookmark', bookmarkId);
-
         const bookmark = await DBConnector().get('bookmarks', bookmarkId);
 
         return new Bookmark(bookmark);

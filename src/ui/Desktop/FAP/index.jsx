@@ -1,24 +1,13 @@
-import React, {
-    useState,
-    useEffect,
-    useCallback,
-} from 'react';
-import {
-    Card,
-    Fade,
-    Box,
-} from '@material-ui/core';
+import React, { useCallback, useEffect } from 'react';
+import { Box, Card, Fade } from '@material-ui/core';
 import { useResizeDetector } from 'react-resize-detector';
 import { makeStyles } from '@material-ui/core/styles';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import {
-    ACTIVITY,
-    BKMS_FAP_ALIGN,
-    BKMS_FAP_POSITION,
-    BKMS_FAP_STYLE,
+    ACTIVITY, BKMS_FAP_ALIGN, BKMS_FAP_POSITION, BKMS_FAP_STYLE,
 } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
@@ -27,6 +16,7 @@ import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
 import TagEntity from '@/stores/universal/bookmarks/entities/tag';
 import useAppService from '@/stores/app/AppStateProvider';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import asyncAction from '@/utils/asyncAction';
 import Folder from './Folder';
 import Tag from './Tag';
 import Link from './Link';
@@ -95,31 +85,36 @@ function FAP() {
     const classes = useStyles();
     const appService = useAppService();
     const bookmarksService = useBookmarksService();
-    const [favorites, setFavorites] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [maxCount, setMaxCount] = useState(0);
+    const store = useLocalObservable(() => ({
+        favorites: [],
+        isLoading: true,
+        maxCount: 0,
+    }));
     const fapSettings = bookmarksService.settings;
 
     const onResize = useCallback((width) => {
-        setMaxCount(Math.max(Math.floor((width + 16) / 56) - 1, 0));
+        store.maxCount = Math.max(Math.floor((width + 16) / 56) - 1, 0);
     }, []);
 
     const { ref } = useResizeDetector({ onResize });
 
     useEffect(() => {
         if (bookmarksService.favorites.length === 0) {
-            setFavorites([]);
+            store.favorites = [];
             return;
         }
 
-        if (favorites.length >= maxCount) {
-            setFavorites(favorites.slice(0, maxCount));
+        /* if (store.favorites.length >= store.maxCount) {
+            store.favorites = store.favorites.slice(0, store.maxCount);
 
             return;
-        }
+        } */
 
-        Promise.allSettled(
-            bookmarksService.favorites.slice(0, maxCount).map((fav) => {
+        console.log('start fap load');
+        console.time('fap load');
+
+        asyncAction(async () => {
+            const queue = bookmarksService.favorites.slice(0, store.maxCount).map((fav) => {
                 if (fav.itemType === 'bookmark') {
                     return BookmarksUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'folder') {
@@ -129,33 +124,29 @@ function FAP() {
                 }
 
                 return Promise.reject();
-            }),
-        )
+            });
+
+            return Promise.allSettled(queue)
+                .then((res) => res
+                    .filter(({ status }) => status === 'fulfilled')
+                    .map(({ value }) => value))
+                .catch(console.error);
+        })
             .then((findFavorites) => {
-                setFavorites([
-                    ...findFavorites
-                        .filter(({ status }, index) => {
-                            if (status !== 'fulfilled') {
-                                bookmarksService.removeFromFavorites(bookmarksService.favorites[index]?.id);
-                                return false;
-                            } else {
-                                return true;
-                            }
-                        })
-                        .map(({ value }) => value),
-                ]);
-                setIsLoading(false);
+                console.timeEnd('fap load');
+                store.favorites = findFavorites;
+                store.isLoading = false;
             })
             .catch((e) => {
                 console.error('Failed load favorites', e);
-                setIsLoading(false);
+                store.isLoading = false;
             });
-    }, [bookmarksService.favorites.length, maxCount]);
+    }, [bookmarksService.favorites.length, store.maxCount]);
 
-    const overload = maxCount < bookmarksService.favorites.length;
+    const overload = store.maxCount < bookmarksService.favorites.length;
 
     return (
-        <Fade in={!isLoading}>
+        <Fade in={!store.isLoading}>
             <Box
                 ref={ref}
                 className={clsx(
@@ -173,7 +164,7 @@ function FAP() {
                         appService.activity === ACTIVITY.BOOKMARKS && classes.contrastBackdrop,
                     )}
                 >
-                    {maxCount.length !== 0 && favorites.slice(0, maxCount).map((fav) => {
+                    {store.maxCount.length !== 0 && store.favorites.slice(0, store.maxCount).map((fav) => {
                         let a11props = {
                             ...fav,
                             key: `${fav.type}-${fav.id}`,
@@ -205,7 +196,7 @@ function FAP() {
                     })}
                     {overload && (
                         <CollapseTray
-                            offsetLoad={maxCount}
+                            offsetLoad={store.maxCount}
                             classes={{
                                 backdrop: clsx(
                                     classes.overload,
