@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import { SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
 import {
     pick,
     assign,
@@ -27,7 +27,7 @@ class BookmarksSearchService {
     constructor() {
         makeAutoObservable(this);
 
-        this._applyRequest = debounce(this.applyRequest, 400, { leading: true });
+        this._applyRequest = debounce(this.applyRequest, 300, { leading: true });
         this.searchRequest = new SearchQuery({
             query: this.query,
             tags: this.tags,

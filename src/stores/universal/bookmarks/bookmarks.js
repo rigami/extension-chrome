@@ -1,193 +1,21 @@
-import { action, computed } from 'mobx';
+import { action, toJS } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
 import FSConnector from '@/utils/fsConnector';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
-import Tag from '@/stores/universal/bookmarks/entities/tag';
-import { difference, values } from 'lodash';
-import asyncAction from '@/utils/asyncAction';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
-
-export const COMPARE = {
-    FULL: 'FULL',
-    PART: 'PART',
-    NONE: 'NONE',
-    IGNORE: 'IGNORE',
-};
-
-export class SearchQuery {
-    tags = [];
-    folderId = null;
-    query = '';
-    onlyFavorites = false;
-    _draftRequest;
-
-    constructor(request = {}) {
-        this._draftRequest = request;
-        if ('tags' in request) this.tags = request.tags;
-        if ('folderId' in request) this.folderId = request.folderId;
-        if ('query' in request) this.query = request.query.toLowerCase();
-        if ('onlyFavorites' in request) this.onlyFavorites = request.onlyFavorites;
-    }
-
-    @computed
-    get searchEverywhere() {
-        return !this.folderId;
-    }
-
-    @computed
-    get usedFields() {
-        return {
-            tags: this.tags.length !== 0,
-            folder: !!this.folderId,
-            query: this.query.length !== 0,
-            onlyFavorites: 'onlyFavorites' in this._draftRequest,
-        };
-    }
-
-    compare(bookmark) {
-        let folder;
-
-        if (!this.folderId) {
-            folder = COMPARE.IGNORE;
-        } else if (bookmark.folderId === this.folderId) {
-            folder = COMPARE.FULL;
-        } else {
-            return {
-                tags: COMPARE.IGNORE,
-                query: COMPARE.IGNORE,
-                favCompare: COMPARE.IGNORE,
-                folder: COMPARE.NONE,
-                summary: COMPARE.NONE,
-            };
-        }
-
-        let favCompare;
-
-        if (!('onlyFavorites' in this._draftRequest) || !this.onlyFavorites) {
-            favCompare = COMPARE.IGNORE;
-        } else if (this.onlyFavorites && FavoritesUniversalService.findFavorite({
-            itemType: 'bookmark',
-            itemId: bookmark.id,
-        })) {
-            favCompare = COMPARE.FULL;
-        } else {
-            return {
-                tags: COMPARE.IGNORE,
-                query: COMPARE.IGNORE,
-                favCompare: COMPARE.NONE,
-                folder,
-                summary: COMPARE.NONE,
-            };
-        }
-
-        let tags;
-
-        const sameTagsCount = difference(this.tags, bookmark.tags.map(({ id }) => id)).length;
-        if (this.tags.length === 0) {
-            tags = COMPARE.IGNORE;
-        } else if (sameTagsCount === 0 && bookmark.tags.length !== 0) {
-            tags = COMPARE.FULL;
-        } else if (sameTagsCount !== bookmark.tags.length && bookmark.tags.length !== 0) {
-            tags = COMPARE.PART;
-        } else {
-            tags = COMPARE.NONE;
-        }
-
-        let query;
-
-        if (this.query.length === 0) {
-            query = COMPARE.IGNORE;
-        } else {
-            query = [bookmark.url, bookmark.name, bookmark.description]
-                .map((bookmarkValue) => {
-                    if (bookmarkValue.toLowerCase() === this.query) {
-                        return COMPARE.FULL;
-                    } else if (bookmarkValue.toLowerCase().indexOf(this.query) !== -1) {
-                        return COMPARE.PART;
-                    } else {
-                        return COMPARE.NONE;
-                    }
-                });
-
-            if (query.some((value) => value === COMPARE.FULL)) {
-                query = COMPARE.FULL;
-            } else if (query.some((value) => value === COMPARE.PART)) {
-                query = COMPARE.PART;
-            } else {
-                query = COMPARE.NONE;
-            }
-        }
-
-        let summary;
-
-        if (
-            (tags === COMPARE.IGNORE || tags === COMPARE.FULL)
-            && (query === COMPARE.IGNORE || query === COMPARE.FULL)
-            && (tags !== COMPARE.IGNORE || query !== COMPARE.IGNORE)
-        ) {
-            summary = COMPARE.FULL;
-        } else if (
-            (tags !== COMPARE.IGNORE && tags !== COMPARE.NONE)
-            || (query !== COMPARE.IGNORE && query !== COMPARE.NONE)
-            || (query === COMPARE.IGNORE && tags === COMPARE.IGNORE)
-        ) {
-            summary = COMPARE.PART;
-        } else {
-            summary = COMPARE.NONE;
-        }
-
-        return {
-            tags,
-            query,
-            favCompare,
-            folder,
-            summary,
-        };
-    }
-}
+import getImageBlob from '@/utils/getImageBlob';
+import { search as searchLight } from '@/stores/universal/bookmarks/search';
+import { cloneDeep } from 'lodash';
+import { SearchQuery } from './searchQuery';
 
 class BookmarksUniversalService {
     @action('get bookmark')
-    static async get(bookmarkId, isFullLoad = true) {
-        const storesName = ['bookmarks', 'bookmarks_by_tags', 'tags'];
-        const tx = DBConnector().transaction(storesName, 'readonly');
-        const stores = {
-            bookmarks: tx.objectStore('bookmarks'),
-            bookmarks_by_tags: tx.objectStore('bookmarks_by_tags'),
-            tags: tx.objectStore('tags'),
-        };
+    static async get(bookmarkId) {
+        console.log('get bookmark', bookmarkId);
 
-        const getTag = (tagId) => asyncAction(async () => {
-            const tag = await stores.tags.get(tagId);
-            return new Tag(tag);
-        });
+        const bookmark = await DBConnector().get('bookmarks', bookmarkId);
 
-        const findTags = [];
-
-        const bookmark = await stores.bookmarks.get(bookmarkId);
-
-        if (isFullLoad) {
-            let cursor = await stores.bookmarks_by_tags.openCursor();
-
-            let cursorTagId;
-            let cursorBookmarkId;
-
-            while (cursor) {
-                cursorTagId = cursor.value.tagId;
-                cursorBookmarkId = cursor.value.bookmarkId;
-
-                if (cursorBookmarkId === bookmark.id) {
-                    const tag = await getTag(cursorTagId);
-                    findTags.push(tag);
-                }
-                cursor = await cursor.continue();
-            }
-        }
-
-        return new Bookmark({
-            ...bookmark,
-            tags: findTags,
-        });
+        return new Bookmark(bookmark);
     }
 
     @action('query feature bookmarks')
@@ -201,54 +29,8 @@ class BookmarksUniversalService {
         return Promise.all(bookmarksKeys.map(({ id }) => this.get(id)));
     }
 
-    @action('query bookmarks')
-    static async query(searchRequest = new SearchQuery()) {
-        console.time('query');
-        const bestMatches = {};
-        const allMatches = {};
-
-        let bookmarksKeys;
-
-        if (searchRequest.folderId) {
-            bookmarksKeys = await DBConnector().getAllFromIndex(
-                'bookmarks',
-                'folder_id',
-                searchRequest.folderId,
-            );
-        } else {
-            console.time('get bookmarks');
-            bookmarksKeys = await DBConnector().getAll('bookmarks');
-            console.timeEnd('get bookmarks');
-        }
-
-        console.time('enrich');
-        const bookmarks = await Promise.all(bookmarksKeys.map(({ id }) => this.get(id)));
-
-        bookmarks.forEach((bookmark) => {
-            const compare = searchRequest.compare(bookmark);
-
-            if (searchRequest.folderId && compare.folder === COMPARE.NONE) return;
-
-            if (compare.summary === COMPARE.FULL) {
-                bestMatches[bookmark.id] = bookmark;
-                allMatches[bookmark.id] = bookmark;
-            } else if (compare.summary === COMPARE.PART) {
-                allMatches[bookmark.id] = bookmark;
-            }
-        });
-
-        const { usedFields } = searchRequest;
-
-        console.timeEnd('enrich');
-        console.timeEnd('query');
-        return {
-            best: usedFields.query || usedFields.tags ? values(bestMatches) : null,
-            all: values(allMatches),
-        };
-    }
-
     @action('save bookmarks')
-    static async save(props, pushEvent = true) {
+    static async save(props) {
         const {
             url,
             name,
@@ -269,16 +51,14 @@ class BookmarksUniversalService {
             description: description && description.trim(),
             icoVariant,
             folderId,
+            tags,
         };
 
         let saveBookmarkId;
         let icoName = `${Date.now().toString()}`;
-        let oldTags = [];
 
         if (id) {
             const oldBookmark = await this.get(id);
-            oldTags = oldBookmark.tags.map((tag) => tag.id);
-
             icoName = oldBookmark.icoFileName || icoName;
 
             saveBookmarkId = await DBConnector().put('bookmarks', {
@@ -288,67 +68,27 @@ class BookmarksUniversalService {
             });
         } else {
             try {
-                saveBookmarkId = await DBConnector().add('bookmarks', {
+                const dataSave = cloneDeep({
                     ...saveData,
                     icoFileName: icoName,
                 });
+
+                // console.log('save:', dataSave);
+
+                saveBookmarkId = await DBConnector().add('bookmarks', dataSave);
             } catch (e) {
+                console.error(e);
                 throw new Error('Similar bookmark already exist');
             }
         }
-
-        const tagsNow = await DBConnector().getAllFromIndex(
-            'bookmarks_by_tags',
-            'bookmark_id',
-            saveBookmarkId,
-        );
-
-        await Promise.all(
-            tagsNow.map(({ tagId, id: bindId }) => {
-                if (~tags.indexOf(tagId)) return Promise.resolve();
-
-                return DBConnector().delete('bookmarks_by_tags', bindId);
-            }),
-        );
-
-        await Promise.all(
-            tags.map((tagId) => {
-                if (~oldTags.indexOf(tagId)) return Promise.resolve();
-
-                return DBConnector().add('bookmarks_by_tags', {
-                    tagId,
-                    bookmarkId: saveBookmarkId,
-                });
-            }),
-        );
 
         if (imageBase64 || (imageURL && imageURL.substring(0, 11) !== 'filesystem:')) {
             let blob;
 
             if (imageBase64) {
-                const base64Response = await fetch(imageBase64);
-                blob = await base64Response.blob();
+                blob = await (await fetch(imageBase64)).blob();
             } else {
-                const img = await new Promise((resolve, reject) => {
-                    const imgLoad = document.createElement('img');
-                    imgLoad.crossOrigin = 'anonymous';
-                    imgLoad.src = imageURL;
-
-                    imgLoad.onload = () => resolve(imgLoad);
-                    imgLoad.onerror = reject;
-                });
-
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-
-                const context = canvas.getContext('2d');
-
-                context.drawImage(img, 0, 0);
-
-                blob = await new Promise((resolve) => {
-                    canvas.toBlob(resolve, 'image/png');
-                });
+                blob = await getImageBlob(imageURL);
             }
 
             await FSConnector.saveFile('/bookmarksIcons', blob, icoName);
@@ -377,20 +117,23 @@ class BookmarksUniversalService {
         const oldBookmark = await DBConnector().get('bookmarks', bookmarkId);
         await DBConnector().delete('bookmarks', bookmarkId);
 
-        const removeBinds = await DBConnector().getAllFromIndex(
-            'bookmarks_by_tags',
-            'bookmark_id',
-            bookmarkId,
-        );
-
-        await Promise.all(removeBinds.map(({ id }) => DBConnector().delete('bookmarks_by_tags', id)));
-
         try {
             await FSConnector.removeFile('/bookmarksIcons', oldBookmark.icoFileName);
         } catch (e) {
             console.log('Failed remove bookmark icon', e);
         }
     }
+
+    @action('query bookmarks')
+    static async query(searchRequest) {
+        try {
+            return searchLight(searchRequest);
+        } catch (e) {
+            console.error(e);
+        }
+    }
 }
+
+export { SearchQuery };
 
 export default BookmarksUniversalService;

@@ -8,7 +8,7 @@ export default {
     version: packageFile.version,
     db: {
         name: 'rigami',
-        version: 7,
+        version: 8,
     },
     fs: { root: `chrome-extension://${chrome.runtime.id}/persistent/` },
     maxUploadFiles: 15,

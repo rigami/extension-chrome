@@ -21,7 +21,7 @@ class BookmarksStore {
 
     @action('save bookmarks')
     async save(props) {
-        const saveBookmarkId = await BookmarksUniversalService.save(props);
+        const saveBookmarkId = await BookmarksUniversalService.save(props).catch(console.error);
 
         this._coreService.globalEventBus.call('bookmark/new', DESTINATION.APP, { bookmarkId: saveBookmarkId });
 

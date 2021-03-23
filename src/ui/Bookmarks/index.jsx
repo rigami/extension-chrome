@@ -7,7 +7,7 @@ import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
 import ToolsPanel from '@/ui/Bookmarks/ToolsPanel';
 import FolderBreadcrumbs from '@/ui/Bookmarks/FolderBreadcrumbs';
 import Scrollbar from '@/ui-components/CustomScroll';
-import { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import { SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem } from '@/stores/app/entities/contextMenu';

@@ -1,4 +1,5 @@
 import { BG_SOURCE, BG_TYPE } from '@/enum';
+import { difference } from 'lodash';
 
 async function upgradeOrCreateBackgrounds(db, transaction) {
     let store;
@@ -75,6 +76,10 @@ async function upgradeOrCreateBookmarks(db, transaction) {
             ...bookmark,
             folderId: bookmark.folderId || 1,
         }));
+    }
+
+    if (!store.indexNames.contains('tags')) {
+        store.createIndex('tags', 'tags', { unique: false });
     }
 
     return store;
@@ -188,8 +193,8 @@ async function upgradeOrCreateFavorites(db, transaction) {
 async function migrate(db, version) {
     console.log('Migrate!');
 
-    if (version === 7) {
-        console.log('Rename tags to tags');
+    if (version <= 7) {
+        console.log('Rename categories to tags...');
         const categories = await db.getAll('categories');
         const bookmarksByCategories = await db.getAll('bookmarks_by_categories');
 
@@ -208,6 +213,23 @@ async function migrate(db, version) {
         await db.deleteObjectStore('categories');
         await db.deleteObjectStore('bookmarks_by_categories');
     }
+
+    if (version <= 8) {
+        console.log('Remove bookmarks_by_tags...');
+        const bookmarks = await db.getAll('bookmarks');
+        const bookmarksByTags = await db.getAll('bookmarks_by_categories');
+
+        bookmarks.forEach((bookmark) => {
+            const tags = bookmarksByTags.filter(({ bookmarkId }) => bookmarkId === bookmark.id).map(({ tagId }) => tagId);
+
+            db.put('bookmarks', {
+                ...bookmark,
+                tags,
+            });
+        });
+
+        await db.deleteObjectStore('bookmarks_by_tags');
+    }
 }
 
 export default ({ upgrade }) => ({
@@ -217,7 +239,7 @@ export default ({ upgrade }) => ({
         upgradeOrCreateBookmarks(db, transaction);
         upgradeOrCreateSystemBookmarks(db, transaction);
         upgradeOrCreateTags(db, transaction);
-        upgradeOrCreateBookmarksByTags(db, transaction);
+        if (oldVersion !== 0 && oldVersion <= 7) upgradeOrCreateBookmarksByTags(db, transaction);
         upgradeOrCreateFolders(db, transaction).catch(console.error);
         upgradeOrCreateFavorites(db, transaction);
 

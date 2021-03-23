@@ -56,7 +56,7 @@ class BookmarkEditor {
                     this.useDescription = !!bookmark.description?.trim();
                     if (this.useDescription) this.description = bookmark.description;
                     this.folderId = bookmark.folderId;
-                    this.tags = (bookmark.tags || []).map((tag) => tag.id);
+                    this.tags = bookmark.tags || [];
                     this.defaultImage = {
                         url: bookmark.imageUrl,
                         icoVariant: bookmark.icoVariant,
