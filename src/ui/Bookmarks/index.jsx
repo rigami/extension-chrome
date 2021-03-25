@@ -16,7 +16,12 @@ import { useTranslation } from 'react-i18next';
 import BookmarksSearchService from '@/ui/Bookmarks/BookmarksSearchService';
 
 const useStyles = makeStyles((theme) => ({
-    root: {},
+    root: {
+        backgroundColor: theme.palette.background.paper,
+        transform: 'translate3d(0,0,0)',
+        display: 'flex',
+        flexDirection: 'row',
+    },
     chipContainer: { },
     container: {
         paddingTop: theme.spacing(3),
@@ -95,7 +100,9 @@ function Bookmarks({ onScroll, active }) {
 
     return (
         <Box
-            className={classes.root} display="flex" flexGrow={1}
+            className={classes.root}
+            display="flex"
+            flexGrow={1}
             onContextMenu={appService.contextMenu(contextMenu)}
         >
             <FoldersPanel searchService={service} />

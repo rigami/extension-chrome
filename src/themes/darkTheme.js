@@ -19,7 +19,7 @@ export default createMuiTheme(merge(
             snackbar: { default: fade('#fff', 0.95) },
             background: {
                 paper: '#151515',
-                backdrop: '#dadada',
+                backdrop: '#1d1d1d',
             },
         },
         overrides: {

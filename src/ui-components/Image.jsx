@@ -13,9 +13,9 @@ const useStyles = makeStyles((theme) => ({
     roundedIconStub: { borderRadius: theme.shape.borderRadiusBold },
     roundedIcon: {
         borderRadius: theme.shape.borderRadiusBold,
-        color: theme.palette.getContrastText(theme.palette.common.white),
+        color: theme.palette.getContrastText(theme.palette.background.backdrop),
         fontWeight: 800,
-        backgroundColor: theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[100],
+        backgroundColor: theme.palette.background.backdrop,
         fontFamily: theme.typography.primaryFontFamily,
     },
 }));

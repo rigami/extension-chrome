@@ -16,7 +16,6 @@ import InitAppProvider from '@/stores/app/InitApp';
 import initSentry from '@/config/sentry';
 import * as Sentry from '@sentry/react';
 import ScrollView from '@/ui-components/ScrollView';
-import { makeStyles } from '@material-ui/core/styles';
 import FabMenu from '@/ui/Menu/FabMenu';
 import Menu from '@/ui/Menu';
 import Bookmarks from './Bookmarks';
@@ -26,18 +25,7 @@ import GlobalModals from './GlobalModals';
 
 initSentry(DESTINATION.APP);
 
-const useStyles = makeStyles((theme) => ({
-    bookmarks: {
-        backgroundColor: theme.palette.background.paper,
-        transform: 'translate3d(0,0,0)',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-}));
-
 function RootApp({ onChangeTheme }) {
-    const classes = useStyles();
-
     return (
         <Nest
             components={[
@@ -61,7 +49,7 @@ function RootApp({ onChangeTheme }) {
                 <ScrollView value={ACTIVITY.DESKTOP}>
                     <Desktop />
                 </ScrollView>
-                <ScrollView value={ACTIVITY.BOOKMARKS} classes={{ content: classes.bookmarks }}>
+                <ScrollView value={ACTIVITY.BOOKMARKS}>
                     <Bookmarks />
                 </ScrollView>
             </GlobalScroll>

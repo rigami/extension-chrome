@@ -6,7 +6,7 @@ import {
     List,
     Tooltip,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import { ArrowBackRounded as BackIcon } from '@material-ui/icons';
 import LogoIcon from '@/images/logo-icon.svg';
 import { useLocalObservable, observer } from 'mobx-react-lite';
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         height: '100vh',
         position: 'sticky',
         top: 0,
-        backgroundColor: theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[50],
+        backgroundColor: fade(theme.palette.background.backdrop, 0.4),
     },
     bottomOffset: { marginTop: 'auto' },
     favorite: {

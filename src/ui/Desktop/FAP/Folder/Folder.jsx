@@ -141,6 +141,7 @@ function Folder(props) {
                 if (shrink) onBack();
             }}
             onContextMenu={appService.contextMenu(contextMenu)}
+            elevation={0}
         >
             <CardHeader
                 avatar={(

@@ -20,7 +20,7 @@ const theme = {
             contrastText: '#fff',
         },
         snackbar: { default: fade('#fff', 0.95) },
-        background: { backdrop: '#dadada' },
+        background: { backdrop: '#ececec' },
     },
     shape: {
         borderRadius: 4,
