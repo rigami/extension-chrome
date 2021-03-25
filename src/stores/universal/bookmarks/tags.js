@@ -22,6 +22,7 @@ class TagsUniversalService {
 
     @action('save tag')
     static async save({ name, id, color }) {
+        const oldTag = id ? await this.get(id) : {};
         let newColor;
 
         if (!id) {
@@ -29,7 +30,7 @@ class TagsUniversalService {
             newColor = color || getUniqueColor(last(allIds));
             newColor = color || getUniqueColor((last(allIds) || 0) + 1);
         } else {
-            newColor = color || this.get(id).color;
+            newColor = color || oldTag.color;
         }
 
         const similarTag = await DBConnector().getFromIndex('tags', 'name', name.trim());

@@ -13,12 +13,8 @@ class TagsStore {
     }
 
     @action('save tag')
-    async save({ name, id, color }) {
-        const newTagId = await TagsUniversalService.save({
-            name,
-            id,
-            color,
-        });
+    async save(tag) {
+        const newTagId = await TagsUniversalService.save(tag);
 
         this._coreService.globalEventBus.call('tag/new', DESTINATION.APP, { tagId: newTagId });
 
