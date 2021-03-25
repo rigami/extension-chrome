@@ -70,6 +70,7 @@ function Bookmarks({ onScroll, active }) {
     ];
 
     const wheelHandler = () => {
+        if (!store.scroll?.scrollerElement) return;
         const nowScrollEventTime = performance.now();
         const delta = nowScrollEventTime - store.lastScrollEventTime;
         store.lastScrollEventTime = nowScrollEventTime;

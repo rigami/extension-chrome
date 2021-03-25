@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
     leftAlign: { marginLeft: 0 },
     backdrop: {
         backdropFilter: 'blur(40px) brightness(110%)  contrast(1.2) invert(0.06)',
-        backgroundColor: fade(theme.palette.background.default, 0.12),
+        backgroundColor: fade(theme.palette.background.backdrop, 0.22),
         marginBottom: theme.spacing(3),
     },
     link: {

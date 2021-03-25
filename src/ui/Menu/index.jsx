@@ -4,6 +4,7 @@ import {
     Backdrop,
     Portal,
     Slide,
+    Box,
 } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
@@ -13,6 +14,7 @@ import Scrollbar from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
 import useAppService from '@/stores/app/AppStateProvider';
 import { ACTIVITY } from '@/enum';
+import { useTheme } from '@material-ui/styles';
 import HomePage, { header as homePageHeader } from './Settings';
 
 const useStyles = makeStyles((theme) => ({
@@ -25,9 +27,10 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
         marginRight: theme.spacing(2),
-        marginLeft: 'auto',
+        marginLeft: theme.spacing(2),
         borderRadius: theme.shape.borderRadius,
-        boxShadow: theme.shadows[20],
+        boxShadow: `0px 4px ${theme.spacing(2)}px #00000017`,
+        // boxShadow: theme.shadows[20],
         pointerEvents: 'auto',
     },
     trackY: {
@@ -44,14 +47,13 @@ const useStyles = makeStyles((theme) => ({
         top: 0,
         right: 0,
         bottom: 0,
-        left: 0,
         zIndex: theme.zIndex.modal,
-        pointerEvents: 'none',
     },
 }));
 
 function Menu({ }) {
     const classes = useStyles();
+    const theme = useTheme();
     const coreService = useCoreService();
     const appService = useAppService();
     const [isOpen, setIsOpen] = useState(false);
@@ -101,25 +103,26 @@ function Menu({ }) {
                 className={clsx(classes.backdrop, appService.activity === ACTIVITY.BOOKMARKS && classes.darkBackdrop)}
             />
             <Slide in={isOpen} direction="left">
-                <Scrollbar
-                    className={classes.drawer}
-                    classes={{
-                        trackY: classes.trackY,
-                        thumbY: classes.thumbY,
-                    }}
-                >
-                    <List
-                        disablePadding
-                        className={classes.list}
-                        style={{ width: pageProps.width || 520 }}
+                <Box className={classes.drawer} style={{ width: (pageProps.width || 520) + theme.spacing(2) * 2 }}>
+                    <Scrollbar
+                        classes={{
+                            trackY: classes.trackY,
+                            thumbY: classes.thumbY,
+                        }}
                     >
-                        <Header onBack={handleBack} {...headerProps} />
-                        <Page
-                            onClose={handleBack}
-                            onSelect={(page) => setStack([...stack, page])}
-                        />
-                    </List>
-                </Scrollbar>
+                        <List
+                            disablePadding
+                            className={classes.list}
+                            style={{ width: pageProps.width || 520 }}
+                        >
+                            <Header onBack={handleBack} {...headerProps} />
+                            <Page
+                                onClose={handleBack}
+                                onSelect={(page) => setStack([...stack, page])}
+                            />
+                        </List>
+                    </Scrollbar>
+                </Box>
             </Slide>
         </Portal>
     );

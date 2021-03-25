@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     card: {
         borderRadius: theme.shape.borderRadius,
         backdropFilter: 'blur(10px) brightness(200%)',
-        backgroundColor: fade(theme.palette.background.default, 0.52),
+        backgroundColor: fade(theme.palette.background.backdrop, 0.52),
         display: 'flex',
         flexDirection: 'column',
         marginTop: theme.spacing(2),
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(0.5),
         marginBottom: theme.spacing(0.5),
     },
-    outline: { boxShadow: `0px 0px 0px 1px ${theme.palette.divider}` },
+    // outline: { boxShadow: `0px 0px 0px 1px ${theme.palette.divider}` },
 }));
 
 function Group({ children, ...other }) {
@@ -79,7 +79,7 @@ function Group({ children, ...other }) {
 
     return (
         <Card
-            className={clsx(classes.card, appService.activity !== ACTIVITY.DESKTOP && classes.outline)}
+            className={clsx(classes.card /* appService.activity !== ACTIVITY.DESKTOP && classes.outline */)}
             elevation={0}
             {...other}
         >
