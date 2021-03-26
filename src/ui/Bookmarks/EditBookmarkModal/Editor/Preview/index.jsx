@@ -1,23 +1,23 @@
-import React, { useEffect, Fragment, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
     CardMedia,
     Box,
-    CircularProgress, Typography, Button, Collapse, Fade, Badge,
+    CircularProgress,
+    Typography,
+    Button,
+    Fade,
+    Badge,
 } from '@material-ui/core';
-import { WarningRounded as WarnIcon, LinkRounded as URLIcon, DoneRounded as SelectIcon } from '@material-ui/icons';
-
+import { LinkRounded as URLIcon, DoneRounded as SelectIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import Stub from '@/ui-components/Stub';
 import { useTranslation } from 'react-i18next';
-import { BKMS_VARIANT, FETCH } from '@/enum';
+import { FETCH } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import Scrollbar from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
 import ResizeDetector, { useResizeDetector } from 'react-resize-detector';
-import { getNextImage } from '@/utils/checkIcons';
-import asyncAction from '@/utils/asyncAction';
-import { toJS } from 'mobx';
 import { STATE_EDITOR } from '@/ui/Bookmarks/EditBookmarkModal/Editor/BookmarkEditor';
 
 const useStyles = makeStyles((theme) => ({
@@ -86,6 +86,7 @@ const useStyles = makeStyles((theme) => ({
     badge: { '& svg': { fontSize: '1rem' } },
     badgePlace: { transform: 'scale(1) translate(30%, -40%)' },
     badgeInvisiblePlace: { transform: 'scale(0) translate(30%, -40%) !important' },
+    hideList: { display: 'none' },
 }));
 
 function PreviewCard(props) {
@@ -256,6 +257,10 @@ function Preview({ editorService: service }) {
                                 className={clsx(
                                     classes.shortList,
                                     store.lockList && classes.lockList,
+                                    (
+                                        service.state === STATE_EDITOR.PARSING_SITE
+                                        || store.primaryImagesState === FETCH.PENDING
+                                    ) && classes.hideList,
                                 )}
                                 style={{
                                     transform: `translateY(${
