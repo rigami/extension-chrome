@@ -59,21 +59,17 @@ class BookmarksUniversalService {
             const oldBookmark = await this.get(id);
             icoName = oldBookmark.icoFileName || icoName;
 
-            saveBookmarkId = await DBConnector().put('bookmarks', {
+            saveBookmarkId = await DBConnector().put('bookmarks', cloneDeep({
                 id,
                 ...saveData,
                 icoFileName: oldBookmark.icoFileName,
-            });
+            }));
         } else {
             try {
-                const dataSave = cloneDeep({
+                saveBookmarkId = await DBConnector().add('bookmarks', cloneDeep({
                     ...saveData,
                     icoFileName: icoName,
-                });
-
-                // console.log('save:', dataSave);
-
-                saveBookmarkId = await DBConnector().add('bookmarks', dataSave);
+                }));
             } catch (e) {
                 console.error(e);
                 throw new Error('Similar bookmark already exist');
