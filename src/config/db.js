@@ -194,33 +194,13 @@ async function migrate(db, version) {
     console.log('Migrate!');
 
     if (version <= 7) {
-        console.log('Rename categories to tags...');
+        console.log('Remove bookmarks_by_categories...');
         const categories = await db.getAll('categories');
+        const bookmarks = await db.getAll('bookmarks');
         const bookmarksByCategories = await db.getAll('bookmarks_by_categories');
 
-        await Promise.all(categories.map((tag) => db.put('tags', {
-            id: tag.id,
-            name: tag.name,
-            color: tag.color,
-        })));
-
-        await Promise.all(bookmarksByCategories.map((bind) => db.put('bookmarks_by_tags', {
-            id: bind.id,
-            tagId: bind.categoryId,
-            bookmarkId: bind.bookmarkId,
-        })));
-
-        await db.deleteObjectStore('categories');
-        await db.deleteObjectStore('bookmarks_by_categories');
-    }
-
-    if (version <= 8) {
-        console.log('Remove bookmarks_by_tags...');
-        const bookmarks = await db.getAll('bookmarks');
-        const bookmarksByTags = await db.getAll('bookmarks_by_categories');
-
         bookmarks.forEach((bookmark) => {
-            const tags = bookmarksByTags.filter(({ bookmarkId }) => bookmarkId === bookmark.id).map(({ tagId }) => tagId);
+            const tags = bookmarksByCategories.filter(({ bookmarkId }) => bookmarkId === bookmark.id).map(({ tagId }) => tagId);
 
             db.put('bookmarks', {
                 ...bookmark,
@@ -228,7 +208,14 @@ async function migrate(db, version) {
             });
         });
 
-        await db.deleteObjectStore('bookmarks_by_tags');
+        await Promise.all(categories.map((tag) => db.put('tags', {
+            id: tag.id,
+            name: tag.name,
+            color: tag.color,
+        })));
+
+        await db.deleteObjectStore('categories');
+        await db.deleteObjectStore('bookmarks_by_categories');
     }
 }
 
@@ -239,7 +226,7 @@ export default ({ upgrade }) => ({
         upgradeOrCreateBookmarks(db, transaction);
         upgradeOrCreateSystemBookmarks(db, transaction);
         upgradeOrCreateTags(db, transaction);
-        if (oldVersion !== 0 && oldVersion <= 7) upgradeOrCreateBookmarksByTags(db, transaction);
+        if (oldVersion !== 0 && oldVersion <= 6) upgradeOrCreateBookmarksByTags(db, transaction);
         upgradeOrCreateFolders(db, transaction).catch(console.error);
         upgradeOrCreateFavorites(db, transaction);
 
