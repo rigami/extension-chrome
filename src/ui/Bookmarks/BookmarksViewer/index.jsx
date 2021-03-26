@@ -130,7 +130,9 @@ function BookmarksViewer({ searchService: service }) {
                             </Box>
                         </Fragment>
                     ),
-                    (service.searchRequest.usedFields.query || service.searchRequest.usedFields.tags) && !store.existMatches && (
+                    (service.searchRequest.usedFields.query || service.searchRequest.usedFields.tags)
+                    && !store.existMatches
+                    && (
                         <Stub
                             key="nothing-found"
                             message={t('search.nothingFound')}
@@ -138,7 +140,10 @@ function BookmarksViewer({ searchService: service }) {
                             classes={{ title: classes.title }}
                         />
                     ),
-                    !service.searchRequest.usedFields.query && !service.searchRequest.usedFields.tags && !store.existMatches && (
+                    !service.searchRequest.usedFields.query
+                    && !service.searchRequest.usedFields.tags
+                    && !store.existMatches
+                    && (
                         <Stub
                             key="empty"
                             message={t('empty')}

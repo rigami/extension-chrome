@@ -141,7 +141,7 @@ function FAP() {
                 console.error('Failed load favorites', e);
                 store.isLoading = false;
             });
-    }, [bookmarksService.favorites.length, store.maxCount]);
+    }, [bookmarksService.favorites.length, store.maxCount, bookmarksService.lastTruthSearchTimestamp]);
 
     const overload = store.maxCount < bookmarksService.favorites.length;
 

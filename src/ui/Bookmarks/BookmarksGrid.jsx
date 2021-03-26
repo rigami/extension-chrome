@@ -1,4 +1,4 @@
-import React, { useCallback, memo } from 'react';
+import React, { memo } from 'react';
 import { Box } from '@material-ui/core';
 import CardLink from '@/ui/Bookmarks/CardLink';
 import { useTheme } from '@material-ui/core/styles';
@@ -46,6 +46,7 @@ function BookmarksGrid({ bookmarks, columns }) {
                                 imageUrl={card.imageUrl}
                                 key={card.id}
                                 style={{ marginBottom: theme.spacing(2) }}
+                                version={card.version}
                             />
                         ))}
                     </Box>
