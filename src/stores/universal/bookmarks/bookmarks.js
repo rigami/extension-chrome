@@ -63,12 +63,14 @@ class BookmarksUniversalService {
                 id,
                 ...saveData,
                 icoFileName: oldBookmark.icoFileName,
+                version: oldBookmark.version + 1,
             }));
         } else {
             try {
                 saveBookmarkId = await DBConnector().add('bookmarks', cloneDeep({
                     ...saveData,
                     icoFileName: icoName,
+                    version: 1,
                 }));
             } catch (e) {
                 console.error(e);

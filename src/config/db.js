@@ -82,6 +82,10 @@ async function upgradeOrCreateBookmarks(db, transaction) {
         store.createIndex('tags', 'tags', { unique: false });
     }
 
+    if (!store.indexNames.contains('version')) {
+        store.createIndex('version', 'version', { unique: false });
+    }
+
     return store;
 }
 
@@ -204,6 +208,7 @@ async function migrate(db, version) {
 
             db.put('bookmarks', {
                 ...bookmark,
+                version: 1,
                 tags,
             });
         });
