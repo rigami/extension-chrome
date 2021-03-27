@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "0.3.95",
+    "version": "0.3.96",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
@@ -39,6 +39,7 @@
         "i18next": "^19.9.2",
         "i18next-http-backend": "^1.1.1",
         "idb": "^6.0.0",
+        "jszip": "^3.6.0",
         "lodash": "^4.17.21",
         "mobx": "^6.1.8",
         "mobx-react-lite": "^3.2.0",

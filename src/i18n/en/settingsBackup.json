@@ -4,7 +4,8 @@
     "title": "Create backup",
     "description": "Save extension settings and bookmarks on your computer",
     "state": {
-      "success": "Save created successfully"
+      "success": "Backup created successfully",
+      "creating": "Creating a recovery file..."
     },
     "error": {
       "unknown": "Save creation error"
@@ -15,7 +16,9 @@
   },
   "syncItem": {
     "settings": "Settings",
-    "bookmarks": "Bookmarks"
+    "bookmarks": "Bookmarks",
+    "backgrounds": "Фоны",
+    "backgrounds_description": "Increases file size greatly"
   },
   "restoreLocalBackup": {
     "state": {

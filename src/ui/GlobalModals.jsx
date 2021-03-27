@@ -11,7 +11,7 @@ import {
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import EditTagModal from '@/ui/Bookmarks/Tags/EditModal';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, getI18n } from 'react-i18next';
 import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import ContextMenu from '@/ui/ContextMenu';
@@ -75,50 +75,60 @@ function GlobalModals({ children }) {
             })),
         ];
 
+        const saveLocalBackup = () => {
+            const generateFormatter = new Intl.DateTimeFormat('en', {
+                weekday: 'long',
+                month: 'short',
+                day: '2-digit',
+                year: 'numeric',
+            });
+
+            const link = document.createElement('a');
+            link.href = FSConnector.getURL('/temp/backup.zip');
+            link.download = `Backup rigami from ${generateFormatter.format(new Date())}.rigami`;
+
+            link.click();
+
+            enqueueSnackbar({
+                message: t('settingsBackup:createLocalBackup.state.success'),
+                variant: 'success',
+            });
+            coreService.storage.updatePersistent({ localBackup: null });
+        };
+
         const globalListeners = [
             coreService.globalEventBus.on('system/backup/local/create/progress', (data) => {
-                if (data.stage === 'error') {
+                if (coreService.storage.temp.progressCreateSnackbar) {
+                    closeSnackbar(coreService.storage.temp.progressCreateSnackbar);
+                    coreService.storage.updateTemp({ progressCreateSnackbar: null });
+                }
+
+                if (data.stage === 'start') {
+                    const snackId = enqueueSnackbar({
+                        message: t('settingsBackup:createLocalBackup.state.creating'),
+                        variant: 'progress',
+                    }, { persist: true });
+
+                    coreService.storage.updateTemp({ progressCreateSnackbar: snackId });
+                } else if (data.stage === 'error') {
                     enqueueSnackbar({
                         message: t('settingsBackup:createLocalBackup.error.unknown'),
                         variant: 'error',
                     });
-
-                    return;
+                } else if (data.stage === 'done') {
+                    saveLocalBackup();
                 }
-
-                console.log('system/backup/local/progress', data);
-
-                console.log(FSConnector.getURL(data.path));
-
-                const link = document.createElement('a');
-                link.href = FSConnector.getURL(data.path);
-                link.download = 'Rigmai backup';
-
-                link.click();
-
-                enqueueSnackbar({
-                    message: t('settingsBackup:createLocalBackup.state.success'),
-                    variant: 'success',
-                });
             }),
             coreService.globalEventBus.on('system/backup/local/restore/progress', (data) => {
                 if (coreService.storage.temp.progressRestoreSnackbar) {
                     closeSnackbar(coreService.storage.temp.progressRestoreSnackbar);
                 }
 
-                if (data.type === 'oldAppBackupFile') {
-                    console.log(data.file);
-
-                    setEdit({
-                        type: 'oldAppBackupFile',
-                        action: 'prompt',
-                        file: data.file,
-                    });
-                } else if (data.result === 'start') {
+                if (data.result === 'start') {
                     const snackId = enqueueSnackbar({
                         message: t('settingsBackup:restoreLocalBackup.state.restoring'),
                         variant: 'progress',
-                    });
+                    }, { persist: true });
 
                     coreService.storage.updateTemp({ progressRestoreSnackbar: snackId });
                 } else if (data.result === 'done') {
@@ -129,9 +139,33 @@ function GlobalModals({ children }) {
                         message: t(`settingsBackup:restoreLocalBackup.error.${data.message}`),
                         variant: data.result,
                     });
+                } else if (data.result === 'brokenFile') {
+                    enqueueSnackbar({
+                        message: t('restoreLocalBackup.error.brokenFile'),
+                        variant: 'error',
+                    });
                 }
             }),
         ];
+
+        if (coreService.storage.persistent.localBackup) {
+            if (coreService.storage.persistent.localBackup === 'creating') {
+                const snackId = enqueueSnackbar({
+                    message: t('settingsBackup:createLocalBackup.state.creating'),
+                    variant: 'progress',
+                }, { persist: true });
+
+                coreService.storage.updateTemp({ progressCreateSnackbar: snackId });
+            } else if (coreService.storage.persistent.localBackup === 'error') {
+                enqueueSnackbar({
+                    message: t('settingsBackup:createLocalBackup.error.unknown'),
+                    variant: 'error',
+                });
+                coreService.storage.updatePersistent({ localBackup: null });
+            } else if (coreService.storage.persistent.localBackup === 'done') {
+                saveLocalBackup();
+            }
+        }
 
         if (coreService.storage.persistent.showBackupSuccessRestoreMessage) {
             coreService.storage.updatePersistent({ showBackupSuccessRestoreMessage: null });
@@ -238,42 +272,6 @@ function GlobalModals({ children }) {
                     </DialogActions>
                 </Dialog>
             ))}
-            <Dialog
-                open={(edit && edit.action === 'prompt' && edit.type === 'oldAppBackupFile') || false}
-                onClose={() => setEdit(null)}
-            >
-                <DialogTitle>
-                    {t('settingsBackup:oldAppBackupFile.title')}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {t('settingsBackup:oldAppBackupFile.description')}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        data-ui-path="dialog.backup.oldAppBackupFile.cancel"
-                        onClick={() => setEdit(null)}
-                        color="primary"
-                    >
-                        {t('common:button.cancel')}
-                    </Button>
-                    <Button
-                        data-ui-path="dialog.backup.localBackup.oldAppBackupFile.continue"
-                        onClick={() => {
-                            eventToBackground(
-                                'system/backup/local/restore',
-                                { backup: convertClockTabToRigami(edit.file) },
-                            );
-                            setEdit(null);
-                        }}
-                        color="primary"
-                        autoFocus
-                    >
-                        {t('settingsBackup:oldAppBackupFile.button.continue')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </React.Fragment>
     );
 }

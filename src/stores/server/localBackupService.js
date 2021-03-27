@@ -8,7 +8,10 @@ import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import appVariables from '@/config/appVariables';
-import { omit } from 'lodash';
+import { omit, map } from 'lodash';
+import JSZip from 'jszip';
+import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
+import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
 
 class LocalBackupService {
     core;
@@ -17,7 +20,10 @@ class LocalBackupService {
         makeAutoObservable(this);
         this.core = core;
 
-        this.core.globalBus.on('system/backup/local/create', async ({ settings, bookmarks }) => {
+        this.core.globalBus.on('system/backup/local/create', async ({ settings, bookmarks, backgrounds }) => {
+            eventToApp('system/backup/local/create/progress', { stage: 'start' });
+            this.core.storageService.updatePersistent({ localBackup: 'creating' });
+
             try {
                 const backup = {};
 
@@ -29,6 +35,10 @@ class LocalBackupService {
                     backup.bookmarks = await this.collectBookmarks();
                 }
 
+                if (backgrounds) {
+                    backup.backgrounds = await this.collectBackgrounds();
+                }
+
                 backup.meta = {
                     date: new Date().toISOString(),
                     appVersion: appVariables.version,
@@ -38,37 +48,109 @@ class LocalBackupService {
 
                 console.log('Backup:', backup);
 
-                const backupPath = '/temp/backup.json';
+                const zip = new JSZip();
+
+                zip.file('meta.json', JSON.stringify(backup.meta));
+                if (settings) zip.file('settings.json', JSON.stringify(backup.settings));
+                if (bookmarks) zip.file('bookmarks.json', JSON.stringify(backup.bookmarks));
+                if (backgrounds) {
+                    zip.file('backgrounds.json', JSON.stringify(backup.backgrounds.meta));
+                    zip.folder('backgrounds');
+
+                    backup.backgrounds.full.forEach((file, fileName) => {
+                        zip.file(`backgrounds/${fileName}`, file);
+                    });
+                }
+
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+                const backupPath = '/temp/backup.zip';
 
                 await FSConnector.saveFile(
                     backupPath,
-                    new Blob([JSON.stringify(backup)], { type: 'application/json' }),
+                    new Blob([zipBlob], { type: 'application/zip' }),
                 );
 
                 eventToApp('system/backup/local/create/progress', {
                     path: backupPath,
                     stage: 'done',
                 });
+                this.core.storageService.updatePersistent({ localBackup: 'done' });
             } catch (e) {
                 console.error(e);
                 eventToApp('system/backup/local/create/progress', { stage: 'error' });
+                this.core.storageService.updatePersistent({ localBackup: 'failed' });
             }
         });
 
-        this.core.globalBus.on('system/backup/local/restore', async ({ backup }) => {
-            console.log('restore backup', backup);
+        this.core.globalBus.on('system/backup/local/restore', async ({ type = 'rigami' }) => {
+            console.log('restoreFile:', type);
 
-            try {
-                if (backup.product === 'ClockTab') {
+            let backup = {};
+
+            if (type === 'rigami') {
+                try {
+                    const restoreFile = await FSConnector.getFileAsBlob('/temp/restore-backup.rigami');
+                    const zip = await new JSZip().loadAsync(restoreFile);
+                    const backgrounds = {};
+                    const files = map(zip.files, (file) => file);
+
+                    for await (const file of files) {
+                        if (
+                            [
+                                'meta.json',
+                                'settings.json',
+                                'bookmarks.json',
+                                'backgrounds.json',
+                            ].includes(file.name)
+                        ) {
+                            const value = await file.async('text');
+                            backup[file.name.slice(0, -5)] = JSON.parse(value);
+                        }
+
+                        if (file.name.indexOf('backgrounds/') === -1 || file.dir) continue;
+
+                        backgrounds[file.name.substring(12)] = await file.async('blob');
+
+                        backup.backgroundsFiles = backgrounds;
+                    }
+                } catch (e) {
                     eventToApp('system/backup/local/restore/progress', {
-                        action: 'prompt',
-                        type: 'oldAppBackupFile',
-                        file: backup,
+                        result: 'error',
+                        message: 'brokenFile',
                     });
 
                     return;
                 }
+            } else if (type === 'json' || type === 'ctbup') {
+                try {
+                    const restoreData = await FSConnector.getFileAsText(`/temp/restore-backup.${type}`);
+                    let file = JSON.parse(restoreData);
 
+                    if (type === 'ctbup') {
+                        file = convertClockTabToRigami(file);
+                    }
+
+                    backup = { ...file };
+                } catch (e) {
+                    eventToApp('system/backup/local/restore/progress', {
+                        result: 'error',
+                        message: 'brokenFile',
+                    });
+
+                    return;
+                }
+            } else {
+                eventToApp('system/backup/local/restore/progress', {
+                    result: 'error',
+                    message: 'wrongSchema',
+                });
+
+                return;
+            }
+
+            console.log('restore backup', backup);
+
+            try {
                 if (backup.meta.version > 4) {
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
@@ -78,17 +160,20 @@ class LocalBackupService {
                     return;
                 }
 
-                eventToApp('system/backup/local/restore/progress', { result: 'start' });
-
                 if (backup.settings) await this.core.settingsService.restore(backup.settings);
                 if (backup.bookmarks) await this.core.bookmarksSyncService.restore(backup.bookmarks);
-
+                if (backup.backgrounds) {
+                    await this.core.backgroundsSyncService.restore(
+                        backup.backgrounds.all,
+                        backup.backgroundsFiles,
+                    );
+                }
                 eventToApp('system/backup/local/restore/progress', { result: 'done' });
             } catch (e) {
-                console.log('Failed restore backup:', e);
+                console.error(e);
                 eventToApp('system/backup/local/restore/progress', {
                     result: 'error',
-                    message: 'wrongSchema',
+                    message: 'brokenFile',
                 });
             }
         });
@@ -122,7 +207,6 @@ class LocalBackupService {
 
             return {
                 ...omit(bookmark, ['icoFileName', 'imageUrl']),
-                tags: bookmark.tags.map(({ id }) => id),
                 image,
             };
         }));
@@ -146,6 +230,36 @@ class LocalBackupService {
             favorites,
             tags,
             folders,
+        };
+    }
+
+    async collectBackgrounds() {
+        const allBackgrounds = await BackgroundsUniversalService.getAll();
+
+        const meta = [];
+        const fullBlobs = new Map();
+
+        for await (const background of allBackgrounds) {
+            console.log(background);
+
+            const full = await FSConnector.getFileAsBlob(`/backgrounds/full/${background.fileName}`);
+            console.log('full:', full);
+
+            fullBlobs.set(background.id, full);
+
+            meta.push(omit(background, [
+                'fullSrc',
+                'previewSrc',
+                'isLoad',
+                'isSaved',
+                'fileName',
+                'id',
+            ]));
+        }
+
+        return {
+            meta: { all: meta },
+            full: fullBlobs,
         };
     }
 }

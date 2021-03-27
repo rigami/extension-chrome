@@ -8,6 +8,7 @@ import LocalBackupService from './localBackupService';
 import BookmarksService from './bookmarksService';
 import WeatherService from './weather/service';
 import BackgroundsService from './backgroundsService';
+import SyncBackgrounds from './syncBackgrounds';
 
 class ServerApp {
     localBus;
@@ -33,6 +34,7 @@ class ServerApp {
         // this.systemBookmarksService = new SyncSystemBookmarksService(this);
         this.bookmarksSyncService = new SyncBookmarks(this);
         this.localBackupService = new LocalBackupService(this);
+        this.backgroundsSyncService = new SyncBackgrounds(this);
 
         // Bookmarks
         this.bookmarksService = new BookmarksService(this);

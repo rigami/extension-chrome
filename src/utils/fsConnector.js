@@ -194,6 +194,16 @@ class FSConnector {
         }));
     }
 
+    static async getFileAsBlob(pathOrFSConnector, name, options) {
+        const file = await FSConnector.getFile(pathOrFSConnector, name, options);
+
+        return new Promise(((resolve) => {
+            file.file((readFile) => {
+                resolve(readFile);
+            });
+        }));
+    }
+
     static getBGURL(path, type = 'full') {
         return FSConnector.getURL(`backgrounds/${type}/${path}`);
     }

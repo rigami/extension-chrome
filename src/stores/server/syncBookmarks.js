@@ -34,7 +34,7 @@ class SyncBookmarks {
         const replaceFolderId = {};
 
         const compareLevel = async (level, localLevel) => {
-            for (const folder of level) {
+            for await (const folder of level) {
                 console.log('Check folder:', folder);
 
                 const findFolder = localLevel.find(({ name }) => folder.name === name);
@@ -66,7 +66,7 @@ class SyncBookmarks {
 
         const replaceTagId = {};
 
-        for (const tag of (bookmarks.categories || bookmarks.tags)) {
+        for await (const tag of (bookmarks.categories || bookmarks.tags)) {
             console.log('Check tag:', tag);
             const findTag = localTags.find(({ name }) => tag.name === name);
 
@@ -95,7 +95,7 @@ class SyncBookmarks {
 
         const replaceBookmarkId = {};
 
-        for (const bookmark of bookmarks.bookmarks) {
+        for await (const bookmark of bookmarks.bookmarks) {
             console.log('Check bookmark:', bookmark);
 
             const findBookmark = localBookmarks.find(({ url }) => bookmark.url === url);
@@ -109,7 +109,7 @@ class SyncBookmarks {
                     folderId: replaceFolderId[bookmark.folderId] || bookmark.folderId || findBookmark.folderId,
                     imageBase64: bookmark.image || bookmark.imageBase64,
                     tags: uniq([
-                        ...findBookmark.tags.map(({ id }) => id),
+                        ...findBookmark.tags,
                         ...(bookmark.categories || bookmark.tags).map((id) => replaceTagId[id] || id),
                         ...[],
                         ...[],
@@ -132,7 +132,7 @@ class SyncBookmarks {
 
         console.log('Restore favorites...');
 
-        for (const favorite of bookmarks.favorites) {
+        for await (const favorite of bookmarks.favorites) {
             console.log('Check favorite:', favorite);
 
             const favType = favorite.itemType || favorite.type;

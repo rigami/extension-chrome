@@ -42,7 +42,7 @@ export const compare = (q, bookmark) => {
 
     let tags;
 
-    const sameTagsCount = difference(q.tags, bookmark.tags.map(({ id }) => id)).length;
+    const sameTagsCount = difference(q.tags, bookmark.tags).length;
     if (q.tags.length === 0) {
         tags = COMPARE.IGNORE;
     } else if (sameTagsCount === 0 && bookmark.tags.length !== 0) {

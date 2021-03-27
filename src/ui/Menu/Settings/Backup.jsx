@@ -21,9 +21,9 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
-import { eventToBackground } from '@/stores/server/bus';
-import { useSnackbar } from 'notistack';
+import { eventToApp, eventToBackground } from '@/stores/server/bus';
 import { observer } from 'mobx-react-lite';
+import FSConnector from '@/utils/fsConnector';
 /* import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import SectionHeader from '@/ui/Menu/SectionHeader';
@@ -45,6 +45,8 @@ const useStyles = makeStyles((theme) => ({
     popper: { zIndex: theme.zIndex.modal },
     input: { display: 'none' },
     reRunSyncButton: { flexShrink: 0 },
+    fixOverflow: { whiteSpace: 'normal' },
+    alignTop: { alignSelf: 'flex-start' },
 }));
 
 const headerProps = { title: 'settings:backup' };
@@ -176,6 +178,7 @@ function LocalBackup() {
     const [saveItems, setSaveItems] = useState({
         settings: true,
         bookmarks: true,
+        backgrounds: false,
     });
 
     const handleChange = (key, value) => {
@@ -239,7 +242,7 @@ function LocalBackup() {
                                     <MenuItem
                                         onClick={() => handleChange('settings', !saveItems.settings)}
                                     >
-                                        <ListItemIcon>
+                                        <ListItemIcon className={classes.alignTop}>
                                             <Checkbox
                                                 color="primary"
                                                 checked={saveItems.settings}
@@ -252,9 +255,8 @@ function LocalBackup() {
                                     </MenuItem>
                                     <MenuItem
                                         onClick={() => handleChange('bookmarks', !saveItems.bookmarks)}
-                                        divider
                                     >
-                                        <ListItemIcon>
+                                        <ListItemIcon className={classes.alignTop}>
                                             <Checkbox
                                                 color="primary"
                                                 checked={saveItems.bookmarks}
@@ -262,7 +264,26 @@ function LocalBackup() {
                                         </ListItemIcon>
                                         <ListItemText
                                             classes={{ primary: classes.optionLabel }}
-                                            primary={t('syncItem.settings')}
+                                            primary={t('syncItem.bookmarks')}
+                                        />
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => handleChange('backgrounds', !saveItems.backgrounds)}
+                                        divider
+                                    >
+                                        <ListItemIcon className={classes.alignTop}>
+                                            <Checkbox
+                                                color="primary"
+                                                checked={saveItems.backgrounds}
+                                            />
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            classes={{
+                                                primary: classes.optionLabel,
+                                                secondary: classes.fixOverflow,
+                                            }}
+                                            primary={t('syncItem.backgrounds')}
+                                            secondary={t('syncItem.backgrounds', { context: 'description' })}
                                         />
                                     </MenuItem>
                                     <MenuItem
@@ -292,27 +313,23 @@ function LocalBackup() {
 
 function BackupSettings() {
     const classes = useStyles();
-    const { enqueueSnackbar } = useSnackbar();
     const { t } = useTranslation(['settingsBackup']);
 
-    const handleLocalRestore = (event) => {
+    const handleLocalRestore = async (event) => {
         const form = event.target;
         if (form.files.length === 0) return;
 
-        const reader = new FileReader();
-        reader.onload = () => {
-            try {
-                const file = JSON.parse(reader.result);
-                console.log('file', file);
-                eventToBackground('system/backup/local/restore', { backup: file });
-            } catch (e) {
-                enqueueSnackbar({
-                    message: t('restoreLocalBackup.error.brokenFile'),
-                    variant: 'error',
-                });
-            }
-        };
-        reader.readAsText(form.files[0]);
+        try {
+            eventToApp('system/backup/local/restore/progress', { result: 'start' });
+            const file = form.files[0];
+            const type = file.name.substring(file.name.lastIndexOf('.') + 1);
+
+            FSConnector.saveFile(`/temp/restore-backup.${type}`, file).then(() => {
+                eventToBackground('system/backup/local/restore', { type });
+            });
+        } catch (e) {
+            eventToApp('system/backup/local/restore/progress', { result: 'brokenFile' });
+        }
     };
 
     return (
@@ -338,7 +355,7 @@ function BackupSettings() {
                                 className={classes.input}
                                 id="upload-from-system"
                                 type="file"
-                                accept=".json,.ctbup"
+                                accept=".json,.ctbup,.rigami"
                                 onChange={handleLocalRestore}
                             />
                             <label htmlFor="upload-from-system" className={classes.fullWidth}>
