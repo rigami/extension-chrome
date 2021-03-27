@@ -170,7 +170,7 @@ async function upgradeOrCreateFavorites(db, transaction) {
         (await store.getAll()).forEach((favorite) => store.put({
             id: favorite.id,
             itemId: favorite.favoriteId,
-            itemType: favorite.type,
+            itemType: favorite.type === 'category' ? 'tag' : favorite.type,
         }));
     }
 
