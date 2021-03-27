@@ -46,7 +46,7 @@ export default {
             type: BG_TYPE.IMAGE,
         },
         stream: {
-            preloadBGCount: 2,
+            prefetchCount: 5,
             preloadMetaCount: 10,
             collections: ['EDITORS_CHOICE'],
             queryPresets: [

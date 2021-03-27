@@ -10,7 +10,6 @@ import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
 import { useTheme } from '@material-ui/styles';
-import { toJS } from 'mobx';
 import Time from './Time';
 import Date from './Date';
 
@@ -27,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        pointerEvents: 'none',
     },
     widget: {
         display: 'flex',
@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
         textShadow: '0 2px 17px #00000029',
         fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 800,
+        pointerEvents: 'all',
     },
 }));
 

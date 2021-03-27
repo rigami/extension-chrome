@@ -12,6 +12,7 @@ import {
     BG_SHOW_STATE,
     BG_SOURCE,
     BG_TYPE,
+    FETCH,
 } from '@/enum';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import DBConnector from '@/utils/dbConnector';
@@ -37,8 +38,6 @@ class BackgroundsServerService {
         this.core = core;
         this.storage = this.core.storageService.storage;
         this.settings = this.core.settingsService.settings.backgrounds;
-
-        console.log('[backgrounds] Check settings & storage', this.storage, this.settings);
 
         try {
             if (this.storage.lastUsageVersion) {
@@ -69,7 +68,6 @@ class BackgroundsServerService {
         this.core.globalBus.on('backgrounds/prepareNextBg', () => {
             if (
                 this.settings.selectionMethod === BG_SELECT_MODE.STREAM
-                && !this.storage.prepareBGStream
                 && this.prepareBgState === BG_SHOW_STATE.WAIT
             ) {
                 console.log('[backgrounds] Request for prepare next background');
@@ -129,6 +127,27 @@ class BackgroundsServerService {
             () => this._runScheduler(),
         );
 
+        reaction(
+            () => first(this.storage.bgsStream)?.state,
+            () => {
+                const bg = first(this.storage.bgsStream);
+
+                if (!bg) return;
+
+                if (bg.state === FETCH.PENDING) {
+                    this.prepareBgState = BG_SHOW_STATE.SEARCH;
+                } else if (bg.state === FETCH.DONE) {
+                    this.prepareBgState = BG_SHOW_STATE.DONE;
+                    if (this.bgState === BG_SHOW_STATE.SEARCH) {
+                        console.log('[backgrounds] Search next background. Reload worker...');
+                        this.nextBGStream().catch(console.error);
+                    }
+                } else {
+                    this.prepareBgState = BG_SHOW_STATE.WAIT;
+                }
+            },
+        );
+
         if (this.settings.changeInterval && this.storage.lastUsageVersion) this._schedulerSwitch();
 
         if (!this.storage.lastUsageVersion && !this.storage.backgroundStreamQuery) {
@@ -147,7 +166,7 @@ class BackgroundsServerService {
         if (this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB) return;
 
         try {
-            console.log('[backgrounds] Run scheduler...');
+            console.log('[backgrounds] Update scheduler...');
             this.core.storageService.updatePersistent({ bgNextSwitchTimestamp: Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval] });
             await this._schedulerSwitch();
         } catch (e) {
@@ -166,7 +185,6 @@ class BackgroundsServerService {
         }
 
         clearTimeout(this._schedulerTimer);
-        console.log('[backgrounds] Set scheduler switch');
         this._schedulerTimer = setTimeout(
             () => this._schedulerSwitch(),
             this.storage.bgNextSwitchTimestamp - Date.now(),
@@ -186,9 +204,15 @@ class BackgroundsServerService {
 
     @action('next bg')
     nextBG() {
-        console.log('next bg', this.settings.selectionMethod);
-        if (this.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC) return Promise.resolve();
         console.log(`[backgrounds] Next background request. Selection method: ${this.settings.selectionMethod}`);
+        if (this.bgState === BG_SHOW_STATE.SEARCH) {
+            console.log('[backgrounds] Background already searching. Skip...');
+            return Promise.resolve();
+        }
+        if (this.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC) {
+            console.log(`[backgrounds] Selection method ${this.settings.selectionMethod} not support. Abort...`);
+            return Promise.resolve();
+        }
 
         eventToApp('backgrounds/state', { state: BG_SHOW_STATE.SEARCH });
 
@@ -228,23 +252,137 @@ class BackgroundsServerService {
         if (bg) return this.setBG(bg);
     }
 
+    @action('prepare queue')
+    async _prepareQueue(fetchIndex = 0) {
+        console.log(`[backgrounds] Prefetch backgrounds. Now ${
+            fetchIndex + 1
+        } from ${
+            this.storage.bgsStream.length
+        }...`);
+
+        if (this.core.isOffline) {
+            console.log('[backgrounds] App is offline. Impossible prefetch bg. Abort...');
+            return Promise.resolve();
+        }
+
+        const currBg = this.storage.bgsStream[fetchIndex];
+        let fileName;
+
+        if (
+            fetchIndex < appVariables.backgrounds.stream.prefetchCount
+            && fetchIndex < this.storage.bgsStream.length - 1
+        ) {
+            if (currBg.state === FETCH.PENDING || currBg.state === FETCH.DONE) {
+                console.log('[backgrounds] Backgrounds already fetch or fetching. Skip...');
+                return this._prepareQueue(fetchIndex + 1);
+            }
+        } else {
+            console.log('[backgrounds] Prefetch enough backgrounds. Stopping');
+
+            if (this.storage.bgsStream.length < appVariables.backgrounds.stream.prefetchCount) {
+                console.log('[backgrounds] Backgrounds are almost over, preload new ones...');
+                return this.nextBGStream(true);
+            } else {
+                return Promise.resolve();
+            }
+        }
+
+        this.core.storageService.updatePersistent({
+            bgsStream: this.storage.bgsStream.map((bg) => {
+                if (bg.downloadLink !== currBg.downloadLink) return bg;
+
+                return {
+                    ...bg,
+                    state: FETCH.PENDING,
+                };
+            }),
+        });
+
+        try {
+            fileName = await BackgroundsUniversalService.fetchBG(currBg.downloadLink);
+        } catch (e) {
+            console.error('[backgrounds] Failed get background. Remove from queue and fetch next...', e);
+
+            this.core.storageService.updatePersistent({ bgsStream: this.storage.bgsStream.splice(fetchIndex, 1) });
+
+            return this._prepareQueue(fetchIndex);
+        }
+
+        this.core.storageService.updatePersistent({
+            bgsStream: this.storage.bgsStream.map((bg) => {
+                if (bg.downloadLink !== currBg.downloadLink) return bg;
+
+                return {
+                    ...bg,
+                    fileName,
+                    state: FETCH.DONE,
+                };
+            }),
+        });
+
+        if (
+            fetchIndex < appVariables.backgrounds.stream.prefetchCount
+            && fetchIndex < this.storage.bgsStream.length - 1
+        ) {
+            return this._prepareQueue(fetchIndex + 1);
+        } else {
+            console.log('[backgrounds] Prefetch enough backgrounds. Stopping');
+            if (this.storage.bgsStream.length < appVariables.backgrounds.stream.prefetchCount) {
+                console.log('[backgrounds] Backgrounds are almost over, preload new ones...');
+                return this.nextBGStream(true);
+            } else {
+                return Promise.resolve();
+            }
+        }
+    }
+
+    @action('set bg from queue')
+    async _setFromQueue() {
+        let fileName;
+
+        if (this.core.isOffline && !first(this.storage.bgsStream).fileName) {
+            console.log('[backgrounds] App is offline and next bg not prefetch. Get background from local store...');
+            this._fetchCount = 0;
+            return this.nextBGLocal();
+        }
+
+        if (first(this.storage.bgsStream).fileName) {
+            fileName = first(this.storage.bgsStream).fileName;
+        } else {
+            try {
+                fileName = await BackgroundsUniversalService.fetchBG(first(this.storage.bgsStream).downloadLink);
+            } catch (e) {
+                console.error('[backgrounds] Failed get background. Get next...', e);
+
+                this.core.storageService.updatePersistent({ bgsStream: this.storage.bgsStream.splice(1) });
+
+                return this.nextBGStream();
+            }
+        }
+
+        const currBg = new Background({
+            ...first(this.storage.bgsStream),
+            fileName,
+            isLoad: true,
+        });
+
+        this.core.storageService.updatePersistent({
+            bgsStream: this.storage.bgsStream.splice(1),
+            currentBGStream: currBg,
+        });
+
+        this._fetchCount = 0;
+        await this.setBG(new Background(currBg));
+        return this._prepareQueue();
+    }
+
     @action('next bg stream')
     async nextBGStream(isPrepare = false) {
-        if (this.prepareBgState !== BG_SHOW_STATE.WAIT) {
+        if (this.prepareBgState === BG_SHOW_STATE.SEARCH) {
             console.log('[backgrounds] Load prepare background. Wait...');
             this.bgState = BG_SHOW_STATE.SEARCH;
 
             return Promise.resolve();
-        }
-
-        if (this.storage.prepareBGStream) {
-            console.log('[backgrounds] Set prepare background...');
-
-            const setBG = this.storage.prepareBGStream;
-
-            this.core.storageService.updatePersistent({ prepareBGStream: null });
-
-            return this.setBG(setBG);
         }
 
         console.log('[backgrounds] Search next background from stream station...');
@@ -258,8 +396,6 @@ class BackgroundsServerService {
             });
         }
         if (!isPrepare) this.bgState = BG_SHOW_STATE.SEARCH;
-        else this.prepareBgState = BG_SHOW_STATE.SEARCH;
-
         this._fetchCount += 1;
 
         if (this._fetchCount > 4) {
@@ -268,109 +404,64 @@ class BackgroundsServerService {
             await new Promise((resolve) => setTimeout(resolve, timeout));
         }
 
-        const setFromQueue = async (queue) => {
-            let fileName;
+        if (!isPrepare && this.storage.bgsStream?.length !== 0) {
+            return this._setFromQueue();
+        }
 
-            if (queue.length === 0) {
-                return this.nextBGStream(isPrepare);
+        if (this.core.isOffline) {
+            if (isPrepare) {
+                console.log('[backgrounds] App is offline. Abort...');
+                return Promise.resolve();
             }
-
-            try {
-                fileName = await BackgroundsUniversalService.fetchBG(first(queue).downloadLink);
-            } catch (e) {
-                console.error('[backgrounds] Failed get background. Get next...', e);
-
-                this.prepareBgState = BG_SHOW_STATE.WAIT;
-
-                this.core.storageService.updatePersistent({ bgsStream: queue.splice(1) });
-
-                return this.nextBGStream(isPrepare);
-            }
-
-            const currBg = new Background({
-                ...first(queue),
-                fileName,
-                isLoad: true,
-            });
-
-            this.core.storageService.updatePersistent({
-                bgsStream: queue.splice(1),
-                [isPrepare ? 'prepareBGStream' : 'currentBGStream']: currBg,
-            });
-
+            console.log('[backgrounds] App is offline. Get background from local store...');
             this._fetchCount = 0;
-            if (!isPrepare) await this.setBG(new Background(currBg));
-            else {
-                try {
-                    fileName = await BackgroundsUniversalService.fetchBG(currBg.downloadLink);
-                } catch (e) {
-                    console.error('[backgrounds] Failed get background. Get next...', e);
-
-                    return Promise.reject();
-                }
-
-                this.core.storageService.updatePersistent({
-                    prepareBGStream: new Background({
-                        ...currBg,
-                        fileName,
-                        isLoad: true,
-                    }),
-                });
-
-                this.prepareBgState = BG_SHOW_STATE.WAIT;
-
-                if (this.bgState === BG_SHOW_STATE.SEARCH) {
-                    console.log('[backgrounds] Search next background. Reload worker...');
-                    return this.nextBGStream(isPrepare);
-                }
-            }
-        };
-
-        if (this.storage.bgsStream?.length > appVariables.backgrounds.stream.preloadBGCount) {
-            const bgRemove = first(this.storage.bgsStream);
-            await BackgroundsUniversalService.removeFromStore(bgRemove);
-
-            await setFromQueue(this.storage.bgsStream);
-
-            return Promise.resolve();
+            return this.nextBGLocal();
         }
 
         try {
-            const { response } = await fetchData(`${
-                appVariables.rest.url
-            }/backgrounds/${
-                this.storage.backgroundStreamQuery?.type === 'collection' ? 'get-from-collection' : 'get-random'
-            }?type=${this.settings.type.join(',').toLowerCase()}${
-                this.storage.backgroundStreamQuery?.type === 'collection'
-                    ? ''
-                    : `&query=${this.storage.backgroundStreamQuery?.value || ''}`
-            }&count=${appVariables.backgrounds.stream.preloadMetaCount}`);
+            const place = this.storage.backgroundStreamQuery?.type === 'collection'
+                ? 'get-from-collection'
+                : 'get-random';
+            const type = this.settings.type.join(',').toLowerCase();
+            let query = this.storage.backgroundStreamQuery?.type !== 'collection'
+                ? `&query=${this.storage.backgroundStreamQuery?.value || ''}`
+                : '';
+            query = `${query}&count=${appVariables.backgrounds.stream.preloadMetaCount}`;
+
+            const { response } = await fetchData(`${appVariables.rest.url}/backgrounds/${place}?type=${type}${query}`);
 
             if (response.length === 0) {
-                console.log('[backgrounds] Backgrounds not found');
+                console.log('[backgrounds] Response empty');
                 if (!isPrepare) eventToApp('backgrounds/state', { state: BG_SHOW_STATE.NOT_FOUND });
-                else this.prepareBgState = BG_SHOW_STATE.WAIT;
 
                 return Promise.resolve();
             }
 
-            console.log('[backgrounds] Download next queue backgrounds', response);
+            this._fetchCount = 0;
+            this.core.storageService.updatePersistent({
+                bgsStream: [
+                    ...(this.storage.bgsStream || []),
+                    ...response.map((bg) => new Background({
+                        ...bg,
+                        originId: bg.bgId,
+                        source: BG_SOURCE[bg.service],
+                        type: BG_TYPE[bg.type],
+                        downloadLink: bg.fullSrc,
+                    })),
+                ],
+            });
 
-            await setFromQueue([
-                ...(this.storage.bgsStream || []),
-                ...response.map((bg) => new Background({
-                    ...bg,
-                    originId: bg.bgId,
-                    source: BG_SOURCE[bg.service],
-                    type: BG_TYPE[bg.type],
-                    downloadLink: bg.fullSrc,
-                })),
-            ]);
+            if (isPrepare) {
+                return this._prepareQueue();
+            } else {
+                return this._setFromQueue();
+            }
         } catch (e) {
             console.log('[backgrounds] Failed get backgrounds', e);
             if (!isPrepare) eventToApp('backgrounds/state', { state: BG_SHOW_STATE.NOT_FOUND });
-            else this.prepareBgState = BG_SHOW_STATE.NOT_FOUND;
         }
+
+        return Promise.resolve();
     }
 
     @action('set bg')

@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'inline-block',
         whiteSpace: 'nowrap',
+        pointerEvents: 'all',
     },
     link: { position: 'relative' },
     loader: {

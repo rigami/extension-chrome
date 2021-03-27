@@ -20,6 +20,7 @@ class ServerApp {
     bookmarksService;
     weatherService;
     backgroundsService;
+    isOffline = !window.navigator.onLine;
 
     constructor() {
         // App core
@@ -49,6 +50,9 @@ class ServerApp {
 
             location.reload();
         });
+
+        window.addEventListener('offline', () => { this.isOffline = true; });
+        window.addEventListener('online', () => { this.isOffline = false; });
     }
 }
 

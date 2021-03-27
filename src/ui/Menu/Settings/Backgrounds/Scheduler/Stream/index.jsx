@@ -13,6 +13,7 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import appVariables from '@/config/appVariables';
 import { eventToBackground } from '@/stores/server/bus';
+import MenuInfo from '@/ui/Menu/MenuInfo';
 import changeLocationPage from './ChangeQuery';
 
 const useStyles = makeStyles((theme) => ({
@@ -65,6 +66,12 @@ function Stream({ onSelect }) {
 
     return (
         <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM}>
+            <MenuInfo
+                show={coreService.isOffline}
+                variant="warn"
+                message={t('notConnectionUseLocal')}
+                description={t('notConnectionUseLocal', { context: 'description' })}
+            />
             <MenuRow
                 title={t('changeInterval.title')}
                 description={t('changeInterval.description')}

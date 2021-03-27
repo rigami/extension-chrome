@@ -224,7 +224,9 @@ function Background() {
         const failedLoad = (e) => {
             if (loadBgId !== store.requestBg.id) return;
             console.log('[BACKGROUND] NEW BG FAILED', e);
+            store.currentBg = store.requestBg;
             store.stateRequestLoadBg = FETCH.FAILED;
+            store.stateLoadBg = FETCH.FAILED;
             store.loadBgId = null;
         };
 

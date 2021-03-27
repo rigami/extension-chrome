@@ -86,9 +86,11 @@
     "wait": "Create your flow",
     "wait_description": "Enter a request to preview the stream",
     "failed": "Data retrieval error",
-    "failed_description": "No matching backgrounds for this threadry later",
+    "failed_description": "No matching backgrounds for this thready later",
     "notFound": "No matching backgrounds for this thread",
     "notFound_description": "Try changing your request",
     "callToUse": "Do you like this thread? He seems to be great"
-  }
+  },
+  "notConnectionUseLocal": "No internet connection. Your local library is currently in use",
+  "notConnectionUseLocal_description": "When the network appears, the backgrounds will be taken from the network again"
 }

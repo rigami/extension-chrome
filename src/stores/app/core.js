@@ -79,6 +79,7 @@ class Core {
     localEventBus;
     storage;
     appState = APP_STATE.WAIT_INIT;
+    isOffline = !window.navigator.onLine;
 
     constructor({ side }) {
         makeAutoObservable(this);
@@ -113,6 +114,9 @@ class Core {
         reaction(() => this.storage.isSync, () => { init(); });
 
         if (this.storage.isSync) init();
+
+        window.addEventListener('offline', () => { this.isOffline = true; });
+        window.addEventListener('online', () => { this.isOffline = false; });
     }
 
     async initialization() {
