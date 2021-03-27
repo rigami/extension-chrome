@@ -124,23 +124,6 @@ function upgradeOrCreateTags(db, transaction) {
     return store;
 }
 
-function upgradeOrCreateBookmarksByTags(db, transaction) {
-    let store;
-
-    if (db.objectStoreNames.contains('bookmarks_by_tags')) {
-        store = transaction.objectStore('bookmarks_by_tags');
-    } else {
-        store = db.createObjectStore('bookmarks_by_tags', {
-            keyPath: 'id',
-            autoIncrement: true,
-        });
-        store.createIndex('tag_id', 'tagId', { unique: false });
-        store.createIndex('bookmark_id', 'bookmarkId', { unique: false });
-    }
-
-    return store;
-}
-
 async function upgradeOrCreateFolders(db, transaction) {
     let store;
 
@@ -203,15 +186,17 @@ async function migrate(db, version) {
         const bookmarks = await db.getAll('bookmarks');
         const bookmarksByCategories = await db.getAll('bookmarks_by_categories');
 
-        bookmarks.forEach((bookmark) => {
-            const tags = bookmarksByCategories.filter(({ bookmarkId }) => bookmarkId === bookmark.id).map(({ tagId }) => tagId);
+        for await (const bookmark of bookmarks) {
+            const tags = bookmarksByCategories
+                .filter(({ bookmarkId }) => bookmarkId === bookmark.id)
+                .map(({ tagId }) => tagId);
 
             db.put('bookmarks', {
                 ...bookmark,
                 version: 1,
                 tags,
             });
-        });
+        }
 
         await Promise.all(categories.map((tag) => db.put('tags', {
             id: tag.id,
@@ -227,13 +212,15 @@ async function migrate(db, version) {
 export default ({ upgrade }) => ({
     upgrade(db, oldVersion, newVersion, transaction) {
         console.log('upgrade db', db, transaction, oldVersion, newVersion);
-        upgradeOrCreateBackgrounds(db, transaction);
-        upgradeOrCreateBookmarks(db, transaction);
-        upgradeOrCreateSystemBookmarks(db, transaction);
+        upgradeOrCreateBackgrounds(db, transaction, newVersion);
+        upgradeOrCreateBookmarks(db, transaction, newVersion);
+        upgradeOrCreateSystemBookmarks(db, transaction, newVersion);
         upgradeOrCreateTags(db, transaction);
-        if (oldVersion !== 0 && oldVersion <= 6) upgradeOrCreateBookmarksByTags(db, transaction);
-        upgradeOrCreateFolders(db, transaction).catch(console.error);
-        upgradeOrCreateFavorites(db, transaction);
+        upgradeOrCreateFolders(db, transaction, newVersion);
+        upgradeOrCreateFavorites(db, transaction, newVersion);
+        if (oldVersion >= 7 && db.objectStoreNames.contains('bookmarks_by_categories')) {
+            db.deleteObjectStore('bookmarks_by_categories');
+        }
 
         upgrade();
     },
