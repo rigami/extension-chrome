@@ -84,6 +84,7 @@ class LocalBackupService {
 
         this.core.globalBus.on('system/backup/local/restore', async ({ type = 'rigami' }) => {
             console.log('restoreFile:', type);
+            this.core.storageService.updatePersistent({ restoreBackup: 'restoring' });
 
             let backup = {};
 
@@ -118,6 +119,10 @@ class LocalBackupService {
                         result: 'error',
                         message: 'brokenFile',
                     });
+                    this.core.storageService.updatePersistent({
+                        restoreBackup: 'error',
+                        restoreBackupError: 'brokenFile',
+                    });
 
                     return;
                 }
@@ -136,6 +141,10 @@ class LocalBackupService {
                         result: 'error',
                         message: 'brokenFile',
                     });
+                    this.core.storageService.updatePersistent({
+                        restoreBackup: 'error',
+                        restoreBackupError: 'brokenFile',
+                    });
 
                     return;
                 }
@@ -143,6 +152,10 @@ class LocalBackupService {
                 eventToApp('system/backup/local/restore/progress', {
                     result: 'error',
                     message: 'wrongSchema',
+                });
+                this.core.storageService.updatePersistent({
+                    restoreBackup: 'error',
+                    restoreBackupError: 'wrongSchema',
                 });
 
                 return;
@@ -155,6 +168,10 @@ class LocalBackupService {
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'wrongVersion',
+                    });
+                    this.core.storageService.updatePersistent({
+                        restoreBackup: 'error',
+                        restoreBackupError: 'wrongSchema',
                     });
 
                     return;
@@ -169,11 +186,16 @@ class LocalBackupService {
                     );
                 }
                 eventToApp('system/backup/local/restore/progress', { result: 'done' });
+                this.core.storageService.updatePersistent({ restoreBackup: 'done' });
             } catch (e) {
                 console.error(e);
                 eventToApp('system/backup/local/restore/progress', {
                     result: 'error',
                     message: 'brokenFile',
+                });
+                this.core.storageService.updatePersistent({
+                    restoreBackup: 'error',
+                    restoreBackupError: 'brokenFile',
                 });
             }
         });
