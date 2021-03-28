@@ -247,14 +247,6 @@ function Background() {
         }
     }, [store.requestBg]);
 
-    useEffect(() => {
-        if (store.stateLoadBg !== FETCH.DONE) return () => {};
-
-        const timer = setTimeout(() => eventToBackground('backgrounds/prepareNextBg'), 3000);
-
-        return () => clearTimeout(timer);
-    }, [store.stateLoadBg]);
-
     return (
         <Fade
             in={
