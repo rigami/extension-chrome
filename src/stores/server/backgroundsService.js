@@ -406,10 +406,17 @@ class BackgroundsServerService {
 
         if (this.bgShowMode === BG_SHOW_MODE.STATIC) setBG.pauseTimestamp = -0.5;
 
+        const isSaved = (await DBConnector().count('backgrounds', setBG.id)) !== 0;
+
         this._currentBG = setBG;
         this.currentBGId = this._currentBG.id;
 
-        this.core.storageService.updatePersistent({ bgCurrent: { ...setBG } });
+        this.core.storageService.updatePersistent({
+            bgCurrent: {
+                ...setBG,
+                isSaved,
+            },
+        });
 
         this.bgState = BG_SHOW_STATE.DONE;
         eventToApp('backgrounds/state', { state: BG_SHOW_STATE.DONE });

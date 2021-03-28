@@ -131,6 +131,12 @@ class BackgroundsAppService {
         try {
             await BackgroundsUniversalService.addToLibrary(bg);
             this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.DONE });
+            this._coreService.storage.updatePersistent({
+                bgCurrent: {
+                    ...this._coreService.storage.persistent.bgCurrent,
+                    isSaved: true,
+                },
+            });
         } catch (e) {
             console.error(e);
             this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.FAILED });

@@ -151,7 +151,7 @@ function Desktop({ active, onScroll, onTryScrollCallback }) {
             <Box
                 onContextMenu={appService.contextMenu(
                     contextMenu,
-                    { reactions: [() => backgrounds.bgState, () => store.addingInLibrary] },
+                    { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.addingBgToLibrary] },
                 )}
             >
                 <Background />
