@@ -32,5 +32,13 @@
   },
   "error": {
     "notFound": "Nothing found"
+  },
+  "crashApp": {
+    "title": "Rigami is down(",
+    "error": {
+      "ERR_INIdT_DB": "Failed to initialize storage",
+      "ERR_INIT_I18N": "Failed to initialize translations",
+      "UNKNOWN": "Could not determine the reason"
+    }
   }
 }

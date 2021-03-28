@@ -53,8 +53,7 @@ const open = () => openDB(
     .then((db) => {
         _db = db;
         openAwaitRequests.forEach(({ resolve, method, args }) => resolve(db[method](...args)));
-    })
-    .catch(console.error);
+    });
 
 export { open };
 export default () => _db || promiseStub;

@@ -79,6 +79,7 @@ class Core {
     localEventBus;
     storage;
     appState = APP_STATE.WAIT_INIT;
+    appError = '';
     isOffline = !window.navigator.onLine;
 
     constructor({ side }) {
@@ -93,6 +94,8 @@ class Core {
             try {
                 await this.initialization();
 
+                if (this.appState === APP_STATE.FAILED) throw new Error('Failed init app');
+
                 runInAction(() => {
                     if (!this.storage.persistent.lastUsageVersion) {
                         this.appState = APP_STATE.REQUIRE_SETUP;
@@ -102,6 +105,7 @@ class Core {
                 });
             } catch (e) {
                 runInAction(() => {
+                    this.appError = this.appError || 'ERR_UNKNOWN';
                     this.appState = APP_STATE.FAILED;
                 });
             }
@@ -120,7 +124,13 @@ class Core {
     }
 
     async initialization() {
-        openDB(); // setTimeout(() => openDB(), 15000);
+        openDB().catch((e) => {
+            console.error('Failed init db:', e);
+
+            this.appError = 'ERR_INIT_DB';
+            this.appState = APP_STATE.FAILED;
+        });
+
         await i18n
             .use(initReactI18next)
             .use(Backend)
@@ -143,6 +153,12 @@ class Core {
                 defaultNS: 'common',
                 backend: { loadPath: 'resource/i18n/{{lng}}/{{ns}}.json' },
                 react: { useSuspense: false },
+            })
+            .catch((e) => {
+                console.error('Failed init i18n:', e);
+
+                this.appError = 'ERR_INIT_I18N';
+                this.appState = APP_STATE.FAILED;
             });
     }
 

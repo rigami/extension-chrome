@@ -4,9 +4,25 @@ import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
 import FirstLookScreen from '@/ui/FirstLookScreen';
 import appVariables from '@/config/appVariables';
+import Stub from '@/ui-components/Stub';
+import { makeStyles } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 import packageJson from '../../../package.json';
 
+const useStyles = makeStyles((theme) => ({
+    stub: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        height: '100vh',
+        width: '100vw',
+        backgroundColor: theme.palette.background.default,
+    },
+}));
+
 function InitApp({ children }) {
+    const classes = useStyles();
+    const { t } = useTranslation();
     const service = useService();
     const [isConfig, setIsConfig] = useState(false);
     const [isFirstContact, setIsFirstContact] = useState(false);
@@ -32,8 +48,8 @@ function InitApp({ children }) {
 
     return (
         <React.Fragment>
-            {isConfig && !isFirstContact && children}
-            {isFirstContact && (
+            {service.appState !== APP_STATE.FAILED && isConfig && !isFirstContact && children}
+            {service.appState !== APP_STATE.FAILED && isFirstContact && (
                 <FirstLookScreen
                     onLoad={() => {
                         service.storage.updatePersistent({ lastUsageVersion: packageJson.version });
@@ -43,6 +59,13 @@ function InitApp({ children }) {
                         setIsFirstContact(false);
                         service.storage.updatePersistent({ lastUsageVersion: packageJson.version });
                     }}
+                />
+            )}
+            {service.appState === APP_STATE.FAILED && (
+                <Stub
+                    message={t('crashApp.title')}
+                    description={t(`crashApp.error.${service.appError}`, t('crashApp.error.UNKNOWN'))}
+                    className={classes.stub}
                 />
             )}
         </React.Fragment>
