@@ -47,6 +47,7 @@
     "unknown_description": "Something went wrong, but it's not clear what, maybe the background is broken, try to delete it"
   },
   "addedToLibrary": "Background saved in the library",
+  "addingToLibrary": "Saving the background...",
   "fetchingNextBG": "Loading background...",
   "removedBrokenBG": "Damaged background removed",
   "backgroundSource": "by {{author}}, $t(serviceName.{{source}}, serviceName.unknown)"

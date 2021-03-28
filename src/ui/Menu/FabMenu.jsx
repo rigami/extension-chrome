@@ -29,11 +29,11 @@ import {
     BG_SHOW_STATE,
     BG_SOURCE,
     BG_TYPE,
+    FETCH,
 } from '@/enum';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
 import { eventToBackground } from '@/stores/server/bus';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import useAppService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
@@ -174,27 +174,43 @@ function FabMenu() {
                             {saveBgLocal && (
                                 <React.Fragment>
                                     {backgrounds.currentBG.type === BG_TYPE.VIDEO && (<Divider />)}
-                                    <Button
-                                        tooltip={
-                                            backgrounds.currentBG.isSaved
-                                                ? t('background:addedToLibrary')
-                                                : t('background:button.addToLibrary')
-                                        }
-                                        data-ui-path={
-                                            backgrounds.currentBG.isSaved
-                                                ? 'bg.addedToLibrary'
-                                                : 'bg.addToLibrary'
-                                        }
-                                        className={clsx(
-                                            backgrounds.currentBG.isSaved && classes.notClickable,
-                                        )}
-                                        disableRipple={backgrounds.currentBG.isSaved}
-                                        onClick={() => (
-                                            !backgrounds.currentBG.isSaved
-                                                && BackgroundsUniversalService.addToLibrary(backgrounds.currentBG)
-                                        )}
-                                        icon={backgrounds.currentBG.isSaved ? SavedBgIcon : SaveBgIcon}
-                                    />
+                                    {coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && (
+                                        <Button
+                                            tooltip={t('background:addingToLibrary')}
+                                            className={classes.notClickable}
+                                            disableRipple
+                                            icon={() => (
+                                                <CircularProgress
+                                                    className={classes.loadBGIcon}
+                                                    size={20}
+                                                />
+                                            )}
+                                        />
+                                    )}
+                                    {coreService.storage.temp.addingBgToLibrary !== FETCH.PENDING && (
+                                        <Button
+                                            tooltip={
+                                                backgrounds.currentBG.isSaved
+                                                    ? t('background:addedToLibrary')
+                                                    : t('background:button.addToLibrary')
+                                            }
+                                            data-ui-path={
+                                                backgrounds.currentBG.isSaved
+                                                    ? 'bg.addedToLibrary'
+                                                    : 'bg.addToLibrary'
+                                            }
+                                            className={clsx(
+                                                backgrounds.currentBG.isSaved && classes.notClickable,
+                                            )}
+                                            disableRipple={backgrounds.currentBG.isSaved}
+                                            onClick={() => {
+                                                if (!backgrounds.currentBG.isSaved) {
+                                                    backgrounds.addToLibrary(backgrounds.currentBG);
+                                                }
+                                            }}
+                                            icon={backgrounds.currentBG.isSaved ? SavedBgIcon : SaveBgIcon}
+                                        />
+                                    )}
                                 </React.Fragment>
                             )}
                             {nextBg && (

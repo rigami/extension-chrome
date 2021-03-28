@@ -182,7 +182,7 @@ class BackgroundsServerService {
         });
 
         try {
-            fileName = await BackgroundsUniversalService.fetchBG(currBg.downloadLink);
+            fileName = await BackgroundsUniversalService.fetchBG(currBg.downloadLink, { preview: false });
         } catch (e) {
             console.error('[backgrounds] Failed get background. Remove from queue and fetch next...', e);
 
@@ -233,7 +233,10 @@ class BackgroundsServerService {
             fileName = first(this.storage.bgsStream).fileName;
         } else {
             try {
-                fileName = await BackgroundsUniversalService.fetchBG(first(this.storage.bgsStream).downloadLink);
+                fileName = await BackgroundsUniversalService.fetchBG(
+                    first(this.storage.bgsStream).downloadLink,
+                    { preview: false },
+                );
             } catch (e) {
                 console.error('[backgrounds] Failed get background. Get next...', e);
 
@@ -336,8 +339,6 @@ class BackgroundsServerService {
             await new Promise((resolve) => setTimeout(resolve, timeout));
         }
 
-        console.warn('bgsStream?.length:', this.storage.bgsStream?.length);
-
         if (this.storage.bgsStream?.length > 0) {
             return this._setFromQueue();
         }
@@ -370,7 +371,7 @@ class BackgroundsServerService {
             let fileName;
 
             try {
-                fileName = await BackgroundsUniversalService.fetchBG(setBG.downloadLink);
+                fileName = await BackgroundsUniversalService.fetchBG(setBG.downloadLink, { preview: false });
             } catch (e) {
                 console.error('[backgrounds] Failed get background. Get next...', e);
 

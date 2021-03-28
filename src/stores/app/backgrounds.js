@@ -124,6 +124,19 @@ class BackgroundsAppService {
         return this._currentBG;
     }
 
+    @action('add to library')
+    async addToLibrary(bg) {
+        this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.PENDING });
+
+        try {
+            await BackgroundsUniversalService.addToLibrary(bg);
+            this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.DONE });
+        } catch (e) {
+            console.error(e);
+            this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.FAILED });
+        }
+    }
+
     @action('add bg`s to queue')
     addToUploadQueue(fileList) {
         if (!fileList || fileList.length === 0) return Promise.reject(ERRORS.NO_FILES);

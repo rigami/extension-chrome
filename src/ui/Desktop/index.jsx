@@ -13,13 +13,16 @@ import { Box, CircularProgress } from '@material-ui/core';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import { eventToBackground } from '@/stores/server/bus';
-import { BG_SELECT_MODE, BG_SHOW_STATE, BG_SOURCE } from '@/enum';
-import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
+import {
+    BG_SELECT_MODE,
+    BG_SHOW_STATE,
+    BG_SOURCE,
+    FETCH,
+} from '@/enum';
 import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem, ContextMenuDivider } from '@/stores/app/entities/contextMenu';
 import FAP from '@/ui/Desktop/FAP';
 import { DIRECTION } from '@/ui/GlobalScroll';
-import { SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
 import Background from './Background';
 import Widgets from './Widgets';
 
@@ -93,12 +96,25 @@ function Desktop({ active, onScroll, onTryScrollCallback }) {
         }),
         ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
             new ContextMenuItem({
-                title: backgrounds.currentBG?.isSaved
-                    ? t('background:addedToLibrary')
-                    : t('background:button.addToLibrary'),
-                disabled: backgrounds.currentBG?.isSaved,
-                icon: backgrounds.currentBG?.isSaved ? SavedBgIcon : SaveBgIcon,
-                onClick: () => BackgroundsUniversalService.addToLibrary(backgrounds.currentBG),
+                title: (
+                    (coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && t('background:addingToLibrary'))
+                    || (backgrounds.currentBG?.isSaved && t('background:addedToLibrary'))
+                    || t('background:button.addToLibrary')
+                ),
+                disabled: (
+                    coreService.storage.temp.addingBgToLibrary === FETCH.PENDING
+                    || backgrounds.currentBG?.isSaved
+                ),
+                icon: (
+                    (coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && CircularProgress)
+                    || (backgrounds.currentBG?.isSaved && SavedBgIcon)
+                    || SaveBgIcon
+                ),
+                iconProps: coreService.storage.temp.addingBgToLibrary === FETCH.PENDING ? {
+                    size: 20,
+                    className: classes.loadBGIcon,
+                } : {},
+                onClick: () => backgrounds.addToLibrary(backgrounds.currentBG),
             }),
             new ContextMenuItem({
                 title: t('background:button.openSource'),
@@ -132,7 +148,12 @@ function Desktop({ active, onScroll, onTryScrollCallback }) {
 
     return (
         <Box className={classes.root}>
-            <Box onContextMenu={appService.contextMenu(contextMenu, { reactions: [() => backgrounds.bgState] })}>
+            <Box
+                onContextMenu={appService.contextMenu(
+                    contextMenu,
+                    { reactions: [() => backgrounds.bgState, () => store.addingInLibrary] },
+                )}
+            >
                 <Background />
                 {widgets.settings.useWidgets && (
                     <Widgets />

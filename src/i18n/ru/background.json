@@ -47,6 +47,7 @@
     "unknown_description": "Что-то пошло не так, но непонятно что, может фон битый, попробуйте удалить его"
   },
   "addedToLibrary": "Фон сохранен в библиотеке",
+  "addingToLibrary": "Сохранение фона...",
   "fetchingNextBG": "Загрузка фона...",
   "removedBrokenBG": "Поврежденный фон удален",
   "backgroundSource": "От {{author}}, $t(serviceName.{{source}}, serviceName.unknown)"
