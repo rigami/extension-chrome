@@ -83,7 +83,7 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
         store.createIndex('version', 'version', { unique: false });
     }
 
-    if (oldVersion < 7) {
+    if (oldVersion !== 0 && oldVersion < 7) {
         const bookmarks = await store.getAll();
         const bookmarksByCategories = await transaction.objectStore('bookmarks_by_categories').getAll();
 
@@ -131,7 +131,7 @@ async function upgradeOrCreateTags(db, transaction, oldVersion, newVersion) {
         store.createIndex('color', 'color', { unique: true });
     }
 
-    if (oldVersion < 7) {
+    if (oldVersion !== 0 && oldVersion < 7) {
         const categories = await transaction.objectStore('categories').getAll();
 
         await Promise.all(categories.map((tag) => transaction.objectStore('tags').put({
@@ -185,7 +185,7 @@ async function upgradeOrCreateFavorites(db, transaction, oldVersion, newVersion)
         store.deleteIndex('favorite_id');
     }
 
-    if (oldVersion < 7) {
+    if (oldVersion !== 0 && oldVersion < 7) {
         (await store.getAll()).forEach((favorite) => store.put({
             id: favorite.id,
             itemId: favorite.itemId,
