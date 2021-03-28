@@ -340,7 +340,7 @@ class BackgroundsServerService {
     async _setFromQueue() {
         let fileName;
 
-        if (this.core.isOffline && !first(this.storage.bgsStream).fileName) {
+        if (this.core.isOffline && !first(this.storage.bgsStream)?.fileName) {
             console.log('[backgrounds] App is offline and next bg not prefetch. Get background from local store...');
             this._fetchCount = 0;
             return this.nextBGLocal();
@@ -404,7 +404,7 @@ class BackgroundsServerService {
             await new Promise((resolve) => setTimeout(resolve, timeout));
         }
 
-        if (!isPrepare && this.storage.bgsStream?.length !== 0) {
+        if (!isPrepare && this.storage.bgsStream?.length > 0) {
             return this._setFromQueue();
         }
 
@@ -458,7 +458,10 @@ class BackgroundsServerService {
             }
         } catch (e) {
             console.log('[backgrounds] Failed get backgrounds', e);
-            if (!isPrepare) eventToApp('backgrounds/state', { state: BG_SHOW_STATE.NOT_FOUND });
+            if (!isPrepare) {
+                this.bgState = BG_SHOW_STATE.NOT_FOUND;
+                eventToApp('backgrounds/state', { state: BG_SHOW_STATE.NOT_FOUND });
+            }
         }
 
         return Promise.resolve();
