@@ -1,5 +1,5 @@
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
-import { difference, values } from 'lodash';
+import { values, intersectionWith, isEqual } from 'lodash';
 import DBConnector from '@/utils/dbConnector';
 import { COMPARE, SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
@@ -42,15 +42,17 @@ export const compare = (q, bookmark) => {
 
     let tags;
 
-    const sameTagsCount = difference(q.tags, bookmark.tags).length;
     if (q.tags.length === 0) {
         tags = COMPARE.IGNORE;
-    } else if (sameTagsCount === 0 && bookmark.tags.length !== 0) {
-        tags = COMPARE.FULL;
-    } else if (sameTagsCount !== bookmark.tags.length && bookmark.tags.length !== 0) {
-        tags = COMPARE.PART;
     } else {
-        tags = COMPARE.NONE;
+        const sameTagsCount = intersectionWith(q.tags, bookmark.tags, isEqual).length;
+        if (sameTagsCount === bookmark.tags.length && sameTagsCount === q.tags.length && bookmark.tags.length !== 0) {
+            tags = COMPARE.FULL;
+        } else if (sameTagsCount !== 0 && bookmark.tags.length !== 0) {
+            tags = COMPARE.PART;
+        } else {
+            tags = COMPARE.NONE;
+        }
     }
 
     let query;
@@ -133,7 +135,9 @@ export const search = async (searchRequest = new SearchQuery()) => {
 
     await transaction.done; */
 
-    (await DBConnector().getAll('bookmarks')).forEach((bookmark) => {
+    const allBookmarks = await DBConnector().getAll('bookmarks');
+
+    allBookmarks.forEach((bookmark) => {
         const compareResult = compare(searchRequest, bookmark);
 
         if (searchRequest.folderId && compareResult.folder === COMPARE.NONE) return;

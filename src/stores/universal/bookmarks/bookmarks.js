@@ -49,7 +49,7 @@ class BookmarksUniversalService {
             description: description && description.trim(),
             icoVariant,
             folderId,
-            tags,
+            tags: tags.filter((isExist) => isExist),
         };
 
         let saveBookmarkId;
