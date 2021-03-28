@@ -66,8 +66,8 @@ function Bookmarks({ onScroll, active }) {
                 coreService.localEventBus.call(
                     'bookmark/create',
                     {
-                        defaultFolderId: store.searchRequest.folderId,
-                        defaultTagsIds: store.searchRequest.tags,
+                        defaultFolderId: service.activeFolderId,
+                        defaultTagsIds: service.tags,
                     },
                 );
             },
