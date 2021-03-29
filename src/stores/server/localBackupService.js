@@ -115,6 +115,7 @@ class LocalBackupService {
                         backup.backgroundsFiles = backgrounds;
                     }
                 } catch (e) {
+                    await FSConnector.removeFile(`/temp/restore-backup.${type}`).catch(console.warn);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'brokenFile',
@@ -137,6 +138,7 @@ class LocalBackupService {
 
                     backup = { ...file };
                 } catch (e) {
+                    await FSConnector.removeFile(`/temp/restore-backup.${type}`).catch(console.warn);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'brokenFile',
@@ -149,6 +151,7 @@ class LocalBackupService {
                     return;
                 }
             } else {
+                await FSConnector.removeFile(`/temp/restore-backup.${type}`).catch(console.warn);
                 eventToApp('system/backup/local/restore/progress', {
                     result: 'error',
                     message: 'wrongSchema',
@@ -161,6 +164,7 @@ class LocalBackupService {
                 return;
             }
 
+            await FSConnector.removeFile(`/temp/restore-backup.${type}`).catch(console.warn);
             console.log('restore backup', backup);
 
             try {
