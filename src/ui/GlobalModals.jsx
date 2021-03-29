@@ -16,7 +16,7 @@ import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import ContextMenu from '@/ui/ContextMenu';
 import { useSnackbar } from 'notistack';
-import FSConnector from '@/utils/fsConnector';
+import { getUrl } from '@/utils/fs';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation();
@@ -82,7 +82,7 @@ function GlobalModals({ children }) {
             });
 
             const link = document.createElement('a');
-            link.href = FSConnector.getURL('/temp/backup.zip');
+            link.href = getUrl('/temp/backup.zip');
             link.download = `Backup rigami from ${generateFormatter.format(new Date())}.rigami`;
 
             link.click();

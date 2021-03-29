@@ -1,5 +1,5 @@
 import { eventToApp } from '@/stores/server/bus';
-import FSConnector from '@/utils/fsConnector';
+import fs from '@/utils/fs';
 import Tag from '@/stores/universal/bookmarks/entities/tag';
 import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { makeAutoObservable } from 'mobx';
@@ -65,7 +65,7 @@ class LocalBackupService {
                 const zipBlob = await zip.generateAsync({ type: 'blob' });
                 const backupPath = '/temp/backup.zip';
 
-                await FSConnector.saveFile(
+                await fs().save(
                     backupPath,
                     new Blob([zipBlob], { type: 'application/zip' }),
                 );
@@ -90,7 +90,7 @@ class LocalBackupService {
 
             if (type === 'rigami') {
                 try {
-                    const restoreFile = await FSConnector.getFileAsBlob('/temp/restore-backup.rigami');
+                    const restoreFile = await fs().get('/temp/restore-backup.rigami', { type: 'blob' });
                     const zip = await new JSZip().loadAsync(restoreFile);
                     const backgrounds = {};
                     const files = map(zip.files, (file) => file);
@@ -115,7 +115,7 @@ class LocalBackupService {
                         backup.backgroundsFiles = backgrounds;
                     }
                 } catch (e) {
-                    await FSConnector.removeFile(`/temp/restore-backup.${type}`).catch(console.warn);
+                    await fs().remove(`/temp/restore-backup.${type}`).catch(console.warn);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'brokenFile',
@@ -129,7 +129,7 @@ class LocalBackupService {
                 }
             } else if (type === 'json' || type === 'ctbup') {
                 try {
-                    const restoreData = await FSConnector.getFileAsText(`/temp/restore-backup.${type}`);
+                    const restoreData = await fs().get(`/temp/restore-backup.${type}`, { type: 'text' });
                     let file = JSON.parse(restoreData);
 
                     if (type === 'ctbup') {
@@ -138,7 +138,7 @@ class LocalBackupService {
 
                     backup = { ...file };
                 } catch (e) {
-                    await FSConnector.removeFile(`/temp/restore-backup.${type}`).catch(console.warn);
+                    await fs().remove(`/temp/restore-backup.${type}`).catch(console.warn);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'brokenFile',
@@ -151,7 +151,7 @@ class LocalBackupService {
                     return;
                 }
             } else {
-                await FSConnector.removeFile(`/temp/restore-backup.${type}`).catch(console.warn);
+                await fs().remove(`/temp/restore-backup.${type}`).catch(console.warn);
                 eventToApp('system/backup/local/restore/progress', {
                     result: 'error',
                     message: 'wrongSchema',
@@ -164,7 +164,7 @@ class LocalBackupService {
                 return;
             }
 
-            await FSConnector.removeFile(`/temp/restore-backup.${type}`).catch(console.warn);
+            await fs().remove(`/temp/restore-backup.${type}`).catch(console.warn);
             console.log('restore backup', backup);
 
             try {
@@ -206,7 +206,7 @@ class LocalBackupService {
     }
 
     collectSettings() {
-        return FSConnector.getFileAsText('/settings.json')
+        return fs().get('/settings.json', { type: 'text' })
             .then((props) => {
                 console.log(props);
 
@@ -226,7 +226,7 @@ class LocalBackupService {
             let image;
 
             try {
-                image = await FSConnector.getFileAsBase64(`/bookmarksIcons/${bookmark.icoFileName}`);
+                image = await fs().get(`/bookmarksIcons/${bookmark.icoFileName}`, { type: 'base64' });
             } catch (e) {
                 console.warn('Failed get icon', e, bookmark);
             }
@@ -268,7 +268,7 @@ class LocalBackupService {
         for await (const background of allBackgrounds) {
             console.log(background);
 
-            const full = await FSConnector.getFileAsBlob(`/backgrounds/full/${background.fileName}`);
+            const full = await fs().get(`/backgrounds/full/${background.fileName}`, { type: 'blob' });
             console.log('full:', full);
 
             fullBlobs.set(background.id, full);

@@ -1,5 +1,7 @@
 import EventBus from '@/utils/eventBus';
 import BusApp, { eventToApp, eventToPopup } from '@/stores/server/bus';
+import fs, { open as openFS } from '@/utils/fs';
+import asyncAction from '@/utils/asyncAction';
 import SettingsService from './settingsService';
 import StorageService from './storageService';
 // import SyncSystemBookmarksService from './syncSystemBookmarksService';
@@ -25,6 +27,7 @@ class ServerApp {
 
     constructor() {
         // App core
+        openFS();
         this.localBus = new EventBus();
         this.globalBus = BusApp();
         this.settingsService = new SettingsService(this);

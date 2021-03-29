@@ -1,6 +1,6 @@
 import { eventToApp, instanceId } from '@/stores/server/bus';
 import { assign, throttle } from 'lodash';
-import FSConnector from '@/utils/fsConnector';
+import fs from '@/utils/fs';
 import { action, makeAutoObservable, toJS } from 'mobx';
 
 class StorageService {
@@ -19,7 +19,7 @@ class StorageService {
         } catch (e) {
             console.log('[storage] Not find fast cache or broken. Get from file cache...');
 
-            FSConnector.getFileAsText('/storage.json')
+            fs().get('/storage.json', { type: 'text' })
                 .then((props) => {
                     this.storage = { ...JSON.parse(props) };
                     this.fastSync();
@@ -62,7 +62,7 @@ class StorageService {
     sync = throttle(() => {
         console.log('[storage] Save settings', this.storage);
 
-        FSConnector.saveFile(
+        fs().save(
             '/storage.json',
             new Blob([JSON.stringify(this.storage)], { type: 'application/json' }),
         ).then(() => {

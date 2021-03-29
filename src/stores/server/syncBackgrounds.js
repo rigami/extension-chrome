@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from '@/stores/universal/backgrounds/entities/background';
-import FSConnector from '@/utils/fsConnector';
+import fs from '@/utils/fs';
 import createPreview from '@/utils/createPreview';
 
 class SyncBookmarks {
@@ -42,8 +42,8 @@ class SyncBookmarks {
                 }
 
                 console.log('[backgrounds] Save BG in file system...');
-                await FSConnector.saveFile(BackgroundsUniversalService.FULL_PATH, files[computeId], fileName);
-                await FSConnector.saveFile(BackgroundsUniversalService.PREVIEW_PATH, previewDefaultBG, fileName);
+                await fs().save(`${BackgroundsUniversalService.FULL_PATH}/${fileName}`, files[computeId]);
+                await fs().save(`${BackgroundsUniversalService.PREVIEW_PATH}/${fileName}`, previewDefaultBG);
 
                 console.log('[backgrounds] Added to library...');
                 await BackgroundsUniversalService.addToLibrary(new Background({

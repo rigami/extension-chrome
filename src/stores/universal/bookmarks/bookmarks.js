@@ -1,6 +1,6 @@
 import { action } from 'mobx';
 import DBConnector from '@/utils/dbConnector';
-import FSConnector from '@/utils/fsConnector';
+import fs from '@/utils/fs';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import getImageBlob from '@/utils/getImageBlob';
@@ -87,10 +87,10 @@ class BookmarksUniversalService {
                 blob = await getImageBlob(imageURL);
             }
 
-            await FSConnector.saveFile('/bookmarksIcons', blob, icoName);
+            await fs().save(`/bookmarksIcons/${icoName}`, blob);
         } else if (!imageURL && id) {
             try {
-                await FSConnector.removeFile('/bookmarksIcons', icoName);
+                await fs().remove(`/bookmarksIcons/${icoName}`);
             } catch (e) {
                 console.error(e);
             }
@@ -114,7 +114,7 @@ class BookmarksUniversalService {
         await DBConnector().delete('bookmarks', bookmarkId);
 
         try {
-            await FSConnector.removeFile('/bookmarksIcons', oldBookmark.icoFileName);
+            await fs().remove(`/bookmarksIcons/${oldBookmark.icoFileName}`);
         } catch (e) {
             console.log('Failed remove bookmark icon', e);
         }

@@ -1,6 +1,6 @@
 import { action, makeAutoObservable } from 'mobx';
 import { assign, pick } from 'lodash';
-import FSConnector from '@/utils/fsConnector';
+import { getIconUrl } from '@/utils/fs';
 import { BKMS_VARIANT } from '@/enum';
 
 class Bookmark {
@@ -20,7 +20,7 @@ class Bookmark {
     constructor(bookmark = {}) {
         makeAutoObservable(this);
 
-        const imageUrl = bookmark.imageUrl || FSConnector.getIconURL(bookmark.icoFileName);
+        const imageUrl = bookmark.imageUrl || getIconUrl(bookmark.icoFileName);
 
         this.id = bookmark.id;
         this.url = bookmark.url;

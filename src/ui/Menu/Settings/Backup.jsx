@@ -23,7 +23,7 @@ import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
 import { eventToApp, eventToBackground } from '@/stores/server/bus';
 import { observer } from 'mobx-react-lite';
-import FSConnector from '@/utils/fsConnector';
+import fs from '@/utils/fs';
 /* import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import SectionHeader from '@/ui/Menu/SectionHeader';
@@ -324,7 +324,7 @@ function BackupSettings() {
             const file = form.files[0];
             const type = file.name.substring(file.name.lastIndexOf('.') + 1);
 
-            FSConnector.saveFile(`/temp/restore-backup.${type}`, file).then(() => {
+            fs().save(`/temp/restore-backup.${type}`, file).then(() => {
                 eventToBackground('system/backup/local/restore', { type });
             });
         } catch (e) {

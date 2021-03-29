@@ -19,7 +19,7 @@ import DBConnector from '@/utils/dbConnector';
 import { first } from 'lodash';
 import appVariables from '@/config/appVariables';
 import fetchData from '@/utils/xhrPromise';
-import FSConnector from '@/utils/fsConnector';
+import fs, { getBgUrl } from '@/utils/fs';
 import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrounds/service';
 import getPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/server/bus';
@@ -437,7 +437,7 @@ class BackgroundsServerService {
             }),
             bgShowMode: BG_SHOW_MODE.LIVE,
         });
-        FSConnector.removeFile(BackgroundsUniversalService.FULL_PATH, 'temporaryVideoFrame').catch(() => {});
+        fs().remove(`${BackgroundsUniversalService.FULL_PATH}/temporaryVideoFrame`).catch(() => {});
 
         return true;
     }
@@ -455,7 +455,7 @@ class BackgroundsServerService {
             bgShowMode: BG_SHOW_MODE.STATIC,
         });
         const frame = await getPreview(
-            FSConnector.getBGURL(this._currentBG.fileName),
+            getBgUrl(this._currentBG.fileName),
             this._currentBG.type,
             {
                 size: 'full',
@@ -465,9 +465,9 @@ class BackgroundsServerService {
 
         if (bgId !== this.currentBGId || this.bgShowMode !== BG_SHOW_MODE.STATIC) throw ERRORS.ID_BG_IS_CHANGED;
 
-        await FSConnector.saveFile(BackgroundsUniversalService.FULL_PATH, frame, 'temporaryVideoFrame');
+        await fs().save(`${BackgroundsUniversalService.FULL_PATH}/temporaryVideoFrame`, frame);
 
-        this._currentBG.pauseStubSrc = FSConnector.getBGURL('temporaryVideoFrame');
+        this._currentBG.pauseStubSrc = getBgUrl('temporaryVideoFrame');
 
         this.core.storageService.updatePersistent({ bgCurrent: this._currentBG });
 

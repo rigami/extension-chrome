@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Avatar, Collapse } from '@material-ui/core';
 import { BG_SELECT_MODE } from '@/enum';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import FSConnector from '@/utils/fsConnector';
+import { getBgUrl } from '@/utils/fs';
 import { BrokenImageRounded as BrokenIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import useAppStateService from '@/stores/app/AppStateProvider';
@@ -25,7 +25,7 @@ function Specific({ onSelect }) {
                         <Avatar
                             src={
                                 backgrounds.currentBGId
-                                && FSConnector.getBGURL(backgrounds.currentBG.fileName, 'preview')
+                                && getBgUrl(backgrounds.currentBG.fileName, 'preview')
                             }
                             variant="rounded"
                             style={{

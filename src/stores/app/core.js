@@ -11,7 +11,7 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import { open as openDB } from '@/utils/dbConnector';
 import appVariables from '@/config/appVariables';
-import FSConnector from '@/utils/fsConnector';
+import fs, { open as openFS } from '@/utils/fs';
 import EventBus from '@/utils/eventBus';
 import { assign, first } from 'lodash';
 import Background from '@/stores/universal/backgrounds/entities/background';
@@ -124,6 +124,13 @@ class Core {
     }
 
     async initialization() {
+        openFS().catch((e) => {
+            console.error('Failed init fs:', e);
+
+            this.appError = 'ERR_INIT_FS';
+            this.appState = APP_STATE.FAILED;
+        });
+
         openDB().catch((e) => {
             console.error('Failed init db:', e);
 
@@ -165,7 +172,10 @@ class Core {
     async setDefaultState(progressCallback) {
         console.log('Create FS');
         progressCallback(5, PREPARE_PROGRESS.CREATE_FS);
-        await FSConnector.createFS();
+        await fs().mkdir('/temp');
+        await fs().mkdir('/bookmarksIcons');
+        await fs().mkdir('/backgrounds/full');
+        await fs().mkdir('/backgrounds/preview');
 
         console.log('Fetch BG');
         progressCallback(10, PREPARE_PROGRESS.FETCH_BG);
