@@ -1,5 +1,5 @@
 import { action } from 'mobx';
-import DBConnector from '@/utils/dbConnector';
+import db from '@/utils/db';
 import fs from '@/utils/fs';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
@@ -11,14 +11,14 @@ import { SearchQuery } from './searchQuery';
 class BookmarksUniversalService {
     @action('get bookmark')
     static async get(bookmarkId) {
-        const bookmark = await DBConnector().get('bookmarks', bookmarkId);
+        const bookmark = await db().get('bookmarks', bookmarkId);
 
         return new Bookmark(bookmark);
     }
 
     @action('query feature bookmarks')
     static async getAllInFolder(folderId) {
-        const bookmarksKeys = await DBConnector().getAllFromIndex(
+        const bookmarksKeys = await db().getAllFromIndex(
             'bookmarks',
             'folder_id',
             folderId,
@@ -59,7 +59,7 @@ class BookmarksUniversalService {
             const oldBookmark = await this.get(id);
             icoName = oldBookmark.icoFileName || icoName;
 
-            saveBookmarkId = await DBConnector().put('bookmarks', cloneDeep({
+            saveBookmarkId = await db().put('bookmarks', cloneDeep({
                 id,
                 ...saveData,
                 icoFileName: oldBookmark.icoFileName,
@@ -67,7 +67,7 @@ class BookmarksUniversalService {
             }));
         } else {
             try {
-                saveBookmarkId = await DBConnector().add('bookmarks', cloneDeep({
+                saveBookmarkId = await db().add('bookmarks', cloneDeep({
                     ...saveData,
                     icoFileName: icoName,
                     version: 1,
@@ -110,8 +110,8 @@ class BookmarksUniversalService {
             await FavoritesUniversalService.removeFromFavorites(favoriteItem.id);
         }
 
-        const oldBookmark = await DBConnector().get('bookmarks', bookmarkId);
-        await DBConnector().delete('bookmarks', bookmarkId);
+        const oldBookmark = await db().get('bookmarks', bookmarkId);
+        await db().delete('bookmarks', bookmarkId);
 
         try {
             await fs().remove(`/bookmarksIcons/${oldBookmark.icoFileName}`);

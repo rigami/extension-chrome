@@ -2,7 +2,7 @@ import BackgroundApp from '@/stores/server';
 import { initBus } from '@/stores/server/bus';
 import { DESTINATION } from '@/enum';
 import asyncAction from '@/utils/asyncAction';
-import { open as openDB } from '@/utils/dbConnector';
+import { open as openDB } from '@/utils/db';
 import initSentry from '@/config/sentry';
 import generateUUID from '@/utils/generateUUID';
 import * as Sentry from '@sentry/react';

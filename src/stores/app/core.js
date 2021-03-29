@@ -9,7 +9,7 @@ import {
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
-import { open as openDB } from '@/utils/dbConnector';
+import { open as openDB } from '@/utils/db';
 import appVariables from '@/config/appVariables';
 import fs, { open as openFS } from '@/utils/fs';
 import EventBus from '@/utils/eventBus';

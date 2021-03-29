@@ -15,7 +15,7 @@ import {
     FETCH,
 } from '@/enum';
 import Background from '@/stores/universal/backgrounds/entities/background';
-import DBConnector from '@/utils/dbConnector';
+import db from '@/utils/db';
 import { first } from 'lodash';
 import appVariables from '@/config/appVariables';
 import fetchData from '@/utils/xhrPromise';
@@ -107,7 +107,7 @@ class BackgroundsServerService {
         console.log('[backgrounds] Search next background from local library...');
         this.bgState = BG_SHOW_STATE.SEARCH;
         const bgs = (await Promise.all(this.settings.type.map((type) => (
-            DBConnector().getAllFromIndex('backgrounds', 'type', type)
+            db().getAllFromIndex('backgrounds', 'type', type)
         )))).flat();
 
         if (bgs.length === 0) {
@@ -406,7 +406,7 @@ class BackgroundsServerService {
 
         if (this.bgShowMode === BG_SHOW_MODE.STATIC) setBG.pauseTimestamp = -0.5;
 
-        const isSaved = (await DBConnector().count('backgrounds', setBG.id)) !== 0;
+        const isSaved = (await db().count('backgrounds', setBG.id)) !== 0;
 
         this._currentBG = setBG;
         this.currentBGId = this._currentBG.id;

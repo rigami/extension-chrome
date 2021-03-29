@@ -13,7 +13,7 @@ import {
     BG_CHANGE_INTERVAL,
     BG_SELECT_MODE,
 } from '@/enum';
-import DBConnector from '@/utils/dbConnector';
+import db from '@/utils/db';
 import getPreview from '@/utils/createPreview';
 import { BackgroundSettingsStore } from '@/stores/app/settings';
 import Background from '@/stores/universal/backgrounds/entities/background';
@@ -240,7 +240,7 @@ class BackgroundsAppService {
 
     @action('get last usage backgrounds')
     async getLastUsage(limit = 10) {
-        const tx = await DBConnector().transaction('backgrounds', 'readonly');
+        const tx = await db().transaction('backgrounds', 'readonly');
         let cursor = await tx.objectStore('backgrounds').openCursor();
         let currIndex = 0;
         const bgs = [];

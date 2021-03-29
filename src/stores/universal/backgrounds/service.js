@@ -1,4 +1,4 @@
-import DBConnector from '@/utils/dbConnector';
+import db from '@/utils/db';
 import fs from '@/utils/fs';
 import createPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/server/bus';
@@ -42,7 +42,7 @@ class BackgroundsUniversalService {
 
         console.log('savedBG', savedBG);
 
-        await DBConnector().add('backgrounds', savedBG);
+        await db().add('backgrounds', savedBG);
 
         eventToApp('backgrounds/new', { bg: savedBG });
 
@@ -58,7 +58,7 @@ class BackgroundsUniversalService {
         console.log('[backgrounds] Remove from store', removeBG);
 
         try {
-            await DBConnector().delete('backgrounds', removeBG.id);
+            await db().delete('backgrounds', removeBG.id);
             console.log('[backgrounds] Remove from db...');
         } catch (e) {
             console.log(`bg ${removeBG.id} not find in db`);
@@ -116,7 +116,7 @@ class BackgroundsUniversalService {
     }
 
     static async getAll() {
-        const bgs = await DBConnector().getAll('backgrounds');
+        const bgs = await db().getAll('backgrounds');
 
         return bgs.map((bg) => new Background(bg));
     }
