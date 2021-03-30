@@ -209,7 +209,7 @@ function Background() {
         store.stateRequestLoadBg = FETCH.PENDING;
 
         const successLoad = () => {
-            if (loadBgId !== store.requestBg.id) return;
+            if (loadBgId !== store.requestBg?.id) return;
             console.log('[BACKGROUND] NEW BG DONE', store.showBg, store.requestBg, store.stateLoadBg);
             store.stateRequestLoadBg = FETCH.DONE;
             store.loadBgId = null;
@@ -222,7 +222,7 @@ function Background() {
         };
 
         const failedLoad = (e) => {
-            if (loadBgId !== store.requestBg.id) return;
+            if (loadBgId !== store.requestBg?.id) return;
             console.log('[BACKGROUND] NEW BG FAILED', e);
             store.currentBg = store.requestBg;
             store.stateRequestLoadBg = FETCH.FAILED;

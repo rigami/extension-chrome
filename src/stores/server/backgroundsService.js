@@ -265,12 +265,12 @@ class BackgroundsServerService {
     @action('preload queue')
     async _preloadQueue(force = false) {
         if (!force && this._queueIsPreloaded) {
-            console.warn('[backgrounds] Queue already preload. Abort...');
+            console.log('[backgrounds] Queue already preload. Abort...');
             return Promise.resolve();
         }
 
         if (!force) this._queueIsPreloaded = true;
-        console.warn(`[backgrounds] Preload queue... Is force: ${force}`);
+        console.log(`[backgrounds] Preload queue... Is force: ${force}`);
         const place = this.storage.backgroundStreamQuery?.type === 'collection'
             ? 'get-from-collection'
             : 'get-random';
@@ -355,11 +355,8 @@ class BackgroundsServerService {
             return this._setFromQueue();
         } catch (e) {
             console.log('[backgrounds] Failed get backgrounds', e);
-            this.bgState = BG_SHOW_STATE.NOT_FOUND;
-            eventToApp('backgrounds/state', { state: BG_SHOW_STATE.NOT_FOUND });
+            return this.nextBGLocal();
         }
-
-        return Promise.resolve();
     }
 
     @action('set bg')
