@@ -29,6 +29,10 @@ const useStyles = makeStyles((theme) => ({
         top: 0,
         backgroundColor: fade(theme.palette.background.backdrop, 0.4),
     },
+    header: {
+        paddingTop: theme.spacing(3),
+        paddingBottom: theme.spacing(3),
+    },
     bottomOffset: { marginTop: 'auto' },
     favorite: {
         color: theme.palette.error.main,
@@ -53,6 +57,8 @@ const useStyles = makeStyles((theme) => ({
     avatar: {
         display: 'flex',
         alignSelf: 'flex-start',
+        marginTop: theme.spacing(0.25),
+        marginBottom: theme.spacing(0.25),
     },
     icon: {
         width: 28,
@@ -134,7 +140,7 @@ function FoldersPanel({ searchService: service }) {
                     'failed load',
                 )}
                 classes={{
-                    root: classes.padding,
+                    root: clsx(classes.padding, classes.header),
                     avatar: classes.avatar,
                     title: classes.title,
                 }}
