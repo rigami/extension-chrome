@@ -17,6 +17,7 @@ import stateRender from '@/utils/stateRender';
 import FolderItem from '@/ui/Bookmarks/FoldersPanel/FolderItem';
 import { useTranslation } from 'react-i18next';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
