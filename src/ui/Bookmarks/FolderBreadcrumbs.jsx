@@ -9,8 +9,19 @@ import { useLocalObservable, observer } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        paddingLeft: theme.spacing(2),
+        height: 42,
+        display: 'flex',
+        alignItems: 'center',
+    },
+}));
 
 function FolderBreadcrumbs({ searchService: service }) {
+    const classes = useStyles();
     const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
         path: null,
@@ -34,7 +45,7 @@ function FolderBreadcrumbs({ searchService: service }) {
     }, [service.activeFolderId, bookmarksService.lastTruthSearchTimestamp]);
 
     return (
-        <Box px={2} visibility={service.searchEverywhere ? 'hidden' : 'visible'}>
+        <Box className={classes.root} visibility={service.searchEverywhere ? 'hidden' : 'visible'}>
             <Breadcrumbs>
                 {store.path && store.path.map((folder, index) => (index === store.path.length - 1 ? (
                     <Typography

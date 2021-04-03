@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme) => ({
     toolbar: {
         minHeight: theme.spacing(9.75),
         display: 'flex',
+        paddingTop: 18,
+        paddingBottom: 18,
+        alignItems: 'flex-start',
     },
     wrapperBreadcrumbs: {},
     wrapperSearch: {

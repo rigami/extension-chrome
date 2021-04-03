@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import Tags from '@/ui/Bookmarks/Tags';
 import { observer } from 'mobx-react-lite';
+import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import Search from './Search';
 
 const useStyles = makeStyles((theme) => ({
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         maxWidth: 600,
         minWidth: 240,
-        height: 42,
+        minHeight: 42,
         flexGrow: 1,
         position: 'relative',
     },
@@ -36,10 +37,14 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 600,
         color: theme.palette.text.secondary,
+        height: 42,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     alignFix: {
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'flex-start',
     },
     fullSearchWrapper: {
@@ -59,23 +64,79 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 600,
         color: theme.palette.text.secondary,
         letterSpacing: 'normal',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
     resetIconWrapper: {
         position: 'absolute',
         right: 0,
         top: 0,
-        height: 'inherit',
+        height: Math.sqrt(882) + 21,
         zIndex: 3,
         overflow: 'hidden',
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         borderTopRightRadius: theme.shape.borderRadius,
         borderBottomRightRadius: theme.shape.borderRadius,
+        pointerEvents: 'none',
     },
     resetIcon: {
         padding: Math.sqrt(882) - 12,
         margin: -(Math.sqrt(882) - 21),
         marginLeft: 0,
+        pointerEvents: 'all',
+    },
+    rows: {
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'auto',
+        flexGrow: 1,
+        '-webkit-mask': 'linear-gradient(to left, transparent 42px, black 60px)',
+    },
+    row: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        height: 42,
+        overflow: 'hidden',
+        marginTop: theme.spacing(-1),
+        '&:first-child': { marginTop: 0 },
+    },
+    extend: {
+        '& $resetIconWrapper': {
+            height: 42,
+            borderBottomRightRadius: theme.shape.borderRadius,
+        },
+    },
+    open: {
+        '& $resetIconWrapper': {
+            height: 42,
+            borderBottomRightRadius: 0,
+        },
+    },
+    tag: {
+        '& div': {
+            opacity: '60%',
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            marginRight: 8,
+            flexShrink: 0,
+        },
+        marginRight: 8,
+        display: 'inline-flex',
+        alignItems: 'center',
+        flexShrink: 0,
+    },
+    tagSmall: {
+        '& div': { marginRight: 0 },
+        fontSize: 0,
+        marginRight: 4,
+    },
+    search: {
+        paddingRight: 42,
+        '-webkit-mask': 'linear-gradient(to left, transparent 42px, black 60px)',
+        display: 'flex',
     },
 }));
 
@@ -83,6 +144,7 @@ function SearchBlock({ searchService: service }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const [isOpen, setIsOpen] = useState(false);
+    const [tags, setTags] = useState([]);
     const rootRef = useRef();
     const inputRef = useRef();
 
@@ -93,7 +155,10 @@ function SearchBlock({ searchService: service }) {
     };
 
     useEffect(() => {
-        if (isOpen) window.addEventListener('keydown', handleKeyDown, true);
+        if (isOpen) {
+            window.addEventListener('keydown', handleKeyDown, true);
+            if (inputRef.current) inputRef.current.focus();
+        }
 
         return () => {
             if (isOpen) window.removeEventListener('keydown', handleKeyDown, true);
@@ -101,18 +166,27 @@ function SearchBlock({ searchService: service }) {
     }, [isOpen]);
 
     useEffect(() => {
-        if (isOpen && inputRef.current) inputRef.current.focus();
-    }, [isOpen]);
+        Promise.all(service.tags.map((tagId) => TagsUniversalService.get(tagId)))
+            .then((fullTags) => setTags(fullTags));
+    }, [service.tags]);
+
+    const { usedFields } = service.searchRequest;
+
+    const oneRow = (!usedFields.tags && usedFields.query)
+        || (usedFields.tags && !usedFields.query);
 
     return (
-        <Box className={classes.wrapper} ref={rootRef}>
+        <Box className={clsx(classes.wrapper, isOpen && classes.open, oneRow && classes.extend)} ref={rootRef}>
             {service.query && (
                 <Box className={classes.resetIconWrapper}>
                     <IconButton
                         className={classes.resetIcon}
                         size="medium"
                         onClick={() => {
-                            service.updateRequest({ query: '' });
+                            service.updateRequest({
+                                query: '',
+                                tags: [],
+                            });
                         }}
                     >
                         <ResetIcon />
@@ -126,16 +200,29 @@ function SearchBlock({ searchService: service }) {
                         onClick={() => setIsOpen(true)}
                     >
                         <SearchIcon className={classes.icon} />
-                        {service.query && (
-                            <Typography variant="caption" className={classes.query}>
-                                {service.query}
-                                {' '}
-                                или
-                                {' '}
-                                {service.tags.map((name) => name).join('; ')}
-                            </Typography>
-                        )}
-                        {!service.query && (
+                        <Box className={classes.rows}>
+                            {usedFields.query && (
+                                <Box className={classes.row}>
+                                    <Typography variant="caption" className={classes.query}>
+                                        {service.query}
+                                    </Typography>
+                                </Box>
+                            )}
+                            {usedFields.tags && (
+                                <Box className={classes.row}>
+                                    {tags.map((tag, index) => (
+                                        <span
+                                            key={tag.id}
+                                            className={clsx(classes.tag, classes.query, index > 2 && classes.tagSmall)}
+                                        >
+                                            <div style={{ backgroundColor: tag.color }} />
+                                            {tag.name}
+                                        </span>
+                                    ))}
+                                </Box>
+                            )}
+                        </Box>
+                        {(!usedFields.query && !usedFields.tags) && (
                             <Typography variant="caption" className={classes.placeholder}>
                                 {t('search.bookmarks', { context: 'placeholder' })}
                             </Typography>
@@ -154,12 +241,12 @@ function SearchBlock({ searchService: service }) {
                         elevation={isOpen ? 18 : 0}
                     >
                         <Collapse collapsedHeight={42} in={isOpen}>
-                            <Search inputRef={inputRef} searchService={service} />
+                            <Search className={classes.search} inputRef={inputRef} searchService={service} />
                             <Divider />
                             <Tags
                                 className={classes.tags}
                                 value={service.tags}
-                                onChange={(tags) => service.updateRequest({ tags })}
+                                onChange={(changedTags) => service.updateRequest({ tags: changedTags })}
                             />
                         </Collapse>
                     </Paper>
