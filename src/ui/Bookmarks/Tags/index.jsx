@@ -14,7 +14,6 @@ import Tag from './Chip';
 const useStyles = makeStyles((theme) => ({
     root: {
         overflow: 'auto',
-        maxHeight: 130,
         display: 'flex',
         flexWrap: 'wrap',
     },

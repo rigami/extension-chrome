@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: theme.spacing(2),
     },
     title: { fontSize: '2.25rem' },
-    bookmarks: { paddingTop: theme.spacing(3) },
+    bookmarks: { paddingTop: theme.spacing(6) },
     bottomOffset: { paddingBottom: theme.spacing(38) },
 }));
 

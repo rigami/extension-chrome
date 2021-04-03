@@ -2,7 +2,7 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const primaryFontFamily = '"Manrope", "Open Sans", sans-serif';
-const secondaryFontFamily = 'Roboto, "Open Sans", sans-serif';
+const secondaryFontFamily = primaryFontFamily; // 'Roboto, "Open Sans", sans-serif';
 
 const theme = {
     palette: {
@@ -27,9 +27,13 @@ const theme = {
         borderRadiusBold: 8,
     },
     typography: {
-        fontFamily: secondaryFontFamily,
+        fontFamily: primaryFontFamily,
         primaryFontFamily,
         secondaryFontFamily,
+        body1: {
+            fontFamily: primaryFontFamily,
+            fontWeight: 600,
+        },
     },
     overrides: {
         MuiButton: {

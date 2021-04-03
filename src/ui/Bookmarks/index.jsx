@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Bookmarks({ onScroll, active }) {
+function Bookmarks({ onScroll, active = true }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const coreService = useCoreService();
@@ -110,10 +110,6 @@ function Bookmarks({ onScroll, active }) {
                 <Scrollbar refScroll={(scroll) => { store.scroll = scroll; }}>
                     <Box minHeight="100vh" display="flex" flexDirection="column">
                         <ToolsPanel searchService={service} />
-                        <FolderBreadcrumbs
-                            selectFolderId={service.activeFolderId}
-                            onSelectFolder={(id) => service.setActiveFolder(id)}
-                        />
                         <BookmarksViewer searchService={service} />
                     </Box>
                 </Scrollbar>

@@ -26,20 +26,20 @@ import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: 180,
+        width: 168,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         position: 'relative',
-        height: 62,
+        height: 58,
         overflow: 'unset',
         '&:hover $menuIconButton': {
             opacity: 1,
             pointerEvents: 'auto',
         },
     },
-    middle: { height: 140 },
-    large: { height: 218 },
+    middle: { height: 132 },
+    large: { height: 206 },
     rootActionWrapper: {
         width: '100%',
         height: '100%',
@@ -49,9 +49,9 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'flex-start',
     },
     icon: {
-        marginRight: theme.spacing(1.5),
-        width: 36,
-        height: 36,
+        marginRight: theme.spacing(1.25),
+        width: 32,
+        height: 32,
         flexShrink: 0,
     },
     body: {
@@ -67,6 +67,9 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         lineHeight: 1.2,
         wordBreak: 'break-word',
+        fontFamily: theme.typography.primaryFontFamily,
+        fontWeight: 600,
+        fontSize: '0.94rem',
     },
     banner: {},
     imageWrapper: {
@@ -75,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         padding: theme.spacing(1.5),
         paddingBottom: theme.spacing(1.25),
-        height: 60,
+        height: 54,
         boxSizing: 'border-box',
     },
     extendBanner: {
@@ -97,7 +100,6 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1.25, 1.5),
         lineHeight: 1.357,
         wordBreak: 'break-word',
-        height: 72,
     },
     favoriteWrapper: {
         position: 'relative',

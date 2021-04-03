@@ -62,8 +62,8 @@ function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName
                     <Skeleton
                         variant="rect"
                         animation="wave"
-                        width={36}
-                        height={36}
+                        width={32}
+                        height={32}
                         className={clsx(classes.roundedIconStub, externalClassName)}
                     />
                 )}

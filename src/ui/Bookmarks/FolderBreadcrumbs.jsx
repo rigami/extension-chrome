@@ -8,15 +8,17 @@ import {
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 
-function FolderBreadcrumbs({ selectFolderId, onSelectFolder }) {
+function FolderBreadcrumbs({ searchService: service }) {
+    const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
         path: null,
         pathState: FETCH.WAIT,
     }));
 
     useEffect(() => {
-        if (selectFolderId === null) {
+        if (service.activeFolderId === null) {
             store.path = null;
             store.pathState = FETCH.WAIT;
             return;
@@ -24,15 +26,15 @@ function FolderBreadcrumbs({ selectFolderId, onSelectFolder }) {
 
         store.pathState = FETCH.PENDING;
 
-        FoldersUniversalService.getPath(selectFolderId)
+        FoldersUniversalService.getPath(service.activeFolderId)
             .then((path) => {
                 store.path = path;
                 store.pathState = FETCH.DONE;
             });
-    }, [selectFolderId]);
+    }, [service.activeFolderId, bookmarksService.lastTruthSearchTimestamp]);
 
     return (
-        <Box px={2} visibility={selectFolderId === 1 ? 'hidden' : 'unset'}>
+        <Box px={2} visibility={service.searchEverywhere ? 'hidden' : 'visible'}>
             <Breadcrumbs>
                 {store.path && store.path.map((folder, index) => (index === store.path.length - 1 ? (
                     <Typography
@@ -48,7 +50,7 @@ function FolderBreadcrumbs({ selectFolderId, onSelectFolder }) {
                         href="/"
                         onClick={(event) => {
                             event.preventDefault();
-                            onSelectFolder(folder.id);
+                            service.setActiveFolder(folder.id);
                         }}
                     >
                         {folder.name}

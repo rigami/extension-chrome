@@ -9,29 +9,28 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         alignItems: 'center',
-        maxWidth: 560,
-        minWidth: 240,
         flexGrow: 1,
         marginRight: 'auto',
     },
-    icon: { margin: theme.spacing(2) },
+    icon: { margin: theme.spacing(1.125) },
     input: {
         fontFamily: theme.typography.primaryFontFamily,
-        fontSize: '1.095rem',
-        fontWeight: 800,
+        fontSize: '1rem',
+        fontWeight: 600,
     },
 }));
 
-function Search({ searchService: service }) {
+function Search({ searchService: service, inputRef, ...other }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
 
     return (
-        <Box className={classes.root}>
+        <Box className={classes.root} {...other}>
             <SearchIcon className={classes.icon} />
             <InputBase
+                inputRef={inputRef}
                 className={classes.input}
-                placeholder={t('search.bookmarks', { context: 'placeholder' })}
+                autoFocus
                 fullWidth
                 value={service.query}
                 onChange={(event) => service.updateRequest({ query: event.currentTarget.value })}

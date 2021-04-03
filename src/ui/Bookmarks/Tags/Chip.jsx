@@ -26,12 +26,13 @@ const useStyles = makeStyles((theme) => ({
         borderColor: theme.palette.divider,
     },
     colorIcon: {
-        width: theme.spacing(2),
-        height: theme.spacing(2),
+        width: theme.spacing(1.5),
+        height: theme.spacing(1.5),
         borderRadius: '50%',
         marginLeft: theme.spacing(1),
         flexShrink: 0,
         marginRight: theme.spacing(1),
+        opacity: 0.6,
     },
     text: {
         whiteSpace: 'nowrap',

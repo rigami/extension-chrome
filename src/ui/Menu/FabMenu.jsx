@@ -1,11 +1,8 @@
 import React, { memo } from 'react';
 import {
-    Card,
     Divider,
-    Tooltip,
     Box,
     CircularProgress,
-    ButtonBase,
     Collapse,
 } from '@material-ui/core';
 import {
@@ -35,6 +32,7 @@ import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
 import { eventToBackground } from '@/stores/server/bus';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppService from '@/stores/app/AppStateProvider';
+import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -42,14 +40,6 @@ const useStyles = makeStyles((theme) => ({
         bottom: theme.spacing(3),
         right: theme.spacing(3),
         zIndex: 2,
-    },
-    card: {
-        borderRadius: theme.shape.borderRadius,
-        backdropFilter: 'blur(10px) brightness(200%)',
-        backgroundColor: fade(theme.palette.background.backdrop, 0.52),
-        display: 'flex',
-        flexDirection: 'column',
-        marginTop: theme.spacing(2),
     },
     button: { padding: theme.spacing(1.25) },
     loadBGIconWhite: {
@@ -63,49 +53,13 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.common.black,
         margin: theme.spacing(0.25),
     },
-    notActive: { pointerEvents: 'none' },
     notClickable: { cursor: 'default' },
     divider: {
         backgroundColor: fade(theme.palette.common.white, 0.12),
         marginTop: theme.spacing(0.5),
         marginBottom: theme.spacing(0.5),
     },
-    // outline: { boxShadow: `0px 0px 0px 1px ${theme.palette.divider}` },
 }));
-
-function Group({ children, ...other }) {
-    const classes = useStyles();
-    const appService = useAppService();
-
-    return (
-        <Card
-            className={clsx(classes.card /* appService.activity !== ACTIVITY.DESKTOP && classes.outline */)}
-            elevation={0}
-            {...other}
-        >
-            {children}
-        </Card>
-    );
-}
-
-function Button({ tooltip, icon, className: externalClassName, ...other }) {
-    const classes = useStyles();
-
-    const Icon = icon;
-
-    return (
-        <Tooltip title={tooltip} placement="left">
-            <ButtonBase
-                size="small"
-                className={clsx(classes.button, externalClassName)}
-                {...other}
-                data-ui-path={`fab.${other['data-ui-path']}`}
-            >
-                <Icon />
-            </ButtonBase>
-        </Tooltip>
-    );
-}
 
 function FabMenu() {
     const classes = useStyles();
@@ -128,29 +82,29 @@ function FabMenu() {
         <React.Fragment>
             <MouseDistanceFade>
                 <Box className={classes.root}>
-                    <Group>
-                        <Button
+                    <ExtendButtonGroup>
+                        <ExtendButton
                             tooltip={t('settings:title')}
                             data-ui-path="settings.open"
                             onClick={() => coreService.localEventBus.call('settings/open')}
                             icon={SettingsIcon}
                         />
-                    </Group>
-                    <Group>
-                        <Button
+                    </ExtendButtonGroup>
+                    <ExtendButtonGroup>
+                        <ExtendButton
                             tooltip={t('bookmark:button.add', { context: 'short' })}
                             data-ui-path="bookmark.add"
                             onClick={() => coreService.localEventBus.call('bookmark/create')}
                             icon={AddBookmarkIcon}
                         />
-                    </Group>
+                    </ExtendButtonGroup>
                     <Collapse
                         in={appService.activity === ACTIVITY.DESKTOP && (bgShowMode || saveBgLocal || nextBg)}
                         unmountOnExit
                     >
-                        <Group>
+                        <ExtendButtonGroup>
                             {bgShowMode && (
-                                <Button
+                                <ExtendButton
                                     tooltip={
                                         backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
                                             ? t('background:button.pause')
@@ -175,7 +129,7 @@ function FabMenu() {
                                 <React.Fragment>
                                     {backgrounds.currentBG.type === BG_TYPE.VIDEO && (<Divider />)}
                                     {coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && (
-                                        <Button
+                                        <ExtendButton
                                             tooltip={t('background:addingToLibrary')}
                                             className={classes.notClickable}
                                             disableRipple
@@ -188,7 +142,7 @@ function FabMenu() {
                                         />
                                     )}
                                     {coreService.storage.temp.addingBgToLibrary !== FETCH.PENDING && (
-                                        <Button
+                                        <ExtendButton
                                             tooltip={
                                                 backgrounds.currentBG.isSaved
                                                     ? t('background:addedToLibrary')
@@ -216,7 +170,7 @@ function FabMenu() {
                             {nextBg && (
                                 <React.Fragment>
                                     {(saveBgLocal || bgShowMode) && (<Divider />)}
-                                    <Button
+                                    <ExtendButton
                                         tooltip={
                                             backgrounds.bgState === BG_SHOW_STATE.SEARCH
                                                 ? t('background:fetchingNextBG')
@@ -247,7 +201,7 @@ function FabMenu() {
                                     />
                                 </React.Fragment>
                             )}
-                        </Group>
+                        </ExtendButtonGroup>
                     </Collapse>
                 </Box>
             </MouseDistanceFade>

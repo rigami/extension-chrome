@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function ScrollView(props, ref) {
+function View(props, ref) {
     const {
         children,
         value,
@@ -38,4 +38,4 @@ function ScrollView(props, ref) {
     );
 }
 
-export default forwardRef(ScrollView);
+export default forwardRef(View);

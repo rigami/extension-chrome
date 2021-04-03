@@ -28,7 +28,6 @@ function TagsSearch({ searchService: service }) {
             <Tags
                 onlyFavorites={service.onlyFavorites}
                 value={service.tags}
-                usePopper
                 onChange={(tags) => service.updateRequest({ tags })}
             />
         </Box>

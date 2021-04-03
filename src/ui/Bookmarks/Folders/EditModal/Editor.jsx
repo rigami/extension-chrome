@@ -101,12 +101,16 @@ function Editor(props) {
         error: false,
     }));
 
-    const handleCreateNewFolder = () => {
-        if (store.expanded.indexOf(store.folderId) === -1) {
-            store.expanded.push(store.folderId);
+    const handleCreateNewFolder = (parentId) => {
+        let createParentId = parentId;
+        if (!isFinite(parentId)) {
+            if (store.expanded.indexOf(store.folderId) === -1) {
+                store.expanded.push(store.folderId);
+            }
+            createParentId = store.folderId;
         }
 
-        FoldersUniversalService.getFoldersByParent(store.folderId).then((folders) => {
+        FoldersUniversalService.getFoldersByParent(createParentId).then((folders) => {
             const folderNames = folders.map(({ name }) => name);
             let newFolderName = t('defaultName');
             let count = 1;
@@ -115,7 +119,7 @@ function Editor(props) {
                 count += 1;
                 newFolderName = `${t('defaultName')} ${count}`;
             }
-            store.newFolderRoot = store.folderId;
+            store.newFolderRoot = createParentId;
             store.newFolderName = newFolderName;
         });
     };
@@ -226,7 +230,7 @@ function Editor(props) {
                     >
                         {[...store.folders].map((item) => renderTree(item))}
                         {store.newFolderRoot === 0 && (
-                            <FolderEditor
+                            <ObserverFolderEditor
                                 value={store.newFolderName}
                                 onSave={handleSaveNewFolder}
                                 nodesLevel={store.folders}
@@ -237,6 +241,14 @@ function Editor(props) {
                         )}
                     </TreeView>
                 )}
+                <Button
+                    data-ui-path="folder.editor.newFolder"
+                    onClick={() => handleCreateNewFolder(0)}
+                    className={classes.createNewFolderButton}
+                    disabled={!store.folderId}
+                >
+                    {t('editor.button.create')}
+                </Button>
             </DialogContent>
             <DialogActions>
                 <Button

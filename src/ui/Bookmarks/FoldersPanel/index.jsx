@@ -7,7 +7,11 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import { ArrowBackRounded as BackIcon } from '@material-ui/icons';
+import {
+    ArrowBackRounded as BackIcon,
+    ExpandMoreRounded as ExpandMoreIcon,
+    ChevronRightRounded as ChevronRightIcon,
+} from '@material-ui/icons';
 import LogoIcon from '@/images/logo-icon.svg';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
@@ -18,10 +22,12 @@ import FolderItem from '@/ui/Bookmarks/FoldersPanel/FolderItem';
 import { useTranslation } from 'react-i18next';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import clsx from 'clsx';
+import { TreeView, TreeItem } from '@material-ui/lab';
+import LogoText from '@/images/logo-text.svg';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: 300,
+        width: 260,
         minWidth: 230,
         display: 'flex',
         flexDirection: 'column',
@@ -30,10 +36,7 @@ const useStyles = makeStyles((theme) => ({
         top: 0,
         backgroundColor: fade(theme.palette.background.backdrop, 0.4),
     },
-    header: {
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(3),
-    },
+    header: { minHeight: theme.spacing(9.75) },
     bottomOffset: { marginTop: 'auto' },
     favorite: {
         color: theme.palette.error.main,
@@ -55,20 +58,47 @@ const useStyles = makeStyles((theme) => ({
         '-webkit-line-clamp': 3,
         minHeight: theme.spacing(4),
     },
-    avatar: {
-        display: 'flex',
-        alignSelf: 'flex-start',
-        marginTop: theme.spacing(0.25),
-        marginBottom: theme.spacing(0.25),
-    },
-    icon: {
+    avatar: { display: 'flex' },
+    appLogoIcon: {
         width: 28,
         height: 28,
     },
+    appLogoText: {
+        height: 28,
+        width: 'auto',
+    },
+    appLogoTextWrapper: { display: 'flex' },
     backButton: { margin: theme.spacing(-1.5) },
     primaryFont: {
         fontWeight: 800,
         fontFamily: theme.typography.primaryFontFamily,
+    },
+    itemRoot: {
+        color: theme.palette.text.secondary,
+        '&:hover > $content': { backgroundColor: theme.palette.action.hover },
+        '&:focus > $content, &$selected > $content': {
+            backgroundColor: theme.palette.action.selected,
+            color: theme.palette.text.primary,
+        },
+        '&:focus > $content $label, &:hover > $content $label, &$selected > $content $label': { backgroundColor: 'transparent !important' },
+    },
+    expanded: {},
+    selected: {},
+    content: {
+        height: theme.spacing(4),
+        color: theme.palette.text.secondary,
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
+        fontWeight: theme.typography.fontWeightMedium,
+        '$expanded > &': { fontWeight: theme.typography.fontWeightRegular },
+    },
+    group: {
+        marginLeft: 0,
+        '& $content': { paddingLeft: theme.spacing(2) },
+    },
+    label: {
+        fontWeight: 'inherit',
+        color: 'inherit',
     },
 }));
 
@@ -77,6 +107,7 @@ function FoldersPanel({ searchService: service }) {
     const { t } = useTranslation(['folder', 'bookmark']);
     const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
+        tree: [],
         folder: null,
         childFolders: null,
         folderState: FETCH.WAIT,
@@ -90,15 +121,18 @@ function FoldersPanel({ searchService: service }) {
         store.childFoldersState = FETCH.PENDING;
         store.pathState = FETCH.PENDING;
 
-        FoldersUniversalService.get(service.activeFolderId)
+        /* FoldersUniversalService.get(service.activeFolderId)
             .then((folder) => {
                 store.folder = folder;
                 store.folderState = FETCH.DONE;
-            });
+            }); */
 
-        FoldersUniversalService.getFoldersByParent(service.activeFolderId)
-            .then((folders) => {
-                store.childFolders = folders.sort((folderA, folderB) => {
+        FoldersUniversalService.getTree()
+            .then((tree) => {
+                console.log('tree:', tree);
+                store.tree = tree;
+
+                /* store.childFolders = folders.sort((folderA, folderB) => {
                     const isFavoriteA = bookmarksService.findFavorite({
                         itemId: folderA.id,
                         itemType: 'folder',
@@ -113,41 +147,49 @@ function FoldersPanel({ searchService: service }) {
 
                     return 0;
                 });
-                store.childFoldersState = FETCH.DONE;
+                store.childFoldersState = FETCH.DONE; */
             });
     }, [service.activeFolderId, bookmarksService.lastTruthSearchTimestamp]);
 
+    const renderTree = (folder) => (
+        <TreeItem
+            key={folder.id}
+            nodeId={folder.id}
+            label={folder.name}
+            classes={{
+                root: classes.itemRoot,
+                content: classes.content,
+                expanded: classes.expanded,
+                selected: classes.selected,
+                group: classes.group,
+                label: classes.label,
+            }}
+            onClick={() => service.setActiveFolder(folder.id)}
+        >
+            {Array.isArray(folder.children) ? folder.children.map((childFolder) => renderTree(childFolder)) : null}
+        </TreeItem>
+    );
+
     return (
-        <Box className={classes.root} pt={1} pb={2}>
+        <Box className={classes.root} pb={2}>
             <CardHeader
-                avatar={(
-                    service.activeFolderId === 1 || service.searchEverywhere ? (
-                        <LogoIcon className={classes.icon} />
-                    ) : (
-                        <Tooltip title={t('common:button.back')}>
-                            <IconButton
-                                className={classes.backButton}
-                                onClick={() => service.setActiveFolder(store.folder?.parentId || 1)}
-                            >
-                                <BackIcon className={classes.icon} />
-                            </IconButton>
-                        </Tooltip>
-                    )
-                )}
-                title={stateRender(
-                    store.folderState,
-                    service.searchEverywhere ? 'rigami' : (store.folder?.name || t('unknown')),
-                    t('common:loading'),
-                    'failed load',
-                )}
+                avatar={(<LogoIcon className={classes.appLogoIcon} />)}
+                title={(<LogoText className={classes.appLogoText} />)}
+                disableTypography
                 classes={{
                     root: clsx(classes.padding, classes.header),
                     avatar: classes.avatar,
-                    title: classes.title,
+                    content: classes.appLogoTextWrapper,
                 }}
             />
-            {!service.searchEverywhere && store.childFolders && store.childFolders.length !== 0 && (
-                <List disablePadding>
+            <TreeView
+                defaultCollapseIcon={<ExpandMoreIcon />}
+                defaultExpandIcon={<ChevronRightIcon />}
+            >
+                {store.tree.map((folder) => renderTree(folder))}
+            </TreeView>
+            {/* !service.searchEverywhere && store.childFolders && store.childFolders.length !== 0 && (
+                <List disablePadding dense>
                     {store.childFolders.map((folder) => (
                         <FolderItem
                             key={folder.id}
@@ -157,10 +199,7 @@ function FoldersPanel({ searchService: service }) {
                         />
                     ))}
                 </List>
-            )}
-            {service.searchEverywhere && (
-                <Stub message={t('bookmark:search.everywhere', { context: 'description' })} />
-            )}
+            ) */}
         </Box>
     );
 }
