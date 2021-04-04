@@ -3,7 +3,6 @@ import { FavoriteRounded as CheckIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { ACTIVITY } from '@/enum';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import { makeStyles } from '@material-ui/core/styles';
 import useAppService from '@/stores/app/AppStateProvider';
 
@@ -13,7 +12,6 @@ function ShowFavorites() {
     const classes = useStyles();
     const { t } = useTranslation();
     const appService = useAppService();
-    const coreService = useCoreService();
 
     return (
         <ExtendButtonGroup>

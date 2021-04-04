@@ -10,6 +10,7 @@
     "back": "Back",
     "more": "Show more",
     "less": "Show less",
+    "reset": "Reset",
     "favorite": {
       "add": "Add to favorites",
       "remove": "Remove from favorites"

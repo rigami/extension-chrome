@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
         height: 28,
     },
     appLogoText: {
-        height: 28,
+        height: 24,
         width: 'auto',
     },
     appLogoTextWrapper: { display: 'flex' },

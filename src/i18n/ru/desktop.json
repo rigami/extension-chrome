@@ -1,4 +1,8 @@
 {
+  "button": {
+    "open": "Открыть фон",
+    "expand": "Открыть фон"
+  },
   "widget": {
     "weather": {
       "button": {

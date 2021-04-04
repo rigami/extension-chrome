@@ -1,10 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Box, Paper, CardActionArea, Typography, Collapse, ClickAwayListener, Divider, Fade, IconButton,
+    Box,
+    Paper,
+    CardActionArea,
+    Typography,
+    Collapse,
+    ClickAwayListener,
+    Divider,
+    Fade,
+    IconButton,
+    Tooltip,
 } from '@material-ui/core';
 import { ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { makeStyles } from '@material-ui/core/styles';
-import { CloseRounded as ResetIcon, SearchRounded as SearchIcon } from '@material-ui/icons';
+import {
+    CloseRounded as ResetIcon,
+    SearchRounded as SearchIcon,
+} from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import Tags from '@/ui/Bookmarks/Tags';
@@ -177,18 +189,20 @@ function SearchBlock({ searchService: service }) {
         <Box className={clsx(classes.wrapper, isOpen && classes.open, oneRow && classes.extend)} ref={rootRef}>
             {(usedFields.query || usedFields.tags) && (
                 <Box className={classes.resetIconWrapper}>
-                    <IconButton
-                        className={classes.resetIcon}
-                        size="medium"
-                        onClick={() => {
-                            service.updateRequest({
-                                query: '',
-                                tags: [],
-                            });
-                        }}
-                    >
-                        <ResetIcon />
-                    </IconButton>
+                    <Tooltip title={t('common:button.reset')}>
+                        <IconButton
+                            className={classes.resetIcon}
+                            size="medium"
+                            onClick={() => {
+                                service.updateRequest({
+                                    query: '',
+                                    tags: [],
+                                });
+                            }}
+                        >
+                            <ResetIcon />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             )}
             <Fade in={!isOpen}>

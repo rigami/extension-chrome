@@ -192,12 +192,12 @@ function Desktop() {
                             data-ui-path="button.desktop-expand"
                             onClick={() => appService.setActivity(ACTIVITY.DESKTOP)}
                             icon={() => <ExpandDesktopIcon className={classes.icon} />}
-                            label={t('bookmark:button.expand')}
+                            label={t('desktop:button.expand')}
                         />
                     </ExtendButtonGroup>
                     <ExtendButtonGroup className={classes.closeFavorites}>
                         <ExtendButton
-                            tooltip={t('bookmark:button.close')}
+                            tooltip={t('common:button.close')}
                             data-ui-path="button.favorites-close"
                             onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
                             icon={() => <CloseIcon className={classes.icon} />}

@@ -33,7 +33,9 @@
   "button": {
     "add":"Add new bookmark",
     "add_short":"Add bookmark",
-    "add_first": "Create first bookmark"
+    "add_first": "Create first bookmark",
+    "favorites": "Show favorites",
+    "open": "Open bookmarks"
   },
   "remove": {
     "confirm": "Delete bookmark?",
