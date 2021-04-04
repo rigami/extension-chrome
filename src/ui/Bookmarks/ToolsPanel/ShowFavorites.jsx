@@ -5,12 +5,14 @@ import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { ACTIVITY } from '@/enum';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { makeStyles } from '@material-ui/core/styles';
+import useAppService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({ icon: { color: theme.palette.error.main } }));
 
 function ShowFavorites() {
     const classes = useStyles();
     const { t } = useTranslation();
+    const appService = useAppService();
     const coreService = useCoreService();
 
     return (
@@ -18,7 +20,7 @@ function ShowFavorites() {
             <ExtendButton
                 tooltip={t('bookmark:button.favorites')}
                 data-ui-path="button.favorites"
-                onClick={() => coreService.localEventBus.call('system/activity/show', ACTIVITY.FAVORITES)}
+                onClick={() => appService.setActivity(ACTIVITY.FAVORITES)}
                 icon={() => <CheckIcon className={classes.icon} />}
             />
         </ExtendButtonGroup>

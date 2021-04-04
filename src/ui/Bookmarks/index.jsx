@@ -17,6 +17,8 @@ import BookmarksSearchService from '@/ui/Bookmarks/BookmarksSearchService';
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        height: '100vh',
+        width: '100vw',
         backgroundColor: theme.palette.background.paper,
         transform: 'translate3d(0,0,0)',
         display: 'flex',

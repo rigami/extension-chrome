@@ -45,9 +45,8 @@ function RootApp({ onChangeTheme }) {
                 GlobalModals,
             ]}
         >
-            <Box height={100}>
-                <Bookmarks />
-            </Box>
+            <Desktop />
+            <Bookmarks />
             <FabMenu />
             <Menu />
         </Nest>

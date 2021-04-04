@@ -149,9 +149,7 @@ function SearchBlock({ searchService: service }) {
     const inputRef = useRef();
 
     const handleKeyDown = (event) => {
-        console.log(event);
-
-        if (event.code === 'Escape') setIsOpen(false);
+        if (event.code === 'Escape' || event.code === 'Enter') setIsOpen(false);
     };
 
     useEffect(() => {
@@ -177,7 +175,7 @@ function SearchBlock({ searchService: service }) {
 
     return (
         <Box className={clsx(classes.wrapper, isOpen && classes.open, oneRow && classes.extend)} ref={rootRef}>
-            {service.query && (
+            {(usedFields.query || usedFields.tags) && (
                 <Box className={classes.resetIconWrapper}>
                     <IconButton
                         className={classes.resetIcon}

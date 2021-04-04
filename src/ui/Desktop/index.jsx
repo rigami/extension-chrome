@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
@@ -7,13 +7,15 @@ import {
     SaveAltRounded as SaveBgIcon,
     CheckRounded as SavedBgIcon,
     OpenInNewRounded as OpenSourceIcon,
+    CloseRounded as CloseIcon,
 } from '@material-ui/icons';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import { Box, CircularProgress } from '@material-ui/core';
+import { Box, CircularProgress, Backdrop } from '@material-ui/core';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import { eventToBackground } from '@/stores/server/bus';
 import {
+    ACTIVITY,
     BG_SELECT_MODE,
     BG_SHOW_STATE,
     BG_SOURCE,
@@ -22,7 +24,8 @@ import {
 import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem, ContextMenuDivider } from '@/stores/app/entities/contextMenu';
 import FAP from '@/ui/Desktop/FAP';
-import { DIRECTION } from '@/ui/GlobalScroll';
+import clsx from 'clsx';
+import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import Background from './Background';
 import Widgets from './Widgets';
 
@@ -31,8 +34,19 @@ const useStyles = makeStyles((theme) => ({
         width: '100vw',
         height: '100vh',
         overflow: 'hidden',
-        position: 'relative',
+        position: 'absolute',
+        zIndex: 2,
+        transform: 'translateY(-100vh)',
+        transition: theme.transitions.create(['transform'], {
+            duration: theme.transitions.duration.standard,
+            easing: theme.transitions.easing.easeInOut,
+        }),
     },
+    favoritesActivity: {
+        transform: 'translateY(calc(-100vh + 188px))',
+        boxShadow: theme.shadows[20],
+    },
+    desktopActivity: { transform: 'translateY(0)' },
     loadBGIcon: { color: theme.palette.text.primary },
     loadBGIconWhite: {
         position: 'absolute',
@@ -41,9 +55,22 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 1,
         color: theme.palette.common.white,
     },
+    backdrop: { zIndex: 1 },
+    closeFavorites: {
+        position: 'absolute',
+        zIndex: 100,
+        top: theme.spacing(2),
+        right: theme.spacing(2),
+    },
+    expandDesktop: {
+        position: 'absolute',
+        zIndex: 100,
+        top: theme.spacing(2),
+        right: theme.spacing(2) * 2 + 42,
+    },
 }));
 
-function Desktop({ active, onScroll, onTryScrollCallback }) {
+function Desktop({ active = true }) {
     const { t } = useTranslation(['bookmark', 'background']);
     const classes = useStyles();
     const appService = useAppService();
@@ -125,20 +152,6 @@ function Desktop({ active, onScroll, onTryScrollCallback }) {
     ];
 
     useEffect(() => {
-        if (coreService.storage.temp.closeFapPopper && active) {
-            onScroll({ blockBottom: true });
-            onTryScrollCallback((scrollDirection) => {
-                if (scrollDirection === DIRECTION.DOWN && coreService.storage.temp.shakeFapPopper) {
-                    coreService.storage.temp.shakeFapPopper();
-                }
-            });
-        } else {
-            onScroll({ blockBottom: false });
-            onTryScrollCallback(null);
-        }
-    }, [coreService.storage.temp.closeFapPopper]);
-
-    useEffect(() => {
         if (active) store.isRender = true;
     }, [active]);
 
@@ -147,26 +160,61 @@ function Desktop({ active, onScroll, onTryScrollCallback }) {
     }
 
     return (
-        <Box className={classes.root}>
+        <Fragment>
+            {appService.activity === ACTIVITY.FAVORITES && (
+                <Fragment>
+                    <ExtendButtonGroup className={classes.expandDesktop}>
+                        <ExtendButton
+                            tooltip={t('desktop:button.expand')}
+                            data-ui-path="button.desktop-expand"
+                            onClick={() => appService.setActivity(ACTIVITY.DESKTOP)}
+                            icon={() => <CloseIcon className={classes.icon} />}
+                            title={t('bookmark:button.close')}
+                        />
+                    </ExtendButtonGroup>
+                    <ExtendButtonGroup className={classes.closeFavorites}>
+                        <ExtendButton
+                            tooltip={t('bookmark:button.close')}
+                            data-ui-path="button.favorites-close"
+                            onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
+                            icon={() => <CloseIcon className={classes.icon} />}
+                        />
+                    </ExtendButtonGroup>
+                </Fragment>
+            )}
             <Box
-                onContextMenu={appService.contextMenu(
-                    contextMenu,
-                    { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.addingBgToLibrary] },
+                className={clsx(
+                    classes.root,
+                    appService.activity === ACTIVITY.FAVORITES && classes.favoritesActivity,
+                    appService.activity === ACTIVITY.DESKTOP && classes.desktopActivity,
                 )}
             >
-                <Background />
-                {widgets.settings.useWidgets && (
-                    <Widgets />
+                <Box
+                    onContextMenu={appService.contextMenu(
+                        contextMenu,
+                        { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.addingBgToLibrary] },
+                    )}
+                >
+                    <Background />
+                    {widgets.settings.useWidgets && (
+                        <Widgets stickToBottom={appService.activity !== ACTIVITY.DESKTOP} />
+                    )}
+                </Box>
+                <FAP />
+                {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
+                    <CircularProgress
+                        className={classes.loadBGIconWhite}
+                        size={20}
+                    />
                 )}
             </Box>
-            <FAP />
-            {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
-                <CircularProgress
-                    className={classes.loadBGIconWhite}
-                    size={20}
-                />
-            )}
-        </Box>
+            <Backdrop
+                invisible
+                className={classes.backdrop}
+                open={appService.activity !== ACTIVITY.BOOKMARKS}
+                onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
+            />
+        </Fragment>
     );
 }
 

@@ -10,6 +10,7 @@ import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
 import { useTheme } from '@material-ui/styles';
+import { useResizeDetector } from 'react-resize-detector';
 import Time from './Time';
 import Date from './Date';
 
@@ -33,17 +34,27 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        transition: theme.transitions.create(['transform'], {
+            easing: theme.transitions.easing.easeInOut,
+            duration: theme.transitions.duration.standard,
+        }),
     },
     leftBottom: {
         alignItems: 'end',
         justifyContent: 'flex-end',
-        '& $widget': { alignItems: 'end' },
+        '& $widget': {
+            alignItems: 'end',
+            transformOrigin: 'left bottom',
+        },
     },
     leftMiddle: {
         alignItems: 'end',
-        '& $widget': { alignItems: 'end' },
+        '& $widget': {
+            alignItems: 'end',
+            transformOrigin: 'left bottom',
+        },
     },
-    centerTop: { '& $widget': { marginBottom: '16%' } },
+    centerTop: { '& $widget': { transformOrigin: 'center bottom' } },
     row: { alignItems: 'center' },
     divider: {
         margin: theme.spacing(0, 2),
@@ -72,11 +83,13 @@ const calcFontSize = (size, dict) => {
     return small;
 };
 
-function Widgets() {
+function Widgets({ stickToBottom }) {
     const classes = useStyles();
     const theme = useTheme();
     const { widgets } = useAppStateService();
     const bookmarksService = useBookmarksService();
+    const { height: heightRoot, ref: refRoot } = useResizeDetector();
+    const { height: heightWidget, ref: refWidget } = useResizeDetector();
 
     if (!bookmarksService.settings.isSync) return null;
 
@@ -104,8 +117,19 @@ function Widgets() {
                 widgets.settings.dtwPosition === DTW_POSITION.CENTER_TOP && classes.centerTop,
             )}
             style={{ [positionOffset]: offset }}
+            ref={refRoot}
         >
-            <Box className={classes.widget}>
+            <Box
+                className={classes.widget}
+                ref={refWidget}
+                style={{
+                    transform: stickToBottom && `${
+                        widgets.settings.dtwPosition !== DTW_POSITION.LEFT_BOTTOM
+                            ? `translateY(calc(${heightRoot / 2}px - ${heightWidget / 2}px))`
+                            : ''
+                    } scale(${64 / heightWidget})`,
+                }}
+            >
                 {widgets.settings.dtwUseTime && (
                     <Typography
                         variant={calcFontSize(widgets.settings.dtwSize, timeFontSize)}
