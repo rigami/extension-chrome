@@ -5,6 +5,7 @@ import {
     assign,
     debounce,
     size,
+    isEqual,
 } from 'lodash';
 
 export const SEARCH_STATE = {
@@ -43,12 +44,16 @@ class BookmarksSearchService {
     }
 
     applyRequest() {
-        this.searchRequest = new SearchQuery({
+        const searchRequest = new SearchQuery({
             query: this.query,
             tags: this.tags,
             folderId: !this.searchEverywhere && this.activeFolderId,
             onlyFavorites: this.onlyFavorites,
         });
+
+        if (!isEqual(searchRequest, this.searchRequest)) {
+            this.searchRequest = searchRequest;
+        }
     }
 
     updateRequest(request) {

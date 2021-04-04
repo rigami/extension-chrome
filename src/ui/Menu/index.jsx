@@ -102,7 +102,7 @@ function Menu({ }) {
                 invisible
                 className={clsx(classes.backdrop, appService.activity === ACTIVITY.BOOKMARKS && classes.darkBackdrop)}
             />
-            <Slide in={isOpen} direction="left">
+            <Slide in={isOpen} direction="left" unmountOnExit>
                 <Box className={classes.drawer} style={{ width: (pageProps.width || 520) + theme.spacing(2) * 2 }}>
                     <Scrollbar
                         classes={{

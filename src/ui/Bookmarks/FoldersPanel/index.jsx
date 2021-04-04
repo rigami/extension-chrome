@@ -89,7 +89,6 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
-        fontWeight: theme.typography.fontWeightMedium,
         '$expanded > &': { fontWeight: theme.typography.fontWeightRegular },
     },
     group: {
@@ -97,8 +96,9 @@ const useStyles = makeStyles((theme) => ({
         '& $content': { paddingLeft: theme.spacing(2) },
     },
     label: {
-        fontWeight: 'inherit',
         color: 'inherit',
+        fontSize: '0.9rem',
+        fontWeight: 550,
     },
 }));
 

@@ -2,12 +2,9 @@ import React from 'react';
 import { AppBar, Toolbar, Box } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import clsx from 'clsx';
 import FolderBreadcrumbs from '@/ui/Bookmarks/FolderBreadcrumbs';
 import { useResizeDetector } from 'react-resize-detector';
 import SearchBlock from './SearchBlock';
-import Tags from './Tags';
-import SearchPlace from './SearchPlace';
 import ShowFavorites from './ShowFavorites';
 
 const useStyles = makeStyles((theme) => ({
@@ -15,20 +12,20 @@ const useStyles = makeStyles((theme) => ({
     toolbar: {
         minHeight: theme.spacing(9.75),
         display: 'flex',
-        paddingTop: theme.spacing(2),
-        paddingBottom: theme.spacing(2),
+        padding: theme.spacing(2),
         alignItems: 'flex-start',
     },
-    wrapperBreadcrumbs: {},
+    wrapperBreadcrumbs: { flexShrink: 0 },
     wrapperSearch: {
         padding: theme.spacing(0, 2),
         display: 'flex',
         flexGrow: 1,
         justifyContent: 'center',
-        width: 600,
+        maxWidth: 600,
+        width: '100%',
     },
     wrapperTools: {
-        paddingRight: theme.spacing(2),
+        flexShrink: 0,
         display: 'flex',
     },
     widthHelper: {
