@@ -8,6 +8,7 @@ import {
     CheckRounded as SavedBgIcon,
     OpenInNewRounded as OpenSourceIcon,
     CloseRounded as CloseIcon,
+    ArrowUpwardRounded as ExpandDesktopIcon,
 } from '@material-ui/icons';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { Box, CircularProgress, Backdrop } from '@material-ui/core';
@@ -70,13 +71,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Desktop({ active = true }) {
+function Desktop() {
     const { t } = useTranslation(['bookmark', 'background']);
     const classes = useStyles();
     const appService = useAppService();
     const { widgets, backgrounds } = appService;
     const coreService = useCoreService();
-    const store = useLocalObservable(() => ({ isRender: active }));
+    const store = useLocalObservable(() => ({ isRender: appService.activity !== ACTIVITY.BOOKMARKS }));
 
     const contextMenu = () => [
         new ContextMenuItem({
@@ -151,9 +152,20 @@ function Desktop({ active = true }) {
         ] : []),
     ];
 
+    const wheelHandler = (event) => {
+
+    };
+
     useEffect(() => {
-        if (active) store.isRender = true;
-    }, [active]);
+        if (appService.activity !== ACTIVITY.BOOKMARKS) {
+            addEventListener('wheel', wheelHandler, true);
+            store.isRender = true;
+        }
+
+        return () => {
+            if (appService.activity !== ACTIVITY.BOOKMARKS) removeEventListener('wheel', wheelHandler);
+        };
+    }, [appService.activity]);
 
     if (!store.isRender) {
         return null;
@@ -168,8 +180,8 @@ function Desktop({ active = true }) {
                             tooltip={t('desktop:button.expand')}
                             data-ui-path="button.desktop-expand"
                             onClick={() => appService.setActivity(ACTIVITY.DESKTOP)}
-                            icon={() => <CloseIcon className={classes.icon} />}
-                            title={t('bookmark:button.close')}
+                            icon={() => <ExpandDesktopIcon className={classes.icon} />}
+                            label={t('bookmark:button.expand')}
                         />
                     </ExtendButtonGroup>
                     <ExtendButtonGroup className={classes.closeFavorites}>

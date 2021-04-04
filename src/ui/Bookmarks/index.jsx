@@ -14,6 +14,7 @@ import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { useTranslation } from 'react-i18next';
 import BookmarksSearchService from '@/ui/Bookmarks/BookmarksSearchService';
+import { ACTIVITY } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Bookmarks({ onScroll, active = true }) {
+function Bookmarks() {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const coreService = useCoreService();
@@ -57,7 +58,7 @@ function Bookmarks({ onScroll, active = true }) {
         draftSearchRequest: {},
         lastScrollEventTime: 0,
         scroll: null,
-        isRender: active,
+        isRender: appService.activity === ACTIVITY.BOOKMARKS,
     }));
 
     const contextMenu = () => [
@@ -81,20 +82,18 @@ function Bookmarks({ onScroll, active = true }) {
         const nowScrollEventTime = performance.now();
         const delta = nowScrollEventTime - store.lastScrollEventTime;
         store.lastScrollEventTime = nowScrollEventTime;
-
-        if (store.scroll.scrollerElement.scrollTop === 0) onScroll({ blockTop: delta < 400 });
-        else onScroll({ blockTop: true });
     };
 
     useEffect(() => {
-        addEventListener('wheel', wheelHandler, true);
+        if (appService.activity === ACTIVITY.BOOKMARKS) {
+            addEventListener('wheel', wheelHandler, true);
+            store.isRender = true;
+        }
 
-        return () => removeEventListener('wheel', wheelHandler);
-    }, []);
-
-    useEffect(() => {
-        if (active) store.isRender = true;
-    }, [active]);
+        return () => {
+            if (appService.activity === ACTIVITY.BOOKMARKS) removeEventListener('wheel', wheelHandler);
+        };
+    }, [appService.activity]);
 
     if (!store.isRender) {
         return null;

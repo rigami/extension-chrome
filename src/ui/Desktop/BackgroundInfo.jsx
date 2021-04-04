@@ -19,8 +19,8 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 const useStyles = makeStyles((theme) => ({
     infoCard: {
         position: 'absolute',
-        right: theme.spacing(3),
-        top: theme.spacing(3),
+        right: 74,
+        top: theme.spacing(2),
         maxWidth: 430,
         minWidth: 350,
         zIndex: theme.zIndex.modal,
