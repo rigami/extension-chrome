@@ -21,6 +21,7 @@ import {
     BG_SHOW_STATE,
     BG_SOURCE,
     FETCH,
+    THEME,
 } from '@/enum';
 import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem, ContextMenuDivider } from '@/stores/app/entities/contextMenu';
@@ -69,6 +70,16 @@ const useStyles = makeStyles((theme) => ({
         top: theme.spacing(2),
         right: theme.spacing(2) * 2 + 42,
     },
+    desktopBackdrop: {
+        backgroundColor: theme.palette.common.black,
+        position: 'absolute',
+        zIndex: 0,
+        top: 0,
+        right: 0,
+        width: '100vw',
+        height: '100vh',
+    },
+    desktopBackdropLight: { backgroundColor: theme.palette.common.white },
 }));
 
 function Desktop() {
@@ -200,18 +211,15 @@ function Desktop() {
                     appService.activity === ACTIVITY.FAVORITES && classes.favoritesActivity,
                     appService.activity === ACTIVITY.DESKTOP && classes.desktopActivity,
                 )}
+                onContextMenu={appService.contextMenu(
+                    contextMenu,
+                    { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.addingBgToLibrary] },
+                )}
             >
-                <Box
-                    onContextMenu={appService.contextMenu(
-                        contextMenu,
-                        { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.addingBgToLibrary] },
-                    )}
-                >
-                    <Background />
-                    {widgets.settings.useWidgets && (
-                        <Widgets stickToBottom={appService.activity !== ACTIVITY.DESKTOP} />
-                    )}
-                </Box>
+                <Background />
+                {widgets.settings.useWidgets && (
+                    <Widgets stickToBottom={appService.activity !== ACTIVITY.DESKTOP} />
+                )}
                 <FAP />
                 {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
                     <CircularProgress
@@ -219,6 +227,12 @@ function Desktop() {
                         size={20}
                     />
                 )}
+                <Box
+                    className={clsx(
+                        classes.desktopBackdrop,
+                        appService.settings.backdropTheme === THEME.LIGHT && classes.desktopBackdropLight,
+                    )}
+                />
             </Box>
             <Backdrop
                 invisible

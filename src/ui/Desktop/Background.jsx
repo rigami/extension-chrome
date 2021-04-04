@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
         height: '100vh',
         overflow: 'hidden',
         position: 'relative',
+        zIndex: 1,
     },
     bg: {
         width: '100%',
