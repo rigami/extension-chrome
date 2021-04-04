@@ -23,6 +23,8 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         maxWidth: 600,
         width: '100%',
+        margin: 'auto',
+        marginTop: 0,
     },
     wrapperTools: {
         flexShrink: 0,
