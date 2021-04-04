@@ -37,9 +37,11 @@ import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'absolute',
-        bottom: theme.spacing(3),
-        right: theme.spacing(3),
+        top: 140,
+        right: theme.spacing(2),
         zIndex: 2,
+        display: 'grid',
+        gridGap: theme.spacing(2),
     },
     button: { padding: theme.spacing(1.25) },
     loadBGIconWhite: {
