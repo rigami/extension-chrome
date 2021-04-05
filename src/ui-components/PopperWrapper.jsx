@@ -24,6 +24,7 @@ function PopperWrapper(props) {
         isOpen,
         modifiers = {},
         popperProps = {},
+        placement = 'top',
         onClose,
         onService,
         children,
@@ -59,7 +60,7 @@ function PopperWrapper(props) {
                     store.popperRef = popperRef;
                     if (onService) onService(popperRef);
                 }}
-                placement="top"
+                placement={placement}
                 className={classes.popper}
                 modifiers={{
                     flip: {

@@ -11,6 +11,8 @@ function EditFolderModal(props) {
         simple = false,
         onSave,
         onClose,
+        popperProps = {},
+        placement,
         ...other
     } = props;
     const store = useLocalObservable(() => ({ popperRef: null }));
@@ -21,6 +23,8 @@ function EditFolderModal(props) {
             anchorEl={anchorEl}
             onClose={onClose}
             onService={(service) => { store.popperRef = service; }}
+            popperProps={popperProps}
+            placement={placement}
         >
             {simple ? (
                 <SimpleEditor

@@ -14,10 +14,16 @@ class FoldersStore {
 
     @action('save folder')
     async save({ name, id, parentId }) {
-        const newFolderId = await FoldersUniversalService.save({
+        console.log('create folder', {
             name,
             id,
             parentId,
+        });
+
+        const newFolderId = await FoldersUniversalService.save({
+            name,
+            id,
+            parentId: parentId || 0,
         });
 
         this._coreService.globalEventBus.call('folder/new', DESTINATION.APP, { folderId: newFolderId });

@@ -9,6 +9,7 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import { toJS } from 'mobx';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -22,16 +23,18 @@ const useStyles = makeStyles((theme) => ({
     errorMessage: { padding: theme.spacing(1, 2) },
 }));
 
-function Editor({ onSave, onError, editId }) {
+function Editor({ onSave, onError, editId, parentId = 0 }) {
     const classes = useStyles();
     const { t } = useTranslation(['folder']);
     const bookmarksService = useBookmarksService();
     const foldersService = bookmarksService.folders;
     const store = useLocalObservable(() => ({
         editId,
-        parentId: false,
+        parentId,
         name: '',
     }));
+
+    console.log(toJS(store));
 
     const handlerSubmit = (event) => {
         event.preventDefault();
@@ -80,7 +83,7 @@ function Editor({ onSave, onError, editId }) {
                     color="primary"
                     type="submit"
                 >
-                    {t('common:save')}
+                    {editId ? t('common:save') : t('common:create')}
                 </Button>
             </form>
         </Card>

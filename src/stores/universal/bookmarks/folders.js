@@ -52,6 +52,11 @@ class FoldersUniversalService {
 
     @action('save folder')
     static async save({ name, id, parentId }) {
+        console.log('universal create folder:', {
+            name,
+            id,
+            parentId,
+        });
         let newFolderId = id;
 
         if (id) {
