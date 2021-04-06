@@ -35,6 +35,10 @@ const theme = {
             fontWeight: 600,
         },
     },
+    transitions: {
+        easing: { shiftEaseInOut: 'cubic-bezier(0.1, 0.84, 0.2, 1)' },
+        duration: { long: 750 },
+    },
     overrides: {
         MuiButton: {
             label: {

@@ -40,8 +40,8 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 2,
         transform: 'translateY(-100vh)',
         transition: theme.transitions.create(['transform'], {
-            duration: theme.transitions.duration.standard,
-            easing: theme.transitions.easing.easeInOut,
+            duration: theme.transitions.duration.long,
+            easing: theme.transitions.easing.shiftEaseInOut,
         }),
     },
     favoritesActivity: {

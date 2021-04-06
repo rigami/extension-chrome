@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import useAppStateService from '@/stores/app/AppStateProvider';
 import DTW_SIZE from '@/enum/WIDGET/DTW_SIZE';
 import { observer } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
@@ -36,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         transition: theme.transitions.create(['transform'], {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.standard,
+            easing: theme.transitions.easing.shiftEaseInOut,
+            duration: theme.transitions.duration.long,
         }),
     },
     leftBottom: {
@@ -88,7 +87,7 @@ function Widgets({ stickToBottom }) {
     const classes = useStyles();
     const theme = useTheme();
     const appService = useAppService();
-    const { widgets } = useAppStateService();
+    const { widgets } = appService;
     const bookmarksService = useBookmarksService();
     const { height: heightRoot, ref: refRoot } = useResizeDetector();
     const { height: heightWidget, ref: refWidget } = useResizeDetector();
