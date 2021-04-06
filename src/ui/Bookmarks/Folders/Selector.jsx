@@ -51,6 +51,7 @@ function FolderSelector({ value, onChange }) {
                     onChange(folderId);
                     store.isOpen = false;
                 }}
+                placement="top-start"
             />
             <Tooltip title={t('change', { context: 'helper' })}>
                 <Button

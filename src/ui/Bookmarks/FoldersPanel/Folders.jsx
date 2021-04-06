@@ -240,7 +240,7 @@ function FolderItem(props) {
             style={{ paddingLeft: 8 + level * 8 }}
             button
             selected={isSelected}
-            onContextMenu={appService.contextMenu(contextMenu)}
+            onContextMenu={appService?.contextMenu?.(contextMenu)}
         >
             <ListItemText
                 inset
