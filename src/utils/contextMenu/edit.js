@@ -7,6 +7,7 @@ export default ({
     coreService,
     t,
     anchorEl,
+    options = {},
 }) => new ContextMenuItem({
     title: t('common:button.edit'),
     icon: EditIcon,
@@ -14,6 +15,7 @@ export default ({
         coreService.localEventBus.call(`${itemType}/edit`, {
             id: itemId,
             anchorEl,
+            options,
         });
     },
 });

@@ -210,7 +210,8 @@ function FolderItem(props) {
             itemType: 'folder',
             t,
             coreService,
-            anchorEl: event.currentTarget,
+            anchorEl: rootRef.current,
+            options: { placement: 'left' },
         }),
         remove({
             itemId: id,

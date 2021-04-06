@@ -53,10 +53,11 @@ function GlobalModals({ children }) {
                 action: 'remove',
                 id,
             })),
-            coreService.localEventBus.on('folder/edit', ({ id, anchorEl }) => {
+            coreService.localEventBus.on('folder/edit', ({ id, anchorEl, options }) => {
                 console.log('folder/edit', {
                     id,
                     anchorEl,
+                    options,
                 });
 
                 setEdit({
@@ -64,6 +65,7 @@ function GlobalModals({ children }) {
                     action: 'edit',
                     id,
                     anchorEl,
+                    options,
                 });
             }),
             coreService.localEventBus.on('folder/remove', ({ id }) => setEdit({
@@ -240,6 +242,7 @@ function GlobalModals({ children }) {
                 onClose={() => setEdit(null)}
                 editId={edit && edit.id}
                 simple
+                {...(edit?.options || {})}
             />
             {/* <Changelog
                 open={edit && edit.type === 'changelog' && edit.action === 'open'}
