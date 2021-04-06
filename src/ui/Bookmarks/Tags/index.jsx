@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import { ArrowBackRounded as ArrowIcon } from '@material-ui/icons';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -46,16 +45,11 @@ function Tags(props) {
     const [tags, setTags] = useState(() => []);
     const isFirstRun = useRef(true);
 
-    const filterTags = (tagsList) => {
-        if (onlyFavorites) {
-            return tagsList.filter(({ id }) => bookmarksService.findFavorite({
-                itemId: id,
-                itemType: 'tag',
-            }));
-        } else {
-            return tagsList;
-        }
-    };
+    useEffect(() => {
+        if (isFirstRun.current) return;
+
+        if (value) setSelectedTags(value || []);
+    }, [value && value.length]);
 
     useEffect(() => {
         if (isFirstRun.current) {
@@ -67,49 +61,11 @@ function Tags(props) {
     }, [selectedTags.length]);
 
     useEffect(() => {
-        if (isFirstRun.current) return;
-
-        if (value) setSelectedTags(value || []);
-    }, [value && value.length]);
-
-    useEffect(() => {
         TagsUniversalService.getAll()
             .then((allTags) => {
-                setTags(filterTags(allTags).sort((tagA, tagB) => {
-                    const isFavoriteA = bookmarksService.findFavorite({
-                        itemId: tagA.id,
-                        itemType: 'tag',
-                    });
-                    const isFavoriteB = bookmarksService.findFavorite({
-                        itemId: tagB.id,
-                        itemType: 'tag',
-                    });
-
-                    if (isFavoriteA && !isFavoriteB) return -1;
-                    else if (!isFavoriteA && isFavoriteB) return 1;
-
-                    return 0;
-                }));
-                setSelectedTags(filterTags(selectedTags.map((id) => ({ id }))).map(({ id }) => id));
+                setTags(allTags);
             });
     }, [bookmarksService.lastTruthSearchTimestamp, onlyFavorites]);
-
-    const renderTag = ({ id, name, color, className }) => (
-        <Tag
-            id={id}
-            name={name}
-            color={color}
-            className={className}
-            isSelect={selectedTags.indexOf(id) !== -1}
-            onClick={() => {
-                if (~selectedTags.indexOf(id)) {
-                    setSelectedTags(selectedTags.filter((cId) => cId !== id));
-                } else {
-                    setSelectedTags([...selectedTags, id]);
-                }
-            }}
-        />
-    );
 
     const AddTag = () => (
         <React.Fragment>
@@ -127,7 +83,22 @@ function Tags(props) {
         <Box className={clsx(classes.root, externalClassName)}>
             <CollapseWrapper
                 list={tags}
-                renderComponent={renderTag}
+                renderComponent={({ id, name, color, className }) => (
+                    <Tag
+                        id={id}
+                        name={name}
+                        color={color}
+                        className={className}
+                        isSelect={selectedTags.includes(id)}
+                        onClick={() => {
+                            if (selectedTags.includes(id)) {
+                                setSelectedTags(selectedTags.filter((cId) => cId !== id));
+                            } else {
+                                setSelectedTags([...selectedTags, id]);
+                            }
+                        }}
+                    />
+                )}
                 expandButtonLabel={t('button.showAll')}
                 collapseButtonLabel={t('button.showLess')}
                 actions={(<AddTag />)}
