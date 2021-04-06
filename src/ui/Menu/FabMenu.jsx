@@ -99,7 +99,6 @@ function FabMenu() {
                         >
                             {nextBg && (
                                 <React.Fragment>
-                                    {(saveBgLocal || bgShowMode) && (<Divider />)}
                                     <ExtendButton
                                         tooltip={
                                             backgrounds.bgState === BG_SHOW_STATE.SEARCH
