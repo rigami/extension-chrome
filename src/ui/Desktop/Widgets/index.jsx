@@ -5,12 +5,13 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 import DTW_SIZE from '@/enum/WIDGET/DTW_SIZE';
 import { observer } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
+import { ACTIVITY, BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
 import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
 import { useTheme } from '@material-ui/styles';
 import { useResizeDetector } from 'react-resize-detector';
+import useAppService from '@/stores/app/AppStateProvider';
 import Time from './Time';
 import Date from './Date';
 
@@ -86,6 +87,7 @@ const calcFontSize = (size, dict) => {
 function Widgets({ stickToBottom }) {
     const classes = useStyles();
     const theme = useTheme();
+    const appService = useAppService();
     const { widgets } = useAppStateService();
     const bookmarksService = useBookmarksService();
     const { height: heightRoot, ref: refRoot } = useResizeDetector();
@@ -96,13 +98,21 @@ function Widgets({ stickToBottom }) {
     let offset = 0;
     let positionOffset = '';
 
-    if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED) {
+    if (
+        (bookmarksService.fapIsDisplay
+        && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED)
+        || appService.activity === ACTIVITY.FAVORITES
+    ) {
         offset = 40 + theme.spacing(6) + theme.spacing(2.5);
     } else if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT) {
         offset = 40 + theme.spacing(6);
     }
 
-    if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM) {
+    if (
+        (bookmarksService.fapIsDisplay
+        && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM)
+        || appService.activity === ACTIVITY.FAVORITES
+    ) {
         positionOffset = 'bottom';
     } else if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP) {
         positionOffset = 'top';

@@ -145,6 +145,8 @@ function FAP() {
 
     const overload = store.maxCount < bookmarksService.favorites.length;
 
+    const isContained = fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED || appService.activity === ACTIVITY.FAVORITES;
+
     return (
         <Fade in={!store.isLoading}>
             <Box
@@ -152,14 +154,14 @@ function FAP() {
                 className={clsx(
                     classes.root,
                     fapSettings.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
-                    fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.contained,
+                    isContained && classes.contained,
                 )}
             >
                 <Card
                     elevation={0}
                     className={clsx(
                         classes.card,
-                        fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.backdrop,
+                        isContained && classes.backdrop,
                         fapSettings.fapAlign === BKMS_FAP_ALIGN.LEFT && classes.leftAlign,
                         appService.activity === ACTIVITY.BOOKMARKS && classes.contrastBackdrop,
                     )}
@@ -168,7 +170,7 @@ function FAP() {
                         let a11props = {
                             ...fav,
                             key: `${fav.constructor.name}-${fav.id}`,
-                            isBlurBackdrop: fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT,
+                            isBlurBackdrop: !isContained,
                         };
 
                         if (fav instanceof FolderEntity || fav instanceof TagEntity) {
@@ -177,8 +179,8 @@ function FAP() {
                                 classes: {
                                     root: classes.link,
                                     backdrop: clsx(
-                                        fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.linkBackdropBlur,
-                                        fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.linkBackdrop,
+                                        !isContained && classes.linkBackdropBlur,
+                                        isContained && classes.linkBackdrop,
                                     ),
                                 },
                             };
@@ -200,8 +202,8 @@ function FAP() {
                             classes={{
                                 backdrop: clsx(
                                     classes.overload,
-                                    fapSettings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT && classes.linkBackdropBlur,
-                                    fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED && classes.linkBackdrop,
+                                    !isContained && classes.linkBackdropBlur,
+                                    isContained && classes.linkBackdrop,
                                 ),
                             }}
                         />
@@ -215,11 +217,14 @@ function FAP() {
 const ObserverFAP = observer(FAP);
 
 function FAPWrapper() {
+    const appService = useAppService();
     const bookmarksService = useBookmarksService();
 
-    if (bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.HIDDEN) return null;
+    if (bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN || appService.activity === ACTIVITY.FAVORITES) {
+        return (<ObserverFAP />);
+    }
 
-    return (<ObserverFAP />);
+    return null;
 }
 
 export default observer(FAPWrapper);
