@@ -252,7 +252,7 @@ function SearchBlock({ searchService: service }) {
                         className={clsx(classes.fullSearch, isOpen && classes.openFullSearch)}
                         elevation={isOpen ? 18 : 0}
                     >
-                        <Collapse collapsedHeight={42} in={isOpen}>
+                        <Collapse collapsedHeight={42} in={isOpen} unmountOnExit>
                             <Search className={classes.search} inputRef={inputRef} searchService={service} />
                             <Divider />
                             <Tags
