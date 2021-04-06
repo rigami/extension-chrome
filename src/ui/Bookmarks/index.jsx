@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import FoldersPanel from '@/ui/Bookmarks/FoldersPanel';
 import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
 import ToolsPanel from '@/ui/Bookmarks/ToolsPanel';
-import FolderBreadcrumbs from '@/ui/Bookmarks/FolderBreadcrumbs';
 import Scrollbar from '@/ui-components/CustomScroll';
 import { SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
 import useCoreService from '@/stores/app/BaseStateProvider';
@@ -96,7 +95,7 @@ function Bookmarks() {
     }, [appService.activity]);
 
     if (!store.isRender) {
-        return null;
+        return (<Box className={classes.root} />);
     }
 
     return (

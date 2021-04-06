@@ -178,10 +178,6 @@ function Desktop() {
         };
     }, [appService.activity]);
 
-    if (!store.isRender) {
-        return null;
-    }
-
     return (
         <Fragment>
             {appService.activity === ACTIVITY.FAVORITES && (
@@ -216,23 +212,27 @@ function Desktop() {
                     { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.addingBgToLibrary] },
                 )}
             >
-                <Background />
-                {widgets.settings.useWidgets && (
-                    <Widgets stickToBottom={appService.activity !== ACTIVITY.DESKTOP} />
+                {store.isRender && (
+                    <React.Fragment>
+                        <Background />
+                        {widgets.settings.useWidgets && (
+                            <Widgets stickToBottom={appService.activity !== ACTIVITY.DESKTOP} />
+                        )}
+                        <FAP />
+                        {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
+                            <CircularProgress
+                                className={classes.loadBGIconWhite}
+                                size={20}
+                            />
+                        )}
+                        <Box
+                            className={clsx(
+                                classes.desktopBackdrop,
+                                appService.settings.backdropTheme === THEME.LIGHT && classes.desktopBackdropLight,
+                            )}
+                        />
+                    </React.Fragment>
                 )}
-                <FAP />
-                {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
-                    <CircularProgress
-                        className={classes.loadBGIconWhite}
-                        size={20}
-                    />
-                )}
-                <Box
-                    className={clsx(
-                        classes.desktopBackdrop,
-                        appService.settings.backdropTheme === THEME.LIGHT && classes.desktopBackdropLight,
-                    )}
-                />
             </Box>
             <Backdrop
                 invisible
