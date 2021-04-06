@@ -39,7 +39,7 @@ function FoldersPanel({ searchService: service }) {
     const classes = useStyles();
 
     return (
-        <Box className={classes.root} pb={2}>
+        <Box className={classes.root}>
             <CardHeader
                 avatar={(<LogoIcon className={classes.appLogoIcon} />)}
                 title={(<LogoText className={classes.appLogoText} />)}
@@ -50,10 +50,12 @@ function FoldersPanel({ searchService: service }) {
                     content: classes.appLogoTextWrapper,
                 }}
             />
-            <Folders
-                selectFolder={service.activeFolderId}
-                onClickFolder={({ id }) => service.setActiveFolder(id)}
-            />
+            <Box overflow="auto" pb={2}>
+                <Folders
+                    selectFolder={service.activeFolderId}
+                    onClickFolder={({ id }) => service.setActiveFolder(id)}
+                />
+            </Box>
         </Box>
     );
 }
