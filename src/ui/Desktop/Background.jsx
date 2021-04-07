@@ -11,6 +11,7 @@ import {
     THEME,
     BG_SHOW_STATE,
     BG_SOURCE,
+    ACTIVITY,
 } from '@/enum';
 import clsx from 'clsx';
 import { Fade } from '@material-ui/core';
@@ -18,11 +19,11 @@ import Stub from '@/ui-components/Stub';
 import { useSnackbar } from 'notistack';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
-import useAppStateService from '@/stores/app/AppStateProvider';
 import { action, toJS } from 'mobx';
 import BackgroundEntity from '@/stores/universal/backgrounds/entities/background';
 import BackgroundInfo from '@/ui/Desktop/BackgroundInfo';
 import { eventToBackground } from '@/stores/server/bus';
+import useAppService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -63,8 +64,9 @@ const useStyles = makeStyles((theme) => ({
 function Background() {
     const { t } = useTranslation();
     const classes = useStyles();
+    const appService = useAppService();
     const { enqueueSnackbar } = useSnackbar();
-    const { settings, backgrounds } = useAppStateService();
+    const { settings, backgrounds } = appService;
     const coreService = useCoreService();
     const store = useLocalObservable(() => ({
         currentBg: null,
@@ -265,17 +267,21 @@ function Background() {
                         style={{ opacity: backgrounds.settings.dimmingPower / 100 || 0 }}
                     />
                 )}
-                {store.currentBg && store.currentBg?.source !== BG_SOURCE.USER && (
-                    <BackgroundInfo
-                        author={store.currentBg?.author}
-                        authorName={store.currentBg?.authorName}
-                        authorAvatarSrc={store.currentBg?.authorAvatarSrc}
-                        sourceLink={store.currentBg?.sourceLink}
-                        service={store.currentBg?.source}
-                        description={store.currentBg?.description}
-                        type={store.currentBg?.type}
-                    />
-                )}
+                {
+                    appService.activity !== ACTIVITY.FAVORITES
+                    && store.currentBg && store.currentBg?.source !== BG_SOURCE.USER
+                    && (
+                        <BackgroundInfo
+                            author={store.currentBg?.author}
+                            authorName={store.currentBg?.authorName}
+                            authorAvatarSrc={store.currentBg?.authorAvatarSrc}
+                            sourceLink={store.currentBg?.sourceLink}
+                            service={store.currentBg?.source}
+                            description={store.currentBg?.description}
+                            type={store.currentBg?.type}
+                        />
+                    )
+                }
                 {(store.stateLoadBg === FETCH.FAILED || !store.currentBg) && (
                     <Stub
                         className={classes.errorStub}

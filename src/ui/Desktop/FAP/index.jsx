@@ -7,7 +7,10 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import {
-    ACTIVITY, BKMS_FAP_ALIGN, BKMS_FAP_POSITION, BKMS_FAP_STYLE,
+    ACTIVITY,
+    BKMS_FAP_ALIGN,
+    BKMS_FAP_POSITION,
+    BKMS_FAP_STYLE,
 } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
@@ -153,7 +156,8 @@ function FAP() {
                 ref={ref}
                 className={clsx(
                     classes.root,
-                    fapSettings.fapPosition === BKMS_FAP_POSITION.BOTTOM && classes.stickyRoot,
+                    (fapSettings.fapPosition === BKMS_FAP_POSITION.BOTTOM || appService.activity === ACTIVITY.FAVORITES)
+                    && classes.stickyRoot,
                     isContained && classes.contained,
                 )}
             >
