@@ -1,39 +1,53 @@
-import React from 'react';
-import { Drawer } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
-import Editor from './Editor';
+import React, { useEffect, useRef, useState } from 'react';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
-function EditBookmarkModal({ isOpen, onClose, ...other }) {
-    const { enqueueSnackbar } = useSnackbar();
-    const { t } = useTranslation();
+function EditBookmarkModal() {
+    const coreService = useCoreService();
+    const [isOpen, setIsOpen] = useState(false);
+    const [isLoad, setIsLoad] = useState(false);
+    const [options, setOptions] = useState({});
+    const editor = useRef(null);
+
+    const handleClose = () => {
+        setIsOpen(false);
+    };
+
+    const handleOpen = async () => {
+        if (editor.current) {
+            setIsOpen(true);
+            return;
+        }
+
+        setIsLoad(true);
+
+        editor.current = (await import('./DrawerEditor')).default;
+        setIsLoad(false);
+        setIsOpen(true);
+    };
+
+    useEffect(() => {
+        const listeners = [
+            coreService.localEventBus.on('bookmark/edit', ({ id }) => {
+                setOptions({ editBookmarkId: id });
+                handleOpen();
+            }),
+            coreService.localEventBus.on('bookmark/create', (editOptions = {}) => {
+                setOptions(editOptions);
+                handleOpen();
+            }),
+        ];
+
+        return () => listeners.forEach((listenerId) => coreService.localEventBus.removeListener(listenerId));
+    }, []);
+
+    if (isLoad || !editor.current) return null;
 
     return (
-        <Drawer
-            anchor="bottom"
-            open={!!isOpen}
-            PaperProps={{
-                elevation: 0,
-                style: {
-                    background: 'none',
-                    height: '100%',
-                },
-            }}
-            disableEnforceFocus
-        >
-            <Editor
-                onSave={onClose}
-                onCancel={onClose}
-                onErrorLoad={() => {
-                    enqueueSnackbar({
-                        message: t('bookmark.errorLoad'),
-                        variant: 'error',
-                    });
-                    onClose();
-                }}
-                {...other}
-            />
-        </Drawer>
+        <editor.current
+            open={isOpen}
+            onClose={handleClose}
+            {...(options || {})}
+        />
     );
 }
 

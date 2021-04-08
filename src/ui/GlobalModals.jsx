@@ -27,16 +27,6 @@ function GlobalModals({ children }) {
 
     useEffect(() => {
         const localListeners = [
-            coreService.localEventBus.on('bookmark/create', (options = {}) => setEdit({
-                type: 'bookmark',
-                action: 'create',
-                options,
-            })),
-            coreService.localEventBus.on('bookmark/edit', ({ id }) => setEdit({
-                type: 'bookmark',
-                action: 'edit',
-                id,
-            })),
             coreService.localEventBus.on('bookmark/remove', ({ id }) => setEdit({
                 type: 'bookmark',
                 action: 'remove',
@@ -222,12 +212,7 @@ function GlobalModals({ children }) {
             {children}
             {/* <InterrogationRequest /> */}
             <ContextMenu />
-            <EditBookmarkModal
-                isOpen={edit && edit.type === 'bookmark' && edit.action !== 'remove'}
-                editBookmarkId={edit && edit.id}
-                onClose={() => setEdit(null)}
-                {...((edit && edit.options) || {})}
-            />
+            <EditBookmarkModal />
             <EditTagModal
                 anchorEl={edit && edit.anchorEl}
                 isOpen={edit && edit.type === 'tag' && edit.action !== 'remove'}
