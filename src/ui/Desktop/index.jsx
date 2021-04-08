@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     RefreshRounded as RefreshIcon,
@@ -40,15 +40,25 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 2,
         transform: 'translateY(-100vh)',
         transition: theme.transitions.create(['transform'], {
-            duration: theme.transitions.duration.long,
-            easing: theme.transitions.easing.shiftEaseInOut,
+            duration: theme.transitions.duration.short,
+            easing: theme.transitions.easing.easeIn,
         }),
     },
     favoritesActivity: {
         transform: 'translateY(calc(-100vh + 188px))',
         boxShadow: theme.shadows[20],
+        transition: theme.transitions.create(['transform'], {
+            duration: theme.transitions.duration.long,
+            easing: theme.transitions.easing.shiftEaseInOut,
+        }),
     },
-    desktopActivity: { transform: 'translateY(0)' },
+    desktopActivity: {
+        transform: 'translateY(0)',
+        transition: theme.transitions.create(['transform'], {
+            duration: theme.transitions.duration.long,
+            easing: theme.transitions.easing.shiftEaseInOut,
+        }),
+    },
     loadBGIcon: { color: theme.palette.text.primary },
     loadBGIconWhite: {
         position: 'absolute',
@@ -85,10 +95,14 @@ const useStyles = makeStyles((theme) => ({
 function Desktop() {
     const { t } = useTranslation(['bookmark', 'background']);
     const classes = useStyles();
+    const theme = useTheme();
     const appService = useAppService();
     const { widgets, backgrounds } = appService;
     const coreService = useCoreService();
-    const store = useLocalObservable(() => ({ isRender: appService.activity !== ACTIVITY.BOOKMARKS }));
+    const store = useLocalObservable(() => ({
+        isRender: appService.activity !== ACTIVITY.BOOKMARKS,
+        stickWidgetsToBottom: appService.activity !== ACTIVITY.DESKTOP,
+    }));
 
     const contextMenu = () => [
         new ContextMenuItem({
@@ -173,6 +187,14 @@ function Desktop() {
             store.isRender = true;
         }
 
+        if (appService.activity !== ACTIVITY.DESKTOP) {
+            setTimeout(() => {
+                if (appService.activity !== ACTIVITY.DESKTOP) { store.stickWidgetsToBottom = true; }
+            }, theme.transitions.duration.short);
+        } else {
+            store.stickWidgetsToBottom = false;
+        }
+
         return () => {
             if (appService.activity !== ACTIVITY.BOOKMARKS) removeEventListener('wheel', wheelHandler);
         };
@@ -216,7 +238,7 @@ function Desktop() {
                     <React.Fragment>
                         <Background />
                         {widgets.settings.useWidgets && (
-                            <Widgets stickToBottom={appService.activity !== ACTIVITY.DESKTOP} />
+                            <Widgets stickToBottom={store.stickWidgetsToBottom} />
                         )}
                         <FAP />
                         {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
