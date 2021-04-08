@@ -6,7 +6,7 @@ import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import useCoreService, { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
-import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
+import useBookmarksService, { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
 import initSentry from '@/config/sentry';
@@ -16,6 +16,9 @@ import Nest from '@/utils/Nest';
 import EditorBookmark from '@/ui/Bookmarks/EditBookmarkModal/Editor';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
+import asyncAction from '@/utils/asyncAction';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import { first } from 'lodash';
 
 initSentry(DESTINATION.POPUP);
 
@@ -41,10 +44,8 @@ const ObserverLoadStoreWait = observer(LoadStoreWait);
 
 function Popup() {
     const classes = useStyles();
-    const [tabName, setTabName] = useState();
-    const [tabUrl, setTabUrl] = useState();
+    const [bookmark, setBookmark] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-    const [theme] = useState(localStorage.getItem('theme') === THEME.LIGHT ? lightTheme : darkTheme);
 
     useEffect(() => {
         if (!chrome?.tabs) {
@@ -52,19 +53,57 @@ function Popup() {
             return;
         }
 
-        chrome.tabs.query({ active: true }, ([tab]) => {
-            if (!tab) {
-                setIsLoading(false);
-                return;
+        asyncAction(async () => {
+            const data = {};
+
+            await new Promise((resolve, reject) => chrome.tabs.query({ active: true }, ([tab]) => {
+                if (!tab) {
+                    reject();
+                    return;
+                }
+
+                data.url = tab.url;
+                data.name = tab.title;
+                resolve();
+            }));
+
+            const res = await BookmarksUniversalService.query(new SearchQuery({ query: data.url }));
+
+            if (res.best && res.best.length !== 0) {
+                data.id = first(res.best)?.id;
             }
 
-            console.log('Found tab', tab);
-
-            setTabName(tab.title);
-            setTabUrl(tab.url);
+            setBookmark(data);
+            setIsLoading(false);
+        }).catch((e) => {
+            console.error(e);
             setIsLoading(false);
         });
     }, []);
+
+    return (
+        <React.Fragment>
+            {!isLoading && (
+                <EditorBookmark
+                    className={clsx(classes.editor)}
+                    classes={{ editor: classes.editorContent }}
+                    bringToEditorHeight
+                    editBookmarkId={bookmark.id}
+                    defaultName={bookmark.name}
+                    defaultUrl={bookmark.url}
+                    marginThreshold={0}
+                    onSave={() => {}}
+                />
+            )}
+            {isLoading && (
+                <Stub message="Loading..." />
+            )}
+        </React.Fragment>
+    );
+}
+
+function PopupRoot() {
+    const [theme] = useState(localStorage.getItem('theme') === THEME.LIGHT ? lightTheme : darkTheme);
 
     return (
         <Box
@@ -82,25 +121,12 @@ function Popup() {
                 ]}
             >
                 <CssBaseline />
-                {!isLoading && (
-                    <EditorBookmark
-                        className={clsx(classes.editor)}
-                        classes={{ editor: classes.editorContent }}
-                        bringToEditorHeight
-                        defaultName={tabName}
-                        defaultUrl={tabUrl}
-                        marginThreshold={0}
-                        onSave={() => {}}
-                    />
-                )}
+                <Popup />
             </Nest>
-            {isLoading && (
-                <Stub message="Loading..." />
-            )}
         </Box>
     );
 }
 
-const ProfilerPopup = Sentry.withProfiler(Popup);
+const ProfilerPopup = Sentry.withProfiler(PopupRoot);
 
 render(<ProfilerPopup />, document.getElementById('root'));
