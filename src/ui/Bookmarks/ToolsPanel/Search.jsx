@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { SearchRounded as SearchIcon } from '@material-ui/icons';
 import { Box, InputBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
+import { debounce } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -22,7 +22,23 @@ const useStyles = makeStyles((theme) => ({
 
 function Search({ searchService: service, inputRef, ...other }) {
     const classes = useStyles();
-    const { t } = useTranslation(['bookmark']);
+    const store = useLocalObservable(() => ({ query: service.query }));
+    const [updateQuery] = useState(() => debounce(
+        (value) => {
+            service.updateRequest({ query: value || '' });
+        },
+        300,
+        { leading: true },
+
+    ));
+
+    useEffect(() => {
+        store.query = service.query;
+    }, [service.query]);
+
+    useEffect(() => {
+        updateQuery(store.query);
+    }, [store.query]);
 
     return (
         <Box className={classes.root} {...other}>
@@ -32,8 +48,8 @@ function Search({ searchService: service, inputRef, ...other }) {
                 className={classes.input}
                 autoFocus
                 fullWidth
-                value={service.query}
-                onChange={(event) => service.updateRequest({ query: event.currentTarget.value })}
+                value={store.query}
+                onChange={(event) => { store.query = event.currentTarget.value; }}
             />
         </Box>
     );
