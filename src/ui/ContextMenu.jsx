@@ -37,8 +37,6 @@ function ContextMenu() {
 
     useEffect(() => {
         const listenId = coreService.localEventBus.on('system/contextMenu', (props) => {
-            if (store.position) return;
-
             store.position = props.position;
             store.actions = props.actions;
             store.reactions = props.reactions || [];

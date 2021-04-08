@@ -29,6 +29,7 @@ class AppStateStore {
     @action('open context menu')
     contextMenu(computeActions, { useAnchorEl = false, reactions } = {}) {
         return (event) => {
+            event.stopPropagation();
             event.preventDefault();
 
             let position = {
