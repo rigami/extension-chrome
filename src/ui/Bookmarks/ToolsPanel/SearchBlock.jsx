@@ -12,7 +12,7 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import { ExtendButtonGroup } from '@/ui-components/ExtendButton';
-import { makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import {
     CloseRounded as ResetIcon,
     SearchRounded as SearchIcon,
@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
         zIndex: 2,
+        border: `1px solid ${fade(theme.palette.divider, 0.05)}`,
     },
     icon: {
         margin: theme.spacing(1.125),
@@ -66,7 +67,10 @@ const useStyles = makeStyles((theme) => ({
         left: 0,
         zIndex: 1,
     },
-    fullSearch: { },
+    fullSearch: {
+        minHeight: 42,
+        border: `1px solid ${theme.palette.divider}`,
+    },
     openFullSearch: {},
     disabledFullSearch: {},
     tags: { padding: theme.spacing(1.5) },

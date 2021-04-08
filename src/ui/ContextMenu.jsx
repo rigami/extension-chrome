@@ -13,14 +13,27 @@ import { useTranslation } from 'react-i18next';
 import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
-    menu: { width: 230 },
+    menu: {
+        width: 230,
+        padding: theme.spacing(0.75, 0),
+        border: `1px solid ${theme.palette.divider}`,
+        borderRadius: 'inherit',
+    },
     emptyMenu: {
         color: theme.palette.text.secondary,
         fontStyle: 'italic',
     },
     divider: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
+        marginTop: theme.spacing(0.75),
+        marginBottom: theme.spacing(0.75),
+    },
+    item: { padding: theme.spacing(0.5, 1.5) },
+    icon: {
+        minWidth: 22 + 12,
+        '& svg': {
+            width: 22,
+            height: 22,
+        },
     },
 }));
 
@@ -68,6 +81,7 @@ function ContextMenu() {
                 event.preventDefault();
                 store.position = null;
             }}
+            elevation={18}
         >
             {calcActions.length === 0 && (
                 <ListItem
@@ -88,6 +102,7 @@ function ContextMenu() {
 
                     return (
                         <ListItem
+                            className={classes.item}
                             key={element.title}
                             button
                             dense
@@ -97,7 +112,7 @@ function ContextMenu() {
                                 store.position = null;
                             }}
                         >
-                            <ListItemIcon>
+                            <ListItemIcon className={classes.icon}>
                                 <Icon {...element.iconProps} />
                             </ListItemIcon>
                             <ListItemText primary={element.title} secondary={element.description} />
