@@ -6,13 +6,14 @@
   "editor_select": "Выберите папку",
   "editor": {
     "name_placeholder": "Имя папки",
-    "button": {
-      "create": "Создать папку"
-    },
     "error": {
       "alreadyExist": "Папка уже существует",
       "unknown": "Неизвестная ошибка"
     }
+  },
+  "button": {
+    "create": "Создать папку",
+    "create_sub": "Создать подпапку"
   },
   "remove": {
     "confirm": "Удалить папку?",

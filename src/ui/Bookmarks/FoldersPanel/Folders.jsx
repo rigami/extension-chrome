@@ -1,11 +1,12 @@
 import {
     Box,
-    ButtonBase, Collapse,
+    ButtonBase,
+    Collapse,
     List,
     ListItem,
-    ListItemIcon,
     ListItemSecondaryAction,
     ListItemText,
+    Tooltip,
 } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
@@ -260,15 +261,17 @@ function FolderItem(props) {
                         {isExpand ? (<ExpandMoreRounded />) : (<ChevronRightIcon />)}
                     </ButtonBase>
                 )}
-                <ButtonBase
-                    className={classes.addSubFolder}
-                    onClick={() => onCreateSubFolder({
-                        anchorEl: rootRef.current,
-                        parentFolder: id,
-                    })}
-                >
-                    <AddIcon />
-                </ButtonBase>
+                <Tooltip title={t('button.create', { context: 'sub' })}>
+                    <ButtonBase
+                        className={classes.addSubFolder}
+                        onClick={() => onCreateSubFolder({
+                            anchorEl: rootRef.current,
+                            parentFolder: id,
+                        })}
+                    >
+                        <AddIcon />
+                    </ButtonBase>
+                </Tooltip>
                 {isPin && (
                     <FavoriteIcon className={classes.favorite} />
                 )}
@@ -401,7 +404,7 @@ function Folders({ selectFolder, onClickFolder }) {
                 selected={store.parentFolder === 0}
             >
                 <AddIcon />
-                {t('button.add')}
+                {t('button.create')}
             </ListItem>
             <EditFolderModal
                 simple

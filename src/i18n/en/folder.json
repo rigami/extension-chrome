@@ -6,13 +6,14 @@
   "editor_select": "Select folder",
   "editor": {
     "name_placeholder": "Folder name",
-    "button": {
-      "create": "Create a folder"
-    },
     "error": {
       "alreadyExist": "Folder already exist",
       "unknown": "Unknown error"
     }
+  },
+  "button": {
+    "create": "Create a folder",
+    "create_sub": "Create a sub folder"
   },
   "remove": {
     "confirm": "Delete folder?",
