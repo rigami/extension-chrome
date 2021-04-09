@@ -8,7 +8,7 @@ import {
     Box,
     Button,
 } from '@material-ui/core';
-import { FolderRounded as FolderIcon } from '@material-ui/icons';
+import { CloseRounded as CloseIcon, FolderRounded as FolderIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import Scrollbar from '@/ui-components/CustomScroll';
 import Stub from '@/ui-components/Stub';
@@ -73,11 +73,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
-    action: {
-        marginTop: theme.spacing(-0.5),
-        marginRight: theme.spacing(-0.5),
-        marginBottom: theme.spacing(-0.5),
-    },
+    action: { marginBottom: theme.spacing(-1) },
     notActiveFolder: {
         opacity: 0.5,
         pointerEvents: 'none',
@@ -165,6 +161,19 @@ function Folder(props) {
                         </IconButton>
                     )
 
+                )}
+                action={rootFolder && (
+                    <Tooltip title={t('common:button.close')}>
+                        <IconButton
+                            onClick={() => {
+                                if (coreService.storage.temp.closeFapPopper) {
+                                    coreService.storage.temp.closeFapPopper();
+                                }
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </Tooltip>
                 )}
                 title={!shrink && folder?.name}
                 classes={{

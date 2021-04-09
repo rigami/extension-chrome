@@ -165,11 +165,7 @@ function ButtonWithPopper(props) {
                             store.isBlockEvent = false;
                         }}
                     >
-                        {store.isOpen ? (
-                            <IconClose className={classes.icon} />
-                        ) : (
-                            <IconOpen {...iconOpenProps} className={classes.icon} />
-                        )}
+                        <IconOpen {...iconOpenProps} className={classes.icon} />
                     </FAPButton>
                 </span>
             </span>

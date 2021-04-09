@@ -5,8 +5,13 @@ import {
     CircularProgress,
     Box,
     Button,
+    IconButton,
+    Tooltip,
 } from '@material-ui/core';
-import { LabelRounded as LabelIcon } from '@material-ui/icons';
+import {
+    CloseRounded as CloseIcon,
+    LabelRounded as LabelIcon,
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import Scrollbar from '@/ui-components/CustomScroll';
@@ -35,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
         height: theme.spacing(4),
         alignItems: 'center',
     },
+    action: { marginBottom: theme.spacing(-1) },
     bookmarks: {
         flexGrow: 1,
         overflow: 'auto',
@@ -80,8 +86,24 @@ function Folder({ id }) {
                 avatar={(
                     <LabelIcon style={{ color: tag?.color }} />
                 )}
+                action={(
+                    <Tooltip title={t('common:button.close')}>
+                        <IconButton
+                            onClick={() => {
+                                if (coreService.storage.temp.closeFapPopper) {
+                                    coreService.storage.temp.closeFapPopper();
+                                }
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </Tooltip>
+                )}
                 title={tag?.name}
-                classes={{ avatar: classes.avatar }}
+                classes={{
+                    avatar: classes.avatar,
+                    action: classes.action,
+                }}
             />
             {isSearching && (
                 <Stub>
