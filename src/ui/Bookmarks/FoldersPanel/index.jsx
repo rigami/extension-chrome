@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
     appLogoText: {
         height: 24,
         width: 'auto',
+        fill: theme.palette.type === 'dark' ? theme.palette.common.white : theme.palette.common.black,
     },
     appLogoTextWrapper: { display: 'flex' },
 }));

@@ -37,6 +37,8 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         zIndex: 2,
         border: `1px solid ${fade(theme.palette.divider, 0.05)}`,
+        backdropFilter: 'none',
+        backgroundColor: theme.palette.background.backdrop,
     },
     icon: {
         margin: theme.spacing(1.125),
