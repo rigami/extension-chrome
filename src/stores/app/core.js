@@ -139,7 +139,7 @@ class Core {
 
         const { response } = await fetchData(
             `${appVariables.rest.url}/backgrounds/get-from-collection?count=1&type=image&collection=best`,
-        );
+        ).catch(() => ({ response: [] }));
 
         progressCallback(30, PREPARE_PROGRESS.FETCH_BG);
 
