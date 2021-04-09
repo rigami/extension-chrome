@@ -96,6 +96,7 @@ function FabMenu() {
                                 && (bgShowMode || saveBgLocal || nextBg)
                                 && classes.button,
                             )}
+                            style={{ minHeight: 42 }}
                         >
                             {nextBg && (
                                 <React.Fragment>
