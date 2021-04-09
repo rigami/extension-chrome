@@ -17,7 +17,7 @@
   "syncItem": {
     "settings": "Settings",
     "bookmarks": "Bookmarks",
-    "backgrounds": "Фоны",
+    "backgrounds": "Backgrounds",
     "backgrounds_description": "Increases file size greatly"
   },
   "restoreLocalBackup": {

@@ -199,7 +199,7 @@ function FolderItem(props) {
         itemType: 'folder',
     }));
 
-    const contextMenu = (event) => [
+    const contextMenu = () => [
         pin({
             itemId: id,
             itemType: 'folder',
@@ -231,7 +231,6 @@ function FolderItem(props) {
 
     return (
         <ListItem
-            nodeId={id}
             ref={rootRef}
             classes={{
                 root: classes.itemRoot,

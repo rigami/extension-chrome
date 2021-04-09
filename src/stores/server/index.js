@@ -1,7 +1,6 @@
 import EventBus from '@/utils/eventBus';
 import BusApp, { eventToApp, eventToPopup } from '@/stores/server/bus';
-import fs, { open as openFS } from '@/utils/fs';
-import asyncAction from '@/utils/asyncAction';
+import { open as openFS } from '@/utils/fs';
 import SettingsService from './settingsService';
 import StorageService from './storageService';
 // import SyncSystemBookmarksService from './syncSystemBookmarksService';

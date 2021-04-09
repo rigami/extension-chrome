@@ -6,7 +6,7 @@ import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import useCoreService, { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
-import useBookmarksService, { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
+import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
 import initSentry from '@/config/sentry';

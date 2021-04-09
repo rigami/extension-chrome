@@ -2,8 +2,8 @@ import React from 'react';
 import { AppBar, Toolbar, Box } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import FolderBreadcrumbs from '@/ui/Bookmarks/FolderBreadcrumbs';
 import { useResizeDetector } from 'react-resize-detector';
+import FolderBreadcrumbs from './FolderBreadcrumbs';
 import SearchBlock from './SearchBlock';
 import ShowFavorites from './ShowFavorites';
 
@@ -53,11 +53,11 @@ function ToolsPanel({ searchService: service }) {
                 <Box className={classes.wrapperBreadcrumbs} ref={refBreadcrumbs}>
                     <FolderBreadcrumbs searchService={service} />
                 </Box>
-                <Box className={classes.widthHelper} style={{ maxWidth: widthTools }} />
+                <Box className={classes.widthHelper} style={{ maxWidth: widthTools || undefined }} />
                 <Box className={classes.wrapperSearch}>
                     <SearchBlock searchService={service} />
                 </Box>
-                <Box className={classes.widthHelper} style={{ maxWidth: widthBreadcrumbs + 260 }} />
+                <Box className={classes.widthHelper} style={{ maxWidth: (widthBreadcrumbs || 0) + 260 }} />
                 <Box className={classes.wrapperTools} ref={refTools}>
                     <ShowFavorites />
                 </Box>

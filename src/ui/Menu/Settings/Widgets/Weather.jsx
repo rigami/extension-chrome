@@ -119,16 +119,19 @@ function WeatherWidget({ onSelect }) {
                 <MenuRow
                     icon={PlaceIcon}
                     title={t('weather.region.title')}
-                    description={
-                        coreService.storage.persistent.weatherLocation
-                            ? (
-                                !coreService.storage.persistent.weatherLocation?.manual
-                                    ? t('weather.region.select.auto')
-                                    : t('weather.region.select.manual')
-                            )
-                            : t('weather.region.select.failed')
-
-                    }
+                    description={(
+                        (
+                            coreService.storage.persistent.weatherLocation
+                            && !coreService.storage.persistent.weatherLocation?.manual
+                            && t('weather.region.select.auto')
+                        )
+                        || (
+                            coreService.storage.persistent.weatherLocation
+                            && coreService.storage.persistent.weatherLocation?.manual
+                            && ('weather.region.select.manual')
+                        )
+                        || t('weather.region.select.failed')
+                    )}
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => onSelect(changeLocationPage),

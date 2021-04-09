@@ -166,7 +166,9 @@ function GlobalModals({ children }) {
                 coreService.storage.updateTemp({ progressRestoreSnackbar: snackId });
             } else if (coreService.storage.persistent.restoreBackup === 'error') {
                 enqueueSnackbar({
-                    message: t(`settingsBackup:restoreLocalBackup.error.${coreService.storage.persistent.restoreBackupError}`),
+                    message: t(`settingsBackup:restoreLocalBackup.error.${
+                        coreService.storage.persistent.restoreBackupError
+                    }`),
                     variant: 'error',
                 });
                 coreService.storage.updatePersistent({

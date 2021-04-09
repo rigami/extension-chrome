@@ -11,7 +11,7 @@ import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         height: 42,
         display: 'flex',

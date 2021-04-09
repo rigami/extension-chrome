@@ -90,7 +90,10 @@ function HeaderActions() {
 
                                         enqueueSnackbar({
                                             message: t('weather.error.failedGeolocation'),
-                                            description: t('weather.error.failedGeolocation', { context: 'description' }),
+                                            description: t(
+                                                'weather.error.failedGeolocation',
+                                                { context: 'description' },
+                                            ),
                                             variant: 'error',
                                         });
                                     })

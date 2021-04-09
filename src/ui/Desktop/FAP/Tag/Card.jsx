@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardActionArea, CardHeader } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { FolderRounded as FolderIcon, LabelRounded as TagIcon } from '@material-ui/icons';
+import { LabelRounded as TagIcon } from '@material-ui/icons';
 import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useCoreService from '@/stores/app/BaseStateProvider';

@@ -1,11 +1,11 @@
 import React, { memo, useState } from 'react';
 import { render } from 'react-dom';
-import { CssBaseline, Box } from '@material-ui/core';
+import { CssBaseline } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
 import Snackbar from '@/ui-components/Snackbar';
 import UploadBGForm from '@/ui/UploadBackground';
-import { ACTIVITY, DESTINATION, THEME } from '@/enum';
+import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
@@ -15,12 +15,10 @@ import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import InitAppProvider from '@/stores/app/InitApp';
 import initSentry from '@/config/sentry';
 import * as Sentry from '@sentry/react';
-import View from '@/ui-components/View';
 import FabMenu from '@/ui/Menu/FabMenu';
 import Menu from '@/ui/Menu';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
-import GlobalScroll from './GlobalScroll';
 import GlobalModals from './GlobalModals';
 
 initSentry(DESTINATION.APP);

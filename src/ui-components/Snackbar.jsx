@@ -15,7 +15,6 @@ import {
 } from '@material-ui/icons';
 import { useSnackbar } from 'notistack';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -64,7 +63,6 @@ function Snackbar(props, ref) {
 
     const classes = useStyles();
     const theme = useTheme();
-    const { t } = useTranslation();
     const { closeSnackbar } = useSnackbar();
     const [progress, setProgress] = useState(0);
     const [description, setDescription] = useState(defaultDescription);

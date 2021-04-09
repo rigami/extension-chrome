@@ -150,29 +150,29 @@ class SyncSystemBookmarksService {
 
             const bookmarks = await BookmarksUniversalService.getAllInFolder(parentId);
 
-            for (let i = 0; i < browserNodes.length; i += 1) {
+            for await (const browserNode of browserNodes) {
                 const bind = await db().getFromIndex(
                     'system_bookmarks',
                     'system_id',
-                    browserNodes[i].id,
+                    browserNode.id,
                 );
 
-                console.log('bind', bind, browserNodes[i]);
+                console.log('bind', bind, browserNode);
 
-                if (browserNodes[i].url && !('dateGroupModified' in browserNodes[i])) {
+                if (browserNode.url && !('dateGroupModified' in browserNode)) {
                     await parseNodeBookmark(
-                        browserNodes[i],
+                        browserNode,
                         bookmarks.find(({ name, url, id }) => (
                             id === bind?.rigamiId
-                            || name === browserNodes[i].title
-                            || url === browserNodes[i].url
+                            || name === browserNode.title
+                            || url === browserNode.url
                         )),
                         parentId,
                     );
                 } else {
                     await parseNodeFolder(
-                        browserNodes[i],
-                        rigamiNodes.find(({ name, id }) => id === bind?.rigamiId || name === browserNodes[i].title),
+                        browserNode,
+                        rigamiNodes.find(({ name, id }) => id === bind?.rigamiId || name === browserNode.title),
                         parentId,
                     );
                 }
