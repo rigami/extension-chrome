@@ -1,23 +1,14 @@
-import React, { useState } from 'react';
-import { Card, Divider } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
+import { Divider } from '@material-ui/core';
 import Folder from './Folder';
 
-const useStyles = makeStyles(() => ({
-    root: {
-        display: 'flex',
-        height: 620,
-        maxHeight: 'inherit',
-        maxWidth: 'inherit',
-    },
-}));
-
 function Explorer({ id: rootId }) {
-    const classes = useStyles();
     const [path, setPath] = useState([rootId]);
 
+    useEffect(() => setPath([rootId]), [rootId]);
+
     return (
-        <Card className={classes.root} elevation={16}>
+        <React.Fragment>
             {path.map((id, index) => (
                 <React.Fragment key={id}>
                     <Folder
@@ -41,7 +32,7 @@ function Explorer({ id: rootId }) {
                     )}
                 </React.Fragment>
             ))}
-        </Card>
+        </React.Fragment>
     );
 }
 

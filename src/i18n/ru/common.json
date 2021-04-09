@@ -28,6 +28,7 @@
   "unknown": "Неизвестно",
   "from": "из",
   "favorites": {
+    "other": "Другие закладки",
     "onlyFavorites_helper": "Показать только избранные",
     "all_helper": "Показать все"
   },

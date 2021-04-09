@@ -28,6 +28,7 @@
   "unknown": "Unknown",
   "from": "from",
   "favorites": {
+    "other": "Other favorites",
     "onlyFavorites_helper": "Show only favorites",
     "all_helper": "Show all"
   },

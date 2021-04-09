@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import PopperWrapper, { TARGET_CLICK } from '@/ui-components/PopperWrapper';
 import { useTranslation } from 'react-i18next';
-import { CloseRounded as CloseIcon } from '@material-ui/icons';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import ReactResizeDetector from 'react-resize-detector';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
@@ -50,10 +49,10 @@ function ButtonWithPopper(props) {
         classes: externalClasses = {},
         iconOpen,
         iconOpenProps = {},
-        iconClose = CloseIcon,
         children,
         popperModifiers = {},
         popperProps = {},
+        onClosed,
         ...otherProps
     } = props;
     const classes = useStyles();
@@ -69,7 +68,6 @@ function ButtonWithPopper(props) {
     }));
 
     const IconOpen = iconOpen;
-    const IconClose = iconClose;
 
     const updatePopper = () => {
         if (!store.popper) return;
@@ -88,6 +86,10 @@ function ButtonWithPopper(props) {
             store.isShake = false;
         }, 400);
     }, [store.isShake]);
+
+    useEffect(() => {
+        if (!store.isOpen && onClosed) onClosed();
+    }, [store.isOpen]);
 
     return (
         <React.Fragment>
