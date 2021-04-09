@@ -4,6 +4,7 @@ import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ACTIVITY } from '@/enum';
 import useAppService from '@/stores/app/AppStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -18,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
 
 function EditBookmarkModal() {
     const classes = useStyles();
+    const coreService = useCoreService();
     const appService = useAppService();
     const [isLoad, setIsLoad] = useState(false);
     const viewer = useRef(null);
@@ -31,6 +33,10 @@ function EditBookmarkModal() {
 
     useEffect(() => {
         if (appService.activity === ACTIVITY.BOOKMARKS && !viewer.current) handleLoad();
+
+        if (appService.activity === ACTIVITY.BOOKMARKS && coreService.storage.temp.closeFapPopper) {
+            coreService.storage.temp.closeFapPopper();
+        }
     }, [appService.activity]);
 
     if (isLoad || !viewer.current) {

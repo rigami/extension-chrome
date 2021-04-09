@@ -260,7 +260,13 @@ function Desktop() {
                 invisible
                 className={classes.backdrop}
                 open={appService.activity !== ACTIVITY.BOOKMARKS}
-                onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
+                onClick={() => {
+                    if (coreService.storage.temp.closeFapPopper) {
+                        coreService.storage.temp.shakeFapPopper();
+                    } else {
+                        appService.setActivity(ACTIVITY.BOOKMARKS);
+                    }
+                }}
             />
         </Fragment>
     );
