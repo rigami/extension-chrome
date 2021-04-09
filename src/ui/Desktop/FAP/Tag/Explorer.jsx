@@ -19,12 +19,11 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import { observer } from 'mobx-react-lite';
 import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: 409,
+        width: (theme.shape.dataCard.width + theme.spacing(2)) * 2 + theme.spacing(2) + 1,
         height: 620,
         maxHeight: 'inherit',
         maxWeight: 'inherit',

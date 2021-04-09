@@ -26,7 +26,7 @@ import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: 409,
+        width: (theme.shape.dataCard.width + theme.spacing(2)) * 2 + theme.spacing(2) + 1,
         maxWeight: 'inherit',
         borderRadius: 0,
         zIndex: 1,
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     bookmarks: {
         overflow: 'auto',
         flexGrow: 1,
-        width: 409,
+        width: (theme.shape.dataCard.width + theme.spacing(2)) * 2 + theme.spacing(2) + 1,
     },
     primaryText: {
         overflow: 'hidden',

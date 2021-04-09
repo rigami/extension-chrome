@@ -12,7 +12,7 @@ import edit from '@/utils/contextMenu/edit';
 import remove from '@/utils/contextMenu/remove';
 
 const useStyles = makeStyles((theme) => ({
-    root: { width: 180 },
+    root: { width: theme.shape.dataCard.width },
     header: { padding: theme.spacing(2) },
     headerContent: {
         overflow: 'hidden',
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
         textOverflow: 'ellipsis',
         overflow: 'hidden',
         fontFamily: theme.typography.secondaryFontFamily,
-        fontWeight: 400,
+        fontWeight: 600,
     },
     active: { backgroundColor: theme.palette.action.selected },
 }));

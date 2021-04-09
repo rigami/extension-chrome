@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 0,
         flexShrink: 0,
         backgroundColor: theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[200],
-        width: 168 + theme.spacing(4),
+        width: theme.shape.dataCard.width + theme.spacing(4),
     },
     typeSwitcher: { marginBottom: theme.spacing(2) },
     warnMessage: {

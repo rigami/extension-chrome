@@ -26,7 +26,7 @@ import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: 168,
+        width: theme.shape.dataCard.width,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

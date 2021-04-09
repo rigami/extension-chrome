@@ -25,6 +25,7 @@ const theme = {
     shape: {
         borderRadius: 4,
         borderRadiusBold: 8,
+        dataCard: { width: 168 },
     },
     typography: {
         fontFamily: primaryFontFamily,
