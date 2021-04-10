@@ -32,8 +32,8 @@ export default {
     widgets: {
         useWidgets: true,
         dtw: {
-            position: WIDGET_DTW_POSITION.LEFT_BOTTOM,
-            size: WIDGET_DTW_SIZE.MIDDLE,
+            position: WIDGET_DTW_POSITION.LEFT_MIDDLE,
+            size: WIDGET_DTW_SIZE.BIG,
             date: {
                 useDate: true,
                 defaultAction: '',
