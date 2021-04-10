@@ -18,7 +18,7 @@ class AppStateStore {
         this.widgets = new WidgetsService(coreService);
         this.backgrounds = new BackgroundsService(coreService);
 
-        this.activity = this.settings.defaultActivity;
+        this.activity = this.settings.defaultActivity || ACTIVITY.DESKTOP;
     }
 
     @action('set activity')
