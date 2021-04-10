@@ -63,7 +63,7 @@ class BookmarkEditor {
                     this.fetchSiteInfo({
                         url: bookmark.url,
                         force: true,
-                        onlyIcons: true,
+                        onlyAdditionalIcons: true,
                     }).catch(console.error);
                 })
                 .catch((e) => {
@@ -100,10 +100,10 @@ class BookmarkEditor {
         this.isChange = false;
     }
 
-    async fetchSiteInfo({ force = false, onlyIcons = false, url: fetchUrl, allowChangeUrl = false }) {
+    async fetchSiteInfo({ force = false, onlyAdditionalIcons = false, url: fetchUrl, allowChangeUrl = false }) {
         let currentFetchUrl = fetchUrl;
         console.log(
-            `fetchSiteInfo { force: ${force} onlyIcons: ${onlyIcons} allowChangeUrl: ${allowChangeUrl} }`,
+            `fetchSiteInfo { force: ${force} onlyAdditionalIcons: ${onlyAdditionalIcons} allowChangeUrl: ${allowChangeUrl} }`,
             fetchUrl,
         );
         if (currentFetchUrl === '') {
@@ -115,7 +115,7 @@ class BookmarkEditor {
             return;
         }
 
-        if (!onlyIcons) {
+        if (!onlyAdditionalIcons) {
             this.url = currentFetchUrl;
             this.imageURL = null;
             this.defaultImage = null;
@@ -128,7 +128,7 @@ class BookmarkEditor {
         try {
             const siteData = await getSiteInfo(currentFetchUrl, ({ title, description }) => {
                 if (this.url !== currentFetchUrl) return;
-                if (!onlyIcons) {
+                if (!onlyAdditionalIcons) {
                     this.name = title;
                     this.description = description;
                 }
@@ -141,7 +141,7 @@ class BookmarkEditor {
 
             console.log('siteData', siteData);
 
-            if (!onlyIcons) {
+            if (!onlyAdditionalIcons) {
                 this.name = this.name || siteData.name || siteData.title;
                 this.description = this.description || siteData.description;
             }
@@ -160,20 +160,21 @@ class BookmarkEditor {
         } catch (e) {
             if (this.url !== currentFetchUrl) return;
             console.error('Failed getSiteInfo', e);
-            if (!onlyIcons) {
+            if (!onlyAdditionalIcons) {
                 this.imageURL = '';
                 this.icoVariant = BKMS_VARIANT.SYMBOL;
             }
             this.allImages = [];
         }
 
-        if (!onlyIcons) {
+        if (!onlyAdditionalIcons) {
             console.log('search default image');
             this.state = STATE_EDITOR.SEARCH_DEFAULT_IMAGE;
             const result = await getDefaultImage(this.allImages);
             if (this.url !== currentFetchUrl) return;
             this.defaultImage = result.image;
             this.allImages = result.list;
+            this.setPreview(this.defaultImage);
         }
         console.log('done fetch site', fetchUrl, this.url);
 
