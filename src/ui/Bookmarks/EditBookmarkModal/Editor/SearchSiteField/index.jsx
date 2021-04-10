@@ -1,4 +1,9 @@
-import React, { useState, createRef, useEffect } from 'react';
+import React, {
+    useState,
+    createRef,
+    useEffect,
+    useRef,
+} from 'react';
 import {
     Box,
     TextField,
@@ -39,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 function SearchSiteField({ url = '', marginThreshold = 24, onSelect }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
-    const [anchorEl, setAnchorEl] = useState(null);
+    const inputRef = useRef();
     const [isOpen, setIsOpen] = useState(false);
     const [isBlockEvent, setIsBlockEvent] = useState(false);
     const secondInput = createRef();
@@ -57,11 +62,9 @@ function SearchSiteField({ url = '', marginThreshold = 24, onSelect }) {
         } else {
             setIsOpen(false);
         }
-        console.log('handleChange:', store.url);
     };
 
     const handleSelect = (data) => {
-        console.log('handleSelect:', data);
         onSelect(data);
         setIsOpen(false);
     };
@@ -82,13 +85,14 @@ function SearchSiteField({ url = '', marginThreshold = 24, onSelect }) {
                     label={t('editor.bookmarkUrl')}
                     variant="outlined"
                     size="small"
+                    ref={inputRef}
                     fullWidth
+                    autoFocus
                     value={store.url}
                     className={classes.input}
                     onChange={handleChange}
                     onMouseDown={() => setIsBlockEvent(true)}
-                    onClick={(event) => {
-                        setAnchorEl(event.currentTarget);
+                    onClick={() => {
                         if (store.url) setIsOpen(true);
                         setIsBlockEvent(false);
                     }}
@@ -118,8 +122,11 @@ function SearchSiteField({ url = '', marginThreshold = 24, onSelect }) {
                 <Scrollbar>
                     <Box
                         style={{
-                            paddingTop: Math.max(anchorEl?.getBoundingClientRect?.()?.top - 16, marginThreshold),
-                            paddingLeft: anchorEl?.getBoundingClientRect?.()?.left - 16,
+                            paddingTop: Math.max(
+                                inputRef.current?.getBoundingClientRect?.()?.top - 16,
+                                marginThreshold,
+                            ),
+                            paddingLeft: inputRef.current?.getBoundingClientRect?.()?.left - 16,
                             paddingBottom: marginThreshold,
                         }}
                     >
