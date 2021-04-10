@@ -17,6 +17,7 @@ import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import ContextMenu from '@/ui/ContextMenu';
 import { useSnackbar } from 'notistack';
 import { getUrl } from '@/utils/fs';
+import Changelog from './Changelog';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation();
@@ -184,25 +185,6 @@ function GlobalModals({ children }) {
             }
         }
 
-        if (coreService.storage.temp.newVersion) {
-            const snackbar = enqueueSnackbar({
-                message: t('newVersion:title', { version: coreService.storage.persistent.lastUsageVersion }),
-                description: t('newVersion:description'),
-                buttons: [
-                    {
-                        title: t('newVersion:button.ok'),
-                        onClick: () => {
-                            closeSnackbar(snackbar);
-                        },
-                    },
-                    /* { title: t('newVersion.changelog'), onClick: () => {
-                            setEdit({ type: 'changelog', action: 'open', });
-                        } }, */
-                ],
-            }, { autoHideDuration: 18000 });
-            coreService.storage.updateTemp({ newVersion: false });
-        }
-
         return () => {
             localListeners.forEach((listenerId) => coreService.localEventBus.removeListener(listenerId));
             globalListeners.forEach((listenerId) => coreService.localEventBus.removeListener(listenerId));
@@ -213,6 +195,7 @@ function GlobalModals({ children }) {
         <React.Fragment>
             {children}
             {/* <InterrogationRequest /> */}
+            <Changelog />
             <ContextMenu />
             <EditBookmarkModal />
             <EditTagModal
@@ -231,10 +214,6 @@ function GlobalModals({ children }) {
                 simple
                 {...(edit?.options || {})}
             />
-            {/* <Changelog
-                open={edit && edit.type === 'changelog' && edit.action === 'open'}
-                onClose={() => setEdit(null)}
-            /> */}
             {['bookmark', 'tag', 'folder'].map((type) => (
                 <Dialog
                     key={type}

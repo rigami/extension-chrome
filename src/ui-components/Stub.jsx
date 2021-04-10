@@ -57,8 +57,8 @@ function Stub(props) {
     const Icon = icon;
 
     return (
-        <Box className={clsx(classes.root, externalClassName)} {...other}>
-            <Container className={classes.container} maxWidth="md">
+        <Box className={clsx(classes.root, externalClassName, externalClasses.root)} {...other}>
+            <Container className={clsx(classes.container, externalClasses.container)} maxWidth="md">
                 {icon && (
                     <Icon
                         {...iconProps}
