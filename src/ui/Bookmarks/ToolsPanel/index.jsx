@@ -4,7 +4,7 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { useResizeDetector } from 'react-resize-detector';
 import FolderBreadcrumbs from './FolderBreadcrumbs';
-import SearchBlock from './SearchBlock';
+import SearchBlock from './Search';
 import ShowFavorites from './ShowFavorites';
 
 const useStyles = makeStyles((theme) => ({
@@ -20,11 +20,13 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0, 2),
         display: 'flex',
         flexGrow: 1,
+        flexShrink: 0,
         justifyContent: 'center',
-        maxWidth: 600,
+        maxWidth: (theme.shape.dataCard.width + theme.spacing(2)) * 3 + theme.spacing(2),
         width: '100%',
         margin: 'auto',
         marginTop: 0,
+        boxSizing: 'content-box',
     },
     wrapperTools: {
         flexShrink: 0,
@@ -51,7 +53,10 @@ function ToolsPanel({ searchService: service }) {
         >
             <Toolbar disableGutters className={classes.toolbar}>
                 <Box className={classes.wrapperBreadcrumbs} ref={refBreadcrumbs}>
-                    <FolderBreadcrumbs searchService={service} />
+                    <FolderBreadcrumbs
+                        folderId={service.activeFolderId}
+                        onSelectFolder={(folderId) => service.setActiveFolder(folderId)}
+                    />
                 </Box>
                 <Box className={classes.widthHelper} style={{ maxWidth: widthTools || undefined }} />
                 <Box className={classes.wrapperSearch}>

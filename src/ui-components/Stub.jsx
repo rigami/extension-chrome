@@ -70,7 +70,7 @@ function Stub(props) {
                         variant="h6"
                         className={clsx(
                             classes.title,
-                            !description && classes.bottomOffset,
+                            !description && (children || actions) && classes.bottomOffset,
                             externalClasses.title,
                         )}
                     >

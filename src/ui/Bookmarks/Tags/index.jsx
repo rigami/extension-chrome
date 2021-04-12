@@ -26,6 +26,11 @@ const useStyles = makeStyles((theme) => ({
             marginRight: theme.spacing(1),
         },
     },
+    tag: {
+        marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+        maxWidth: `calc(100% - ${theme.spacing(1)}px)`,
+    },
 }));
 
 function Tags(props) {
@@ -34,6 +39,7 @@ function Tags(props) {
         onlyFavorites = false,
         autoSelect = false,
         usePopper = false,
+        expandAlways = false,
         className: externalClassName,
         onCreate,
         onChange,
@@ -78,6 +84,31 @@ function Tags(props) {
             />
         </React.Fragment>
     );
+
+    if (expandAlways) {
+        return (
+            <Box className={clsx(classes.root, externalClassName)}>
+                {tags.map(({ id, name, color }) => (
+                    <Tag
+                        key={id}
+                        id={id}
+                        name={name}
+                        color={color}
+                        className={classes.tag}
+                        isSelect={selectedTags.includes(id)}
+                        onClick={() => {
+                            if (selectedTags.includes(id)) {
+                                setSelectedTags(selectedTags.filter((cId) => cId !== id));
+                            } else {
+                                setSelectedTags([...selectedTags, id]);
+                            }
+                        }}
+                    />
+                ))}
+                <AddTag />
+            </Box>
+        );
+    }
 
     return (
         <Box className={clsx(classes.root, externalClassName)}>

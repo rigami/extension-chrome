@@ -4,10 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
-    container: {
-        marginTop: theme.spacing(3),
-        listStyle: 'none',
-    },
     textWrapper: { maxWidth: 700 },
     text: {
         fontFamily: theme.typography.primaryFontFamily,
@@ -18,20 +14,20 @@ const useStyles = makeStyles((theme) => ({
     secondary: { fontSize: '1rem' },
 }));
 
-function Header({ title, subtitle }) {
+function Header({ title, subtitle, classes: externalClasses = {} }) {
     const classes = useStyles();
 
     return (
         <ListItem
             disableGutters
             component="div"
-            classes={{ container: classes.container }}
+            classes={{ root: clsx(classes.root, externalClasses.root) }}
         >
             <ListItemText
                 classes={{
                     root: classes.textWrapper,
-                    primary: clsx(classes.text, classes.title),
-                    secondary: clsx(classes.text, classes.secondary),
+                    primary: clsx(classes.text, classes.title, externalClasses.title),
+                    secondary: clsx(classes.text, classes.secondary, externalClasses.secondary),
                 }}
                 primary={title}
                 secondary={subtitle}

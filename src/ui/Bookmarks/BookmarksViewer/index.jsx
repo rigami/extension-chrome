@@ -49,6 +49,7 @@ function BookmarksViewer({ searchService: service }) {
         requestId: 0,
         loadState: FETCH.WAIT,
         columnsCount: 0,
+        usedFields: {},
     }));
     const onResize = useCallback((width) => {
         store.columnsCount = maxColumnCalc(width);
@@ -95,9 +96,10 @@ function BookmarksViewer({ searchService: service }) {
                 store.bestBookmarks = result.best && sortByFavorites(result.best);
                 store.allBookmarks = result.all && sortByFavorites(result.all);
                 store.existMatches = ((result.best?.length || 0) + result.all.length) !== 0;
+                store.usedFields = { ...service.searchRequest.usedFields };
                 store.loadState = FETCH.DONE;
             });
-    }, [service.searchRequest, bookmarksService.lastTruthSearchTimestamp]);
+    }, [service.searchRequestId, bookmarksService.lastTruthSearchTimestamp]);
 
     return (
         <Box className={classes.root} ref={ref}>
@@ -106,7 +108,7 @@ function BookmarksViewer({ searchService: service }) {
                 [
                     store.existMatches && (
                         <Fragment key="exist-matches">
-                            {(service.searchRequest.usedFields.query || service.searchRequest.usedFields.tags) && (
+                            {(store.usedFields.query || store.usedFields.tags) && (
                                 <Fragment>
                                     <Header title={t('search.bestMatches')} />
                                     {store.bestBookmarks && store.bestBookmarks.length !== 0 ? (
@@ -130,7 +132,7 @@ function BookmarksViewer({ searchService: service }) {
                             </Box>
                         </Fragment>
                     ),
-                    (service.searchRequest.usedFields.query || service.searchRequest.usedFields.tags)
+                    (store.usedFields.query || store.usedFields.tags)
                     && !store.existMatches
                     && (
                         <Stub
@@ -140,8 +142,8 @@ function BookmarksViewer({ searchService: service }) {
                             classes={{ title: classes.title }}
                         />
                     ),
-                    !service.searchRequest.usedFields.query
-                    && !service.searchRequest.usedFields.tags
+                    !store.usedFields.query
+                    && !store.usedFields.tags
                     && !store.existMatches
                     && (
                         <Stub

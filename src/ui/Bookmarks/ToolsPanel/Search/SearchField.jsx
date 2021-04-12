@@ -20,12 +20,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Search({ searchService: service, inputRef, ...other }) {
+function SearchField({ query, onChange, inputRef, ...other }) {
     const classes = useStyles();
-    const store = useLocalObservable(() => ({ query: service.query }));
+    const store = useLocalObservable(() => ({ query }));
     const [updateQuery] = useState(() => debounce(
         (value) => {
-            service.updateRequest({ query: value || '' });
+            onChange(value || '');
         },
         300,
         { leading: true },
@@ -33,8 +33,8 @@ function Search({ searchService: service, inputRef, ...other }) {
     ));
 
     useEffect(() => {
-        store.query = service.query;
-    }, [service.query]);
+        store.query = query;
+    }, [query]);
 
     useEffect(() => {
         updateQuery(store.query);
@@ -55,4 +55,4 @@ function Search({ searchService: service, inputRef, ...other }) {
     );
 }
 
-export default observer(Search);
+export default observer(SearchField);

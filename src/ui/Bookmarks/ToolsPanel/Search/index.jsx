@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
     Box,
     Paper,
-    CardActionArea,
-    Typography,
     Collapse,
     ClickAwayListener,
     Divider,
@@ -11,26 +9,28 @@ import {
     IconButton,
     Tooltip,
 } from '@material-ui/core';
-import { ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import {
-    CloseRounded as ResetIcon,
-    SearchRounded as SearchIcon,
-} from '@material-ui/icons';
+import { CloseRounded as ResetIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import Tags from '@/ui/Bookmarks/Tags';
 import { observer } from 'mobx-react-lite';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import Search from './Search';
+import CustomScroll from '@/ui-components/CustomScroll';
+import { SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
+import FullSearch from '@/ui/Bookmarks/ToolsPanel/Search/FullSearch';
+import Preview from './Preview';
+import SearchField from './SearchField';
+import FastResults from './FastResults';
 
 const useStyles = makeStyles((theme) => ({
     wrapper: {
         width: '100%',
-        maxWidth: 600,
+        maxWidth: (theme.shape.dataCard.width + theme.spacing(2)) * 3 + theme.spacing(2),
         minWidth: 240,
         minHeight: 42,
         flexGrow: 1,
+        flexShrink: 0,
         position: 'relative',
     },
     root: {
@@ -158,35 +158,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function SearchBlock({ searchService: service }) {
+function Search({ searchService: globalService }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const [isOpen, setIsOpen] = useState(false);
-    const [tags, setTags] = useState([]);
     const rootRef = useRef();
-    const inputRef = useRef();
 
-    const handleKeyDown = (event) => {
-        if (event.code === 'Escape' || event.code === 'Enter') setIsOpen(false);
-    };
-
-    useEffect(() => {
-        if (isOpen) {
-            window.addEventListener('keydown', handleKeyDown, true);
-            if (inputRef.current) inputRef.current.focus();
-        }
-
-        return () => {
-            if (isOpen) window.removeEventListener('keydown', handleKeyDown, true);
-        };
-    }, [isOpen]);
-
-    useEffect(() => {
-        Promise.all(service.tags.map((tagId) => TagsUniversalService.get(tagId)))
-            .then((fullTags) => setTags(fullTags));
-    }, [service.tags]);
-
-    const { usedFields } = service.searchRequest;
+    const { usedFields } = globalService.searchRequest;
 
     const oneRow = (!usedFields.tags && usedFields.query)
         || (usedFields.tags && !usedFields.query);
@@ -200,9 +178,12 @@ function SearchBlock({ searchService: service }) {
                             className={classes.resetIcon}
                             size="medium"
                             onClick={() => {
-                                service.updateRequest({
+                                globalService.updateRequest({
                                     query: '',
                                     tags: [],
+                                }, {
+                                    force: true,
+                                    incrementId: !isOpen,
                                 });
                             }}
                         >
@@ -212,66 +193,26 @@ function SearchBlock({ searchService: service }) {
                 </Box>
             )}
             <Fade in={!isOpen}>
-                <ExtendButtonGroup className={classes.root}>
-                    <CardActionArea
-                        className={classes.alignFix}
-                        onClick={() => setIsOpen(true)}
-                    >
-                        <SearchIcon className={classes.icon} />
-                        <Box className={classes.rows}>
-                            {usedFields.query && (
-                                <Box className={classes.row}>
-                                    <Typography variant="caption" className={classes.query}>
-                                        {service.query}
-                                    </Typography>
-                                </Box>
-                            )}
-                            {usedFields.tags && (
-                                <Box className={classes.row}>
-                                    {tags.map((tag, index) => (
-                                        <span
-                                            key={tag.id}
-                                            className={clsx(classes.tag, classes.query, index > 2 && classes.tagSmall)}
-                                        >
-                                            <div style={{ backgroundColor: tag.color }} />
-                                            {tag.name}
-                                        </span>
-                                    ))}
-                                </Box>
-                            )}
-                        </Box>
-                        {(!usedFields.query && !usedFields.tags) && (
-                            <Typography variant="caption" className={classes.placeholder}>
-                                {t('search.bookmarks', { context: 'placeholder' })}
-                            </Typography>
-                        )}
-                    </CardActionArea>
-                </ExtendButtonGroup>
+                <Preview
+                    query={usedFields.query && globalService.query}
+                    tags={usedFields.tags && globalService.tags}
+                    onClick={() => setIsOpen(true)}
+                />
             </Fade>
             <Box className={clsx(classes.fullSearchWrapper, !isOpen && classes.disabledFullSearch)}>
-                <ClickAwayListener
-                    onClickAway={(event) => {
-                        if (!event.path.includes(rootRef.current)) setIsOpen(false);
+                <FullSearch
+                    searchService={globalService}
+                    open={isOpen}
+                    onClose={(event) => {
+                        if (!event || !event.path.includes(rootRef.current)) {
+                            setIsOpen(false);
+                            globalService.applyRequest(true);
+                        }
                     }}
-                >
-                    <Paper
-                        className={clsx(classes.fullSearch, isOpen && classes.openFullSearch)}
-                        elevation={isOpen ? 18 : 0}
-                    >
-                        <Collapse collapsedHeight={42} in={isOpen} unmountOnExit>
-                            <Search className={classes.search} inputRef={inputRef} searchService={service} />
-                            <Divider />
-                            <Tags
-                                className={classes.tags}
-                                value={service.tags}
-                                onChange={(changedTags) => service.updateRequest({ tags: changedTags })}
-                            />
-                        </Collapse>
-                    </Paper>
-                </ClickAwayListener>
+                />
             </Box>
         </Box>
     );
 }
 
-export default observer(SearchBlock);
+export default observer(Search);
