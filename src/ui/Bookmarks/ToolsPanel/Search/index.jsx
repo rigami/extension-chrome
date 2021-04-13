@@ -122,13 +122,13 @@ const useStyles = makeStyles((theme) => ({
     },
     extend: {
         '& $resetIconWrapper': {
-            height: 42,
+            height: 44,
             borderBottomRightRadius: theme.shape.borderRadius,
         },
     },
     open: {
         '& $resetIconWrapper': {
-            height: 42,
+            height: 44,
             borderBottomRightRadius: 0,
         },
     },
@@ -181,10 +181,9 @@ function Search({ searchService: globalService }) {
                                 globalService.updateRequest({
                                     query: '',
                                     tags: [],
-                                }, {
-                                    force: true,
-                                    incrementId: !isOpen,
-                                });
+                                }, { force: true });
+
+                                globalService.applyChanges();
                             }}
                         >
                             <ResetIcon />
@@ -194,8 +193,8 @@ function Search({ searchService: globalService }) {
             )}
             <Fade in={!isOpen}>
                 <Preview
-                    query={usedFields.query && globalService.query}
-                    tags={usedFields.tags && globalService.tags}
+                    query={usedFields.query && globalService.searchRequest.query}
+                    tags={usedFields.tags && globalService.searchRequest.tags}
                     onClick={() => setIsOpen(true)}
                 />
             </Fade>
@@ -203,10 +202,11 @@ function Search({ searchService: globalService }) {
                 <FullSearch
                     searchService={globalService}
                     open={isOpen}
-                    onClose={(event) => {
+                    onClose={(event, apply) => {
                         if (!event || !event.path.includes(rootRef.current)) {
                             setIsOpen(false);
-                            globalService.applyRequest(true);
+                            if (apply) globalService.applyChanges();
+                            else globalService.resetChanges();
                         }
                     }}
                 />

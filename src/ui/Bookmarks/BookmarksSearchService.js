@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, toJS } from 'mobx';
 import { SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
 import {
     pick,
@@ -18,66 +18,87 @@ export const SEARCH_STATE = {
 
 class BookmarksSearchService {
     activeFolderId = 1;
-    searchEverywhere = false;
-    onlyFavorites = false;
     searchRequest = new SearchQuery({});
+    tempSearchRequest = new SearchQuery({});
     state = SEARCH_STATE.WAIT;
-    query = '';
-    tags = [];
+    _temp = {
+        query: '',
+        tags: [],
+    };
+
     searchRequestId = 0;
-    tempSearchRequestId = 0;
-    _applyRequest;
+    _debounceApplyRequest;
+
     constructor() {
         makeAutoObservable(this);
 
-        this._applyRequest = debounce(
-            (incrementId) => this.applyRequest(incrementId),
+        this._debounceApplyRequest = debounce(
+            () => this._applyRequest(),
             300,
             { leading: true },
         );
+        this.tempSearchRequest = new SearchQuery({
+            query: this._temp.query,
+            tags: this._temp.tags,
+        });
         this.searchRequest = new SearchQuery({
-            query: this.query,
-            tags: this.tags,
-            folderId: !this.searchEverywhere && this.activeFolderId,
-            onlyFavorites: this.onlyFavorites,
+            query: this._temp.query,
+            tags: this._temp.tags,
+            folderId: this.activeFolderId,
         });
     }
 
     setActiveFolder(folderId) {
         this.activeFolderId = folderId;
 
-        this.applyRequest(true);
+        this.applyChanges();
     }
 
-    applyRequest(incrementId = false) {
+    _applyRequest() {
+        console.log('_applyRequest', toJS(this._temp));
         const searchRequest = new SearchQuery({
-            query: this.query,
-            tags: this.tags,
-            folderId: !this.searchEverywhere && this.activeFolderId,
-            onlyFavorites: this.onlyFavorites,
+            query: this._temp.query,
+            tags: this._temp.tags,
+        });
+
+        if (!isEqual(searchRequest, this.tempSearchRequest)) {
+            this.tempSearchRequest = searchRequest;
+        }
+    }
+
+    applyChanges() {
+        console.log('applyChanges');
+        const searchRequest = new SearchQuery({
+            query: this._temp.query,
+            tags: this._temp.tags,
+            folderId: this.activeFolderId,
         });
 
         if (!isEqual(searchRequest, this.searchRequest)) {
             this.searchRequest = searchRequest;
-
-            if (incrementId) {
-                this.searchRequestId += 1;
-            }
+            this.searchRequestId += 1;
         }
     }
 
-    updateRequest(request, { force = false, incrementId = false } = {}) {
-        const changeValues = pick(request, [
-            'query',
-            'tags',
-            'searchEverywhere',
-            'onlyFavorites',
-        ]);
-        console.log(changeValues);
-        assign(this, changeValues);
+    resetChanges() {
+        this._temp = {
+            query: this.searchRequest.query,
+            tags: this.searchRequest.tags,
+        };
+        this.tempSearchRequest = new SearchQuery({
+            query: this.searchRequest.query,
+            tags: this.searchRequest.tags,
+            folderId: this.searchRequest.folderId,
+        });
+    }
+
+    updateRequest(request, { force = false } = {}) {
+        console.log('updateRequest', request, { force });
+        const changeValues = pick(request, ['query', 'tags']);
+        assign(this._temp, changeValues);
         if (size(changeValues) > 0) {
-            if (force) this.applyRequest(incrementId);
-            else this._applyRequest(incrementId);
+            if (force) this._applyRequest();
+            else this._debounceApplyRequest();
         }
     }
 }

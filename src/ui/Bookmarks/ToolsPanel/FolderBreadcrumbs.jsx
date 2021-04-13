@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import {
     Box,
-    Breadcrumbs, Button,
-    Link,
+    Breadcrumbs,
+    Button,
     Typography,
 } from '@material-ui/core';
 import { useLocalObservable, observer } from 'mobx-react-lite';
@@ -38,7 +38,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function FolderBreadcrumbs({ folderId, lastClickable = false, onSelectFolder, className: externalClassName }) {
+function FolderBreadcrumbs(props) {
+    const {
+        folderId,
+        lastClickable = false,
+        className: externalClassName,
+        classes: externalClasses = {},
+        onSelectFolder,
+    } = props;
     const classes = useStyles();
     const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
@@ -57,38 +64,35 @@ function FolderBreadcrumbs({ folderId, lastClickable = false, onSelectFolder, cl
 
         FoldersUniversalService.getPath(folderId)
             .then((path) => {
-                console.log('getPath:', folderId, path);
                 store.path = path;
                 store.pathState = FETCH.DONE;
             });
     }, [folderId, bookmarksService.lastTruthSearchTimestamp]);
 
     return (
-        <Box className={clsx(classes.root, externalClassName)}>
+        <Box className={clsx(classes.root, externalClassName, externalClasses.root)}>
             <Breadcrumbs>
                 {store.path && store.path.map((folder, index) => (index === store.path.length - 1 ? (
-                    <React.Fragment>
-                        {lastClickable ? (
-                            <Button
-                                key={folder.id}
-                                className={classes.last}
-                                classes={{ label: classes.buttonLabel }}
-                                endIcon={(<GoToIcon />)}
-                                onClick={() => {
-                                    if (onSelectFolder) onSelectFolder(folder.id);
-                                }}
-                            >
-                                {folder.name}
-                            </Button>
-                        ) : (
-                            <Typography
-                                key={folder.id}
-                                className={classes.last}
-                            >
-                                {folder.name}
-                            </Typography>
-                        )}
-                    </React.Fragment>
+                    lastClickable ? (
+                        <Button
+                            key={folder.id}
+                            className={clsx(classes.last, externalClasses.last)}
+                            classes={{ label: classes.buttonLabel }}
+                            endIcon={(<GoToIcon />)}
+                            onClick={() => {
+                                if (onSelectFolder) onSelectFolder(folder.id);
+                            }}
+                        >
+                            {folder.name}
+                        </Button>
+                    ) : (
+                        <Typography
+                            key={folder.id}
+                            className={clsx(classes.last, externalClasses.last)}
+                        >
+                            {folder.name}
+                        </Typography>
+                    )
                 ) : (
                     <Button
                         key={folder.id}
