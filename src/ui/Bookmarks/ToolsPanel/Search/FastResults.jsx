@@ -145,7 +145,7 @@ function FastResults({ searchService: service, onGoToFolder }) {
                     )}
                 </Fragment>,
                 <Typography variant="body1" className={classes.stub}>
-                    {`${t('common:search')}...`}
+                    {t('common:search')}
                 </Typography>,
             )}
         </Box>
