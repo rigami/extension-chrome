@@ -48,7 +48,9 @@
     "everywhere_description": "Search for bookmarks throughout the system",
     "bookmarks_placeholder": "Search for bookmarks",
     "bestMatches": "Best matches",
-    "allMatches": "All matches"
+    "allMatches": "All matches",
+    "results": "{{count}} result",
+    "results_plural": "{{count}} results"
   },
   "empty": "There are no bookmarks here yet"
 }

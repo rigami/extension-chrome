@@ -48,7 +48,11 @@
     "everywhere_description": "Поиск закладок по всей системе",
     "bookmarks_placeholder": "Поиск закладок",
     "bestMatches": "Лучшие совпадения",
-    "allMatches": "Все совпадения"
+    "allMatches": "Все совпадения",
+    "results": "{{count}} результат",
+    "results_0": "{{count}} результат",
+    "results_1": "{{count}} результа",
+    "results_2": "{{count}} результатов"
   },
   "empty": "Здесь пока нет закладок"
 }

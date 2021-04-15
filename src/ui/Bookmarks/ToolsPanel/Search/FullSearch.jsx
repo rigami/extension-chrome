@@ -10,7 +10,6 @@ import SearchField from '@/ui/Bookmarks/ToolsPanel/Search/SearchField';
 import Tags from '@/ui/Bookmarks/Tags';
 import CustomScroll from '@/ui-components/CustomScroll';
 import FastResults from '@/ui/Bookmarks/ToolsPanel/Search/FastResults';
-import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 
@@ -42,7 +41,6 @@ const useStyles = makeStyles((theme) => ({
 
 function FullSearch({ searchService: globalService, open, onClose }) {
     const classes = useStyles();
-    const { t } = useTranslation(['bookmark']);
     const inputRef = useRef();
     const store = useLocalObservable(() => ({
         showFastResults: false,
@@ -117,7 +115,6 @@ function FullSearch({ searchService: globalService, open, onClose }) {
                                     <FastResults
                                         searchService={globalService}
                                         onGoToFolder={(folderId, apply) => {
-                                            console.log('apply:', apply);
                                             if (!apply) globalService.resetChanges();
                                             globalService.setActiveFolder(folderId);
                                             onClose(null, apply);

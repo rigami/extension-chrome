@@ -102,7 +102,7 @@ function FastResults({ searchService: service, onGoToFolder }) {
                                     variant="caption"
                                     className={classes.countResults}
                                 >
-                                    {`${store.currentFolder.length} results`}
+                                    {t('search.results', { count: store.currentFolder.length })}
                                 </Typography>
                             </Box>
                             <BookmarksGrid
@@ -129,7 +129,7 @@ function FastResults({ searchService: service, onGoToFolder }) {
                                     variant="caption"
                                     className={classes.countResults}
                                 >
-                                    {`${bookmarks.length} results`}
+                                    {t('search.results', { count: bookmarks.length })}
                                 </Typography>
                             </Box>
                             <BookmarksGrid
@@ -144,7 +144,9 @@ function FastResults({ searchService: service, onGoToFolder }) {
                         <Typography variant="body1" className={classes.stub}>{t('search.nothingFound')}</Typography>
                     )}
                 </Fragment>,
-                <Typography variant="body1" className={classes.stub}>Search...</Typography>,
+                <Typography variant="body1" className={classes.stub}>
+                    {`${t('common:search')}...`}
+                </Typography>,
             )}
         </Box>
     );
