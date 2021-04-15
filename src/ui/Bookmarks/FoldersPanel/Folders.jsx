@@ -27,6 +27,7 @@ import pin from '@/utils/contextMenu/pin';
 import edit from '@/utils/contextMenu/edit';
 import remove from '@/utils/contextMenu/remove';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
+import asyncAction from '@/utils/asyncAction';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -284,6 +285,7 @@ const ObserverFolderItem = observer(FolderItem);
 function TreeItem(props) {
     const {
         folder,
+        defaultExpanded = [],
         level,
         isExpanded,
         selectedId,
@@ -310,6 +312,7 @@ function TreeItem(props) {
                 <Collapse in={isExpanded}>
                     <TreeLevel
                         data={folder.children}
+                        defaultExpanded={defaultExpanded}
                         level={level + 1}
                         selectedId={selectedId}
                         onClickFolder={onClick}
@@ -324,16 +327,20 @@ function TreeItem(props) {
 function TreeLevel(props) {
     const {
         data,
+        defaultExpanded = [],
         level,
         selectedId,
         onClickFolder,
         onCreateSubFolder,
     } = props;
-    const [expanded, setExpanded] = useState([]);
+    const [expanded, setExpanded] = useState(defaultExpanded);
+
+    console.log('defaultExpanded:', defaultExpanded);
 
     return data.map((folder) => (
         <TreeItem
             key={folder.id}
+            defaultExpanded={defaultExpanded}
             folder={folder}
             level={level}
             isExpanded={expanded.includes(folder.id)}
@@ -357,54 +364,58 @@ function Folders({ selectFolder, onClickFolder }) {
     const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
         tree: [],
+        path: [],
         folder: null,
-        childFolders: null,
-        folderState: FETCH.WAIT,
-        childFoldersState: FETCH.WAIT,
         anchorEl: null,
         expanded: [],
+        state: FETCH.WAIT,
     }));
 
     useEffect(() => {
-        store.folderState = FETCH.PENDING;
-        store.childFoldersState = FETCH.PENDING;
-        store.pathState = FETCH.PENDING;
+        store.state = FETCH.PENDING;
 
-        FoldersUniversalService.getTree()
-            .then((tree) => {
-                console.log('load .tree:', tree);
-                store.tree = tree;
-            });
+        asyncAction(async () => {
+            const path = selectFolder ? await FoldersUniversalService.getPath(selectFolder) : [];
+            const tree = await FoldersUniversalService.getTree();
+
+            store.path = path.map(({ id }) => id).slice(0, -1);
+            store.tree = tree;
+            store.state = FETCH.DONE;
+        }).catch((error) => {
+            console.error(error);
+            store.state = FETCH.FAILED;
+        });
     }, [bookmarksService.lastTruthSearchTimestamp]);
-
-    console.log('store.tree:', store.tree);
 
     return (
         <Box>
             <List disablePadding>
-                <TreeLevel
-                    data={store.tree}
-                    level={0}
-                    selectedId={selectFolder}
-                    onClickFolder={onClickFolder}
-                    onCreateSubFolder={({ anchorEl, parentFolder }) => {
-                        store.anchorEl = anchorEl;
-                        store.parentFolder = parentFolder;
+                {store.state === FETCH.DONE && (
+                    <TreeLevel
+                        data={store.tree}
+                        defaultExpanded={store.path}
+                        level={0}
+                        selectedId={selectFolder}
+                        onClickFolder={onClickFolder}
+                        onCreateSubFolder={({ anchorEl, parentFolder }) => {
+                            store.anchorEl = anchorEl;
+                            store.parentFolder = parentFolder;
+                        }}
+                    />
+                )}
+                <ListItem
+                    className={classes.addRootButton}
+                    onClick={(event) => {
+                        store.anchorEl = event.currentTarget;
+                        store.parentFolder = 0;
                     }}
-                />
+                    button
+                    selected={store.parentFolder === 0}
+                >
+                    <AddIcon />
+                    {t('button.create')}
+                </ListItem>
             </List>
-            <ListItem
-                className={classes.addRootButton}
-                onClick={(event) => {
-                    store.anchorEl = event.currentTarget;
-                    store.parentFolder = 0;
-                }}
-                button
-                selected={store.parentFolder === 0}
-            >
-                <AddIcon />
-                {t('button.create')}
-            </ListItem>
             <EditFolderModal
                 simple
                 isOpen={Boolean(store.anchorEl)}
