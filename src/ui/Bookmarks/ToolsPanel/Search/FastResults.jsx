@@ -93,7 +93,7 @@ function FastResults({ searchService: service, onGoToFolder }) {
                                     endIcon={(<GoToIcon />)}
                                     className={classes.goToButton}
                                     onClick={() => {
-                                        onGoToFolder(store.currentFolder, true);
+                                        onGoToFolder(service.activeFolderId, true);
                                     }}
                                 >
                                     In the current folder
