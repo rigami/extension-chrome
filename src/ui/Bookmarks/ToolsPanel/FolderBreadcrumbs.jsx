@@ -15,7 +15,7 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        height: 42,
+        minHeight: 42,
         display: 'flex',
         alignItems: 'center',
     },
@@ -71,7 +71,7 @@ function FolderBreadcrumbs(props) {
 
     return (
         <Box className={clsx(classes.root, externalClassName, externalClasses.root)}>
-            <Breadcrumbs>
+            <Breadcrumbs maxItems={2}>
                 {store.path && store.path.map((folder, index) => (index === store.path.length - 1 ? (
                     lastClickable ? (
                         <Button

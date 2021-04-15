@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
     countResults: {
         color: theme.palette.text.secondary,
         marginLeft: 'auto',
+        flexShrink: 0,
     },
     stub: { padding: theme.spacing(2) },
 }));

@@ -54,6 +54,7 @@ function ToolsPanel({ searchService: service }) {
             <Toolbar disableGutters className={classes.toolbar}>
                 <Box className={classes.wrapperBreadcrumbs} ref={refBreadcrumbs}>
                     <FolderBreadcrumbs
+                        key={service.activeFolderId}
                         folderId={service.activeFolderId}
                         onSelectFolder={(folderId) => service.setActiveFolder(folderId)}
                     />

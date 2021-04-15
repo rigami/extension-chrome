@@ -8,10 +8,7 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles(() => ({
     root: { width: '100%' },
-    bookmarks: {
-        display: 'flex',
-        width: '100%',
-    },
+    bookmarks: { display: 'flex' },
 }));
 
 function BookmarksGrid(props) {
