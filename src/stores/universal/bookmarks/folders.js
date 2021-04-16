@@ -86,27 +86,21 @@ class FoldersUniversalService {
             await FavoritesUniversalService.removeFromFavorites(favoriteItem.id);
         }
 
-        const removeFolders = async (parentId) => {
-            await db().delete('folders', parentId);
+        const removedBookmarks = await BookmarksUniversalService.getAllInFolder(folderId);
 
-            const removedBookmarks = await BookmarksUniversalService.getAllInFolder(parentId);
+        await Promise.all(removedBookmarks.map(({ id }) => BookmarksUniversalService.remove(id)));
 
-            await Promise.all(removedBookmarks.map(({ id }) => BookmarksUniversalService.remove(id)));
+        const childFolders = await db().getAllFromIndex(
+            'folders',
+            'parent_id',
+            folderId,
+        );
 
-            const childFolders = await db().getAllFromIndex(
-                'folders',
-                'parent_id',
-                parentId,
-            );
+        await Promise.all(childFolders.map(({ id }) => this.remove(id)));
 
-            return [parentId, ...((await Promise.all(childFolders.map(({ id }) => removeFolders(id)))).flat())];
-        };
+        await db().delete('folders', folderId);
 
-        const removedFolders = await removeFolders(folderId);
-
-        console.log('removedFolders', removedFolders);
-
-        return removedFolders;
+        return Promise.resolve();
     }
 }
 
