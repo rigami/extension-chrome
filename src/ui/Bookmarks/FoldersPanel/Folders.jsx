@@ -215,7 +215,7 @@ function FolderItem(props) {
             anchorEl: rootRef.current,
             options: { placement: 'left' },
         }),
-        remove({
+        id !== 1 && remove({
             itemId: id,
             itemType: 'folder',
             t,
@@ -334,8 +334,6 @@ function TreeLevel(props) {
         onCreateSubFolder,
     } = props;
     const [expanded, setExpanded] = useState(defaultExpanded);
-
-    console.log('defaultExpanded:', defaultExpanded);
 
     return data.map((folder) => (
         <TreeItem

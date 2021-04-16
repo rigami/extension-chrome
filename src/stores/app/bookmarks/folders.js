@@ -33,6 +33,8 @@ class FoldersStore {
 
     @action('remove folder')
     async remove(folderId) {
+        if (folderId === 1) return Promise.reject(new Error('Cannon remove first folder'));
+
         const removedFolders = await FoldersUniversalService.remove(folderId);
 
         if (this._coreService) this._coreService.globalEventBus.call('folder/remove', DESTINATION.APP, { folderId });

@@ -77,6 +77,8 @@ class FoldersUniversalService {
 
     @action('remove folder')
     static async remove(folderId) {
+        if (folderId === 1) return Promise.reject(new Error('Cannon remove first folder'));
+
         const favoriteItem = FavoritesUniversalService.findFavorite({
             itemType: 'folder',
             itemId: folderId,
