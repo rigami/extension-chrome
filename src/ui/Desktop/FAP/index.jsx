@@ -65,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
         backdropFilter: 'blur(40px) brightness(110%)  contrast(1.2) invert(0.06)',
         backgroundColor: fade(theme.palette.background.backdrop, 0.22),
         marginBottom: theme.spacing(3),
+        minHeight: 60,
     },
     link: {
         marginRight: theme.spacing(2),
