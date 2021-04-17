@@ -285,13 +285,13 @@ const ObserverFolderItem = observer(FolderItem);
 function TreeItem(props) {
     const {
         folder,
-        defaultExpanded = [],
+        expanded = [],
         level,
         isExpanded,
         selectedId,
         onClick,
-        onExpandChange,
         onCreateSubFolder,
+        onChangeExpanded,
     } = props;
     const childExist = Array.isArray(folder.children) && folder.children.length > 0;
 
@@ -305,18 +305,19 @@ function TreeItem(props) {
                 isSelected={selectedId === folder.id}
                 level={level}
                 onClick={() => onClick(folder)}
-                onExpandChange={onExpandChange}
+                onExpandChange={() => onChangeExpanded(folder.id)}
                 onCreateSubFolder={onCreateSubFolder}
             />
             {childExist && (
                 <Collapse in={isExpanded}>
                     <TreeLevel
                         data={folder.children}
-                        defaultExpanded={defaultExpanded}
+                        expanded={expanded}
                         level={level + 1}
                         selectedId={selectedId}
                         onClickFolder={onClick}
                         onCreateSubFolder={onCreateSubFolder}
+                        onChangeExpanded={onChangeExpanded}
                     />
                 </Collapse>
             )}
@@ -327,46 +328,39 @@ function TreeItem(props) {
 function TreeLevel(props) {
     const {
         data,
-        defaultExpanded = [],
+        expanded = [],
         level,
         selectedId,
         onClickFolder,
         onCreateSubFolder,
+        onChangeExpanded,
     } = props;
-    const [expanded, setExpanded] = useState(defaultExpanded);
 
     return data.map((folder) => (
         <TreeItem
             key={folder.id}
-            defaultExpanded={defaultExpanded}
+            expanded={expanded}
             folder={folder}
             level={level}
             isExpanded={expanded.includes(folder.id)}
             selectedId={selectedId}
             onClick={(selectFolder) => onClickFolder(selectFolder)}
-            onExpandChange={() => {
-                if (expanded.includes(folder.id)) {
-                    setExpanded(expanded.filter((id) => id !== folder.id));
-                } else {
-                    setExpanded([...expanded, folder.id]);
-                }
-            }}
+            onChangeExpanded={onChangeExpanded}
             onCreateSubFolder={onCreateSubFolder}
         />
     ));
 }
 
-function Folders({ selectFolder, onClickFolder }) {
+function Folders({ selectFolder, onClickFolder, defaultExpanded = [] }) {
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
     const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
         tree: [],
-        path: [],
         folder: null,
         anchorEl: null,
-        expanded: [],
         state: FETCH.WAIT,
+        expanded: defaultExpanded,
     }));
 
     useEffect(() => {
@@ -376,7 +370,7 @@ function Folders({ selectFolder, onClickFolder }) {
             const path = selectFolder ? await FoldersUniversalService.getPath(selectFolder) : [];
             const tree = await FoldersUniversalService.getTree();
 
-            store.path = path.map(({ id }) => id).slice(0, -1);
+            store.expanded = [...store.expanded, ...path.map(({ id }) => id).slice(0, -1)];
             store.tree = tree;
             store.state = FETCH.DONE;
         }).catch((error) => {
@@ -388,16 +382,23 @@ function Folders({ selectFolder, onClickFolder }) {
     return (
         <Box>
             <List disablePadding>
-                {store.state === FETCH.DONE && (
+                {(store.state === FETCH.DONE || store.state === FETCH.PENDING) && (
                     <TreeLevel
                         data={store.tree}
-                        defaultExpanded={store.path}
+                        expanded={store.expanded}
                         level={0}
                         selectedId={selectFolder}
                         onClickFolder={onClickFolder}
                         onCreateSubFolder={({ anchorEl, parentFolder }) => {
                             store.anchorEl = anchorEl;
                             store.parentFolder = parentFolder;
+                        }}
+                        onChangeExpanded={(folderId) => {
+                            if (store.expanded.includes(folderId)) {
+                                store.expanded = store.expanded.filter((id) => id !== folderId);
+                            } else {
+                                store.expanded = [...store.expanded, folderId];
+                            }
                         }}
                     />
                 )}
@@ -423,6 +424,7 @@ function Folders({ selectFolder, onClickFolder }) {
                     store.parentFolder = null;
                 }}
                 onSave={() => {
+                    store.expanded = [...store.expanded, store.parentFolder];
                     store.anchorEl = null;
                     store.parentFolder = null;
                 }}
