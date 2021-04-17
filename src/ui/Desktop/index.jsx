@@ -214,6 +214,14 @@ function Desktop() {
         };
     }, [appService.activity]);
 
+    useEffect(() => {
+        if (!store.showBookmarksGoHelper) return () => {};
+
+        const timer = setTimeout(() => { store.showBookmarksGoHelper = false; }, 4000);
+
+        return () => clearTimeout(timer);
+    }, [store.showBookmarksGoHelper]);
+
     return (
         <Fragment>
             <Grow in={appService.activity === ACTIVITY.FAVORITES}>
