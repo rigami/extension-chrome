@@ -25,7 +25,7 @@ class TagsStore {
     async remove(tagId) {
         const removeBinds = await TagsUniversalService.remove(tagId);
 
-        this._coreService.globalEventBus.call('tag/remove', DESTINATION.APP, { tagId });
+        this._coreService.globalEventBus.call('tag/removed', DESTINATION.APP, { tagId });
 
         return removeBinds;
     }

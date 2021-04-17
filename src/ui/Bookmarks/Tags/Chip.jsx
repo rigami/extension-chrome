@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         borderRadius: theme.spacing(2),
         borderColor: theme.palette.divider,
+        boxSizing: 'border-box',
     },
     colorIcon: {
         width: theme.spacing(1.5),

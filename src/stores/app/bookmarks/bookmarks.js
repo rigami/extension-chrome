@@ -32,7 +32,7 @@ class BookmarksStore {
     async remove(bookmarkId) {
         await BookmarksUniversalService.remove(bookmarkId);
 
-        this._coreService.globalEventBus.call('bookmark/remove', DESTINATION.APP, { bookmarkId });
+        this._coreService.globalEventBus.call('bookmark/removed', DESTINATION.APP, { bookmarkId });
     }
 }
 

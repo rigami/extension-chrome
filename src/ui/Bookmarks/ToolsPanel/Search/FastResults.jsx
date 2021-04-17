@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { map, size, omit } from 'lodash';
 import FolderBreadcrumbs from '@/ui/Bookmarks/ToolsPanel/FolderBreadcrumbs';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: { width: (theme.shape.dataCard.width + theme.spacing(2)) * 3 + theme.spacing(2) },
@@ -45,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 function FastResults({ searchService: service, onGoToFolder }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
+    const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
         bookmarks: null,
         currentFolder: [],
@@ -80,7 +82,7 @@ function FastResults({ searchService: service, onGoToFolder }) {
                 );
                 store.loadState = FETCH.DONE;
             });
-    }, [service.tempSearchRequest]);
+    }, [bookmarksService.lastTruthSearchTimestamp, service.tempSearchRequest]);
 
     return (
         <Box className={classes.root}>

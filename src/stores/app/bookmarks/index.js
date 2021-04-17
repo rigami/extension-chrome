@@ -30,19 +30,19 @@ class BookmarksService {
         this._coreService.globalEventBus.on('bookmark/new', () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
-        this._coreService.globalEventBus.on('bookmark/remove', async () => {
+        this._coreService.globalEventBus.on('bookmark/removed', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
             await this.syncFavorites();
         });
         this._coreService.globalEventBus.on('tag/new', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
-        this._coreService.globalEventBus.on('tag/remove', async () => {
+        this._coreService.globalEventBus.on('tag/removed', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
 
             await this.syncFavorites();
         });
-        this._coreService.globalEventBus.on('folder/remove', async () => {
+        this._coreService.globalEventBus.on('folder/removed', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
             await this.syncFavorites();
         });

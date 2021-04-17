@@ -4,6 +4,7 @@ import getUniqueColor from '@/utils/uniqueColor';
 import { last } from 'lodash';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import Tag from '@/stores/universal/bookmarks/entities/tag';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 
 class TagsUniversalService {
     @action
@@ -70,15 +71,14 @@ class TagsUniversalService {
 
         await db().delete('tags', tagId);
 
-        const removeBinds = await db().getAllFromIndex(
-            'bookmarks_by_tags',
-            'tag_id',
-            tagId,
-        );
+        const { all: bookmarks } = await BookmarksUniversalService.query(new SearchQuery({ tags: [tagId] }));
 
-        await Promise.all(removeBinds.map(({ id }) => db().delete('bookmarks_by_tags', id)));
+        await Promise.all(bookmarks.map(({ tags, ...bookmark }) => db().put('bookmarks', {
+            ...bookmark,
+            tags: tags.filter((id) => id !== tagId),
+        })));
 
-        return removeBinds;
+        return Promise.resolve();
     }
 }
 

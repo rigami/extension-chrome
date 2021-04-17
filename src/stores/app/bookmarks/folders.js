@@ -37,7 +37,7 @@ class FoldersStore {
 
         const removedFolders = await FoldersUniversalService.remove(folderId);
 
-        if (this._coreService) this._coreService.globalEventBus.call('folder/remove', DESTINATION.APP, { folderId });
+        if (this._coreService) this._coreService.globalEventBus.call('folder/removed', DESTINATION.APP, { folderId });
 
         return removedFolders;
     }
