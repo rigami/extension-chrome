@@ -423,10 +423,13 @@ function Folders({ selectFolder, onClickFolder, defaultExpanded = [] }) {
                     store.anchorEl = null;
                     store.parentFolder = null;
                 }}
-                onSave={() => {
+                onSave={(folderId) => {
                     store.expanded = [...store.expanded, store.parentFolder];
                     store.anchorEl = null;
                     store.parentFolder = null;
+
+                    FoldersUniversalService.get(folderId)
+                        .then(onClickFolder);
                 }}
                 parentId={store.parentFolder}
                 placement="left"
