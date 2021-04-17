@@ -15,6 +15,8 @@
     "search_web": "Search the web",
     "search": {
       "urlNotRecognize": "Address not recognized",
+      "gettingSiteInfo": "Getting info",
+      "searchSiteFavicon": "Search site favicon",
       "preview": {
         "parsing": "Search for other variants...",
         "download": "Analysis of variants..."

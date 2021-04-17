@@ -209,12 +209,12 @@ function Preview({ editorService: service }) {
                 <Stub icon={URLIcon} description={t('editor.helper.enterName')} />
             )}
             {service.state === STATE_EDITOR.PARSING_SITE && !service.defaultImage && (
-                <Stub description="Getting site info">
+                <Stub description={t('editor.search.gettingSiteInfo')}>
                     <CircularProgress color="primary" />
                 </Stub>
             )}
             {service.state === STATE_EDITOR.SEARCH_DEFAULT_IMAGE && (
-                <Stub description="Search site favicon">
+                <Stub description={t('editor.search.searchSiteFavicon')}>
                     <CircularProgress color="primary" />
                 </Stub>
             )}
