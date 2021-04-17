@@ -99,7 +99,7 @@ function FastResults({ searchService: service, onGoToFolder }) {
                                         onGoToFolder(service.activeFolderId, true);
                                     }}
                                 >
-                                    In the current folder
+                                    {t('search.currentFolderMatches')}
                                 </Button>
                                 <Typography
                                     variant="caption"

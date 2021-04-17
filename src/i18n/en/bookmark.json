@@ -49,6 +49,7 @@
     "bookmarks_placeholder": "Search for bookmarks",
     "bestMatches": "Best matches",
     "allMatches": "All matches",
+    "currentFolderMatches": "In the current folder",
     "results": "{{count}} result",
     "results_plural": "{{count}} results"
   },

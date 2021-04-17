@@ -49,6 +49,7 @@
     "bookmarks_placeholder": "Поиск закладок",
     "bestMatches": "Лучшие совпадения",
     "allMatches": "Все совпадения",
+    "currentFolderMatches": "В текущей папке",
     "results": "{{count}} результат",
     "results_0": "{{count}} результат",
     "results_1": "{{count}} результа",

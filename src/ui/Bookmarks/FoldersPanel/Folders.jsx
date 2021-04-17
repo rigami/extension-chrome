@@ -357,7 +357,6 @@ function Folders({ selectFolder, onClickFolder, defaultExpanded = [] }) {
     const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
         tree: [],
-        folder: null,
         anchorEl: null,
         state: FETCH.WAIT,
         expanded: defaultExpanded,
