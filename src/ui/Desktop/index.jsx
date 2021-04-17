@@ -9,9 +9,15 @@ import {
     OpenInNewRounded as OpenSourceIcon,
     CloseRounded as CloseIcon,
     ArrowUpwardRounded as ExpandDesktopIcon,
+    ArrowDownwardRounded as ShowBookmarksIcon,
 } from '@material-ui/icons';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import { Box, CircularProgress, Backdrop } from '@material-ui/core';
+import {
+    Box,
+    CircularProgress,
+    Backdrop,
+    Grow,
+} from '@material-ui/core';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import { eventToBackground } from '@/stores/server/bus';
@@ -80,6 +86,12 @@ const useStyles = makeStyles((theme) => ({
         top: theme.spacing(2),
         right: theme.spacing(2) * 2 + 42,
     },
+    showBookmarks: {
+        position: 'absolute',
+        zIndex: 100,
+        bottom: theme.spacing(6) + theme.spacing(2.5) + 40,
+        right: theme.spacing(2) * 2 + 42,
+    },
     desktopBackdrop: {
         backgroundColor: theme.palette.common.black,
         position: 'absolute',
@@ -102,6 +114,7 @@ function Desktop() {
     const store = useLocalObservable(() => ({
         isRender: appService.activity !== ACTIVITY.BOOKMARKS,
         stickWidgetsToBottom: appService.activity !== ACTIVITY.DESKTOP,
+        showBookmarksGoHelper: false,
     }));
 
     const contextMenu = () => [
@@ -178,7 +191,7 @@ function Desktop() {
     ];
 
     const wheelHandler = (event) => {
-
+        store.showBookmarksGoHelper = event.deltaY > 0;
     };
 
     useEffect(() => {
@@ -191,6 +204,7 @@ function Desktop() {
             setTimeout(() => {
                 if (appService.activity !== ACTIVITY.DESKTOP) { store.stickWidgetsToBottom = true; }
             }, theme.transitions.duration.short);
+            store.showBookmarksGoHelper = false;
         } else {
             store.stickWidgetsToBottom = false;
         }
@@ -202,27 +216,38 @@ function Desktop() {
 
     return (
         <Fragment>
+            <Grow in={appService.activity === ACTIVITY.FAVORITES}>
+                <ExtendButtonGroup className={classes.expandDesktop}>
+                    <ExtendButton
+                        tooltip={t('desktop:button.expand')}
+                        data-ui-path="button.desktop-expand"
+                        onClick={() => appService.setActivity(ACTIVITY.DESKTOP)}
+                        icon={() => <ExpandDesktopIcon className={classes.icon} />}
+                        label={t('desktop:button.expand')}
+                    />
+                </ExtendButtonGroup>
+            </Grow>
             {appService.activity === ACTIVITY.FAVORITES && (
-                <Fragment>
-                    <ExtendButtonGroup className={classes.expandDesktop}>
-                        <ExtendButton
-                            tooltip={t('desktop:button.expand')}
-                            data-ui-path="button.desktop-expand"
-                            onClick={() => appService.setActivity(ACTIVITY.DESKTOP)}
-                            icon={() => <ExpandDesktopIcon className={classes.icon} />}
-                            label={t('desktop:button.expand')}
-                        />
-                    </ExtendButtonGroup>
-                    <ExtendButtonGroup className={classes.closeFavorites}>
-                        <ExtendButton
-                            tooltip={t('common:button.close')}
-                            data-ui-path="button.favorites-close"
-                            onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
-                            icon={() => <CloseIcon className={classes.icon} />}
-                        />
-                    </ExtendButtonGroup>
-                </Fragment>
+                <ExtendButtonGroup className={classes.closeFavorites}>
+                    <ExtendButton
+                        tooltip={t('common:button.close')}
+                        data-ui-path="button.favorites-close"
+                        onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
+                        icon={() => <CloseIcon className={classes.icon} />}
+                    />
+                </ExtendButtonGroup>
             )}
+            <Grow in={store.showBookmarksGoHelper && appService.activity === ACTIVITY.DESKTOP}>
+                <ExtendButtonGroup className={classes.showBookmarks}>
+                    <ExtendButton
+                        tooltip={t('bookmark:button.open')}
+                        data-ui-path="button.bookmarks-show"
+                        onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
+                        icon={() => <ShowBookmarksIcon className={classes.icon} />}
+                        label={t('bookmark:button.open')}
+                    />
+                </ExtendButtonGroup>
+            </Grow>
             <Box
                 className={clsx(
                     classes.root,
