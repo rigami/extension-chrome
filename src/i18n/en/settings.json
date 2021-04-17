@@ -12,6 +12,8 @@
   "backup_description": "Save app data to computer",
   "about": "About",
   "about_description": "Email the developer, submit a bug report, suggest an idea",
+  "devTools": "Dev Tools",
+  "devTools_description": "",
   "shareBanner": {
     "message": "Help the project",
     "description": "Find out how you can help. For example, tell your friends or take a survey",
