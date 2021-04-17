@@ -54,6 +54,7 @@ function PopperWrapper(props) {
             mouseEvent="onMouseDown"
         >
             <Popper
+                data-role="dialog"
                 open={!!isOpen}
                 anchorEl={anchorEl}
                 popperRef={(popperRef) => {

@@ -69,7 +69,7 @@ function FullSearch({ searchService: globalService, open, onClose }) {
     }, [open]);
 
     return (
-        <ClickAwayListener onClickAway={(event) => onClose(event, false)}>
+        <ClickAwayListener mouseEvent="onClick" onClickAway={(event) => onClose(event, false)}>
             <Paper
                 className={clsx(classes.fullSearch, open && classes.openFullSearch)}
                 elevation={open ? 18 : 0}

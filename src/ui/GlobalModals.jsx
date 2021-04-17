@@ -216,6 +216,7 @@ function GlobalModals({ children }) {
             />
             {['bookmark', 'tag', 'folder'].map((type) => (
                 <Dialog
+                    data-role="dialog"
                     key={type}
                     open={(edit && edit.action === 'remove' && edit.type === type) || false}
                     onClose={() => setEdit(null)}

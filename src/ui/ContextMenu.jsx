@@ -70,6 +70,7 @@ function ContextMenu() {
 
     return (
         <Menu
+            data-role="contextmenu"
             open={store.position !== null}
             onClose={() => {
                 store.position = null;

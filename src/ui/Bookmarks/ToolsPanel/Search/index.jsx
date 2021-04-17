@@ -1,10 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
     Box,
-    Paper,
-    Collapse,
-    ClickAwayListener,
-    Divider,
     Fade,
     IconButton,
     Tooltip,
@@ -13,15 +9,9 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 import { CloseRounded as ResetIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import Tags from '@/ui/Bookmarks/Tags';
 import { observer } from 'mobx-react-lite';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import CustomScroll from '@/ui-components/CustomScroll';
-import { SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
 import FullSearch from '@/ui/Bookmarks/ToolsPanel/Search/FullSearch';
 import Preview from './Preview';
-import SearchField from './SearchField';
-import FastResults from './FastResults';
 
 const useStyles = makeStyles((theme) => ({
     wrapper: {
@@ -32,35 +22,6 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         flexShrink: 0,
         position: 'relative',
-    },
-    root: {
-        position: 'relative',
-        zIndex: 2,
-        border: `1px solid ${fade(theme.palette.divider, 0.05)}`,
-        backdropFilter: 'none',
-        backgroundColor: theme.palette.background.backdrop,
-    },
-    icon: {
-        margin: theme.spacing(1.125),
-        color: theme.palette.text.secondary,
-    },
-    placeholder: {
-        position: 'absolute',
-        width: '100%',
-        textAlign: 'center',
-        fontSize: '1rem',
-        fontFamily: theme.typography.primaryFontFamily,
-        fontWeight: 600,
-        color: theme.palette.text.secondary,
-        height: 42,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    alignFix: {
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'flex-start',
     },
     fullSearchWrapper: {
         position: 'absolute',
@@ -73,7 +34,6 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 42,
         border: `1px solid ${theme.palette.divider}`,
     },
-    openFullSearch: {},
     disabledFullSearch: {},
     tags: { padding: theme.spacing(1.5) },
     query: {
@@ -104,22 +64,6 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 0,
         pointerEvents: 'all',
     },
-    rows: {
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'auto',
-        flexGrow: 1,
-        '-webkit-mask': 'linear-gradient(to left, transparent 42px, black 60px)',
-    },
-    row: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        height: 42,
-        overflow: 'hidden',
-        marginTop: theme.spacing(-1),
-        '&:first-child': { marginTop: 0 },
-    },
     extend: {
         '& $resetIconWrapper': {
             height: 44,
@@ -131,25 +75,6 @@ const useStyles = makeStyles((theme) => ({
             height: 44,
             borderBottomRightRadius: 0,
         },
-    },
-    tag: {
-        '& div': {
-            opacity: '60%',
-            width: 8,
-            height: 8,
-            borderRadius: 4,
-            marginRight: 8,
-            flexShrink: 0,
-        },
-        marginRight: 8,
-        display: 'inline-flex',
-        alignItems: 'center',
-        flexShrink: 0,
-    },
-    tagSmall: {
-        '& div': { marginRight: 0 },
-        fontSize: 0,
-        marginRight: 4,
     },
     search: {
         paddingRight: 42,
@@ -203,6 +128,11 @@ function Search({ searchService: globalService }) {
                     searchService={globalService}
                     open={isOpen}
                     onClose={(event, apply) => {
+                        if (event.path.find((elem) => (
+                            elem.dataset?.role === 'contextmenu'
+                            || elem.dataset?.role === 'dialog'
+                        ))) return;
+
                         if (!event || !event.path.includes(rootRef.current)) {
                             setIsOpen(false);
                             if (apply) globalService.applyChanges();
