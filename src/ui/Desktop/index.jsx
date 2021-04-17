@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, Fragment, useRef } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
@@ -111,6 +111,7 @@ function Desktop() {
     const appService = useAppService();
     const { widgets, backgrounds } = appService;
     const coreService = useCoreService();
+    const rootRef = useRef();
     const store = useLocalObservable(() => ({
         isRender: appService.activity !== ACTIVITY.BOOKMARKS,
         stickWidgetsToBottom: appService.activity !== ACTIVITY.DESKTOP,
@@ -191,6 +192,8 @@ function Desktop() {
     ];
 
     const wheelHandler = (event) => {
+        if (!event.path.includes(rootRef.current)) return;
+
         store.showBookmarksGoHelper = !coreService.storage.temp.closeFapPopper && event.deltaY > 0;
     };
 
@@ -257,6 +260,7 @@ function Desktop() {
                 </ExtendButtonGroup>
             </Grow>
             <Box
+                ref={rootRef}
                 className={clsx(
                     classes.root,
                     appService.activity === ACTIVITY.FAVORITES && classes.favoritesActivity,
