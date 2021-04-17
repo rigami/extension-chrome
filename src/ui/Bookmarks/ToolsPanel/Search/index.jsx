@@ -128,7 +128,7 @@ function Search({ searchService: globalService }) {
                     searchService={globalService}
                     open={isOpen}
                     onClose={(event, apply) => {
-                        if (event.path.find((elem) => (
+                        if (event && event.path.find((elem) => (
                             elem.dataset?.role === 'contextmenu'
                             || elem.dataset?.role === 'dialog'
                         ))) return;
