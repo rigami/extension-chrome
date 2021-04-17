@@ -41,7 +41,7 @@ function FoldersPanel({ searchService: service }) {
 
     return (
         <Box className={classes.root}>
-            <CardHeader
+            {/* <CardHeader
                 avatar={(<LogoIcon className={classes.appLogoIcon} />)}
                 title={(<LogoText className={classes.appLogoText} />)}
                 disableTypography
@@ -50,8 +50,8 @@ function FoldersPanel({ searchService: service }) {
                     avatar: classes.avatar,
                     content: classes.appLogoTextWrapper,
                 }}
-            />
-            <Box overflow="auto" pb={2}>
+            /> */}
+            <Box overflow="auto" py={2}>
                 <Folders
                     selectFolder={service.activeFolderId}
                     onClickFolder={({ id }) => service.setActiveFolder(id)}
