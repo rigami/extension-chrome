@@ -191,7 +191,7 @@ function Desktop() {
     ];
 
     const wheelHandler = (event) => {
-        store.showBookmarksGoHelper = event.deltaY > 0;
+        store.showBookmarksGoHelper = !coreService.storage.temp.closeFapPopper && event.deltaY > 0;
     };
 
     useEffect(() => {
