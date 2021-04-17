@@ -4,7 +4,15 @@
     "ok": "Good"
   },
   "changelog": [
-    "Changed the design of cards, now they are more compact and aligned on one line",
-    "Fixed some critical bugs"
+    "Updated appearance",
+
+    "Added quick search for bookmarks",
+    "Redesigned folder view, now it is more convenient to use them",
+
+    "Simplified the process of choosing an icon for a bookmark",
+
+    "For the \"background stream\" mode, added automatic switching to the local library in case of problems with the Internet",
+
+    "Many other fixes and improvements"
   ]
 }

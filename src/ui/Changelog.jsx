@@ -67,6 +67,10 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(2),
         marginLeft: 'auto',
     },
+    listItem: {
+        paddingTop: theme.spacing(0.5),
+        paddingBottom: theme.spacing(0.5),
+    },
 }));
 
 function ChangelogScreen({ onClose }) {
@@ -91,7 +95,7 @@ function ChangelogScreen({ onClose }) {
                     />
                     <List disablePadding>
                         {t('changelog', { returnObjects: true }).map((item) => (
-                            <ListItem key={item} disableGutters>
+                            <ListItem key={item} disableGutters className={classes.listItem}>
                                 <ListItemIcon className={classes.itemIcon}>
                                     <ItemIcon />
                                 </ListItemIcon>
