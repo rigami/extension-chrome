@@ -10,7 +10,11 @@ import clsx from 'clsx';
 import EditTagModal from './EditModal';
 
 const useStyles = makeStyles((theme) => ({
-    chip: { boxShadow: 'none !important' },
+    chip: {
+        boxShadow: 'none !important',
+        marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
     addTag: {
         marginLeft: '3px !important',
         marginRight: 3,
