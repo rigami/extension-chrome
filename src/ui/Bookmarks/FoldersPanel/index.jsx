@@ -1,10 +1,10 @@
 import React from 'react';
-import { Box, CardHeader } from '@material-ui/core';
+import { Box /* CardHeader */ } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import LogoIcon from '@/images/logo-icon.svg';
+// import LogoIcon from '@/images/logo-icon.svg';
 import { observer } from 'mobx-react-lite';
-import clsx from 'clsx';
-import LogoText from '@/images/logo-text.svg';
+// import clsx from 'clsx';
+// import LogoText from '@/images/logo-text.svg';
 import Folders from './Folders';
 
 const useStyles = makeStyles((theme) => ({
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
         height: '100vh',
         position: 'sticky',
         top: 0,
-        backgroundColor: fade(theme.palette.background.backdrop, 0.4),
+        backgroundColor: fade(theme.palette.background.backdrop, 0.3),
     },
     avatar: { display: 'flex' },
     header: { minHeight: theme.spacing(9.75) },
