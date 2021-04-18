@@ -23,8 +23,9 @@ $ yarn build:analyze
 
 ## Screenshots
 
-![screenshot 1](docs/en/screenshot_1.png)
-![screenshot 2](docs/en/screenshot_2.png)
-![screenshot 3](docs/en/screenshot_3.png)
-![screenshot 4](docs/en/screenshot_4.png)
-![screenshot 5](docs/en/screenshot_5.png)
+![screenshot 1](docs/en/Main.png)
+![screenshot 2](docs/en/Bookmarks.png)
+![screenshot 3](docs/en/Bookmark%20editor.png)
+![screenshot 4](docs/en/Backgrounds.png)
+![screenshot 5](docs/en/Background%20stream.png)
+![screenshot 6](docs/en/Light%20and%20dark%20theme.png)
