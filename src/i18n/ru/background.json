@@ -1,0 +1,54 @@
+{
+  "upload":{
+    "file":"Имя файла",
+    "size":"Размер",
+    "fileType":"Тип файла",
+    "dropToAdd":"Отпустите, чтобы добавить фон",
+    "dropToAdd_1":"Отпустите, чтобы добавить фоны",
+    "button": {
+      "discardAll":"Отменить все",
+      "antiAliasing": "Сглаживание",
+      "antiAliasing_helper": "Отключите эту опцию, если вы хотите загрузить пиксельный фон"
+    },
+    "error": {
+      "TOO_MANY_FILES": "Слишко много файлов",
+      "NO_FILES": "Файлов не найдено"
+    }
+  },
+  "button": {
+    "apply": "Применить фон",
+    "add": "Добавить новый фон",
+    "pause": "Приостановить фон",
+    "play": "Воспроизвести фон",
+    "addToLibrary": "Добавить фон в библиотеку",
+    "next": "Следующий фон",
+    "remove": "Удалить фон",
+    "change": "Сменить фон",
+    "openSource": "Открыть фон в источнике"
+  },
+  "type": {
+    "IMAGE": "Изображение",
+    "IMAGE_plural": "Изображения",
+    "VIDEO": "Видео",
+    "VIDEO_plural": "Видеофайлы",
+    "ANIMATION": "Анимация",
+    "ANIMATION_plural": "Анимации"
+  },
+  "serviceName": {
+    "unknown": "Неизвестный сервис",
+    "UNSPLASH": "Unsplash",
+    "PEXELS": "Pexels",
+    "PIXABAY": "Pixabay"
+  },
+  "error": {
+    "notFound": "Подходящего фона не найдено",
+    "notFound_description": "",
+    "unknown": "Не удалось установить фон",
+    "unknown_description": "Что-то пошло не так, но непонятно что, может фон битый, попробуйте удалить его"
+  },
+  "addedToLibrary": "Фон сохранен в библиотеке",
+  "addingToLibrary": "Сохранение фона...",
+  "fetchingNextBG": "Загрузка фона...",
+  "removedBrokenBG": "Поврежденный фон удален",
+  "backgroundSource": "От {{author}}, $t(serviceName.{{source}}, serviceName.unknown)"
+}

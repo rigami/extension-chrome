@@ -1,5 +1,5 @@
 import { observable } from 'mobx';
-import FSConnector from '@/utils/fsConnector';
+import { getBgUrl } from '@/utils/fs';
 import { BG_SOURCE } from '@/enum';
 
 class Background {
@@ -37,9 +37,9 @@ class Background {
         this.sourceLink = background.sourceLink;
         this.downloadLink = background.downloadLink;
         this.type = background.type;
-        this.previewSrc = this.fileName && FSConnector.getBGURL(this.fileName, 'preview');
+        this.previewSrc = this.fileName && getBgUrl(this.fileName, 'preview');
         this.pauseStubSrc = background.pauseStubSrc;
-        this.fullSrc = this.fileName && FSConnector.getBGURL(this.fileName, 'full');
+        this.fullSrc = this.fileName && getBgUrl(this.fileName, 'full');
         this.pauseTimestamp = background.pauseTimestamp;
     }
 }

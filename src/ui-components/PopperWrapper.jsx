@@ -8,14 +8,23 @@ const useStyles = makeStyles((theme) => ({
     popper: {
         zIndex: theme.zIndex.modal,
         willChange: 'auto !important',
+        maxWidth: 'calc(100vw - 32px)',
+        maxHeight: 'calc(100vh - 32px)',
     },
 }));
+
+export const TARGET_CLICK = {
+    OUTSIDE: 'OUTSIDE',
+    ANCHOR: 'ANCHOR',
+};
 
 function PopperWrapper(props) {
     const {
         anchorEl,
         isOpen,
         modifiers = {},
+        popperProps = {},
+        placement = 'top',
         onClose,
         onService,
         children,
@@ -24,6 +33,10 @@ function PopperWrapper(props) {
     const coreService = useCoreService();
     const [listenId, setListenId] = useState(null);
     const store = useLocalObservable(() => ({ popperRef: null }));
+
+    const handleClose = (event) => {
+        onClose(event.path.indexOf(anchorEl) !== -1 ? TARGET_CLICK.ANCHOR : TARGET_CLICK.OUTSIDE);
+    };
 
     useEffect(() => {
         if (isOpen) {
@@ -37,17 +50,18 @@ function PopperWrapper(props) {
 
     return (
         <ClickAwayListener
-            onClickAway={onClose}
+            onClickAway={handleClose}
             mouseEvent="onMouseDown"
         >
             <Popper
+                data-role="dialog"
                 open={!!isOpen}
                 anchorEl={anchorEl}
                 popperRef={(popperRef) => {
                     store.popperRef = popperRef;
                     if (onService) onService(popperRef);
                 }}
-                placement="top"
+                placement={placement}
                 className={classes.popper}
                 modifiers={{
                     flip: {
@@ -56,8 +70,14 @@ function PopperWrapper(props) {
                     },
                     preventOverflow: {
                         enabled: true,
-                        padding: 8,
-                        boundariesElement: 'window',
+                        padding: 16,
+                        boundariesElement: 'viewport',
+                        priority: [
+                            'left',
+                            'right',
+                            'top',
+                            'bottom',
+                        ],
                     },
                     offset: {
                         enabled: true,
@@ -65,6 +85,7 @@ function PopperWrapper(props) {
                     },
                     ...modifiers,
                 }}
+                {...popperProps}
             >
                 {children}
             </Popper>

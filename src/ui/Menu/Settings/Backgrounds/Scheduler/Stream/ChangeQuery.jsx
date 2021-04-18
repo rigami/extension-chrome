@@ -18,14 +18,14 @@ import {
     WifiTetheringRounded as StreamIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import FullscreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { runInAction } from 'mobx';
 import fetchData from '@/utils/xhrPromise';
 import appVariables from '@/config/appVariables';
 import { eventToBackground } from '@/stores/server/bus';
 import useAppStateService from '@/stores/app/AppStateProvider';
-import BackgroundCard from '@/ui-components/BackgroundCard';
+import BackgroundCard from '@/ui/Menu/Settings/Backgrounds/BackgroundCard';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from '@/stores/universal/backgrounds/entities/background';
 
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         fontSize: '3.2rem',
         fontWeight: '900',
-        fontFamily: '"Manrope", "Open Sans", sans-serif',
+        fontFamily: theme.typography.primaryFontFamily,
     },
     submit: {
         flexShrink: 0,
@@ -78,12 +78,12 @@ const useStyles = makeStyles((theme) => ({
     footer: { height: 400 },
 }));
 
-const headerProps = { title: 'settings.bg.scheduler.query.custom.createTitle' };
+const headerProps = { title: 'settingsBackground:query.custom.create' };
 const pageProps = { width: 960 };
 
 function ChangeQuery({ onClose }) {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsBackground']);
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const store = useLocalObservable(() => ({
@@ -144,7 +144,7 @@ function ChangeQuery({ onClose }) {
                     fullWidth
                     inputRef={inputRef}
                     className={classes.input}
-                    placeholder={t('settings.bg.scheduler.query.search.placeholder')}
+                    placeholder={t('searchQuery.query', { context: 'placeholder' })}
                     variant="outlined"
                     autoFocus
                     value={store.searchRequest}
@@ -154,13 +154,13 @@ function ChangeQuery({ onClose }) {
                 />
                 {(store.foundRequest !== store.searchRequest || store.status === FETCH.FAILED) && (
                     <Button
-                        data-ui-path="settings.bg.scheduler.query.custom.search"
+                        data-ui-path="backgrounds.scheduler.query.custom.search"
                         type="submit"
                         variant="text"
                         className={classes.submit}
-                        disabled={store.foundRequest === store.searchRequest}
+                        disabled={store.foundRequest === store.searchRequest && store.status !== FETCH.FAILED}
                     >
-                        {t('settings.bg.scheduler.query.search.button')}
+                        {t('searchQuery.button.search')}
                     </Button>
                 )}
                 {store.foundRequest === store.searchRequest && store.status === FETCH.PENDING && (
@@ -169,19 +169,19 @@ function ChangeQuery({ onClose }) {
                         className={classes.submit}
                         disabled
                     >
-                        {t('settings.bg.scheduler.query.search.process')}
+                        {t('common:search')}
                     </Button>
                 )}
                 {store.foundRequest === store.searchRequest && store.status === FETCH.DONE && (
                     <Button
-                        data-ui-path="settings.bg.scheduler.query.custom.save"
+                        data-ui-path="backgrounds.scheduler.query.custom.save"
                         type="submit"
                         color="primary"
                         variant="contained"
                         className={classes.submit}
                         onClick={handleSelect}
                     >
-                        {t('settings.bg.scheduler.query.search.saveButton')}
+                        {t('searchQuery.button.save')}
                     </Button>
                 )}
             </form>
@@ -233,13 +233,13 @@ function ChangeQuery({ onClose }) {
                         )}
                     </Box>
                     {store.list.length !== 0 && (
-                        <FullscreenStub
+                        <Stub
                             className={classes.footer}
                             icon={StationIcon}
-                            message={t('settings.bg.scheduler.query.search.footerMessage.title')}
+                            message={t('searchQuery.callToUse')}
                             actions={[
                                 {
-                                    title: t('settings.bg.scheduler.query.search.footerMessage.useStream'),
+                                    title: t('searchQuery.button.save'),
                                     variant: 'contained',
                                     color: 'primary',
                                     onClick: handleSelect,
@@ -250,23 +250,23 @@ function ChangeQuery({ onClose }) {
                 </React.Fragment>
             )}
             {store.status === FETCH.DONE && store.list.length === 0 && (
-                <FullscreenStub
-                    message={t('settings.bg.scheduler.query.search.notFound.title')}
-                    description={t('settings.bg.scheduler.query.search.notFound.description')}
+                <Stub
+                    message={t('searchQuery.notFound')}
+                    description={t('searchQuery.notFound', { context: 'description' })}
                 />
             )}
             {store.status === FETCH.FAILED && (
-                <FullscreenStub
+                <Stub
                     icon={ErrorIcon}
-                    message={t('settings.bg.scheduler.query.search.failed.title')}
-                    description={t('settings.bg.scheduler.query.search.failed.description')}
+                    message={t('searchQuery.failed')}
+                    description={t('searchQuery.failed', { context: 'description' })}
                 />
             )}
             {store.status === FETCH.WAIT && (
-                <FullscreenStub
+                <Stub
                     icon={StreamIcon}
-                    message={t('settings.bg.scheduler.query.search.wait.title')}
-                    description={t('settings.bg.scheduler.query.search.wait.description')}
+                    message={t('searchQuery.wait')}
+                    description={t('searchQuery.wait', { context: 'description' })}
                 />
             )}
         </React.Fragment>

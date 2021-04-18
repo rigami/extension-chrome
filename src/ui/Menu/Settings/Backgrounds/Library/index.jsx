@@ -11,12 +11,12 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import FullscreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import { last } from 'lodash';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import BackgroundCard from '@/ui-components/BackgroundCard';
+import BackgroundCard from '@/ui/Menu/Settings/Backgrounds/BackgroundCard';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 
 const useStyles = makeStyles(() => ({
@@ -31,7 +31,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const headerProps = {
-    title: 'settings.bg.general.library.title',
+    title: 'settingsBackground:library.title',
     actions: (<HeaderActions />),
 };
 const pageProps = { width: 960 };
@@ -47,7 +47,7 @@ function HeaderActions() {
 function LibraryMenu() {
     const { backgrounds } = useAppStateService();
     const coreService = useCoreService();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsBackground', 'background']);
     const classes = useStyles();
 
     const [bgs, setBgs] = useState(null);
@@ -106,17 +106,12 @@ function LibraryMenu() {
     return (
         <React.Fragment>
             {state === FETCH.PENDING && (
-                <FullscreenStub>
+                <Stub>
                     <CircularProgress />
-                </FullscreenStub>
+                </Stub>
             )}
             {state === FETCH.FAILED && (
-                <Box className={classes.centerPage}>
-                    <Typography variant="h5" color="error">{t('error')}</Typography>
-                    <Typography variant="body1" gutterBottom>
-                        {t('settings.bg.general.library.loadFailed')}
-                    </Typography>
-                </Box>
+                <Stub message={t('library.error.unknown')} />
             )}
             {state === FETCH.DONE && (
                 <Box className={classes.root}>
@@ -126,7 +121,7 @@ function LibraryMenu() {
                                 (
                                     <GridListTile cols={4} style={{ height: 'auto' }} key={group.type}>
                                         <ListSubheader component="div">
-                                            {t(`settings.bg.general.library.type.${group.type}`)}
+                                            {t(`background:type.${group.type}`, { context: 'plural' })}
                                         </ListSubheader>
                                     </GridListTile>
                                 ),
@@ -144,7 +139,7 @@ function LibraryMenu() {
                         </GridList>
                     )}
                     {bgs.length === 0 && (
-                        <FullscreenStub message={t('bg.notFound')} />
+                        <Stub message={t('library.error.notFound')} />
                     )}
                 </Box>
             )}

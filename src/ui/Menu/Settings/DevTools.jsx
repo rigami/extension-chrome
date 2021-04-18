@@ -51,6 +51,14 @@ function HeaderActions() {
             >
                 Reset
             </Button>
+            <Button
+                className={classes.headerButton}
+                onClick={() => {
+                    eventToBackground('system.forceReload');
+                }}
+            >
+                Force reload
+            </Button>
         </React.Fragment>
     );
 }
@@ -80,6 +88,18 @@ function DevTools() {
                         store.settings.productionEnv = value;
                         store.hasChange = true;
                     },
+                }}
+            />
+            <MenuRow
+                title={t('Locale')}
+                action={{
+                    type: ROWS_TYPE.SELECT,
+                    value: store.settings.locale,
+                    onChange: (event) => {
+                        store.settings.locale = event.target.value;
+                        store.hasChange = true;
+                    },
+                    values: ['ru', 'en'],
                 }}
             />
         </React.Fragment>

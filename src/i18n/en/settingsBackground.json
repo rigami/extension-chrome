@@ -1,0 +1,96 @@
+{
+  "general": "General",
+  "scheduler": "Switch mode",
+  "specificBg": "Specific background",
+  "library":{
+    "title": "Library",
+    "description": "Your`s local backgrounds",
+    "button": {
+      "uploadFromComputer":"Upload from computer"
+    },
+    "error": {
+      "unknown": "Failed load library",
+      "notFound": "Not found local backgrounds"
+    }
+  },
+  "dimmingPower":{
+    "title":"Darkening backgrounds",
+    "description":"Background shade level"
+  },
+  "selectionMethod":{
+    "title":"Background selection method",
+    "description":"Select a method for changing the background",
+    "value":{
+      "RANDOM":"Random selection",
+      "SPECIFIC":"Specific background",
+      "SEQUENCE": "Sequence of backgrounds",
+      "STREAM": "Stream"
+    }
+  },
+  "changeInterval":{
+    "title":"Change period",
+    "description":"Select background change period",
+    "value":{
+      "OPEN_TAB":"On opening",
+      "MINUTES_5": "5 min",
+      "MINUTES_30":"30 min",
+      "HOURS_1":"1 hour",
+      "HOURS_6":"6 hours",
+      "HOURS_12":"12 hours",
+      "DAY_1":"1 day"
+    }
+  },
+  "bgType":{
+    "title":"Types of backgrounds",
+    "description":"Select background type",
+    "value":{
+      "IMAGE":"Picture",
+      "ANIMATION":"Animation",
+      "VIDEO":"Video",
+      "all":"All types",
+      "nothingSelected":"Nothing selected"
+    }
+  },
+  "query": {
+    "title": "Request to customize the background flow",
+    "description": "Choose a ready-made request for the flow of backgrounds, or create your own",
+    "notSet": "Query not set",
+    "custom": {
+      "title": "Custom request for backgrounds thread",
+      "create": "Creating your own stream",
+      "description": "Specify any request, the stream will be selected for it"
+    },
+    "value": {
+      "EDITORS_CHOICE": "Editor's Choice",
+      "CLOUDS": "Clouds",
+      "SPACE": "Space",
+      "NATURE": "Nature",
+      "MINIMALISM": "Minimalism",
+      "ABSTRACT": "Abstract backgrounds",
+      "NIGHT_SKY": "Night sky",
+      "WINTER": "Winter",
+      "WALLPAPER": "Wallpaper",
+      "DARK": "Dark backgrounds",
+      "AESTHETIC": "Beautiful",
+      "MINIMALISM_NATURE": "Minimalistic nature",
+      "ARCHITECTURE": "Architecture",
+      "CUSTOM_QUERY": "Own flow"
+    }
+  },
+  "searchQuery": {
+    "query_placeholder": "Search query",
+    "button": {
+      "search": "Preview",
+      "save": "Create stream"
+    },
+    "wait": "Create your flow",
+    "wait_description": "Enter a request to preview the stream",
+    "failed": "Data retrieval error",
+    "failed_description": "No matching backgrounds for this thready later",
+    "notFound": "No matching backgrounds for this thread",
+    "notFound_description": "Try changing your request",
+    "callToUse": "Do you like this thread? He seems to be great"
+  },
+  "notConnectionUseLocal": "No internet connection. Your local library is currently in use",
+  "notConnectionUseLocal_description": "When the network appears, the backgrounds will be taken from the network again"
+}

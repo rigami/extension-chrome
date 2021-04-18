@@ -21,9 +21,9 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
-import { eventToBackground } from '@/stores/server/bus';
-import { useSnackbar } from 'notistack';
+import { eventToApp, eventToBackground } from '@/stores/server/bus';
 import { observer } from 'mobx-react-lite';
+import fs from '@/utils/fs';
 /* import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import SectionHeader from '@/ui/Menu/SectionHeader';
@@ -45,9 +45,11 @@ const useStyles = makeStyles((theme) => ({
     popper: { zIndex: theme.zIndex.modal },
     input: { display: 'none' },
     reRunSyncButton: { flexShrink: 0 },
+    fixOverflow: { whiteSpace: 'normal' },
+    alignTop: { alignSelf: 'flex-start' },
 }));
 
-const headerProps = { title: 'settings.backup.title' };
+const headerProps = { title: 'settings:backup' };
 const pageProps = { width: 750 };
 
 /* function BrowserSync() {
@@ -74,11 +76,11 @@ const pageProps = { width: 750 };
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('settings.backup.systemBookmarks.title')} />
+            <SectionHeader title={t('systemBookmarks.title')} />
             <MenuRow
-                title={t('settings.backup.systemBookmarks.syncSystemBookmarks.title')}
+                title={t('systemBookmarks.syncSystemBookmarks.title')}
                 description={t(
-                    'settings.backup.systemBookmarks.syncSystemBookmarks.description',
+                    'systemBookmarks.syncSystemBookmarks.description',
                     { folderName: syncFolderName || 'load...' },
                 )}
                 action={{
@@ -91,13 +93,13 @@ const pageProps = { width: 750 };
             />
             <Collapse in={bookmarksService.settings.syncWithSystem}>
                 <MenuRow
-                    title={t('settings.backup.systemBookmarks.syncFolder.title')}
-                    description={t('settings.backup.systemBookmarks.syncFolder.description')}
+                    title={t('systemBookmarks.syncFolder.title')}
+                    description={t('systemBookmarks.syncFolder.description')}
                     disabled={foldersRoot === null}
                     action={{
                         type: ROWS_TYPE.SELECT,
                         format: (value) => (value === 'new-folder'
-                            ? t('settings.backup.systemBookmarks.syncFolder.newFolder')
+                            ? t('systemBookmarks.syncFolder.newFolder')
                             : (foldersRoot ? foldersRoot.find(({ id }) => id === value)?.name : 'load...')),
                         value: syncFolderId,
                         onOpen: (event) => setEditorAnchor(event.target),
@@ -133,8 +135,8 @@ const pageProps = { width: 750 };
                     }}
                 />
                 <MenuRow
-                    title={t('settings.backup.systemBookmarks.reRunSync.title')}
-                    description={t('settings.backup.systemBookmarks.reRunSync.description')}
+                    title={t('systemBookmarks.reRunSync.title')}
+                    description={t('systemBookmarks.reRunSync.description')}
                     action={{
                         type: ROWS_TYPE.CUSTOM,
                         onClick: () => {},
@@ -156,8 +158,8 @@ const pageProps = { width: 750 };
                             >
                                 {
                                     syncing
-                                        ? t('settings.backup.systemBookmarks.reRunSync.progress')
-                                        : t('settings.backup.systemBookmarks.reRunSync.button')
+                                        ? t('systemBookmarks.reRunSync.progress')
+                                        : t('systemBookmarks.reRunSync.button')
                                 }
                             </Button>
                         ),
@@ -170,12 +172,13 @@ const pageProps = { width: 750 };
 
 function LocalBackup() {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsBackup']);
     const anchorRef = useRef(null);
     const [open, setOpen] = useState(false);
     const [saveItems, setSaveItems] = useState({
         settings: true,
         bookmarks: true,
+        backgrounds: false,
     });
 
     const handleChange = (key, value) => {
@@ -206,7 +209,7 @@ function LocalBackup() {
     return (
         <Fragment>
             <Button
-                data-ui-path="settings.backup.localBackup.create"
+                data-ui-path="localBackup.create"
                 ref={anchorRef}
                 onClick={handleToggle}
                 color="primary"
@@ -214,7 +217,7 @@ function LocalBackup() {
                 fullWidth
                 className={classes.backupButton}
             >
-                {t('settings.backup.localBackup.create.button')}
+                {t('createLocalBackup.button.create')}
             </Button>
             <Popper
                 open={open}
@@ -239,7 +242,7 @@ function LocalBackup() {
                                     <MenuItem
                                         onClick={() => handleChange('settings', !saveItems.settings)}
                                     >
-                                        <ListItemIcon>
+                                        <ListItemIcon className={classes.alignTop}>
                                             <Checkbox
                                                 color="primary"
                                                 checked={saveItems.settings}
@@ -247,14 +250,13 @@ function LocalBackup() {
                                         </ListItemIcon>
                                         <ListItemText
                                             classes={{ primary: classes.optionLabel }}
-                                            primary={t('settings.backup.localBackup.item.settings')}
+                                            primary={t('syncItem.settings')}
                                         />
                                     </MenuItem>
                                     <MenuItem
                                         onClick={() => handleChange('bookmarks', !saveItems.bookmarks)}
-                                        divider
                                     >
-                                        <ListItemIcon>
+                                        <ListItemIcon className={classes.alignTop}>
                                             <Checkbox
                                                 color="primary"
                                                 checked={saveItems.bookmarks}
@@ -262,7 +264,26 @@ function LocalBackup() {
                                         </ListItemIcon>
                                         <ListItemText
                                             classes={{ primary: classes.optionLabel }}
-                                            primary={t('settings.backup.localBackup.item.bookmarks')}
+                                            primary={t('syncItem.bookmarks')}
+                                        />
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => handleChange('backgrounds', !saveItems.backgrounds)}
+                                        divider
+                                    >
+                                        <ListItemIcon className={classes.alignTop}>
+                                            <Checkbox
+                                                color="primary"
+                                                checked={saveItems.backgrounds}
+                                            />
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            classes={{
+                                                primary: classes.optionLabel,
+                                                secondary: classes.fixOverflow,
+                                            }}
+                                            primary={t('syncItem.backgrounds')}
+                                            secondary={t('syncItem.backgrounds', { context: 'description' })}
                                         />
                                     </MenuItem>
                                     <MenuItem
@@ -275,7 +296,7 @@ function LocalBackup() {
                                         </ListItemIcon>
                                         <ListItemText
                                             classes={{ primary: classes.optionLabel }}
-                                            primary={t('settings.backup.localBackup.save')}
+                                            primary={t('createLocalBackup.button.create')}
                                         />
                                     </MenuItem>
                                 </MenuList>
@@ -292,36 +313,32 @@ function LocalBackup() {
 
 function BackupSettings() {
     const classes = useStyles();
-    const { enqueueSnackbar } = useSnackbar();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsBackup']);
 
-    const handleLocalRestore = (event) => {
+    const handleLocalRestore = async (event) => {
         const form = event.target;
         if (form.files.length === 0) return;
 
-        const reader = new FileReader();
-        reader.onload = () => {
-            try {
-                const file = JSON.parse(reader.result);
-                console.log('file', file);
-                eventToBackground('system/backup/local/restore', { backup: file });
-            } catch (e) {
-                enqueueSnackbar({
-                    message: t('settings.backup.localBackup.noty.failed.brokenFile'),
-                    variant: 'success',
-                });
-            }
-        };
-        reader.readAsText(form.files[0]);
+        try {
+            eventToApp('system/backup/local/restore/progress', { result: 'start' });
+            const file = form.files[0];
+            const type = file.name.substring(file.name.lastIndexOf('.') + 1);
+
+            fs().save(`/temp/restore-backup.${type}`, file).then(() => {
+                eventToBackground('system/backup/local/restore', { type });
+            });
+        } catch (e) {
+            eventToApp('system/backup/local/restore/progress', { result: 'brokenFile' });
+        }
     };
 
     return (
         <React.Fragment>
             {/* <ObserverBrowserSync />
-            <SectionHeader title={t('settings.backup.localBackup.title')} /> */}
+            <SectionHeader title={t('localBackup.title')} /> */}
             <MenuRow
-                title={t('settings.backup.localBackup.create.title')}
-                description={t('settings.backup.localBackup.create.description')}
+                title={t('createLocalBackup.title')}
+                description={t('createLocalBackup.description')}
                 action={{
                     type: ROWS_TYPE.CUSTOM,
                     onClick: () => {},
@@ -338,19 +355,19 @@ function BackupSettings() {
                                 className={classes.input}
                                 id="upload-from-system"
                                 type="file"
-                                accept=".json,.ctbup"
+                                accept=".json,.ctbup,.rigami"
                                 onChange={handleLocalRestore}
                             />
                             <label htmlFor="upload-from-system" className={classes.fullWidth}>
                                 <Button
-                                    data-ui-path="settings.backup.localBackup.restore"
+                                    data-ui-path="localBackup.restore"
                                     variant="contained"
                                     component="span"
                                     color="primary"
                                     fullWidth
                                     className={classes.backupButton}
                                 >
-                                    {t('settings.backup.localBackup.restore.title')}
+                                    {t('restoreLocalBackup.button.restore')}
                                 </Button>
                             </label>
                         </React.Fragment>

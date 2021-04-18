@@ -1,9 +1,8 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import usAppService from '@/stores/app/AppStateProvider';
-import { useResizeDetector } from 'react-resize-detector';
+import useAppService from '@/stores/app/AppStateProvider';
 import { ACTIVITY } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
@@ -11,38 +10,28 @@ const useStyles = makeStyles((theme) => ({
         minHeight: '100vh',
         width: '100vw',
         transition: theme.transitions.create(['transform'], {
-            duration: theme.transitions.duration.complex,
-            easing: theme.transitions.easing.easeInOut,
+            duration: 550,
+            easing: 'cubic-bezier(0.08, 0.85, 0.19, 1.01)',
         }),
     },
     hideScroll: { opacity: 0 },
 }));
 
-const DIRECTION = {
+export const DIRECTION = {
     UP: 'UP',
     DOWN: 'DOWN',
 };
 
 function GlobalScroll({ children }) {
     const classes = useStyles();
-    const appService = usAppService();
-    const { width, height, ref: rootRef } = useResizeDetector();
+    const appService = useAppService();
+    const ref = useRef();
     const store = useLocalObservable(() => ({
-        scroll: null,
-        speed: 0,
         direction: 0,
-        active: false,
-        aimScroll: null,
-        scrollNow: 0,
-        oldTime: 0,
-        userActive: false,
-        scrollTopBefore: 0,
-        scrollTopNow: 0,
-        views: [],
         activeView: appService.settings.defaultActivity === ACTIVITY.BOOKMARKS ? 1 : 0,
-        topOffset: appService.settings.defaultActivity === ACTIVITY.BOOKMARKS
-            ? -document.documentElement.clientHeight
-            : 0,
+        blockViewTop: false,
+        blockViewBottom: false,
+        viewsCallbacks: {},
     }));
 
     const scrollHandler = (delta) => {
@@ -50,22 +39,19 @@ function GlobalScroll({ children }) {
 
         const { activeView } = store;
 
-        if (store.direction === DIRECTION.UP && store.activeViewTop) {
+        if (store.viewsCallbacks[activeView]) store.viewsCallbacks[activeView](store.direction);
+        if (store.direction === DIRECTION.UP && !store.blockViewTop) {
             store.activeView = Math.max(store.activeView - 1, 0);
-        } else if (store.direction === DIRECTION.DOWN && store.activeViewBottom) {
-            store.activeView = Math.min(store.activeView + 1, store.views.length - 1);
+        } else if (store.direction === DIRECTION.DOWN && !store.blockViewBottom) {
+            store.activeView = Math.min(store.activeView + 1, children.length - 1);
         }
         if (activeView === store.activeView) return;
 
-        const view = store.views[store.activeView];
-
-        store.topOffset = -view.ref.current.offsetTop;
-
-        appService.setActivity(view.value);
+        appService.setActivity(children[store.activeView].props.value);
     };
 
     const wheelHandler = (e) => {
-        if (e.path.indexOf(rootRef.current) === -1) return;
+        if (e.path.indexOf(ref.current) === -1) return;
 
         scrollHandler(e.deltaY);
     };
@@ -76,34 +62,26 @@ function GlobalScroll({ children }) {
         return () => removeEventListener('wheel', wheelHandler);
     }, []);
 
-    const views = children.map((child) => ({
-        value: child.props.value,
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        ref: useRef(),
-    }));
-
-    useEffect(() => {
-        store.views = views;
-    }, [children.length]);
-
-    useEffect(() => {
-        store.topOffset = -store.views[store.activeView].ref.current.offsetTop;
-    }, [width, height]);
-
     return (
         <Box
             className={classes.root}
-            ref={rootRef}
-            style={{ transform: `translateY(${store.topOffset}px)` }}
+            ref={ref}
+            style={{
+                transform: `translateY(${store.activeView * -100}vh)`,
+                height: `${children.length * 100}vh`,
+            }}
         >
             {children.map((item, index) => React.cloneElement(item, {
-                ref: views[index].ref,
+                key: item.props.value,
                 active: store.activeView === index,
-                onScroll: ({ isTop, isBottom }) => {
+                onScroll: ({ blockTop, blockBottom }) => {
                     if (store.activeView === index) {
-                        store.activeViewTop = isTop;
-                        store.activeViewBottom = isBottom;
+                        store.blockViewTop = blockTop;
+                        store.blockViewBottom = blockBottom;
                     }
+                },
+                onTryScrollCallback: (callback) => {
+                    store.viewsCallbacks[index] = callback;
                 },
             }))}
         </Box>

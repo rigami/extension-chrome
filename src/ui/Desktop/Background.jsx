@@ -11,18 +11,19 @@ import {
     THEME,
     BG_SHOW_STATE,
     BG_SOURCE,
+    ACTIVITY,
 } from '@/enum';
 import clsx from 'clsx';
 import { Fade } from '@material-ui/core';
-import FullscreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import { useSnackbar } from 'notistack';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
-import useAppStateService from '@/stores/app/AppStateProvider';
 import { action, toJS } from 'mobx';
 import BackgroundEntity from '@/stores/universal/backgrounds/entities/background';
 import BackgroundInfo from '@/ui/Desktop/BackgroundInfo';
 import { eventToBackground } from '@/stores/server/bus';
+import useAppService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
         height: '100vh',
         overflow: 'hidden',
         position: 'relative',
+        zIndex: 1,
     },
     bg: {
         width: '100%',
@@ -62,8 +64,9 @@ const useStyles = makeStyles((theme) => ({
 function Background() {
     const { t } = useTranslation();
     const classes = useStyles();
+    const appService = useAppService();
     const { enqueueSnackbar } = useSnackbar();
-    const { settings, backgrounds } = useAppStateService();
+    const { settings, backgrounds } = appService;
     const coreService = useCoreService();
     const store = useLocalObservable(() => ({
         currentBg: null,
@@ -209,7 +212,7 @@ function Background() {
         store.stateRequestLoadBg = FETCH.PENDING;
 
         const successLoad = () => {
-            if (loadBgId !== store.requestBg.id) return;
+            if (loadBgId !== store.requestBg?.id) return;
             console.log('[BACKGROUND] NEW BG DONE', store.showBg, store.requestBg, store.stateLoadBg);
             store.stateRequestLoadBg = FETCH.DONE;
             store.loadBgId = null;
@@ -222,9 +225,11 @@ function Background() {
         };
 
         const failedLoad = (e) => {
-            if (loadBgId !== store.requestBg.id) return;
+            if (loadBgId !== store.requestBg?.id) return;
             console.log('[BACKGROUND] NEW BG FAILED', e);
+            store.currentBg = store.requestBg;
             store.stateRequestLoadBg = FETCH.FAILED;
+            store.stateLoadBg = FETCH.FAILED;
             store.loadBgId = null;
         };
 
@@ -245,14 +250,6 @@ function Background() {
         }
     }, [store.requestBg]);
 
-    useEffect(() => {
-        if (store.stateLoadBg !== FETCH.DONE) return () => {};
-
-        const timer = setTimeout(() => eventToBackground('backgrounds/prepareNextBg'), 3000);
-
-        return () => clearTimeout(timer);
-    }, [store.stateLoadBg]);
-
     return (
         <Fade
             in={
@@ -270,32 +267,36 @@ function Background() {
                         style={{ opacity: backgrounds.settings.dimmingPower / 100 || 0 }}
                     />
                 )}
-                {store.currentBg && store.currentBg?.source !== BG_SOURCE.USER && (
-                    <BackgroundInfo
-                        author={store.currentBg?.author}
-                        authorName={store.currentBg?.authorName}
-                        authorAvatarSrc={store.currentBg?.authorAvatarSrc}
-                        sourceLink={store.currentBg?.sourceLink}
-                        service={store.currentBg?.source}
-                        description={store.currentBg?.description}
-                        type={store.currentBg?.type}
-                    />
-                )}
+                {
+                    appService.activity !== ACTIVITY.FAVORITES
+                    && store.currentBg && store.currentBg?.source !== BG_SOURCE.USER
+                    && (
+                        <BackgroundInfo
+                            author={store.currentBg?.author}
+                            authorName={store.currentBg?.authorName}
+                            authorAvatarSrc={store.currentBg?.authorAvatarSrc}
+                            sourceLink={store.currentBg?.sourceLink}
+                            service={store.currentBg?.source}
+                            description={store.currentBg?.description}
+                            type={store.currentBg?.type}
+                        />
+                    )
+                }
                 {(store.stateLoadBg === FETCH.FAILED || !store.currentBg) && (
-                    <FullscreenStub
+                    <Stub
                         className={classes.errorStub}
                         icon={BrokenIcon}
-                        message={t('bg.errorLoad')}
-                        description={(store.currentBg && t('bg.errorLoadUnknownReason')) || t('bg.notFound')}
+                        message={t(`error.${store.currentBg ? 'unknown' : 'notFound'}`)}
+                        description={t(`error.${store.currentBg ? 'unknown' : 'notFound'}`, { context: 'description' })}
                         style={{ height: '100vh' }}
                         actions={store.currentBg && [
                             {
-                                title: t('bg.remove'),
+                                title: t('button.remove'),
                                 onClick: () => {
                                     backgrounds.removeFromStore(store.currentBg.id)
                                         .then(() => backgrounds.nextBG())
                                         .then(() => enqueueSnackbar({
-                                            message: t('bg.brokenRemovedSuccess'),
+                                            message: t('removedBrokenBG'),
                                             variant: 'warning',
                                         }));
                                 },

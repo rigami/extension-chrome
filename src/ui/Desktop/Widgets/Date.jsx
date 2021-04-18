@@ -1,30 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Link, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState, Fragment } from 'react';
+import { Link } from '@material-ui/core';
 import useAppStateService from '@/stores/app/AppStateProvider';
-import clsx from 'clsx';
 import { last } from 'lodash';
+import { getI18n } from 'react-i18next';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        textShadow: '0 2px 17px #00000029',
-        fontFamily: '"Manrope", "Open Sans", sans-serif',
-        fontWeight: 800,
-    },
-    link: {},
-    offset: { marginRight: theme.spacing(3) },
-}));
-
-const formatter = new Intl.DateTimeFormat('nu', {
+const generateFormatter = (locale) => new Intl.DateTimeFormat(/* 'nu' */ locale, {
     weekday: 'long',
     month: 'short',
     day: '2-digit',
 });
 
-function DateWidget({ size, dot = false }) {
-    const classes = useStyles();
+function DateWidget({ dot = false }) {
     const { widgets } = useAppStateService();
     const [now, setNow] = useState(new Date());
+    const [formatter] = useState(generateFormatter(getI18n()?.language));
 
     useEffect(() => {
         const scheduler = setInterval(() => {
@@ -36,6 +25,8 @@ function DateWidget({ size, dot = false }) {
 
     const date = formatter.format(now);
 
+    const dotSymbol = last(date) !== '.' ? '. ' : ' ';
+
     if (widgets.settings.dtwDateAction) {
         return (
             <Link
@@ -43,21 +34,16 @@ function DateWidget({ size, dot = false }) {
                 target="_blank"
                 underline="none"
                 color="inherit"
-                className={clsx(classes.link, dot && classes.offset)}
             >
-                <Typography variant={size} className={classes.root}>
-                    {date}
-                    {dot && last(date) !== '.' ? '.' : ''}
-                </Typography>
+                {`${date}${dot ? dotSymbol : ''}`}
             </Link>
         );
     }
 
     return (
-        <Typography variant={size} className={clsx(classes.root, dot && classes.offset)}>
-            {date}
-            {dot && last(date) !== '.' ? '.' : ''}
-        </Typography>
+        <Fragment>
+            {`${date}${dot ? dotSymbol : ''}`}
+        </Fragment>
     );
 }
 

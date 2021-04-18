@@ -1,0 +1,22 @@
+{
+  "unknown": "Unknown folder",
+  "notSelect": "No folder selected",
+  "change_helper": "Change folder",
+  "defaultName": "New folder",
+  "editor_select": "Select folder",
+  "editor": {
+    "name_placeholder": "Folder name",
+    "error": {
+      "alreadyExist": "Folder already exist",
+      "unknown": "Unknown error"
+    }
+  },
+  "button": {
+    "create": "Create a folder",
+    "create_sub": "Create a sub folder"
+  },
+  "remove": {
+    "confirm": "Delete folder?",
+    "confirm_description": "When you delete a folder, all child folders and bookmarks in it will be deleted. Are you sure you want to delete it?"
+  }
+}

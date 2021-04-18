@@ -1,0 +1,11 @@
+{
+  "homePage": "Project home page",
+  "review": "Write a review",
+  "review_description": "Tell us what you want to see in the extension, what you like or dislike",
+  "bugReport": "Report bugs",
+  "bugReport_description": "Tell me what problems in the extension are encountered, I will try to fix them as soon as possible",
+  "contact": "Get into contact with me",
+  "contact_description": "Contact the developer directly",
+  "policy":"Privacy policy",
+  "rate": "Rate the extension in the Chrome Web Store"
+}

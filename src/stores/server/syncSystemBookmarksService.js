@@ -1,5 +1,5 @@
 import { BKMS_VARIANT, TYPE } from '@/enum';
-import DBConnector from '@/utils/dbConnector';
+import db from '@/utils/db';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { first } from 'lodash';
@@ -34,7 +34,7 @@ class SyncSystemBookmarksService {
             this.parseSystemBookmarks();
 
             chrome.bookmarks.onCreated.addListener(async (id, createInfo) => {
-                const bind = await DBConnector().getFromIndex(
+                const bind = await db().getFromIndex(
                     'system_bookmarks',
                     'system_id',
                     createInfo.parentId,
@@ -74,7 +74,7 @@ class SyncSystemBookmarksService {
             image_url: '',
             icoVariant: BKMS_VARIANT.SYMBOL,
             ...bookmark,
-            categories: [],
+            tags: [],
         }, notyEvent);
 
         console.log('add bind:', {
@@ -83,7 +83,7 @@ class SyncSystemBookmarksService {
             systemId: browserNode.id,
         });
 
-        await DBConnector().add('system_bookmarks', {
+        await db().add('system_bookmarks', {
             type: TYPE.BOOKMARK,
             rigamiId: bookmarkId,
             systemId: browserNode.id,
@@ -106,7 +106,7 @@ class SyncSystemBookmarksService {
             systemId: browserNode.id,
         });
 
-        await DBConnector().add('system_bookmarks', {
+        await db().add('system_bookmarks', {
             type: TYPE.FOLDER,
             rigamiId: newFolderId,
             systemId: browserNode.id,
@@ -150,29 +150,29 @@ class SyncSystemBookmarksService {
 
             const bookmarks = await BookmarksUniversalService.getAllInFolder(parentId);
 
-            for (let i = 0; i < browserNodes.length; i += 1) {
-                const bind = await DBConnector().getFromIndex(
+            for await (const browserNode of browserNodes) {
+                const bind = await db().getFromIndex(
                     'system_bookmarks',
                     'system_id',
-                    browserNodes[i].id,
+                    browserNode.id,
                 );
 
-                console.log('bind', bind, browserNodes[i]);
+                console.log('bind', bind, browserNode);
 
-                if (browserNodes[i].url && !('dateGroupModified' in browserNodes[i])) {
+                if (browserNode.url && !('dateGroupModified' in browserNode)) {
                     await parseNodeBookmark(
-                        browserNodes[i],
+                        browserNode,
                         bookmarks.find(({ name, url, id }) => (
                             id === bind?.rigamiId
-                            || name === browserNodes[i].title
-                            || url === browserNodes[i].url
+                            || name === browserNode.title
+                            || url === browserNode.url
                         )),
                         parentId,
                     );
                 } else {
                     await parseNodeFolder(
-                        browserNodes[i],
-                        rigamiNodes.find(({ name, id }) => id === bind?.rigamiId || name === browserNodes[i].title),
+                        browserNode,
+                        rigamiNodes.find(({ name, id }) => id === bind?.rigamiId || name === browserNode.title),
                         parentId,
                     );
                 }

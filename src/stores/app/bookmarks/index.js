@@ -2,12 +2,12 @@ import { action, makeAutoObservable, reaction } from 'mobx';
 import { BKMS_FAP_STYLE, DESTINATION } from '@/enum';
 import { BookmarksSettingsStore } from '@/stores/app/settings';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
-import CategoriesStore from './categories';
+import TagsStore from './tags';
 import FoldersStore from './folders';
 import BookmarksStore from './bookmarks';
 
 class BookmarksService {
-    categories;
+    tags;
     bookmarks;
     folders;
     favorites = [];
@@ -18,45 +18,33 @@ class BookmarksService {
     constructor(coreService) {
         makeAutoObservable(this);
         this._coreService = coreService;
-        this.categories = new CategoriesStore(coreService, this);
+        this.tags = new TagsStore(coreService, this);
         this.folders = new FoldersStore(coreService, this);
         this.bookmarks = new BookmarksStore(coreService, this);
         this.settings = new BookmarksSettingsStore();
 
         if (!this._coreService) return;
 
-        this.categories.sync();
         this.syncFavorites();
 
         this._coreService.globalEventBus.on('bookmark/new', () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
-        this._coreService.globalEventBus.on('bookmark/remove', () => {
+        this._coreService.globalEventBus.on('bookmark/removed', async () => {
+            this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
+            await this.syncFavorites();
+        });
+        this._coreService.globalEventBus.on('tag/new', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
-        this._coreService.globalEventBus.on('category/new', async () => {
-            await this.categories.sync();
-
+        this._coreService.globalEventBus.on('tag/removed', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
-        });
-        this._coreService.globalEventBus.on('category/remove', async ({ categoryId }) => {
-            await this.categories.sync();
-
-            this._coreService.storage.updatePersistent({
-                bkmsLastSearch: {
-                    ...(this._coreService.storage.persistent.categories || {}),
-                    categories: {
-                        match: (this._coreService.storage.persistent.categories || [])
-                            .filter((id) => id !== categoryId),
-                    },
-                },
-                bkmsLastTruthSearchTimestamp: Date.now(),
-            });
 
             await this.syncFavorites();
         });
-        this._coreService.globalEventBus.on('folder/remove', async () => {
+        this._coreService.globalEventBus.on('folder/removed', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
+            await this.syncFavorites();
         });
         this._coreService.globalEventBus.on('folder/new', async () => {
             this._coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
@@ -85,11 +73,8 @@ class BookmarksService {
 
     @action('sync favorites')
     async syncFavorites() {
-        console.log('Sync fav');
-
+        console.log('Sync favorites');
         this.favorites = await FavoritesUniversalService.getAll();
-
-        console.log('this.favorites', this.favorites);
 
         return this.favorites;
     }
@@ -103,24 +88,18 @@ class BookmarksService {
     async addToFavorites(favorite) {
         console.log('addToFavorites', favorite);
         const favoriteId = await FavoritesUniversalService.addToFavorites(favorite);
-        console.log('new favorite id:', favoriteId);
 
-        if (this._coreService) {
-            this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: favorite.id });
-        }
+        this._coreService.globalEventBus.call('favorite/new', DESTINATION.APP, { favoriteId: favorite.id });
 
         return favoriteId;
     }
 
     @action('add to favorites')
     async removeFromFavorites(favoriteId) {
-        this.favorites = this.favorites.filter((fav) => fav.id !== favoriteId);
-
+        console.log('removeFromFavorites', favoriteId);
         await FavoritesUniversalService.removeFromFavorites(favoriteId);
 
-        if (this._coreService) {
-            this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId });
-        }
+        this._coreService.globalEventBus.call('favorite/remove', DESTINATION.APP, { favoriteId });
 
         return favoriteId;
     }

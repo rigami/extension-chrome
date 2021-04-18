@@ -1,0 +1,59 @@
+{
+  "editor_add": "Adding a new bookmark",
+  "editor_edit": "Editing a bookmark",
+  "editor": {
+    "bookmarkUrl": "URL or request",
+    "bookmarkName": "Bookmark name",
+    "bookmarkDescription": "Description",
+    "button": {
+      "addDescription": "Add description",
+      "forceAdd": "Add anyway",
+      "moreIcons": "More icons",
+      "scrollToMore": "Scroll to more"
+    },
+    "search_url": "Search by address",
+    "search_web": "Search the web",
+    "search": {
+      "urlNotRecognize": "Address not recognized",
+      "gettingSiteInfo": "Getting info",
+      "searchSiteFavicon": "Search site favicon",
+      "preview": {
+        "parsing": "Search for other variants...",
+        "download": "Analysis of variants..."
+      }
+    },
+    "save": {
+      "success": "Bookmark saved successfully",
+      "saving": "Saving..."
+    },
+    "helper": {
+      "enterRequest": "Enter the address",
+      "selectResult": "Select a search result",
+      "enterName": "Enter the name of the bookmark"
+    }
+  },
+  "button": {
+    "add":"Add new bookmark",
+    "add_short":"Add bookmark",
+    "add_first": "Create first bookmark",
+    "favorites": "Show favorites",
+    "open": "Open bookmarks"
+  },
+  "remove": {
+    "confirm": "Delete bookmark?",
+    "confirm_description": "The bookmark will be deleted forever, are you sure?"
+  },
+  "search": {
+    "nothingFound": "Nothing found",
+    "nothingFound_description": "Try changing your request",
+    "everywhere": "Search everywhere",
+    "everywhere_description": "Search for bookmarks throughout the system",
+    "bookmarks_placeholder": "Search for bookmarks",
+    "bestMatches": "Best matches",
+    "allMatches": "All matches",
+    "currentFolderMatches": "In the current folder",
+    "results": "{{count}} result",
+    "results_plural": "{{count}} results"
+  },
+  "empty": "There are no bookmarks here yet"
+}

@@ -1,6 +1,6 @@
 import { eventToApp } from '@/stores/server/bus';
 import { assign, throttle, forEach } from 'lodash';
-import FSConnector from '@/utils/fsConnector';
+import fs from '@/utils/fs';
 import { makeAutoObservable, toJS } from 'mobx';
 import defaultSettings from '@/config/settings';
 
@@ -42,7 +42,7 @@ class SettingsService {
         } catch (e) {
             console.log('[settings] Not find fast cache or broken. Get from file cache...');
 
-            FSConnector.getFileAsText('/settings.json')
+            fs().get('/settings.json', { type: 'text' })
                 .then((file) => {
                     const fileSettings = JSON.parse(file);
 
@@ -147,7 +147,7 @@ class SettingsService {
     sync() {
         console.log('[settings] Save settings', this.settings);
 
-        FSConnector.saveFile(
+        fs().save(
             '/settings.json',
             new Blob([JSON.stringify(this.settings)], { type: 'application/json' }),
         ).then(() => {

@@ -1,0 +1,54 @@
+{
+  "upload":{
+    "file":"File name",
+    "size":"Size",
+    "fileType":"File type",
+    "dropToAdd":"Drop to add background",
+    "dropToAdd_plural":"Drop to add backgrounds",
+    "button": {
+      "discardAll":"Cancel all",
+      "antiAliasing": "Smoothing",
+      "antiAliasing_helper": "Disable this option if you want to load a pixelated background"
+    },
+    "error": {
+      "TOO_MANY_FILES": "Too many files",
+      "NO_FILES": "No files found"
+    }
+  },
+  "button": {
+    "apply": "Apply background",
+    "add": "Add new background",
+    "pause": "Pause background",
+    "play": "Play background",
+    "addToLibrary": "Add background to library",
+    "next": "Next background",
+    "remove": "Remove background",
+    "change": "Change background",
+    "openSource": "Open background in source"
+  },
+  "type": {
+    "IMAGE": "Image",
+    "IMAGE_plural": "Images",
+    "VIDEO": "Video",
+    "VIDEO_plural": "Videos",
+    "ANIMATION": "Animation",
+    "ANIMATION_plural": "Animations"
+  },
+  "serviceName": {
+    "unknown": "Unknown service",
+    "UNSPLASH": "Unsplash",
+    "PEXELS": "Pexels",
+    "PIXABAY": "Pixabay"
+  },
+  "error": {
+    "notFound": "No suitable background found",
+    "notFound_description": "",
+    "unknown": "Failed to set background",
+    "unknown_description": "Something went wrong, but it's not clear what, maybe the background is broken, try to delete it"
+  },
+  "addedToLibrary": "Background saved in the library",
+  "addingToLibrary": "Saving the background...",
+  "fetchingNextBG": "Loading background...",
+  "removedBrokenBG": "Damaged background removed",
+  "backgroundSource": "by {{author}}, $t(serviceName.{{source}}, serviceName.unknown)"
+}

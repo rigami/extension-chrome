@@ -1,5 +1,6 @@
 import EventBus from '@/utils/eventBus';
 import BusApp, { eventToApp, eventToPopup } from '@/stores/server/bus';
+import { open as openFS } from '@/utils/fs';
 import SettingsService from './settingsService';
 import StorageService from './storageService';
 // import SyncSystemBookmarksService from './syncSystemBookmarksService';
@@ -8,6 +9,7 @@ import LocalBackupService from './localBackupService';
 import BookmarksService from './bookmarksService';
 import WeatherService from './weather/service';
 import BackgroundsService from './backgroundsService';
+import SyncBackgrounds from './syncBackgrounds';
 
 class ServerApp {
     localBus;
@@ -20,9 +22,11 @@ class ServerApp {
     bookmarksService;
     weatherService;
     backgroundsService;
+    isOffline = !window.navigator.onLine;
 
     constructor() {
         // App core
+        openFS();
         this.localBus = new EventBus();
         this.globalBus = BusApp();
         this.settingsService = new SettingsService(this);
@@ -32,6 +36,7 @@ class ServerApp {
         // this.systemBookmarksService = new SyncSystemBookmarksService(this);
         this.bookmarksSyncService = new SyncBookmarks(this);
         this.localBackupService = new LocalBackupService(this);
+        this.backgroundsSyncService = new SyncBackgrounds(this);
 
         // Bookmarks
         this.bookmarksService = new BookmarksService(this);
@@ -49,6 +54,9 @@ class ServerApp {
 
             location.reload();
         });
+
+        window.addEventListener('offline', () => { this.isOffline = true; });
+        window.addEventListener('online', () => { this.isOffline = false; });
     }
 }
 

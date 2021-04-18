@@ -1,11 +1,11 @@
 @font-face {
     font-family: "Roboto";
-    src: url("./Roboto-Regular.ttf") format("truetype");
+    src: local("Roboto"), url("./Roboto-Regular.ttf") format("truetype");
     font-weight: auto;
 }
 
 @font-face {
     font-family: "Manrope";
-    src: url("./Manrope-VariableFont_wght.ttf") format("truetype");
+    src: local("Manrope"), url("./Manrope-VariableFont_wght.ttf") format("truetype");
     font-weight: 200 800;
 }

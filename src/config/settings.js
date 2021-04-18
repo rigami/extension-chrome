@@ -9,6 +9,7 @@ import {
     WIDGET_DTW_POSITION,
     WIDGET_DTW_SIZE,
     WIDGET_DTW_UNITS,
+    BKMS_FAP_ALIGN,
 } from '@/enum';
 import i18n from 'i18next';
 
@@ -22,6 +23,7 @@ export default {
     bookmarks: {
         fapStyle: BKMS_FAP_STYLE.CONTAINED,
         fapPosition: BKMS_FAP_POSITION.BOTTOM,
+        fapAlign: BKMS_FAP_ALIGN.CENTER,
         openOnStartup: false,
         favorites: [],
         syncWithSystem: false,
@@ -30,8 +32,8 @@ export default {
     widgets: {
         useWidgets: true,
         dtw: {
-            position: WIDGET_DTW_POSITION.LEFT_BOTTOM,
-            size: WIDGET_DTW_SIZE.MIDDLE,
+            position: WIDGET_DTW_POSITION.LEFT_MIDDLE,
+            size: WIDGET_DTW_SIZE.BIG,
             date: {
                 useDate: true,
                 defaultAction: '',
@@ -50,7 +52,6 @@ export default {
     app: {
         backdropTheme: THEME.DARK,
         theme: THEME.LIGHT,
-        useSystemFont: true,
         tabName: i18n.t('tabName.default') || 'Rigami',
         defaultActivity: ACTIVITY.DESKTOP,
     },

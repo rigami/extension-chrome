@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import packageFile from '@/../package.json';
+import StorageConnector from '@/utils/storageConnector';
 
 const beforeBreadcrumb = (breadcrumb, hint) => {
     if (breadcrumb.category === 'ui.click') {
@@ -39,4 +40,5 @@ export default (destination) => {
     });
 
     Sentry.setTag('destination', destination.toLowerCase());
+    Sentry.setUser({ id: StorageConnector.getJSON('storage', {}).userId });
 };

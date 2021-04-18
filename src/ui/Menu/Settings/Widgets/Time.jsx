@@ -7,14 +7,14 @@ import { Collapse } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 
 function TimeWidget() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsWidget']);
     const { widgets } = useAppStateService();
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('settings.widgets.dtw.time.title')} />
+            <SectionHeader title={t('time.title')} />
             <MenuRow
-                title={t('settings.widgets.dtw.time.useTime')}
+                title={t('time.useTime')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     value: widgets.settings.dtwUseTime,
@@ -25,7 +25,7 @@ function TimeWidget() {
             />
             <Collapse in={widgets.settings.dtwUseTime}>
                 <MenuRow
-                    title={t('settings.widgets.dtw.time.format12')}
+                    title={t('time.format12')}
                     action={{
                         type: ROWS_TYPE.CHECKBOX,
                         value: widgets.settings.dtwTimeFormat12,

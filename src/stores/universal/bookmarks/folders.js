@@ -1,5 +1,5 @@
 import { action } from 'mobx';
-import DBConnector from '@/utils/dbConnector';
+import db from '@/utils/db';
 import Folder from '@/stores/universal/bookmarks/entities/folder';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
@@ -7,7 +7,7 @@ import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 class FoldersUniversalService {
     @action('get folders root')
     static async getFoldersByParent(parentId = 0) {
-        const folders = await DBConnector().getAllFromIndex('folders', 'parent_id', parentId);
+        const folders = await db().getAllFromIndex('folders', 'parent_id', parentId);
 
         return folders.map((folder) => new Folder(folder));
     }
@@ -45,23 +45,28 @@ class FoldersUniversalService {
     @action('get folder by id')
     static async get(folderId) {
         console.log('get folder by id', folderId);
-        const folder = await DBConnector().get('folders', folderId);
+        const folder = await db().get('folders', folderId);
 
         return new Folder(folder);
     }
 
     @action('save folder')
     static async save({ name, id, parentId }) {
+        console.log('universal create folder:', {
+            name,
+            id,
+            parentId,
+        });
         let newFolderId = id;
 
         if (id) {
-            await DBConnector().put('folders', {
+            await db().put('folders', {
                 id,
                 name: name.trim(),
                 parentId,
             });
         } else {
-            newFolderId = await DBConnector().add('folders', {
+            newFolderId = await db().add('folders', {
                 name: name.trim(),
                 parentId,
             });
@@ -72,6 +77,8 @@ class FoldersUniversalService {
 
     @action('remove folder')
     static async remove(folderId) {
+        if (folderId === 1) return Promise.reject(new Error('Cannon remove first folder'));
+
         const favoriteItem = FavoritesUniversalService.findFavorite({
             itemType: 'folder',
             itemId: folderId,
@@ -81,27 +88,21 @@ class FoldersUniversalService {
             await FavoritesUniversalService.removeFromFavorites(favoriteItem.id);
         }
 
-        const removeFolders = async (parentId) => {
-            await DBConnector().delete('folders', parentId);
+        const removedBookmarks = await BookmarksUniversalService.getAllInFolder(folderId);
 
-            const removedBookmarks = await BookmarksUniversalService.getAllInFolder(parentId);
+        await Promise.all(removedBookmarks.map(({ id }) => BookmarksUniversalService.remove(id)));
 
-            await Promise.all(removedBookmarks.map(({ id }) => BookmarksUniversalService.remove(id)));
+        const childFolders = await db().getAllFromIndex(
+            'folders',
+            'parent_id',
+            folderId,
+        );
 
-            const childFolders = await DBConnector().getAllFromIndex(
-                'folders',
-                'parent_id',
-                parentId,
-            );
+        await Promise.all(childFolders.map(({ id }) => this.remove(id)));
 
-            return [parentId, ...((await Promise.all(childFolders.map(({ id }) => removeFolders(id)))).flat())];
-        };
+        await db().delete('folders', folderId);
 
-        const removedFolders = await removeFolders(folderId);
-
-        console.log('removedFolders', removedFolders);
-
-        return removedFolders;
+        return Promise.resolve();
     }
 }
 

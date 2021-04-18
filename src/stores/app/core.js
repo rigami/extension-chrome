@@ -1,20 +1,23 @@
 import BusApp, { eventToBackground, initBus, instanceId } from '@/stores/server/bus';
 import { BG_SOURCE, BG_TYPE, DESTINATION } from '@/enum';
 import {
-    reaction, action, makeAutoObservable, runInAction,
+    reaction,
+    action,
+    makeAutoObservable,
+    runInAction,
 } from 'mobx';
 import i18n from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
-import { open as openDB } from '@/utils/dbConnector';
+import { open as openDB } from '@/utils/db';
 import appVariables from '@/config/appVariables';
-import FSConnector from '@/utils/fsConnector';
+import fs, { open as openFS } from '@/utils/fs';
 import EventBus from '@/utils/eventBus';
 import { assign, first } from 'lodash';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import fetchData from '@/utils/xhrPromise';
+import StorageConnector from '@/utils/storageConnector';
 
 const APP_STATE = {
     WAIT_INIT: 'WAIT_INIT',
@@ -76,6 +79,8 @@ class Core {
     localEventBus;
     storage;
     appState = APP_STATE.WAIT_INIT;
+    appError = '';
+    isOffline = !window.navigator.onLine;
 
     constructor({ side }) {
         makeAutoObservable(this);
@@ -89,6 +94,8 @@ class Core {
             try {
                 await this.initialization();
 
+                if (this.appState === APP_STATE.FAILED) throw new Error('Failed init app');
+
                 runInAction(() => {
                     if (!this.storage.persistent.lastUsageVersion) {
                         this.appState = APP_STATE.REQUIRE_SETUP;
@@ -98,6 +105,7 @@ class Core {
                 });
             } catch (e) {
                 runInAction(() => {
+                    this.appError = this.appError || 'ERR_UNKNOWN';
                     this.appState = APP_STATE.FAILED;
                 });
             }
@@ -110,29 +118,64 @@ class Core {
         reaction(() => this.storage.isSync, () => { init(); });
 
         if (this.storage.isSync) init();
+
+        window.addEventListener('offline', () => { this.isOffline = true; });
+        window.addEventListener('online', () => { this.isOffline = false; });
     }
 
     async initialization() {
+        openFS().catch((e) => {
+            console.error('Failed init fs:', e);
+
+            this.appError = 'ERR_INIT_FS';
+            this.appState = APP_STATE.FAILED;
+        });
+
+        openDB().catch((e) => {
+            console.error('Failed init db:', e);
+
+            this.appError = 'ERR_INIT_DB';
+            this.appState = APP_STATE.FAILED;
+        });
+
         await i18n
             .use(initReactI18next)
-            .use(LanguageDetector)
             .use(Backend)
             .init({
+                lng: StorageConnector.getJSON('devTools', {}).locale
+                    || (chrome?.i18n?.getUILanguage?.() || 'en').substring(0, 2),
                 load: 'languageOnly',
-                fallbackLng: PRODUCTION_MODE ? 'en' : 'dev',
+                fallbackLng: 'en',
                 debug: !PRODUCTION_MODE,
-                interpolation: { escapeValue: false },
-                backend: { loadPath: 'resource/i18n/{{lng}}.json' },
+                ns: [
+                    'common',
+                    'bookmark',
+                    'background',
+                    'tag',
+                    'desktop',
+                    'settings',
+                    'settingsBackup',
+                    'newVersion',
+                ],
+                defaultNS: 'common',
+                backend: { loadPath: 'resource/i18n/{{lng}}/{{ns}}.json' },
                 react: { useSuspense: false },
-            });
+            })
+            .catch((e) => {
+                console.error('Failed init i18n:', e);
 
-        await openDB();
+                this.appError = 'ERR_INIT_I18N';
+                this.appState = APP_STATE.FAILED;
+            });
     }
 
     async setDefaultState(progressCallback) {
         console.log('Create FS');
         progressCallback(5, PREPARE_PROGRESS.CREATE_FS);
-        await FSConnector.createFS();
+        await fs().mkdir('/temp');
+        await fs().mkdir('/bookmarksIcons');
+        await fs().mkdir('/backgrounds/full');
+        await fs().mkdir('/backgrounds/preview');
 
         console.log('Fetch BG');
         progressCallback(10, PREPARE_PROGRESS.FETCH_BG);

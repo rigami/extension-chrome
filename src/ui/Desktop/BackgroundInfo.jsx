@@ -3,9 +3,7 @@ import {
     Card,
     CardHeader,
     Avatar,
-    Tooltip,
     Link,
-    IconButton,
 } from '@material-ui/core';
 import { OpenInNewRounded as OpenSourceIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,37 +15,62 @@ import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 
 const useStyles = makeStyles((theme) => ({
-    infoCard: {
+    root: {
         position: 'absolute',
-        right: theme.spacing(3),
-        top: theme.spacing(3),
+        right: 74,
+        top: theme.spacing(2),
+        background: 'none',
         maxWidth: 430,
         minWidth: 350,
         zIndex: theme.zIndex.modal,
-        '&:not(:hover) $subheader': { '-webkit-line-clamp': 4 },
+        color: theme.palette.common.white,
+        overflow: 'unset',
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            width: 800,
+            height: 500,
+            transform: 'translate(-50%, -50%)',
+            left: '50%',
+            zIndex: -1,
+            backgroundImage: 'radial-gradient(closest-side, #00000047, #ffffff00)',
+        },
     },
-    topOffset: { top: theme.spacing(14) },
+    topOffset: {
+        top: 'unset',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
+    },
     avatar: { alignSelf: 'flex-start' },
+    title: { fontWeight: 500 },
     subheader: {
         wordBreak: 'break-word',
         display: '-webkit-box',
         '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 20,
+        '-webkit-line-clamp': 3,
         overflow: 'hidden',
-    },
-    service: { color: theme.palette.text.secondary },
-    action: {
-        marginTop: theme.spacing(-1),
-        marginBottom: theme.spacing(-1),
-        marginRight: theme.spacing(-1),
-        marginLeft: theme.spacing(1),
-        display: 'flex',
+        color: theme.palette.grey[200],
+        fontWeight: 450,
     },
     avatarIcon: {
         width: theme.spacing(4),
         height: theme.spacing(4),
     },
-    header: { padding: theme.spacing(1.5) },
+    header: { padding: 0 },
+    openSource: {
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: theme.spacing(1),
+        fontWeight: 700,
+        color: theme.palette.common.white,
+        '& svg': {
+            width: theme.spacing(2),
+            height: theme.spacing(2),
+            marginLeft: theme.spacing(1),
+        },
+    },
+    link: { fontWeight: 700 },
 }));
 
 function BackgroundInfo(props) {
@@ -62,7 +85,7 @@ function BackgroundInfo(props) {
     } = props;
     const classes = useStyles();
     const bookmarksService = useBookmarksService();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['background']);
 
     let serviceName = 'Unknown';
     let serviceUrl = '#';
@@ -86,7 +109,7 @@ function BackgroundInfo(props) {
         <MouseDistanceFade distanceMax={64} distanceMin={8}>
             <Card
                 className={clsx(
-                    classes.infoCard,
+                    classes.root,
                     bookmarksService.fapIsDisplay
                     && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
                     && classes.topOffset,
@@ -97,45 +120,51 @@ function BackgroundInfo(props) {
                     classes={{
                         root: classes.header,
                         avatar: classes.avatar,
+                        title: classes.title,
                         subheader: classes.subheader,
-                        action: classes.action,
                     }}
                     avatar={(
                         <Avatar className={classes.avatarIcon} src={authorAvatarSrc} />
                     )}
-                    action={(
-                        <Tooltip title={t('bg.openSource')}>
-                            <IconButton
-                                data-ui-path="desktop.bgInfo.openSource"
-                                onClick={() => { window.open(sourceLink, '_blank'); }}
-                            >
-                                <OpenSourceIcon />
-                            </IconButton>
-                        </Tooltip>
-                    )}
                     title={(
                         <Fragment>
-                            {`${t(`bg.type.${type}`)} `}
+                            {`${t(`type.${type}`)} `}
                             <Link
                                 color="inherit"
-                                underline="always"
+                                underline="hover"
                                 href={authorUrl}
                                 target="_blank"
+                                className={classes.link}
                             >
                                 {authorName}
                             </Link>
-                            {' с '}
+                            {` ${t('common:from')} `}
                             <Link
                                 color="inherit"
-                                underline="always"
+                                underline="hover"
                                 href={serviceUrl}
                                 target="_blank"
+                                className={classes.link}
                             >
                                 {serviceName}
                             </Link>
                         </Fragment>
                     )}
-                    subheader={description}
+                    subheader={(
+                        <Fragment>
+                            <Link
+                                color="inherit"
+                                underline="hover"
+                                href={sourceLink}
+                                target="_blank"
+                                className={classes.openSource}
+                            >
+                                {t('button.openSource')}
+                                <OpenSourceIcon />
+                            </Link>
+                            <span>{description}</span>
+                        </Fragment>
+                    )}
                 />
             </Card>
         </MouseDistanceFade>

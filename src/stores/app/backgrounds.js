@@ -13,7 +13,7 @@ import {
     BG_CHANGE_INTERVAL,
     BG_SELECT_MODE,
 } from '@/enum';
-import DBConnector from '@/utils/dbConnector';
+import db from '@/utils/db';
 import getPreview from '@/utils/createPreview';
 import { BackgroundSettingsStore } from '@/stores/app/settings';
 import Background from '@/stores/universal/backgrounds/entities/background';
@@ -124,6 +124,25 @@ class BackgroundsAppService {
         return this._currentBG;
     }
 
+    @action('add to library')
+    async addToLibrary(bg) {
+        this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.PENDING });
+
+        try {
+            await BackgroundsUniversalService.addToLibrary(bg);
+            this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.DONE });
+            this._coreService.storage.updatePersistent({
+                bgCurrent: {
+                    ...this._coreService.storage.persistent.bgCurrent,
+                    isSaved: true,
+                },
+            });
+        } catch (e) {
+            console.error(e);
+            this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.FAILED });
+        }
+    }
+
     @action('add bg`s to queue')
     addToUploadQueue(fileList) {
         if (!fileList || fileList.length === 0) return Promise.reject(ERRORS.NO_FILES);
@@ -221,7 +240,7 @@ class BackgroundsAppService {
 
     @action('get last usage backgrounds')
     async getLastUsage(limit = 10) {
-        const tx = await DBConnector().transaction('backgrounds', 'readonly');
+        const tx = await db().transaction('backgrounds', 'readonly');
         let cursor = await tx.objectStore('backgrounds').openCursor();
         let currIndex = 0;
         const bgs = [];

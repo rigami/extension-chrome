@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
-import { CssBaseline } from '@material-ui/core';
+import { Box, CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
@@ -11,9 +11,24 @@ import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
 import initSentry from '@/config/sentry';
 import * as Sentry from '@sentry/react';
-import PopupContent from './PopupEditor';
+import Stub from '@/ui-components/Stub';
+import Nest from '@/utils/Nest';
+import EditorBookmark from '@/ui/Bookmarks/EditBookmarkModal/Editor';
+import clsx from 'clsx';
+import { makeStyles } from '@material-ui/core/styles';
+import asyncAction from '@/utils/asyncAction';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import { first } from 'lodash';
 
 initSentry(DESTINATION.POPUP);
+
+const useStyles = makeStyles(() => ({
+    editor: { padding: 0 },
+    editorContent: {
+        flexGrow: 1,
+        borderRadius: 0,
+    },
+}));
 
 function LoadStoreWait({ children }) {
     const coreService = useCoreService();
@@ -28,10 +43,9 @@ function LoadStoreWait({ children }) {
 const ObserverLoadStoreWait = observer(LoadStoreWait);
 
 function Popup() {
-    const [tabName, setTabName] = useState();
-    const [tabUrl, setTabUrl] = useState();
+    const classes = useStyles();
+    const [bookmark, setBookmark] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-    const [theme] = useState(localStorage.getItem('theme') === THEME.LIGHT ? lightTheme : darkTheme);
 
     useEffect(() => {
         if (!chrome?.tabs) {
@@ -39,36 +53,80 @@ function Popup() {
             return;
         }
 
-        chrome.tabs.query({ active: true }, ([tab]) => {
-            if (!tab) {
-                setIsLoading(false);
-                return;
+        asyncAction(async () => {
+            const data = {};
+
+            await new Promise((resolve, reject) => chrome.tabs.query({ active: true }, ([tab]) => {
+                if (!tab) {
+                    reject();
+                    return;
+                }
+
+                data.url = tab.url;
+                data.name = tab.title;
+                resolve();
+            }));
+
+            const res = await BookmarksUniversalService.query(new SearchQuery({ query: data.url }));
+
+            if (res.best && res.best.length !== 0) {
+                data.id = first(res.best)?.id;
             }
 
-            console.log('Found tab', tab);
-
-            setTabName(tab.title);
-            setTabUrl(tab.url);
+            setBookmark(data);
+            setIsLoading(false);
+        }).catch((e) => {
+            console.error(e);
             setIsLoading(false);
         });
     }, []);
 
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
+        <React.Fragment>
             {!isLoading && (
-                <BaseStateProvider side={DESTINATION.POPUP}>
-                    <ObserverLoadStoreWait>
-                        <BookmarksProvider>
-                            <PopupContent tabName={tabName} tabUrl={tabUrl} />
-                        </BookmarksProvider>
-                    </ObserverLoadStoreWait>
-                </BaseStateProvider>
+                <EditorBookmark
+                    className={clsx(classes.editor)}
+                    classes={{ editor: classes.editorContent }}
+                    bringToEditorHeight
+                    editBookmarkId={bookmark.id}
+                    defaultName={bookmark.name}
+                    defaultUrl={bookmark.url}
+                    marginThreshold={0}
+                    onSave={() => {}}
+                />
             )}
-        </ThemeProvider>
+            {isLoading && (
+                <Stub message="Loading..." />
+            )}
+        </React.Fragment>
     );
 }
 
-const ProfilerPopup = Sentry.withProfiler(Popup);
+function PopupRoot() {
+    const [theme] = useState(localStorage.getItem('theme') === THEME.LIGHT ? lightTheme : darkTheme);
+
+    return (
+        <Box
+            width={680}
+            minWidth={300}
+            minHeight={400}
+            display="flex"
+        >
+            <Nest
+                components={[
+                    ({ children }) => (<ThemeProvider theme={theme}>{children}</ThemeProvider>),
+                    ({ children }) => (<BaseStateProvider side={DESTINATION.POPUP}>{children}</BaseStateProvider>),
+                    ObserverLoadStoreWait,
+                    BookmarksProvider,
+                ]}
+            >
+                <CssBaseline />
+                <Popup />
+            </Nest>
+        </Box>
+    );
+}
+
+const ProfilerPopup = Sentry.withProfiler(PopupRoot);
 
 render(<ProfilerPopup />, document.getElementById('root'));

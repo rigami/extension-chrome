@@ -18,12 +18,39 @@ class AppStateStore {
         this.widgets = new WidgetsService(coreService);
         this.backgrounds = new BackgroundsService(coreService);
 
-        this.activity = this.settings.defaultActivity;
+        this.activity = this.settings.defaultActivity || ACTIVITY.DESKTOP;
     }
 
     @action('set activity')
     setActivity(activity) {
         this.activity = activity;
+    }
+
+    @action('open context menu')
+    contextMenu(computeActions, { useAnchorEl = false, reactions } = {}) {
+        return (event) => {
+            event.stopPropagation();
+            event.preventDefault();
+
+            let position = {
+                top: event.nativeEvent.clientY,
+                left: event.nativeEvent.clientX,
+            };
+
+            if (useAnchorEl) {
+                const { top, left } = event.currentTarget.getBoundingClientRect();
+                position = {
+                    top,
+                    left,
+                };
+            }
+
+            this.coreService.localEventBus.call('system/contextMenu', {
+                actions: () => computeActions(event).filter((isExist) => isExist),
+                position,
+                reactions,
+            });
+        };
     }
 }
 

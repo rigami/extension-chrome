@@ -1,5 +1,5 @@
-import DBConnector from '@/utils/dbConnector';
-import FSConnector from '@/utils/fsConnector';
+import db from '@/utils/db';
+import fs from '@/utils/fs';
 import createPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/server/bus';
 import fetchData from '@/utils/xhrPromise';
@@ -19,11 +19,19 @@ class BackgroundsUniversalService {
 
     static async addToLibrary(saveBG) {
         console.log('[backgrounds] Add bg to library', saveBG);
-
         let saveFileName = saveBG.fileName;
 
-        if (!saveBG.fileName) {
+        if (!saveFileName) {
             saveFileName = await this.fetchBG(saveBG.downloadLink);
+        } else {
+            const fullBg = await fs().get(`${BackgroundsUniversalService.FULL_PATH}/${saveFileName}`, { type: 'blob' });
+            console.log('[backgrounds] Create preview...');
+
+            const previewDefaultBG = await createPreview(fullBg, saveBG.type);
+
+            console.log('[backgrounds] Save preview...');
+
+            await fs().save(`${BackgroundsUniversalService.PREVIEW_PATH}/${saveFileName}`, previewDefaultBG);
         }
 
         const savedBG = new Background({
@@ -34,7 +42,7 @@ class BackgroundsUniversalService {
 
         console.log('savedBG', savedBG);
 
-        await DBConnector().add('backgrounds', savedBG);
+        await db().add('backgrounds', savedBG);
 
         eventToApp('backgrounds/new', { bg: savedBG });
 
@@ -50,15 +58,15 @@ class BackgroundsUniversalService {
         console.log('[backgrounds] Remove from store', removeBG);
 
         try {
-            await DBConnector().delete('backgrounds', removeBG.id);
+            await db().delete('backgrounds', removeBG.id);
             console.log('[backgrounds] Remove from db...');
         } catch (e) {
             console.log(`bg ${removeBG.id} not find in db`);
         }
 
         try {
-            await FSConnector.removeFile(`/backgrounds/full/${removeBG.fileName}`);
-            await FSConnector.removeFile(`/backgrounds/preview/${removeBG.fileName}`);
+            await fs().remove(`/backgrounds/full/${removeBG.fileName}`);
+            await fs().remove(`/backgrounds/preview/${removeBG.fileName}`);
             console.log('[backgrounds] Remove from file system...');
         } catch (e) {
             console.log(`[backgrounds] BG with id=${removeBG.id} not find in file system`);
@@ -67,18 +75,19 @@ class BackgroundsUniversalService {
         eventToApp('backgrounds/remove', { bg: removeBG });
     }
 
-    static async fetchBG(src) {
-        const fileName = Date.now().toString();
-        console.log('[backgrounds] Fetch BG', {
+    static async fetchBG(src, { full = true, preview = true, fileName: defaultFileName } = {}) {
+        const fileName = defaultFileName || Date.now().toString();
+        console.log('[backgrounds] Fetch background', {
             src,
             fileName,
+            full,
+            preview,
         });
 
         let defaultBG;
 
         try {
             const response = await fetch(src);
-            console.log('response', response);
             if (!response.ok) throw new Error(response.statusText);
             defaultBG = await response.blob();
         } catch (e) {
@@ -86,19 +95,28 @@ class BackgroundsUniversalService {
             return Promise.reject();
         }
 
-        console.log('[backgrounds] Create preview...');
+        if (preview) {
+            try {
+                console.log('[backgrounds] Create preview...');
 
-        const previewDefaultBG = await createPreview(defaultBG);
+                const previewDefaultBG = await createPreview(defaultBG);
 
-        console.log('[backgrounds] Save BG in file system...');
-        await FSConnector.saveFile(BackgroundsUniversalService.FULL_PATH, defaultBG, fileName);
-        await FSConnector.saveFile(BackgroundsUniversalService.PREVIEW_PATH, previewDefaultBG, fileName);
+                await fs().save(`${BackgroundsUniversalService.PREVIEW_PATH}/${fileName}`, previewDefaultBG);
+            } catch (e) {
+                console.warn('Failed create preview:', e);
+            }
+        }
+
+        if (full) {
+            console.log('[backgrounds] Save BG in file system...');
+            await fs().save(`${BackgroundsUniversalService.FULL_PATH}/${fileName}`, defaultBG).catch(console.error);
+        }
 
         return fileName;
     }
 
     static async getAll() {
-        const bgs = await DBConnector().getAll('backgrounds');
+        const bgs = await db().getAll('backgrounds');
 
         return bgs.map((bg) => new Background(bg));
     }

@@ -52,47 +52,36 @@ const useStyles = makeStyles((theme) => ({
 
 const general = [
     {
-        title: 'settings.bg.title',
-        description: 'settings.bg.description',
         icon: <BackgroundsIcon />,
         id: 'backgrounds',
         page: backgroundsPage,
         color: '#2675F0',
     },
     {
-        title: 'settings.bookmarks.title',
-        description: 'settings.bookmarks.description',
         icon: <BookmarksIcon />,
         id: 'bookmarks',
         page: bookmarksPage,
         color: '#ff4f88',
     },
     {
-        title: 'settings.widgets.title',
-        description: 'settings.widgets.description',
         icon: <WidgetsIcon />,
         id: 'widgets',
         page: widgetsPage,
         color: '#596dff',
     },
     {
-        title: 'settings.app.title',
-        description: 'settings.app.description',
         icon: <SettingsIcon />,
         id: 'app',
         page: appSettingsPage,
         color: '#F88317',
     },
     {
-        title: 'settings.backup.title',
-        description: 'settings.backup.description',
         icon: <BackupIcon />,
         id: 'backup',
         page: backupPage,
         color: '#0f9d58',
     },
     !PRODUCTION_MODE && {
-        title: 'DevTools',
         icon: <DevToolsIcon />,
         id: 'devTools',
         page: devTools,
@@ -101,8 +90,6 @@ const general = [
 ].filter((isAvailable) => isAvailable);
 const additional = [
     {
-        title: 'settings.about.title',
-        description: 'settings.about.description',
         icon: <AboutIcon />,
         id: 'about',
         page: aboutPage,
@@ -110,18 +97,17 @@ const additional = [
     },
 ];
 
-const headerProps = { title: 'settings.title' };
+const headerProps = { title: 'title' };
 
 function Row(props) {
     const {
-        title,
+        id,
         color,
-        description,
         icon: Icon,
         page,
         onSelect,
     } = props;
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settings']);
 
     return (
         <ListItem
@@ -134,13 +120,13 @@ function Row(props) {
                     {Icon}
                 </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={t(title)} secondary={t(description)} />
+            <ListItemText primary={t(id)} secondary={t(id, { context: 'description' })} />
         </ListItem>
     );
 }
 
 function GeneralMenu({ onSelect }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settings']);
     const classes = useStyles();
 
     return (
@@ -157,17 +143,17 @@ function GeneralMenu({ onSelect }) {
                     show
                     variant="default"
                     icon={ShareIcon}
-                    message={t('settings.shareBanner.title')}
+                    message={t('shareBanner.message')}
                     description={(
                         <Fragment>
-                            {t('settings.shareBanner.description')}
+                            {t('shareBanner.description')}
                             <span className={classes.bannerLinks}>
                                 <Link
                                     color="inherit"
                                     underline="always"
                                     href="https://rigami.io/help-for-the-project"
                                 >
-                                    {t('settings.shareBanner.action')}
+                                    {t('shareBanner.button.openPage')}
                                 </Link>
                                 <Link
                                     color="inherit"
@@ -175,7 +161,7 @@ function GeneralMenu({ onSelect }) {
                                     target="_blank"
                                     href={`https://chrome.google.com/webstore/detail/${appVariables.extensionId}`}
                                 >
-                                    {t('settings.betaBanner.rateExtension')}
+                                    {t('shareBanner.button.rateExtension')}
                                 </Link>
                             </span>
                         </Fragment>
@@ -184,7 +170,7 @@ function GeneralMenu({ onSelect }) {
                 <MenuInfo
                     show
                     variant="warn"
-                    message={t('settings.betaBanner.title')}
+                    message={t('betaBanner.message')}
                     description={(
                         <span className={classes.bannerLinks}>
                             <Link
@@ -192,7 +178,7 @@ function GeneralMenu({ onSelect }) {
                                 underline="always"
                                 href="mailto:danilkinkin@gmail.com"
                             >
-                                {t('settings.betaBanner.sendEmail')}
+                                {t('betaBanner.button.sendEmail')}
                             </Link>
                             <Link
                                 color="inherit"
@@ -200,7 +186,7 @@ function GeneralMenu({ onSelect }) {
                                 target="_blank"
                                 href="https://github.com/rigami/readme/issues"
                             >
-                                {t('settings.betaBanner.openIssue')}
+                                {t('betaBanner.button.openIssue')}
                             </Link>
                         </span>
                     )}

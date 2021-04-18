@@ -1,12 +1,9 @@
 import React, { memo } from 'react';
 import {
-    Card,
     Divider,
-    Tooltip,
     Box,
     CircularProgress,
-    ButtonBase,
-    Collapse,
+    Fade,
 } from '@material-ui/core';
 import {
     RefreshRounded as RefreshIcon,
@@ -15,6 +12,8 @@ import {
     PlayArrowRounded as PlayIcon,
     SaveAltRounded as SaveBgIcon,
     CheckRounded as SavedBgIcon,
+    BookmarksRounded as BookmarksIcon,
+    HomeRounded as DesktopIcon,
 } from '@material-ui/icons';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -29,29 +28,25 @@ import {
     BG_SHOW_STATE,
     BG_SOURCE,
     BG_TYPE,
+    FETCH,
 } from '@/enum';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
 import { eventToBackground } from '@/stores/server/bus';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import useAppService from '@/stores/app/AppStateProvider';
+import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'absolute',
-        bottom: theme.spacing(3),
-        right: theme.spacing(3),
+        top: theme.spacing(2),
+        right: theme.spacing(2),
         zIndex: 2,
+        display: 'grid',
+        gridGap: theme.spacing(2),
+        pointerEvents: 'none',
     },
-    card: {
-        borderRadius: theme.shape.borderRadius,
-        backdropFilter: 'blur(10px) brightness(200%)',
-        backgroundColor: fade(theme.palette.background.default, 0.52),
-        display: 'flex',
-        flexDirection: 'column',
-        marginTop: theme.spacing(2),
-    },
-    button: { padding: theme.spacing(1.25) },
+    button: { pointerEvents: 'all' },
     loadBGIconWhite: {
         position: 'absolute',
         bottom: theme.spacing(4.25),
@@ -63,56 +58,20 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.common.black,
         margin: theme.spacing(0.25),
     },
-    notActive: { pointerEvents: 'none' },
     notClickable: { cursor: 'default' },
     divider: {
         backgroundColor: fade(theme.palette.common.white, 0.12),
         marginTop: theme.spacing(0.5),
         marginBottom: theme.spacing(0.5),
     },
-    outline: { boxShadow: `0px 0px 0px 1px ${theme.palette.divider}` },
 }));
-
-function Group({ children, ...other }) {
-    const classes = useStyles();
-    const appService = useAppService();
-
-    return (
-        <Card
-            className={clsx(classes.card, appService.activity !== ACTIVITY.DESKTOP && classes.outline)}
-            elevation={0}
-            {...other}
-        >
-            {children}
-        </Card>
-    );
-}
-
-function Button({ tooltip, icon, className: externalClassName, ...other }) {
-    const classes = useStyles();
-
-    const Icon = icon;
-
-    return (
-        <Tooltip title={tooltip} placement="left">
-            <ButtonBase
-                size="small"
-                className={clsx(classes.button, externalClassName)}
-                {...other}
-                data-ui-path={`fab.${other['data-ui-path']}`}
-            >
-                <Icon />
-            </ButtonBase>
-        </Tooltip>
-    );
-}
 
 function FabMenu() {
     const classes = useStyles();
     const coreService = useCoreService();
     const appService = useAppService();
     const { backgrounds } = appService;
-    const { t } = useTranslation();
+    const { t } = useTranslation(['bookmark', 'settings', 'background']);
 
     const bgShowMode = backgrounds.currentBG.type === BG_TYPE.VIDEO;
     const saveBgLocal = (
@@ -128,89 +87,24 @@ function FabMenu() {
         <React.Fragment>
             <MouseDistanceFade>
                 <Box className={classes.root}>
-                    <Group>
-                        <Button
-                            tooltip={t('settings.title')}
-                            data-ui-path="settings.open"
-                            onClick={() => coreService.localEventBus.call('settings/open')}
-                            icon={SettingsIcon}
-                        />
-                    </Group>
-                    <Group>
-                        <Button
-                            tooltip={t('bookmark.addShort')}
-                            data-ui-path="bookmark.add"
-                            onClick={() => coreService.localEventBus.call('bookmark/create')}
-                            icon={AddBookmarkIcon}
-                        />
-                    </Group>
-                    <Collapse
+                    <Fade
                         in={appService.activity === ACTIVITY.DESKTOP && (bgShowMode || saveBgLocal || nextBg)}
-                        unmountOnExit
                     >
-                        <Group>
-                            {bgShowMode && (
-                                <Button
-                                    tooltip={
-                                        backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
-                                            ? (
-                                                <React.Fragment>
-                                                    <b>{t('bg.pauseVideo')}</b>
-                                                    <Divider className={classes.divider} />
-                                                    {t('bg.pauseVideoDescription')}
-                                                </React.Fragment>
-                                            )
-                                            : t('bg.playVideo')
-                                    }
-                                    data-ui-path={
-                                        backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
-                                            ? 'bg.pauseVideo'
-                                            : 'bg.playVideo'
-                                    }
-                                    onClick={() => {
-                                        if (backgrounds.bgShowMode === BG_SHOW_MODE.LIVE) {
-                                            coreService.localEventBus.call('background/pause');
-                                        } else {
-                                            coreService.localEventBus.call('background/play');
-                                        }
-                                    }}
-                                    icon={backgrounds.bgShowMode === BG_SHOW_MODE.LIVE ? PauseIcon : PlayIcon}
-                                />
+                        <ExtendButtonGroup
+                            className={clsx(
+                                appService.activity === ACTIVITY.DESKTOP
+                                && (bgShowMode || saveBgLocal || nextBg)
+                                && classes.button,
                             )}
-                            {saveBgLocal && (
-                                <React.Fragment>
-                                    {backgrounds.currentBG.type === BG_TYPE.VIDEO && (<Divider />)}
-                                    <Button
-                                        tooltip={
-                                            backgrounds.currentBG.isSaved
-                                                ? t('bg.addedToLibrary')
-                                                : t('bg.addToLibrary')
-                                        }
-                                        data-ui-path={
-                                            backgrounds.currentBG.isSaved
-                                                ? 'bg.addedToLibrary'
-                                                : 'bg.addToLibrary'
-                                        }
-                                        className={clsx(
-                                            backgrounds.currentBG.isSaved && classes.notClickable,
-                                        )}
-                                        disableRipple={backgrounds.currentBG.isSaved}
-                                        onClick={() => (
-                                            !backgrounds.currentBG.isSaved
-                                                && BackgroundsUniversalService.addToLibrary(backgrounds.currentBG)
-                                        )}
-                                        icon={backgrounds.currentBG.isSaved ? SavedBgIcon : SaveBgIcon}
-                                    />
-                                </React.Fragment>
-                            )}
+                            style={{ minHeight: 42 }}
+                        >
                             {nextBg && (
                                 <React.Fragment>
-                                    {(saveBgLocal || bgShowMode) && (<Divider />)}
-                                    <Button
+                                    <ExtendButton
                                         tooltip={
                                             backgrounds.bgState === BG_SHOW_STATE.SEARCH
-                                                ? t('bg.fetchingNextBG')
-                                                : t('bg.next')
+                                                ? t('background:fetchingNextBG')
+                                                : t('background:button.next')
                                         }
                                         data-ui-path="bg.next"
                                         className={clsx(
@@ -237,8 +131,111 @@ function FabMenu() {
                                     />
                                 </React.Fragment>
                             )}
-                        </Group>
-                    </Collapse>
+                            {saveBgLocal && (
+                                <React.Fragment>
+                                    {nextBg && (<Divider />)}
+                                    {coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && (
+                                        <ExtendButton
+                                            tooltip={t('background:addingToLibrary')}
+                                            className={classes.notClickable}
+                                            disableRipple
+                                            icon={() => (
+                                                <CircularProgress
+                                                    className={classes.loadBGIcon}
+                                                    size={20}
+                                                />
+                                            )}
+                                        />
+                                    )}
+                                    {coreService.storage.temp.addingBgToLibrary !== FETCH.PENDING && (
+                                        <ExtendButton
+                                            tooltip={
+                                                backgrounds.currentBG.isSaved
+                                                    ? t('background:addedToLibrary')
+                                                    : t('background:button.addToLibrary')
+                                            }
+                                            data-ui-path={
+                                                backgrounds.currentBG.isSaved
+                                                    ? 'bg.addedToLibrary'
+                                                    : 'bg.addToLibrary'
+                                            }
+                                            className={clsx(
+                                                backgrounds.currentBG.isSaved && classes.notClickable,
+                                            )}
+                                            disableRipple={backgrounds.currentBG.isSaved}
+                                            onClick={() => {
+                                                if (!backgrounds.currentBG.isSaved) {
+                                                    backgrounds.addToLibrary(backgrounds.currentBG);
+                                                }
+                                            }}
+                                            icon={backgrounds.currentBG.isSaved ? SavedBgIcon : SaveBgIcon}
+                                        />
+                                    )}
+                                </React.Fragment>
+                            )}
+                            {bgShowMode && (
+                                <React.Fragment>
+                                    {(saveBgLocal || nextBg) && (<Divider />)}
+                                    <ExtendButton
+                                        tooltip={
+                                            backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
+                                                ? t('background:button.pause')
+                                                : t('background:button.play')
+                                        }
+                                        data-ui-path={
+                                            backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
+                                                ? 'bg.pauseVideo'
+                                                : 'bg.playVideo'
+                                        }
+                                        onClick={() => {
+                                            if (backgrounds.bgShowMode === BG_SHOW_MODE.LIVE) {
+                                                coreService.localEventBus.call('background/pause');
+                                            } else {
+                                                coreService.localEventBus.call('background/play');
+                                            }
+                                        }}
+                                        icon={backgrounds.bgShowMode === BG_SHOW_MODE.LIVE ? PauseIcon : PlayIcon}
+                                    />
+                                </React.Fragment>
+                            )}
+                        </ExtendButtonGroup>
+                    </Fade>
+                    <ExtendButtonGroup className={classes.button}>
+                        <ExtendButton
+                            tooltip={t('settings:title')}
+                            data-ui-path="settings.open"
+                            onClick={() => coreService.localEventBus.call('settings/open')}
+                            icon={SettingsIcon}
+                        />
+                    </ExtendButtonGroup>
+                    {appService.activity !== ACTIVITY.DESKTOP && (
+                        <ExtendButtonGroup className={classes.button}>
+                            <ExtendButton
+                                tooltip={t('desktop:button.open')}
+                                data-ui-path="desktop.open"
+                                onClick={() => appService.setActivity(ACTIVITY.DESKTOP)}
+                                icon={DesktopIcon}
+                            />
+                        </ExtendButtonGroup>
+                    )}
+                    {appService.activity === ACTIVITY.DESKTOP && (
+                        <ExtendButtonGroup className={classes.button}>
+                            <ExtendButton
+                                tooltip={t('bookmark:button.open')}
+                                data-ui-path="bookmark.open"
+                                onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
+                                icon={BookmarksIcon}
+                            />
+                        </ExtendButtonGroup>
+                    )}
+                    <ExtendButtonGroup className={classes.button}>
+                        <ExtendButton
+                            tooltip={t('bookmark:button.add', { context: 'short' })}
+                            data-ui-path="bookmark.add"
+                            onClick={() => coreService.localEventBus.call('bookmark/create')}
+                            icon={AddBookmarkIcon}
+                        />
+                    </ExtendButtonGroup>
                 </Box>
             </MouseDistanceFade>
         </React.Fragment>

@@ -10,16 +10,14 @@ import {
 } from '@material-ui/core';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import EditCategoryModal from '@/ui/Bookmarks/Categories/EditModal';
+import EditTagModal from '@/ui/Bookmarks/Tags/EditModal';
 import { useTranslation } from 'react-i18next';
 import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import ContextMenu from '@/ui/ContextMenu';
 import { useSnackbar } from 'notistack';
-import FSConnector from '@/utils/fsConnector';
-import { eventToBackground } from '@/stores/server/bus';
-import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
-// import InterrogationRequest from '@/ui/InterrogationRequest';
+import { getUrl } from '@/utils/fs';
+import Changelog from './Changelog';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation();
@@ -27,46 +25,30 @@ function GlobalModals({ children }) {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const coreService = useCoreService();
     const [edit, setEdit] = useState(null);
-    const [contextMenuPosition, setContextMenuPosition] = useState(null);
-    const [contextMenuActions, setContextMenuActions] = useState([]);
-    const [contextMenuReactions, setContextMenuReactions] = useState([]);
 
     useEffect(() => {
         const localListeners = [
-            coreService.localEventBus.on('system/contextMenu', ({ actions, position, reactions }) => {
-                setContextMenuPosition(position);
-                setContextMenuActions(() => actions);
-                setContextMenuReactions(reactions);
-            }),
-            coreService.localEventBus.on('bookmark/create', () => setEdit({
-                type: 'bookmark',
-                action: 'create',
-            })),
-            coreService.localEventBus.on('bookmark/edit', ({ id }) => setEdit({
-                type: 'bookmark',
-                action: 'edit',
-                id,
-            })),
             coreService.localEventBus.on('bookmark/remove', ({ id }) => setEdit({
                 type: 'bookmark',
                 action: 'remove',
                 id,
             })),
-            coreService.localEventBus.on('category/edit', ({ id, anchorEl }) => setEdit({
-                type: 'category',
+            coreService.localEventBus.on('tag/edit', ({ id, anchorEl }) => setEdit({
+                type: 'tag',
                 action: 'edit',
                 id,
                 anchorEl,
             })),
-            coreService.localEventBus.on('category/remove', ({ id }) => setEdit({
-                type: 'category',
+            coreService.localEventBus.on('tag/remove', ({ id }) => setEdit({
+                type: 'tag',
                 action: 'remove',
                 id,
             })),
-            coreService.localEventBus.on('folder/edit', ({ id, anchorEl }) => {
+            coreService.localEventBus.on('folder/edit', ({ id, anchorEl, options }) => {
                 console.log('folder/edit', {
                     id,
                     anchorEl,
+                    options,
                 });
 
                 setEdit({
@@ -74,6 +56,7 @@ function GlobalModals({ children }) {
                     action: 'edit',
                     id,
                     anchorEl,
+                    options,
                 });
             }),
             coreService.localEventBus.on('folder/remove', ({ id }) => setEdit({
@@ -83,89 +66,123 @@ function GlobalModals({ children }) {
             })),
         ];
 
+        const saveLocalBackup = () => {
+            const generateFormatter = new Intl.DateTimeFormat('en', {
+                weekday: 'long',
+                month: 'short',
+                day: '2-digit',
+                year: 'numeric',
+            });
+
+            const link = document.createElement('a');
+            link.href = getUrl('/temp/backup.zip');
+            link.download = `Backup rigami from ${generateFormatter.format(new Date())}.rigami`;
+
+            link.click();
+
+            enqueueSnackbar({
+                message: t('settingsBackup:createLocalBackup.state.success'),
+                variant: 'success',
+            });
+            coreService.storage.updatePersistent({ localBackup: null });
+        };
+
         const globalListeners = [
             coreService.globalEventBus.on('system/backup/local/create/progress', (data) => {
-                if (data.stage === 'error') {
-                    enqueueSnackbar({
-                        message: t('settings.backup.localBackup.create.failed'),
-                        variant: 'error',
-                    });
-
-                    return;
+                if (coreService.storage.temp.progressCreateSnackbar) {
+                    closeSnackbar(coreService.storage.temp.progressCreateSnackbar);
+                    coreService.storage.updateTemp({ progressCreateSnackbar: null });
                 }
 
-                console.log('system/backup/local/progress', data);
+                if (data.stage === 'start') {
+                    const snackId = enqueueSnackbar({
+                        message: t('settingsBackup:createLocalBackup.state.creating'),
+                        variant: 'progress',
+                    }, { persist: true });
 
-                console.log(FSConnector.getURL(data.path));
-
-                const link = document.createElement('a');
-                link.href = FSConnector.getURL(data.path);
-                link.download = 'Rigmai backup';
-
-                link.click();
-
-                enqueueSnackbar({
-                    message: t('settings.backup.localBackup.create.success'),
-                    variant: 'success',
-                });
+                    coreService.storage.updateTemp({ progressCreateSnackbar: snackId });
+                } else if (data.stage === 'error') {
+                    enqueueSnackbar({
+                        message: t('settingsBackup:createLocalBackup.error.unknown'),
+                        variant: 'error',
+                    });
+                } else if (data.stage === 'done') {
+                    saveLocalBackup();
+                }
             }),
             coreService.globalEventBus.on('system/backup/local/restore/progress', (data) => {
                 if (coreService.storage.temp.progressRestoreSnackbar) {
                     closeSnackbar(coreService.storage.temp.progressRestoreSnackbar);
                 }
 
-                if (data.type === 'oldAppBackupFile') {
-                    console.log(data.file);
-
-                    setEdit({
-                        type: 'oldAppBackupFile',
-                        action: 'prompt',
-                        file: data.file,
-                    });
-                } else if (data.result === 'start') {
+                if (data.result === 'start') {
                     const snackId = enqueueSnackbar({
-                        message: t('settings.backup.localBackup.restore.progress'),
+                        message: t('settingsBackup:restoreLocalBackup.state.restoring'),
                         variant: 'progress',
-                    });
+                    }, { persist: true });
 
                     coreService.storage.updateTemp({ progressRestoreSnackbar: snackId });
                 } else if (data.result === 'done') {
-                    coreService.storage.updatePersistent({ showBackupSuccessRestoreMessage: true });
                     location.reload();
                 } else if (data.result === 'error') {
                     enqueueSnackbar({
-                        message: t(`settings.backup.localBackup.restore.failed.${data.message}`),
+                        message: t(`settingsBackup:restoreLocalBackup.error.${data.message}`),
                         variant: data.result,
+                    });
+
+                    coreService.storage.updatePersistent({
+                        restoreBackup: null,
+                        restoreBackupError: null,
                     });
                 }
             }),
         ];
 
-        if (coreService.storage.persistent.showBackupSuccessRestoreMessage) {
-            coreService.storage.updatePersistent({ showBackupSuccessRestoreMessage: null });
-            enqueueSnackbar({
-                message: t('settings.backup.localBackup.restore.success'),
-                variant: 'success',
-            });
+        if (coreService.storage.persistent.localBackup) {
+            if (coreService.storage.persistent.localBackup === 'creating') {
+                const snackId = enqueueSnackbar({
+                    message: t('settingsBackup:createLocalBackup.state.creating'),
+                    variant: 'progress',
+                }, { persist: true });
+
+                coreService.storage.updateTemp({ progressCreateSnackbar: snackId });
+            } else if (coreService.storage.persistent.localBackup === 'error') {
+                enqueueSnackbar({
+                    message: t('settingsBackup:createLocalBackup.error.unknown'),
+                    variant: 'error',
+                });
+                coreService.storage.updatePersistent({ localBackup: null });
+            } else if (coreService.storage.persistent.localBackup === 'done') {
+                saveLocalBackup();
+            }
         }
 
-        if (coreService.storage.temp.newVersion) {
-            const snackbar = enqueueSnackbar({
-                message: t('newVersion.title', { version: coreService.storage.persistent.lastUsageVersion }),
-                description: t('newVersion.description'),
-                buttons: [
-                    {
-                        title: t('newVersion.ok'),
-                        onClick: () => {
-                            closeSnackbar(snackbar);
-                        },
-                    },
-                    /* { title: t('newVersion.changelog'), onClick: () => {
-                            setEdit({ type: 'changelog', action: 'open', });
-                        } }, */
-                ],
-            }, { autoHideDuration: 18000 });
-            coreService.storage.updateTemp({ newVersion: false });
+        if (coreService.storage.persistent.restoreBackup) {
+            if (coreService.storage.persistent.restoreBackup === 'restoring') {
+                const snackId = enqueueSnackbar({
+                    message: t('settingsBackup:restoreLocalBackup.state.restoring'),
+                    variant: 'progress',
+                }, { persist: true });
+
+                coreService.storage.updateTemp({ progressRestoreSnackbar: snackId });
+            } else if (coreService.storage.persistent.restoreBackup === 'error') {
+                enqueueSnackbar({
+                    message: t(`settingsBackup:restoreLocalBackup.error.${
+                        coreService.storage.persistent.restoreBackupError
+                    }`),
+                    variant: 'error',
+                });
+                coreService.storage.updatePersistent({
+                    restoreBackup: null,
+                    restoreBackupError: null,
+                });
+            } else if (coreService.storage.persistent.restoreBackup === 'done') {
+                coreService.storage.updatePersistent({ restoreBackup: null });
+                enqueueSnackbar({
+                    message: t('settingsBackup:restoreLocalBackup.state.success'),
+                    variant: 'success',
+                });
+            }
         }
 
         return () => {
@@ -178,21 +195,12 @@ function GlobalModals({ children }) {
         <React.Fragment>
             {children}
             {/* <InterrogationRequest /> */}
-            <ContextMenu
-                isOpen={contextMenuPosition !== null}
-                position={contextMenuPosition}
-                actions={contextMenuActions}
-                reactions={contextMenuReactions}
-                onClose={() => setContextMenuPosition(null)}
-            />
-            <EditBookmarkModal
-                isOpen={edit && edit.type === 'bookmark' && edit.action !== 'remove'}
-                editBookmarkId={edit && edit.id}
-                onClose={() => setEdit(null)}
-            />
-            <EditCategoryModal
+            <Changelog />
+            <ContextMenu />
+            <EditBookmarkModal />
+            <EditTagModal
                 anchorEl={edit && edit.anchorEl}
-                isOpen={edit && edit.type === 'category' && edit.action !== 'remove'}
+                isOpen={edit && edit.type === 'tag' && edit.action !== 'remove'}
                 onSave={() => setEdit(null)}
                 onClose={() => setEdit(null)}
                 editId={edit && edit.id}
@@ -204,23 +212,21 @@ function GlobalModals({ children }) {
                 onClose={() => setEdit(null)}
                 editId={edit && edit.id}
                 simple
+                {...(edit?.options || {})}
             />
-            {/* <Changelog
-                open={edit && edit.type === 'changelog' && edit.action === 'open'}
-                onClose={() => setEdit(null)}
-            /> */}
-            {['bookmark', 'category', 'folder'].map((type) => (
+            {['bookmark', 'tag', 'folder'].map((type) => (
                 <Dialog
+                    data-role="dialog"
                     key={type}
                     open={(edit && edit.action === 'remove' && edit.type === type) || false}
                     onClose={() => setEdit(null)}
                 >
                     <DialogTitle>
-                        {t(`${type}.remove.title`)}
+                        {t(`${type}:remove.confirm`)}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            {t(`${type}.remove.description`)}
+                            {t(`${type}:remove.confirm`, { context: 'description' })}
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -229,15 +235,15 @@ function GlobalModals({ children }) {
                             onClick={() => setEdit(null)}
                             color="primary"
                         >
-                            {t('cancel')}
+                            {t('common:button.cancel')}
                         </Button>
                         <Button
                             data-ui-path={`dialog.${type}.remove`}
                             onClick={() => {
                                 if (type === 'bookmark') {
                                     bookmarksStore.bookmarks.remove(edit.id);
-                                } else if (type === 'category') {
-                                    bookmarksStore.categories.remove(edit.id);
+                                } else if (type === 'tag') {
+                                    bookmarksStore.tags.remove(edit.id);
                                 } else if (type === 'folder') {
                                     bookmarksStore.folders.remove(edit.id);
                                 }
@@ -246,47 +252,11 @@ function GlobalModals({ children }) {
                             color="primary"
                             autoFocus
                         >
-                            {t('remove')}
+                            {t('common:button.remove')}
                         </Button>
                     </DialogActions>
                 </Dialog>
             ))}
-            <Dialog
-                open={(edit && edit.action === 'prompt' && edit.type === 'oldAppBackupFile') || false}
-                onClose={() => setEdit(null)}
-            >
-                <DialogTitle>
-                    {t('settings.backup.localBackup.oldAppBackupFile.title')}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {t('settings.backup.localBackup.oldAppBackupFile.description')}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        data-ui-path="dialog.backup.localBackup.oldAppBackupFile.cancel"
-                        onClick={() => setEdit(null)}
-                        color="primary"
-                    >
-                        {t('cancel')}
-                    </Button>
-                    <Button
-                        data-ui-path="dialog.backup.localBackup.oldAppBackupFile.continue"
-                        onClick={() => {
-                            eventToBackground(
-                                'system/backup/local/restore',
-                                { backup: convertClockTabToRigami(edit.file) },
-                            );
-                            setEdit(null);
-                        }}
-                        color="primary"
-                        autoFocus
-                    >
-                        {t('settings.backup.localBackup.oldAppBackupFile.continue')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </React.Fragment>
     );
 }

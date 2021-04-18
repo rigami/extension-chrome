@@ -1,11 +1,9 @@
-import DBConnector from '@/utils/dbConnector';
-import { toJS } from 'mobx';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 
-async function upgradeOrCreateBackgrounds(db, transaction) {
+async function upgradeOrCreateBackgrounds(db, transaction, oldVersion, newVersion) {
     let store;
 
-    if (db.objectStoreNames.contains('backgrounds')) {
+    if (transaction.objectStoreNames.contains('backgrounds')) {
         store = transaction.objectStore('backgrounds');
     } else {
         store = db.createObjectStore('backgrounds', {
@@ -47,14 +45,12 @@ async function upgradeOrCreateBackgrounds(db, transaction) {
     if (!store.indexNames.contains('download_link')) {
         store.createIndex('download_link', 'downloadLink', { unique: false });
     }
-
-    return store;
 }
 
-async function upgradeOrCreateBookmarks(db, transaction) {
+async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion) {
     let store;
 
-    if (db.objectStoreNames.contains('bookmarks')) {
+    if (transaction.objectStoreNames.contains('bookmarks')) {
         store = transaction.objectStore('bookmarks');
     } else {
         store = db.createObjectStore('bookmarks', {
@@ -79,13 +75,36 @@ async function upgradeOrCreateBookmarks(db, transaction) {
         }));
     }
 
-    return store;
+    if (!store.indexNames.contains('tags')) {
+        store.createIndex('tags', 'tags', { unique: false });
+    }
+
+    if (!store.indexNames.contains('version')) {
+        store.createIndex('version', 'version', { unique: false });
+    }
+
+    if (oldVersion !== 0 && oldVersion < 7) {
+        const bookmarks = await store.getAll();
+        const bookmarksByCategories = await transaction.objectStore('bookmarks_by_categories').getAll();
+
+        for await (const bookmark of bookmarks) {
+            const tags = bookmarksByCategories
+                .filter(({ bookmarkId }) => bookmarkId === bookmark.id)
+                .map(({ categoryId }) => categoryId);
+
+            transaction.objectStore('bookmarks').put({
+                ...bookmark,
+                version: 1,
+                tags,
+            });
+        }
+    }
 }
 
-function upgradeOrCreateSystemBookmarks(db, transaction) {
+function upgradeOrCreateSystemBookmarks(db, transaction, oldVersion, newVersion) {
     let store;
 
-    if (db.objectStoreNames.contains('system_bookmarks')) {
+    if (transaction.objectStoreNames.contains('system_bookmarks')) {
         store = transaction.objectStore('system_bookmarks');
     } else {
         store = db.createObjectStore('system_bookmarks', {
@@ -96,17 +115,15 @@ function upgradeOrCreateSystemBookmarks(db, transaction) {
         store.createIndex('rigami_id', 'rigamiId', { unique: false });
         store.createIndex('system_id', 'systemId', { unique: true });
     }
-
-    return store;
 }
 
-function upgradeOrCreateCategories(db, transaction) {
+async function upgradeOrCreateTags(db, transaction, oldVersion, newVersion) {
     let store;
 
-    if (db.objectStoreNames.contains('categories')) {
-        store = transaction.objectStore('categories');
+    if (transaction.objectStoreNames.contains('tags')) {
+        store = transaction.objectStore('tags');
     } else {
-        store = db.createObjectStore('categories', {
+        store = db.createObjectStore('tags', {
             keyPath: 'id',
             autoIncrement: true,
         });
@@ -114,30 +131,22 @@ function upgradeOrCreateCategories(db, transaction) {
         store.createIndex('color', 'color', { unique: true });
     }
 
-    return store;
-}
+    if (oldVersion !== 0 && oldVersion < 7) {
+        const categories = await transaction.objectStore('categories').getAll();
 
-function upgradeOrCreateBookmarksByCategories(db, transaction) {
-    let store;
-
-    if (db.objectStoreNames.contains('bookmarks_by_categories')) {
-        store = transaction.objectStore('bookmarks_by_categories');
-    } else {
-        store = db.createObjectStore('bookmarks_by_categories', {
-            keyPath: 'id',
-            autoIncrement: true,
-        });
-        store.createIndex('category_id', 'categoryId', { unique: false });
-        store.createIndex('bookmark_id', 'bookmarkId', { unique: false });
+        await Promise.all(categories.map((tag) => transaction.objectStore('tags').put({
+            id: tag.id,
+            name: tag.name,
+            color: tag.color,
+        })));
+        db.deleteObjectStore('categories');
     }
-
-    return store;
 }
 
-async function upgradeOrCreateFolders(db, transaction /* , newVersion */) {
+async function upgradeOrCreateFolders(db, transaction, oldVersion, newVersion) {
     let store;
 
-    if (db.objectStoreNames.contains('folders')) {
+    if (transaction.objectStoreNames.contains('folders')) {
         store = transaction.objectStore('folders');
     } else {
         store = db.createObjectStore('folders', {
@@ -148,18 +157,16 @@ async function upgradeOrCreateFolders(db, transaction /* , newVersion */) {
         store.createIndex('parent_id', 'parentId', { unique: false });
 
         await store.add({
-            name: 'rigami',
+            name: 'Sundry',
             parentId: 0,
         });
     }
-
-    return store;
 }
 
-async function upgradeOrCreateFavorites(db, transaction) {
+async function upgradeOrCreateFavorites(db, transaction, oldVersion, newVersion) {
     let store;
 
-    if (db.objectStoreNames.contains('favorites')) {
+    if (transaction.objectStoreNames.contains('favorites')) {
         store = transaction.objectStore('favorites');
     } else {
         store = db.createObjectStore('favorites', {
@@ -176,80 +183,29 @@ async function upgradeOrCreateFavorites(db, transaction) {
 
         store.deleteIndex('type');
         store.deleteIndex('favorite_id');
-
-        (await store.getAll()).forEach((favorite) => store.put({
-            id: favorite.id,
-            itemId: favorite.favoriteId,
-            itemType: favorite.type,
-        }));
     }
 
-    return store;
-}
-
-async function migrate(version) {
-    console.log('Migrate!');
-
-    if (version === 3) {
-        console.log('Rename old folders');
-        const renameFolder = (folderIndex, folderNames, oldName) => {
-            let newFolderName = oldName;
-            let count = 1;
-
-            while (folderNames.indexOf(newFolderName) !== -1) {
-                count += 1;
-                newFolderName = `${oldName} ${count}`;
-            }
-
-            return newFolderName;
-        };
-
-        const findRenamedFolders = async (folderId) => {
-            const folders = await DBConnector().getAllFromIndex('folders', 'parent_id', folderId);
-
-            console.log('check level', folderId, toJS(folders));
-
-            if (folders.length === 0) return [];
-
-            const renamedFolders = [];
-
-            const changedFolders = folders.map(({ name, ...folder }, index) => {
-                const newName = renameFolder(index, [...renamedFolders].splice(0, index), folders[index].name);
-
-                renamedFolders.push(newName);
-
-                return {
-                    ...folder,
-                    name,
-                    newName,
-                };
-            }).filter(({ name, newName }) => name !== newName);
-
-            const childFolders = (await Promise.all(folders.map((folder) => findRenamedFolders(folder.id)))).flat();
-
-            return [...changedFolders, ...childFolders];
-        };
-
-        const changedFolders = await findRenamedFolders(0);
-
-        await Promise.all(changedFolders.map((folder) => DBConnector().put('folders', {
-            id: folder.id,
-            name: folder.newName.trim(),
-            parentId: folder.parentId,
-        })));
+    if (oldVersion !== 0 && oldVersion < 7) {
+        (await store.getAll()).forEach((favorite) => store.put({
+            id: favorite.id,
+            itemId: favorite.itemId,
+            itemType: favorite.itemType === 'category' ? 'tag' : favorite.itemType,
+        }));
     }
 }
 
 export default ({ upgrade }) => ({
-    upgrade(db, oldVersion, newVersion, transaction) {
+    async upgrade(db, oldVersion, newVersion, transaction) {
         console.log('upgrade db', db, transaction, oldVersion, newVersion);
-        upgradeOrCreateBackgrounds(db, transaction);
-        upgradeOrCreateBookmarks(db, transaction);
-        upgradeOrCreateSystemBookmarks(db, transaction);
-        upgradeOrCreateCategories(db, transaction);
-        upgradeOrCreateBookmarksByCategories(db, transaction);
-        upgradeOrCreateFolders(db, transaction, newVersion).catch(console.error);
-        upgradeOrCreateFavorites(db, transaction);
+        await upgradeOrCreateBackgrounds(db, transaction, oldVersion, newVersion);
+        await upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion);
+        await upgradeOrCreateSystemBookmarks(db, transaction, oldVersion, newVersion);
+        await upgradeOrCreateTags(db, transaction, oldVersion, newVersion);
+        await upgradeOrCreateFolders(db, transaction, oldVersion, newVersion);
+        await upgradeOrCreateFavorites(db, transaction, oldVersion, newVersion);
+        if (newVersion >= 7 && transaction.objectStoreNames.contains('bookmarks_by_categories')) {
+            db.deleteObjectStore('bookmarks_by_categories');
+        }
 
         upgrade();
     },
@@ -257,5 +213,3 @@ export default ({ upgrade }) => ({
     blocking() {},
     terminated() {},
 });
-
-export { migrate };

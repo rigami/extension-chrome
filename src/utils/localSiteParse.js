@@ -44,10 +44,10 @@ function parseSite(xml, urlOrigin) {
             url = element.getAttribute('href');
             const sizes = element.getAttribute('sizes');
 
-            if (sizes !== '' && sizes !== 'any') {
+            if (typeof sizes === 'string' && sizes !== '' && sizes !== 'any') {
                 try {
                     const separator = sizes.indexOf('x');
-                    if (separator === -1) throw new Exception('Is not size');
+                    if (separator === -1) throw new Error('Is not size');
                     const width = Number.parseInt(sizes.substring(0, separator));
                     const height = Number.parseInt(sizes.substring(separator + 1));
 

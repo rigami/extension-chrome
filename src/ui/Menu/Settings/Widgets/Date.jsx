@@ -26,16 +26,16 @@ const useStyles = makeStyles((theme) => ({
 
 function DateWidget() {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsWidget']);
     const { widgets } = useAppStateService();
     const [actionEditorOpen, setActionEditorOpen] = useState(false);
     const [actionUrl, setActionUrl] = useState('');
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('settings.widgets.dtw.date.title')} />
+            <SectionHeader title={t('date.title')} />
             <MenuRow
-                title={t('settings.widgets.dtw.date.useDate')}
+                title={t('date.useDate')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     value: widgets.settings.dtwUseDate,
@@ -46,8 +46,8 @@ function DateWidget() {
             />
             <Collapse in={widgets.settings.dtwUseDate}>
                 <MenuRow
-                    title={t('settings.widgets.dtw.date.clickAction.title')}
-                    description={t('settings.widgets.dtw.date.clickAction.description')}
+                    title={t('date.clickAction.title')}
+                    description={t('date.clickAction.description')}
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => { setActionEditorOpen(true); },
@@ -55,43 +55,43 @@ function DateWidget() {
                             ? `open: ${getDomain(widgets.settings.dtwDateAction)}`
                             : (
                                 <Typography className={classes.notSetValue}>
-                                    {t('settings.widgets.dtw.date.clickAction.notSet')}
+                                    {t('common:notSet')}
                                 </Typography>
                             ),
                     }}
                 />
                 <Dialog open={actionEditorOpen} onClose={() => { setActionEditorOpen(false); }}>
-                    <DialogTitle>{t('settings.widgets.dtw.date.clickAction.titleFull')}</DialogTitle>
+                    <DialogTitle>{t('date.clickAction.dialog.title')}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            {t('settings.widgets.dtw.date.clickAction.descriptionFull')}
+                            {t('date.clickAction.dialog.description')}
                         </DialogContentText>
                         <TextField
                             autoFocus
                             margin="dense"
                             defaultValue={widgets.settings.dtwDateAction}
                             fullWidth
-                            label={t('settings.widgets.dtw.date.clickAction.textFieldLabelUrl')}
+                            label={t('date.clickAction.dialog.url')}
                             onChange={(event) => { setActionUrl(event.target.value); }}
                         />
                     </DialogContent>
                     <DialogActions>
                         <Button
-                            data-ui-path="settings.widgets.dtw.date.clickAction.cancel"
+                            data-ui-path="date.clickAction.cancel"
                             color="primary"
                             onClick={() => { setActionEditorOpen(false); }}
                         >
-                            {t('cancel')}
+                            {t('common:button.cancel')}
                         </Button>
                         <Button
-                            data-ui-path="settings.widgets.dtw.date.clickAction.save"
+                            data-ui-path="date.clickAction.save"
                             color="primary"
                             onClick={() => {
                                 setActionEditorOpen(false);
                                 widgets.settings.update({ dtwDateAction: actionUrl });
                             }}
                         >
-                            {t('save')}
+                            {t('common:button.save')}
                         </Button>
                     </DialogActions>
                 </Dialog>

@@ -13,9 +13,10 @@ const useStyles = makeStyles((theme) => ({
     roundedIconStub: { borderRadius: theme.shape.borderRadiusBold },
     roundedIcon: {
         borderRadius: theme.shape.borderRadiusBold,
-        backgroundColor: theme.palette.common.white,
-        color: theme.palette.getContrastText(theme.palette.common.white),
+        color: theme.palette.getContrastText(theme.palette.background.backdrop),
         fontWeight: 800,
+        backgroundColor: theme.palette.background.backdrop,
+        fontFamily: theme.typography.primaryFontFamily,
     },
 }));
 
@@ -45,7 +46,7 @@ function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName
                         variant="rect"
                         animation="wave"
                         width={180}
-                        height={90}
+                        height={84}
                         className={externalClassName}
                     />
                 )}
@@ -61,8 +62,8 @@ function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName
                     <Skeleton
                         variant="rect"
                         animation="wave"
-                        width={40}
-                        height={40}
+                        width={32}
+                        height={32}
                         className={clsx(classes.roundedIconStub, externalClassName)}
                     />
                 )}

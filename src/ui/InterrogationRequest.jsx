@@ -4,7 +4,7 @@ import { IconButton, CardMedia, Collapse } from '@material-ui/core';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import FullScreenStub from '@/ui-components/FullscreenStub';
+import Stub from '@/ui-components/Stub';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     CloseRounded as CloseIcon,
@@ -38,7 +38,7 @@ function RequestScreen({ onClose, onEnd }) {
                 <CloseIcon />
             </IconButton>
             <Collapse in={isRequestScreen}>
-                <FullScreenStub
+                <Stub
                     className={classes.rateScreen}
                     icon={CardMedia}
                     iconProps={{
@@ -61,7 +61,7 @@ function RequestScreen({ onClose, onEnd }) {
                 />
             </Collapse>
             <Collapse in={!isRequestScreen}>
-                <FullScreenStub
+                <Stub
                     className={classes.endScreen}
                     icon={FavoriteIcon}
                     iconProps={{ className: classes.endScreenIcon }}

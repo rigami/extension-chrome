@@ -1,15 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState, Fragment } from 'react';
 import useAppStateService from '@/stores/app/AppStateProvider';
-
-const useStyles = makeStyles(() => ({
-    root: {
-        textShadow: '0 2px 17px #00000029',
-        fontFamily: '"Manrope", "Open Sans", sans-serif',
-        fontWeight: 800,
-    },
-}));
 
 const formatter = new Intl.DateTimeFormat('nu', {
     hour: '2-digit',
@@ -22,8 +12,7 @@ const formatter12 = new Intl.DateTimeFormat('nu', {
     hour12: true,
 });
 
-function Time({ size }) {
-    const classes = useStyles();
+function Time() {
     const { widgets } = useAppStateService();
     const [now, setNow] = useState(new Date());
 
@@ -36,9 +25,9 @@ function Time({ size }) {
     }, []);
 
     return (
-        <Typography variant={size} className={classes.root}>
+        <Fragment>
             {(widgets.settings.dtwTimeFormat12 ? formatter12 : formatter).format(now)}
-        </Typography>
+        </Fragment>
     );
 }
 

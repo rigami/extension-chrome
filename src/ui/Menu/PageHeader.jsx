@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
 
 function PageHeader({ title, onBack, actions, ...other }) {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settings']);
 
     return (
         <AppBar

@@ -1,0 +1,34 @@
+{
+  "general": "General",
+  "fap": "Quick Access Toolbar",
+  "fapEmptyWarningMessage":"The panel is not displayed because no item has been added to favorites. Add folder, bookmark or tag to favorites",
+  "openOnStartup": {
+    "title": "Open bookmarks panel at startup",
+    "description": "Bookmarks panel will open when opening a new tab"
+  },
+  "useFap":{
+    "title":"Use Quick Access Toolbar",
+    "description":"Pin your most important bookmarks and tags to always have quick access to them"
+  },
+  "fapStyle":{
+    "title":"Panel Style",
+    "value":{
+      "CONTAINED":"With backdrop",
+      "TRANSPARENT":"Transparent"
+    }
+  },
+  "fapPosition":{
+    "title":"Panel position",
+    "value":{
+      "TOP":"From above",
+      "BOTTOM":"From below"
+    }
+  },
+  "fapAlign":{
+    "title":"Panel align",
+    "value":{
+      "LEFT":"Be left side",
+      "CENTER":"Center"
+    }
+  }
+}

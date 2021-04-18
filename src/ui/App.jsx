@@ -4,8 +4,8 @@ import { CssBaseline } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
 import Snackbar from '@/ui-components/Snackbar';
-import UploadBGForm from '@/ui-components/UploadBGForm';
-import { ACTIVITY, DESTINATION, THEME } from '@/enum';
+import UploadBGForm from '@/ui/UploadBackground';
+import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/Nest';
@@ -15,30 +15,15 @@ import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import InitAppProvider from '@/stores/app/InitApp';
 import initSentry from '@/config/sentry';
 import * as Sentry from '@sentry/react';
-import ScrollView from '@/ui-components/ScrollView';
-import { makeStyles } from '@material-ui/core/styles';
 import FabMenu from '@/ui/Menu/FabMenu';
 import Menu from '@/ui/Menu';
-import FAP from './Bookmarks/FAP';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
-import GlobalScroll from './GlobalScroll';
 import GlobalModals from './GlobalModals';
 
 initSentry(DESTINATION.APP);
 
-const useStyles = makeStyles((theme) => ({
-    bookmarks: {
-        backgroundColor: theme.palette.background.paper,
-        transform: 'translate3d(0,0,0)',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-}));
-
 function RootApp({ onChangeTheme }) {
-    const classes = useStyles();
-
     return (
         <Nest
             components={[
@@ -58,15 +43,8 @@ function RootApp({ onChangeTheme }) {
                 GlobalModals,
             ]}
         >
-            <GlobalScroll>
-                <ScrollView value={ACTIVITY.DESKTOP} disableScroll>
-                    <Desktop />
-                </ScrollView>
-                <ScrollView value={ACTIVITY.BOOKMARKS} classes={{ content: classes.bookmarks }}>
-                    <Bookmarks />
-                </ScrollView>
-            </GlobalScroll>
-            <FAP />
+            <Desktop />
+            <Bookmarks />
             <FabMenu />
             <Menu />
         </Nest>

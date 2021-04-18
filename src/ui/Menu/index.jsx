@@ -1,123 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import {
-    List,
-    Backdrop,
-    Portal,
-    Slide,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import Header from '@/ui/Menu/PageHeader';
-import Scrollbar from '@/ui-components/CustomScroll';
-import HomePage, { header as homePageHeader } from './Settings';
-
-const useStyles = makeStyles((theme) => ({
-    list: {
-        flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: `calc(100vh - ${theme.spacing(4)}px)`,
-        backgroundColor: theme.palette.background.paper,
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-        marginRight: theme.spacing(2),
-        marginLeft: 'auto',
-        borderRadius: theme.shape.borderRadius,
-        boxShadow: theme.shadows[20],
-        pointerEvents: 'auto',
-    },
-    trackY: {
-        top: theme.spacing(2),
-        bottom: theme.spacing(2),
-        right: theme.spacing(0.75),
-        pointerEvents: 'auto',
-    },
-    thumbY: { backgroundColor: theme.palette.background.paper },
-    backdrop: { zIndex: theme.zIndex.drawer },
-    drawer: {
-        position: 'absolute !important',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        zIndex: theme.zIndex.modal,
-        pointerEvents: 'none',
-    },
-}));
 
 function Menu({ }) {
     const coreService = useCoreService();
-
-    const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
-    const [stack, setStack] = useState([
-        {
-            content: HomePage,
-            header: homePageHeader,
-        },
-    ]);
+    const [isLoad, setIsLoad] = useState(false);
+    const menu = useRef(null);
 
     const handleClose = () => {
-        setStack([
-            {
-                content: HomePage,
-                header: homePageHeader,
-            },
-        ]);
         setIsOpen(false);
     };
 
-    const handleBack = () => {
-        if (stack.length === 1) {
-            handleClose();
-        } else {
-            setStack(stack.slice(0, stack.length - 1));
+    const handleOpen = async () => {
+        if (menu.current) {
+            setIsOpen(true);
+            return;
         }
-    };
 
-    const Page = stack[stack.length - 1].content;
-    const headerProps = stack[stack.length - 1] && stack[stack.length - 1].header;
-    const pageProps = (stack[stack.length - 1] && stack[stack.length - 1].props) || {};
+        setIsLoad(true);
+
+        menu.current = (await import('./DrawerMenu')).default;
+        setIsLoad(false);
+        setIsOpen(true);
+    };
 
     useEffect(() => {
         const listenerId = coreService.localEventBus.on('settings/open', () => {
-            setIsOpen(true);
+            handleOpen();
         });
 
         return () => coreService.localEventBus.removeListener(listenerId);
     }, []);
 
+    if (isLoad || !menu.current) return null;
+
     return (
-        <Portal>
-            <Backdrop
-                open={isOpen}
-                onClick={handleClose}
-                invisible
-                className={classes.backdrop}
-            />
-            <Slide in={isOpen} direction="left">
-                <Scrollbar
-                    className={classes.drawer}
-                    classes={{
-                        trackY: classes.trackY,
-                        thumbY: classes.thumbY,
-                    }}
-                >
-                    <List
-                        disablePadding
-                        className={classes.list}
-                        style={{ width: pageProps.width || 520 }}
-                    >
-                        <Header onBack={handleBack} {...headerProps} />
-                        <Page
-                            onClose={handleBack}
-                            onSelect={(page) => setStack([...stack, page])}
-                        />
-                    </List>
-                </Scrollbar>
-            </Slide>
-        </Portal>
+        <menu.current open={isOpen} onClose={handleClose} />
     );
 }
 

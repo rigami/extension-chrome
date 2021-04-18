@@ -78,6 +78,7 @@ function MenuRow(props) {
         action: {
             type: actionType = TYPE.NONE,
             width: actionWidth = 252,
+            format: actionFormat = (value) => value,
             ...actionProps
         } = {},
         width,
@@ -151,7 +152,7 @@ function MenuRow(props) {
                             >
                                 {actionProps.values.map((actionValue) => (
                                     <MenuItem key={actionValue} value={actionValue}>
-                                        {actionProps.format?.(actionValue) || actionValue}
+                                        {actionFormat?.(actionValue) || actionValue}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -166,15 +167,15 @@ function MenuRow(props) {
                                 displayEmpty
                                 renderValue={(selected) => {
                                     if (actionProps.value && (actionProps.value.length === 0)) {
-                                        return actionProps.format?.('nothingSelected') || t('nothingSelected');
+                                        return actionFormat?.('nothingSelected') || t('nothingSelected');
                                     } else if (
                                         actionProps.values && actionProps.value
                                         && (actionProps.values.length === actionProps.value.length)
                                     ) {
-                                        return actionProps.format?.('all') || t('all');
+                                        return actionFormat?.('all') || t('all');
                                     } else {
                                         return selected && selected
-                                            .map((actionValue) => (actionProps.format?.(actionValue) || actionValue))
+                                            .map((actionValue) => (actionFormat?.(actionValue) || actionValue))
                                             .join(', ');
                                     }
                                 }}
@@ -186,7 +187,7 @@ function MenuRow(props) {
                                             checked={actionProps.value && actionProps.value.indexOf(actionValue) > -1}
                                         />
                                         <ListItemText
-                                            primary={actionProps.format?.(actionValue) || actionValue}
+                                            primary={actionFormat?.(actionValue) || actionValue}
                                         />
                                     </MenuItem>
                                 ))}
