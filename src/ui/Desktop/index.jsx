@@ -115,7 +115,6 @@ function Desktop() {
     const store = useLocalObservable(() => ({
         isRender: appService.activity !== ACTIVITY.BOOKMARKS,
         stickWidgetsToBottom: appService.activity !== ACTIVITY.DESKTOP,
-        showBookmarksGoHelper: false,
     }));
 
     const contextMenu = () => [
@@ -192,9 +191,13 @@ function Desktop() {
     ];
 
     const wheelHandler = (event) => {
-        if (!event.path.includes(rootRef.current)) return;
+        if (!event.path.includes(rootRef.current) || event.deltaY <= 0) return;
 
-        store.showBookmarksGoHelper = !coreService.storage.temp.closeFapPopper && event.deltaY > 0;
+        if (coreService.storage.temp.shakeFapPopper) {
+            coreService.storage.temp.shakeFapPopper();
+        } else {
+            appService.setActivity(ACTIVITY.BOOKMARKS);
+        }
     };
 
     useEffect(() => {
@@ -207,7 +210,6 @@ function Desktop() {
             setTimeout(() => {
                 if (appService.activity !== ACTIVITY.DESKTOP) { store.stickWidgetsToBottom = true; }
             }, theme.transitions.duration.short);
-            store.showBookmarksGoHelper = false;
         } else {
             store.stickWidgetsToBottom = false;
         }
@@ -216,14 +218,6 @@ function Desktop() {
             if (appService.activity !== ACTIVITY.BOOKMARKS) removeEventListener('wheel', wheelHandler);
         };
     }, [appService.activity]);
-
-    useEffect(() => {
-        if (!store.showBookmarksGoHelper) return () => {};
-
-        const timer = setTimeout(() => { store.showBookmarksGoHelper = false; }, 4000);
-
-        return () => clearTimeout(timer);
-    }, [store.showBookmarksGoHelper]);
 
     return (
         <Fragment>
@@ -248,17 +242,6 @@ function Desktop() {
                     />
                 </ExtendButtonGroup>
             )}
-            <Grow in={store.showBookmarksGoHelper && appService.activity === ACTIVITY.DESKTOP}>
-                <ExtendButtonGroup className={classes.showBookmarks}>
-                    <ExtendButton
-                        tooltip={t('bookmark:button.open')}
-                        data-ui-path="button.bookmarks-show"
-                        onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
-                        icon={() => <ShowBookmarksIcon className={classes.icon} />}
-                        label={t('bookmark:button.open')}
-                    />
-                </ExtendButtonGroup>
-            </Grow>
             <Box
                 ref={rootRef}
                 className={clsx(
