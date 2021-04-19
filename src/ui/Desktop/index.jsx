@@ -191,13 +191,12 @@ function Desktop() {
     ];
 
     const wheelHandler = (event) => {
-        if (!event.path.includes(rootRef.current) || event.deltaY <= 0) return;
+        if (!event.path.includes(rootRef.current)) return;
 
         if (coreService.storage.temp.shakeFapPopper) {
             coreService.storage.temp.shakeFapPopper();
-        } else {
-            appService.setActivity(ACTIVITY.BOOKMARKS);
-        }
+        } else if (event.deltaY > 0) appService.setActivity(ACTIVITY.BOOKMARKS);
+        else appService.setActivity(ACTIVITY.DESKTOP);
     };
 
     useEffect(() => {
