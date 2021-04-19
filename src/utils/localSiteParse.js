@@ -1,4 +1,5 @@
 import { BKMS_VARIANT } from '@/enum';
+import { captureException } from '@sentry/react';
 
 function getDomain(url) {
     let domain = url;
@@ -57,6 +58,7 @@ function parseSite(xml, urlOrigin) {
                     score += wScore;
                     score += hScore;
                 } catch (e) {
+                    captureException(e);
                     console.error(e);
                 }
             }

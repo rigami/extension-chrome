@@ -18,6 +18,7 @@ import Background from '@/stores/universal/backgrounds/entities/background';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import fetchData from '@/utils/xhrPromise';
 import StorageConnector from '@/utils/storageConnector';
+import { captureException } from '@sentry/react';
 
 const APP_STATE = {
     WAIT_INIT: 'WAIT_INIT',
@@ -50,6 +51,7 @@ class Storage {
             this.isSync = true;
         } catch (e) {
             console.warn('Failed get app settings from cache. Request form background...');
+            captureException(e);
             eventToBackground('system/getStorage', null, (persistent) => {
                 this.updatePersistent(persistent, false);
                 this.isSync = true;
@@ -104,6 +106,7 @@ class Core {
                     }
                 });
             } catch (e) {
+                captureException(e);
                 runInAction(() => {
                     this.appError = this.appError || 'ERR_UNKNOWN';
                     this.appState = APP_STATE.FAILED;
@@ -126,6 +129,7 @@ class Core {
     async initialization() {
         openFS().catch((e) => {
             console.error('Failed init fs:', e);
+            captureException(e);
 
             this.appError = 'ERR_INIT_FS';
             this.appState = APP_STATE.FAILED;
@@ -133,6 +137,7 @@ class Core {
 
         openDB().catch((e) => {
             console.error('Failed init db:', e);
+            captureException(e);
 
             this.appError = 'ERR_INIT_DB';
             this.appState = APP_STATE.FAILED;
@@ -163,6 +168,7 @@ class Core {
             })
             .catch((e) => {
                 console.error('Failed init i18n:', e);
+                captureException(e);
 
                 this.appError = 'ERR_INIT_I18N';
                 this.appState = APP_STATE.FAILED;

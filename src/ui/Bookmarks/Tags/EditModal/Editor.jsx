@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -38,6 +39,7 @@ function Editor({ onSave, onError, editId }) {
             })
                 .then((tagId) => onSave(tagId))
                 .catch((e) => {
+                    captureException(e);
                     onError(e.message);
                     setError(e.message);
                 });
@@ -52,7 +54,10 @@ function Editor({ onSave, onError, editId }) {
                 setEditTag(tag);
                 setIsLoading(false);
             })
-            .catch(console.error);
+            .catch((e) => {
+                console.error(e);
+                captureException(e);
+            });
     }, []);
 
     return !isLoading && (

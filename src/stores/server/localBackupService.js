@@ -12,6 +12,7 @@ import { omit, map } from 'lodash';
 import JSZip from 'jszip';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
+import { captureException } from '@sentry/react';
 
 class LocalBackupService {
     core;
@@ -77,6 +78,7 @@ class LocalBackupService {
                 this.core.storageService.updatePersistent({ localBackup: 'done' });
             } catch (e) {
                 console.error(e);
+                captureException(e);
                 eventToApp('system/backup/local/create/progress', { stage: 'error' });
                 this.core.storageService.updatePersistent({ localBackup: 'failed' });
             }
@@ -115,6 +117,7 @@ class LocalBackupService {
                         backup.backgroundsFiles = backgrounds;
                     }
                 } catch (e) {
+                    captureException(e);
                     await fs().remove(`/temp/restore-backup.${type}`).catch(console.warn);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
@@ -138,6 +141,7 @@ class LocalBackupService {
 
                     backup = { ...file };
                 } catch (e) {
+                    captureException(e);
                     await fs().remove(`/temp/restore-backup.${type}`).catch(console.warn);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
@@ -151,7 +155,10 @@ class LocalBackupService {
                     return;
                 }
             } else {
-                await fs().remove(`/temp/restore-backup.${type}`).catch(console.warn);
+                await fs().remove(`/temp/restore-backup.${type}`).catch((e) => {
+                    console.warn(e);
+                    captureException(e);
+                });
                 eventToApp('system/backup/local/restore/progress', {
                     result: 'error',
                     message: 'wrongSchema',
@@ -164,7 +171,11 @@ class LocalBackupService {
                 return;
             }
 
-            await fs().remove(`/temp/restore-backup.${type}`).catch(console.warn);
+            await fs().remove(`/temp/restore-backup.${type}`)
+                .catch((e) => {
+                    console.warn(e);
+                    captureException(e);
+                });
             console.log('restore backup', backup);
 
             try {
@@ -193,6 +204,7 @@ class LocalBackupService {
                 this.core.storageService.updatePersistent({ restoreBackup: 'done' });
             } catch (e) {
                 console.error(e);
+                captureException(e);
                 eventToApp('system/backup/local/restore/progress', {
                     result: 'error',
                     message: 'brokenFile',
@@ -214,6 +226,7 @@ class LocalBackupService {
             })
             .catch((e) => {
                 console.error(e);
+                captureException(e);
 
                 return {};
             });
@@ -228,6 +241,7 @@ class LocalBackupService {
             try {
                 image = await fs().get(`/bookmarksIcons/${bookmark.icoFileName}`, { type: 'base64' });
             } catch (e) {
+                captureException(e);
                 console.warn('Failed get icon', e, bookmark);
             }
 

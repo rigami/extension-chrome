@@ -19,6 +19,7 @@ import Scrollbar from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
 import ResizeDetector, { useResizeDetector } from 'react-resize-detector';
 import { STATE_EDITOR } from '@/ui/Bookmarks/EditBookmarkModal/Editor/BookmarkEditor';
+import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     cover: {
@@ -163,7 +164,10 @@ function Preview({ editorService: service }) {
 
         service.loadPrimaryImages()
             .then(() => { store.primaryImagesState = FETCH.DONE; })
-            .catch(() => { store.primaryImagesState = FETCH.FAILED; });
+            .catch((e) => {
+                captureException(e);
+                store.primaryImagesState = FETCH.FAILED;
+            });
     };
 
     const handleLoadSecondList = async () => {
@@ -172,7 +176,10 @@ function Preview({ editorService: service }) {
 
         service.loadSecondaryImages()
             .then(() => { store.secondaryImagesState = FETCH.DONE; })
-            .catch(() => { store.secondaryImagesState = FETCH.FAILED; });
+            .catch((e) => {
+                captureException(e);
+                store.secondaryImagesState = FETCH.FAILED;
+            });
     };
 
     useEffect(() => {

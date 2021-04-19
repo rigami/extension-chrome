@@ -1,4 +1,5 @@
 import { BKMS_VARIANT } from '@/enum';
+import { captureException } from '@sentry/react';
 
 export const checkValidImage = async (url) => new Promise(((resolve, reject) => {
     const imgCache = document.createElement('img');
@@ -35,7 +36,10 @@ export const getNextImage = async (list, onChangeList) => {
         currList = newList;
         onChangeList(newList);
     });
-    const isValid = nextImage && await checkValidImage(nextImage.url).catch(() => null);
+    const isValid = nextImage && await checkValidImage(nextImage.url).catch((e) => {
+        captureException(e);
+        return null;
+    });
 
     return !nextImage || isValid ? nextImage : getNextImage(currList, (newList) => {
         currList = newList;

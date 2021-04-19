@@ -24,6 +24,7 @@ import { PlaceRounded as PlaceIcon } from '@material-ui/icons';
 import { getDomain } from '@/utils/localSiteParse';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
+import { captureException } from '@sentry/react';
 import changeLocationPage from './WeatherChangeLocation';
 
 const useStyles = makeStyles((theme) => ({
@@ -58,6 +59,7 @@ function WeatherWidget({ onSelect }) {
                             widgets.getPermissionsToWeather()
                                 .catch(action((e) => {
                                     console.error(e);
+                                    captureException(e);
                                 }))
                                 .finally(() => {
                                     widgets.settings.update({ dtwUseWeather: true });

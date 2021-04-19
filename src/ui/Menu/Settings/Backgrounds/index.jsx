@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import useAppStateService from '@/stores/app/AppStateProvider';
+import { captureException } from '@sentry/react';
 import libraryPage from './Library';
 import SchedulerSection from './Scheduler';
 
@@ -72,6 +73,7 @@ function BackgroundsSection({ onSelect }) {
         backgrounds.getLastUsage(8)
             .then((lastBgs) => setBgs(lastBgs))
             .catch((e) => {
+                captureException(e);
                 console.error('Failed load bg`s from db:', e);
             });
     }, [backgrounds.count]);

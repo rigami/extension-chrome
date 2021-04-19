@@ -32,6 +32,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import Scrollbar from '@/ui-components/CustomScroll';
 import BeautifulFileSize from '@/utils/beautifulFileSize';
 import useAppStateService from '@/stores/app/AppStateProvider';
+import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     preview: {
@@ -237,10 +238,13 @@ function UploadBackground({ children }) {
             event.preventDefault();
             setDragFiles(null);
             backgrounds.addToUploadQueue(event.dataTransfer.files)
-                .catch((e) => enqueueSnackbar({
-                    ...t(`upload.error.${e}`),
-                    variant: 'error',
-                }));
+                .catch((e) => {
+                    captureException(e);
+                    enqueueSnackbar({
+                        ...t(`upload.error.${e}`),
+                        variant: 'error',
+                    });
+                });
         };
     }, [dragFiles]);
 

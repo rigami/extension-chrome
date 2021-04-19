@@ -24,6 +24,7 @@ import BackgroundEntity from '@/stores/universal/backgrounds/entities/background
 import BackgroundInfo from '@/ui/Desktop/BackgroundInfo';
 import { eventToBackground } from '@/stores/server/bus';
 import useAppService from '@/stores/app/AppStateProvider';
+import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -129,6 +130,7 @@ function Background() {
                             }
                         }));
                     } catch (e) {
+                        captureException(e);
                         console.log('Failed pause', e);
                         return;
                     }
@@ -156,6 +158,7 @@ function Background() {
                         }
                     }));
                 } catch (e) {
+                    captureException(e);
                     console.log(e);
                     return;
                 }

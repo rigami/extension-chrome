@@ -3,6 +3,7 @@ import { assign, throttle, forEach } from 'lodash';
 import fs from '@/utils/fs';
 import { makeAutoObservable, toJS } from 'mobx';
 import defaultSettings from '@/config/settings';
+import { captureException } from '@sentry/react';
 
 class SettingsService {
     core;
@@ -41,6 +42,7 @@ class SettingsService {
             console.log('[settings]', toJS(this.settings));
         } catch (e) {
             console.log('[settings] Not find fast cache or broken. Get from file cache...');
+            captureException(e);
 
             fs().get('/settings.json', { type: 'text' })
                 .then((file) => {
@@ -66,7 +68,10 @@ class SettingsService {
                     };
                     fastSyncSettings();
                 })
-                .catch((e2) => console.error('[settings] Failed read cache from file:', e2));
+                .catch((e2) => {
+                    console.error('[settings] Failed read cache from file:', e2);
+                    captureException(e2);
+                });
         }
 
         // Check valid settings

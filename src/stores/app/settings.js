@@ -2,6 +2,7 @@ import { action, makeAutoObservable } from 'mobx';
 import defaultSettings from '@/config/settings';
 import { assign, pick, size } from 'lodash';
 import BusApp, { eventToBackground, instanceId } from '@/stores/server/bus';
+import { captureException } from '@sentry/react';
 
 class BackgroundSettingsStore {
     selectionMethod;
@@ -18,6 +19,7 @@ class BackgroundSettingsStore {
             this.isSync = true;
         } catch (e) {
             console.warn('Failed get backgrounds settings from cache. Request form background...');
+            captureException(e);
             eventToBackground('system/getSettings/backgrounds', null, (settings) => {
                 this.update(settings, false);
                 this.isSync = true;
@@ -75,6 +77,7 @@ class WidgetsSettingsStore {
             this.isSync = true;
         } catch (e) {
             console.warn('Failed get widgets settings from cache. Request form background...');
+            captureException(e);
             eventToBackground('system/getSettings/widgets', null, (settings) => {
                 this.update(settings, false);
                 this.isSync = true;
@@ -123,6 +126,7 @@ class BookmarksSettingsStore {
             this.isSync = true;
         } catch (e) {
             console.warn('Failed get bookmarks settings from cache. Request form background...');
+            captureException(e);
             eventToBackground('system/getSettings/bookmarks', null, (settings) => {
                 this.update(settings, false);
                 this.isSync = true;
@@ -167,6 +171,7 @@ class AppSettingsStore {
             this.isSync = true;
         } catch (e) {
             console.warn('Failed get app settings from cache. Request form background...');
+            captureException(e);
             eventToBackground('system/getSettings/app', null, (settings) => {
                 this.update(settings, false);
                 this.isSync = true;

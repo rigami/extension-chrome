@@ -6,6 +6,7 @@ import i18n from 'i18next';
 import useService from '@/stores/app/BaseStateProvider';
 import asyncAction from '@/utils/asyncAction';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
+import { captureException } from '@sentry/react';
 
 function FirstLookScreen({ onStart, onLoad }) {
     const { t } = useTranslation(['firstLook']);
@@ -27,7 +28,10 @@ function FirstLookScreen({ onStart, onLoad }) {
                     onLoad();
                 }
             });
-        }).catch(console.error);
+        }).catch((e) => {
+            console.error(e);
+            captureException(e);
+        });
     }, []);
 
     return (

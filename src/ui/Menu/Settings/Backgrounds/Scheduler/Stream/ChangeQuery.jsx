@@ -28,6 +28,7 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundCard from '@/ui/Menu/Settings/Backgrounds/BackgroundCard';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from '@/stores/universal/backgrounds/entities/background';
+import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     root: { marginTop: 4 },
@@ -117,6 +118,7 @@ function ChangeQuery({ onClose }) {
             });
         } catch (e) {
             console.error(e);
+            captureException(e);
             store.status = FETCH.FAILED;
         }
     };

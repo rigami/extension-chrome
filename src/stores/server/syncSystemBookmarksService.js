@@ -6,6 +6,7 @@ import { first } from 'lodash';
 import { makeAutoObservable } from 'mobx';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import { captureException } from '@sentry/react';
 
 class SyncSystemBookmarksService {
     core;
@@ -24,6 +25,7 @@ class SyncSystemBookmarksService {
                 await this.parseSystemBookmarks();
             } catch (e) {
                 console.error(e);
+                captureException(e);
             }
             console.log(props, options, callback, other);
             console.log('finish SYNC!');

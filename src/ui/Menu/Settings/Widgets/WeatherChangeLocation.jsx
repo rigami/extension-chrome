@@ -27,6 +27,7 @@ import Stub from '@/ui-components/Stub';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { runInAction } from 'mobx';
 import { useSnackbar } from 'notistack';
+import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     row: {
@@ -86,6 +87,7 @@ function HeaderActions() {
                                 widgets.getPermissionsToWeather()
                                     .then(() => widgets.autoDetectWeatherLocation())
                                     .catch((e) => {
+                                        captureException(e);
                                         console.error(e);
 
                                         enqueueSnackbar({
@@ -183,6 +185,7 @@ function WeatherChangeLocation({ onClose }) {
                 store.status = FETCH.DONE;
             });
         } catch (e) {
+            captureException(e);
             console.error(e);
             store.status = FETCH.FAILED;
         }

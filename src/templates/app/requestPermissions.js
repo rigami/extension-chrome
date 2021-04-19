@@ -1,5 +1,6 @@
 import { eventToApp, initBus } from '@/stores/server/bus';
 import { DESTINATION } from '@/enum';
+import { captureException } from '@sentry/react';
 
 const bus = initBus(DESTINATION.REQUEST_PERMISSIONS);
 
@@ -17,6 +18,7 @@ bus.on('requestPermissions/geolocation', async ({}, {}, callback) => {
 
         callback(true);
     } catch (e) {
+        captureException(e);
         callback(false);
     }
 });

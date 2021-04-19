@@ -19,6 +19,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import asyncAction from '@/utils/asyncAction';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { first } from 'lodash';
+import { captureException } from '@sentry/react';
 
 initSentry(DESTINATION.POPUP);
 
@@ -76,6 +77,7 @@ function Popup() {
             setBookmark(data);
             setIsLoading(false);
         }).catch((e) => {
+            captureException(e);
             console.error(e);
             setIsLoading(false);
         });

@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { toJS } from 'mobx';
+import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -46,6 +47,7 @@ function Editor({ onSave, onError, editId, parentId = 0 }) {
             })
                 .then((tagId) => onSave(tagId))
                 .catch((e) => {
+                    captureException(e);
                     onError(e.message);
                 });
         }

@@ -28,6 +28,7 @@ import edit from '@/utils/contextMenu/edit';
 import remove from '@/utils/contextMenu/remove';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import asyncAction from '@/utils/asyncAction';
+import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -374,6 +375,7 @@ function Folders({ selectFolder, onClickFolder, defaultExpanded = [] }) {
             store.state = FETCH.DONE;
         }).catch((error) => {
             console.error(error);
+            captureException(e);
             store.state = FETCH.FAILED;
         });
     }, [bookmarksService.lastTruthSearchTimestamp]);

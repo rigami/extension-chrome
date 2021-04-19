@@ -20,6 +20,7 @@ import TagEntity from '@/stores/universal/bookmarks/entities/tag';
 import useAppService from '@/stores/app/AppStateProvider';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import asyncAction from '@/utils/asyncAction';
+import { captureException } from '@sentry/react';
 import Folder from './Folder';
 import Tag from './Tag';
 import Link from './Link';
@@ -134,7 +135,10 @@ function FAP() {
                 .then((res) => res
                     .filter(({ status }) => status === 'fulfilled')
                     .map(({ value }) => value))
-                .catch(console.error);
+                .catch((e) => {
+                    console.error(e);
+                    captureException(e);
+                });
         })
             .then((findFavorites) => {
                 console.timeEnd('fap load');
@@ -143,6 +147,7 @@ function FAP() {
             })
             .catch((e) => {
                 console.error('Failed load favorites', e);
+                captureException(e);
                 store.isLoading = false;
             });
     }, [bookmarksService.favorites.length, store.maxCount, bookmarksService.lastTruthSearchTimestamp]);

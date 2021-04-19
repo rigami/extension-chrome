@@ -4,6 +4,7 @@ import { eventToApp } from '@/stores/server/bus';
 import { FETCH } from '@/enum';
 import WeatherLocation from '@/entities/WeatherLocation';
 import Weather from '@/entities/Weather';
+import { captureException } from '@sentry/react';
 import OpenWeatherMap from './connectors/OpenWeatherMap';
 
 class WeatherService {
@@ -39,6 +40,7 @@ class WeatherService {
                 })
                 .catch((e) => {
                     console.error('[weather] Failed get current weather:', e);
+                    captureException(e);
                     this.core.storageService.updatePersistent({
                         weather: new Weather({
                             ...this.core.storageService.storage.weather,
@@ -146,6 +148,7 @@ class WeatherService {
                     result,
                 });
             } catch (e) {
+                captureException(e);
                 callback({ success: false });
             }
         });
@@ -157,6 +160,7 @@ class WeatherService {
                 await this.autoDetectLocation();
                 callback(true);
             } catch (e) {
+                captureException(e);
                 callback(false);
             }
         });

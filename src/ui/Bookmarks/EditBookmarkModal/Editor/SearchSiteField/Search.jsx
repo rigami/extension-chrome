@@ -17,6 +17,7 @@ import { getFaviconUrl, getSiteInfoLocal, search } from '@/utils/siteSearch';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -94,7 +95,8 @@ function Search({ query = '', onSelect }) {
                 .then((siteData) => {
                     setStraightResults({ ...siteData });
                 })
-                .catch(() => {
+                .catch((e) => {
+                    captureException(e);
                     setStraightResults(null);
                 })
                 .finally(() => {
@@ -106,7 +108,8 @@ function Search({ query = '', onSelect }) {
                 .then((foundResults) => {
                     setGlobalResults(foundResults);
                 })
-                .catch(() => {
+                .catch((e) => {
+                    captureException(e);
                     setGlobalResults([]);
                 })
                 .finally(() => {

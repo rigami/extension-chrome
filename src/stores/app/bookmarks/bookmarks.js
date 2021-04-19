@@ -1,6 +1,7 @@
 import { action, makeAutoObservable } from 'mobx';
 import { DESTINATION } from '@/enum';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import { captureException } from '@sentry/react';
 
 class BookmarksStore {
     _coreService;
@@ -21,7 +22,12 @@ class BookmarksStore {
 
     @action('save bookmarks')
     async save(props) {
-        const saveBookmarkId = await BookmarksUniversalService.save(props).catch(console.error);
+        const saveBookmarkId = await BookmarksUniversalService
+            .save(props)
+            .catch((e) => {
+                console.error(e);
+                captureException(e);
+            });
 
         this._coreService.globalEventBus.call('bookmark/new', DESTINATION.APP, { bookmarkId: saveBookmarkId });
 

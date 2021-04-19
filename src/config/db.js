@@ -1,4 +1,5 @@
 import { BG_SOURCE, BG_TYPE } from '@/enum';
+import { captureException } from '@sentry/react';
 
 async function upgradeOrCreateBackgrounds(db, transaction, oldVersion, newVersion) {
     let store;
@@ -31,6 +32,7 @@ async function upgradeOrCreateBackgrounds(db, transaction, oldVersion, newVersio
             }));
         } catch (e) {
             console.log(e);
+            captureException(e);
         }
     }
 

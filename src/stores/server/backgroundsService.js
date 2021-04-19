@@ -23,6 +23,7 @@ import fs, { getBgUrl } from '@/utils/fs';
 import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrounds/service';
 import getPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/server/bus';
+import { captureException } from '@sentry/react';
 
 class BackgroundsServerService {
     core;
@@ -55,6 +56,7 @@ class BackgroundsServerService {
             await this._schedulerSwitch();
         } catch (e) {
             console.error('[backgrounds] Failed change interval', e);
+            captureException(e);
         }
     }
 
@@ -185,6 +187,7 @@ class BackgroundsServerService {
             fileName = await BackgroundsUniversalService.fetchBG(currBg.downloadLink, { preview: false });
         } catch (e) {
             console.error('[backgrounds] Failed get background. Remove from queue and fetch next...', e);
+            captureException(e);
 
             this.core.storageService.updatePersistent({ bgsStream: this.storage.bgsStream.splice(fetchIndex, 1) });
 
@@ -239,6 +242,7 @@ class BackgroundsServerService {
                 );
             } catch (e) {
                 console.error('[backgrounds] Failed get background. Get next...', e);
+                captureException(e);
 
                 this.core.storageService.updatePersistent({ bgsStream: this.storage.bgsStream.splice(1) });
 
@@ -306,6 +310,7 @@ class BackgroundsServerService {
             if (!force) this._queueIsPreloaded = false;
             return Promise.resolve();
         } catch (e) {
+            captureException(e);
             if (!force) this._queueIsPreloaded = false;
             return Promise.reject(e);
         }
@@ -355,6 +360,7 @@ class BackgroundsServerService {
             return this._setFromQueue();
         } catch (e) {
             console.log('[backgrounds] Failed get backgrounds', e);
+            captureException(e);
             return this.nextBGLocal();
         }
     }
@@ -371,6 +377,7 @@ class BackgroundsServerService {
                 fileName = await BackgroundsUniversalService.fetchBG(setBG.downloadLink, { preview: false });
             } catch (e) {
                 console.error('[backgrounds] Failed get background. Get next...', e);
+                captureException(e);
 
                 return Promise.reject();
             }
@@ -434,7 +441,11 @@ class BackgroundsServerService {
             }),
             bgShowMode: BG_SHOW_MODE.LIVE,
         });
-        fs().remove(`${BackgroundsUniversalService.FULL_PATH}/temporaryVideoFrame`).catch(() => {});
+        fs()
+            .remove(`${BackgroundsUniversalService.FULL_PATH}/temporaryVideoFrame`)
+            .catch((e) => {
+                captureException(e);
+            });
 
         return true;
     }
@@ -442,7 +453,7 @@ class BackgroundsServerService {
     @action('pause bg')
     async pause({ bgId, timestamp }) {
         console.log('pause bg:', this.currentBGId, toJS((this)));
-        if (bgId !== this.currentBGId) return Promise.reject(ERRORS.ID_BG_IS_CHANGED);
+        if (bgId !== this.currentBGId) return Promise.reject(new Error(ERRORS.ID_BG_IS_CHANGED));
 
         this._currentBG.pauseTimestamp = timestamp;
         this.bgShowMode = BG_SHOW_MODE.STATIC;
@@ -460,7 +471,9 @@ class BackgroundsServerService {
             },
         );
 
-        if (bgId !== this.currentBGId || this.bgShowMode !== BG_SHOW_MODE.STATIC) throw ERRORS.ID_BG_IS_CHANGED;
+        if (bgId !== this.currentBGId || this.bgShowMode !== BG_SHOW_MODE.STATIC) {
+            return Promise.reject(new Error(ERRORS.ID_BG_IS_CHANGED));
+        }
 
         await fs().save(`${BackgroundsUniversalService.FULL_PATH}/temporaryVideoFrame`, frame);
 
@@ -468,7 +481,7 @@ class BackgroundsServerService {
 
         this.core.storageService.updatePersistent({ bgCurrent: this._currentBG });
 
-        return true;
+        return Promise.resolve();
     }
 
     subscribe() {
@@ -493,6 +506,7 @@ class BackgroundsServerService {
             }
         } catch (e) {
             console.error('[backgrounds] Error check current background. Change to next...', e);
+            captureException(e);
             this.nextBG();
         }
 
@@ -512,6 +526,7 @@ class BackgroundsServerService {
                     result,
                 });
             } catch (e) {
+                captureException(e);
                 callback({
                     success: false,
                     result: e,
@@ -529,6 +544,7 @@ class BackgroundsServerService {
                     result,
                 });
             } catch (e) {
+                captureException(e);
                 callback({
                     success: false,
                     result: e,
@@ -563,7 +579,11 @@ class BackgroundsServerService {
                     this.prepareBgState = BG_SHOW_STATE.DONE;
                     if (this.bgState === BG_SHOW_STATE.SEARCH) {
                         console.log('[backgrounds] Search next background. Reload worker...');
-                        this.nextBGStream().catch(console.error);
+                        this.nextBGStream()
+                            .catch((e) => {
+                                console.error(e);
+                                captureException(e);
+                            });
                     }
                 } else {
                     this.prepareBgState = BG_SHOW_STATE.WAIT;

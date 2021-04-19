@@ -17,6 +17,7 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import BackgroundCard from '@/ui/Menu/Settings/Backgrounds/BackgroundCard';
+import { captureException } from '@sentry/react';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 
 const useStyles = makeStyles(() => ({
@@ -82,6 +83,7 @@ function LibraryMenu() {
                 setState(FETCH.DONE);
             })
             .catch((e) => {
+                captureException(e);
                 setState(FETCH.FAILED);
                 console.error('Failed load bg`s from db:', e);
             });

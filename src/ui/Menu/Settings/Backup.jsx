@@ -24,6 +24,7 @@ import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
 import { eventToApp, eventToBackground } from '@/stores/server/bus';
 import { observer } from 'mobx-react-lite';
 import fs from '@/utils/fs';
+import { captureException } from '@sentry/react';
 /* import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import SectionHeader from '@/ui/Menu/SectionHeader';
@@ -328,6 +329,7 @@ function BackupSettings() {
                 eventToBackground('system/backup/local/restore', { type });
             });
         } catch (e) {
+            captureException(e);
             eventToApp('system/backup/local/restore/progress', { result: 'brokenFile' });
         }
     };

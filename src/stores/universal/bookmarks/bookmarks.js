@@ -6,6 +6,7 @@ import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import getImageBlob from '@/utils/getImageBlob';
 import { search as searchLight } from '@/stores/universal/bookmarks/search';
 import { cloneDeep } from 'lodash';
+import { captureException } from '@sentry/react';
 import { SearchQuery } from './searchQuery';
 
 class BookmarksUniversalService {
@@ -74,6 +75,7 @@ class BookmarksUniversalService {
                 }));
             } catch (e) {
                 console.error(e);
+                captureException(e);
                 throw new Error('Similar bookmark already exist');
             }
         }
@@ -93,6 +95,7 @@ class BookmarksUniversalService {
                 await fs().remove(`/bookmarksIcons/${icoName}`);
             } catch (e) {
                 console.error(e);
+                captureException(e);
             }
         }
 
@@ -117,6 +120,7 @@ class BookmarksUniversalService {
             await fs().remove(`/bookmarksIcons/${oldBookmark.icoFileName}`);
         } catch (e) {
             console.log('Failed remove bookmark icon', e);
+            captureException(e);
         }
     }
 
@@ -126,6 +130,7 @@ class BookmarksUniversalService {
             return searchLight(searchRequest);
         } catch (e) {
             console.error(e);
+            captureException(e);
         }
     }
 }

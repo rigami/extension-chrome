@@ -3,6 +3,7 @@ import BackgroundsUniversalService from '@/stores/universal/backgrounds/service'
 import Background from '@/stores/universal/backgrounds/entities/background';
 import fs from '@/utils/fs';
 import createPreview from '@/utils/createPreview';
+import { captureException } from '@sentry/react';
 
 class SyncBookmarks {
     core;
@@ -39,6 +40,7 @@ class SyncBookmarks {
                     previewDefaultBG = await createPreview(files[computeId], background.type);
                 } catch (e) {
                     console.error(e);
+                    captureException(e);
                 }
 
                 console.log('[backgrounds] Save BG in file system...');

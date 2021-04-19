@@ -20,6 +20,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import clsx from 'clsx';
 import FolderSelector from '@/ui/Bookmarks/Folders/Selector';
+import { captureException } from '@sentry/react';
 import SearchSiteField from './SearchSiteField';
 
 const useStyles = makeStyles((theme) => ({
@@ -164,7 +165,10 @@ function Fields(props) {
                             onClick={() => {
                                 service.save()
                                     .then(() => { store.saveState = FETCH.DONE; onSave(); })
-                                    .catch(() => { store.saveState = FETCH.FAILED; });
+                                    .catch((e) => {
+                                        captureException(e);
+                                        store.saveState = FETCH.FAILED;
+                                    });
                             }}
                         >
                             {t('common:button.save')}

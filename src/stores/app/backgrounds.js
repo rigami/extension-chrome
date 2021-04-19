@@ -19,6 +19,7 @@ import { BackgroundSettingsStore } from '@/stores/app/settings';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import { eventToBackground } from '@/stores/server/bus';
 import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrounds/service';
+import { captureException } from '@sentry/react';
 
 class BackgroundsAppService {
     currentBGId;
@@ -139,6 +140,7 @@ class BackgroundsAppService {
             });
         } catch (e) {
             console.error(e);
+            captureException(e);
             this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.FAILED });
         }
     }
@@ -171,7 +173,10 @@ class BackgroundsAppService {
                     });
                     getNextPreview();
                 })
-                .catch((e) => console.error(e));
+                .catch((e) => {
+                    console.error(e);
+                    captureException(e);
+                });
         };
 
         return Promise.all(Array.prototype.map.call(fileList, (file, index) => {

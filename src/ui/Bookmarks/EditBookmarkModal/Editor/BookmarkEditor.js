@@ -3,6 +3,7 @@ import { makeAutoObservable, toJS } from 'mobx';
 import { getImageRecalc, getSiteInfo } from '@/utils/siteSearch';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import { getNextImage, getDefaultImage } from '@/utils/checkIcons';
+import { captureException } from '@sentry/react';
 
 export const STATE_EDITOR = {
     LOADING_EDITOR: 'LOADING_EDITOR',
@@ -64,11 +65,15 @@ class BookmarkEditor {
                         url: bookmark.url,
                         force: true,
                         onlyAdditionalIcons: true,
-                    }).catch(console.error);
+                    }).catch((e) => {
+                        console.error(e);
+                        captureException(e);
+                    });
                 })
                 .catch((e) => {
                     this.state = STATE_EDITOR.DONE;
                     console.error(e);
+                    captureException(e);
                 });
         } else {
             this.state = STATE_EDITOR.WAIT_REQUEST;
@@ -80,7 +85,10 @@ class BookmarkEditor {
                 this.fetchSiteInfo({
                     url: defaultData.url,
                     force: true,
-                }).catch(console.error);
+                }).catch((e) => {
+                    console.error(e);
+                    captureException(e);
+                });
             }
         }
     }
@@ -152,12 +160,14 @@ class BookmarkEditor {
                     siteData.bestIcon = await getImageRecalc(siteData.bestIcon.url);
                 } catch (e) {
                     console.error(e);
+                    captureException(e);
                     siteData.bestIcon = null;
                 }
             }
             if (this.url !== currentFetchUrl) return;
             this.allImages = [siteData.bestIcon, ...siteData.icons].filter((isExist) => isExist);
         } catch (e) {
+            captureException(e);
             if (this.url !== currentFetchUrl) return;
             console.error('Failed getSiteInfo', e);
             if (!onlyAdditionalIcons) {
@@ -217,7 +227,10 @@ class BookmarkEditor {
             this.fetchSiteInfo({
                 allowChangeUrl: values.allowChangeUrl,
                 url: values.url,
-            }).catch(console.error);
+            }).catch((e) => {
+                console.error(e);
+                captureException(e);
+            });
         }
     }
 

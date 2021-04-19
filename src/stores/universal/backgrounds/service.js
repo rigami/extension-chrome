@@ -5,6 +5,7 @@ import { eventToApp } from '@/stores/server/bus';
 import fetchData from '@/utils/xhrPromise';
 import appVariables from '@/config/appVariables';
 import { BG_SOURCE } from '@/enum';
+import { captureException } from '@sentry/react';
 import Background from './entities/background';
 
 export const ERRORS = {
@@ -48,7 +49,10 @@ class BackgroundsUniversalService {
 
         if (savedBG.source !== BG_SOURCE.USER) {
             fetchData(`${appVariables.rest.url}/backgrounds/mark-download/${savedBG.source}/${savedBG.originId}`)
-                .catch(console.error);
+                .catch((e) => {
+                    console.error(e);
+                    captureException(e);
+                });
         }
 
         return savedBG;
@@ -62,6 +66,7 @@ class BackgroundsUniversalService {
             console.log('[backgrounds] Remove from db...');
         } catch (e) {
             console.log(`bg ${removeBG.id} not find in db`);
+            captureException(e);
         }
 
         try {
@@ -70,6 +75,7 @@ class BackgroundsUniversalService {
             console.log('[backgrounds] Remove from file system...');
         } catch (e) {
             console.log(`[backgrounds] BG with id=${removeBG.id} not find in file system`);
+            captureException(e);
         }
 
         eventToApp('backgrounds/remove', { bg: removeBG });
@@ -92,6 +98,7 @@ class BackgroundsUniversalService {
             defaultBG = await response.blob();
         } catch (e) {
             console.error('[backgrounds] Failed fetch bg', e);
+            captureException(e);
             return Promise.reject();
         }
 
@@ -104,12 +111,17 @@ class BackgroundsUniversalService {
                 await fs().save(`${BackgroundsUniversalService.PREVIEW_PATH}/${fileName}`, previewDefaultBG);
             } catch (e) {
                 console.warn('Failed create preview:', e);
+                captureException(e);
             }
         }
 
         if (full) {
             console.log('[backgrounds] Save BG in file system...');
-            await fs().save(`${BackgroundsUniversalService.FULL_PATH}/${fileName}`, defaultBG).catch(console.error);
+            await fs().save(`${BackgroundsUniversalService.FULL_PATH}/${fileName}`, defaultBG)
+                .catch((e) => {
+                    console.error(e);
+                    captureException(e);
+                });
         }
 
         return fileName;

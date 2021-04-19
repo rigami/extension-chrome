@@ -2,6 +2,7 @@ import { eventToApp, instanceId } from '@/stores/server/bus';
 import { assign, throttle } from 'lodash';
 import fs from '@/utils/fs';
 import { action, makeAutoObservable, toJS } from 'mobx';
+import { captureException } from '@sentry/react';
 
 class StorageService {
     core;
@@ -18,13 +19,17 @@ class StorageService {
             console.log('[storage]', toJS(this.storage));
         } catch (e) {
             console.log('[storage] Not find fast cache or broken. Get from file cache...');
+            captureException(e);
 
             fs().get('/storage.json', { type: 'text' })
                 .then((props) => {
                     this.storage = { ...JSON.parse(props) };
                     this.fastSync();
                 })
-                .catch((e2) => console.error('[storage] Failed read storage from file:', e2));
+                .catch((e2) => {
+                    console.error('[storage] Failed read storage from file:', e2);
+                    captureException(e2);
+                });
         }
 
         this.core.globalBus.on('system/syncStorage', (storage, { initiatorId }) => {

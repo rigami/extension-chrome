@@ -1,6 +1,7 @@
 import appVariables from '@/config/appVariables';
 import xhrPromise, { AbortController } from '@/utils/xhrPromise';
 import parseSite from '@/utils/localSiteParse';
+import { captureException } from '@sentry/react';
 
 const search = async (query, signal) => {
     const response = await xhrPromise(
@@ -45,6 +46,7 @@ const getSiteInfoLocal = async (url) => {
     try {
         parseData = { ...parseSite(response, urlOrigin) };
     } catch (e) {
+        captureException(e);
         console.log('Failed parse site', e);
     }
 

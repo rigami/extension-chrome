@@ -1,4 +1,5 @@
 import { BG_TYPE } from '@/enum';
+import { captureException } from '@sentry/react';
 
 function postprocessing(cnvs, { /* antiAliasing */ }) {
     return new Promise((resolve) => {
@@ -127,6 +128,7 @@ const getPreview = (fileOrSrc, type, { size = 'preview', antiAliasing = true, ti
                 };
             }
         } catch (e) {
+            captureException(e);
             console.error(e);
             reject(e);
         }

@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
 import clsx from 'clsx';
 import TagCard from '@/ui/Desktop/FAP/Tag/Card';
+import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -120,6 +121,7 @@ function Explorer(props) {
             })
             .catch((e) => {
                 console.error('Failed load favorites', e);
+                captureException(e);
                 setIsLoading(false);
             });
     }, [bookmarksService.favorites.length]);
