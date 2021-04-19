@@ -14,24 +14,21 @@ import WeatherWidget from './Weather';
 const headerProps = { title: 'settings:widgets' };
 const pageProps = { width: 750 };
 
-const numberToEnumSize = (value) => {
-    if (value === 3) {
-        return WIDGET_DTW_SIZE.BIG;
-    } else if (value === 2) {
-        return WIDGET_DTW_SIZE.MIDDLE;
-    } else {
-        return WIDGET_DTW_SIZE.SMALL;
-    }
-};
-const enumSizeToNumber = (value) => {
-    if (value === WIDGET_DTW_SIZE.BIG) {
-        return 3;
-    } else if (value === WIDGET_DTW_SIZE.MIDDLE) {
-        return 2;
-    } else {
-        return 1;
-    }
-};
+const numberToEnumSize = (value) => [
+    WIDGET_DTW_SIZE.SMALLER,
+    WIDGET_DTW_SIZE.SMALL,
+    WIDGET_DTW_SIZE.MIDDLE,
+    WIDGET_DTW_SIZE.BIG,
+    WIDGET_DTW_SIZE.BIGGER,
+][value - 1];
+
+const enumSizeToNumber = (value) => [
+    WIDGET_DTW_SIZE.SMALLER,
+    WIDGET_DTW_SIZE.SMALL,
+    WIDGET_DTW_SIZE.MIDDLE,
+    WIDGET_DTW_SIZE.BIG,
+    WIDGET_DTW_SIZE.BIGGER,
+].findIndex((size) => size === value) + 1;
 
 function Widgets({ onSelect }) {
     const { t } = useTranslation(['settingsWidget']);
@@ -80,19 +77,18 @@ function Widgets({ onSelect }) {
                             widgets.settings.update({ dtwSize: numberToEnumSize(value) });
                         },
                         min: 1,
-                        max: 3,
+                        max: 5,
                         marks: [
                             {
                                 value: 1,
-                                label: t(`dtwSize.value.${WIDGET_DTW_SIZE.SMALL}`),
+                                label: t('dtwSize.value.smaller'),
                             },
+                            { value: 2 },
+                            { value: 3 },
+                            { value: 4 },
                             {
-                                value: 2,
-                                label: t(`dtwSize.value.${WIDGET_DTW_SIZE.MIDDLE}`),
-                            },
-                            {
-                                value: 3,
-                                label: t(`dtwSize.value.${WIDGET_DTW_SIZE.BIG}`),
+                                value: 5,
+                                label: t('dtwSize.value.bigger'),
                             },
                         ],
                         step: 1,

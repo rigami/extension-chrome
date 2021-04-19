@@ -15,9 +15,8 @@
   "dtwSize": {
     "title": "Size",
     "value": {
-      "SMALL": "Less",
-      "MIDDLE": "Average",
-      "BIG": "More"
+      "smaller": "Less",
+      "bigger": "More"
     }
   },
   "time": {

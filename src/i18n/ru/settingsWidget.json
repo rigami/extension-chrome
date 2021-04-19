@@ -15,9 +15,8 @@
   "dtwSize": {
     "title": "Размер",
     "value": {
-      "SMALL": "Меньше",
-      "MIDDLE": "Средний",
-      "BIG": "Больше"
+      "smaller": "Меньше",
+      "bigger": "Больше"
     }
   },
   "time": {

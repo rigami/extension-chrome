@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import DTW_SIZE from '@/enum/WIDGET/DTW_SIZE';
 import { observer } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { ACTIVITY, BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
@@ -66,22 +65,47 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 800,
         pointerEvents: 'all',
     },
+    'time-smaller': {
+        fontSize: '2rem',
+        lineHeight: '90%',
+    },
+    'time-small': {
+        fontSize: '3.9rem',
+        lineHeight: '90%',
+    },
+    'time-middle': {
+        fontSize: '6.1rem',
+        lineHeight: '90%',
+    },
+    'time-big': {
+        fontSize: '8.3rem',
+        lineHeight: '100%',
+    },
+    'time-bigger': {
+        fontSize: '13rem',
+        lineHeight: '110%',
+    },
+    'date-smaller': {
+        fontSize: '1.6rem',
+        lineHeight: '100%',
+    },
+    'date-small': {
+        fontSize: '2.7rem',
+        lineHeight: '100%',
+    },
+    'date-middle': {
+        fontSize: '3.8rem',
+        lineHeight: '100%',
+    },
+    'date-big': {
+        fontSize: '4.9rem',
+        lineHeight: '100%',
+    },
+    'date-bigger': {
+        fontSize: '7rem',
+        lineHeight: '100%',
+    },
 }));
-
-const timeFontSize = ['h4', 'h2', 'h1'];
-const dateFontSize = ['h5', 'h3', 'h2'];
-
-const calcFontSize = (size, dict) => {
-    const [small, middle, big] = dict;
-
-    if (size === DTW_SIZE.BIG) {
-        return big;
-    } else if (size === DTW_SIZE.MIDDLE) {
-        return middle;
-    }
-
-    return small;
-};
 
 function Widgets({ stickToBottom }) {
     const classes = useStyles();
@@ -141,25 +165,27 @@ function Widgets({ stickToBottom }) {
             >
                 {widgets.settings.dtwUseTime && (
                     <Typography
-                        variant={calcFontSize(widgets.settings.dtwSize, timeFontSize)}
-                        className={classes.text}
+                        className={clsx(
+                            classes.text,
+                            classes[`time-${widgets.settings.dtwSize.toLowerCase()}`],
+                        )}
                     >
                         <Time />
                     </Typography>
                 )}
                 {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) && (
                     <Typography
-                        variant={calcFontSize(widgets.settings.dtwSize, timeFontSize)}
-                        className={clsx(classes.row, classes.text)}
+                        className={clsx(
+                            classes.row,
+                            classes.text,
+                            classes[`date-${widgets.settings.dtwSize.toLowerCase()}`],
+                        )}
                     >
                         {widgets.settings.dtwUseDate && (
-                            <Date
-                                size={calcFontSize(widgets.settings.dtwSize, dateFontSize)}
-                                dot={widgets.showWeather}
-                            />
+                            <Date dot={widgets.showWeather} />
                         )}
                         {widgets.settings.dtwUseWeather && (
-                            <WeatherWidget size={calcFontSize(widgets.settings.dtwSize, dateFontSize)} />
+                            <WeatherWidget />
                         )}
                     </Typography>
                 )}
