@@ -14,7 +14,8 @@
         "bump": "yarn bump:patch",
         "bump:patch": "yarn version --patch --no-commit --no-git-tag-version && git add ./package.json",
         "bump:minor": "yarn version --minor --no-commit --no-git-tag-version && git add ./package.json",
-        "bump:major": "yarn version --major --no-commit --no-git-tag-version && git add ./package.json"
+        "bump:major": "yarn version --major --no-commit --no-git-tag-version && git add ./package.json",
+        "prepare": "husky install"
     },
     "repository": "https://github.com/rigami/extension-chrome",
     "author": "Danilkinkin <Danilkinkin@gmail.com>",
