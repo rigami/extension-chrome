@@ -1,5 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn run git-branch-is --not master
-yarn bump:patch || echo 'skip set version'
+yarn run git-branch-is --not master && yarn bump:patch || echo 'skip set version'
