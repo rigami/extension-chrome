@@ -28,11 +28,16 @@ function MouseDistanceFade(props) {
         hideTimer: null,
         smooth: false,
         id: `item-${Math.random().toString().substring(2)}`,
+        distanceMax,
+        distanceMin,
+        lastPageY: null,
+        lastPageX: null,
+        isHover: false,
     }));
 
     const handleRef = useForkRef(children.ref, rootAl);
 
-    const moveMouseHandler = action((e) => {
+    const calcOpacity = () => {
         if (!rootAl.current) return;
 
         store.smooth = false;
@@ -40,31 +45,55 @@ function MouseDistanceFade(props) {
 
         const { x, y, height, width } = rootAl.current.getBoundingClientRect();
 
-        const a = (e.pageX < x) ? Math.abs(x - e.pageX) : (e.pageX > x + width) ? Math.abs(x + width - e.pageX) : 1;
-        const b = (e.pageY < y) ? Math.abs(y - e.pageY) : (e.pageY > y + height) ? Math.abs(y + height - e.pageY) : 1;
-        let dist = 0.96 * Math.max(a, b) + 0.4 * Math.min(a, b);
+        let xMultiplicator = 1;
+        let yMultiplicator = 1;
 
-        if (dist > distanceMax) {
-            dist = distanceMax;
-        } else if (dist < distanceMin) {
-            dist = distanceMin;
+        if (store.lastPageX < x) {
+            xMultiplicator = Math.abs(x - store.lastPageX);
+        } else if (store.lastPageX > x + width) {
+            xMultiplicator = Math.abs(x + width - store.lastPageX);
         }
 
-        dist -= distanceMin;
+        if (store.lastPageY < y) {
+            yMultiplicator = Math.abs(y - store.lastPageY);
+        } else if (store.lastPageY > y + height) {
+            yMultiplicator = Math.abs(y + height - store.lastPageY);
+        }
 
-        items[store.id] = 1 - dist / (distanceMax - distanceMin);
+        let dist = 0.96 * Math.max(xMultiplicator, yMultiplicator) + 0.4 * Math.min(xMultiplicator, yMultiplicator);
 
-        const calcOpacity = items[store.id]; // max(values(items));
+        if (dist > store.distanceMax) {
+            dist = store.distanceMax;
+        } else if (dist < store.distanceMin) {
+            dist = store.distanceMin;
+        }
 
-        if (rootAl.current) rootAl.current.style.opacity = calcOpacity;
+        dist -= store.distanceMin;
+
+        items[store.id] = 1 - dist / (store.distanceMax - store.distanceMin);
+
+        if (rootAl.current) rootAl.current.style.opacity = items[store.id];
 
         store.hideTimer = setTimeout(action(() => {
-            if (e.path.indexOf(rootAl.current) !== -1) return;
+            if (store.isHover) return;
 
             store.smooth = true;
             if (rootAl.current) rootAl.current.style.opacity = 0;
         }), 3000);
+    };
+
+    const moveMouseHandler = action((e) => {
+        store.isHover = e.path.includes(rootAl.current);
+        store.lastPageY = e.pageY;
+        store.lastPageX = e.pageX;
+        calcOpacity();
     });
+
+    useEffect(() => {
+        store.distanceMax = distanceMax;
+        store.distanceMin = distanceMin;
+        calcOpacity();
+    }, [distanceMax, distanceMin]);
 
     useEffect(() => {
         items[store.id] = 0;

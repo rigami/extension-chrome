@@ -85,7 +85,10 @@ function FabMenu() {
 
     return (
         <React.Fragment>
-            <MouseDistanceFade>
+            <MouseDistanceFade
+                distanceMax={appService.activity === ACTIVITY.DESKTOP ? 750 : 150}
+                distanceMin={appService.activity === ACTIVITY.DESKTOP ? 300 : 100}
+            >
                 <Box className={classes.root}>
                     <Fade
                         in={appService.activity === ACTIVITY.DESKTOP && (bgShowMode || saveBgLocal || nextBg)}
