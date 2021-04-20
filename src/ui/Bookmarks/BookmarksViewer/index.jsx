@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
+        marginRight: 58,
     },
     title: { fontSize: '2.25rem' },
     bookmarks: { paddingTop: theme.spacing(6) },
