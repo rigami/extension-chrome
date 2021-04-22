@@ -118,7 +118,7 @@ class LocalBackupService {
                     }
                 } catch (e) {
                     captureException(e);
-                    await fs().remove(`/temp/restore-backup.${type}`).catch(console.warn);
+                    await fs().rmrf(`/temp/restore-backup.${type}`).catch(console.warn);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'brokenFile',
@@ -142,7 +142,7 @@ class LocalBackupService {
                     backup = { ...file };
                 } catch (e) {
                     captureException(e);
-                    await fs().remove(`/temp/restore-backup.${type}`).catch(console.warn);
+                    await fs().rmrf(`/temp/restore-backup.${type}`).catch(console.warn);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'brokenFile',
@@ -155,7 +155,7 @@ class LocalBackupService {
                     return;
                 }
             } else {
-                await fs().remove(`/temp/restore-backup.${type}`).catch((e) => {
+                await fs().rmrf(`/temp/restore-backup.${type}`).catch((e) => {
                     console.warn(e);
                     captureException(e);
                 });
@@ -171,7 +171,7 @@ class LocalBackupService {
                 return;
             }
 
-            await fs().remove(`/temp/restore-backup.${type}`)
+            await fs().rmrf(`/temp/restore-backup.${type}`)
                 .catch((e) => {
                     console.warn(e);
                     captureException(e);

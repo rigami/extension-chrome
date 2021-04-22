@@ -12,7 +12,7 @@ export default class FSConnector {
         this._fs = unwrapFs;
     }
 
-    ls(path, options) {
+    cd(path, options) {
         return new Promise((resolve, reject) => {
             console.log('this._fs:', this._fs);
             this._fs.getDirectory(
@@ -25,7 +25,7 @@ export default class FSConnector {
     }
 
     mkdir(mkdir) {
-        return this.ls(mkdir, { create: true });
+        return this.cd(mkdir, { create: true });
     }
 
     save(savePath, file) {
@@ -96,10 +96,10 @@ export default class FSConnector {
         }));
     }
 
-    async remove(removeFilePath) {
+    async rmrf(removeFilePath) {
         const { path, name: fileName } = getPathAndName(removeFilePath);
 
-        const dir = await this.ls(path);
+        const dir = await this.cd(path);
 
         if (fileName === '*') {
             return new Promise((resolve, reject) => {
