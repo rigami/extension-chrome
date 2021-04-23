@@ -8,7 +8,7 @@ import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import { captureException } from '@sentry/react';
 
-class SyncSystemBookmarksService {
+class SyncChromeBookmarksService {
     core;
 
     constructor(core) {
@@ -32,11 +32,13 @@ class SyncSystemBookmarksService {
             // await new Promise((resolve) => setTimeout(resolve, 4500))
             callback();
         });
-        if (this.core.bookmarksService.settings.syncWithSystem) {
+
+        if (true || this.core.bookmarksService.settings.syncWithSystem) {
             this.parseSystemBookmarks();
 
             chrome.bookmarks.onCreated.addListener(async (id, createInfo) => {
-                const bind = await db().getFromIndex(
+                console.log('[chrome bookmarks] Capture create event', id, createInfo);
+                /* const bind = await db().getFromIndex(
                     'system_bookmarks',
                     'system_id',
                     createInfo.parentId,
@@ -48,77 +50,146 @@ class SyncSystemBookmarksService {
                 } else {
                     console.log('onCreated folder', id, createInfo);
                     await this.createFolder(createInfo, bind.rigamiId, true);
-                }
+                } */
             });
             chrome.bookmarks.onMoved.addListener((id, moveInfo) => {
-                console.log('onMoved', id, moveInfo);
+                console.log('[chrome bookmarks] Capture move event', id, moveInfo);
             });
             chrome.bookmarks.onChanged.addListener(async (id, changeInfo) => {
-                console.log('onChanged', id, changeInfo);
+                console.log('[chrome bookmarks] Capture change event', id, changeInfo);
             });
             chrome.bookmarks.onRemoved.addListener((id, { node: removedNode, ...removeInfo }) => {
-                console.log('onRemoved', id, removeInfo, removedNode);
+                console.log('[chrome bookmarks] Capture remove event', id, {
+                    node: removedNode,
+                    removeInfo,
+                });
             });
         }
     }
 
-    async createBookmark(browserNode, parentId, notyEvent = false) {
-        const bookmark = new Bookmark({
-            name: browserNode.title,
-            url: browserNode.url,
-            folderId: parentId,
-        });
+    async createOrUpdateBookmark(browserNode) {
+        console.log('[chrome bookmarks] Create or update bookmark:', browserNode);
 
-        console.log('create bookmark:', bookmark);
+        const bind = await db().getFromIndex(
+            'system_bookmarks',
+            'system_id',
+            browserNode.id,
+        );
 
-        const bookmarkId = await this.core.bookmarksService.bookmarks.save({
-            description: '',
-            image_url: '',
-            icoVariant: BKMS_VARIANT.SYMBOL,
-            ...bookmark,
-            tags: [],
-        }, notyEvent);
+        if (!bind) {
+            console.log('[chrome bookmarks] Bookmark not found. Create...');
 
-        console.log('add bind:', {
-            type: TYPE.BOOKMARK,
-            rigamiId: bookmarkId,
-            systemId: browserNode.id,
-        });
+            const parentBind = await db().getFromIndex(
+                'system_bookmarks',
+                'system_id',
+                browserNode.parentId,
+            );
 
-        await db().add('system_bookmarks', {
-            type: TYPE.BOOKMARK,
-            rigamiId: bookmarkId,
-            systemId: browserNode.id,
-        });
+            console.log('[chrome bookmarks] parentBind:', parentBind);
 
-        return bookmarkId;
+            if (!parentBind) return Promise.reject(new Error('Not find folder'));
+
+            const bookmark = new Bookmark({
+                name: browserNode.title,
+                url: browserNode.url,
+                folderId: parentBind.rigamiId,
+                description: '',
+                image_url: '',
+                icoVariant: BKMS_VARIANT.SYMBOL,
+                tags: [],
+            });
+
+            const newBookmarkId = await BookmarksUniversalService.save(bookmark);
+
+            await db().add('system_bookmarks', {
+                type: TYPE.BOOKMARK,
+                rigamiId: newBookmarkId,
+                systemId: browserNode.id,
+            });
+        } else {
+            console.log('[chrome bookmarks] Update bookmark...');
+        }
+
+        return Promise.resolve();
     }
 
-    async createFolder(browserNode, parentId, notyEvent = false) {
-        const folder = new Folder({
-            name: browserNode.title,
-            parentId,
-        });
-        console.log('create folder:', folder);
-        const newFolderId = await this.core.bookmarksService.folders.save({ ...folder }, notyEvent);
+    async createOrUpdateFolder(browserNode) {
+        console.log('[chrome bookmarks] Create or update folder:', browserNode);
 
-        console.log('add bind:', {
-            type: TYPE.FOLDER,
-            rigamiId: newFolderId,
-            systemId: browserNode.id,
-        });
+        const bind = await db().getFromIndex(
+            'system_bookmarks',
+            'system_id',
+            browserNode.id,
+        );
 
-        await db().add('system_bookmarks', {
-            type: TYPE.FOLDER,
-            rigamiId: newFolderId,
-            systemId: browserNode.id,
-        });
+        if (!bind) {
+            console.log('[chrome bookmarks] Folder not found. Create...');
 
-        return newFolderId;
+            const parentBind = await db().getFromIndex(
+                'system_bookmarks',
+                'system_id',
+                browserNode.parentId,
+            );
+
+            console.log('[chrome bookmarks] parentBind:', parentBind);
+
+            if (!parentBind && +browserNode.parentId !== 0) return Promise.reject(new Error('Not find parent folder'));
+
+            const folder = new Folder({
+                name: browserNode.title,
+                parentId: parentBind?.rigamiId || 0,
+            });
+
+            const newFolderId = await FoldersUniversalService.save(folder);
+
+            await db().add('system_bookmarks', {
+                type: TYPE.FOLDER,
+                rigamiId: newFolderId,
+                systemId: browserNode.id,
+            });
+        } else {
+            console.log('[chrome bookmarks] Update folder...');
+        }
+
+        return Promise.resolve();
     }
 
     async parseSystemBookmarks() {
-        const parseNodeBookmark = async (browserNode, rigamiNode, parentId) => {
+        console.log('[chrome bookmarks] Start parsing...');
+        const nodes = await new Promise((resolve) => chrome.bookmarks.getTree(resolve));
+        const browserTree = first(nodes).children;
+        const rigamiTree = await FoldersUniversalService.getTree();
+
+        console.log('[chrome bookmarks] Rigami tree:', rigamiTree);
+        console.log('[chrome bookmarks] Browser tree:', browserTree);
+
+        const parseBookmarkNode = async (browserBookmarkNode) => {
+            await this.createOrUpdateBookmark(browserBookmarkNode);
+        };
+
+        const parseFolderNode = async (browserFolderNode) => {
+            await this.createOrUpdateFolder(browserFolderNode);
+
+            for await (const browserNode of browserFolderNode.children) {
+                await parseNode(browserNode);
+            }
+        };
+
+        const parseNode = async (browserNode) => {
+            if (browserNode.url) {
+                await parseBookmarkNode(browserNode);
+            } else {
+                await parseFolderNode(browserNode);
+            }
+        };
+
+        for await (const browserNode of browserTree) {
+            await parseNode(browserNode);
+        }
+
+        console.log('[chrome bookmarks] Finish sync!');
+
+        /* const parseNodeBookmark = async (browserNode, rigamiNode, parentId) => {
             console.log('parseNodeBookmark', browserNode, rigamiNode, parentId);
 
             if (rigamiNode) {
@@ -182,11 +253,10 @@ class SyncSystemBookmarksService {
         };
 
         const tree = await FoldersUniversalService.getTree(this.core.storageService.storage.syncBrowserFolder);
-        const nodes = await new Promise((resolve) => chrome.bookmarks.getTree(resolve));
 
         await parseLevel(first(nodes).children, tree, this.core.storageService.storage.syncBrowserFolder);
-        console.log('finish sync!');
+        */
     }
 }
 
-export default SyncSystemBookmarksService;
+export default SyncChromeBookmarksService;

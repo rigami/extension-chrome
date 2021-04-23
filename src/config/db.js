@@ -85,6 +85,14 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
         store.createIndex('version', 'version', { unique: false });
     }
 
+    if (!store.indexNames.contains('modified_timestamp')) {
+        store.createIndex('modified_timestamp', 'modifiedTimestamp', { unique: false });
+    }
+
+    if (!store.indexNames.contains('create_timestamp')) {
+        store.createIndex('create_timestamp', 'createTimestamp', { unique: false });
+    }
+
     if (oldVersion !== 0 && oldVersion < 7) {
         const bookmarks = await store.getAll();
         const bookmarksByCategories = await transaction.objectStore('bookmarks_by_categories').getAll();
