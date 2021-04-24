@@ -5,7 +5,7 @@ import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { first } from 'lodash';
 import { makeAutoObservable } from 'mobx';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { captureException } from '@sentry/react';
 
 class SyncChromeBookmarksService {
@@ -77,7 +77,7 @@ class SyncChromeBookmarksService {
         );
 
         if (!bind) {
-            console.log('[chrome bookmarks] Bookmark not found. Create...');
+            console.log('[chrome bookmarks] Bind not found. Search by parent bind...');
 
             const parentBind = await db().getFromIndex(
                 'system_bookmarks',
@@ -89,7 +89,18 @@ class SyncChromeBookmarksService {
 
             if (!parentBind) return Promise.reject(new Error('Not find folder'));
 
+            const { best: similarBookmarks } = await BookmarksUniversalService.query(new SearchQuery({
+                folderId: parentBind.rigamiId,
+                query: browserNode.url,
+            }));
+
+            console.log('similarBookmarks:', similarBookmarks);
+            const similarBookmark = first(similarBookmarks);
+
+            console.log('[chrome bookmarks] Similar rigami bookmarks:', similarBookmark);
+
             const bookmark = new Bookmark({
+                ...(similarBookmark || {}),
                 name: browserNode.title,
                 url: browserNode.url,
                 folderId: parentBind.rigamiId,
@@ -123,7 +134,7 @@ class SyncChromeBookmarksService {
         );
 
         if (!bind) {
-            console.log('[chrome bookmarks] Folder not found. Create...');
+            console.log('[chrome bookmarks] Bind not found. Search by parent bind...');
 
             const parentBind = await db().getFromIndex(
                 'system_bookmarks',
@@ -135,7 +146,13 @@ class SyncChromeBookmarksService {
 
             if (!parentBind && +browserNode.parentId !== 0) return Promise.reject(new Error('Not find parent folder'));
 
+            const folders = await db().getAllFromIndex('folders', 'parent_id', parentBind?.rigamiId || 0);
+            const similarFolder = folders.find(({ name }) => name === browserNode.title);
+
+            console.log('[chrome bookmarks] Similar rigami folder:', similarFolder);
+
             const folder = new Folder({
+                ...(similarFolder || {}),
                 name: browserNode.title,
                 parentId: parentBind?.rigamiId || 0,
             });
@@ -158,9 +175,7 @@ class SyncChromeBookmarksService {
         console.log('[chrome bookmarks] Start parsing...');
         const nodes = await new Promise((resolve) => chrome.bookmarks.getTree(resolve));
         const browserTree = first(nodes).children;
-        const rigamiTree = await FoldersUniversalService.getTree();
 
-        console.log('[chrome bookmarks] Rigami tree:', rigamiTree);
         console.log('[chrome bookmarks] Browser tree:', browserTree);
 
         const parseBookmarkNode = async (browserBookmarkNode) => {
@@ -188,74 +203,6 @@ class SyncChromeBookmarksService {
         }
 
         console.log('[chrome bookmarks] Finish sync!');
-
-        /* const parseNodeBookmark = async (browserNode, rigamiNode, parentId) => {
-            console.log('parseNodeBookmark', browserNode, rigamiNode, parentId);
-
-            if (rigamiNode) {
-                console.log('use rigami bookmark:', rigamiNode);
-            } else {
-                await this.createBookmark(browserNode, parentId);
-            }
-
-            return Promise.resolve();
-        };
-
-        const parseNodeFolder = async (browserNode, rigamiNode, parentId) => {
-            console.log('parseNodeFolder', browserNode, rigamiNode, parentId);
-
-            let newFolderId;
-
-            if (rigamiNode) {
-                console.log('use rigami folder:', rigamiNode);
-                newFolderId = rigamiNode.id;
-            } else {
-                newFolderId = await this.createFolder(browserNode, parentId);
-            }
-
-            await parseLevel(browserNode.children, rigamiNode?.children || [], newFolderId);
-
-            return Promise.resolve();
-        };
-
-        const parseLevel = async (browserNodes, rigamiNodes, parentId) => {
-            console.log('parseLevel', browserNodes, rigamiNodes);
-
-            const bookmarks = await BookmarksUniversalService.getAllInFolder(parentId);
-
-            for await (const browserNode of browserNodes) {
-                const bind = await db().getFromIndex(
-                    'system_bookmarks',
-                    'system_id',
-                    browserNode.id,
-                );
-
-                console.log('bind', bind, browserNode);
-
-                if (browserNode.url && !('dateGroupModified' in browserNode)) {
-                    await parseNodeBookmark(
-                        browserNode,
-                        bookmarks.find(({ name, url, id }) => (
-                            id === bind?.rigamiId
-                            || name === browserNode.title
-                            || url === browserNode.url
-                        )),
-                        parentId,
-                    );
-                } else {
-                    await parseNodeFolder(
-                        browserNode,
-                        rigamiNodes.find(({ name, id }) => id === bind?.rigamiId || name === browserNode.title),
-                        parentId,
-                    );
-                }
-            }
-        };
-
-        const tree = await FoldersUniversalService.getTree(this.core.storageService.storage.syncBrowserFolder);
-
-        await parseLevel(first(nodes).children, tree, this.core.storageService.storage.syncBrowserFolder);
-        */
     }
 }
 
