@@ -30,6 +30,8 @@ class FoldersUniversalService {
     static async _getPath(folderId = 0, path) {
         const folder = await this.get(folderId);
 
+        if (!folder) return path;
+
         if (folder.parentId === 0) {
             return [folder, ...path];
         }
@@ -47,7 +49,7 @@ class FoldersUniversalService {
         console.log('get folder by id', folderId);
         const folder = await db().get('folders', folderId);
 
-        return new Folder(folder);
+        return folder && new Folder(folder);
     }
 
     @action('save folder')
