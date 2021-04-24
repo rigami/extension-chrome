@@ -150,6 +150,9 @@ class Core {
                 lng: StorageConnector.getJSON('devTools', {}).locale
                     || (chrome?.i18n?.getUILanguage?.() || 'en').substring(0, 2),
                 load: 'languageOnly',
+                cleanCode: true,
+                nonExplicitSupportedLngs: true,
+                supportedLngs: ['en', 'ru'],
                 fallbackLng: 'en',
                 debug: !PRODUCTION_MODE,
                 ns: [
@@ -165,6 +168,7 @@ class Core {
                 defaultNS: 'common',
                 backend: { loadPath: 'resource/i18n/{{lng}}/{{ns}}.json' },
                 react: { useSuspense: false },
+                partialBundledLanguages: true,
             })
             .catch((e) => {
                 console.error('Failed init i18n:', e);
