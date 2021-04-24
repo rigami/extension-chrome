@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,6 +12,7 @@ import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { useTranslation } from 'react-i18next';
 import BookmarksSearchService from '@/ui/Bookmarks/BookmarksSearchService';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -46,6 +47,16 @@ function Bookmarks() {
             },
         }),
     ];
+
+    useEffect(() => {
+        const listenId = coreService.globalEventBus.on('folder/removed', async () => {
+            const folder = await FoldersUniversalService.get(service.activeFolderId);
+
+            if (!folder) service.setActiveFolder(1);
+        });
+
+        return () => coreService.globalEventBus.removeListener(listenId);
+    }, []);
 
     return (
         <Box
