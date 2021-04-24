@@ -175,11 +175,6 @@ async function upgradeOrCreateFolders(db, transaction, oldVersion, newVersion) {
         });
         store.createIndex('name', 'name', { unique: false });
         store.createIndex('parent_id', 'parentId', { unique: false });
-
-        await store.add({
-            name: 'Sundry',
-            parentId: 0,
-        });
     }
 }
 

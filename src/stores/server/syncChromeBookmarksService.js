@@ -31,8 +31,6 @@ class SyncChromeBookmarksService {
             console.log('finish import!');
             callback();
         });
-
-        this.syncBookmarks();
     }
 
     async createOrUpdateBookmark(browserNode, parentId) {
