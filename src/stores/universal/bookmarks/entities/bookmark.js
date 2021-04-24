@@ -15,24 +15,24 @@ class Bookmark {
     tags;
     folderId;
     clickCounts = 0;
-    version = 1;
 
     constructor(bookmark = {}) {
         makeAutoObservable(this);
 
-        const imageUrl = bookmark.imageUrl || getIconUrl(bookmark.icoFileName);
+        const imageUrl = getIconUrl(bookmark.icoFileName);
 
         this.id = bookmark.id;
         this.url = bookmark.url;
         this.name = bookmark.name;
         this.description = bookmark.description || '';
         this.icoVariant = bookmark.icoVariant || BKMS_VARIANT.SYMBOL;
-        this.imageUrl = `${imageUrl}?v=${bookmark.version || 1}`;
+        this.imageUrl = `${imageUrl}?v=${bookmark.modifiedTimestamp || 1}`;
         this.imageBase64 = bookmark.imageBase64;
         this.tags = bookmark.tags || [];
         this.folderId = bookmark.folderId || null;
         this.icoFileName = bookmark.icoFileName;
-        this.version = bookmark.version || 1;
+        this.createTimestamp = bookmark.createTimestamp;
+        this.modifiedTimestamp = bookmark.modifiedTimestamp;
 
         this.update(bookmark);
     }

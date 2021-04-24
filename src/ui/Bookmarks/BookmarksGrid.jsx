@@ -72,7 +72,6 @@ function BookmarksGrid(props) {
                                     imageUrl={card.imageUrl}
                                     key={card.id}
                                     style={{ marginBottom: theme.spacing(2) }}
-                                    version={card.version}
                                 />
                             ))}
                         </Box>

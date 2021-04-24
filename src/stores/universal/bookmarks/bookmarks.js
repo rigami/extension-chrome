@@ -64,14 +64,15 @@ class BookmarksUniversalService {
                 id,
                 ...saveData,
                 icoFileName: oldBookmark.icoFileName,
-                version: oldBookmark.version + 1,
+                modifiedTimestamp: Date.now(),
             }));
         } else {
             try {
                 saveBookmarkId = await db().add('bookmarks', cloneDeep({
                     ...saveData,
                     icoFileName: icoName,
-                    version: 1,
+                    createTimestamp: Date.now(),
+                    modifiedTimestamp: Date.now(),
                 }));
             } catch (e) {
                 console.error(e);

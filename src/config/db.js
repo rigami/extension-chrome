@@ -81,8 +81,8 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
         store.createIndex('tags', 'tags', { unique: false });
     }
 
-    if (!store.indexNames.contains('version')) {
-        store.createIndex('version', 'version', { unique: false });
+    if (store.indexNames.contains('version')) {
+        store.deleteIndex('version');
     }
 
     if (!store.indexNames.contains('modified_timestamp')) {
@@ -104,8 +104,18 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
 
             transaction.objectStore('bookmarks').put({
                 ...bookmark,
-                version: 1,
                 tags,
+            });
+        }
+    }
+    if (oldVersion !== 0 && oldVersion < 8) {
+        const bookmarks = await store.getAll();
+
+        for await (const bookmark of bookmarks) {
+            transaction.objectStore('bookmarks').put({
+                ...bookmark,
+                createTimestamp: Date.now(),
+                modifiedTimestamp: Date.now(),
             });
         }
     }
