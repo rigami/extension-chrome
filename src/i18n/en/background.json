@@ -20,7 +20,7 @@
     "add": "Add new background",
     "pause": "Pause background",
     "play": "Play background",
-    "addToLibrary": "Add background to library",
+    "like": "Mark background as you like",
     "next": "Next background",
     "remove": "Remove background",
     "change": "Change background",
@@ -46,8 +46,7 @@
     "unknown": "Failed to set background",
     "unknown_description": "Something went wrong, but it's not clear what, maybe the background is broken, try to delete it"
   },
-  "addedToLibrary": "Background saved in the library",
-  "addingToLibrary": "Saving the background...",
+  "liked": "You liked this background and now it is in your library",
   "fetchingNextBG": "Loading background...",
   "removedBrokenBG": "Damaged background removed",
   "backgroundSource": "by {{author}}, $t(serviceName.{{source}}, serviceName.unknown)"

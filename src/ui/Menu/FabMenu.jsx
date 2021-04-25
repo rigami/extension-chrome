@@ -10,8 +10,8 @@ import {
     SettingsRounded as SettingsIcon,
     PauseRounded as PauseIcon,
     PlayArrowRounded as PlayIcon,
-    SaveAltRounded as SaveBgIcon,
-    CheckRounded as SavedBgIcon,
+    FavoriteBorder as SaveBgIcon,
+    Favorite as SavedBgIcon,
     BookmarksRounded as BookmarksIcon,
     HomeRounded as DesktopIcon,
 } from '@material-ui/icons';
@@ -139,28 +139,23 @@ function FabMenu() {
                                     {nextBg && (<Divider />)}
                                     {coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && (
                                         <ExtendButton
-                                            tooltip={t('background:addingToLibrary')}
+                                            tooltip={t('background:liked')}
                                             className={classes.notClickable}
                                             disableRipple
-                                            icon={() => (
-                                                <CircularProgress
-                                                    className={classes.loadBGIcon}
-                                                    size={20}
-                                                />
-                                            )}
+                                            icon={SavedBgIcon}
                                         />
                                     )}
                                     {coreService.storage.temp.addingBgToLibrary !== FETCH.PENDING && (
                                         <ExtendButton
                                             tooltip={
                                                 backgrounds.currentBG.isSaved
-                                                    ? t('background:addedToLibrary')
-                                                    : t('background:button.addToLibrary')
+                                                    ? t('background:liked')
+                                                    : t('background:button.like')
                                             }
                                             data-ui-path={
                                                 backgrounds.currentBG.isSaved
-                                                    ? 'bg.addedToLibrary'
-                                                    : 'bg.addToLibrary'
+                                                    ? 'bg.liked'
+                                                    : 'bg.like'
                                             }
                                             className={clsx(
                                                 backgrounds.currentBG.isSaved && classes.notClickable,

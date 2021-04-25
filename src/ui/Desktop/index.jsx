@@ -4,12 +4,11 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     RefreshRounded as RefreshIcon,
     AddPhotoAlternateRounded as UploadFromComputerIcon,
-    SaveAltRounded as SaveBgIcon,
-    CheckRounded as SavedBgIcon,
+    FavoriteBorder as SaveBgIcon,
+    Favorite as SavedBgIcon,
     OpenInNewRounded as OpenSourceIcon,
     CloseRounded as CloseIcon,
     ArrowUpwardRounded as ExpandDesktopIcon,
-    ArrowDownwardRounded as ShowBookmarksIcon,
 } from '@material-ui/icons';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import {
@@ -163,23 +162,19 @@ function Desktop() {
         ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
             new ContextMenuItem({
                 title: (
-                    (coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && t('background:addingToLibrary'))
-                    || (backgrounds.currentBG?.isSaved && t('background:addedToLibrary'))
-                    || t('background:button.addToLibrary')
+                    (coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && t('background:liked'))
+                    || (backgrounds.currentBG?.isSaved && t('background:liked'))
+                    || t('background:button.like')
                 ),
                 disabled: (
                     coreService.storage.temp.addingBgToLibrary === FETCH.PENDING
                     || backgrounds.currentBG?.isSaved
                 ),
                 icon: (
-                    (coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && CircularProgress)
+                    (coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && SavedBgIcon)
                     || (backgrounds.currentBG?.isSaved && SavedBgIcon)
                     || SaveBgIcon
                 ),
-                iconProps: coreService.storage.temp.addingBgToLibrary === FETCH.PENDING ? {
-                    size: 20,
-                    className: classes.loadBGIcon,
-                } : {},
                 onClick: () => backgrounds.addToLibrary(backgrounds.currentBG),
             }),
             new ContextMenuItem({
