@@ -4,8 +4,10 @@
     "ok": "Good"
   },
   "changelog": [
-    "Removed the button to open the bookmarks panel, now it opens again with a scroll",
-    "Added new widget sizes",
+    "Added import of bookmarks from chrome",
+    "Added actions 'Copy' and 'Copy url' to the context menu of bookmarks",
+    "Added 'Move' action to context menus of bookmarks and folders",
+    "Background save button changed to 'like'",
     "Some other fixes and improvements"
   ]
 }
