@@ -59,6 +59,29 @@ function ContextMenuProvider({ children }) {
                     }
                 },
             }),
+            ...(itemType === 'bookmark' ? [
+                new ContextMenuDivider(),
+                new ContextMenuItem({
+                    title: t('button.copyUrl'),
+                    icon: CopyToClipboardIcon,
+                    onClick: async () => {
+                        const bookmark = await BookmarksUniversalService.get(itemId);
+                        copyToClipboard(bookmark.url);
+                    },
+                }),
+                new ContextMenuItem({
+                    title: t('button.copy'),
+                    icon: CopyToClipboardIcon,
+                    onClick: async () => {
+                        const bookmark = await BookmarksUniversalService.get(itemId);
+                        if (bookmark.description) {
+                            copyToClipboard(`${bookmark.name}\n${bookmark.description}\n\n${bookmark.url}`);
+                        } else {
+                            copyToClipboard(`${bookmark.name}\n${bookmark.url}`);
+                        }
+                    },
+                }),
+            ] : []),
             new ContextMenuDivider(),
             !disableEdit && new ContextMenuItem({
                 title: t('common:button.edit'),
@@ -101,29 +124,6 @@ function ContextMenuProvider({ children }) {
                     coreService.localEventBus.call(`${itemType}/remove`, { id: itemId });
                 },
             }),
-            ...(itemType === 'bookmark' ? [
-                new ContextMenuDivider(),
-                new ContextMenuItem({
-                    title: t('button.copyUrl'),
-                    icon: CopyToClipboardIcon,
-                    onClick: async () => {
-                        const bookmark = await BookmarksUniversalService.get(itemId);
-                        copyToClipboard(bookmark.url);
-                    },
-                }),
-                new ContextMenuItem({
-                    title: t('button.copy'),
-                    icon: CopyToClipboardIcon,
-                    onClick: async () => {
-                        const bookmark = await BookmarksUniversalService.get(itemId);
-                        if (bookmark.description) {
-                            copyToClipboard(`${bookmark.name}\n${bookmark.description}\n\n${bookmark.url}`);
-                        } else {
-                            copyToClipboard(`${bookmark.name}\n${bookmark.url}`);
-                        }
-                    },
-                }),
-            ] : []),
         ];
     };
 

@@ -131,6 +131,8 @@ class BookmarksUniversalService {
         } catch (e) {
             console.error(e);
             captureException(e);
+
+            return Promise.reject(e);
         }
     }
 }
