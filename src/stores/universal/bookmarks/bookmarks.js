@@ -64,6 +64,7 @@ class BookmarksUniversalService {
                 id,
                 ...saveData,
                 icoFileName: oldBookmark.icoFileName,
+                createTimestamp: oldBookmark.createTimestamp || Date.now(),
                 modifiedTimestamp: Date.now(),
             }));
         } else {
