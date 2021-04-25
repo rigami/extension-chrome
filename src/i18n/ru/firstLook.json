@@ -9,6 +9,8 @@
   "stage": {
     "WAIT": "Подождите...",
     "CREATE_FS": "Создание файловой системы",
+    "CREATE_DEFAULT_STRUCTURE": "Добавление магии",
+    "IMPORT_BOOKMARKS": "Импорт закладок из сhrome",
     "FETCH_BG": "Получение первого фона",
     "SAVE_BG": "Сохранение фона",
     "DONE": "Готово!"

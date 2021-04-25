@@ -1,44 +1,51 @@
 {
-  "localBackup": "Local backup",
-  "createLocalBackup": {
-    "title": "Create backup",
-    "description": "Save extension settings and bookmarks on your computer",
-    "state": {
-      "success": "Backup created successfully",
-      "creating": "Creating a recovery file..."
-    },
-    "error": {
-      "unknown": "Save creation error"
-    },
-    "button": {
-      "create": "Create backup"
+  "import": {
+    "title": "Import",
+    "chrome": {
+      "title": "Importing bookmarks from chrome",
+      "state": {
+        "importing": "Importing..."
+      },
+      "button": {
+        "import": "Import"
+      }
     }
   },
-  "syncItem": {
-    "settings": "Settings",
-    "bookmarks": "Bookmarks",
-    "backgrounds": "Backgrounds",
-    "backgrounds_description": "Increases file size greatly"
-  },
-  "restoreLocalBackup": {
-    "state": {
-      "restoring": "Data recovering...",
-      "success": "Save successfully restored"
+  "localBackup": {
+    "title": "Local backup",
+    "create": {
+      "title": "Create backup",
+      "description": "Save extension settings and bookmarks on your computer",
+      "state": {
+        "success": "Backup created successfully",
+        "creating": "Creating a recovery file..."
+      },
+      "error": {
+        "unknown": "Save creation error"
+      },
+      "button": {
+        "create": "Create backup"
+      }
     },
-    "button": {
-      "restore": "Recover data"
+    "syncItem": {
+      "settings": "Settings",
+      "bookmarks": "Bookmarks",
+      "backgrounds": "Backgrounds",
+      "backgrounds_description": "Increases file size greatly"
     },
-    "error": {
-      "brokenFile": "Broken restore file",
-      "wrongVersion": "Mistake. Saving this version is not supported",
-      "wrongSchema": "Mistake. Invalid save file structure"
-    }
-  },
-  "oldAppBackupFile": {
-    "title": "This is the legacy extension save file",
-    "description": "These are saves from the ClockTab application. Not all settings can be applied",
-    "button": {
-      "continue": "Apply this save"
+    "restore": {
+      "state": {
+        "restoring": "Data recovering...",
+        "success": "Save successfully restored"
+      },
+      "button": {
+        "restore": "Recover data"
+      },
+      "error": {
+        "brokenFile": "Broken restore file",
+        "wrongVersion": "Mistake. Saving this version is not supported",
+        "wrongSchema": "Mistake. Invalid save file structure"
+      }
     }
   }
 }

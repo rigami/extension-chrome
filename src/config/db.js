@@ -81,8 +81,16 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
         store.createIndex('tags', 'tags', { unique: false });
     }
 
-    if (!store.indexNames.contains('version')) {
-        store.createIndex('version', 'version', { unique: false });
+    if (store.indexNames.contains('version')) {
+        store.deleteIndex('version');
+    }
+
+    if (!store.indexNames.contains('modified_timestamp')) {
+        store.createIndex('modified_timestamp', 'modifiedTimestamp', { unique: false });
+    }
+
+    if (!store.indexNames.contains('create_timestamp')) {
+        store.createIndex('create_timestamp', 'createTimestamp', { unique: false });
     }
 
     if (oldVersion !== 0 && oldVersion < 7) {
@@ -96,8 +104,18 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
 
             transaction.objectStore('bookmarks').put({
                 ...bookmark,
-                version: 1,
                 tags,
+            });
+        }
+    }
+    if (oldVersion !== 0 && oldVersion < 8) {
+        const bookmarks = await store.getAll();
+
+        for await (const bookmark of bookmarks) {
+            transaction.objectStore('bookmarks').put({
+                ...bookmark,
+                createTimestamp: Date.now(),
+                modifiedTimestamp: Date.now(),
             });
         }
     }
@@ -157,11 +175,6 @@ async function upgradeOrCreateFolders(db, transaction, oldVersion, newVersion) {
         });
         store.createIndex('name', 'name', { unique: false });
         store.createIndex('parent_id', 'parentId', { unique: false });
-
-        await store.add({
-            name: 'Sundry',
-            parentId: 0,
-        });
     }
 }
 

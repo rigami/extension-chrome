@@ -9,7 +9,7 @@ import {
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
-import { open as openDB } from '@/utils/db';
+import db, { open as openDB } from '@/utils/db';
 import appVariables from '@/config/appVariables';
 import fs, { open as openFS } from '@/utils/fs';
 import EventBus from '@/utils/eventBus';
@@ -31,6 +31,8 @@ const APP_STATE = {
 const PREPARE_PROGRESS = {
     WAIT: 'WAIT',
     CREATE_FS: 'CREATE_FS',
+    CREATE_DEFAULT_STRUCTURE: 'CREATE_DEFAULT_STRUCTURE',
+    IMPORT_BOOKMARKS: 'IMPORT_BOOKMARKS',
     FETCH_BG: 'FETCH_BG',
     SAVE_BG: 'SAVE_BG',
     DONE: 'DONE',
@@ -150,6 +152,9 @@ class Core {
                 lng: StorageConnector.getJSON('devTools', {}).locale
                     || (chrome?.i18n?.getUILanguage?.() || 'en').substring(0, 2),
                 load: 'languageOnly',
+                cleanCode: true,
+                nonExplicitSupportedLngs: true,
+                supportedLngs: ['en', 'ru'],
                 fallbackLng: 'en',
                 debug: !PRODUCTION_MODE,
                 ns: [
@@ -165,6 +170,7 @@ class Core {
                 defaultNS: 'common',
                 backend: { loadPath: 'resource/i18n/{{lng}}/{{ns}}.json' },
                 react: { useSuspense: false },
+                partialBundledLanguages: true,
             })
             .catch((e) => {
                 console.error('Failed init i18n:', e);
@@ -183,14 +189,30 @@ class Core {
         await fs().mkdir('/backgrounds/full');
         await fs().mkdir('/backgrounds/preview');
 
+        progressCallback(10, PREPARE_PROGRESS.CREATE_DEFAULT_STRUCTURE);
+
+        await db().add('folders', {
+            id: 1,
+            name: 'Sundry',
+            parentId: 0,
+        });
+
+        progressCallback(15, PREPARE_PROGRESS.IMPORT_BOOKMARKS);
+
+        console.log('Import system bookmarks');
+        await new Promise((resolve) => eventToBackground('system/importSystemBookmarks', {}, () => {
+            console.log('Finish import');
+            resolve();
+        }));
+
         console.log('Fetch BG');
-        progressCallback(10, PREPARE_PROGRESS.FETCH_BG);
+        progressCallback(35, PREPARE_PROGRESS.FETCH_BG);
 
         const { response } = await fetchData(
             `${appVariables.rest.url}/backgrounds/get-from-collection?count=1&type=image&collection=best`,
         ).catch(() => ({ response: [] }));
 
-        progressCallback(30, PREPARE_PROGRESS.FETCH_BG);
+        progressCallback(70, PREPARE_PROGRESS.SAVE_BG);
 
         let bg;
 

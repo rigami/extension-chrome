@@ -14,7 +14,7 @@ const methodPromise = (args, method) => new Promise((resolve, reject) => {
 });
 
 const promiseStub = {
-    ls: (...args) => methodPromise(args, 'ls'),
+    cd: (...args) => methodPromise(args, 'cd'),
     mkdir: (...args) => methodPromise(args, 'mkdir'),
     save: (...args) => methodPromise(args, 'save'),
     get: (...args) => methodPromise(args, 'get'),

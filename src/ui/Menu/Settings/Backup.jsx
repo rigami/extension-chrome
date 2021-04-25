@@ -2,7 +2,6 @@ import React, {
     Fragment,
     useState,
     useRef,
-    // useEffect,
 } from 'react';
 import {
     Popper,
@@ -15,7 +14,6 @@ import {
     Checkbox,
     ListItemText,
     ListItemIcon,
-    // Collapse,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,11 +23,8 @@ import { eventToApp, eventToBackground } from '@/stores/server/bus';
 import { observer } from 'mobx-react-lite';
 import fs from '@/utils/fs';
 import { captureException } from '@sentry/react';
-/* import useCoreService from '@/stores/app/BaseStateProvider';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
 import SectionHeader from '@/ui/Menu/SectionHeader';
-import FolderEditor from '@/ui/Bookmarks/Folders/EditModal';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders'; */
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     backupButton: { flexShrink: 0 },
@@ -53,123 +48,46 @@ const useStyles = makeStyles((theme) => ({
 const headerProps = { title: 'settings:backup' };
 const pageProps = { width: 750 };
 
-/* function BrowserSync() {
+function BrowserSync() {
     const classes = useStyles();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settingsBackup']);
     const coreService = useCoreService();
-    const bookmarksService = useBookmarksService();
-    const [editorAnchor, setEditorAnchor] = useState(null);
-    const [syncFolderId, setSyncFolderId] = useState(coreService.storage.persistent.syncBrowserFolder);
-    const [syncFolderName, setSyncFolderName] = useState(null);
-    const [foldersRoot, setFoldersRoot] = useState(null);
-    const [foldersEditorOpen, setFoldersEditorOpen] = useState(false);
     const [syncing, setSyncing] = useState(false);
 
-    useEffect(() => {
-        FoldersUniversalService.getFoldersByParent().then((rootFolders) => setFoldersRoot(rootFolders));
-    }, []);
-
-    useEffect(() => {
-        setSyncFolderId(coreService.storage.persistent.syncBrowserFolder);
-        FoldersUniversalService.get(coreService.storage.persistent.syncBrowserFolder)
-            .then((folder) => setSyncFolderName(folder.name));
-    }, [coreService.storage.persistent.syncBrowserFolder]);
-
     return (
-        <React.Fragment>
-            <SectionHeader title={t('systemBookmarks.title')} />
-            <MenuRow
-                title={t('systemBookmarks.syncSystemBookmarks.title')}
-                description={t(
-                    'systemBookmarks.syncSystemBookmarks.description',
-                    { folderName: syncFolderName || 'load...' },
-                )}
-                action={{
-                    type: ROWS_TYPE.CHECKBOX,
-                    value: bookmarksService.settings.syncWithSystem,
-                    onChange: (event, value) => {
-                        bookmarksService.settings.update({ syncWithSystem: value });
-                    },
-                }}
-            />
-            <Collapse in={bookmarksService.settings.syncWithSystem}>
-                <MenuRow
-                    title={t('systemBookmarks.syncFolder.title')}
-                    description={t('systemBookmarks.syncFolder.description')}
-                    disabled={foldersRoot === null}
-                    action={{
-                        type: ROWS_TYPE.SELECT,
-                        format: (value) => (value === 'new-folder'
-                            ? t('systemBookmarks.syncFolder.newFolder')
-                            : (foldersRoot ? foldersRoot.find(({ id }) => id === value)?.name : 'load...')),
-                        value: syncFolderId,
-                        onOpen: (event) => setEditorAnchor(event.target),
-                        onChange: (event) => {
-                            if (event.target.value === 'new-folder') {
-                                setFoldersEditorOpen(true);
-                                setSyncFolderId('new-folder');
-                            } else {
-                                setSyncFolderId(event.target.value);
-                                coreService.storage.updatePersistent({ syncBrowserFolder: event.target.value });
-                            }
-                        },
-                        values: [...(foldersRoot ? foldersRoot.map(({ id }) => id) : []), 'new-folder'],
-                    }}
-                />
-                <FolderEditor
-                    anchorEl={editorAnchor}
-                    isOpen={foldersEditorOpen}
-                    editRootFolders
-                    addNewFolderByParentId={0}
-                    onSave={(folderId) => {
-                        FoldersUniversalService.getFoldersByParent()
-                            .then((rootFolders) => {
-                                setFoldersRoot(rootFolders);
+        <MenuRow
+            title={t('import.chrome.title')}
+            action={{
+                type: ROWS_TYPE.CUSTOM,
+                onClick: () => {},
+                component: (
+                    <Button
+                        variant="contained"
+                        component="span"
+                        color="primary"
+                        className={classes.reRunSyncButton}
+                        fullWidth
+                        disabled={syncing}
+                        onClick={() => {
+                            setSyncing(true);
+                            eventToBackground('system/importSystemBookmarks', {}, () => {
+                                console.log('FINISH SYNC!');
+                                setSyncing(false);
+                                coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
                             });
-                        setSyncFolderId(folderId);
-                        coreService.storage.updatePersistent({ syncBrowserFolder: folderId });
-                        setFoldersEditorOpen(false);
-                    }}
-                    onClose={() => {
-                        setSyncFolderId(coreService.storage.persistent.syncBrowserFolder);
-                        setFoldersEditorOpen(false);
-                    }}
-                />
-                <MenuRow
-                    title={t('systemBookmarks.reRunSync.title')}
-                    description={t('systemBookmarks.reRunSync.description')}
-                    action={{
-                        type: ROWS_TYPE.CUSTOM,
-                        onClick: () => {},
-                        component: (
-                            <Button
-                                variant="contained"
-                                component="span"
-                                color="primary"
-                                className={classes.reRunSyncButton}
-                                fullWidth
-                                disabled={syncing}
-                                onClick={() => {
-                                    setSyncing(true);
-                                    eventToBackground('system/parseSystemBookmarks', {}, () => {
-                                        console.log('FINISH SYNC!');
-                                        setSyncing(false);
-                                    });
-                                }}
-                            >
-                                {
-                                    syncing
-                                        ? t('systemBookmarks.reRunSync.progress')
-                                        : t('systemBookmarks.reRunSync.button')
-                                }
-                            </Button>
-                        ),
-                    }}
-                />
-            </Collapse>
-        </React.Fragment>
+                        }}
+                    >
+                        {
+                            syncing
+                                ? t('import.chrome.state.importing')
+                                : t('import.chrome.button.import')
+                        }
+                    </Button>
+                ),
+            }}
+        />
     );
-} */
+}
 
 function LocalBackup() {
     const classes = useStyles();
@@ -218,7 +136,7 @@ function LocalBackup() {
                 fullWidth
                 className={classes.backupButton}
             >
-                {t('createLocalBackup.button.create')}
+                {t('localBackup.create.button.create')}
             </Button>
             <Popper
                 open={open}
@@ -251,7 +169,7 @@ function LocalBackup() {
                                         </ListItemIcon>
                                         <ListItemText
                                             classes={{ primary: classes.optionLabel }}
-                                            primary={t('syncItem.settings')}
+                                            primary={t('localBackup.syncItem.settings')}
                                         />
                                     </MenuItem>
                                     <MenuItem
@@ -265,7 +183,7 @@ function LocalBackup() {
                                         </ListItemIcon>
                                         <ListItemText
                                             classes={{ primary: classes.optionLabel }}
-                                            primary={t('syncItem.bookmarks')}
+                                            primary={t('localBackup.syncItem.bookmarks')}
                                         />
                                     </MenuItem>
                                     <MenuItem
@@ -283,8 +201,8 @@ function LocalBackup() {
                                                 primary: classes.optionLabel,
                                                 secondary: classes.fixOverflow,
                                             }}
-                                            primary={t('syncItem.backgrounds')}
-                                            secondary={t('syncItem.backgrounds', { context: 'description' })}
+                                            primary={t('localBackup.syncItem.backgrounds')}
+                                            secondary={t('localBackup.syncItem.backgrounds', { context: 'description' })}
                                         />
                                     </MenuItem>
                                     <MenuItem
@@ -297,7 +215,7 @@ function LocalBackup() {
                                         </ListItemIcon>
                                         <ListItemText
                                             classes={{ primary: classes.optionLabel }}
-                                            primary={t('createLocalBackup.button.create')}
+                                            primary={t('localBackup.create.button.create')}
                                         />
                                     </MenuItem>
                                 </MenuList>
@@ -310,7 +228,7 @@ function LocalBackup() {
     );
 }
 
-// const ObserverBrowserSync = observer(BrowserSync);
+const ObserverBrowserSync = observer(BrowserSync);
 
 function BackupSettings() {
     const classes = useStyles();
@@ -336,11 +254,12 @@ function BackupSettings() {
 
     return (
         <React.Fragment>
-            {/* <ObserverBrowserSync />
-            <SectionHeader title={t('localBackup.title')} /> */}
+            <SectionHeader title={t('import.title')} />
+            <ObserverBrowserSync />
+            <SectionHeader title={t('localBackup.title')} />
             <MenuRow
-                title={t('createLocalBackup.title')}
-                description={t('createLocalBackup.description')}
+                title={t('localBackup.create.title')}
+                description={t('localBackup.create.description')}
                 action={{
                     type: ROWS_TYPE.CUSTOM,
                     onClick: () => {},
@@ -369,7 +288,7 @@ function BackupSettings() {
                                     fullWidth
                                     className={classes.backupButton}
                                 >
-                                    {t('restoreLocalBackup.button.restore')}
+                                    {t('localBackup.restore.button.restore')}
                                 </Button>
                             </label>
                         </React.Fragment>

@@ -9,6 +9,8 @@
   "stage": {
     "WAIT": "Waiting...",
     "CREATE_FS": "Creating file system",
+    "CREATE_DEFAULT_STRUCTURE": "Adding magic",
+    "IMPORT_BOOKMARKS": "Importing bookmarks from chrome",
     "FETCH_BG": "Fetching first background",
     "SAVE_BG": "Saving background",
     "DONE": "Done!"

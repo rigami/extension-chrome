@@ -64,14 +64,15 @@ class BookmarksUniversalService {
                 id,
                 ...saveData,
                 icoFileName: oldBookmark.icoFileName,
-                version: oldBookmark.version + 1,
+                modifiedTimestamp: Date.now(),
             }));
         } else {
             try {
                 saveBookmarkId = await db().add('bookmarks', cloneDeep({
                     ...saveData,
                     icoFileName: icoName,
-                    version: 1,
+                    createTimestamp: Date.now(),
+                    modifiedTimestamp: Date.now(),
                 }));
             } catch (e) {
                 console.error(e);
@@ -92,7 +93,7 @@ class BookmarksUniversalService {
             await fs().save(`/bookmarksIcons/${icoName}`, blob);
         } else if (!imageURL && id) {
             try {
-                await fs().remove(`/bookmarksIcons/${icoName}`);
+                await fs().rmrf(`/bookmarksIcons/${icoName}`);
             } catch (e) {
                 console.error(e);
                 captureException(e);
@@ -117,7 +118,7 @@ class BookmarksUniversalService {
         await db().delete('bookmarks', bookmarkId);
 
         try {
-            await fs().remove(`/bookmarksIcons/${oldBookmark.icoFileName}`);
+            await fs().rmrf(`/bookmarksIcons/${oldBookmark.icoFileName}`);
         } catch (e) {
             console.log('Failed remove bookmark icon', e);
             captureException(e);

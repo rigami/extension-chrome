@@ -3,20 +3,21 @@ import BusApp, { eventToApp, eventToPopup } from '@/stores/server/bus';
 import { open as openFS } from '@/utils/fs';
 import SettingsService from './settingsService';
 import StorageService from './storageService';
-// import SyncSystemBookmarksService from './syncSystemBookmarksService';
+// import SyncChromeBookmarksService from './syncSystemBookmarksService';
 import SyncBookmarks from './syncBookmarks';
 import LocalBackupService from './localBackupService';
 import BookmarksService from './bookmarksService';
 import WeatherService from './weather/service';
 import BackgroundsService from './backgroundsService';
 import SyncBackgrounds from './syncBackgrounds';
+import SyncChromeBookmarksService from './syncChromeBookmarksService';
 
 class ServerApp {
     localBus;
     globalBus;
     settingsService;
     storageService;
-    // systemBookmarksService;
+    systemBookmarksService;
     bookmarksSyncService;
     localBackupService;
     bookmarksService;
@@ -33,7 +34,7 @@ class ServerApp {
         this.storageService = new StorageService(this);
 
         // Sync & backup
-        // this.systemBookmarksService = new SyncSystemBookmarksService(this);
+        this.systemBookmarksService = new SyncChromeBookmarksService(this);
         this.bookmarksSyncService = new SyncBookmarks(this);
         this.localBackupService = new LocalBackupService(this);
         this.backgroundsSyncService = new SyncBackgrounds(this);

@@ -70,8 +70,8 @@ class BackgroundsUniversalService {
         }
 
         try {
-            await fs().remove(`/backgrounds/full/${removeBG.fileName}`);
-            await fs().remove(`/backgrounds/preview/${removeBG.fileName}`);
+            await fs().rmrf(`/backgrounds/full/${removeBG.fileName}`);
+            await fs().rmrf(`/backgrounds/preview/${removeBG.fileName}`);
             console.log('[backgrounds] Remove from file system...');
         } catch (e) {
             console.log(`[backgrounds] BG with id=${removeBG.id} not find in file system`);

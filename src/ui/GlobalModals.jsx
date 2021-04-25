@@ -95,7 +95,7 @@ function GlobalModals({ children }) {
             link.click();
 
             enqueueSnackbar({
-                message: t('settingsBackup:createLocalBackup.state.success'),
+                message: t('settingsBackup:localBackup.create.state.success'),
                 variant: 'success',
             });
             coreService.storage.updatePersistent({ localBackup: null });
@@ -110,14 +110,14 @@ function GlobalModals({ children }) {
 
                 if (data.stage === 'start') {
                     const snackId = enqueueSnackbar({
-                        message: t('settingsBackup:createLocalBackup.state.creating'),
+                        message: t('settingsBackup:localBackup.create.state.creating'),
                         variant: 'progress',
                     }, { persist: true });
 
                     coreService.storage.updateTemp({ progressCreateSnackbar: snackId });
                 } else if (data.stage === 'error') {
                     enqueueSnackbar({
-                        message: t('settingsBackup:createLocalBackup.error.unknown'),
+                        message: t('settingsBackup:localBackup.create.error.unknown'),
                         variant: 'error',
                     });
                 } else if (data.stage === 'done') {
@@ -131,7 +131,7 @@ function GlobalModals({ children }) {
 
                 if (data.result === 'start') {
                     const snackId = enqueueSnackbar({
-                        message: t('settingsBackup:restoreLocalBackup.state.restoring'),
+                        message: t('settingsBackup:localBackup.restore.state.restoring'),
                         variant: 'progress',
                     }, { persist: true });
 
@@ -140,7 +140,7 @@ function GlobalModals({ children }) {
                     location.reload();
                 } else if (data.result === 'error') {
                     enqueueSnackbar({
-                        message: t(`settingsBackup:restoreLocalBackup.error.${data.message}`),
+                        message: t(`settingsBackup:localBackup.restore.error.${data.message}`),
                         variant: data.result,
                     });
 
@@ -155,14 +155,14 @@ function GlobalModals({ children }) {
         if (coreService.storage.persistent.localBackup) {
             if (coreService.storage.persistent.localBackup === 'creating') {
                 const snackId = enqueueSnackbar({
-                    message: t('settingsBackup:createLocalBackup.state.creating'),
+                    message: t('settingsBackup:localBackup.create.state.creating'),
                     variant: 'progress',
                 }, { persist: true });
 
                 coreService.storage.updateTemp({ progressCreateSnackbar: snackId });
             } else if (coreService.storage.persistent.localBackup === 'error') {
                 enqueueSnackbar({
-                    message: t('settingsBackup:createLocalBackup.error.unknown'),
+                    message: t('settingsBackup:localBackup.create.error.unknown'),
                     variant: 'error',
                 });
                 coreService.storage.updatePersistent({ localBackup: null });
@@ -174,14 +174,14 @@ function GlobalModals({ children }) {
         if (coreService.storage.persistent.restoreBackup) {
             if (coreService.storage.persistent.restoreBackup === 'restoring') {
                 const snackId = enqueueSnackbar({
-                    message: t('settingsBackup:restoreLocalBackup.state.restoring'),
+                    message: t('settingsBackup:localBackup.restore.state.restoring'),
                     variant: 'progress',
                 }, { persist: true });
 
                 coreService.storage.updateTemp({ progressRestoreSnackbar: snackId });
             } else if (coreService.storage.persistent.restoreBackup === 'error') {
                 enqueueSnackbar({
-                    message: t(`settingsBackup:restoreLocalBackup.error.${
+                    message: t(`settingsBackup:localBackup.restore.error.${
                         coreService.storage.persistent.restoreBackupError
                     }`),
                     variant: 'error',
@@ -193,7 +193,7 @@ function GlobalModals({ children }) {
             } else if (coreService.storage.persistent.restoreBackup === 'done') {
                 coreService.storage.updatePersistent({ restoreBackup: null });
                 enqueueSnackbar({
-                    message: t('settingsBackup:restoreLocalBackup.state.success'),
+                    message: t('settingsBackup:localBackup.restore.state.success'),
                     variant: 'success',
                 });
             }
