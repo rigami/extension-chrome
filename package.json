@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "0.11.13",
+    "version": "0.11.14",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
@@ -32,6 +32,7 @@
         "@sentry/react": "^6.2.2",
         "@sentry/tracing": "^6.2.2",
         "clsx": "^1.1.1",
+        "copy-to-clipboard": "^3.3.1",
         "i18next": "^20.2.1",
         "i18next-http-backend": "^1.1.1",
         "idb": "^6.0.0",

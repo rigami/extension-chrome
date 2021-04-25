@@ -5,14 +5,17 @@ import ContextMenu from '@/ui/ContextMenu';
 import useAppService from '@/stores/app/AppStateProvider';
 import { useTranslation } from 'react-i18next';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
+import { ContextMenuDivider, ContextMenuItem } from '@/stores/app/entities/contextMenu';
 import {
     DeleteRounded as RemoveIcon,
     EditRounded as EditIcon,
     FavoriteBorderRounded as AddFavoriteIcon,
     FavoriteRounded as RemoveFavoriteIcon,
 } from '@material-ui/icons';
+import { ContentCopyFilled as CopyToClipboardIcon } from '@/icons';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import copyToClipboard from 'copy-to-clipboard';
+import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 
 const context = createContext(() => ({}));
 
@@ -20,7 +23,7 @@ function ContextMenuProvider({ children }) {
     const appService = useAppService();
     const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['bookmark']);
     const Context = context;
 
     const computeActions = ({ itemType, itemId, disableEdit = false, disableRemove = false }, event) => {
@@ -64,6 +67,29 @@ function ContextMenuProvider({ children }) {
                     coreService.localEventBus.call(`${itemType}/remove`, { id: itemId });
                 },
             }),
+            ...(itemType === 'bookmark' ? [
+                new ContextMenuDivider(),
+                new ContextMenuItem({
+                    title: t('button.copyUrl'),
+                    icon: CopyToClipboardIcon,
+                    onClick: async () => {
+                        const bookmark = await BookmarksUniversalService.get(itemId);
+                        copyToClipboard(bookmark.url);
+                    },
+                }),
+                new ContextMenuItem({
+                    title: t('button.copy'),
+                    icon: CopyToClipboardIcon,
+                    onClick: async () => {
+                        const bookmark = await BookmarksUniversalService.get(itemId);
+                        if (bookmark.description) {
+                            copyToClipboard(`${bookmark.name}\n${bookmark.description}\n\n${bookmark.url}`);
+                        } else {
+                            copyToClipboard(`${bookmark.name}\n${bookmark.url}`);
+                        }
+                    },
+                }),
+            ] : []),
         ];
     };
 

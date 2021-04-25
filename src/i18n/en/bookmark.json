@@ -37,7 +37,9 @@
     "add_short":"Add bookmark",
     "add_first": "Create first bookmark",
     "favorites": "Show favorites",
-    "open": "Open bookmarks"
+    "open": "Open bookmarks",
+    "copyUrl": "Copy url",
+    "copy": "Copy"
   },
   "remove": {
     "confirm": "Delete bookmark?",
