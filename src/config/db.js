@@ -1,5 +1,6 @@
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 import { captureException } from '@sentry/react';
+import { omit } from 'lodash';
 
 async function upgradeOrCreateBackgrounds(db, transaction, oldVersion, newVersion) {
     let store;
@@ -113,7 +114,7 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
 
         for await (const bookmark of bookmarks) {
             transaction.objectStore('bookmarks').put({
-                ...bookmark,
+                ...omit(bookmark, ['version']),
                 createTimestamp: Date.now(),
                 modifiedTimestamp: Date.now(),
             });
