@@ -11,6 +11,7 @@
     "more": "Show more",
     "less": "Show less",
     "reset": "Reset",
+    "move": "Move",
     "favorite": {
       "add": "Add to favorites",
       "remove": "Remove from favorites"

@@ -13,6 +13,7 @@ import {
     ChevronRightRounded as ChevronRightIcon,
     ExpandMoreRounded,
     FavoriteRounded as FavoriteIcon,
+    HomeRounded as HomeIcon,
 } from '@material-ui/icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +26,7 @@ import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import asyncAction from '@/utils/asyncAction';
 import { captureException } from '@sentry/react';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -88,6 +90,7 @@ const useStyles = makeStyles((theme) => ({
             height: 18,
         },
     },
+    disabledExpand: { color: theme.palette.action.disabled },
     itemRoot: {
         color: theme.palette.text.secondary,
         padding: 0,
@@ -179,6 +182,7 @@ function FolderItem(props) {
         id,
         name,
         childExist,
+        isDisabled,
         isExpand,
         isSelected,
         level,
@@ -194,6 +198,7 @@ function FolderItem(props) {
         itemId: id,
         itemType: 'folder',
         disableRemove: id === 1,
+        disableMove: id === 1,
     });
     const [isPin, setIsPin] = useState(bookmarksService.findFavorite({
         itemId: id,
@@ -217,6 +222,7 @@ function FolderItem(props) {
             onClick={onClick}
             style={{ paddingLeft: 8 + level * 8 }}
             button
+            disabled={isDisabled}
             selected={isSelected}
             onContextMenu={contextMenu}
         >
@@ -231,24 +237,27 @@ function FolderItem(props) {
             <ListItemSecondaryAction className={classes.actions}>
                 {childExist && (
                     <ButtonBase
-                        className={classes.expandIcon}
+                        disabled={isDisabled}
+                        className={clsx(classes.expandIcon, isDisabled && classes.disabledExpand)}
                         onClick={onExpandChange}
                         style={{ marginLeft: level * 8 }}
                     >
                         {isExpand ? (<ExpandMoreRounded />) : (<ChevronRightIcon />)}
                     </ButtonBase>
                 )}
-                <Tooltip title={t('button.create', { context: 'sub' })}>
-                    <ButtonBase
-                        className={classes.addSubFolder}
-                        onClick={() => onCreateSubFolder({
-                            anchorEl: rootRef.current,
-                            parentFolder: id,
-                        })}
-                    >
-                        <AddIcon />
-                    </ButtonBase>
-                </Tooltip>
+                {!isDisabled && (
+                    <Tooltip title={t('button.create', { context: 'sub' })}>
+                        <ButtonBase
+                            className={classes.addSubFolder}
+                            onClick={() => onCreateSubFolder({
+                                anchorEl: rootRef.current,
+                                parentFolder: id,
+                            })}
+                        >
+                            <AddIcon />
+                        </ButtonBase>
+                    </Tooltip>
+                )}
                 {isPin && (
                     <FavoriteIcon className={classes.favorite} />
                 )}
@@ -263,7 +272,9 @@ function TreeItem(props) {
     const {
         folder,
         expanded = [],
+        disabled = [],
         level,
+        isDisabled,
         isExpanded,
         selectedId,
         onClick,
@@ -278,6 +289,7 @@ function TreeItem(props) {
                 id={folder.id}
                 name={folder.name}
                 childExist={childExist}
+                isDisabled={isDisabled}
                 isExpand={isExpanded}
                 isSelected={selectedId === folder.id}
                 level={level}
@@ -290,6 +302,7 @@ function TreeItem(props) {
                     <TreeLevel
                         data={folder.children}
                         expanded={expanded}
+                        disabled={disabled}
                         level={level + 1}
                         selectedId={selectedId}
                         onClickFolder={onClick}
@@ -306,6 +319,7 @@ function TreeLevel(props) {
     const {
         data,
         expanded = [],
+        disabled = [],
         level,
         selectedId,
         onClickFolder,
@@ -317,8 +331,10 @@ function TreeLevel(props) {
         <TreeItem
             key={folder.id}
             expanded={expanded}
+            disabled={disabled}
             folder={folder}
             level={level}
+            isDisabled={disabled.includes(folder.id)}
             isExpanded={expanded.includes(folder.id)}
             selectedId={selectedId}
             onClick={(selectFolder) => onClickFolder(selectFolder)}
@@ -328,7 +344,14 @@ function TreeLevel(props) {
     ));
 }
 
-function Folders({ selectFolder, onClickFolder, defaultExpanded = [] }) {
+function Folders(props) {
+    const {
+        selectFolder,
+        defaultExpanded = [],
+        disabled: defaultDisabled = [],
+        showRoot = false,
+        onClickFolder,
+    } = props;
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
     const bookmarksService = useBookmarksService();
@@ -337,6 +360,7 @@ function Folders({ selectFolder, onClickFolder, defaultExpanded = [] }) {
         anchorEl: null,
         state: FETCH.WAIT,
         expanded: defaultExpanded,
+        disabled: defaultDisabled,
     }));
 
     useEffect(() => {
@@ -351,18 +375,34 @@ function Folders({ selectFolder, onClickFolder, defaultExpanded = [] }) {
             store.state = FETCH.DONE;
         }).catch((error) => {
             console.error(error);
-            captureException(e);
+            captureException(error);
             store.state = FETCH.FAILED;
         });
     }, [bookmarksService.lastTruthSearchTimestamp]);
 
+    console.log('selectFolder:', selectFolder);
+
     return (
         <Box>
             <List disablePadding>
+                {showRoot && (
+                    <ListItem
+                        className={classes.addRootButton}
+                        onClick={async () => {
+                            onClickFolder({ id: 0 });
+                        }}
+                        button
+                        selected={selectFolder === 0}
+                    >
+                        <HomeIcon />
+                        {t('folder:root')}
+                    </ListItem>
+                )}
                 {(store.state === FETCH.DONE || store.state === FETCH.PENDING) && (
                     <TreeLevel
                         data={store.tree}
                         expanded={store.expanded}
+                        disabled={store.disabled}
                         level={0}
                         selectedId={selectFolder}
                         onClickFolder={onClickFolder}
@@ -386,7 +426,7 @@ function Folders({ selectFolder, onClickFolder, defaultExpanded = [] }) {
                         store.parentFolder = 0;
                     }}
                     button
-                    selected={store.parentFolder === 0}
+                    selected={store.parentFolder === 0 && store.anchorEl}
                 >
                     <AddIcon />
                     {t('button.create')}
