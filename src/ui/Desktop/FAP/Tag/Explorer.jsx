@@ -22,9 +22,9 @@ import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { observer } from 'mobx-react-lite';
-import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import useContextMenu from '@/stores/app/ContextMenuProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -50,14 +50,12 @@ const useStyles = makeStyles((theme) => ({
 function Folder({ id }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
-    const appService = useAppService();
     const bookmarksService = useBookmarksService();
     const coreService = useCoreService();
     const [tag, setTag] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
-
-    const contextMenu = () => [
+    const contextMenu = useContextMenu(() => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
@@ -65,7 +63,7 @@ function Folder({ id }) {
                 coreService.localEventBus.call('bookmark/create', { defaultTagsIds: [id] });
             },
         }),
-    ];
+    ]);
 
     useEffect(() => {
         setIsSearching(true);
@@ -80,7 +78,7 @@ function Folder({ id }) {
     return (
         <Card
             className={classes.root} elevation={16}
-            onContextMenu={appService.contextMenu(contextMenu)}
+            onContextMenu={contextMenu}
         >
             <CardHeader
                 avatar={(

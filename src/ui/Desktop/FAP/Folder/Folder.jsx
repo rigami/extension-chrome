@@ -21,8 +21,8 @@ import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
+import useContextMenu from '@/stores/app/ContextMenuProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -92,15 +92,13 @@ function Folder(props) {
     } = props;
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
-    const appService = useAppService();
     const bookmarksService = useBookmarksService();
     const coreService = useCoreService();
     const [folder, setFolder] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
     const [folders, setFolders] = useState([]);
-
-    const contextMenu = () => [
+    const contextMenu = useContextMenu(() => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
@@ -108,7 +106,7 @@ function Folder(props) {
                 coreService.localEventBus.call('bookmark/create', { defaultFolderId: id });
             },
         }),
-    ];
+    ]);
 
     useEffect(() => {
         setIsSearching(true);
@@ -136,7 +134,7 @@ function Folder(props) {
             onClick={() => {
                 if (shrink) onBack();
             }}
-            onContextMenu={appService.contextMenu(contextMenu)}
+            onContextMenu={contextMenu}
             elevation={0}
         >
             <CardHeader

@@ -12,6 +12,7 @@ import Nest from '@/utils/Nest';
 import { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
 import { Provider as AppStateProvider } from '@/stores/app/AppStateProvider';
 import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
+import { Provider as ContextMenuProvider } from '@/stores/app/ContextMenuProvider';
 import InitAppProvider from '@/stores/app/InitApp';
 import initSentry from '@/config/sentry';
 import * as Sentry from '@sentry/react';
@@ -41,6 +42,7 @@ function RootApp({ onChangeTheme }) {
                 BookmarksProvider,
                 UploadBGForm,
                 GlobalModals,
+                ContextMenuProvider,
             ]}
         >
             <Desktop />

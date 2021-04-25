@@ -3,13 +3,7 @@ import { Card, CardActionArea, CardHeader } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { LabelRounded as TagIcon } from '@material-ui/icons';
 import clsx from 'clsx';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import { useTranslation } from 'react-i18next';
-import useAppService from '@/stores/app/AppStateProvider';
-import pin from '@/utils/contextMenu/pin';
-import edit from '@/utils/contextMenu/edit';
-import remove from '@/utils/contextMenu/remove';
+import useContextMenu from '@/stores/app/ContextMenuProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: { width: theme.shape.dataCard.width },
@@ -37,34 +31,11 @@ function TagCard(props) {
         onClick,
         ...other
     } = props;
-    const { t } = useTranslation();
     const classes = useStyles();
-    const appService = useAppService();
-    const coreService = useCoreService();
-    const bookmarksService = useBookmarksService();
-
-    const contextMenu = (event) => [
-        pin({
-            itemId: id,
-            itemType: 'tag',
-            t,
-            bookmarksService,
-        }),
-
-        edit({
-            itemId: id,
-            itemType: 'tag',
-            t,
-            coreService,
-            anchorEl: event.currentTarget,
-        }),
-        remove({
-            itemId: id,
-            itemType: 'tag',
-            t,
-            coreService,
-        }),
-    ];
+    const contextMenu = useContextMenu({
+        itemId: id,
+        itemType: 'tag',
+    });
 
     return (
         <Card
@@ -74,7 +45,7 @@ function TagCard(props) {
         >
             <CardActionArea
                 onClick={onClick}
-                onContextMenu={appService.contextMenu(contextMenu)}
+                onContextMenu={contextMenu}
             >
                 <CardHeader
                     avatar={<TagIcon style={{ color }} />}

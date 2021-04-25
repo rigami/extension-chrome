@@ -34,6 +34,7 @@ import { ContextMenuItem, ContextMenuDivider } from '@/stores/app/entities/conte
 import FAP from '@/ui/Desktop/FAP';
 import clsx from 'clsx';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
+import useContextMenu from '@/stores/app/ContextMenuProvider';
 import Background from './Background';
 import Widgets from './Widgets';
 
@@ -116,8 +117,7 @@ function Desktop() {
         isRender: appService.activity !== ACTIVITY.BOOKMARKS,
         stickWidgetsToBottom: appService.activity !== ACTIVITY.DESKTOP,
     }));
-
-    const contextMenu = () => [
+    const contextMenu = useContextMenu(() => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
@@ -188,7 +188,7 @@ function Desktop() {
                 onClick: () => window.open(backgrounds.currentBG?.sourceLink, '_blank'),
             }),
         ] : []),
-    ];
+    ], { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.addingBgToLibrary] });
 
     const wheelHandler = (event) => {
         if (!event.path.includes(rootRef.current)) return;
@@ -248,10 +248,7 @@ function Desktop() {
                     appService.activity === ACTIVITY.FAVORITES && classes.favoritesActivity,
                     appService.activity === ACTIVITY.DESKTOP && classes.desktopActivity,
                 )}
-                onContextMenu={appService.contextMenu(
-                    contextMenu,
-                    { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.addingBgToLibrary] },
-                )}
+                onContextMenu={contextMenu}
             >
                 {store.isRender && (
                     <React.Fragment>

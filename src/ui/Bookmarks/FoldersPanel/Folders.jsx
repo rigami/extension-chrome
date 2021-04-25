@@ -1,4 +1,4 @@
-import {
+﻿import {
     Box,
     ButtonBase,
     Collapse,
@@ -21,14 +21,10 @@ import { useLocalObservable, observer } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import useAppService from '@/stores/app/AppStateProvider';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import pin from '@/utils/contextMenu/pin';
-import edit from '@/utils/contextMenu/edit';
-import remove from '@/utils/contextMenu/remove';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import asyncAction from '@/utils/asyncAction';
 import { captureException } from '@sentry/react';
+import useContextMenu from '@/stores/app/ContextMenuProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -193,36 +189,16 @@ function FolderItem(props) {
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
     const rootRef = useRef();
-    const appService = useAppService();
     const bookmarksService = useBookmarksService();
-    const coreService = useCoreService();
+    const contextMenu = useContextMenu({
+        itemId: id,
+        itemType: 'folder',
+        disableRemove: id === 1,
+    });
     const [isPin, setIsPin] = useState(bookmarksService.findFavorite({
         itemId: id,
         itemType: 'folder',
     }));
-
-    const contextMenu = () => [
-        pin({
-            itemId: id,
-            itemType: 'folder',
-            t,
-            bookmarksService,
-        }),
-        edit({
-            itemId: id,
-            itemType: 'folder',
-            t,
-            coreService,
-            anchorEl: rootRef.current,
-            options: { placement: 'left' },
-        }),
-        id !== 1 && remove({
-            itemId: id,
-            itemType: 'folder',
-            t,
-            coreService,
-        }),
-    ];
 
     useEffect(() => {
         setIsPin(bookmarksService.findFavorite({
@@ -242,7 +218,7 @@ function FolderItem(props) {
             style={{ paddingLeft: 8 + level * 8 }}
             button
             selected={isSelected}
-            onContextMenu={appService?.contextMenu?.(contextMenu)}
+            onContextMenu={contextMenu}
         >
             <ListItemText
                 inset

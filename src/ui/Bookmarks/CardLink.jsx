@@ -15,13 +15,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { useTranslation } from 'react-i18next';
-import useAppService from '@/stores/app/AppStateProvider';
-import pin from '@/utils/contextMenu/pin';
-import edit from '@/utils/contextMenu/edit';
-import remove from '@/utils/contextMenu/remove';
+import useContextMenu from '@/stores/app/ContextMenuProvider';
 import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
@@ -139,35 +134,15 @@ function CardLink(props) {
         ...other
     } = props;
     const classes = useStyles();
-    const appService = useAppService();
-    const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
-    const { t } = useTranslation();
     const [isPin, setIsPin] = useState(bookmarksService.findFavorite({
         itemId: id,
         itemType: 'bookmark',
     }));
-
-    const contextMenu = () => [
-        pin({
-            itemId: id,
-            itemType: 'bookmark',
-            t,
-            bookmarksService,
-        }),
-        edit({
-            itemId: id,
-            itemType: 'bookmark',
-            t,
-            coreService,
-        }),
-        remove({
-            itemId: id,
-            itemType: 'bookmark',
-            t,
-            coreService,
-        }),
-    ];
+    const contextMenu = useContextMenu({
+        itemId: id,
+        itemType: 'bookmark',
+    });
 
     const handleClick = (event) => {
         if (onClick) {
@@ -214,7 +189,7 @@ function CardLink(props) {
                 <CardActionArea
                     className={classes.rootActionWrapper}
                     onMouseUp={handleClick}
-                    onContextMenu={!preview ? appService.contextMenu(contextMenu) : undefined}
+                    onContextMenu={!preview ? contextMenu : undefined}
                 >
                     {icoVariant !== BKMS_VARIANT.POSTER && (
                         <Box className={classes.imageWrapper}>

@@ -7,12 +7,12 @@ import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
 import ToolsPanel from '@/ui/Bookmarks/ToolsPanel';
 import Scrollbar from '@/ui-components/CustomScroll';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { useTranslation } from 'react-i18next';
 import BookmarksSearchService from '@/ui/Bookmarks/BookmarksSearchService';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import useContextMenu from '@/stores/app/ContextMenuProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,10 +29,8 @@ function Bookmarks() {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const coreService = useCoreService();
-    const appService = useAppService();
     const service = useLocalObservable(() => new BookmarksSearchService());
-
-    const contextMenu = () => [
+    const contextMenu = useContextMenu(() => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
@@ -46,7 +44,7 @@ function Bookmarks() {
                 );
             },
         }),
-    ];
+    ]);
 
     useEffect(() => {
         const listenId = coreService.globalEventBus.on('folder/removed', async () => {
@@ -63,7 +61,7 @@ function Bookmarks() {
             className={classes.root}
             display="flex"
             flexGrow={1}
-            onContextMenu={appService.contextMenu(contextMenu)}
+            onContextMenu={contextMenu}
         >
             <FoldersPanel searchService={service} />
             <Box flexGrow={1} overflow="auto">

@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import useAppService from '@/stores/app/AppStateProvider';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { useTranslation } from 'react-i18next';
-import pin from '@/utils/contextMenu/pin';
-import edit from '@/utils/contextMenu/edit';
-import remove from '@/utils/contextMenu/remove';
 import { Box, ButtonBase, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { FavoriteRounded as FavoriteIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
+import useContextMenu from '@/stores/app/ContextMenuProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -64,38 +59,17 @@ function Tag(props) {
         className: externalClassName,
     } = props;
     const classes = useStyles();
-    const appService = useAppService();
-    const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
-    const { t } = useTranslation();
+    const contextMenu = useContextMenu({
+        itemId: id,
+        itemType: 'tag',
+    });
     const [isPin, setIsPin] = useState(bookmarksService.findFavorite({
         itemId: id,
         itemType: 'tag',
     }));
 
     const repairColor = color || '#000';
-
-    const contextMenu = (event) => [
-        pin({
-            itemId: id,
-            itemType: 'tag',
-            t,
-            bookmarksService,
-        }),
-        edit({
-            itemId: id,
-            itemType: 'tag',
-            t,
-            coreService,
-            anchorEl: event.currentTarget,
-        }),
-        remove({
-            itemId: id,
-            itemType: 'tag',
-            t,
-            coreService,
-        }),
-    ];
 
     useEffect(() => {
         setIsPin(bookmarksService.findFavorite({
@@ -112,7 +86,7 @@ function Tag(props) {
                 borderColor: isSelect && repairColor,
             }}
             onClick={onClick}
-            onContextMenu={appService?.contextMenu?.(contextMenu)}
+            onContextMenu={contextMenu}
         >
             <div className={classes.colorIcon} style={{ backgroundColor: repairColor }} />
             <Typography component="span" className={classes.text}>

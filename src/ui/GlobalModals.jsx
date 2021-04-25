@@ -196,7 +196,6 @@ function GlobalModals({ children }) {
             {children}
             {/* <InterrogationRequest /> */}
             <Changelog />
-            <ContextMenu />
             <EditBookmarkModal />
             <EditTagModal
                 anchorEl={edit && edit.anchorEl}
