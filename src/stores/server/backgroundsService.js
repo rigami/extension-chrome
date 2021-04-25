@@ -442,12 +442,13 @@ class BackgroundsServerService {
             bgShowMode: BG_SHOW_MODE.LIVE,
         });
         fs()
-            .remove(`${BackgroundsUniversalService.FULL_PATH}/temporaryVideoFrame`)
+            .rmrf(`${BackgroundsUniversalService.FULL_PATH}/temporaryVideoFrame`)
             .catch((e) => {
+                console.log('Not found temporary video frame');
                 captureException(e);
             });
 
-        return true;
+        return Promise.resolve();
     }
 
     @action('pause bg')
@@ -517,15 +518,16 @@ class BackgroundsServerService {
         });
 
         this.core.globalBus.on('backgrounds/play', async (data, props, callback) => {
-            console.log('backgrounds/play', data);
+            console.log('backgrounds/play');
             try {
-                const result = await this.play(data);
+                const result = await this.play();
 
                 callback({
                     success: true,
                     result,
                 });
             } catch (e) {
+                console.log(e);
                 captureException(e);
                 callback({
                     success: false,

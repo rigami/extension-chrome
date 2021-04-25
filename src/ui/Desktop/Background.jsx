@@ -154,16 +154,17 @@ function Background() {
                         if (data.success) {
                             resolve();
                         } else {
-                            reject();
+                            reject(new Error(JSON.stringify(data)));
                         }
                     }));
                 } catch (e) {
-                    captureException(e);
                     console.log(e);
+                    captureException(e);
                     return;
                 }
 
                 if (bgRef.current.play) {
+                    console.log('play background...');
                     bgRef.current.play();
                     bgRef.current.onpause = null;
                 } else {
