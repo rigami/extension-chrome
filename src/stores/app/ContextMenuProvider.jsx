@@ -23,7 +23,7 @@ function ContextMenuProvider({ children }) {
     const { t } = useTranslation();
     const Context = context;
 
-    const computeActions = ({ itemType, itemId }, event) => {
+    const computeActions = ({ itemType, itemId, disableEdit = false, disableRemove = false }, event) => {
         const isFavorite = bookmarksService.findFavorite({
             itemId,
             itemType,
@@ -47,7 +47,7 @@ function ContextMenuProvider({ children }) {
                     }
                 },
             }),
-            new ContextMenuItem({
+            !disableEdit && new ContextMenuItem({
                 title: t('common:button.edit'),
                 icon: EditIcon,
                 onClick: () => {
@@ -57,7 +57,7 @@ function ContextMenuProvider({ children }) {
                     });
                 },
             }),
-            new ContextMenuItem({
+            !disableRemove && new ContextMenuItem({
                 title: t('common:button.remove'),
                 icon: RemoveIcon,
                 onClick: () => {
