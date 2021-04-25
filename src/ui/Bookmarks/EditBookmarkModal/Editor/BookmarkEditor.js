@@ -19,7 +19,7 @@ class BookmarkEditor {
     // Bookmark data
     editBookmarkId;
     icoVariant;
-    imageURL = '';
+    imageUrl = '';
     name = '';
     description = '';
     useDescription;
@@ -51,7 +51,7 @@ class BookmarkEditor {
                     console.log('edit bookmark:', toJS(bookmark));
                     this.url = bookmark.url;
                     this.name = bookmark.name;
-                    this.imageURL = bookmark.imageUrl;
+                    this.imageUrl = bookmark.imageUrl;
                     this.icoVariant = bookmark.icoVariant;
                     this.useDescription = !!bookmark.description?.trim();
                     if (this.useDescription) this.description = bookmark.description;
@@ -99,7 +99,7 @@ class BookmarkEditor {
             url: this.url,
             name: this.name.trim(),
             description: (this.useDescription && this.description?.trim()) || '',
-            imageURL: this.imageURL,
+            imageUrl: this.imageUrl,
             tags: this.tags,
             folderId: this.folderId,
             icoVariant: this.icoVariant,
@@ -125,7 +125,7 @@ class BookmarkEditor {
 
         if (!onlyAdditionalIcons) {
             this.url = currentFetchUrl;
-            this.imageURL = null;
+            this.imageUrl = null;
             this.defaultImage = null;
         }
         this.allImages = [];
@@ -171,7 +171,7 @@ class BookmarkEditor {
             if (this.url !== currentFetchUrl) return;
             console.error('Failed getSiteInfo', e);
             if (!onlyAdditionalIcons) {
-                this.imageURL = '';
+                this.imageUrl = '';
                 this.icoVariant = BKMS_VARIANT.SYMBOL;
             }
             this.allImages = [];
@@ -198,7 +198,7 @@ class BookmarkEditor {
             url,
             icoVariant,
         });
-        this.imageURL = url;
+        this.imageUrl = url;
         this.icoVariant = icoVariant;
     }
 

@@ -34,7 +34,7 @@ class BookmarksUniversalService {
             url,
             name,
             description,
-            imageURL,
+            imageUrl,
             imageBase64,
             tags = [],
             folderId,
@@ -54,7 +54,7 @@ class BookmarksUniversalService {
         };
 
         let saveBookmarkId;
-        let icoName = `${Date.now().toString()}`;
+        let icoName = `${Date.now()}`;
 
         if (id) {
             const oldBookmark = await this.get(id);
@@ -80,18 +80,17 @@ class BookmarksUniversalService {
                 throw new Error('Similar bookmark already exist');
             }
         }
-
-        if (imageBase64 || (imageURL && imageURL.substring(0, 11) !== 'filesystem:')) {
+        if (imageBase64 || (imageUrl && imageUrl.substring(0, 11) !== 'filesystem:')) {
             let blob;
 
             if (imageBase64) {
                 blob = await (await fetch(imageBase64)).blob();
             } else {
-                blob = await getImageBlob(imageURL);
+                blob = await getImageBlob(imageUrl);
             }
 
             await fs().save(`/bookmarksIcons/${icoName}`, blob);
-        } else if (!imageURL && id) {
+        } else if (!imageUrl && id) {
             try {
                 await fs().rmrf(`/bookmarksIcons/${icoName}`);
             } catch (e) {

@@ -251,7 +251,7 @@ function Preview({ editorService: service }) {
                             >
                                 {() => (
                                     <PreviewCard
-                                        active={service.imageURL === service.defaultImage.url}
+                                        active={service.imageUrl === service.defaultImage.url}
                                         name={service.name}
                                         description={service.useDescription && service.description}
                                         icoVariant={service.defaultImage.icoVariant}
@@ -280,7 +280,7 @@ function Preview({ editorService: service }) {
                                 {service.primaryImages.map(({ url, icoVariant }) => (
                                     <PreviewCard
                                         key={url}
-                                        active={service.imageURL === url}
+                                        active={service.imageUrl === url}
                                         name={service.name}
                                         description={service.useDescription && service.description}
                                         icoVariant={icoVariant}
@@ -294,7 +294,7 @@ function Preview({ editorService: service }) {
                                 {service.secondaryImages.map(({ url, icoVariant }) => (
                                     <PreviewCard
                                         key={url}
-                                        active={service.imageURL === url}
+                                        active={service.imageUrl === url}
                                         name={service.name}
                                         description={service.useDescription && service.description}
                                         icoVariant={icoVariant}

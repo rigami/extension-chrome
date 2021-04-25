@@ -26,7 +26,7 @@ class Bookmark {
         this.name = bookmark.name;
         this.description = bookmark.description || '';
         this.icoVariant = bookmark.icoVariant || BKMS_VARIANT.SYMBOL;
-        this.imageUrl = `${imageUrl}?v=${bookmark.modifiedTimestamp || 1}`;
+        this.imageUrl = `${imageUrl}?modifiedTimestamp=${bookmark.modifiedTimestamp || 1}`;
         this.imageBase64 = bookmark.imageBase64;
         this.tags = bookmark.tags || [];
         this.folderId = bookmark.folderId || null;
