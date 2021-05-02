@@ -26,8 +26,8 @@ const theme = {
         borderRadius: 4,
         borderRadiusBold: 8,
         dataCard: {
-            width: 180,
-            height: 58,
+            width: 210,
+            height: 80,
         },
     },
     typography: {

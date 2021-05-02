@@ -9,6 +9,7 @@ import {
     CardActionArea,
     Tooltip,
     Box,
+    Divider,
 } from '@material-ui/core';
 import { FavoriteRounded as FavoriteIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -18,6 +19,7 @@ import { BKMS_VARIANT } from '@/enum';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import { observer } from 'mobx-react-lite';
+import { getDomain } from '@/utils/localSiteParse';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -49,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
         width: 32,
         height: 32,
         flexShrink: 0,
+        alignSelf: 'flex-start',
     },
     body: {
         width: '100%',
@@ -59,9 +62,9 @@ const useStyles = makeStyles((theme) => ({
     title: {
         display: '-webkit-box',
         '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 2,
+        '-webkit-line-clamp': 3,
         overflow: 'hidden',
-        lineHeight: 1.2,
+        lineHeight: 1.1,
         wordBreak: 'break-word',
         fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 600,
@@ -74,49 +77,43 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         padding: theme.spacing(1.5),
         paddingBottom: theme.spacing(1.25),
-        height: 54,
+        minHeight: 54,
         boxSizing: 'border-box',
+        flexShrink: 0,
     },
     extendBanner: {
         width: '100%',
-        height: 84,
+        height: 109,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
     },
-    extendBannerTitle: { margin: theme.spacing(0.625, 1.5) },
+    extendBannerTitle: { margin: theme.spacing(1, 1.5) },
     description: {
         color: theme.palette.text.secondary,
-        display: '-webkit-box',
-        '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 4,
         overflow: 'hidden',
-        marginTop: theme.spacing(-0.5),
-        margin: theme.spacing(1.25, 1.5),
-        lineHeight: 1.357,
+        marginTop: theme.spacing(-0.25),
+        margin: theme.spacing(0, 1.5),
+        lineHeight: 1.2,
         wordBreak: 'break-word',
+        height: '100%',
+        marginBottom: theme.spacing(-1.5),
+        '-webkit-mask': 'linear-gradient(to top, #0000 10px, #000 34px)',
     },
-    favoriteWrapper: {
-        position: 'relative',
+    infoWrapper: {
+        display: 'flex',
         width: '100%',
+        height: 24,
+        alignItems: 'center',
+        padding: theme.spacing(0, 1.5),
+        flexShrink: 0,
+        marginTop: 'auto',
     },
     favorite: {
-        borderRadius: '50%',
-        padding: theme.spacing(0.375),
-        border: `1px solid ${theme.palette.divider}`,
-        position: 'absolute',
-        display: 'flex',
-        top: -14,
-        right: -7,
-        zIndex: 1,
-        backgroundColor: theme.palette.background.default,
-        '& svg': {
-            color: theme.palette.error.main,
-            width: 12,
-            height: 12,
-            transform: 'translateY(0.5px)',
-        },
+        width: 16,
+        height: 16,
+        marginLeft: 'auto',
     },
 }));
 
@@ -209,6 +206,7 @@ function CardLink(props) {
                     {icoVariant === BKMS_VARIANT.POSTER && (
                         <Box className={classes.banner}>
                             <Image variant={BKMS_VARIANT.POSTER} src={imageUrl} className={classes.extendBanner} />
+                            <Divider />
                             <Typography
                                 className={clsx(classes.title, classes.extendBannerTitle)}
                             >
@@ -216,16 +214,15 @@ function CardLink(props) {
                             </Typography>
                         </Box>
                     )}
-                    {isPin && (
-                        <Box className={classes.favoriteWrapper}>
-                            <Box className={classes.favorite}>
-                                <FavoriteIcon />
-                            </Box>
-                        </Box>
-                    )}
                     {description && (
                         <Typography variant="body2" className={classes.description}>{description}</Typography>
                     )}
+                    <Box className={classes.infoWrapper}>
+                        <Typography variant="caption" color="textSecondary">
+                            {getDomain(url)}
+                        </Typography>
+                        {isPin && (<FavoriteIcon className={classes.favorite} />)}
+                    </Box>
                 </CardActionArea>
             </Card>
         </Tooltip>

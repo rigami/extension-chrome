@@ -93,6 +93,7 @@ const useStyles = makeStyles((theme) => ({
 function PreviewCard(props) {
     const {
         active,
+        url,
         imageUrl,
         icoVariant,
         onClick,
@@ -121,6 +122,7 @@ function PreviewCard(props) {
                 name={name}
                 description={description}
                 icoVariant={icoVariant}
+                url={url}
                 imageUrl={imageUrl}
                 preview
                 onClick={() => onClick({
@@ -254,6 +256,7 @@ function Preview({ editorService: service }) {
                                         active={service.imageUrl === service.defaultImage.url}
                                         name={service.name}
                                         description={service.useDescription && service.description}
+                                        url={service.url}
                                         icoVariant={service.defaultImage.icoVariant}
                                         imageUrl={service.defaultImage.url}
                                         onClick={() => service.setPreview(service.defaultImage)}
@@ -284,6 +287,7 @@ function Preview({ editorService: service }) {
                                         name={service.name}
                                         description={service.useDescription && service.description}
                                         icoVariant={icoVariant}
+                                        url={service.url}
                                         imageUrl={url}
                                         onClick={() => service.setPreview({
                                             url,
@@ -298,6 +302,7 @@ function Preview({ editorService: service }) {
                                         name={service.name}
                                         description={service.useDescription && service.description}
                                         icoVariant={icoVariant}
+                                        url={service.url}
                                         imageUrl={url}
                                         onClick={() => service.setPreview({
                                             url,

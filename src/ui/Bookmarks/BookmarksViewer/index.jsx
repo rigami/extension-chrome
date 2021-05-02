@@ -5,7 +5,7 @@ import {
     CircularProgress,
 } from '@material-ui/core';
 import Stub from '@/ui-components/Stub';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
@@ -34,13 +34,9 @@ const useStyles = makeStyles((theme) => ({
     stub: { width: 'calc(100% - 260px)' },
 }));
 
-const maxColumnCalc = (width) => Math.min(
-    Math.floor((width + 16) / 196),
-    7,
-);
-
 function BookmarksViewer({ searchService: service }) {
     const classes = useStyles();
+    const theme = useTheme();
     const bookmarksService = useBookmarksService();
     const coreService = useCoreService();
     const { t } = useTranslation(['bookmark']);
@@ -54,7 +50,10 @@ function BookmarksViewer({ searchService: service }) {
         usedFields: {},
     }));
     const onResize = useCallback((width) => {
-        store.columnsCount = maxColumnCalc(width);
+        store.columnsCount = Math.min(
+            Math.floor((width + 16 - 58) / theme.shape.dataCard.width),
+            7,
+        );
     }, []);
 
     const { ref } = useResizeDetector({ onResize });
