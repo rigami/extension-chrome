@@ -2,7 +2,7 @@ import { ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/co
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { FavoriteRounded as FavoriteIcon } from '@material-ui/icons';
+import { StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 

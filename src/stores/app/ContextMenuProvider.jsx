@@ -8,8 +8,8 @@ import { ContextMenuDivider, ContextMenuItem } from '@/stores/app/entities/conte
 import {
     DeleteRounded as RemoveIcon,
     EditRounded as EditIcon,
-    FavoriteBorderRounded as AddFavoriteIcon,
-    FavoriteRounded as RemoveFavoriteIcon,
+    StarBorderRounded as AddFavoriteIcon,
+    StarRounded as RemoveFavoriteIcon,
 } from '@material-ui/icons';
 import {
     ContentCopyFilled as CopyToClipboardIcon,

@@ -11,7 +11,7 @@ import {
     Box,
     Divider,
 } from '@material-ui/core';
-import { FavoriteRounded as FavoriteIcon } from '@material-ui/icons';
+import { StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Image from '@/ui-components/Image';
@@ -111,6 +111,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 'auto',
     },
     favorite: {
+        color: theme.palette.favorite.main,
         width: 16,
         height: 16,
         marginLeft: 'auto',

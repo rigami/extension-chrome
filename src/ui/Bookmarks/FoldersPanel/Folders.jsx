@@ -12,7 +12,7 @@ import {
     AddRounded as AddIcon,
     ChevronRightRounded as ChevronRightIcon,
     ExpandMoreRounded,
-    FavoriteRounded as FavoriteIcon,
+    StarRounded as FavoriteIcon,
     HomeRounded as HomeIcon,
 } from '@material-ui/icons';
 import React, { useEffect, useRef, useState } from 'react';
@@ -154,9 +154,9 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: theme.typography.primaryFontFamily,
     },
     favorite: {
-        color: theme.palette.error.main,
-        width: 12,
-        height: 12,
+        color: theme.palette.favorite.main,
+        width: 16,
+        height: 16,
         marginLeft: theme.spacing(1),
         marginRight: 5,
     },

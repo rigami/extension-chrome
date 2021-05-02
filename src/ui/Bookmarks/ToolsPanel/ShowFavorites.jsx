@@ -1,12 +1,12 @@
 import React from 'react';
-import { FavoriteRounded as CheckIcon } from '@material-ui/icons';
+import { StarRounded as CheckIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { ACTIVITY } from '@/enum';
 import { makeStyles } from '@material-ui/core/styles';
 import useAppService from '@/stores/app/AppStateProvider';
 
-const useStyles = makeStyles((theme) => ({ icon: { color: theme.palette.error.main } }));
+const useStyles = makeStyles((theme) => ({ icon: { color: theme.palette.favorite.main } }));
 
 function ShowFavorites() {
     const classes = useStyles();
