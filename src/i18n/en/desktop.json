@@ -1,7 +1,7 @@
 {
   "button": {
-    "open": "Open background",
-    "expand": "Open background"
+    "open": "Turn on quiet mode",
+    "expand": "Expand background"
   },
   "widget": {
     "weather": {

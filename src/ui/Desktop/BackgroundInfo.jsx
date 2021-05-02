@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         position: 'absolute',
         right: 74,
-        top: theme.spacing(2),
+        bottom: theme.spacing(2),
         background: 'none',
         maxWidth: 430,
         minWidth: 350,

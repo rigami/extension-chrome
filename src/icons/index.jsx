@@ -4,6 +4,7 @@ import BookmarkAddRounded from './BookmarkAddRounded';
 import VolunteerActivismRounded from './VolunteerActivismRounded';
 import ContentCopyFilled from './ContentCopyFilled';
 import DriveFileMoveFilled from './DriveFileMoveFilled';
+import SelfImprovementRounded from './SelfImprovementRounded';
 
 export {
     NearMeDisabledRounded,
@@ -12,4 +13,5 @@ export {
     VolunteerActivismRounded,
     ContentCopyFilled,
     DriveFileMoveFilled,
+    SelfImprovementRounded,
 };

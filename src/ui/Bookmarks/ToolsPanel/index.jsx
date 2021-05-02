@@ -3,6 +3,11 @@ import { AppBar, Toolbar, Box } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { useResizeDetector } from 'react-resize-detector';
+import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
+import { SelfImprovementRounded as DesktopIcon } from '@/icons';
+import { ACTIVITY } from '@/enum';
+import { useTranslation } from 'react-i18next';
+import useAppService from '@/stores/app/AppStateProvider';
 import FolderBreadcrumbs from './FolderBreadcrumbs';
 import SearchBlock from './Search';
 import ShowFavorites from './ShowFavorites';
@@ -30,17 +35,25 @@ const useStyles = makeStyles((theme) => ({
     },
     wrapperTools: {
         flexShrink: 0,
-        display: 'flex',
+        display: 'grid',
+        gridAutoFlow: 'column',
+        gridGap: theme.spacing(2),
     },
     widthHelper: {
         flexShrink: 1,
         display: 'flex',
         flexGrow: 1,
     },
+    toolStub: {
+        visibility: 'hidden',
+        width: 42,
+    },
 }));
 
 function ToolsPanel({ searchService: service }) {
     const classes = useStyles();
+    const { t } = useTranslation(['desktop']);
+    const appService = useAppService();
     const { width: widthBreadcrumbs, ref: refBreadcrumbs } = useResizeDetector();
     const { width: widthTools, ref: refTools } = useResizeDetector();
 
@@ -66,6 +79,15 @@ function ToolsPanel({ searchService: service }) {
                 <Box className={classes.widthHelper} style={{ maxWidth: (widthBreadcrumbs || 0) + 260 }} />
                 <Box className={classes.wrapperTools} ref={refTools}>
                     <ShowFavorites />
+                    <ExtendButtonGroup>
+                        <ExtendButton
+                            tooltip={t('desktop:button.open')}
+                            data-ui-path="desktop.open"
+                            onClick={() => appService.setActivity(ACTIVITY.DESKTOP)}
+                            icon={DesktopIcon}
+                        />
+                    </ExtendButtonGroup>
+                    <ExtendButtonGroup className={classes.toolStub} />
                 </Box>
             </Toolbar>
         </AppBar>

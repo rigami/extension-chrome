@@ -8,7 +8,9 @@ const theme = {
     palette: {
         type: 'light',
         primary: {
+            light: '#28DEC8',
             main: '#49C5B6',
+            dark: '#299286',
             contrastText: '#fff',
         },
         secondary: {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import {
     ButtonBase,
     Card,
@@ -30,11 +30,12 @@ const useStyles = makeStyles((theme) => ({
     label: {},
 }));
 
-function ExtendButtonGroup({ children, className: externalClassName, ...other }) {
+function ExtendButtonGroup({ children, className: externalClassName, ...other }, ref) {
     const classes = useStyles();
 
     return (
         <Card
+            ref={ref}
             className={clsx(classes.card, externalClassName)}
             elevation={0}
             {...other}
@@ -57,7 +58,7 @@ function ExtendButton(props) {
     const Icon = icon;
 
     return (
-        <Tooltip title={tooltip} placement="left">
+        <Tooltip title={tooltip} placement="bottom">
             <ButtonBase
                 size="small"
                 className={clsx(classes.button, externalClassName)}
@@ -73,4 +74,6 @@ function ExtendButton(props) {
     );
 }
 
-export { ExtendButtonGroup, ExtendButton };
+const ForwardRefExtendButtonGroup = forwardRef(ExtendButtonGroup);
+
+export { ForwardRefExtendButtonGroup as ExtendButtonGroup, ExtendButton };

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Fab, Tooltip } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import FoldersPanel from '@/ui/Bookmarks/FoldersPanel';
@@ -22,6 +22,13 @@ const useStyles = makeStyles((theme) => ({
         transform: 'translate3d(0,0,0)',
         display: 'flex',
         flexDirection: 'row',
+    },
+    fab: {
+        position: 'absolute',
+        bottom: theme.spacing(3),
+        right: theme.spacing(3),
+        backgroundImage: `linear-gradient(to top, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+        '&:hover': { backgroundImage: `linear-gradient(to top, ${theme.palette.primary.dark}, ${theme.palette.primary.main})` },
     },
 }));
 
@@ -72,6 +79,15 @@ function Bookmarks() {
                     </Box>
                 </Scrollbar>
             </Box>
+            <Tooltip title={t('bookmark:button.add', { context: 'short' })} placement="left">
+                <Fab
+                    className={classes.fab}
+                    color="primary"
+                    onClick={() => coreService.localEventBus.call('bookmark/create')}
+                >
+                    <AddBookmarkIcon />
+                </Fab>
+            </Tooltip>
         </Box>
     );
 }

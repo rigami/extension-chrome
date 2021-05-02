@@ -4,6 +4,7 @@ import { action } from 'mobx';
 import { useForkRef } from '@material-ui/core/utils';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
+import { max, values } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
     smooth: {
@@ -14,10 +15,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const items = {};
+const itemsByUnionKey = {};
+const hoverItemsByUnionKey = {};
 
 function MouseDistanceFade(props) {
     const {
+        unionKey,
+        show = undefined,
         children,
         distanceMax = 750,
         distanceMin = 300,
@@ -25,14 +29,17 @@ function MouseDistanceFade(props) {
     const classes = useStyles();
     const rootAl = useRef();
     const store = useLocalObservable(() => ({
+        preHideTimer: null,
         hideTimer: null,
         smooth: false,
         id: `item-${Math.random().toString().substring(2)}`,
         distanceMax,
         distanceMin,
+        show,
         lastPageY: null,
         lastPageX: null,
         isHover: false,
+        unionKey: unionKey || `item-${Math.random().toString().substring(2)}`,
     }));
 
     const handleRef = useForkRef(children.ref, rootAl);
@@ -41,7 +48,15 @@ function MouseDistanceFade(props) {
         if (!rootAl.current) return;
 
         store.smooth = false;
+        clearTimeout(store.preHideTimer);
         clearTimeout(store.hideTimer);
+
+        if (typeof store.show !== 'undefined') {
+            itemsByUnionKey[store.unionKey][store.id] = store.show ? 1 : 0;
+            if (rootAl.current) rootAl.current.style.opacity = itemsByUnionKey[store.unionKey][store.id];
+
+            return;
+        }
 
         const { x, y, height, width } = rootAl.current.getBoundingClientRect();
 
@@ -70,12 +85,17 @@ function MouseDistanceFade(props) {
 
         dist -= store.distanceMin;
 
-        items[store.id] = 1 - dist / (store.distanceMax - store.distanceMin);
+        itemsByUnionKey[store.unionKey][store.id] = 1 - dist / (store.distanceMax - store.distanceMin);
 
-        if (rootAl.current) rootAl.current.style.opacity = items[store.id];
+        if (rootAl.current) rootAl.current.style.opacity = max(values(itemsByUnionKey[store.unionKey]));
 
+        store.preHideTimer = setTimeout(action(() => {
+            const path = document.elementsFromPoint(store.lastPageX, store.lastPageY);
+
+            hoverItemsByUnionKey[store.unionKey][store.id] = path.includes(rootAl.current);
+        }), 2950);
         store.hideTimer = setTimeout(action(() => {
-            if (store.isHover) return;
+            if (values(hoverItemsByUnionKey[store.unionKey]).includes(true)) return;
 
             store.smooth = true;
             if (rootAl.current) rootAl.current.style.opacity = 0;
@@ -83,29 +103,36 @@ function MouseDistanceFade(props) {
     };
 
     const moveMouseHandler = action((e) => {
-        store.isHover = e.path.includes(rootAl.current);
         store.lastPageY = e.pageY;
         store.lastPageX = e.pageX;
         calcOpacity();
     });
 
     useEffect(() => {
-        store.distanceMax = distanceMax;
-        store.distanceMin = distanceMin;
-        calcOpacity();
-    }, [distanceMax, distanceMin]);
-
-    useEffect(() => {
-        items[store.id] = 0;
+        itemsByUnionKey[store.unionKey] = {
+            ...(itemsByUnionKey[store.unionKey] || {}),
+            [store.id]: 0,
+        };
+        hoverItemsByUnionKey[store.unionKey] = {
+            ...(hoverItemsByUnionKey[store.unionKey] || {}),
+            [store.id]: false,
+        };
         if (rootAl.current) rootAl.current.style.opacity = 0;
         window.addEventListener('mousemove', moveMouseHandler);
 
         return () => {
             window.removeEventListener('mousemove', moveMouseHandler);
 
-            delete items[store.id];
+            delete itemsByUnionKey[store.unionKey][store.id];
         };
     }, []);
+
+    useEffect(() => {
+        store.distanceMax = distanceMax;
+        store.distanceMin = distanceMin;
+        store.show = show;
+        calcOpacity();
+    }, [distanceMax, distanceMin, show]);
 
     return (
         <Observer>
