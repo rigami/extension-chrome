@@ -1,5 +1,6 @@
 import { BKMS_VARIANT } from '@/enum';
 import { captureException } from '@sentry/react';
+import { startsWith } from 'lodash';
 
 function getDomain(url) {
     let domain = url;
@@ -9,6 +10,10 @@ function getDomain(url) {
 
     if (domain.indexOf('/') !== -1) {
         domain = domain.substring(0, domain.indexOf('/'));
+    }
+
+    if (startsWith(domain, 'www.')) {
+        domain = domain.substring(4);
     }
 
     return domain;
