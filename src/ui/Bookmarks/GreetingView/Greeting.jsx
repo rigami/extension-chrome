@@ -100,11 +100,12 @@ function FakeInput(props) {
     );
 }
 
-function Greeting({ className: externalClassName, readOnly = false }) {
+function Greeting({ className: externalClassName, readOnly = false, force = false }) {
     const classes = useStyles();
     const { t, ready } = useTranslation(['greeting']);
     const coreService = useCoreService();
     const store = useLocalObservable(() => ({
+        firstRender: true,
         greeting: null,
         isFirstRender: true,
         editUserName: coreService.storage.persistent.userName || '',
@@ -124,7 +125,28 @@ function Greeting({ className: externalClassName, readOnly = false }) {
     }
 
     useEffect(() => {
+        if (store.firstRender) {
+            store.firstRender = false;
+            return;
+        }
         store.editUserName = coreService.storage.persistent.userName;
+
+        let greeting;
+
+        if (typeof coreService.storage.temp.greeting === 'undefined') {
+            const greetings = t([time, 'default'], {
+                returnObjects: true,
+                name: '[name]',
+            });
+
+            console.log(greetings, time);
+
+            greeting = sample(Array.isArray(greetings) ? greetings : []);
+        } else {
+            greeting = coreService.storage.temp.greeting;
+        }
+
+        store.greeting = store.greeting || greeting;
     }, [coreService.storage.persistent.userName]);
 
     useEffect(() => {
@@ -134,7 +156,7 @@ function Greeting({ className: externalClassName, readOnly = false }) {
 
         const lastShowWasRecently = coreService.storage.persistent.lastGreetingTimestamp > Date.now() - 10 * 60 * 1000;
 
-        if (typeof coreService.storage.temp.greeting === 'undefined' && !lastShowWasRecently) {
+        if (typeof coreService.storage.temp.greeting === 'undefined' && (!lastShowWasRecently || force)) {
             const greetings = t([time, 'default'], {
                 returnObjects: true,
                 name: '[name]',
@@ -144,16 +166,16 @@ function Greeting({ className: externalClassName, readOnly = false }) {
 
             greeting = sample(Array.isArray(greetings) ? greetings : []);
 
-            coreService.storage.updateTemp({ greeting: null });
+            if (!force) coreService.storage.updateTemp({ greeting: null });
         } else {
             greeting = coreService.storage.temp.greeting;
         }
 
         store.greeting = greeting;
-        if (greeting) coreService.storage.updatePersistent({ lastGreetingTimestamp: Date.now() });
+        if (greeting && !force) coreService.storage.updatePersistent({ lastGreetingTimestamp: Date.now() });
 
         return () => {
-            coreService.storage.updatePersistent({ userName: store.editUserName });
+            if (!force) coreService.storage.updatePersistent({ userName: store.editUserName });
         };
     }, [ready]);
 

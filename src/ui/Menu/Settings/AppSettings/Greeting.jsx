@@ -36,6 +36,7 @@ function Greeting() {
             <GreetingPreview
                 className={classes.preview}
                 readOnly
+                force
             />
             <Box className={classes.row}>
                 <TextField

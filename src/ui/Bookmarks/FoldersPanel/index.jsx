@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
         fill: theme.palette.type === 'dark' ? theme.palette.common.white : theme.palette.common.black,
     },
     appLogoTextWrapper: { display: 'flex' },
+    activeGreetingView: { backgroundColor: theme.palette.action.selected },
 }));
 
 function FoldersPanel({ searchService: service }) {
@@ -54,7 +55,11 @@ function FoldersPanel({ searchService: service }) {
                     title={(<LogoText className={classes.appLogoText} />)}
                     disableTypography
                     classes={{
-                        root: clsx(classes.padding, classes.header),
+                        root: clsx(
+                            classes.padding,
+                            classes.header,
+                            service.activeFolderId === null && classes.activeGreetingView,
+                        ),
                         avatar: classes.avatar,
                         content: classes.appLogoTextWrapper,
                     }}
