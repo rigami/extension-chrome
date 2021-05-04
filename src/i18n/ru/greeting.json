@@ -1,0 +1,35 @@
+{
+  "morning_appeal": "Доброе утро",
+  "day_appeal": "Привет",
+  "evening_appeal": "Добрый вечер",
+  "night_appeal": "Доброй ночи",
+  "name_placeholder": "как к вам обращаться?",
+  "name_stub": "друг",
+  "cancelInfo": "Если вы не хотите, чтобы rigami обращался к вам, то нажмите '$t(cancel)'.",
+  "cancelInfo_description": "Вы сможете снова включить обращение в настройках.",
+  "cancel": "Не показывать обращение",
+  "morning": [
+    "Доброе утро, {{name}} \uD83C\uDF05 </br> Хорошего дня!",
+    "Доброе утро, {{name}} \uD83D\uDE34 </br> Хорошего дня! ",
+    "Доброе утро, {{name}} \uD83D\uDC23",
+    "Доброе утро, {{name}} \uD83C\uDF04"
+  ],
+  "day": [
+    "Привет, {{name}} \uD83D\uDC4B 1",
+    "Привет, {{name}} \uD83D\uDC4B 2",
+    "Привет, {{name}} \uD83D\uDC4B 3"
+  ],
+  "evening": [
+    "Добрый вечер, {{name}} \uD83D\uDC4B",
+    "Добрый вечер, {{name}} \uD83D\uDCA4"
+  ],
+  "night": [
+    "Доброй ночи, {{name}} \uD83C\uDF03",
+    "Доброй ночи, {{name}} \uD83C\uDF1B",
+    "Доброй ночи, {{name}} \uD83D\uDCA4 </br> Пора ложится спать",
+    "Доброй ночи, {{name}} \uD83D\uDE34 </br>Не можете уснуть?"
+  ],
+  "default": [
+    "Привет, {{name}} \uD83D\uDC4B"
+  ]
+}

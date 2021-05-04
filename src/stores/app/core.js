@@ -169,7 +169,10 @@ class Core {
                 ],
                 defaultNS: 'common',
                 backend: { loadPath: 'resource/i18n/{{lng}}/{{ns}}.json' },
-                react: { useSuspense: false },
+                react: {
+                    useSuspense: false,
+                    wait: true,
+                },
                 partialBundledLanguages: true,
             })
             .catch((e) => {

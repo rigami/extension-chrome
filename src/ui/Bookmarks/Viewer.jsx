@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import BookmarksSearchService from '@/ui/Bookmarks/BookmarksSearchService';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
+import GreetingView from '@/ui/Bookmarks/GreetingView';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -75,7 +76,12 @@ function Bookmarks() {
                 <Scrollbar>
                     <Box minHeight="100vh" display="flex" flexDirection="column">
                         <ToolsPanel searchService={service} />
-                        <BookmarksViewer searchService={service} />
+                        {!service.activeFolderId && (
+                            <GreetingView searchService={service} />
+                        )}
+                        {service.activeFolderId && (
+                            <BookmarksViewer searchService={service} />
+                        )}
                     </Box>
                 </Scrollbar>
             </Box>

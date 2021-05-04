@@ -7,6 +7,7 @@ import { THEME } from '@/enum';
 import useAppService from '@/stores/app/AppStateProvider';
 import { observer } from 'mobx-react-lite';
 import tabNamePage from './TabName';
+import greetingPage from './Greeting';
 
 const useStyles = makeStyles((theme) => ({
     defaultTabValue: {
@@ -56,6 +57,13 @@ function AppSettings({ onSelect }) {
                             {appService.settings.tabName || 'Rigami'}
                         </Typography>
                     ),
+                }}
+            />
+            <MenuRow
+                title={t('greeting.title')}
+                action={{
+                    type: ROWS_TYPE.LINK,
+                    onClick: () => onSelect(greetingPage),
                 }}
             />
         </React.Fragment>

@@ -15,6 +15,7 @@ function LinkButton(props) {
         imageUrl,
         icoVariant,
         className: externalClassName,
+        children,
     } = props;
     const { t } = useTranslation();
 
@@ -41,11 +42,14 @@ function LinkButton(props) {
             )}
             onMouseUp={handleClick}
         >
-            <Image
-                src={imageUrl}
-                alternativeIcon={first(name)?.toUpperCase()}
-                variant={icoVariant === BKMS_VARIANT.POSTER ? BKMS_VARIANT.SYMBOL : icoVariant}
-            />
+            {children}
+            {!children && (
+                <Image
+                    src={imageUrl}
+                    alternativeIcon={first(name)?.toUpperCase()}
+                    variant={icoVariant === BKMS_VARIANT.POSTER ? BKMS_VARIANT.SYMBOL : icoVariant}
+                />
+            )}
         </FAPButton>
     );
 }

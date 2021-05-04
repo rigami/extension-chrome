@@ -52,6 +52,7 @@ function ButtonWithPopper(props) {
         children,
         popperModifiers = {},
         popperProps = {},
+        button,
         onClosed,
         ...otherProps
     } = props;
@@ -167,7 +168,10 @@ function ButtonWithPopper(props) {
                             store.isBlockEvent = false;
                         }}
                     >
-                        <IconOpen {...iconOpenProps} className={classes.icon} />
+                        {button}
+                        {!button && (
+                            <IconOpen {...iconOpenProps} className={classes.icon} />
+                        )}
                     </FAPButton>
                 </span>
             </span>

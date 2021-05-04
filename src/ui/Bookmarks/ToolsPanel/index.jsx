@@ -74,7 +74,9 @@ function ToolsPanel({ searchService: service }) {
                 </Box>
                 <Box className={classes.widthHelper} style={{ maxWidth: widthTools || undefined }} />
                 <Box className={classes.wrapperSearch}>
-                    <SearchBlock searchService={service} />
+                    {service.activeFolderId && (
+                        <SearchBlock searchService={service} />
+                    )}
                 </Box>
                 <Box className={classes.widthHelper} style={{ maxWidth: (widthBreadcrumbs || 0) + 260 }} />
                 <Box className={classes.wrapperTools} ref={refTools}>

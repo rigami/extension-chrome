@@ -21,6 +21,7 @@ function Folder(props) {
         parentId,
         name,
         classes: externalClasses,
+        children,
     } = props;
     const theme = useTheme();
 
@@ -34,6 +35,7 @@ function Folder(props) {
             iconOpen={FolderIcon}
             classes={externalClasses}
             iconOpenProps={{ style: { color: fade(theme.palette.text.secondary, 0.23) } }}
+            button={children}
         >
             <Card className={classes.root} elevation={16}>
                 <Explorer id={id} />

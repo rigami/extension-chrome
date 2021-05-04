@@ -1,10 +1,10 @@
 import React from 'react';
-import { Box /* CardHeader */ } from '@material-ui/core';
+import { Box, CardActionArea, CardHeader } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
-// import LogoIcon from '@/images/logo-icon.svg';
+import LogoIcon from '@/images/logo-icon.svg';
 import { observer } from 'mobx-react-lite';
-// import clsx from 'clsx';
-// import LogoText from '@/images/logo-text.svg';
+import clsx from 'clsx';
+import LogoText from '@/images/logo-text.svg';
 import Folders from './Folders';
 
 const useStyles = makeStyles((theme) => ({
@@ -17,19 +17,26 @@ const useStyles = makeStyles((theme) => ({
         position: 'sticky',
         top: 0,
         backgroundColor: fade(theme.palette.background.backdrop, 0.3),
+        paddingTop: theme.spacing(2),
     },
-    avatar: { display: 'flex' },
-    header: { minHeight: theme.spacing(9.75) },
+    avatar: {
+        display: 'flex',
+        marginRight: theme.spacing(1),
+    },
+    header: {
+        height: 42,
+        padding: 0,
+    },
     padding: {
         paddingLeft: theme.spacing(4),
         paddingRight: theme.spacing(4),
     },
     appLogoIcon: {
-        width: 28,
-        height: 28,
+        width: 20,
+        height: 20,
     },
     appLogoText: {
-        height: 24,
+        height: 20,
         width: 'auto',
         fill: theme.palette.type === 'dark' ? theme.palette.common.white : theme.palette.common.black,
     },
@@ -41,16 +48,18 @@ function FoldersPanel({ searchService: service }) {
 
     return (
         <Box className={classes.root}>
-            {/* <CardHeader
-                avatar={(<LogoIcon className={classes.appLogoIcon} />)}
-                title={(<LogoText className={classes.appLogoText} />)}
-                disableTypography
-                classes={{
-                    root: clsx(classes.padding, classes.header),
-                    avatar: classes.avatar,
-                    content: classes.appLogoTextWrapper,
-                }}
-            /> */}
+            <CardActionArea onClick={() => service.setActiveFolder(null)}>
+                <CardHeader
+                    avatar={(<LogoIcon className={classes.appLogoIcon} />)}
+                    title={(<LogoText className={classes.appLogoText} />)}
+                    disableTypography
+                    classes={{
+                        root: clsx(classes.padding, classes.header),
+                        avatar: classes.avatar,
+                        content: classes.appLogoTextWrapper,
+                    }}
+                />
+            </CardActionArea>
             <Box overflow="auto" py={2}>
                 <Folders
                     selectFolder={service.activeFolderId}

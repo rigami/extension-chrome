@@ -9,6 +9,7 @@ function Tag(props) {
         name,
         color,
         classes: externalClasses,
+        children,
     } = props;
 
     return (
@@ -19,6 +20,7 @@ function Tag(props) {
             classes={externalClasses}
             iconOpen={TagIcon}
             iconOpenProps={{ style: { color } }}
+            button={children}
         >
             <Explorer id={id} />
         </ButtonWithPopper>

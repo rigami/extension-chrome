@@ -17,7 +17,7 @@ export const SEARCH_STATE = {
 };
 
 class BookmarksSearchService {
-    activeFolderId = 1;
+    activeFolderId = null;
     searchRequest = new SearchQuery({});
     tempSearchRequest = new SearchQuery({});
     state = SEARCH_STATE.WAIT;

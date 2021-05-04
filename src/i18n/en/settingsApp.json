@@ -5,5 +5,10 @@
     "title":"Tab name",
     "description":"Enter your tab name",
     "emptyName_placeholder": "Blank tab with no name"
+  },
+  "greeting": {
+    "title": "System greeting",
+    "use": "Show greeting",
+    "name_placeholder": "How can I call you?"
   }
 }

@@ -6,6 +6,7 @@ import {
     ListItemText,
     Collapse,
     ListItemSecondaryAction,
+    Box,
 } from '@material-ui/core';
 import {
     InfoRounded as InfoIcon,
@@ -40,7 +41,10 @@ const useStyles = makeStyles((theme) => ({
     icon: {},
     messageText: {},
     descriptionText: {},
-    actions: {},
+    actions: {
+        marginLeft: theme.spacing(2),
+        '& > *': { color: 'inherit' },
+    },
     iconWrapper: {
         minWidth: theme.spacing(5),
         alignSelf: 'baseline',
@@ -51,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
 
 function MenuInfo(props) {
     const {
+        component = 'li',
         show,
         message,
         description,
@@ -79,6 +84,7 @@ function MenuInfo(props) {
     return (
         <Collapse in={show} className={externalClasses.wrapper}>
             <ListItem
+                ContainerComponent={component}
                 className={clsx(
                     variant === 'info' && classes.info,
                     variant === 'warn' && classes.warn,
@@ -101,9 +107,9 @@ function MenuInfo(props) {
                     secondary={description}
                 />
                 {actions && (
-                    <ListItemSecondaryAction className={classes.actions}>
+                    <Box className={classes.actions}>
                         {actions}
-                    </ListItemSecondaryAction>
+                    </Box>
                 )}
             </ListItem>
         </Collapse>

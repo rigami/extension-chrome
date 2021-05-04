@@ -1,0 +1,30 @@
+{
+  "morning_appeal": "Good morning,",
+  "day_appeal": "Hello,",
+  "evening_appeal": "Good evening,",
+  "night_appeal": "Good night,",
+  "name_placeholder": "what should I call you?",
+  "name_stub": "friend",
+  "cancelInfo": "If you do not want rigami to contact you, then click the '$t(cancel)'.",
+  "cancelInfo_description": "You can turn it back on in the settings.",
+  "cancel": "Do not show appeal",
+  "morning": [
+    "Good morning, {{name}} \uD83C\uDF05 </br>Have a good day!",
+    "Good morning, {{name}} \uD83D\uDE34 </br>Have a good day!",
+    "Good morning, {{name}} \uD83D\uDC23",
+    "Good morning, {{name}} \uD83C\uDF04"
+  ],
+  "day": [
+    "Hello, {{name}} \uD83D\uDC4B"
+  ],
+  "evening": [
+    "Good evening, {{name}} \uD83D\uDC4B",
+    "Good evening, {{name}} \uD83D\uDCA4 </br>Goes to bed soon"
+  ],
+  "night": [
+    "Good night, {{name}} \uD83C\uDF03",
+    "Good night, {{name}} \uD83C\uDF1B",
+    "Good night, {{name}} \uD83D\uDCA4",
+    "Good night, {{name}} \uD83D\uDE34 </br>Can not sleep?"
+  ]
+}
