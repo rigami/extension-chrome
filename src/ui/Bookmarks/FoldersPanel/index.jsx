@@ -6,6 +6,7 @@ import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import LogoText from '@/images/logo-text.svg';
 import Folders from './Folders';
+import LastClosed from './LastClosed';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -42,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
     },
     appLogoTextWrapper: { display: 'flex' },
     activeGreetingView: { backgroundColor: theme.palette.action.selected },
+    offsetTop: { marginTop: 'auto' },
 }));
 
 function FoldersPanel({ searchService: service }) {
@@ -71,6 +73,7 @@ function FoldersPanel({ searchService: service }) {
                     onClickFolder={({ id }) => service.setActiveFolder(id)}
                 />
             </Box>
+            <LastClosed className={classes.offsetTop} />
         </Box>
     );
 }

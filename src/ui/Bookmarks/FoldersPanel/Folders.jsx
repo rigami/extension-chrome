@@ -27,6 +27,7 @@ import asyncAction from '@/utils/asyncAction';
 import { captureException } from '@sentry/react';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import clsx from 'clsx';
+import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -71,14 +72,6 @@ const useStyles = makeStyles((theme) => ({
     primaryFont: {
         fontWeight: 800,
         fontFamily: theme.typography.primaryFontFamily,
-    },
-    addSubFolder: {
-        borderRadius: theme.spacing(0.5),
-        padding: 2,
-        '& svg': {
-            width: 18,
-            height: 18,
-        },
     },
     expandWrapper: {},
     expandIcon: {
@@ -152,13 +145,17 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '0.9rem',
         fontWeight: 550,
         fontFamily: theme.typography.primaryFontFamily,
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
     },
     favorite: {
         color: theme.palette.favorite.main,
-        width: 16,
-        height: 16,
-        marginLeft: theme.spacing(1),
-        marginRight: 5,
+        width: 18,
+        height: 18,
+        marginLeft: theme.spacing(0.5),
+        padding: theme.spacing(0.25),
+        boxSizing: 'content-box',
     },
     actions: {
         display: 'flex',
@@ -175,6 +172,8 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0, 0.5),
         '& > *': { pointerEvents: 'all' },
     },
+    folderItem: { '&:hover $addSubFolder': { display: 'flex' } },
+    addSubFolder: { display: 'none' },
 }));
 
 function FolderItem(props) {
@@ -213,56 +212,46 @@ function FolderItem(props) {
     }, [bookmarksService.favorites.length]);
 
     return (
-        <ListItem
+        <Item
             ref={rootRef}
-            classes={{
-                root: classes.itemRoot,
-                container: classes.itemContainer,
-            }}
-            onClick={onClick}
-            style={{ paddingLeft: 8 + level * 8 }}
-            button
+            level={level}
             disabled={isDisabled}
             selected={isSelected}
             onContextMenu={contextMenu}
-        >
-            <ListItemText
-                inset
-                primary={name}
-                classes={{
-                    primary: classes.text,
-                    inset: classes.itemInset,
-                }}
-            />
-            <ListItemSecondaryAction className={classes.actions}>
-                {childExist && (
-                    <ButtonBase
-                        disabled={isDisabled}
-                        className={clsx(classes.expandIcon, isDisabled && classes.disabledExpand)}
-                        onClick={onExpandChange}
-                        style={{ marginLeft: level * 8 }}
-                    >
-                        {isExpand ? (<ExpandMoreRounded />) : (<ChevronRightIcon />)}
-                    </ButtonBase>
-                )}
-                {!isDisabled && (
-                    <Tooltip title={t('button.create', { context: 'sub' })}>
-                        <ButtonBase
-                            className={classes.addSubFolder}
-                            onClick={() => onCreateSubFolder({
-                                anchorEl: rootRef.current,
-                                parentFolder: id,
-                            })}
-                        >
-                            <AddIcon />
-                        </ButtonBase>
-                    </Tooltip>
-                )}
-                {isPin && (
-                    <FavoriteIcon className={classes.favorite} />
-                )}
-            </ListItemSecondaryAction>
-        </ListItem>
+            title={name}
+            onClick={onClick}
+            className={classes.folderItem}
+            startAction={childExist && (
+                <ButtonBase
+                    disabled={isDisabled}
+                    className={clsx(classes.expandIcon, isDisabled && classes.disabledExpand)}
+                    onClick={onExpandChange}
+                    style={{ marginLeft: level * 8 }}
+                >
+                    {isExpand ? (<ExpandMoreRounded />) : (<ChevronRightIcon />)}
+                </ButtonBase>
+            )}
+            actions={(
+                <React.Fragment>
+                    {!isDisabled && (
+                        <Tooltip title={t('button.create', { context: 'sub' })}>
+                            <ItemAction
+                                className={classes.addSubFolder}
+                                onClick={() => onCreateSubFolder({
+                                    anchorEl: rootRef.current,
+                                    parentFolder: id,
+                                })}
+                            >
+                                <AddIcon />
+                            </ItemAction>
+                        </Tooltip>
+                    )}
+                    {isPin && (
+                        <FavoriteIcon className={classes.favorite} />
+                    )}
+                </React.Fragment>
+            )}
+        />
     );
 }
 

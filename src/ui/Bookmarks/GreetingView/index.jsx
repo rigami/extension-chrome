@@ -47,9 +47,6 @@ function GreetingView({ searchService: service }) {
                 </Box>
                 <Favorites className={classes.favoritesContainer} />
             </Box>
-            <Box className={classes.sidebar}>
-                Open tabs
-            </Box>
         </Box>
     );
 }
