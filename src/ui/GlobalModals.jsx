@@ -57,11 +57,12 @@ function GlobalModals({ children }) {
                 action: 'remove',
                 id,
             })),
-            coreService.localEventBus.on('folder/edit', ({ id, anchorEl, options }) => setEdit({
+            coreService.localEventBus.on('folder/edit', ({ id, anchorEl, position, options }) => setEdit({
                 type: 'folder',
                 action: 'edit',
                 id,
                 anchorEl,
+                position,
                 options,
             })),
             coreService.localEventBus.on('folder/remove', ({ id }) => setEdit({
@@ -220,6 +221,7 @@ function GlobalModals({ children }) {
             />
             <EditFolderModal
                 anchorEl={edit && edit.anchorEl}
+                position={edit && edit.position}
                 isOpen={edit && edit.type === 'folder' && edit.action === 'edit'}
                 onSave={() => setEdit(null)}
                 onClose={() => setEdit(null)}

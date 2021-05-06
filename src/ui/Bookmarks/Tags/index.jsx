@@ -38,7 +38,6 @@ function Tags(props) {
         value,
         onlyFavorites = false,
         autoSelect = false,
-        usePopper = false,
         expandAlways = false,
         className: externalClassName,
         onCreate,
@@ -74,15 +73,13 @@ function Tags(props) {
     }, [bookmarksService.lastTruthSearchTimestamp, onlyFavorites]);
 
     const AddTag = () => (
-        <React.Fragment>
-            <AddButton
-                isShowTitle={tags.length === 0}
-                onCreate={(newId) => {
-                    if (autoSelect) setSelectedTags([...selectedTags, newId]);
-                    if (onCreate) onCreate(newId);
-                }}
-            />
-        </React.Fragment>
+        <AddButton
+            isShowTitle={tags.length === 0}
+            onCreate={(newId) => {
+                if (autoSelect) setSelectedTags([...selectedTags, newId]);
+                if (onCreate) onCreate(newId);
+            }}
+        />
     );
 
     if (expandAlways) {
@@ -133,7 +130,6 @@ function Tags(props) {
                 expandButtonLabel={t('button.showAll')}
                 collapseButtonLabel={t('button.showLess')}
                 actions={(<AddTag />)}
-                usePopper={usePopper}
             />
         </Box>
     );

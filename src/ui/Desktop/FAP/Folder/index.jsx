@@ -2,7 +2,7 @@ import React from 'react';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
 import { useTheme, fade, makeStyles } from '@material-ui/core/styles';
-import { Card } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import Explorer from './Explorer';
 
 const useStyles = makeStyles(() => ({
@@ -10,7 +10,6 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         height: 620,
         maxHeight: 'inherit',
-        maxWidth: 'inherit',
     },
 }));
 
@@ -37,9 +36,9 @@ function Folder(props) {
             iconOpenProps={{ style: { color: fade(theme.palette.text.secondary, 0.23) } }}
             button={children}
         >
-            <Card className={classes.root} elevation={16}>
+            <Box className={classes.root}>
                 <Explorer id={id} />
-            </Card>
+            </Box>
         </ButtonWithPopper>
     );
 }

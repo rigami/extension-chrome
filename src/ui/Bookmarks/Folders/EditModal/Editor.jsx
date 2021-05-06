@@ -10,6 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import Folders from '@/ui/Bookmarks/FoldersPanel/Folders';
+import { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -40,8 +41,8 @@ function Editor(props) {
     };
 
     return (
-        <Card className={classes.popper} elevation={16}>
-            <DialogTitle className={classes.header}>{t('editor', { context: 'select' })}</DialogTitle>
+        <React.Fragment>
+            <PopoverDialogHeader title={t('editor', { context: 'select' })} />
             <DialogContent className={classes.tree}>
                 <Folders
                     selectFolder={store.folderId}
@@ -67,7 +68,7 @@ function Editor(props) {
                     {t('common:button.save')}
                 </Button>
             </DialogActions>
-        </Card>
+        </React.Fragment>
     );
 }
 

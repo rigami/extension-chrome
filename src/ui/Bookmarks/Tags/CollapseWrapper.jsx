@@ -9,7 +9,6 @@ import {
     Box,
     Chip,
     Tooltip,
-    Card,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
@@ -18,7 +17,6 @@ import {
     KeyboardArrowDownRounded as ArrowDownIcon,
     KeyboardArrowUpRounded as ArrowUpIcon,
 } from '@material-ui/icons';
-import PopperWrapper from '@/ui-components/PopperWrapper';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
@@ -92,7 +90,6 @@ function CollapseWrapper(props) {
         renderComponent = () => {},
         classes: externalClasses = {},
         actions,
-        usePopper = false,
     } = props;
     const classes = useStyles();
     const { t } = useTranslation();
@@ -155,44 +152,12 @@ function CollapseWrapper(props) {
                         if (!store.isPopperOpen) store.isBlockEvent = true;
                     }}
                     onClick={() => {
-                        if (usePopper) {
-                            store.isPopperOpen = !store.isPopperOpen;
-                        } else {
-                            store.isCollapse = false;
-                        }
+                        store.isCollapse = false;
                         store.isBlockEvent = false;
                     }}
                 />
             )}
             {store.isCollapse && actions}
-            {usePopper && (
-                <PopperWrapper
-                    isOpen={store.isPopperOpen}
-                    anchorEl={anchorEl.current}
-                    onClose={() => {
-                        if (store.isBlockEvent) return;
-
-                        store.isPopperOpen = false;
-                    }}
-                    placement="bottom"
-                    modifiers={{
-                        offset: {
-                            enabled: true,
-                            offset: '0px, 16px',
-                        },
-                    }}
-                >
-                    <Card className={classes.popperCard} elevation={18}>
-                        {list.length !== 0 && list.map((component) => (
-                            <RenderComponent
-                                key={component.id}
-                                className={clsx(classes.tag, externalClasses.chip)}
-                                {...component}
-                            />
-                        ))}
-                    </Card>
-                </PopperWrapper>
-            )}
             <ResizeDetector handleWidth onResize={handleResize} />
         </Box>
     );

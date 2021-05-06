@@ -64,31 +64,29 @@ function Editor({ onSave, onError, editId, parentId = 0 }) {
     }, []);
 
     return (
-        <Card className={classes.popper} elevation={16}>
-            <form onSubmit={handlerSubmit}>
-                <InputBase
-                    className={classes.input}
-                    placeholder={t('editor.name', { context: 'placeholder' })}
-                    variant="outlined"
-                    autoFocus
-                    value={store.name}
-                    onChange={(event) => {
-                        store.name = event.target.value;
-                        onError(null);
-                    }}
-                />
-                <Button
-                    data-ui-path="folder.editor.newFolder.save"
-                    className={classes.saveButton}
-                    onClick={handlerSubmit}
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                >
-                    {editId ? t('common:save') : t('common:create')}
-                </Button>
-            </form>
-        </Card>
+        <form onSubmit={handlerSubmit}>
+            <InputBase
+                className={classes.input}
+                placeholder={t('editor.name', { context: 'placeholder' })}
+                variant="outlined"
+                autoFocus
+                value={store.name}
+                onChange={(event) => {
+                    store.name = event.target.value;
+                    onError(null);
+                }}
+            />
+            <Button
+                data-ui-path="folder.editor.newFolder.save"
+                className={classes.saveButton}
+                onClick={handlerSubmit}
+                variant="contained"
+                color="primary"
+                type="submit"
+            >
+                {editId ? t('common:save') : t('common:create')}
+            </Button>
+        </form>
     );
 }
 

@@ -1,13 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import PopperWrapper, { TARGET_CLICK } from '@/ui-components/PopperWrapper';
 import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import ReactResizeDetector from 'react-resize-detector';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { BKMS_FAP_POSITION } from '@/enum';
 import useCoreService from '@/stores/app/BaseStateProvider';
+import PopperDialog from '@/ui-components/PopoverDialog';
 import FAPButton from './Button';
 
 const useStyles = makeStyles((theme) => ({
@@ -50,8 +49,6 @@ function ButtonWithPopper(props) {
         iconOpen,
         iconOpenProps = {},
         children,
-        popperModifiers = {},
-        popperProps = {},
         button,
         onClosed,
         ...otherProps
@@ -70,14 +67,6 @@ function ButtonWithPopper(props) {
 
     const IconOpen = iconOpen;
 
-    const updatePopper = () => {
-        if (!store.popper) return;
-
-        requestAnimationFrame(() => {
-            store.popper.update();
-        });
-    };
-
     const offsetToTop = bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP;
 
     useEffect(() => {
@@ -94,36 +83,27 @@ function ButtonWithPopper(props) {
 
     return (
         <React.Fragment>
-            <PopperWrapper
-                isOpen={store.isOpen}
+            <PopperDialog
+                open={store.isOpen}
+                onClose={() => {
+                    store.isOpen = false;
+                    coreService.storage.updateTemp({
+                        closeFapPopper: null,
+                        shakeFapPopper: null,
+                    });
+                }}
                 anchorEl={anchorEl.current}
-                onClose={(reason) => {
-                    if (store.isBlockEvent) return;
-
-                    if (reason === TARGET_CLICK.ANCHOR) {
-                        store.isOpen = false;
-                        coreService.storage.updateTemp({
-                            closeFapPopper: null,
-                            shakeFapPopper: null,
-                        });
-                    } else {
-                        store.isShake = true;
-                    }
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
                 }}
-                modifiers={{
-                    offset: {
-                        enabled: true,
-                        offset: '0px, 32px',
-                    },
-                    ...popperModifiers,
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
                 }}
-                popperProps={popperProps}
-                onService={(popperInstance) => { store.popper = popperInstance; }}
             >
-                <ReactResizeDetector handleWidth handleHeight onResize={updatePopper}>
-                    {children}
-                </ReactResizeDetector>
-            </PopperWrapper>
+                {children}
+            </PopperDialog>
             <span
                 ref={anchorEl}
                 className={externalClasses.root}

@@ -46,7 +46,7 @@ function PopoverDialog({ children, PaperProps = {}, ...props }) {
             }}
         >
             <ReactResizeDetector handleWidth handleHeight onResize={updatePopper}>
-                {children}
+                {() => children}
             </ReactResizeDetector>
         </Popover>
     );

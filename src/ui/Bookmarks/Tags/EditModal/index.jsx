@@ -1,6 +1,6 @@
 import React from 'react';
-import { useLocalObservable, observer } from 'mobx-react-lite';
-import PopperWrapper from '@/ui-components/PopperWrapper';
+import { observer } from 'mobx-react-lite';
+import PopperDialog from '@/ui-components/PopoverDialog';
 import Editor from './Editor';
 
 function EditTagModal(props) {
@@ -11,21 +11,26 @@ function EditTagModal(props) {
         onClose,
         ...other
     } = props;
-    const store = useLocalObservable(() => ({ popperRef: null }));
 
     return (
-        <PopperWrapper
-            isOpen={isOpen}
-            anchorEl={anchorEl}
+        <PopperDialog
+            open={isOpen}
             onClose={onClose}
-            onService={(service) => { store.popperRef = service; }}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+            }}
+            transformOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+            }}
         >
             <Editor
                 onSave={(tagId) => onSave && onSave(tagId)}
-                onError={() => { if (store.popperRef) store.popperRef.update(); }}
                 {...other}
             />
-        </PopperWrapper>
+        </PopperDialog>
     );
 }
 

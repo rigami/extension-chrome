@@ -1,7 +1,5 @@
 import React from 'react';
-import PopperWrapper from '@/ui-components/PopperWrapper';
-import { useLocalObservable, observer } from 'mobx-react-lite';
-import ReactResizeDetector from 'react-resize-detector';
+import PopperDialog from '@/ui-components/PopoverDialog';
 import Editor from './Editor';
 import SimpleEditor from './EditorSimple';
 
@@ -12,48 +10,48 @@ function EditFolderModal(props) {
         simple = false,
         onSave,
         onClose,
-        popperProps = {},
         placement,
+        position,
         ...other
     } = props;
-    const store = useLocalObservable(() => ({ popper: null }));
-
-    const updatePopper = () => {
-        if (!store.popper) return;
-
-        requestAnimationFrame(() => {
-            store.popper.update();
-        });
-    };
 
     return (
-        <PopperWrapper
-            isOpen={isOpen}
-            anchorEl={anchorEl}
+        <PopperDialog
+            open={isOpen}
             onClose={onClose}
-            onService={(service) => { store.popper = service; }}
-            popperProps={popperProps}
-            placement={placement}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'center',
+                horizontal: 'right',
+            }}
+            transformOrigin={{
+                vertical: 'center',
+                horizontal: 'left',
+            }}
+            {...(position ? {
+                anchorReference: 'anchorPosition',
+                anchorPosition: position,
+                transformOrigin: {
+                    vertical: 'top',
+                    horizontal: 'left',
+                },
+            } : {})}
         >
-            <ReactResizeDetector handleWidth handleHeight onResize={updatePopper}>
-                {simple ? (
-                    <SimpleEditor
-                        onSave={(folderId) => onSave && onSave(folderId)}
-                        onError={() => store.popper.update()}
-                        onCancel={onClose}
-                        {...other}
-                    />
-                ) : (
-                    <Editor
-                        onSave={(folderId) => onSave && onSave(folderId)}
-                        onError={() => store.popper.update()}
-                        onCancel={onClose}
-                        {...other}
-                    />
-                )}
-            </ReactResizeDetector>
-        </PopperWrapper>
+            {simple ? (
+                <SimpleEditor
+                    onSave={(folderId) => onSave && onSave(folderId)}
+                    onCancel={onClose}
+                    {...other}
+                />
+            ) : (
+                <Editor
+                    onSave={(folderId) => onSave && onSave(folderId)}
+                    onCancel={onClose}
+                    {...other}
+                />
+            )}
+        </PopperDialog>
     );
 }
 
-export default observer(EditFolderModal);
+export default EditFolderModal;

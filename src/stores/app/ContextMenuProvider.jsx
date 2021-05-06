@@ -89,7 +89,10 @@ function ContextMenuProvider({ children }) {
                 onClick: () => {
                     coreService.localEventBus.call(`${itemType}/edit`, {
                         id: itemId,
-                        anchorEl: event.currentTarget,
+                        position: {
+                            left: event.clientX,
+                            top: event.clientY,
+                        },
                     });
                 },
             }),
