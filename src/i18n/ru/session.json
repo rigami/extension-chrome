@@ -3,6 +3,11 @@
     "title": "Недавно закрытые",
     "empty": "Нет недавних сессий",
     "expand": "Раскрыть список",
-    "collapse": "Свернуть список"
+    "collapse": "Свернуть список",
+    "restoreWindow": "Восстановить окно",
+    "windowSessionTitle": "{{count}} вкладки",
+    "windowSessionTitle_0": "{{count}} вкладка",
+    "windowSessionTitle_1": "{{count}} вкладки",
+    "windowSessionTitle_2": "{{count}} вкладок"
   }
 }

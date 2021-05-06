@@ -16,6 +16,7 @@ import {
     History as EmptyHistoryIcon,
     ArrowForward as OpenIcon,
     TabRounded as WindowSessionIcon,
+    Launch as OpenWindowIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
@@ -70,12 +71,22 @@ function RecentlyClosedList(props) {
 
         console.log('recently closed:', sessions);
 
-        store.sessions = sessions.map(({ tab, window }) => ({
-            tab,
-            window,
-            sessionId: tab ? tab.sessionId : window.sessionId,
-            type: tab ? 'tab' : 'window',
-        }));
+        store.sessions = sessions.map(({ tab, window }) => {
+            if (window?.sessionId && store.openWindowSession?.sessionId) {
+                store.openWindowSession = {
+                    ...window,
+                    sessionId: window.sessionId,
+                    type: 'window',
+                };
+            }
+
+            return ({
+                tab,
+                window,
+                sessionId: tab ? tab.sessionId : window.sessionId,
+                type: tab ? 'tab' : 'window',
+            });
+        });
         store.loading = false;
     };
 
@@ -119,7 +130,10 @@ function RecentlyClosedList(props) {
                                             icon={(
                                                 <WindowSessionIcon className={classes.favicon} />
                                             )}
-                                            title={`${windowSession.tabs.length} tabs`}
+                                            title={t(
+                                                'recentlyClosed.windowSessionTitle',
+                                                { count: windowSession.tabs.length },
+                                            )}
                                             level={disableItemOffset ? null : 0}
                                             className={clsx(disableItemOffset && classes.disableItemOffset)}
                                         />
@@ -165,7 +179,24 @@ function RecentlyClosedList(props) {
                         }}
                         PaperProps={{ className: classes.dialog }}
                     >
-                        <PopoverDialogHeader title={`${store.openWindowSession?.tabs?.length} tabs`} />
+                        <PopoverDialogHeader
+                            title={t(
+                                'recentlyClosed.windowSessionTitle',
+                                { count: store.openWindowSession?.tabs?.length },
+                            )}
+                            action={(
+                                <Button
+                                    color="primary"
+                                    endIcon={(<OpenWindowIcon />)}
+                                    onClick={() => {
+                                        store.anchorEl = null;
+                                        chrome.sessions.restore(store.openWindowSession?.sessionId);
+                                    }}
+                                >
+                                    {t('recentlyClosed.restoreWindow')}
+                                </Button>
+                            )}
+                        />
                         <List dense className={classes.list}>
                             {store.openWindowSession?.tabs.map((tab) => (
                                 <Item

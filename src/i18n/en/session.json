@@ -3,6 +3,9 @@
     "title": "Recently closed",
     "empty": "No recent sessions",
     "expand": "Expand the list",
-    "collapse": "Collapse the list"
+    "collapse": "Collapse the list",
+    "restoreWindow": "Restore window",
+    "windowSessionTitle": "{{count}} tab",
+    "windowSessionTitle_plural": "{{count}} tabs"
   }
 }
