@@ -15,6 +15,7 @@ import {
     UnfoldMore as MoreIcon,
     History as EmptyHistoryIcon,
     ArrowForward as OpenIcon,
+    TabRounded as WindowSessionIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
@@ -59,6 +60,8 @@ function RecentlyClosedList(props) {
     const store = useLocalObservable(() => ({
         loading: true,
         sessions: [],
+        openWindowSession: null,
+        anchorEl: null,
     }));
 
     const getAllTabs = async () => {
@@ -67,7 +70,12 @@ function RecentlyClosedList(props) {
 
         console.log('recently closed:', sessions);
 
-        store.sessions = sessions.map(({ tab }) => tab).filter((isExist) => isExist);
+        store.sessions = sessions.map(({ tab, window }) => ({
+            tab,
+            window,
+            sessionId: tab ? tab.sessionId : window.sessionId,
+            type: tab ? 'tab' : 'window',
+        }));
         store.loading = false;
     };
 
@@ -91,9 +99,77 @@ function RecentlyClosedList(props) {
                     )}
                     {store.sessions.length > 0 && !store.loading && (
                         <List dense disablePadding={disablePadding} className={classes.list}>
-                            {store.sessions.slice(offset, offset + max).map((tab) => (
+                            {
+                                store.sessions
+                                    .slice(offset, offset + max)
+                                    .map(({ window: windowSession, tab, ...session }) => (session.type === 'window' ? (
+                                        <Item
+                                            key={session.sessionId}
+                                            button
+                                            selected={store.openWindowSession?.sessionId === session.sessionId}
+                                            onClick={(event) => {
+                                                store.openWindowSession = {
+                                                    ...windowSession,
+                                                    ...session,
+                                                };
+                                                store.anchorEl = event.currentTarget;
+
+                                                console.log('store.openWindowSession:', store.openWindowSession);
+                                            }}
+                                            icon={(
+                                                <WindowSessionIcon className={classes.favicon} />
+                                            )}
+                                            title={`${windowSession.tabs.length} tabs`}
+                                            level={disableItemOffset ? null : 0}
+                                            className={clsx(disableItemOffset && classes.disableItemOffset)}
+                                        />
+                                    ) : (
+                                        <Item
+                                            key={session.sessionId}
+                                            button
+                                            onClick={() => { chrome.sessions.restore(session.sessionId); }}
+                                            icon={(
+                                                <Avatar
+                                                    variant="rounded"
+                                                    src={tab.favIconUrl || getFaviconUrl(tab.url)}
+                                                    className={classes.favicon}
+                                                >
+                                                    <WebSiteIcon />
+                                                </Avatar>
+                                            )}
+                                            title={tab.title || tab.url || 'Unknown tab'}
+                                            level={disableItemOffset ? null : 0}
+                                            className={clsx(disableItemOffset && classes.disableItemOffset)}
+                                        />
+                                    )))
+                            }
+                            {store.sessions.length > (offset + max) && overloadContent}
+                        </List>
+                    )}
+                    <PopperDialog
+                        open={store.anchorEl}
+                        onClose={() => {
+                            store.anchorEl = null;
+                        }}
+                        onExited={() => {
+                            store.openWindowSession = null;
+                        }}
+                        anchorEl={store.anchorEl}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                        PaperProps={{ className: classes.dialog }}
+                    >
+                        <PopoverDialogHeader title={`${store.openWindowSession?.tabs?.length} tabs`} />
+                        <List dense className={classes.list}>
+                            {store.openWindowSession?.tabs.map((tab) => (
                                 <Item
-                                    key={tab.id}
+                                    key={tab.sessionId}
                                     button
                                     onClick={() => { chrome.sessions.restore(tab.sessionId); }}
                                     icon={(
@@ -106,13 +182,12 @@ function RecentlyClosedList(props) {
                                         </Avatar>
                                     )}
                                     title={tab.title || tab.url || 'Unknown tab'}
-                                    level={disableItemOffset ? null : 0}
-                                    className={clsx(disableItemOffset && classes.disableItemOffset)}
+                                    level={null}
+                                    className={classes.disableItemOffset}
                                 />
                             ))}
-                            {store.sessions.length > (offset + max) && overloadContent}
                         </List>
-                    )}
+                    </PopperDialog>
                 </Box>
             )}
         </Observer>
@@ -129,6 +204,7 @@ function RecentlyClosed({ className: externalClassName }) {
             ? true
             : coreService.storage.persistent.expandRecentlyClosed,
         openPopover: false,
+        anchorEl: null,
     }));
 
     return (
@@ -176,7 +252,7 @@ function RecentlyClosed({ className: externalClassName }) {
                                         store.openPopover = true;
                                     }}
                                 >
-                                    More
+                                    {t('common:button.more')}
                                 </Button>
                             </CardActions>
                         )}

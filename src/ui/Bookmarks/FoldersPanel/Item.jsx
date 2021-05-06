@@ -52,7 +52,10 @@ const useStyles = makeStyles((theme) => ({
             height: 18,
         },
     },
-    avatar: { minWidth: theme.spacing(3) },
+    avatar: {
+        minWidth: theme.spacing(3),
+        display: 'flex',
+    },
     startAction: {
         marginLeft: -(theme.spacing(0.5) + 22),
         marginRight: theme.spacing(0.5),
