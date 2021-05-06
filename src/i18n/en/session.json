@@ -1,5 +1,8 @@
 {
   "recentlyClosed": {
-    "title": "Recently closed"
+    "title": "Recently closed",
+    "empty": "No recent sessions",
+    "expand": "Expand the list",
+    "collapse": "Collapse the list"
   }
 }

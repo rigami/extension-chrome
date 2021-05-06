@@ -61,11 +61,12 @@ const useStyles = makeStyles((theme) => ({
     textContainer: { flexGrow: 0 },
 }));
 
-function ItemAction({ className: externalClassName, children, ...props }) {
+function ItemAction({ className: externalClassName, children, ...props }, ref) {
     const classes = useStyles();
 
     return (
         <ButtonBase
+            ref={ref}
             className={clsx(classes.button, externalClassName)}
             {...props}
         >
@@ -73,6 +74,8 @@ function ItemAction({ className: externalClassName, children, ...props }) {
         </ButtonBase>
     );
 }
+
+const ForwardRefItemAction = forwardRef(ItemAction);
 
 function Item(props, ref) {
     const {
@@ -98,7 +101,7 @@ function Item(props, ref) {
                 container: classes.itemContainer,
             }}
             button={!disableButton}
-            style={{ paddingLeft: 30 + level * 8 }}
+            style={{ paddingLeft: Number.isFinite(level) ? (30 + level * 8) : null }}
             onClick={(event) => {
                 if (
                     event.nativeEvent.path.includes(startActionRef.current)
@@ -143,5 +146,5 @@ export default ForwardRefItem;
 
 export {
     ForwardRefItem as Item,
-    ItemAction,
+    ForwardRefItemAction as ItemAction,
 };

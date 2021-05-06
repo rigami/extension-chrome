@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Item } from '@/ui/Bookmarks/FoldersPanel/Item';
 import clsx from 'clsx';
@@ -13,10 +13,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Subheader({ className: externalClassName, ...props }) {
+function Subheader({ className: externalClassName, ...props }, ref) {
     const classes = useStyles();
 
-    return (<Item className={clsx(classes.subheader, externalClassName)} {...props} />);
+    return (
+        <Item
+            className={clsx(classes.subheader, externalClassName)}
+            ref={ref}
+            {...props}
+        />
+    );
 }
 
-export default Subheader;
+export default forwardRef(Subheader);
