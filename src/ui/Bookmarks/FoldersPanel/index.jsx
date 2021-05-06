@@ -6,7 +6,7 @@ import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import LogoText from '@/images/logo-text.svg';
 import Folders from './Folders';
-import LastClosed from './LastClosed';
+import LastClosed from './RecentlyClosed';
 
 const useStyles = makeStyles((theme) => ({
     root: {

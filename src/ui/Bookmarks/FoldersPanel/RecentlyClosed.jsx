@@ -45,30 +45,32 @@ const useStyles = makeStyles((theme) => ({
     action: { display: 'none' },
 }));
 
-function LastClosed({ className: externalClassName }) {
+function RecentlyClosed({ className: externalClassName }) {
     const { t } = useTranslation(['session']);
     const classes = useStyles();
     const store = useLocalObservable(() => ({
-        tabs: [],
+        sessions: [],
         expand: true,
     }));
 
     const getAllTabs = async () => {
         const queryOptions = { maxResults: 8 };
-        const tabs = await new Promise((resolve) => chrome.sessions.getRecentlyClosed(queryOptions, resolve));
+        const sessions = await new Promise((resolve) => chrome.sessions.getRecentlyClosed(queryOptions, resolve));
 
-        console.log('tabs:', tabs);
+        console.log('recently closed:', sessions);
 
-        store.tabs = tabs.slice(0, 8).map(({ tab }) => tab).filter((isExist) => isExist);
+        store.sessions = sessions.slice(0, 8).map(({ tab }) => tab).filter((isExist) => isExist);
     };
 
     useEffect(() => {
+        if (!store.expand) return () => {};
+
         getAllTabs();
 
         chrome.sessions.onChanged.addListener(getAllTabs);
 
         return () => chrome.sessions.onChanged.removeListener(getAllTabs);
-    }, []);
+    }, [store.expand]);
 
     return (
         <Box className={externalClassName}>
@@ -89,7 +91,7 @@ function LastClosed({ className: externalClassName }) {
                     )}
                 />
                 <Collapse in={store.expand} unmountOnExit>
-                    {store.tabs.map((tab) => (
+                    {store.sessions.map((tab) => (
                         <Item
                             key={tab.id}
                             button
@@ -112,4 +114,4 @@ function LastClosed({ className: externalClassName }) {
     );
 }
 
-export default observer(LastClosed);
+export default observer(RecentlyClosed);
