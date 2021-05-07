@@ -16,9 +16,7 @@ import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import { useSnackbar } from 'notistack';
 import { getUrl } from '@/utils/fs';
-import Folders from '@/ui/Bookmarks/FoldersPanel/Folders';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import MoveDialog from '@/ui/Bookmarks/MoveDialog';
 import Changelog from './Changelog';
 
 function GlobalModals({ children }) {
@@ -35,17 +33,6 @@ function GlobalModals({ children }) {
                 action: 'remove',
                 id,
             })),
-            coreService.localEventBus.on('bookmark/move', ({ id, folderId }) => {
-                console.log('bookmark/move', id, folderId);
-
-                setEdit({
-                    type: 'bookmark',
-                    action: 'move',
-                    id,
-                    folderId,
-                    moveId: folderId,
-                });
-            }),
             coreService.localEventBus.on('tag/edit', ({ id, anchorEl }) => setEdit({
                 type: 'tag',
                 action: 'edit',
@@ -70,16 +57,7 @@ function GlobalModals({ children }) {
                 action: 'remove',
                 id,
             })),
-            coreService.localEventBus.on('folder/move', ({ id, anchorEl }) => setEdit({
-                type: 'folder',
-                action: 'move',
-                id,
-                anchorEl,
-                moveId: id,
-            })),
         ];
-
-        console.log('edit:', edit);
 
         const saveLocalBackup = () => {
             const generateFormatter = new Intl.DateTimeFormat('en', {
@@ -209,8 +187,8 @@ function GlobalModals({ children }) {
     return (
         <React.Fragment>
             {children}
-            {/* <InterrogationRequest /> */}
             <Changelog />
+            <MoveDialog />
             <EditBookmarkModal />
             <EditTagModal
                 anchorEl={edit && edit.anchorEl}
@@ -229,69 +207,6 @@ function GlobalModals({ children }) {
                 simple
                 {...(edit?.options || {})}
             />
-            {['bookmark', 'folder'].map((type) => (
-                <Dialog
-                    maxWidth="xs"
-                    fullWidth
-                    data-role="dialog"
-                    key={type}
-                    open={(edit && edit.action === 'move' && edit.type === type) || false}
-                    onClose={() => setEdit(null)}
-                    disableEnforceFocus
-                >
-                    <DialogTitle>
-                        {t('folder:editor', { context: 'select' })}
-                    </DialogTitle>
-                    {edit && (
-                        <Folders
-                            showRoot={edit.type === 'folder'}
-                            selectFolder={edit.moveId}
-                            disabled={edit.type === 'folder' ? [edit.id] : []}
-                            defaultExpanded={edit.type === 'folder' ? [edit.parentId] : [edit.moveId]}
-                            onClickFolder={({ id }) => {
-                                setEdit({
-                                    ...edit,
-                                    moveId: id,
-                                });
-                            }}
-                        />
-                    )}
-                    <DialogActions>
-                        <Button
-                            data-ui-path={`dialog.${type}.cancelRemove`}
-                            onClick={() => setEdit(null)}
-                            color="primary"
-                        >
-                            {t('common:button.cancel')}
-                        </Button>
-                        <Button
-                            data-ui-path={`dialog.${type}.remove`}
-                            onClick={async () => {
-                                if (edit.type === 'bookmark') {
-                                    const bookmark = await BookmarksUniversalService.get(edit.id);
-                                    bookmarksStore.bookmarks.save({
-                                        ...bookmark,
-                                        folderId: edit.moveId,
-                                    });
-                                }
-                                if (edit.type === 'folder') {
-                                    const folder = await FoldersUniversalService.get(edit.id);
-                                    bookmarksStore.folders.save({
-                                        ...folder,
-                                        parentId: edit.moveId,
-                                    });
-                                }
-
-                                setEdit(null);
-                            }}
-                            color="primary"
-                            autoFocus
-                        >
-                            {t('common:button.move')}
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            ))}
             {['bookmark', 'tag', 'folder'].map((type) => (
                 <Dialog
                     data-role="dialog"

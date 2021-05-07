@@ -105,7 +105,10 @@ function ContextMenuProvider({ children }) {
 
                         coreService.localEventBus.call(`${itemType}/move`, {
                             id: itemId,
-                            anchorEl: event.currentTarget,
+                            position: {
+                                left: event.clientX,
+                                top: event.clientY,
+                            },
                             folderId: bookmark.folderId,
                         });
                     }
@@ -114,7 +117,10 @@ function ContextMenuProvider({ children }) {
 
                         coreService.localEventBus.call(`${itemType}/move`, {
                             id: itemId,
-                            anchorEl: event.currentTarget,
+                            position: {
+                                left: event.clientX,
+                                top: event.clientY,
+                            },
                             parentId: folder.parentId,
                         });
                     }

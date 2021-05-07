@@ -4,6 +4,7 @@
   "change_helper": "Изменить папку",
   "defaultName": "Новая папка",
   "editor_select": "Выберите папку",
+  "root": "Корневая папка",
   "editor": {
     "name_placeholder": "Имя папки",
     "error": {

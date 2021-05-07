@@ -4,6 +4,7 @@
   "change_helper": "Change folder",
   "defaultName": "New folder",
   "editor_select": "Select folder",
+  "root": "Root folder",
   "editor": {
     "name_placeholder": "Folder name",
     "error": {

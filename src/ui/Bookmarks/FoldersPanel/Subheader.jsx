@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: theme.spacing(0.5),
         fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 600,
-        letterSpacing: '0.2em',
+        letterSpacing: '0.14em',
     },
 }));
 
