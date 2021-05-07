@@ -170,11 +170,11 @@ function RecentlyClosedList(props) {
                         }}
                         anchorEl={store.anchorEl}
                         anchorOrigin={{
-                            vertical: 'bottom',
+                            vertical: 'top',
                             horizontal: 'right',
                         }}
                         transformOrigin={{
-                            vertical: 'bottom',
+                            vertical: 'top',
                             horizontal: 'left',
                         }}
                         PaperProps={{ className: classes.dialog }}
