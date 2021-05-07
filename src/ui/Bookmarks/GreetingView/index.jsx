@@ -15,10 +15,11 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
         marginRight: 58,
+        maxWidth: 1300,
     },
     main: {
         flexGrow: 1,
-        maxWidth: 1150,
+        maxWidth: 1000,
         width: '100%',
         margin: '0 auto',
         display: 'flex',
@@ -43,7 +44,7 @@ function GreetingView({ searchService: service }) {
                 <Greeting />
                 <Widgets className={classes.widgetContainer} />
                 <Box className={classes.searchContainer}>
-                    <SearchBlock searchService={service} />
+                    <SearchBlock alignLeft searchService={service} />
                 </Box>
                 <Favorites className={classes.favoritesContainer} />
             </Box>

@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Search({ searchService: globalService }) {
+function Search({ searchService: globalService, alignLeft }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const [isOpen, setIsOpen] = useState(false);
@@ -120,6 +120,7 @@ function Search({ searchService: globalService }) {
                 <Preview
                     query={usedFields.query && globalService.searchRequest.query}
                     tags={usedFields.tags && globalService.searchRequest.tags}
+                    alignLeft={alignLeft}
                     onClick={() => setIsOpen(true)}
                 />
             </Fade>

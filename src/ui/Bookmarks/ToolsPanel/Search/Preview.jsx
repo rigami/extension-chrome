@@ -32,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    placeholderAlignLeft: {
+        position: 'relative',
+        justifyContent: 'flex-start',
+    },
     alignFix: {
         display: 'flex',
         alignItems: 'flex-start',
@@ -84,7 +88,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Preview({ onClick, query, tags: tagsIds, ...other }) {
+function Preview(props) {
+    const {
+        query,
+        tags: tagsIds,
+        alignLeft = false,
+        onClick,
+        ...other
+    } = props;
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const [tags, setTags] = useState([]);
@@ -129,7 +140,10 @@ function Preview({ onClick, query, tags: tagsIds, ...other }) {
                     )}
                 </Box>
                 {(!query && !tagsIds) && (
-                    <Typography variant="caption" className={classes.placeholder}>
+                    <Typography
+                        variant="caption"
+                        className={clsx(classes.placeholder, alignLeft && classes.placeholderAlignLeft)}
+                    >
                         {t('search.bookmarks', { context: 'placeholder' })}
                     </Typography>
                 )}

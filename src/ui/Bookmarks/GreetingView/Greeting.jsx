@@ -162,8 +162,6 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
                 name: '[name]',
             });
 
-            console.log(greetings, time);
-
             greeting = sample(Array.isArray(greetings) ? greetings : []);
 
             if (!force) coreService.storage.updateTemp({ greeting: null });
