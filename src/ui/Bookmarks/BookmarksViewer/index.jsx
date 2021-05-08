@@ -5,7 +5,7 @@ import {
     CircularProgress,
 } from '@material-ui/core';
 import Stub from '@/ui-components/Stub';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
@@ -18,6 +18,7 @@ import Header from '@/ui/Bookmarks/BookmarksViewer/Header';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { useTranslation } from 'react-i18next';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { sample } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -28,10 +29,36 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: theme.spacing(2),
         marginRight: 58,
     },
-    title: { fontSize: '2.25rem' },
+    stub: { maxHeight: 750 },
+    emoticon: {
+        fontSize: '10rem',
+        color: fade(theme.palette.text.secondary, 0.06),
+        fontWeight: 700,
+    },
+    message: {
+        fontSize: '1.4rem',
+        fontWeight: 600,
+        marginTop: theme.spacing(4),
+    },
     bookmarks: { paddingTop: theme.spacing(6) },
     bottomOffset: { paddingBottom: theme.spacing(38) },
 }));
+
+const emoticons = [
+    '(^_^)b',
+    '(；⌣̀_⌣́)',
+    '(⇀‸↼‶)',
+    '(눈_눈)',
+    '(ᗒᗣᗕ)՞',
+    '(￢_￢;)',
+    'ヾ( ￣O￣)ツ',
+    '(╥_╥)',
+    '( ╥ω╥ )',
+    '¯\\_(ツ)_/¯',
+    '┐( ˘ ､ ˘ )┌',
+    '╮( ˘_˘ )╭',
+    '(⊙_⊙)',
+];
 
 function BookmarksViewer({ searchService: service }) {
     const classes = useStyles();
@@ -47,6 +74,7 @@ function BookmarksViewer({ searchService: service }) {
         loadState: FETCH.WAIT,
         columnsCount: 0,
         usedFields: {},
+        emoticon: sample(emoticons),
     }));
     const onResize = useCallback((width) => {
         store.columnsCount = Math.min(
@@ -98,6 +126,7 @@ function BookmarksViewer({ searchService: service }) {
                 store.existMatches = ((result.best?.length || 0) + result.all.length) !== 0;
                 store.usedFields = { ...service.searchRequest.usedFields };
                 store.loadState = FETCH.DONE;
+                store.emoticon = sample(emoticons);
             });
     }, [service.searchRequestId, bookmarksService.lastTruthSearchTimestamp]);
 
@@ -137,9 +166,13 @@ function BookmarksViewer({ searchService: service }) {
                     && (
                         <Stub
                             key="nothing-found"
-                            message={t('search.nothingFound')}
+                            message={store.emoticon}
                             description={t('search.nothingFound', { context: 'description' })}
-                            classes={{ title: classes.title }}
+                            classes={{
+                                root: classes.stub,
+                                title: classes.emoticon,
+                                description: classes.message,
+                            }}
                         />
                     ),
                     !store.usedFields.query
@@ -148,8 +181,13 @@ function BookmarksViewer({ searchService: service }) {
                     && (
                         <Stub
                             key="empty"
-                            message={t('empty')}
-                            classes={{ title: classes.title }}
+                            message={store.emoticon}
+                            description={t('empty')}
+                            classes={{
+                                root: classes.stub,
+                                title: classes.emoticon,
+                                description: classes.message,
+                            }}
                         >
                             <Button
                                 onClick={() => coreService.localEventBus.call(
@@ -157,7 +195,7 @@ function BookmarksViewer({ searchService: service }) {
                                     { defaultFolderId: service.activeFolderId },
                                 )}
                                 startIcon={<AddBookmarkIcon />}
-                                variant="contained"
+                                variant="outlined"
                                 color="primary"
                             >
                                 {t('button.add', { context: 'first' })}
