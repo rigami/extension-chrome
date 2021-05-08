@@ -46,8 +46,7 @@
     "confirm_description": "Закладка будет удалена навсегда, вы уверены?"
   },
   "search": {
-    "nothingFound": "Ничего не найдено",
-    "nothingFound_description": "Попробуйте изменить свой запрос",
+    "nothingFound": "Ничего не найдено. Попробуйте изменить свой запрос",
     "everywhere": "Искать везде",
     "everywhere_description": "Поиск закладок по всей системе",
     "bookmarks_placeholder": "Поиск закладок",

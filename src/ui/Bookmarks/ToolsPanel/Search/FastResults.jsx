@@ -9,7 +9,6 @@ import { FETCH } from '@/enum';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import stateRender from '@/utils/stateRender';
-import Header from '@/ui/Bookmarks/BookmarksViewer/Header';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import { ArrowForward as GoToIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
@@ -41,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
     },
     stub: { padding: theme.spacing(2) },
+    folderBreadcrumbs: { overflow: 'auto' },
 }));
 
 function FastResults({ searchService: service, onGoToFolder }) {
@@ -123,7 +123,10 @@ function FastResults({ searchService: service, onGoToFolder }) {
                                 <FolderBreadcrumbs
                                     folderId={+folderId}
                                     lastClickable
-                                    classes={{ last: classes.goToButton }}
+                                    classes={{
+                                        root: classes.folderBreadcrumbs,
+                                        last: classes.goToButton,
+                                    }}
                                     onSelectFolder={(selectFolderId) => {
                                         onGoToFolder(selectFolderId, selectFolderId === +folderId);
                                     }}

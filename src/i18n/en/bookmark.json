@@ -46,8 +46,7 @@
     "confirm_description": "The bookmark will be deleted forever, are you sure?"
   },
   "search": {
-    "nothingFound": "Nothing found",
-    "nothingFound_description": "Try changing your request",
+    "nothingFound": "Nothing found. Try changing your request",
     "everywhere": "Search everywhere",
     "everywhere_description": "Search for bookmarks throughout the system",
     "bookmarks_placeholder": "Search for bookmarks",

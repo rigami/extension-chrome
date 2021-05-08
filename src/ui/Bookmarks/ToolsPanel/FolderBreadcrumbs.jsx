@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         fontWeight: 600,
         padding: theme.spacing(0.5, 1),
-        fontSize: theme.typography.body1.fontSize,
+        fontSize: theme.typography.button.fontSize,
         letterSpacing: 'unset',
     },
     last: {
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.primary,
         fontWeight: 600,
         padding: theme.spacing(0.5, 1),
-        fontSize: theme.typography.body1.fontSize,
+        fontSize: theme.typography.button.fontSize,
         letterSpacing: 'unset',
     },
     overflow: {
@@ -57,6 +57,10 @@ const useStyles = makeStyles((theme) => ({
         textOverflow: 'ellipsis',
         overflow: 'hidden',
         display: 'block',
+    },
+    icon: {
+        display: 'inline-flex',
+        verticalAlign: 'sub',
     },
 }));
 
@@ -108,6 +112,7 @@ function FolderBreadcrumbs(props) {
                             classes={{
                                 root: clsx(classes.overflow, classes.last, externalClasses.last),
                                 label: classes.label,
+                                endIcon: classes.icon,
                             }}
                             endIcon={(<GoToIcon />)}
                             onClick={() => {

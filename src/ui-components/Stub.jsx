@@ -50,6 +50,7 @@ function Stub(props) {
         children,
         className: externalClassName,
         classes: externalClasses = {},
+        maxWidth = 'md',
         ...other
     } = props;
     const classes = useStyles();
@@ -58,7 +59,7 @@ function Stub(props) {
 
     return (
         <Box className={clsx(classes.root, externalClassName, externalClasses.root)} {...other}>
-            <Container className={clsx(classes.container, externalClasses.container)} maxWidth="md">
+            <Container className={clsx(classes.container, externalClasses.container)} maxWidth={maxWidth}>
                 {icon && (
                     <Icon
                         {...iconProps}

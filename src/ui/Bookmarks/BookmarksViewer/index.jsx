@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '1.4rem',
         fontWeight: 600,
         marginTop: theme.spacing(4),
+        color: theme.palette.text.primary,
     },
     bookmarks: { paddingTop: theme.spacing(6) },
     bottomOffset: { paddingBottom: theme.spacing(38) },
@@ -166,8 +167,9 @@ function BookmarksViewer({ searchService: service }) {
                     && (
                         <Stub
                             key="nothing-found"
+                            maxWidth={false}
                             message={store.emoticon}
-                            description={t('search.nothingFound', { context: 'description' })}
+                            description={t('search.nothingFound')}
                             classes={{
                                 root: classes.stub,
                                 title: classes.emoticon,
@@ -181,6 +183,7 @@ function BookmarksViewer({ searchService: service }) {
                     && (
                         <Stub
                             key="empty"
+                            maxWidth={false}
                             message={store.emoticon}
                             description={t('empty')}
                             classes={{
