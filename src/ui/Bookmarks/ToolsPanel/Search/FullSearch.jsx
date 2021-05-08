@@ -12,15 +12,16 @@ import CustomScroll from '@/ui-components/CustomScroll';
 import FastResults from '@/ui/Bookmarks/ToolsPanel/Search/FastResults';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const useStyles = makeStyles((theme) => ({
     fullSearch: {
         minHeight: 40,
-        border: `1px solid ${theme.palette.divider}`,
+        border: `1px solid ${fade(theme.palette.background.backdrop, 0.52)}`,
         overflow: 'hidden',
         boxSizing: 'border-box',
     },
-    openFullSearch: {},
+    openFullSearch: { border: `1px solid ${theme.palette.divider}` },
     tags: {
         padding: theme.spacing(1.5),
         paddingBottom: theme.spacing(0.75),
