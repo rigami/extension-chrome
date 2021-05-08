@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: theme.spacing(0.5),
         paddingBottom: theme.spacing(0.5),
         fontFamily: theme.typography.primaryFontFamily,
-        fontWeight: 600,
+        fontWeight: 700,
         letterSpacing: '0.14em',
     },
 }));

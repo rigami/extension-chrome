@@ -1,12 +1,18 @@
 import React from 'react';
-import { Box, CardActionArea, CardHeader } from '@material-ui/core';
+import {
+    Box, CardActionArea, CardHeader, Tooltip,
+} from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import LogoIcon from '@/images/logo-icon.svg';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import LogoText from '@/images/logo-text.svg';
-import Folders from './Folders';
+import Subheader from '@/ui/Bookmarks/FoldersPanel/Subheader';
+import { ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
+import { UnfoldLess as LessIcon, UnfoldMore as MoreIcon } from '@material-ui/icons';
+import { useTranslation } from 'react-i18next';
 import LastClosed from './RecentlyClosed';
+import Folders from './Folders';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -47,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function FoldersPanel({ searchService: service }) {
+    const { t } = useTranslation(['folder']);
     const classes = useStyles();
 
     return (
@@ -68,6 +75,10 @@ function FoldersPanel({ searchService: service }) {
                 />
             </CardActionArea>
             <Box overflow="auto" py={2}>
+                <Subheader
+                    title={t('listTitle')}
+                    disableButton
+                />
                 <Folders
                     selectFolder={service.activeFolderId}
                     onClickFolder={({ id }) => service.setActiveFolder(id)}

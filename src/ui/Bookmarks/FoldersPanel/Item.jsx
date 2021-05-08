@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
         padding: 0,
         paddingRight: theme.spacing(1),
         position: 'relative',
+        fontWeight: 550,
     },
     itemContainer: {
         '& $addSubFolder': { opacity: 0 },
@@ -24,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     text: {
         color: theme.palette.text.secondary,
         fontSize: '0.9rem',
-        fontWeight: 550,
+        fontWeight: 'inherit',
         fontFamily: theme.typography.primaryFontFamily,
         overflow: 'hidden',
         whiteSpace: 'nowrap',
