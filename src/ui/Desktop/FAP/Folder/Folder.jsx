@@ -78,6 +78,11 @@ const useStyles = makeStyles((theme) => ({
         opacity: 0.5,
         pointerEvents: 'none',
     },
+    titleContent: { overflow: 'auto' },
+    title: {
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+    },
 }));
 
 function Folder(props) {
@@ -177,6 +182,8 @@ function Folder(props) {
                 classes={{
                     avatar: classes.avatar,
                     action: classes.action,
+                    content: classes.titleContent,
+                    title: classes.title,
                 }}
             />
             {isSearching && (
