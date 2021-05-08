@@ -5,8 +5,7 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     subheader: {
-        paddingTop: theme.spacing(0.5),
-        paddingBottom: theme.spacing(0.5),
+        padding: theme.spacing(0.5, 2),
         fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 700,
         letterSpacing: '0.14em',
@@ -19,6 +18,7 @@ function Subheader({ className: externalClassName, ...props }, ref) {
     return (
         <Item
             className={clsx(classes.subheader, externalClassName)}
+            level={null}
             ref={ref}
             {...props}
         />

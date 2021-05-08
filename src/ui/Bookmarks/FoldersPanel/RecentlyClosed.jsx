@@ -44,15 +44,14 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         flexGrow: 1,
     },
-    disableItemOffset: { paddingLeft: theme.spacing(2) },
-    actions: { padding: '0px 22px' },
+    itemOffset: { paddingLeft: theme.spacing(2) },
+    actions: { padding: theme.spacing(0, 1) },
 }));
 
 function RecentlyClosedList(props) {
     const {
         offset = 0,
         max = 8,
-        disableItemOffset = false,
         disablePadding = false,
         overloadContent,
     } = props;
@@ -134,8 +133,8 @@ function RecentlyClosedList(props) {
                                                 'recentlyClosed.windowSessionTitle',
                                                 { count: windowSession.tabs.length },
                                             )}
-                                            level={disableItemOffset ? null : 0}
-                                            className={clsx(disableItemOffset && classes.disableItemOffset)}
+                                            level={null}
+                                            className={classes.itemOffset}
                                         />
                                     ) : (
                                         <Item
@@ -152,8 +151,8 @@ function RecentlyClosedList(props) {
                                                 </Avatar>
                                             )}
                                             title={tab.title || tab.url || 'Unknown tab'}
-                                            level={disableItemOffset ? null : 0}
-                                            className={clsx(disableItemOffset && classes.disableItemOffset)}
+                                            level={null}
+                                            className={classes.itemOffset}
                                         />
                                     )))
                             }
@@ -214,7 +213,7 @@ function RecentlyClosedList(props) {
                                     )}
                                     title={tab.title || tab.url || 'Unknown tab'}
                                     level={null}
-                                    className={classes.disableItemOffset}
+                                    className={classes.itemOffset}
                                 />
                             ))}
                         </List>
@@ -305,7 +304,7 @@ function RecentlyClosed({ className: externalClassName }) {
                 PaperProps={{ className: classes.dialog }}
             >
                 <PopoverDialogHeader title={t('recentlyClosed.title')} />
-                <RecentlyClosedList offset={store.expand ? 6 : 0} max={25} disableItemOffset />
+                <RecentlyClosedList offset={store.expand ? 6 : 0} max={25} />
             </PopperDialog>
         </Box>
     );

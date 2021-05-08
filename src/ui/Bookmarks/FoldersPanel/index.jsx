@@ -33,10 +33,8 @@ const useStyles = makeStyles((theme) => ({
     header: {
         height: 40,
         padding: 0,
-    },
-    padding: {
-        paddingLeft: theme.spacing(4),
-        paddingRight: theme.spacing(4),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
     },
     appLogoIcon: {
         width: 20,
@@ -65,7 +63,6 @@ function FoldersPanel({ searchService: service }) {
                     disableTypography
                     classes={{
                         root: clsx(
-                            classes.padding,
                             classes.header,
                             service.activeFolderId === null && classes.activeGreetingView,
                         ),
