@@ -89,7 +89,10 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
     },
-    extendBannerTitle: { margin: theme.spacing(1, 1.5) },
+    extendBannerTitle: {
+        margin: theme.spacing(0.5, 1.5),
+        '-webkit-line-clamp': 2,
+    },
     description: {
         color: theme.palette.text.secondary,
         overflow: 'hidden',
