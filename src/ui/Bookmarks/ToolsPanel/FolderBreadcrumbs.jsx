@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
     },
-    buttonLabel: { fontWeight: 'inherit' },
     middle: {
         textTransform: 'none',
         color: theme.palette.text.secondary,
@@ -35,6 +34,29 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0.5, 1),
         fontSize: theme.typography.body1.fontSize,
         letterSpacing: 'unset',
+    },
+    overflow: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        maxWidth: '100%',
+    },
+    breadcrumbsRoot: { width: '100%' },
+    ol: {
+        overflow: 'auto',
+        display: 'flex',
+        flexDirection: 'row',
+        width: 'inherit',
+    },
+    li: {
+        overflow: 'auto',
+        width: 'auto',
+        flexShrink: 1,
+    },
+    label: {
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        display: 'block',
     },
 }));
 
@@ -71,13 +93,22 @@ function FolderBreadcrumbs(props) {
 
     return (
         <Box className={clsx(classes.root, externalClassName, externalClasses.root)}>
-            <Breadcrumbs maxItems={2}>
+            <Breadcrumbs
+                maxItems={2}
+                classes={{
+                    root: classes.breadcrumbsRoot,
+                    ol: classes.ol,
+                    li: classes.li,
+                }}
+            >
                 {store.path && store.path.map((folder, index) => (index === store.path.length - 1 ? (
                     lastClickable ? (
                         <Button
                             key={folder.id}
-                            className={clsx(classes.last, externalClasses.last)}
-                            classes={{ label: classes.buttonLabel }}
+                            classes={{
+                                root: clsx(classes.overflow, classes.last, externalClasses.last),
+                                label: classes.label,
+                            }}
                             endIcon={(<GoToIcon />)}
                             onClick={() => {
                                 if (onSelectFolder) onSelectFolder(folder.id);
@@ -88,7 +119,7 @@ function FolderBreadcrumbs(props) {
                     ) : (
                         <Typography
                             key={folder.id}
-                            className={clsx(classes.last, externalClasses.last)}
+                            className={clsx(classes.overflow, classes.last, externalClasses.last)}
                         >
                             {folder.name}
                         </Typography>
@@ -96,8 +127,10 @@ function FolderBreadcrumbs(props) {
                 ) : (
                     <Button
                         key={folder.id}
-                        className={classes.middle}
-                        classes={{ label: classes.buttonLabel }}
+                        classes={{
+                            root: clsx(classes.overflow, classes.middle),
+                            label: classes.label,
+                        }}
                         onClick={() => {
                             if (onSelectFolder) onSelectFolder(folder.id);
                         }}

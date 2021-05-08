@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'flex-start',
         boxSizing: 'content-box',
     },
-    wrapperBreadcrumbs: { flexShrink: 0 },
+    wrapperBreadcrumbs: { overflow: 'auto' },
     wrapperSearch: {
         padding: theme.spacing(0, 2),
         display: 'flex',
