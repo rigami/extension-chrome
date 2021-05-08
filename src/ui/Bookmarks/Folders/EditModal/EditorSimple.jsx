@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import {
-    Card,
     InputBase,
     Button,
 } from '@material-ui/core';
@@ -9,7 +8,6 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import { toJS } from 'mobx';
 import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
@@ -22,6 +20,10 @@ const useStyles = makeStyles((theme) => ({
     input: { padding: theme.spacing(2) },
     saveButton: { marginRight: theme.spacing(2) },
     errorMessage: { padding: theme.spacing(1, 2) },
+    form: {
+        display: 'flex',
+        alignItems: 'center',
+    },
 }));
 
 function Editor({ onSave, onError, editId, parentId = 0 }) {
@@ -34,8 +36,6 @@ function Editor({ onSave, onError, editId, parentId = 0 }) {
         parentId,
         name: '',
     }));
-
-    console.log(toJS(store));
 
     const handlerSubmit = (event) => {
         event.preventDefault();
@@ -64,7 +64,7 @@ function Editor({ onSave, onError, editId, parentId = 0 }) {
     }, []);
 
     return (
-        <form onSubmit={handlerSubmit}>
+        <form onSubmit={handlerSubmit} className={classes.form}>
             <InputBase
                 className={classes.input}
                 placeholder={t('editor.name', { context: 'placeholder' })}

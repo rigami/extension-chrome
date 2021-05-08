@@ -1,11 +1,10 @@
-﻿import {
+﻿import React, { useEffect, useRef, useState } from 'react';
+import {
     Box,
     ButtonBase,
     Collapse,
     List,
     ListItem,
-    ListItemSecondaryAction,
-    ListItemText,
     Tooltip,
 } from '@material-ui/core';
 import {
@@ -15,13 +14,12 @@ import {
     StarRounded as FavoriteIcon,
     HomeRounded as HomeIcon,
 } from '@material-ui/icons';
-import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import asyncAction from '@/utils/asyncAction';
 import { captureException } from '@sentry/react';
@@ -30,50 +28,6 @@ import clsx from 'clsx';
 import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        width: 260,
-        minWidth: 230,
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        position: 'sticky',
-        top: 0,
-        backgroundColor: fade(theme.palette.background.backdrop, 0.4),
-    },
-    header: { minHeight: theme.spacing(9.75) },
-    bottomOffset: { marginTop: 'auto' },
-    padding: {
-        paddingLeft: theme.spacing(4),
-        paddingRight: theme.spacing(4),
-    },
-    title: {
-        fontSize: '1.5rem',
-        fontWeight: 800,
-        fontFamily: theme.typography.primaryFontFamily,
-        display: '-webkit-box',
-        overflow: 'hidden',
-        wordBreak: 'break-word',
-        lineHeight: 1.2,
-        '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 3,
-        minHeight: theme.spacing(4),
-    },
-    avatar: { display: 'flex' },
-    appLogoIcon: {
-        width: 28,
-        height: 28,
-    },
-    appLogoText: {
-        height: 24,
-        width: 'auto',
-    },
-    appLogoTextWrapper: { display: 'flex' },
-    backButton: { margin: theme.spacing(-1.5) },
-    primaryFont: {
-        fontWeight: 800,
-        fontFamily: theme.typography.primaryFontFamily,
-    },
-    expandWrapper: {},
     expandIcon: {
         borderRadius: theme.spacing(0.5),
         padding: 2,
@@ -84,39 +38,6 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     disabledExpand: { color: theme.palette.action.disabled },
-    itemRoot: {
-        color: theme.palette.text.secondary,
-        padding: 0,
-        position: 'relative',
-        '&:hover > $content': { backgroundColor: theme.palette.action.hover },
-        '&:focus > $content, &$selected > $content': {
-            backgroundColor: theme.palette.action.selected,
-            color: theme.palette.text.primary,
-        },
-        '&:focus > $content $label, &:hover > $content $label, &$selected > $content $label': { backgroundColor: 'transparent !important' },
-    },
-    itemContainer: {
-        '& $addSubFolder': { opacity: 0 },
-        '&:hover $addSubFolder': { opacity: 1 },
-    },
-    expanded: {},
-    selected: {},
-    content: {
-        height: theme.spacing(4),
-        color: theme.palette.text.secondary,
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1),
-        '$expanded > &': { fontWeight: theme.typography.fontWeightRegular },
-    },
-    group: {
-        marginLeft: 0,
-        '& $content': { paddingLeft: theme.spacing(2) },
-    },
-    label: {
-        color: 'inherit',
-        fontSize: '0.9rem',
-        fontWeight: 550,
-    },
     addRootButton: {
         height: theme.spacing(4),
         color: theme.palette.text.secondary,
@@ -132,23 +53,6 @@ const useStyles = makeStyles((theme) => ({
             height: 18,
         },
     },
-    icon: {
-        minWidth: 18 + 4,
-        '& svg': {
-            width: 18,
-            height: 18,
-        },
-    },
-    itemInset: { paddingLeft: 22 },
-    text: {
-        color: theme.palette.text.secondary,
-        fontSize: '0.9rem',
-        fontWeight: 550,
-        fontFamily: theme.typography.primaryFontFamily,
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis',
-    },
     favorite: {
         color: theme.palette.favorite.main,
         width: 18,
@@ -156,21 +60,6 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(0.5),
         padding: theme.spacing(0.25),
         boxSizing: 'content-box',
-    },
-    actions: {
-        display: 'flex',
-        alignItems: 'center',
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        pointerEvents: 'none',
-        flexDirection: 'row',
-        transform: 'none',
-        justifyContent: 'flex-end',
-        padding: theme.spacing(0, 0.5),
-        '& > *': { pointerEvents: 'all' },
     },
     folderItem: { '&:hover $addSubFolder': { display: 'flex' } },
     addSubFolder: { display: 'none' },

@@ -13,7 +13,7 @@ function FAPButton(props) {
         tooltip,
         type = 'bookmark',
         children,
-        disableEdit = false,
+        disableMove = false,
         disableRemove = false,
         className: externalClassName,
         ...other
@@ -23,7 +23,7 @@ function FAPButton(props) {
     const contextMenu = useContextMenu({
         itemId: id,
         itemType: type,
-        disableEdit,
+        disableMove,
         disableRemove,
     });
 

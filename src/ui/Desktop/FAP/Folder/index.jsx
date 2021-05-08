@@ -17,7 +17,6 @@ function Folder(props) {
     const classes = useStyles();
     const {
         id,
-        parentId,
         name,
         classes: externalClasses,
         children,
@@ -28,8 +27,8 @@ function Folder(props) {
         <ButtonWithPopper
             id={id}
             name={name}
-            disableEdit={parentId === 0}
-            disableRemove={parentId === 0}
+            disableMove={id === 1}
+            disableRemove={id === 1}
             type="folder"
             iconOpen={FolderIcon}
             classes={externalClasses}

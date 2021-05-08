@@ -19,6 +19,10 @@ const useStyles = makeStyles((theme) => ({
     input: { padding: theme.spacing(2) },
     saveButton: { marginRight: theme.spacing(2) },
     errorMessage: { padding: theme.spacing(1, 2) },
+    form: {
+        display: 'flex',
+        alignItems: 'center',
+    },
 }));
 
 function Editor({ onSave, onError, editId }) {
@@ -62,7 +66,7 @@ function Editor({ onSave, onError, editId }) {
 
     return !isLoading && (
         <Card className={classes.popper} elevation={16}>
-            <form onSubmit={handlerSubmit}>
+            <form onSubmit={handlerSubmit} className={classes.form}>
                 <InputBase
                     className={classes.input}
                     placeholder={t('editor.name', { context: 'placeholder' })}
