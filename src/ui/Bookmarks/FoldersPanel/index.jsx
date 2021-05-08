@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(1),
     },
     header: {
-        height: 42,
+        height: 40,
         padding: 0,
     },
     padding: {

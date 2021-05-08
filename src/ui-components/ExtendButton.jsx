@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
         // marginTop: theme.spacing(2),
     },
     button: {
-        padding: theme.spacing(1.125),
+        padding: theme.spacing(1),
         '& svg + $label': {
             marginLeft: theme.spacing(1),
             fontSize: '0.9rem',

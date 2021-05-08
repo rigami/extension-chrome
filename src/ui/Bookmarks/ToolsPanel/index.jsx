@@ -15,10 +15,11 @@ import ShowFavorites from './ShowFavorites';
 const useStyles = makeStyles((theme) => ({
     root: { backgroundColor: fade(theme.palette.background.paper, 0.95) },
     toolbar: {
-        minHeight: theme.spacing(9.75),
+        minHeight: 40,
         display: 'flex',
         padding: theme.spacing(2),
         alignItems: 'flex-start',
+        boxSizing: 'content-box',
     },
     wrapperBreadcrumbs: { flexShrink: 0 },
     wrapperSearch: {
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         maxWidth: (theme.shape.dataCard.width + theme.spacing(2)) * 3 + theme.spacing(2),
         width: '100%',
-        margin: 'auto',
+        marginLeft: 'auto',
         marginTop: 0,
         boxSizing: 'content-box',
     },
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
     toolStub: {
         visibility: 'hidden',
-        width: 42,
+        width: 40,
     },
 }));
 
@@ -54,8 +55,6 @@ function ToolsPanel({ searchService: service }) {
     const classes = useStyles();
     const { t } = useTranslation(['desktop']);
     const appService = useAppService();
-    const { width: widthBreadcrumbs, ref: refBreadcrumbs } = useResizeDetector();
-    const { width: widthTools, ref: refTools } = useResizeDetector();
 
     return (
         <AppBar
@@ -65,21 +64,19 @@ function ToolsPanel({ searchService: service }) {
             className={classes.root}
         >
             <Toolbar disableGutters className={classes.toolbar}>
-                <Box className={classes.wrapperBreadcrumbs} ref={refBreadcrumbs}>
+                <Box className={classes.wrapperBreadcrumbs}>
                     <FolderBreadcrumbs
                         key={service.activeFolderId}
                         folderId={service.activeFolderId}
                         onSelectFolder={(folderId) => service.setActiveFolder(folderId)}
                     />
                 </Box>
-                <Box className={classes.widthHelper} style={{ maxWidth: widthTools || undefined }} />
                 <Box className={classes.wrapperSearch}>
                     {service.activeFolderId && (
                         <SearchBlock searchService={service} />
                     )}
                 </Box>
-                <Box className={classes.widthHelper} style={{ maxWidth: (widthBreadcrumbs || 0) + 260 }} />
-                <Box className={classes.wrapperTools} ref={refTools}>
+                <Box className={classes.wrapperTools}>
                     <ShowFavorites />
                     <ExtendButtonGroup>
                         <ExtendButton

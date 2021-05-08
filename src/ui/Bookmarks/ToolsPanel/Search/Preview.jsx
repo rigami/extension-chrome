@@ -3,7 +3,7 @@ import { SearchRounded as SearchIcon } from '@material-ui/icons';
 import clsx from 'clsx';
 import { ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import React, { useEffect, useState } from 'react';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 
@@ -11,28 +11,24 @@ const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
         zIndex: 2,
-        border: `1px solid ${fade(theme.palette.divider, 0.05)}`,
+        border: '1px solid transparent',
         backdropFilter: 'none',
         backgroundColor: theme.palette.background.backdrop,
     },
     icon: {
-        margin: theme.spacing(1.125),
+        margin: theme.spacing(1 - 0.125),
         color: theme.palette.text.secondary,
     },
     placeholder: {
-        position: 'absolute',
         width: '100%',
         textAlign: 'center',
         fontSize: '1rem',
         fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 600,
         color: theme.palette.text.secondary,
-        height: 42,
+        height: 38,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-    },
-    placeholderAlignLeft: {
         position: 'relative',
         justifyContent: 'flex-start',
     },
@@ -62,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        height: 42,
+        height: 38,
         overflow: 'hidden',
         marginTop: theme.spacing(-1),
         '&:first-child': { marginTop: 0 },
@@ -92,7 +88,6 @@ function Preview(props) {
     const {
         query,
         tags: tagsIds,
-        alignLeft = false,
         onClick,
         ...other
     } = props;
@@ -142,7 +137,7 @@ function Preview(props) {
                 {(!query && !tagsIds) && (
                     <Typography
                         variant="caption"
-                        className={clsx(classes.placeholder, alignLeft && classes.placeholderAlignLeft)}
+                        className={classes.placeholder}
                     >
                         {t('search.bookmarks', { context: 'placeholder' })}
                     </Typography>

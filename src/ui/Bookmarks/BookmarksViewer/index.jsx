@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
     title: { fontSize: '2.25rem' },
     bookmarks: { paddingTop: theme.spacing(6) },
     bottomOffset: { paddingBottom: theme.spacing(38) },
-    stub: { width: 'calc(100% - 260px)' },
 }));
 
 function BookmarksViewer({ searchService: service }) {
@@ -140,10 +139,7 @@ function BookmarksViewer({ searchService: service }) {
                             key="nothing-found"
                             message={t('search.nothingFound')}
                             description={t('search.nothingFound', { context: 'description' })}
-                            classes={{
-                                root: classes.stub,
-                                title: classes.title,
-                            }}
+                            classes={{ title: classes.title }}
                         />
                     ),
                     !store.usedFields.query
@@ -153,10 +149,7 @@ function BookmarksViewer({ searchService: service }) {
                         <Stub
                             key="empty"
                             message={t('empty')}
-                            classes={{
-                                root: classes.stub,
-                                title: classes.title,
-                            }}
+                            classes={{ title: classes.title }}
                         >
                             <Button
                                 onClick={() => coreService.localEventBus.call(

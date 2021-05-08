@@ -15,9 +15,10 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     fullSearch: {
-        minHeight: 42,
+        minHeight: 40,
         border: `1px solid ${theme.palette.divider}`,
         overflow: 'hidden',
+        boxSizing: 'border-box',
     },
     openFullSearch: {},
     tags: {
@@ -26,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
     },
     search: {
-        paddingRight: 42,
-        '-webkit-mask': 'linear-gradient(to left, transparent 42px, black 60px)',
+        paddingRight: 40,
+        '-webkit-mask': 'linear-gradient(to left, transparent 40px, black 60px)',
         display: 'flex',
         flexShrink: 0,
     },
@@ -75,7 +76,7 @@ function FullSearch({ searchService: globalService, open, onClose }) {
                 elevation={open ? 18 : 0}
             >
                 <Collapse
-                    collapsedHeight={42}
+                    collapsedHeight={40}
                     in={open}
                     unmountOnExit
                     onEntered={() => { store.showFastResults = true; }}

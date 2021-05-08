@@ -5,7 +5,7 @@ import {
     IconButton,
     Tooltip,
 } from '@material-ui/core';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { CloseRounded as ResetIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         maxWidth: (theme.shape.dataCard.width + theme.spacing(2)) * 3 + theme.spacing(2),
         minWidth: 240,
-        minHeight: 42,
+        minHeight: 40,
         flexGrow: 1,
         flexShrink: 0,
         position: 'relative',
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 1,
     },
     fullSearch: {
-        minHeight: 42,
+        minHeight: 40,
         border: `1px solid ${theme.palette.divider}`,
     },
     disabledFullSearch: {},
@@ -66,24 +66,24 @@ const useStyles = makeStyles((theme) => ({
     },
     extend: {
         '& $resetIconWrapper': {
-            height: 44,
+            height: 40,
             borderBottomRightRadius: theme.shape.borderRadius,
         },
     },
     open: {
         '& $resetIconWrapper': {
-            height: 44,
+            height: 40,
             borderBottomRightRadius: 0,
         },
     },
     search: {
-        paddingRight: 42,
-        '-webkit-mask': 'linear-gradient(to left, transparent 42px, black 60px)',
+        paddingRight: 40,
+        '-webkit-mask': 'linear-gradient(to left, transparent 40px, black 60px)',
         display: 'flex',
     },
 }));
 
-function Search({ searchService: globalService, alignLeft }) {
+function Search({ searchService: globalService }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const [isOpen, setIsOpen] = useState(false);
@@ -120,7 +120,6 @@ function Search({ searchService: globalService, alignLeft }) {
                 <Preview
                     query={usedFields.query && globalService.searchRequest.query}
                     tags={usedFields.tags && globalService.searchRequest.tags}
-                    alignLeft={alignLeft}
                     onClick={() => setIsOpen(true)}
                 />
             </Fade>

@@ -15,7 +15,7 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        minHeight: 42,
+        minHeight: 40,
         display: 'flex',
         alignItems: 'center',
     },

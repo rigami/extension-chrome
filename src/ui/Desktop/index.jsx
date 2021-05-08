@@ -89,13 +89,13 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         zIndex: 100,
         top: theme.spacing(2),
-        right: theme.spacing(2) * 2 + 42,
+        right: theme.spacing(2) * 2 + 40,
     },
     showBookmarks: {
         position: 'absolute',
         zIndex: 100,
         bottom: theme.spacing(6) + theme.spacing(2.5) + 40,
-        right: theme.spacing(2) * 2 + 42,
+        right: theme.spacing(2) * 2 + 40,
     },
     desktopBackdrop: {
         backgroundColor: theme.palette.common.black,
@@ -120,7 +120,7 @@ const useStyles = makeStyles((theme) => ({
     },
     toolStub: {
         visibility: 'hidden',
-        width: 42,
+        width: 40,
     },
     group: { flexDirection: 'row' },
     button: { pointerEvents: 'auto' },
@@ -287,7 +287,7 @@ function Desktop() {
                                 && (bgShowMode || saveBgLocal || nextBg)
                                 && classes.button,
                                 )}
-                                style={{ minHeight: 42 }}
+                                style={{ minHeight: 40 }}
                             >
                                 {saveBgLocal && (
                                     <React.Fragment>
