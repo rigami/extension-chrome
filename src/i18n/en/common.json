@@ -2,10 +2,12 @@
   "button": {
     "add": "Add",
     "save":"Save",
+    "create": "Create",
     "cancel":"Cancel",
     "close": "Close",
     "remove":"Remove",
     "edit":"Edit",
+    "rename":"Rename",
     "search":"Search",
     "back": "Back",
     "more": "Show more",

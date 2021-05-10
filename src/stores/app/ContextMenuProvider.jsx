@@ -86,7 +86,7 @@ function ContextMenuProvider({ children }) {
             ] : []),
             new ContextMenuDivider(),
             !disableEdit && new ContextMenuItem({
-                title: t('common:button.edit'),
+                title: t(`common:button.${itemType === 'bookmark' ? 'edit' : 'rename'}`),
                 icon: EditIcon,
                 onClick: () => {
                     coreService.localEventBus.call(`${itemType}/edit`, {

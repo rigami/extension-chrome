@@ -84,7 +84,7 @@ function Editor({ onSave, onError, editId, parentId = 0 }) {
                 color="primary"
                 type="submit"
             >
-                {editId ? t('common:save') : t('common:create')}
+                {editId ? t('common:button.save') : t('common:button.create')}
             </Button>
         </form>
     );
