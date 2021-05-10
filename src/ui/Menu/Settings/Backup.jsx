@@ -172,20 +172,22 @@ function LocalBackup() {
                                             primary={t('localBackup.syncItem.settings')}
                                         />
                                     </MenuItem>
-                                    <MenuItem
-                                        onClick={() => handleChange('bookmarks', !saveItems.bookmarks)}
-                                    >
-                                        <ListItemIcon className={classes.alignTop}>
-                                            <Checkbox
-                                                color="primary"
-                                                checked={saveItems.bookmarks}
+                                    {BUILD === 'full' && (
+                                        <MenuItem
+                                            onClick={() => handleChange('bookmarks', !saveItems.bookmarks)}
+                                        >
+                                            <ListItemIcon className={classes.alignTop}>
+                                                <Checkbox
+                                                    color="primary"
+                                                    checked={saveItems.bookmarks}
+                                                />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                classes={{ primary: classes.optionLabel }}
+                                                primary={t('localBackup.syncItem.bookmarks')}
                                             />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            classes={{ primary: classes.optionLabel }}
-                                            primary={t('localBackup.syncItem.bookmarks')}
-                                        />
-                                    </MenuItem>
+                                        </MenuItem>
+                                    )}
                                     <MenuItem
                                         onClick={() => handleChange('backgrounds', !saveItems.backgrounds)}
                                         divider
@@ -254,8 +256,12 @@ function BackupSettings() {
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('import.title')} />
-            <ObserverBrowserSync />
+            {BUILD === 'full' && (
+                <React.Fragment>
+                    <SectionHeader title={t('import.title')} />
+                    <ObserverBrowserSync />
+                </React.Fragment>
+            )}
             <SectionHeader title={t('localBackup.title')} />
             <MenuRow
                 title={t('localBackup.create.title')}

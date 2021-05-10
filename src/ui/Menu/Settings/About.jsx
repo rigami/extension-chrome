@@ -17,6 +17,7 @@ import {
     EmailRounded as EmailIcon,
     PolicyRounded as PolicyIcon,
     StarRounded as StarIcon,
+    Extension as ExtensionIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
@@ -82,7 +83,8 @@ function About() {
                 <LogoIcon className={classes.appLogoIcon} />
                 <LogoText className={classes.appLogoText} />
                 <Typography className={classes.appVersion} variant="body2">
-                    {`v${appVariables.version || '-'} (BETA)`}
+                    {BUILD === 'full' && `v${appVariables.version || '-'} (BETA)`}
+                    {BUILD === 'wallpapers' && `v${appVariables.version || '-'} (${t('onlyWallpapers')}) (BETA)`}
                 </Typography>
             </Box>
             <Divider />
@@ -91,6 +93,14 @@ function About() {
                 icon={HomeIcon}
                 primary={t('homePage')}
             />
+            {BUILD === 'wallpapers' && (
+                <Row
+                    href="https://chrome.google.com/webstore/detail/hdpjmahlkfndaejogipnepcgdmjiamhd"
+                    icon={ExtensionIcon}
+                    primary={t('fullVersion')}
+                    secondary={t('fullVersion', { context: 'description' })}
+                />
+            )}
             <Row
                 href="https://github.com/rigami/readme/blob/main/REVIEW.md"
                 icon={ReviewIcon}
@@ -115,7 +125,7 @@ function About() {
                 primary={t('policy')}
             />
             <Row
-                href="https://chrome.google.com/webstore/detail/hdpjmahlkfndaejogipnepcgdmjiamhd"
+                href={`https://chrome.google.com/webstore/detail/${appVariables.extensionId}`}
                 icon={StarIcon}
                 primary={t('rate')}
             />

@@ -9,7 +9,6 @@ import {
     OpenInNewRounded as OpenSourceIcon,
     CloseRounded as CloseIcon,
     ArrowUpwardRounded as ExpandDesktopIcon,
-    HomeRounded as DesktopIcon,
     BookmarksRounded as BookmarksIcon,
     PauseRounded as PauseIcon, PlayArrowRounded as PlayIcon,
 } from '@material-ui/icons';
@@ -18,7 +17,8 @@ import {
     Box,
     CircularProgress,
     Backdrop,
-    Grow, Divider, Fade,
+    Grow,
+    Divider,
 } from '@material-ui/core';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
@@ -37,7 +37,6 @@ import FAP from '@/ui/Desktop/FAP';
 import clsx from 'clsx';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
-import ShowFavorites from '@/ui/Bookmarks/ToolsPanel/ShowFavorites';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
 import Background from './Background';
 import Widgets from './Widgets';
@@ -139,14 +138,16 @@ function Desktop() {
         stickWidgetsToBottom: appService.activity !== ACTIVITY.DESKTOP,
     }));
     const contextMenu = useContextMenu(() => [
-        new ContextMenuItem({
-            title: t('bookmark:button.add'),
-            icon: AddBookmarkIcon,
-            onClick: () => {
-                coreService.localEventBus.call('bookmark/create');
-            },
-        }),
-        new ContextMenuDivider(),
+        ...(BUILD === 'full' ? [
+            new ContextMenuItem({
+                title: t('bookmark:button.add'),
+                icon: AddBookmarkIcon,
+                onClick: () => {
+                    coreService.localEventBus.call('bookmark/create');
+                },
+            }),
+            new ContextMenuDivider(),
+        ] : []),
         ...(backgrounds.settings.selectionMethod !== BG_SELECT_MODE.SPECIFIC ? [
             new ContextMenuItem({
                 title: backgrounds.bgState === BG_SHOW_STATE.SEARCH
@@ -216,7 +217,13 @@ function Desktop() {
         else appService.setActivity(ACTIVITY.DESKTOP);
     };
 
+    if (BUILD === 'full') {
+        console.log('REMOVED_BLOCK_UNUSED_IN_BUILD');
+    }
+
     useEffect(() => {
+        if (BUILD !== 'full') return () => {};
+
         if (appService.activity !== ACTIVITY.BOOKMARKS) {
             addEventListener('wheel', wheelHandler, true);
             store.isRender = true;
@@ -247,31 +254,33 @@ function Desktop() {
 
     return (
         <Fragment>
-            <Box className={classes.wrapperTools}>
-                <Grow in={appService.activity === ACTIVITY.FAVORITES}>
-                    <ExtendButtonGroup className={classes.button}>
-                        <ExtendButton
-                            tooltip={t('desktop:button.open')}
-                            data-ui-path="button.desktop-expand"
-                            onClick={() => appService.setActivity(ACTIVITY.DESKTOP)}
-                            icon={ExpandDesktopIcon}
-                            label={t('desktop:button.expand')}
-                        />
-                    </ExtendButtonGroup>
-                </Grow>
-                {appService.activity === ACTIVITY.FAVORITES && (
-                    <ExtendButtonGroup className={classes.button}>
-                        <ExtendButton
-                            tooltip={t('common:button.close')}
-                            data-ui-path="button.favorites-close"
-                            onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
-                            icon={CloseIcon}
-                        />
-                    </ExtendButtonGroup>
-                )}
-                <ExtendButtonGroup className={classes.toolStub} />
-                <ExtendButtonGroup className={classes.toolStub} />
-            </Box>
+            {BUILD === 'full' && (
+                <Box className={classes.wrapperTools}>
+                    <Grow in={appService.activity === ACTIVITY.FAVORITES}>
+                        <ExtendButtonGroup className={classes.button}>
+                            <ExtendButton
+                                tooltip={t('desktop:button.open')}
+                                data-ui-path="button.desktop-expand"
+                                onClick={() => appService.setActivity(ACTIVITY.DESKTOP)}
+                                icon={ExpandDesktopIcon}
+                                label={t('desktop:button.expand')}
+                            />
+                        </ExtendButtonGroup>
+                    </Grow>
+                    {appService.activity === ACTIVITY.FAVORITES && (
+                        <ExtendButtonGroup className={classes.button}>
+                            <ExtendButton
+                                tooltip={t('common:button.close')}
+                                data-ui-path="button.favorites-close"
+                                onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
+                                icon={CloseIcon}
+                            />
+                        </ExtendButtonGroup>
+                    )}
+                    <ExtendButtonGroup className={classes.toolStub} />
+                    <ExtendButtonGroup className={classes.toolStub} />
+                </Box>
+            )}
             <Box className={classes.wrapperTools}>
                 <Grow in={appService.activity === ACTIVITY.DESKTOP && (bgShowMode || saveBgLocal || nextBg)}>
                     <span>
@@ -388,24 +397,26 @@ function Desktop() {
                         </MouseDistanceFade>
                     </span>
                 </Grow>
-                <Grow in={appService.activity === ACTIVITY.DESKTOP}>
-                    <span>
-                        <MouseDistanceFade
-                            unionKey="desktop-fab"
-                            distanceMax={750}
-                            distanceMin={300}
-                        >
-                            <ExtendButtonGroup className={classes.button}>
-                                <ExtendButton
-                                    tooltip={t('bookmark:button.open')}
-                                    data-ui-path="bookmark.open"
-                                    onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
-                                    icon={BookmarksIcon}
-                                />
-                            </ExtendButtonGroup>
-                        </MouseDistanceFade>
-                    </span>
-                </Grow>
+                {BUILD === 'full' && (
+                    <Grow in={appService.activity === ACTIVITY.DESKTOP}>
+                        <span>
+                            <MouseDistanceFade
+                                unionKey="desktop-fab"
+                                distanceMax={750}
+                                distanceMin={300}
+                            >
+                                <ExtendButtonGroup className={classes.button}>
+                                    <ExtendButton
+                                        tooltip={t('bookmark:button.open')}
+                                        data-ui-path="bookmark.open"
+                                        onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
+                                        icon={BookmarksIcon}
+                                    />
+                                </ExtendButtonGroup>
+                            </MouseDistanceFade>
+                        </span>
+                    </Grow>
+                )}
                 <ExtendButtonGroup className={classes.toolStub} />
             </Box>
             <Box
@@ -423,7 +434,7 @@ function Desktop() {
                         {widgets.settings.useWidgets && (
                             <Widgets stickToBottom={store.stickWidgetsToBottom} />
                         )}
-                        <FAP />
+                        {BUILD === 'full' && (<FAP />)}
                         {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
                             <CircularProgress
                                 className={classes.loadBGIconWhite}

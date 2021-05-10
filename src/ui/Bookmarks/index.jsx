@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ACTIVITY } from '@/enum';
 import useAppService from '@/stores/app/AppStateProvider';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import Viewer from './Viewer';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -17,35 +17,22 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function EditBookmarkModal() {
+function BookmarksViewer() {
     const classes = useStyles();
-    const coreService = useCoreService();
     const appService = useAppService();
-    const [isLoad, setIsLoad] = useState(false);
-    const viewer = useRef(null);
-
-    const handleLoad = async () => {
-        setIsLoad(true);
-
-        viewer.current = (await import('./Viewer')).default;
-        setIsLoad(false);
-    };
+    const [show, setShow] = useState(appService.activity === ACTIVITY.BOOKMARKS);
 
     useEffect(() => {
-        if (appService.activity === ACTIVITY.BOOKMARKS && !viewer.current) handleLoad();
-
-        if (appService.activity === ACTIVITY.BOOKMARKS && coreService.storage.temp.closeFapPopper) {
-            coreService.storage.temp.closeFapPopper();
-        }
+        if (appService.activity === ACTIVITY.BOOKMARKS) setShow(true);
     }, [appService.activity]);
 
-    if (isLoad || !viewer.current) {
+    if (!show) {
         return (<Box className={classes.root} />);
     }
 
     return (
-        <viewer.current />
+        <Viewer />
     );
 }
 
-export default observer(EditBookmarkModal);
+export default observer(BookmarksViewer);

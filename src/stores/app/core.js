@@ -200,13 +200,15 @@ class Core {
             parentId: 0,
         });
 
-        progressCallback(15, PREPARE_PROGRESS.IMPORT_BOOKMARKS);
+        if (BUILD === 'full') {
+            progressCallback(15, PREPARE_PROGRESS.IMPORT_BOOKMARKS);
 
-        console.log('Import system bookmarks');
-        await new Promise((resolve) => eventToBackground('system/importSystemBookmarks', {}, () => {
-            console.log('Finish import');
-            resolve();
-        }));
+            console.log('Import system bookmarks');
+            await new Promise((resolve) => eventToBackground('system/importSystemBookmarks', {}, () => {
+                console.log('Finish import');
+                resolve();
+            }));
+        }
 
         console.log('Fetch BG');
         progressCallback(35, PREPARE_PROGRESS.FETCH_BG);

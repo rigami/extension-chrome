@@ -59,13 +59,15 @@ function AppSettings({ onSelect }) {
                     ),
                 }}
             />
-            <MenuRow
-                title={t('greeting.title')}
-                action={{
-                    type: ROWS_TYPE.LINK,
-                    onClick: () => onSelect(greetingPage),
-                }}
-            />
+            {BUILD === 'full' && (
+                <MenuRow
+                    title={t('greeting.title')}
+                    action={{
+                        type: ROWS_TYPE.LINK,
+                        onClick: () => onSelect(greetingPage),
+                    }}
+                />
+            )}
         </React.Fragment>
     );
 }

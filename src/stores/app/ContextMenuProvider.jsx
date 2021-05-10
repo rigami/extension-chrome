@@ -41,6 +41,8 @@ function ContextMenuProvider({ children }) {
             itemType,
         });
 
+        if (BUILD !== 'full') return [];
+
         return [
             new ContextMenuItem({
                 title: isFavorite ? t('common:button.favorite.remove') : t('common:button.favorite.add'),

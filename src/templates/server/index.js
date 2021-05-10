@@ -7,7 +7,6 @@ import initSentry from '@/config/sentry';
 import generateUUID from '@/utils/generateUUID';
 import * as Sentry from '@sentry/react';
 import StorageConnector from '@/utils/storageConnector';
-import { captureException } from '@sentry/react';
 
 console.log('Server app running...');
 let background;
@@ -32,5 +31,5 @@ asyncAction(async () => {
     .then(() => console.log('Server app is run!'))
     .catch((e) => {
         console.error('Failed run app server', e);
-        captureException(e);
+        Sentry.captureException(e);
     });

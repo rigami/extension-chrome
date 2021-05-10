@@ -32,7 +32,7 @@ class LocalBackupService {
                     backup.settings = await this.collectSettings();
                 }
 
-                if (bookmarks) {
+                if (BUILD === 'full' && bookmarks) {
                     backup.bookmarks = await this.collectBookmarks();
                 }
 
@@ -53,7 +53,7 @@ class LocalBackupService {
 
                 zip.file('meta.json', JSON.stringify(backup.meta));
                 if (settings) zip.file('settings.json', JSON.stringify(backup.settings));
-                if (bookmarks) zip.file('bookmarks.json', JSON.stringify(backup.bookmarks));
+                if (BUILD === 'full' && bookmarks) zip.file('bookmarks.json', JSON.stringify(backup.bookmarks));
                 if (backgrounds) {
                     zip.file('backgrounds.json', JSON.stringify(backup.backgrounds.meta));
                     zip.folder('backgrounds');
@@ -193,7 +193,9 @@ class LocalBackupService {
                 }
 
                 if (backup.settings) await this.core.settingsService.restore(backup.settings);
-                if (backup.bookmarks) await this.core.bookmarksSyncService.restore(backup.bookmarks);
+                if (BUILD === 'full' && backup.bookmarks) {
+                    await this.core.bookmarksSyncService.restore(backup.bookmarks);
+                }
                 if (backup.backgrounds) {
                     await this.core.backgroundsSyncService.restore(
                         backup.backgrounds.all,
@@ -233,6 +235,8 @@ class LocalBackupService {
     }
 
     async collectBookmarks() {
+        if (BUILD !== 'full') return;
+
         const { all: bookmarksAll } = await BookmarksUniversalService.query();
 
         const bookmarks = await Promise.all(bookmarksAll.map(async (bookmark) => {

@@ -4,11 +4,12 @@ module.exports = (api) => ({
     "presets": [
         ["@babel/preset-env", {
             "targets": {
-                "chrome": 75,
+                "chrome": 85,
                 "esmodules": true,
             },
-            "bugfixes": true,
             "loose": true,
+            "modules": false,
+            "bugfixes": true,
             "shippedProposals": true
         }],
         "@babel/preset-react",
@@ -18,22 +19,16 @@ module.exports = (api) => ({
         ["@babel/plugin-syntax-throw-expressions"],
         ["@babel/plugin-proposal-decorators", { "legacy": true }],
         ["@babel/plugin-proposal-class-properties", { "loose": true }],
-        /*["@babel/plugin-transform-react-jsx", {
-            "pragma": "h",
-            "pragmaFrag": "Fragment"
-        }],*/
         ["module-resolver", {
             "root": ["./src"],
             "alias": paths(__dirname+"/src/"),
         }],
-        ['babel-plugin-transform-imports',{
+        ['transform-imports',{
             '@material-ui/core': {
-                // Use "transform: '@material-ui/core/${member}'," if your bundler does not support ES modules
                 'transform': '@material-ui/core/esm/${member}',
                 'preventFullImport': true
             },
             '@material-ui/icons': {
-                // Use "transform: '@material-ui/icons/${member}'," if your bundler does not support ES modules
                 'transform': '@material-ui/icons/esm/${member}',
                 'preventFullImport': true
             },

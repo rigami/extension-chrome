@@ -1,5 +1,5 @@
-import { uniq } from 'lodash';
 import { makeAutoObservable } from 'mobx';
+import { uniq } from 'lodash';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';

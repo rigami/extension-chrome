@@ -34,13 +34,13 @@ class ServerApp {
         this.storageService = new StorageService(this);
 
         // Sync & backup
-        this.systemBookmarksService = new SyncChromeBookmarksService(this);
-        this.bookmarksSyncService = new SyncBookmarks(this);
+        if (BUILD === 'full') { this.systemBookmarksService = new SyncChromeBookmarksService(this); }
+        if (BUILD === 'full') { this.bookmarksSyncService = new SyncBookmarks(this); }
         this.localBackupService = new LocalBackupService(this);
         this.backgroundsSyncService = new SyncBackgrounds(this);
 
         // Bookmarks
-        this.bookmarksService = new BookmarksService(this);
+        if (BUILD === 'full') { this.bookmarksService = new BookmarksService(this); }
 
         // Weather
         this.weatherService = new WeatherService(this);

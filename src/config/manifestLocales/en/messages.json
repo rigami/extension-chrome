@@ -1,8 +1,14 @@
 {
-  "appName": {
+  "appNameFull": {
     "message": "Rigami - New tab"
   },
-  "appDesc": {
+  "appNameWallpapers": {
+    "message": "Rigami wallpapers - New tab"
+  },
+  "appDescFull": {
+    "message": "Simple and beautiful new tab"
+  },
+  "appDescWallpapers": {
     "message": "Simple and beautiful new tab"
   },
   "appAction": {

@@ -2,7 +2,6 @@ import React from 'react';
 import { AppBar, Toolbar, Box } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import { useResizeDetector } from 'react-resize-detector';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { SelfImprovementRounded as DesktopIcon } from '@/icons';
 import { ACTIVITY } from '@/enum';

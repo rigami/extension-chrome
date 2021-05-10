@@ -57,7 +57,7 @@ const general = [
         page: backgroundsPage,
         color: '#2675F0',
     },
-    {
+    BUILD === 'full' && {
         icon: <BookmarksIcon />,
         id: 'bookmarks',
         page: bookmarksPage,

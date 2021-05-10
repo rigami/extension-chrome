@@ -16,6 +16,7 @@ module.exports = {
     'globals': {
         'PRODUCTION_MODE': true,
         'COLLECT_LOGS': true,
+        'BUILD': true,
     },
     'settings': {
         'import/resolver': {

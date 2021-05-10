@@ -1,5 +1,8 @@
 {
+  "onlyWallpapers": "only wallpapers",
   "homePage": "Project home page",
+  "fullVersion": "Full version of the extension",
+  "fullVersion_description": "Now you use the light version of the extension only with backgrounds, if you are missing this, then pay attention to the extended version",
   "review": "Write a review",
   "review_description": "Tell us what you want to see in the extension, what you like or dislike",
   "bugReport": "Report bugs",

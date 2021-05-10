@@ -1,5 +1,4 @@
 import EventBus from '@/utils/eventBus';
-import { makeAutoObservable } from 'mobx';
 import { DESTINATION } from '@/enum';
 import appVariables from '@/config/appVariables';
 
@@ -11,7 +10,6 @@ class BusApp {
     _destination;
 
     constructor(destination) {
-        makeAutoObservable(this);
         this._destination = destination;
 
         if (!chrome?.runtime?.onMessage) {

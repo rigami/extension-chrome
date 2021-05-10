@@ -1,5 +1,4 @@
 import React, { memo, useState } from 'react';
-import { render } from 'react-dom';
 import { CssBaseline } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
@@ -39,14 +38,14 @@ function RootApp({ onChangeTheme }) {
                 ({ children }) => (<BaseStateProvider side={DESTINATION.APP}>{children}</BaseStateProvider>),
                 InitAppProvider,
                 ({ children }) => (<AppStateProvider onChangeTheme={onChangeTheme}>{children}</AppStateProvider>),
-                BookmarksProvider,
+                BUILD === 'full' ? BookmarksProvider : ({ children }) => children,
                 UploadBGForm,
                 GlobalModals,
                 ContextMenuProvider,
             ]}
         >
             <Desktop />
-            <Bookmarks />
+            {BUILD === 'full' && (<Bookmarks />)}
             <FabMenu />
             <Menu />
         </Nest>
@@ -68,6 +67,4 @@ function App() {
     );
 }
 
-const ProfilerApp = Sentry.withProfiler(App);
-
-render(<ProfilerApp />, document.getElementById('root'));
+export default Sentry.withProfiler(App);

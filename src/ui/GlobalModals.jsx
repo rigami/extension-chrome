@@ -12,7 +12,7 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import EditTagModal from '@/ui/Bookmarks/Tags/EditModal';
 import { useTranslation } from 'react-i18next';
-import EditBookmarkModal from '@/ui/Bookmarks/EditBookmarkModal';
+import { default as EditBookmarkModal } from '@/ui/Bookmarks/EditBookmarkModal';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import { useSnackbar } from 'notistack';
 import { getUrl } from '@/utils/fs';
@@ -188,69 +188,73 @@ function GlobalModals({ children }) {
         <React.Fragment>
             {children}
             <Changelog />
-            <MoveDialog />
-            <EditBookmarkModal />
-            <EditTagModal
-                anchorEl={edit && edit.anchorEl}
-                isOpen={edit && edit.type === 'tag' && edit.action === 'edit'}
-                onSave={() => setEdit(null)}
-                onClose={() => setEdit(null)}
-                editId={edit && edit.id}
-            />
-            <EditFolderModal
-                anchorEl={edit && edit.anchorEl}
-                position={edit && edit.position}
-                isOpen={edit && edit.type === 'folder' && edit.action === 'edit'}
-                onSave={() => setEdit(null)}
-                onClose={() => setEdit(null)}
-                editId={edit && edit.id}
-                simple
-                {...(edit?.options || {})}
-            />
-            {['bookmark', 'tag', 'folder'].map((type) => (
-                <Dialog
-                    data-role="dialog"
-                    key={type}
-                    open={(edit && edit.action === 'remove' && edit.type === type) || false}
-                    onClose={() => setEdit(null)}
-                    disableEnforceFocus
-                >
-                    <DialogTitle>
-                        {t(`${type}:remove.confirm`)}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            {t(`${type}:remove.confirm`, { context: 'description' })}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button
-                            data-ui-path={`dialog.${type}.cancelRemove`}
-                            onClick={() => setEdit(null)}
-                            color="primary"
+            {BUILD === 'full' && (
+                <React.Fragment>
+                    <MoveDialog />
+                    <EditBookmarkModal />
+                    <EditTagModal
+                        anchorEl={edit && edit.anchorEl}
+                        isOpen={edit && edit.type === 'tag' && edit.action === 'edit'}
+                        onSave={() => setEdit(null)}
+                        onClose={() => setEdit(null)}
+                        editId={edit && edit.id}
+                    />
+                    <EditFolderModal
+                        anchorEl={edit && edit.anchorEl}
+                        position={edit && edit.position}
+                        isOpen={edit && edit.type === 'folder' && edit.action === 'edit'}
+                        onSave={() => setEdit(null)}
+                        onClose={() => setEdit(null)}
+                        editId={edit && edit.id}
+                        simple
+                        {...(edit?.options || {})}
+                    />
+                    {['bookmark', 'tag', 'folder'].map((type) => (
+                        <Dialog
+                            data-role="dialog"
+                            key={type}
+                            open={(edit && edit.action === 'remove' && edit.type === type) || false}
+                            onClose={() => setEdit(null)}
+                            disableEnforceFocus
                         >
-                            {t('common:button.cancel')}
-                        </Button>
-                        <Button
-                            data-ui-path={`dialog.${type}.remove`}
-                            onClick={() => {
-                                if (type === 'bookmark') {
-                                    bookmarksStore.bookmarks.remove(edit.id);
-                                } else if (type === 'tag') {
-                                    bookmarksStore.tags.remove(edit.id);
-                                } else if (type === 'folder') {
-                                    bookmarksStore.folders.remove(edit.id);
-                                }
-                                setEdit(null);
-                            }}
-                            color="primary"
-                            autoFocus
-                        >
-                            {t('common:button.remove')}
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            ))}
+                            <DialogTitle>
+                                {t(`${type}:remove.confirm`)}
+                            </DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    {t(`${type}:remove.confirm`, { context: 'description' })}
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button
+                                    data-ui-path={`dialog.${type}.cancelRemove`}
+                                    onClick={() => setEdit(null)}
+                                    color="primary"
+                                >
+                                    {t('common:button.cancel')}
+                                </Button>
+                                <Button
+                                    data-ui-path={`dialog.${type}.remove`}
+                                    onClick={() => {
+                                        if (type === 'bookmark') {
+                                            bookmarksStore.bookmarks.remove(edit.id);
+                                        } else if (type === 'tag') {
+                                            bookmarksStore.tags.remove(edit.id);
+                                        } else if (type === 'folder') {
+                                            bookmarksStore.folders.remove(edit.id);
+                                        }
+                                        setEdit(null);
+                                    }}
+                                    color="primary"
+                                    autoFocus
+                                >
+                                    {t('common:button.remove')}
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    ))}
+                </React.Fragment>
+            )}
         </React.Fragment>
     );
 }

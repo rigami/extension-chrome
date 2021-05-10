@@ -36,7 +36,6 @@ class BackgroundsServerService {
     _queueIsPreloaded = false;
 
     constructor(core) {
-        makeAutoObservable(this);
         this.core = core;
         this.storage = this.core.storageService.storage;
         this.settings = this.core.settingsService.settings.backgrounds;
@@ -44,7 +43,6 @@ class BackgroundsServerService {
         this.subscribe();
     }
 
-    @action('run scheduler')
     async _runScheduler() {
         if (this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB) return;
 
@@ -60,7 +58,6 @@ class BackgroundsServerService {
         }
     }
 
-    @action('scheduler switch')
     async _schedulerSwitch() {
         if (this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB) return Promise.resolve();
         console.log('[backgrounds] Call scheduler switch');
@@ -81,7 +78,6 @@ class BackgroundsServerService {
         return Promise.resolve();
     }
 
-    @action('next bg')
     nextBG() {
         console.log(`[backgrounds] Next background request. Selection method: ${this.settings.selectionMethod}`);
         if (this.bgState === BG_SHOW_STATE.SEARCH) {
@@ -104,7 +100,6 @@ class BackgroundsServerService {
         return Promise.resolve();
     }
 
-    @action('next bg local')
     async nextBGLocal() {
         console.log('[backgrounds] Search next background from local library...');
         this.bgState = BG_SHOW_STATE.SEARCH;
@@ -133,7 +128,6 @@ class BackgroundsServerService {
         return Promise.resolve();
     }
 
-    @action('prepare queue')
     async _prepareQueue(fetchIndex = 0) {
         if (this.storage.bgsStream.length === 0) {
             console.log('[backgrounds] Backgrounds is over, preload new ones...');
@@ -222,7 +216,6 @@ class BackgroundsServerService {
         }
     }
 
-    @action('set bg from queue')
     async _setFromQueue() {
         let fileName;
 
@@ -266,7 +259,6 @@ class BackgroundsServerService {
         return this._prepareQueue();
     }
 
-    @action('preload queue')
     async _preloadQueue(force = false) {
         if (!force && this._queueIsPreloaded) {
             console.log('[backgrounds] Queue already preload. Abort...');
@@ -316,7 +308,6 @@ class BackgroundsServerService {
         }
     }
 
-    @action('next bg stream')
     async nextBGStream() {
         if (this.prepareBgState === BG_SHOW_STATE.SEARCH) {
             console.log('[backgrounds] Load prepare background. Wait...');
@@ -365,7 +356,6 @@ class BackgroundsServerService {
         }
     }
 
-    @action('set bg')
     async setBG(setBG) {
         console.log('[backgrounds] Set background', setBG);
 
@@ -428,7 +418,6 @@ class BackgroundsServerService {
         return Promise.resolve();
     }
 
-    @action('play bg')
     play() {
         this._currentBG.pause = false;
         this.bgShowMode = BG_SHOW_MODE.LIVE;
@@ -451,9 +440,8 @@ class BackgroundsServerService {
         return Promise.resolve();
     }
 
-    @action('pause bg')
     async pause({ bgId, timestamp }) {
-        console.log('pause bg:', this.currentBGId, toJS((this)));
+        console.log('pause bg:', this.currentBGId, (this));
         if (bgId !== this.currentBGId) return Promise.reject(new Error(ERRORS.ID_BG_IS_CHANGED));
 
         this._currentBG.pauseTimestamp = timestamp;

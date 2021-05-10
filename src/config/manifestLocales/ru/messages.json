@@ -1,8 +1,14 @@
 {
-  "appName": {
+  "appNameFull": {
     "message": "Rigami - Новая вкладка"
   },
-  "appDesc": {
+  "appNameWallpapers": {
+    "message": "Rigami wallpapers - Новая вкладка"
+  },
+  "appDescFull": {
+    "message": "Простая и красивая новая вкладка"
+  },
+  "appDescWallpapers": {
     "message": "Простая и красивая новая вкладка"
   },
   "appAction": {

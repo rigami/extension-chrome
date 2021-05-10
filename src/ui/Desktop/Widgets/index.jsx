@@ -17,9 +17,9 @@ const useStyles = makeStyles((theme) => ({
     root: {
         position: 'absolute',
         zIndex: 1,
-        top: theme.spacing(3),
+        top: theme.spacing(4),
         right: theme.spacing(11),
-        bottom: theme.spacing(3),
+        bottom: theme.spacing(6),
         left: theme.spacing(11),
         color: theme.palette.common.white,
         display: 'flex',
@@ -116,29 +116,31 @@ function Widgets({ stickToBottom }) {
     const { height: heightRoot, ref: refRoot } = useResizeDetector();
     const { height: heightWidget, ref: refWidget } = useResizeDetector();
 
-    if (!bookmarksService.settings.isSync) return null;
+    if (BUILD === 'full' && !bookmarksService.settings.isSync) return null;
 
     let offset = 0;
     let positionOffset = '';
 
-    if (
-        (bookmarksService.fapIsDisplay
-        && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED)
-        || appService.activity === ACTIVITY.FAVORITES
-    ) {
-        offset = 40 + theme.spacing(6) + theme.spacing(2.5);
-    } else if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT) {
-        offset = 40 + theme.spacing(6);
-    }
+    if (BUILD === 'full') {
+        if (
+            (bookmarksService.fapIsDisplay
+                && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED)
+            || appService.activity === ACTIVITY.FAVORITES
+        ) {
+            offset = 40 + theme.spacing(6) + theme.spacing(2.5);
+        } else if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT) {
+            offset = 40 + theme.spacing(6);
+        }
 
-    if (
-        (bookmarksService.fapIsDisplay
-        && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM)
-        || appService.activity === ACTIVITY.FAVORITES
-    ) {
-        positionOffset = 'bottom';
-    } else if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP) {
-        positionOffset = 'top';
+        if (
+            (bookmarksService.fapIsDisplay
+                && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM)
+            || appService.activity === ACTIVITY.FAVORITES
+        ) {
+            positionOffset = 'bottom';
+        } else if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP) {
+            positionOffset = 'top';
+        }
     }
 
     return (
