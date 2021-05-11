@@ -52,7 +52,7 @@
     }
   },
   "query": {
-    "title": "Request to customize the background flow",
+    "title": "Stream setting",
     "description": "Choose a ready-made request for the flow of backgrounds, or create your own",
     "notSet": "Query not set",
     "custom": {

@@ -79,7 +79,7 @@ function Menu({ open, onClose }) {
                 open={open}
                 onClick={onClose}
                 invisible
-                className={clsx(classes.backdrop, appService.activity === ACTIVITY.BOOKMARKS && classes.darkBackdrop)}
+                className={clsx(classes.backdrop, appService.activity !== ACTIVITY.DESKTOP && classes.darkBackdrop)}
             />
             <Slide
                 in={open}

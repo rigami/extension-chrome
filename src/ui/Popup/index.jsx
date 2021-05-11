@@ -129,6 +129,4 @@ function PopupRoot() {
     );
 }
 
-const ProfilerPopup = Sentry.withProfiler(PopupRoot);
-
-render(<ProfilerPopup />, document.getElementById('root'));
+export default Sentry.withProfiler(PopupRoot);

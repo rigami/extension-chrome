@@ -12,7 +12,7 @@ import SearchBlock from './Search';
 import ShowFavorites from './ShowFavorites';
 
 const useStyles = makeStyles((theme) => ({
-    root: { backgroundColor: fade(theme.palette.background.paper, 0.95) },
+    root: { backgroundColor: fade(theme.palette.background.paper, 0.91) },
     toolbar: {
         minHeight: 40,
         display: 'flex',

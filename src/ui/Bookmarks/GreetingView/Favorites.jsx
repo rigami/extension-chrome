@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
     },
+    itemBackdrop: { backgroundColor: 'transparent' },
 }));
 
 function FavoriteItem(props) {
@@ -159,7 +160,7 @@ function Favorites({ className: externalClassName }) {
                     );
                 } else if (fav instanceof FolderEntity) {
                     return (
-                        <Folder {...a11props}>
+                        <Folder {...a11props} classes={{ backdrop: classes.itemBackdrop }}>
                             <FavoriteItem
                                 type="folder"
                                 name={fav.name}
@@ -168,7 +169,7 @@ function Favorites({ className: externalClassName }) {
                     );
                 } else if (fav instanceof TagEntity) {
                     return (
-                        <Tag {...a11props}>
+                        <Tag {...a11props} classes={{ backdrop: classes.itemBackdrop }}>
                             <FavoriteItem
                                 type="tag"
                                 name={fav.name}
