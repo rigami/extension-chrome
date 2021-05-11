@@ -10,7 +10,12 @@ import {
     CloseRounded as CloseIcon,
     ArrowUpwardRounded as ExpandDesktopIcon,
     BookmarksRounded as BookmarksIcon,
-    PauseRounded as PauseIcon, PlayArrowRounded as PlayIcon,
+    PauseRounded as PauseIcon,
+    PlayArrowRounded as PlayIcon,
+    ThumbUp as LikedIcon,
+    ThumbDown as DislikedIcon,
+    ThumbUpOutlined as LikeIcon,
+    ThumbDownOutlined as DislikeIcon,
 } from '@material-ui/icons';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import {
@@ -38,6 +43,7 @@ import clsx from 'clsx';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
+import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from './Background';
 import Widgets from './Widgets';
 
@@ -162,6 +168,36 @@ function Desktop() {
                 onClick: () => eventToBackground('backgrounds/nextBg'),
             }),
         ] : []),
+        ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
+            new ContextMenuItem({
+                title: (
+                    (backgrounds.currentBG?.isSaved && t('background:liked'))
+                    || t('background:button.like')
+                ),
+                icon: (
+                    (backgrounds.currentBG?.isSaved && LikedIcon)
+                    || LikeIcon
+                ),
+                onClick: () => {
+                    if (!backgrounds.currentBG.isSaved) {
+                        backgrounds.like(backgrounds.currentBG);
+                    } else {
+                        backgrounds.unlike(backgrounds.currentBG);
+                    }
+                },
+            }),
+            new ContextMenuItem({
+                title: t('background:button.dislike'),
+                icon: DislikeIcon,
+                onClick: () => backgrounds.dislike(backgrounds.currentBG),
+            }),
+            new ContextMenuItem({
+                title: t('background:button.openSource'),
+                icon: OpenSourceIcon,
+                onClick: () => window.open(backgrounds.currentBG?.sourceLink, '_blank'),
+            }),
+        ] : []),
+        new ContextMenuDivider(),
         new ContextMenuItem({
             title: t('background:button.add'),
             icon: UploadFromComputerIcon,
@@ -182,30 +218,6 @@ function Desktop() {
                 shadowInput.click();
             },
         }),
-        ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
-            new ContextMenuItem({
-                title: (
-                    (coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && t('background:liked'))
-                    || (backgrounds.currentBG?.isSaved && t('background:liked'))
-                    || t('background:button.like')
-                ),
-                disabled: (
-                    coreService.storage.temp.addingBgToLibrary === FETCH.PENDING
-                    || backgrounds.currentBG?.isSaved
-                ),
-                icon: (
-                    (coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && SavedBgIcon)
-                    || (backgrounds.currentBG?.isSaved && SavedBgIcon)
-                    || SaveBgIcon
-                ),
-                onClick: () => backgrounds.addToLibrary(backgrounds.currentBG),
-            }),
-            new ContextMenuItem({
-                title: t('background:button.openSource'),
-                icon: OpenSourceIcon,
-                onClick: () => window.open(backgrounds.currentBG?.sourceLink, '_blank'),
-            }),
-        ] : []),
     ], { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.addingBgToLibrary] });
 
     const wheelHandler = (event) => {
@@ -298,45 +310,8 @@ function Desktop() {
                                 )}
                                 style={{ minHeight: 40 }}
                             >
-                                {saveBgLocal && (
-                                    <React.Fragment>
-                                        {coreService.storage.temp.addingBgToLibrary === FETCH.PENDING && (
-                                            <ExtendButton
-                                                tooltip={t('background:liked')}
-                                                className={classes.notClickable}
-                                                disableRipple
-                                                icon={SavedBgIcon}
-                                            />
-                                        )}
-                                        {coreService.storage.temp.addingBgToLibrary !== FETCH.PENDING && (
-                                            <ExtendButton
-                                                tooltip={
-                                                    backgrounds.currentBG.isSaved
-                                                        ? t('background:liked')
-                                                        : t('background:button.like')
-                                                }
-                                                data-ui-path={
-                                                    backgrounds.currentBG.isSaved
-                                                        ? 'bg.liked'
-                                                        : 'bg.like'
-                                                }
-                                                className={clsx(
-                                                    backgrounds.currentBG.isSaved && classes.notClickable,
-                                                )}
-                                                disableRipple={backgrounds.currentBG.isSaved}
-                                                onClick={() => {
-                                                    if (!backgrounds.currentBG.isSaved) {
-                                                        backgrounds.addToLibrary(backgrounds.currentBG);
-                                                    }
-                                                }}
-                                                icon={backgrounds.currentBG.isSaved ? SavedBgIcon : SaveBgIcon}
-                                            />
-                                        )}
-                                    </React.Fragment>
-                                )}
                                 {bgShowMode && (
                                     <React.Fragment>
-                                        {saveBgLocal && (<Divider orientation="vertical" flexItem />)}
                                         <ExtendButton
                                             tooltip={
                                                 backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
@@ -356,6 +331,49 @@ function Desktop() {
                                                 }
                                             }}
                                             icon={backgrounds.bgShowMode === BG_SHOW_MODE.LIVE ? PauseIcon : PlayIcon}
+                                        />
+                                    </React.Fragment>
+                                )}
+                                {saveBgLocal && (
+                                    <React.Fragment>
+                                        {bgShowMode && (<Divider orientation="vertical" flexItem />)}
+                                        <ExtendButton
+                                            tooltip={
+                                                !backgrounds.currentBG.isSaved
+                                                    ? t('background:button.like')
+                                                    : t('background:liked')
+                                            }
+                                            data-ui-path={
+                                                backgrounds.currentBG.isSaved
+                                                    ? 'bg.liked'
+                                                    : 'bg.like'
+                                            }
+                                            disableRipple={backgrounds.currentBG.isSaved}
+                                            onClick={() => {
+                                                if (!backgrounds.currentBG.isSaved) {
+                                                    backgrounds.like(backgrounds.currentBG);
+                                                } else {
+                                                    backgrounds.unlike(backgrounds.currentBG);
+                                                }
+                                            }}
+                                            icon={
+                                                (
+                                                    backgrounds.currentBG.isSaved
+                                                    || coreService.storage.temp.addingBgToLibrary === FETCH.PENDING
+                                                )
+                                                    ? LikedIcon
+                                                    : LikeIcon
+                                            }
+                                        />
+                                        <Divider orientation="vertical" flexItem />
+                                        <ExtendButton
+                                            tooltip={t('background:button.dislike')}
+                                            data-ui-path="bg.dislike"
+                                            disableRipple={backgrounds.currentBG.isSaved}
+                                            onClick={() => {
+                                                backgrounds.dislike(backgrounds.currentBG);
+                                            }}
+                                            icon={DislikeIcon}
                                         />
                                     </React.Fragment>
                                 )}

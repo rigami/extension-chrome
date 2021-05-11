@@ -297,7 +297,7 @@ function Background() {
                             {
                                 title: t('button.remove'),
                                 onClick: () => {
-                                    backgrounds.removeFromStore(store.currentBg.id)
+                                    backgrounds.removeFromLibrary(store.currentBg.id)
                                         .then(() => backgrounds.nextBG())
                                         .then(() => enqueueSnackbar({
                                             message: t('removedBrokenBG'),

@@ -58,7 +58,7 @@ class BackgroundsUniversalService {
         return savedBG;
     }
 
-    static async removeFromStore(removeBG) {
+    static async removeFromLibrary(removeBG, notRemoveCache = false) {
         console.log('[backgrounds] Remove from store', removeBG);
 
         try {
@@ -69,16 +69,18 @@ class BackgroundsUniversalService {
             captureException(e);
         }
 
-        try {
-            await fs().rmrf(`/backgrounds/full/${removeBG.fileName}`);
-            await fs().rmrf(`/backgrounds/preview/${removeBG.fileName}`);
-            console.log('[backgrounds] Remove from file system...');
-        } catch (e) {
-            console.log(`[backgrounds] BG with id=${removeBG.id} not find in file system`);
-            captureException(e);
-        }
+        if (!notRemoveCache) {
+            try {
+                await fs().rmrf(`/backgrounds/full/${removeBG.fileName}`);
+                await fs().rmrf(`/backgrounds/preview/${removeBG.fileName}`);
+                console.log('[backgrounds] Remove from file system...');
+            } catch (e) {
+                console.log(`[backgrounds] BG with id=${removeBG.id} not find in file system`);
+                captureException(e);
+            }
 
-        eventToApp('backgrounds/remove', { bg: removeBG });
+            eventToApp('backgrounds/removed', { bg: removeBG });
+        }
     }
 
     static async fetchBG(src, { full = true, preview = true, fileName: defaultFileName } = {}) {

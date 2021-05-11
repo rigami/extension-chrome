@@ -409,6 +409,7 @@ class BackgroundsServerService {
             bgCurrent: {
                 ...setBG,
                 isSaved,
+                isLiked: isSaved,
             },
         });
 

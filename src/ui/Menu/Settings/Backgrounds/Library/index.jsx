@@ -98,7 +98,7 @@ function LibraryMenu() {
             fetchBackgrounds();
         }));
 
-        listeners.push(coreService.globalEventBus.on('backgrounds/remove', () => {
+        listeners.push(coreService.globalEventBus.on('backgrounds/removed', () => {
             fetchBackgrounds();
         }));
 
@@ -133,7 +133,7 @@ function LibraryMenu() {
                                             {...bg}
                                             select={coreService.storage.persistent.bgCurrent?.id === bg.id}
                                             onSet={() => backgrounds.setBG(bg)}
-                                            onRemove={() => BackgroundsUniversalService.removeFromStore(bg)}
+                                            onRemove={() => BackgroundsUniversalService.removeFromLibrary(bg)}
                                         />
                                     </GridListTile>
                                 )),

@@ -96,7 +96,7 @@ class BackgroundsAppService {
             setCurrentBg(bg);
         });
 
-        this._coreService.globalEventBus.on('backgrounds/remove', ({ bg }) => {
+        this._coreService.globalEventBus.on('backgrounds/removed', ({ bg }) => {
             if (bg.id === this.currentBGId) eventToBackground('backgrounds/nextBg');
         });
 
@@ -122,7 +122,84 @@ class BackgroundsAppService {
 
     @computed
     get currentBG() {
-        return this._currentBG;
+        return this._coreService.storage.persistent.bgCurrent;
+    }
+
+    @action
+    async like(bg) {
+        const currentBgId = bg.id;
+        this._coreService.storage.updatePersistent({
+            bgCurrent: {
+                ...this._coreService.storage.persistent.bgCurrent,
+                isLiked: true,
+                isDisliked: false,
+                isSaved: true,
+            },
+        });
+
+        try {
+            await BackgroundsUniversalService.addToLibrary(bg);
+        } catch (e) {
+            console.error(e);
+            captureException(e);
+            if (currentBgId === this._coreService.storage.persistent.bgCurrent.id) {
+                this._coreService.storage.updatePersistent({
+                    bgCurrent: {
+                        ...this._coreService.storage.persistent.bgCurrent,
+                        isLiked: false,
+                        isSaved: false,
+                    },
+                });
+            }
+        }
+    }
+
+    @action
+    async dislike(bg) {
+        const currentBgId = bg.id;
+        this._coreService.storage.updatePersistent({
+            bgCurrent: {
+                ...this._coreService.storage.persistent.bgCurrent,
+                isLiked: false,
+                isDisliked: true,
+                isSaved: false,
+            },
+        });
+
+        try {
+            await BackgroundsUniversalService.removeFromLibrary(bg);
+        } catch (e) {
+            console.error(e);
+            captureException(e);
+            if (currentBgId === this._coreService.storage.persistent.bgCurrent.id) {
+                this._coreService.storage.updatePersistent({
+                    bgCurrent: {
+                        ...this._coreService.storage.persistent.bgCurrent,
+                        isDisliked: false,
+                        isSaved: false,
+                    },
+                });
+            }
+        }
+    }
+
+    @action
+    async unlike(bg) {
+        this._coreService.storage.updatePersistent({
+            bgCurrent: {
+                ...this._coreService.storage.persistent.bgCurrent,
+                isLiked: false,
+                isDisliked: false,
+                isSaved: false,
+            },
+        });
+
+        try {
+            await BackgroundsUniversalService.removeFromLibrary(bg, true);
+        } catch (e) {
+            console.error(e);
+            captureException(e);
+        }
     }
 
     @action('add to library')
