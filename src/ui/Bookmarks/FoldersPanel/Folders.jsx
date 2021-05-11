@@ -108,7 +108,11 @@ function FolderItem(props) {
             selected={isSelected}
             onContextMenu={contextMenu}
             title={name}
-            onClick={onClick}
+            onClick={() => {
+                if (isExpand && isSelected) onExpandChange();
+                if (!isExpand) onExpandChange();
+                onClick();
+            }}
             className={classes.folderItem}
             startAction={childExist && (
                 <ButtonBase
