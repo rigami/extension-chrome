@@ -173,7 +173,7 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
         if (greeting && !force) coreService.storage.updatePersistent({ lastGreetingTimestamp: Date.now() });
 
         return () => {
-            if (!force) coreService.storage.updatePersistent({ userName: store.editUserName });
+            if (!force) coreService.storage.updatePersistent({ userName: store.editUserName || null });
         };
     }, [ready]);
 
@@ -256,4 +256,16 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
     );
 }
 
-export default observer(Greeting);
+const ObserverGreeting = observer(Greeting);
+
+function GreetingContainer(props) {
+    const coreService = useCoreService();
+
+    console.log('coreService.storage', coreService.storage.isSync, 1, coreService.storage.persistent.userName, 2);
+
+    if (!coreService.storage.isSync) return null;
+
+    return (<ObserverGreeting {...props} />);
+}
+
+export default observer(GreetingContainer);
