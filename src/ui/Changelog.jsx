@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
 
 function ChangelogScreen({ onClose }) {
     const classes = useStyles();
-    const { t } = useTranslation(['newVersion']);
+    const { t } = useTranslation([`changelog_${BUILD}`]);
 
     return (
         <Box className={classes.root}>
@@ -125,7 +125,7 @@ function Changelog() {
 
     useEffect(() => {
         if (!coreService.storage.temp.newVersion) {
-            return;
+            // return;
         }
 
         const changelogSnackbar = enqueueSnackbar({

@@ -1,0 +1,13 @@
+{
+  "title": "Rigami updated",
+  "button": {
+    "ok": "Good"
+  },
+  "changelog": [
+    "Added welcome screen",
+    "Added a list of recently closed bookmarks",
+    "Backgrounds can now be 'like' and 'dislike'",
+    "The design of the cards has been changed, now they are better readable",
+    "Some other fixes and improvements"
+  ]
+}
