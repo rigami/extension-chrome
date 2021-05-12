@@ -3,7 +3,7 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { Box, ButtonBase, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import { FavoriteRounded as FavoriteIcon } from '@material-ui/icons';
+import { StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 
@@ -37,15 +37,16 @@ const useStyles = makeStyles((theme) => ({
     },
     active: {},
     favorite: {
-        color: theme.palette.error.main,
-        width: 12,
-        height: 12,
+        color: theme.palette.favorite.main,
+        width: 18,
+        height: 18,
     },
     favoriteWrapper: {
         width: theme.spacing(2.5),
         display: 'flex',
         justifyContent: 'center',
-        marginRight: theme.spacing(0.625),
+        marginLeft: theme.spacing(0.25),
+        marginRight: theme.spacing(0.75),
     },
 }));
 
