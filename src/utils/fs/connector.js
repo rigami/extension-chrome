@@ -24,8 +24,20 @@ export default class FSConnector {
         });
     }
 
-    mkdir(mkdir) {
-        return this.cd(mkdir, { create: true });
+    async mkdir(path) {
+        try {
+            return await this.cd(path, { create: true });
+        } catch (e) {
+            let checkPath = '';
+            let dir;
+            for await (const dirName of path.split('/')) {
+                if (!dirName) continue;
+                checkPath = `${checkPath}/${dirName}`;
+                dir = await this.cd(checkPath, { create: true });
+            }
+
+            return dir;
+        }
     }
 
     write(savePath, file) {
