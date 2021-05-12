@@ -15,9 +15,7 @@
     "Доброе утро, {{name}} \uD83C\uDF04"
   ],
   "day": [
-    "Привет, {{name}} \uD83D\uDC4B 1",
-    "Привет, {{name}} \uD83D\uDC4B 2",
-    "Привет, {{name}} \uD83D\uDC4B 3"
+    "Привет, {{name}} \uD83D\uDC4B"
   ],
   "evening": [
     "Добрый вечер, {{name}} \uD83D\uDC4B",
