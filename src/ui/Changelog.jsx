@@ -125,7 +125,7 @@ function Changelog() {
 
     useEffect(() => {
         if (!coreService.storage.temp.newVersion) {
-            // return;
+            return;
         }
 
         const changelogSnackbar = enqueueSnackbar({
