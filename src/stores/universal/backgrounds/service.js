@@ -25,14 +25,14 @@ class BackgroundsUniversalService {
         if (!saveFileName) {
             saveFileName = await this.fetchBG(saveBG.downloadLink);
         } else {
-            const fullBg = await fs().get(`${BackgroundsUniversalService.FULL_PATH}/${saveFileName}`, { type: 'blob' });
+            const fullBg = await fs().read(`${BackgroundsUniversalService.FULL_PATH}/${saveFileName}`, { type: 'blob' });
             console.log('[backgrounds] Create preview...');
 
             const previewDefaultBG = await createPreview(fullBg, saveBG.type);
 
             console.log('[backgrounds] Save preview...');
 
-            await fs().save(`${BackgroundsUniversalService.PREVIEW_PATH}/${saveFileName}`, previewDefaultBG);
+            await fs().write(`${BackgroundsUniversalService.PREVIEW_PATH}/${saveFileName}`, previewDefaultBG);
         }
 
         const savedBG = new Background({
@@ -110,7 +110,7 @@ class BackgroundsUniversalService {
 
                 const previewDefaultBG = await createPreview(defaultBG);
 
-                await fs().save(`${BackgroundsUniversalService.PREVIEW_PATH}/${fileName}`, previewDefaultBG);
+                await fs().write(`${BackgroundsUniversalService.PREVIEW_PATH}/${fileName}`, previewDefaultBG);
             } catch (e) {
                 console.warn('Failed create preview:', e);
                 captureException(e);
@@ -119,7 +119,7 @@ class BackgroundsUniversalService {
 
         if (full) {
             console.log('[backgrounds] Save BG in file system...');
-            await fs().save(`${BackgroundsUniversalService.FULL_PATH}/${fileName}`, defaultBG)
+            await fs().write(`${BackgroundsUniversalService.FULL_PATH}/${fileName}`, defaultBG)
                 .catch((e) => {
                     console.error(e);
                     captureException(e);

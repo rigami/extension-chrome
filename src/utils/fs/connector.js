@@ -28,13 +28,13 @@ export default class FSConnector {
         return this.cd(mkdir, { create: true });
     }
 
-    save(savePath, file) {
+    write(savePath, file) {
         const { name: fileName } = getPathAndName(savePath);
 
         if (!file) return Promise.reject(FSConnector.ERRORS.FILE_IS_REQUIRE);
         if (!fileName) return Promise.reject(FSConnector.ERRORS.FILE_NAME_IS_REQUIRE);
 
-        return this.get(savePath, {
+        return this.read(savePath, {
             create: true,
             type: 'unwrap',
         })
@@ -60,7 +60,7 @@ export default class FSConnector {
             }));
     }
 
-    async get(path, { type, ...options } = {}) {
+    async read(path, { type, ...options } = {}) {
         const { name: fileName } = getPathAndName(path);
 
         if (!fileName) return Promise.reject(FSConnector.ERRORS.FILE_NAME_IS_REQUIRE);
@@ -112,7 +112,7 @@ export default class FSConnector {
 
         if (!fileName) return Promise.reject(FSConnector.ERRORS.FILE_NAME_IS_REQUIRE);
 
-        const file = await dir.get(fileName, {
+        const file = await dir.read(fileName, {
             create: false,
             type: 'unwrap',
         });

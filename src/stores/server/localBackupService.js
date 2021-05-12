@@ -66,7 +66,7 @@ class LocalBackupService {
                 const zipBlob = await zip.generateAsync({ type: 'blob' });
                 const backupPath = '/temp/backup.zip';
 
-                await fs().save(
+                await fs().write(
                     backupPath,
                     new Blob([zipBlob], { type: 'application/zip' }),
                 );
@@ -92,7 +92,7 @@ class LocalBackupService {
 
             if (type === 'rigami') {
                 try {
-                    const restoreFile = await fs().get('/temp/restore-backup.rigami', { type: 'blob' });
+                    const restoreFile = await fs().read('/temp/restore-backup.rigami', { type: 'blob' });
                     const zip = await new JSZip().loadAsync(restoreFile);
                     const backgrounds = {};
                     const files = map(zip.files, (file) => file);
@@ -132,7 +132,7 @@ class LocalBackupService {
                 }
             } else if (type === 'json' || type === 'ctbup') {
                 try {
-                    const restoreData = await fs().get(`/temp/restore-backup.${type}`, { type: 'text' });
+                    const restoreData = await fs().read(`/temp/restore-backup.${type}`, { type: 'text' });
                     let file = JSON.parse(restoreData);
 
                     if (type === 'ctbup') {
@@ -220,7 +220,7 @@ class LocalBackupService {
     }
 
     collectSettings() {
-        return fs().get('/settings.json', { type: 'text' })
+        return fs().read('/settings.json', { type: 'text' })
             .then((props) => {
                 console.log(props);
 
@@ -243,7 +243,7 @@ class LocalBackupService {
             let image;
 
             try {
-                image = await fs().get(`/bookmarksIcons/${bookmark.icoFileName}`, { type: 'base64' });
+                image = await fs().read(`/bookmarksIcons/${bookmark.icoFileName}`, { type: 'base64' });
             } catch (e) {
                 captureException(e);
                 console.warn('Failed get icon', e, bookmark);
@@ -286,7 +286,7 @@ class LocalBackupService {
         for await (const background of allBackgrounds) {
             console.log(background);
 
-            const full = await fs().get(`/backgrounds/full/${background.fileName}`, { type: 'blob' });
+            const full = await fs().read(`/backgrounds/full/${background.fileName}`, { type: 'blob' });
             console.log('full:', full);
 
             fullBlobs.set(background.id, full);

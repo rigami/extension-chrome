@@ -16,8 +16,8 @@ const methodPromise = (args, method) => new Promise((resolve, reject) => {
 const promiseStub = {
     cd: (...args) => methodPromise(args, 'cd'),
     mkdir: (...args) => methodPromise(args, 'mkdir'),
-    save: (...args) => methodPromise(args, 'save'),
-    get: (...args) => methodPromise(args, 'get'),
+    write: (...args) => methodPromise(args, 'write'),
+    read: (...args) => methodPromise(args, 'read'),
     remove: (...args) => methodPromise(args, 'remove'),
 };
 
@@ -30,6 +30,8 @@ const open = () => new Promise((resolve, reject) => {
 })
     .then((fs) => {
         _fs = new FSConnector(fs.root);
+
+        console.log(_fs);
 
         openAwaitRequests.forEach(({ resolve, method, args }) => resolve(_fs[method](...args)));
     });

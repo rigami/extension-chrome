@@ -44,8 +44,8 @@ class SyncBookmarks {
                 }
 
                 console.log('[backgrounds] Save BG in file system...');
-                await fs().save(`${BackgroundsUniversalService.FULL_PATH}/${fileName}`, files[computeId]);
-                await fs().save(`${BackgroundsUniversalService.PREVIEW_PATH}/${fileName}`, previewDefaultBG);
+                await fs().write(`${BackgroundsUniversalService.FULL_PATH}/${fileName}`, files[computeId]);
+                await fs().write(`${BackgroundsUniversalService.PREVIEW_PATH}/${fileName}`, previewDefaultBG);
 
                 console.log('[backgrounds] Added to library...');
                 await BackgroundsUniversalService.addToLibrary(new Background({

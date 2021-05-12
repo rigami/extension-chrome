@@ -44,7 +44,7 @@ class SettingsService {
             console.log('[settings] Not find fast cache or broken. Get from file cache...');
             captureException(e);
 
-            fs().get('/settings.json', { type: 'text' })
+            fs().read('/settings.json', { type: 'text' })
                 .then((file) => {
                     const fileSettings = JSON.parse(file);
 
@@ -152,7 +152,7 @@ class SettingsService {
     sync() {
         console.log('[settings] Save settings', this.settings);
 
-        fs().save(
+        fs().write(
             '/settings.json',
             new Blob([JSON.stringify(this.settings)], { type: 'application/json' }),
         ).then(() => {

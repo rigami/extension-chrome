@@ -21,7 +21,7 @@ class StorageService {
             console.log('[storage] Not find fast cache or broken. Get from file cache...');
             captureException(e);
 
-            fs().get('/storage.json', { type: 'text' })
+            fs().read('/storage.json', { type: 'text' })
                 .then((props) => {
                     this.storage = { ...JSON.parse(props) };
                     this.fastSync();
@@ -67,7 +67,7 @@ class StorageService {
     sync = throttle(() => {
         console.log('[storage] Save settings', this.storage);
 
-        fs().save(
+        fs().write(
             '/storage.json',
             new Blob([JSON.stringify(this.storage)], { type: 'application/json' }),
         ).then(() => {

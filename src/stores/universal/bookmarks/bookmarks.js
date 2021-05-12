@@ -90,7 +90,7 @@ class BookmarksUniversalService {
                 blob = await getImageBlob(imageUrl);
             }
 
-            await fs().save(`/bookmarksIcons/${icoName}`, blob);
+            await fs().write(`/bookmarksIcons/${icoName}`, blob);
         } else if (!imageUrl && id) {
             try {
                 await fs().rmrf(`/bookmarksIcons/${icoName}`);

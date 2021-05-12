@@ -465,7 +465,7 @@ class BackgroundsServerService {
             return Promise.reject(new Error(ERRORS.ID_BG_IS_CHANGED));
         }
 
-        await fs().save(`${BackgroundsUniversalService.FULL_PATH}/temporaryVideoFrame`, frame);
+        await fs().write(`${BackgroundsUniversalService.FULL_PATH}/temporaryVideoFrame`, frame);
 
         this._currentBG.pauseStubSrc = getBgUrl('temporaryVideoFrame');
 

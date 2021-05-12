@@ -245,7 +245,7 @@ function BackupSettings() {
             const file = form.files[0];
             const type = file.name.substring(file.name.lastIndexOf('.') + 1);
 
-            fs().save(`/temp/restore-backup.${type}`, file).then(() => {
+            fs().write(`/temp/restore-backup.${type}`, file).then(() => {
                 eventToBackground('system/backup/local/restore', { type });
             });
         } catch (e) {
