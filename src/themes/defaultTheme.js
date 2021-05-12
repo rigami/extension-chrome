@@ -21,6 +21,7 @@ const theme = {
             main: '#f46600',
             contrastText: '#fff',
         },
+        divider: fade('#000', 0.09),
         favorite: { main: '#F4C620' },
         snackbar: { default: fade('#fff', 0.95) },
         background: { backdrop: '#ececec' },

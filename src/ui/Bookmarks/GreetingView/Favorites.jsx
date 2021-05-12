@@ -17,7 +17,7 @@ import Image from '@/ui-components/Image';
 import { first } from 'lodash';
 import { BKMS_VARIANT } from '@/enum';
 import { FolderRounded as FolderIcon, LabelRounded as TagIcon } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
@@ -66,6 +66,7 @@ function FavoriteItem(props) {
         color,
     } = props;
     const classes = useStyles();
+    const theme = useTheme();
 
     return (
         <Card className={classes.favoriteItem} variant="outlined">
@@ -78,7 +79,7 @@ function FavoriteItem(props) {
                 />
             )}
             {type === 'folder' && (
-                <FolderIcon className={classes.icon} />
+                <FolderIcon className={classes.icon} style={{ color: fade(theme.palette.text.secondary, 0.23) }} />
             )}
             {type === 'tag' && (
                 <TagIcon className={classes.icon} style={{ color }} />

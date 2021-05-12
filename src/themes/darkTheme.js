@@ -16,6 +16,7 @@ export default createMuiTheme(merge(
                 main: '#3386E4',
                 contrastText: '#fff',
             },
+            divider: fade('#fff', 0.09),
             snackbar: { default: fade('#fff', 0.95) },
             background: {
                 paper: '#151515',
