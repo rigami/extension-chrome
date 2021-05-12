@@ -20,7 +20,7 @@ import copyToClipboard from 'copy-to-clipboard';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
-const context = createContext(() => ({}));
+const context = createContext(() => () => null);
 
 function ContextMenuProvider({ children }) {
     const coreService = useCoreService();

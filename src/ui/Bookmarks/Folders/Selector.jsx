@@ -51,7 +51,14 @@ function FolderSelector({ value, onChange }) {
                     onChange(folderId);
                     store.isOpen = false;
                 }}
-                placement="top-start"
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
             />
             <Tooltip title={t('change', { context: 'helper' })}>
                 <Button

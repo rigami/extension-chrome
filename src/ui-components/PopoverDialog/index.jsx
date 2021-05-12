@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Popover } from '@material-ui/core';
+import { Popover, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import ReactResizeDetector from 'react-resize-detector';
@@ -19,7 +19,6 @@ function PopoverDialog({ children, PaperProps = {}, ...props }) {
     const updatePosition = useRef(null);
 
     const updatePopper = () => {
-        console.log('Resize popover');
         if (!updatePosition?.current) return;
 
         requestAnimationFrame(() => {
@@ -46,7 +45,11 @@ function PopoverDialog({ children, PaperProps = {}, ...props }) {
             }}
         >
             <ReactResizeDetector handleWidth handleHeight onResize={updatePopper}>
-                {() => children}
+                {() => (
+                    <Box>
+                        {children}
+                    </Box>
+                )}
             </ReactResizeDetector>
         </Popover>
     );

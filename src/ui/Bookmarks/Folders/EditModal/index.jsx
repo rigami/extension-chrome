@@ -12,6 +12,8 @@ function EditFolderModal(props) {
         onClose,
         placement,
         position,
+        anchorOrigin,
+        transformOrigin,
         ...other
     } = props;
 
@@ -20,11 +22,11 @@ function EditFolderModal(props) {
             open={isOpen}
             onClose={onClose}
             anchorEl={anchorEl}
-            anchorOrigin={{
+            anchorOrigin={anchorOrigin || {
                 vertical: 'center',
                 horizontal: 'right',
             }}
-            transformOrigin={{
+            transformOrigin={transformOrigin || {
                 vertical: 'center',
                 horizontal: 'left',
             }}
