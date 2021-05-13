@@ -25,7 +25,7 @@ module.exports = () => {
         'chrome_url_overrides': { 'newtab': 'index.html' },
     };
 
-    let permissions = ['storage', 'unlimitedStorage'];
+    let permissions = ['storage', 'unlimitedStorage', '*://*/*'];
 
     if (!process.env.BUILD || process.env.BUILD === 'full') {
         manifest = {
@@ -41,7 +41,6 @@ module.exports = () => {
             'sessions',
             'notifications',
             'bookmarks',
-            '*://*/*',
             'http://danilkinkin.com/',
         ];
     }
