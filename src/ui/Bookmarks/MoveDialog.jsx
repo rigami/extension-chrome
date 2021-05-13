@@ -78,7 +78,7 @@ function MoveDialog({ }) {
                     <Button
                         data-ui-path={`dialog.${edit.type}.remove`}
                         endIcon={(<MoveIcon />)}
-                        disabled={edit.id === edit.moveId}
+                        disabled={edit.id === edit.moveId && edit.type === 'folder'}
                         onClick={async () => {
                             if (edit.type === 'bookmark') {
                                 const bookmark = await BookmarksUniversalService.get(edit.id);
