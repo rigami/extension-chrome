@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { captureException } from '@sentry/react';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -26,10 +27,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Editor({ onSave, onError, editId, parentId = 0 }) {
+function Editor({ onSave, editId, parentId = 0 }) {
     const classes = useStyles();
     const { t } = useTranslation(['folder']);
     const bookmarksService = useBookmarksService();
+    const { enqueueSnackbar } = useSnackbar();
     const foldersService = bookmarksService.folders;
     const store = useLocalObservable(() => ({
         editId,
@@ -48,7 +50,10 @@ function Editor({ onSave, onError, editId, parentId = 0 }) {
                 .then((tagId) => onSave(tagId))
                 .catch((e) => {
                     captureException(e);
-                    onError(e.message);
+                    enqueueSnackbar({
+                        message: t('editor.error.unknown'),
+                        variant: 'error',
+                    });
                 });
         }
     };
@@ -73,7 +78,6 @@ function Editor({ onSave, onError, editId, parentId = 0 }) {
                 value={store.name}
                 onChange={(event) => {
                     store.name = event.target.value;
-                    onError(null);
                 }}
             />
             <Button
