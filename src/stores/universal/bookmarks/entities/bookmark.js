@@ -1,6 +1,5 @@
 import { action, makeAutoObservable } from 'mobx';
 import { assign, pick } from 'lodash';
-import { getIconUrl } from '@/utils/fs';
 import { BKMS_VARIANT } from '@/enum';
 
 class Bookmark {
@@ -9,7 +8,7 @@ class Bookmark {
     name;
     description;
     icoVariant;
-    imageUrl;
+    icoUrl;
     imageBase64;
     icoFileName;
     tags;
@@ -19,14 +18,12 @@ class Bookmark {
     constructor(bookmark = {}) {
         makeAutoObservable(this);
 
-        const imageUrl = getIconUrl(bookmark.icoFileName);
-
         this.id = bookmark.id;
         this.url = bookmark.url;
         this.name = bookmark.name;
         this.description = bookmark.description || '';
         this.icoVariant = bookmark.icoVariant || BKMS_VARIANT.SYMBOL;
-        this.imageUrl = `${imageUrl}?modifiedTimestamp=${bookmark.modifiedTimestamp || 1}`;
+        this.icoUrl = bookmark.icoUrl;
         this.imageBase64 = bookmark.imageBase64;
         this.tags = bookmark.tags || [];
         this.folderId = bookmark.folderId || null;

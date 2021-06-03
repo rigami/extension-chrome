@@ -61,7 +61,6 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
             autoIncrement: true,
         });
         store.createIndex('ico_variant', 'icoVariant', { unique: false });
-        store.createIndex('ico_file_name', 'icoFileName', { unique: false });
         store.createIndex('url', 'url', { unique: false });
         store.createIndex('name', 'name', { unique: false });
         store.createIndex('description', 'description', { unique: false });
@@ -92,6 +91,10 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
 
     if (!store.indexNames.contains('create_timestamp')) {
         store.createIndex('create_timestamp', 'createTimestamp', { unique: false });
+    }
+
+    if (!store.indexNames.contains('ico_url')) {
+        store.createIndex('ico_url', 'icoUrl', { unique: false });
     }
 
     if (oldVersion !== 0 && oldVersion < 7) {
@@ -212,7 +215,7 @@ async function upgradeOrCreateFavorites(db, transaction, oldVersion, newVersion)
 
 export default ({ upgrade }) => ({
     async upgrade(db, oldVersion, newVersion, transaction) {
-        console.log('upgrade db', db, transaction, oldVersion, newVersion);
+        console.log(`Require upgrade db version from ${oldVersion} to ${newVersion}`);
         await upgradeOrCreateBackgrounds(db, transaction, oldVersion, newVersion);
         await upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion);
         await upgradeOrCreateSystemBookmarks(db, transaction, oldVersion, newVersion);

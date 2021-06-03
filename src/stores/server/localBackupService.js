@@ -23,7 +23,7 @@ class LocalBackupService {
 
         this.core.globalBus.on('system/backup/local/create', async ({ settings, bookmarks, backgrounds }) => {
             eventToApp('system/backup/local/create/progress', { stage: 'start' });
-            this.core.storageService.updatePersistent({ localBackup: 'creating' });
+            this.core.storage.persistent.update({ localBackup: 'creating' });
 
             try {
                 const backup = {};
@@ -75,18 +75,18 @@ class LocalBackupService {
                     path: backupPath,
                     stage: 'done',
                 });
-                this.core.storageService.updatePersistent({ localBackup: 'done' });
+                this.core.storage.persistent.update({ localBackup: 'done' });
             } catch (e) {
                 console.error(e);
                 captureException(e);
                 eventToApp('system/backup/local/create/progress', { stage: 'error' });
-                this.core.storageService.updatePersistent({ localBackup: 'failed' });
+                this.core.storage.persistent.update({ localBackup: 'failed' });
             }
         });
 
         this.core.globalBus.on('system/backup/local/restore', async ({ type = 'rigami' }) => {
             console.log('restoreFile:', type);
-            this.core.storageService.updatePersistent({ restoreBackup: 'restoring' });
+            this.core.storage.persistent.update({ restoreBackup: 'restoring' });
 
             let backup = {};
 
@@ -123,7 +123,7 @@ class LocalBackupService {
                         result: 'error',
                         message: 'brokenFile',
                     });
-                    this.core.storageService.updatePersistent({
+                    this.core.storage.persistent.update({
                         restoreBackup: 'error',
                         restoreBackupError: 'brokenFile',
                     });
@@ -147,7 +147,7 @@ class LocalBackupService {
                         result: 'error',
                         message: 'brokenFile',
                     });
-                    this.core.storageService.updatePersistent({
+                    this.core.storage.persistent.update({
                         restoreBackup: 'error',
                         restoreBackupError: 'brokenFile',
                     });
@@ -163,7 +163,7 @@ class LocalBackupService {
                     result: 'error',
                     message: 'wrongSchema',
                 });
-                this.core.storageService.updatePersistent({
+                this.core.storage.persistent.update({
                     restoreBackup: 'error',
                     restoreBackupError: 'wrongSchema',
                 });
@@ -184,7 +184,7 @@ class LocalBackupService {
                         result: 'error',
                         message: 'wrongVersion',
                     });
-                    this.core.storageService.updatePersistent({
+                    this.core.storage.persistent.update({
                         restoreBackup: 'error',
                         restoreBackupError: 'wrongSchema',
                     });
@@ -203,7 +203,7 @@ class LocalBackupService {
                     );
                 }
                 eventToApp('system/backup/local/restore/progress', { result: 'done' });
-                this.core.storageService.updatePersistent({ restoreBackup: 'done' });
+                this.core.storage.persistent.update({ restoreBackup: 'done' });
             } catch (e) {
                 console.error(e);
                 captureException(e);
@@ -211,7 +211,7 @@ class LocalBackupService {
                     result: 'error',
                     message: 'brokenFile',
                 });
-                this.core.storageService.updatePersistent({
+                this.core.storage.persistent.update({
                     restoreBackup: 'error',
                     restoreBackupError: 'brokenFile',
                 });
@@ -250,7 +250,7 @@ class LocalBackupService {
             }
 
             return {
-                ...omit(bookmark, ['icoFileName', 'imageUrl']),
+                ...omit(bookmark, ['icoFileName', 'icoUrl']),
                 image,
             };
         }));

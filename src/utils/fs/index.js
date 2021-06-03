@@ -1,7 +1,6 @@
-import { getUrl, getBgUrl, getIconUrl } from './utils';
-import FSConnector from './connector';
+import { getUrl } from './utils';
 
-let _fs = null;
+const _fs = null;
 const openAwaitRequests = [];
 
 const methodPromise = (args, method) => new Promise((resolve, reject) => {
@@ -21,27 +20,7 @@ const promiseStub = {
     remove: (...args) => methodPromise(args, 'remove'),
 };
 
-const open = () => new Promise((resolve, reject) => {
-    navigator.webkitPersistentStorage.requestQuota(
-        1024 * 1024 * 1024,
-        (grantedBytes) => window.webkitRequestFileSystem(window.PERSISTENT, grantedBytes, resolve, reject),
-        reject,
-    );
-})
-    .then((fs) => {
-        _fs = new FSConnector(fs.root);
-
-        console.log(_fs);
-
-        openAwaitRequests.forEach(({ resolve, method, args }) => resolve(_fs[method](...args)));
-    });
-
 const fs = () => _fs || promiseStub;
 
-export {
-    open,
-    getUrl,
-    getBgUrl,
-    getIconUrl,
-};
+export { getUrl };
 export default fs;

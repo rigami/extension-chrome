@@ -87,7 +87,7 @@ function ButtonWithPopper(props) {
                 open={store.isOpen}
                 onClose={() => {
                     store.isOpen = false;
-                    coreService.storage.updateTemp({
+                    coreService.storage.temp.update({
                         closeFapPopper: null,
                         shakeFapPopper: null,
                     });
@@ -127,14 +127,14 @@ function ButtonWithPopper(props) {
                         }}
                         onClick={() => {
                             if (store.isBlockEvent) {
-                                if (coreService.storage.temp.closeFapPopper) {
-                                    coreService.storage.temp.closeFapPopper();
+                                if (coreService.storage.temp.data.closeFapPopper) {
+                                    coreService.storage.temp.data.closeFapPopper();
                                 }
 
-                                coreService.storage.updateTemp({
+                                coreService.storage.temp.update({
                                     closeFapPopper: () => {
                                         store.isOpen = false;
-                                        coreService.storage.updateTemp({
+                                        coreService.storage.temp.update({
                                             closeFapPopper: null,
                                             shakeFapPopper: null,
                                         });

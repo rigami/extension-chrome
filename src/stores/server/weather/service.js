@@ -23,17 +23,17 @@ class WeatherService {
             if (!this._active) return;
             console.log('[weather] Update...');
             this._lastUpd = Date.now();
-            this.core.storageService.updatePersistent({
+            this.core.storage.persistent.update({
                 weather: new Weather({
-                    ...this.core.storageService.storage.weather,
+                    ...this.core.storage.persistent.data.weather,
                     status: FETCH.PENDING,
                 }),
             });
             this.getCurWeather()
                 .then(() => {
-                    this.core.storageService.updatePersistent({
+                    this.core.storage.persistent.update({
                         weather: new Weather({
-                            ...this.core.storageService.storage.weather,
+                            ...this.core.storage.persistent.data.weather,
                             status: FETCH.ONLINE,
                         }),
                     });
@@ -41,9 +41,9 @@ class WeatherService {
                 .catch((e) => {
                     console.error('[weather] Failed get current weather:', e);
                     captureException(e);
-                    this.core.storageService.updatePersistent({
+                    this.core.storage.persistent.update({
                         weather: new Weather({
-                            ...this.core.storageService.storage.weather,
+                            ...this.core.storage.persistent.data.weather,
                             status: FETCH.FAILED,
                             lastUpdateStatus: FETCH.FAILED,
                         }),
@@ -73,7 +73,7 @@ class WeatherService {
                 || !this._lastUpd
                 || this._lastUpd + appVariables.widgets.weather.updateTime.inactive <= Date.now()
                 || !isFinite(this.weatherConnector.weather?.currTemp)
-                || this.core.storageService.widgetWeather
+                || this.core.storage.widgetWeather
             ) {
                 console.log('[weather] Start service');
                 updateWeather();
@@ -85,9 +85,9 @@ class WeatherService {
                     start,
                     this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now(),
                 );
-                this.core.storageService.updatePersistent({
+                this.core.storage.persistent.update({
                     weather: new Weather({
-                        ...this.core.storageService.storage.weather,
+                        ...this.core.storage.persistent.data.weather,
                         status: FETCH.ONLINE,
                     }),
                 });
@@ -99,25 +99,25 @@ class WeatherService {
             this._active = false;
             clearTimeout(this._timer);
 
-            this.core.storageService.updatePersistent({
+            this.core.storage.persistent.update({
                 weather: new Weather({
-                    ...this.core.storageService.storage.weather,
+                    ...this.core.storage.persistent.data.weather,
                     status: FETCH.STOP,
                 }),
             });
         };
 
-        this._lastUpd = this.core.storageService.storage.weather?.lastUpdateTimestamp;
+        this._lastUpd = this.core.storage.persistent.data.weather?.lastUpdateTimestamp;
 
         reaction(
-            () => this.core.settingsService.settings.widgets.dtwUseWeather,
+            () => this.core.settingsService.widgets?.dtwUseWeather,
             () => {
-                if (this.core.settingsService.settings.widgets.dtwUseWeather) start();
+                if (this.core.settingsService.widgets?.dtwUseWeather) start();
                 else stop();
             },
         );
 
-        if (this.core.settingsService.settings.widgets.dtwUseWeather) start();
+        if (this.core.settingsService.widgets.dtwUseWeather) start();
 
         this.core.globalBus.on('widgets/connectors/update', () => {
             console.log('[weather] Request force update');
@@ -137,7 +137,7 @@ class WeatherService {
             }
         });
 
-        this.core.globalBus.on('widgets/connectors/searchLocation', async ({ query }, { }, callback) => {
+        this.core.globalBus.on('widgets/connectors/searchLocation', async ({ data: query, callback }) => {
             console.log('[weather] Search location for query:', query);
 
             try {
@@ -153,7 +153,7 @@ class WeatherService {
             }
         });
 
-        this.core.globalBus.on('widgets/connectors/autoDetectLocation', async ({}, {}, callback) => {
+        this.core.globalBus.on('widgets/connectors/autoDetectLocation', async ({ callback }) => {
             console.log('[weather] Auto detect location');
 
             try {
@@ -165,7 +165,7 @@ class WeatherService {
             }
         });
 
-        this.core.globalBus.on('widgets/connectors/setLocation', async ({ location }, { }) => {
+        this.core.globalBus.on('widgets/connectors/setLocation', async ({ data: location }) => {
             console.log('[weather] Set manual location', location);
 
             this.weatherConnector.setLocation(new WeatherLocation({

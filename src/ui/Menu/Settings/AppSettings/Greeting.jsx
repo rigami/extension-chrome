@@ -26,10 +26,10 @@ function Greeting() {
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     width: 72,
-                    checked: coreService.storage.persistent.userName !== null,
+                    checked: coreService.storage.persistent.data.userName !== null,
                     color: 'primary',
                     onChange: (event, value) => {
-                        coreService.storage.updatePersistent({ userName: value ? undefined : null });
+                        coreService.storage.persistent.update({ userName: value ? undefined : null });
                     },
                 }}
             />
@@ -43,9 +43,9 @@ function Greeting() {
                     variant="outlined"
                     fullWidth
                     placeholder={t('greeting.name', { context: 'placeholder' })}
-                    value={coreService.storage.persistent.userName || ''}
+                    value={coreService.storage.persistent.data.userName || ''}
                     onChange={(event) => {
-                        coreService.storage.updatePersistent({ userName: event.target.value });
+                        coreService.storage.persistent.update({ userName: event.target.value });
                     }}
                 />
             </Box>

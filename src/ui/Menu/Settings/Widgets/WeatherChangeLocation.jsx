@@ -62,8 +62,8 @@ function HeaderActions() {
     const [loading, setLoading] = useState(false);
 
     const isAuto = (
-        coreService.storage.persistent.weatherLocation
-        && !coreService.storage.persistent.weatherLocation?.manual
+        coreService.storage.persistent.data.weatherLocation
+        && !coreService.storage.persistent.data.weatherLocation?.manual
     );
 
     return (
@@ -166,7 +166,7 @@ function WeatherChangeLocation({ onClose }) {
     const { widgets } = useAppStateService();
     const coreService = useCoreService();
     const store = useLocalObservable(() => ({
-        searchRequest: coreService.storage.persistent.weatherLocation?.name,
+        searchRequest: coreService.storage.persistent.data.weatherLocation?.name,
         list: [],
         status: FETCH.WAIT,
     }));
@@ -207,7 +207,7 @@ function WeatherChangeLocation({ onClose }) {
                     fullWidth
                     inputRef={inputRef}
                     className={classes.input}
-                    placeholder={coreService.storage.persistent.weatherLocation?.name}
+                    placeholder={coreService.storage.persistent.data.weatherLocation?.name}
                     variant="outlined"
                     autoFocus
                     onChange={(event) => {
@@ -252,33 +252,33 @@ function WeatherChangeLocation({ onClose }) {
                     description={t('weather.region.search.error.failed', { context: 'description' })}
                 />
             )}
-            {store.status === FETCH.WAIT && !coreService.storage.persistent.weatherLocation && (
+            {store.status === FETCH.WAIT && !coreService.storage.persistent.data.weatherLocation && (
                 <Stub
                     icon={WrongLocationIcon}
                     message={t('weather.region.search.wait.failed')}
                     description={t('weather.region.search.wait.failed', { context: 'description' })}
                 />
             )}
-            {store.status === FETCH.WAIT && coreService.storage.persistent.weatherLocation?.manual && (
+            {store.status === FETCH.WAIT && coreService.storage.persistent.data.weatherLocation?.manual && (
                 <Stub
                     icon={PlaceIcon}
                     message={t(
                         'weather.region.search.wait.manual',
-                        { locationName: coreService.storage.persistent.weatherLocation?.name },
+                        { locationName: coreService.storage.persistent.data.weatherLocation?.name },
                     )}
                     description={t('weather.region.search.wait.manual', { context: 'description' })}
                 />
             )}
             {
                 store.status === FETCH.WAIT
-                && coreService.storage.persistent.weatherLocation
-                && !coreService.storage.persistent.weatherLocation?.manual
+                && coreService.storage.persistent.data.weatherLocation
+                && !coreService.storage.persistent.data.weatherLocation?.manual
                 && (
                     <Stub
                         icon={MyLocationIcon}
                         message={t(
                             'weather.region.search.wait.auto',
-                            { locationName: coreService.storage.persistent.weatherLocation?.name },
+                            { locationName: coreService.storage.persistent.data.weatherLocation?.name },
                         )}
                         description={t('weather.region.search.wait.auto', { context: 'description' })}
                     />

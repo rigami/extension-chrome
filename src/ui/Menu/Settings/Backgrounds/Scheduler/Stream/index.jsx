@@ -61,7 +61,7 @@ function Stream({ onSelect }) {
     const { backgrounds } = useAppStateService();
     const { t } = useTranslation(['settingsBackground']);
     const [isCustomQuery, setIsCustomQuery] = useState(
-        coreService.storage.persistent.backgroundStreamQuery?.type === 'custom-query',
+        coreService.storage.persistent.data.backgroundStreamQuery?.type === 'custom-query',
     );
 
     return (
@@ -112,7 +112,7 @@ function Stream({ onSelect }) {
                 action={{
                     type: ROWS_TYPE.SELECT,
                     format: (value) => t(`query.value.${value}`),
-                    value: isCustomQuery ? 'CUSTOM_QUERY' : coreService.storage.persistent.backgroundStreamQuery?.id,
+                    value: isCustomQuery ? 'CUSTOM_QUERY' : coreService.storage.persistent.data.backgroundStreamQuery?.id,
                     onChange: (event) => {
                         if (event.target.value === 'CUSTOM_QUERY') {
                             onSelect(changeLocationPage);
@@ -121,7 +121,7 @@ function Stream({ onSelect }) {
 
                             setIsCustomQuery(false);
 
-                            coreService.storage.updatePersistent({
+                            coreService.storage.persistent.update({
                                 backgroundStreamQuery: value,
                                 bgsStream: [],
                                 prepareBGStream: null,
@@ -140,9 +140,9 @@ function Stream({ onSelect }) {
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => onSelect(changeLocationPage),
-                        component: coreService.storage.persistent.backgroundStreamQuery?.value
+                        component: coreService.storage.persistent.data.backgroundStreamQuery?.value
                             ? (`${
-                                coreService.storage.persistent.backgroundStreamQuery?.value || t('unknown')
+                                coreService.storage.persistent.data.backgroundStreamQuery?.value || t('unknown')
                             }`)
                             : (
                                 <Typography className={classes.notSetValue}>

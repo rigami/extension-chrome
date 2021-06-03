@@ -1,19 +1,20 @@
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 import packageFile from '@/../package.json';
-import StorageConnector from '@/utils/storageConnector';
+import BrowserAPI from '@/utils/browserAPI';
 
 export default {
     notifyNewVersion: true,
-    extensionId: chrome.runtime.id,
+    extensionId: BrowserAPI.extensionId(),
     version: packageFile.version,
     db: {
         name: 'rigami',
         version: 8,
     },
-    fs: { root: `chrome-extension://${chrome.runtime.id}/persistent/` },
+    storage: { version: 1 },
+    fs: { root: `chrome-extension://${BrowserAPI.extensionId()}/persistent/` },
     maxUploadFiles: 15,
     rest: {
-        url: StorageConnector.getJSON('devTools', {}).productionEnv || PRODUCTION_MODE
+        url: PRODUCTION_MODE || PRODUCTION_ENV
             ? 'https://api.rigami.io'
             : 'http://localhost:8080',
     },

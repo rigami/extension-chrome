@@ -19,7 +19,7 @@ class BookmarkEditor {
     // Bookmark data
     editBookmarkId;
     icoVariant;
-    imageUrl = '';
+    icoUrl = '';
     name = '';
     description = '';
     useDescription;
@@ -51,14 +51,14 @@ class BookmarkEditor {
                     console.log('edit bookmark:', toJS(bookmark));
                     this.url = bookmark.url;
                     this.name = bookmark.name;
-                    this.imageUrl = bookmark.imageUrl;
+                    this.icoUrl = bookmark.icoUrl;
                     this.icoVariant = bookmark.icoVariant;
                     this.useDescription = !!bookmark.description?.trim();
                     if (this.useDescription) this.description = bookmark.description;
                     this.folderId = bookmark.folderId;
                     this.tags = bookmark.tags || [];
                     this.defaultImage = {
-                        url: bookmark.imageUrl,
+                        url: bookmark.icoUrl,
                         icoVariant: bookmark.icoVariant,
                     };
                     this.fetchSiteInfo({
@@ -99,7 +99,7 @@ class BookmarkEditor {
             url: this.url,
             name: this.name.trim(),
             description: (this.useDescription && this.description?.trim()) || '',
-            imageUrl: this.imageUrl,
+            icoUrl: this.icoUrl,
             tags: this.tags,
             folderId: this.folderId,
             icoVariant: this.icoVariant,
@@ -125,7 +125,7 @@ class BookmarkEditor {
 
         if (!onlyAdditionalIcons) {
             this.url = currentFetchUrl;
-            this.imageUrl = null;
+            this.icoUrl = null;
             this.defaultImage = null;
         }
         this.allImages = [];
@@ -171,11 +171,13 @@ class BookmarkEditor {
             if (this.url !== currentFetchUrl) return;
             console.error('Failed getSiteInfo', e);
             if (!onlyAdditionalIcons) {
-                this.imageUrl = '';
+                this.icoUrl = '';
                 this.icoVariant = BKMS_VARIANT.SYMBOL;
             }
             this.allImages = [];
         }
+
+        console.log('All images:', toJS(this.allImages));
 
         if (!onlyAdditionalIcons) {
             console.log('search default image');
@@ -198,7 +200,7 @@ class BookmarkEditor {
             url,
             icoVariant,
         });
-        this.imageUrl = url;
+        this.icoUrl = url;
         this.icoVariant = icoVariant;
     }
 

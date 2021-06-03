@@ -88,8 +88,8 @@ function Folder({ id }) {
                     <Tooltip title={t('common:button.close')}>
                         <IconButton
                             onClick={() => {
-                                if (coreService.storage.temp.closeFapPopper) {
-                                    coreService.storage.temp.closeFapPopper();
+                                if (coreService.storage.temp.data.closeFapPopper) {
+                                    coreService.storage.temp.data.closeFapPopper();
                                 }
                             }}
                         >

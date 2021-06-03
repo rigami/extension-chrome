@@ -132,7 +132,7 @@ function CardLink(props) {
         url,
         icoVariant,
         description,
-        imageUrl,
+        icoUrl,
         preview = false,
         onClick,
         className: externalClassName,
@@ -200,7 +200,7 @@ function CardLink(props) {
                         <Box className={classes.imageWrapper}>
                             <Image
                                 variant={icoVariant}
-                                src={imageUrl}
+                                src={icoUrl}
                                 alternativeIcon={
                                     icoVariant === BKMS_VARIANT.SYMBOL
                                         ? name[0]?.toUpperCase()
@@ -213,7 +213,7 @@ function CardLink(props) {
                     )}
                     {icoVariant === BKMS_VARIANT.POSTER && (
                         <Box className={classes.banner}>
-                            <Image variant={BKMS_VARIANT.POSTER} src={imageUrl} className={classes.extendBanner} />
+                            <Image variant={BKMS_VARIANT.POSTER} src={icoUrl} className={classes.extendBanner} />
                             <Divider />
                             <Typography
                                 className={clsx(classes.title, classes.extendBannerTitle)}

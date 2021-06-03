@@ -23,6 +23,7 @@ function BookmarksViewer() {
     const [show, setShow] = useState(appService.activity === ACTIVITY.BOOKMARKS);
 
     useEffect(() => {
+        console.log('appService.activity:', appService.activity);
         if (appService.activity === ACTIVITY.BOOKMARKS) setShow(true);
     }, [appService.activity]);
 

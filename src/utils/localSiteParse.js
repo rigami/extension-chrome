@@ -19,7 +19,9 @@ function getDomain(url) {
     return domain;
 }
 
-function parseSite(xml, urlOrigin) {
+function parseSite(textXml, urlOrigin) {
+    const xml = new DOMParser().parseFromString(textXml, 'text/html');
+
     console.log({ xml });
     const head = xml.querySelector('head');
 

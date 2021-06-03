@@ -1,5 +1,4 @@
 import { observable } from 'mobx';
-import { getBgUrl } from '@/utils/fs';
 import { BG_SOURCE } from '@/enum';
 
 class Background {
@@ -37,9 +36,9 @@ class Background {
         this.sourceLink = background.sourceLink;
         this.downloadLink = background.downloadLink;
         this.type = background.type;
-        this.previewSrc = this.fileName && getBgUrl(this.fileName, 'preview');
+        this.previewSrc = background.previewSrc;
         this.pauseStubSrc = background.pauseStubSrc;
-        this.fullSrc = this.fileName && getBgUrl(this.fileName, 'full');
+        this.fullSrc = background.fullSrc;
         this.pauseTimestamp = background.pauseTimestamp;
     }
 }

@@ -131,7 +131,7 @@ function LibraryMenu() {
                                     <GridListTile key={bg.id}>
                                         <BackgroundCard
                                             {...bg}
-                                            select={coreService.storage.persistent.bgCurrent?.id === bg.id}
+                                            select={coreService.storage.persistent.data.bgCurrent?.id === bg.id}
                                             onSet={() => backgrounds.setBG(bg)}
                                             onRemove={() => BackgroundsUniversalService.removeFromLibrary(bg)}
                                         />

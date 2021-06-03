@@ -6,6 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const GenerateJsonPlugin = require('generate-json-from-js-webpack-plugin');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 const paths = require('./alias.config.js');
 const packageFile = require('./package.json');
 
@@ -14,7 +15,7 @@ module.exports = () => {
 
     let entry = {
         app: './templates/app/index.jsx',
-        server: './templates/server/index.js',
+        // server: './templates/server/index.js',
         requestPermissions: './templates/app/requestPermissions.js',
     };
     const plugins = [
@@ -38,12 +39,6 @@ module.exports = () => {
         }),
         new HtmlWebpackPlugin({
             inject: true,
-            chunks: ['server'],
-            template: './templates/server/index.html',
-            filename: 'server.html',
-        }),
-        new HtmlWebpackPlugin({
-            inject: true,
             chunks: ['requestPermissions'],
             template: './templates/app/requestPermissions.html',
             filename: 'requestPermissions.html',
@@ -55,7 +50,7 @@ module.exports = () => {
                     to: './_locales/',
                 },
                 {
-                    from: path.resolve(__dirname, 'public/'),
+                    from: '../public/',
                     to: './resource/',
                 },
                 {
@@ -72,12 +67,17 @@ module.exports = () => {
                 },
             ],
         }),
+        new WorkboxPlugin.InjectManifest({
+            swSrc: './templates/server/index.js',
+            swDest: 'server.js',
+        }),
         new GenerateJsonPlugin({
             path: './config/manifest.js',
             filename: './manifest.json',
         }),
         new webpack.DefinePlugin({
             PRODUCTION_MODE: JSON.stringify(process.env.NODE_ENV === 'production'),
+            PRODUCTION_ENV: JSON.stringify(Boolean(process.env.PRODUCTION_ENV)),
             COLLECT_LOGS: process.env.COLLECT_LOGS,
             BUILD: JSON.stringify(build),
         }),
@@ -119,10 +119,10 @@ module.exports = () => {
         entry,
         mode: process.env.NODE_ENV || 'development',
         output: {
-            filename: '[name].[contenthash].bundle.js',
+            filename: (pathData) => (pathData.chunk.name === 'server' ? '[name].js' : '[name].[contenthash].bundle.js'),
             path: path.resolve(__dirname, 'build'),
         },
-        // devtool: process.env.NODE_ENV === 'production' ? false : 'eval-source-map',
+        devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'cheap-source-map',
         devServer: {
             contentBase: path.resolve(__dirname, 'public'),
             hot: true,
@@ -177,12 +177,8 @@ module.exports = () => {
                 '.svg',
             ],
             alias: paths(),
-            // plugins: [PnpWebpackPlugin],
         },
-        // resolveLoader: { plugins: [PnpWebpackPlugin.moduleLoader(module)] },
-        // optimization: { splitChunks: { chunks: 'all' } },
         optimization: {
-            // sideEffects: true,
             usedExports: true,
             splitChunks: { chunks: 'all' },
         },

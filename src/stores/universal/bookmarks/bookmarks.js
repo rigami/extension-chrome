@@ -34,7 +34,7 @@ class BookmarksUniversalService {
             url,
             name,
             description,
-            imageUrl,
+            icoUrl,
             imageBase64,
             tags = [],
             folderId,
@@ -54,16 +54,14 @@ class BookmarksUniversalService {
         };
 
         let saveBookmarkId;
-        let icoName = `${Date.now()}`;
 
         if (id) {
             const oldBookmark = await this.get(id);
-            icoName = oldBookmark.icoFileName || icoName;
 
             saveBookmarkId = await db().put('bookmarks', cloneDeep({
                 id,
                 ...saveData,
-                icoFileName: oldBookmark.icoFileName,
+                icoUrl,
                 createTimestamp: oldBookmark.createTimestamp || Date.now(),
                 modifiedTimestamp: Date.now(),
             }));
@@ -71,7 +69,7 @@ class BookmarksUniversalService {
             try {
                 saveBookmarkId = await db().add('bookmarks', cloneDeep({
                     ...saveData,
-                    icoFileName: icoName,
+                    icoUrl,
                     createTimestamp: Date.now(),
                     modifiedTimestamp: Date.now(),
                 }));
@@ -81,23 +79,21 @@ class BookmarksUniversalService {
                 throw new Error('Similar bookmark already exist');
             }
         }
-        if (imageBase64 || (imageUrl && imageUrl.substring(0, 11) !== 'filesystem:')) {
+        if (imageBase64 || icoUrl) {
             let blob;
 
             if (imageBase64) {
                 blob = await (await fetch(imageBase64)).blob();
             } else {
-                blob = await getImageBlob(imageUrl);
+                blob = await getImageBlob(icoUrl);
             }
 
-            await fs().write(`/bookmarksIcons/${icoName}`, blob);
-        } else if (!imageUrl && id) {
-            try {
-                await fs().rmrf(`/bookmarksIcons/${icoName}`);
-            } catch (e) {
-                console.error(e);
-                captureException(e);
-            }
+            const cache = await caches.open('icons');
+            const iconResponse = new Response(blob);
+
+            await cache.put(icoUrl, iconResponse);
+        } else if (!icoUrl && id) {
+            // TODO: Remove icon from cache
         }
 
         return saveBookmarkId;

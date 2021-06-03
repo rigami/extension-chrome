@@ -20,16 +20,15 @@ class SyncChromeBookmarksService {
             return;
         }
 
-        this.core.globalBus.on('system/importSystemBookmarks', async (props, options, callback, ...other) => {
+        this.core.globalBus.on('system/importSystemBookmarks', async ({ callback }) => {
             try {
                 await this.syncBookmarks();
             } catch (e) {
                 console.error(e);
                 captureException(e);
             }
-            console.log(props, options, callback, other);
-            console.log('finish import!');
             callback();
+            console.log('finish import!');
         });
     }
 

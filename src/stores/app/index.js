@@ -1,5 +1,5 @@
 import { action, makeAutoObservable } from 'mobx';
-import { AppSettingsStore } from '@/stores/app/settings';
+import { AppSettings } from '@/stores/universal/settings';
 import WidgetsService from '@/stores/app/widgets';
 import BackgroundsService from '@/stores/app/backgrounds';
 import { ACTIVITY } from '@/enum';
@@ -14,7 +14,7 @@ class AppStateStore {
     constructor({ coreService }) {
         makeAutoObservable(this);
         this.coreService = coreService;
-        this.settings = new AppSettingsStore();
+        this.settings = new AppSettings();
         this.widgets = new WidgetsService(coreService);
         this.backgrounds = new BackgroundsService(coreService);
 

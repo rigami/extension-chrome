@@ -54,9 +54,7 @@ function Editor(props) {
     useEffect(() => onStage(service.state), [service.state]);
 
     if (service.state === STATE_EDITOR.LOADING_EDITOR) {
-        return (
-            <CircularProgress />
-        );
+        return (<CircularProgress />);
     }
 
     return (

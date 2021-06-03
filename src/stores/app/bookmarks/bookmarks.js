@@ -15,7 +15,7 @@ class BookmarksStore {
 
     @action('query bookmarks')
     async query(searchQuery = {}) {
-        this._coreService.storage.updatePersistent({ bkmsLastSearch: searchQuery });
+        this._coreService.storage.persistent.update({ bkmsLastSearch: searchQuery });
 
         return BookmarksUniversalService.query(searchQuery);
     }

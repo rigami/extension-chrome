@@ -2,7 +2,7 @@ const packageJson = require('../../package.json');
 
 module.exports = () => {
     let manifest = {
-        'manifest_version': 2,
+        'manifest_version': 3,
         'name': '__MSG_appNameFull__',
         'description': '__MSG_appDescFull__',
         'short_name': 'Rigami',
@@ -17,20 +17,17 @@ module.exports = () => {
             '64': 'resource/64x64.png',
             '128': 'resource/128x128.png',
         },
-        'content_security_policy': 'script-src \'self\' \'unsafe-eval\'; object-src \'self\'',
-        'background': {
-            'page': 'server.html',
-            'persistent': false,
-        },
+        'background': { 'service_worker': 'server.js' },
         'chrome_url_overrides': { 'newtab': 'index.html' },
+        'host_permissions': ['http://danilkinkin.com/', '*://*/*'],
     };
 
-    let permissions = ['storage', 'unlimitedStorage', '*://*/*'];
+    let permissions = ['storage', 'unlimitedStorage'];
 
     if (!process.env.BUILD || process.env.BUILD === 'full') {
         manifest = {
             ...manifest,
-            'browser_action': {
+            'action': {
                 'default_title': '__MSG_appAction__',
                 'default_popup': 'popup.html',
             },
@@ -39,9 +36,7 @@ module.exports = () => {
             ...permissions,
             'activeTab',
             'sessions',
-            'notifications',
             'bookmarks',
-            'http://danilkinkin.com/',
         ];
     }
 

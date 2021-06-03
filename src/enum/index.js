@@ -17,6 +17,7 @@ import WIDGET_DTW_POSITION from './WIDGET/DTW_POSITION';
 import WIDGET_DTW_SIZE from './WIDGET/DTW_SIZE';
 import WIDGET_DTW_UNITS from './WIDGET/DTW_UNITS';
 import TYPE from './TYPE';
+import SERVICE_STATE from './SERVICE_STATE';
 
 export {
     BG_CHANGE_INTERVAL,
@@ -38,4 +39,5 @@ export {
     WIDGET_DTW_SIZE,
     WIDGET_DTW_UNITS,
     TYPE,
+    SERVICE_STATE,
 };

@@ -15,6 +15,7 @@ module.exports = {
     },
     'globals': {
         'PRODUCTION_MODE': true,
+        'PRODUCTION_ENV': true,
         'COLLECT_LOGS': true,
         'BUILD': true,
     },

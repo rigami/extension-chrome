@@ -3,27 +3,27 @@ class BaseWeatherConnector {
     location;
     weather;
     apiKey;
-    storageService;
+    storage;
 
-    constructor({ name, apiKey, storageService }) {
+    constructor({ name, apiKey, storage }) {
         this.name = name;
         this.apiKey = apiKey;
-        this.storageService = storageService;
-        this.location = storageService.storage.weatherLocation;
-        this.weather = storageService.storage.weather;
+        this.storage = storage;
+        this.location = storage.persistent.weatherLocation;
+        this.weather = storage.persistent.weather;
     }
 
     async getWeather(weather) {
         console.log('Set connectors:', weather);
         this.weather = weather;
 
-        if (this.storageService.storage.widgetWeather) {
-            this.storageService.updatePersistent({
+        if (this.storage.persistent.data.widgetWeather) {
+            this.storage.persistent.update({
                 weather,
                 widgetWeather: null,
             });
         } else {
-            this.storageService.updatePersistent({ weather });
+            this.storage.persistent.update({ weather });
         }
     }
 
@@ -35,7 +35,7 @@ class BaseWeatherConnector {
         console.log('Set location:', location);
         this.location = location;
 
-        this.storageService.updatePersistent({ weatherLocation: location });
+        this.storage.persistent.update({ weatherLocation: location });
     }
 }
 

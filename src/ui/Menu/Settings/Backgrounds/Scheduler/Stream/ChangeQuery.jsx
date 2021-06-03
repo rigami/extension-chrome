@@ -21,7 +21,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Stub from '@/ui-components/Stub';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { runInAction } from 'mobx';
-import fetchData from '@/utils/xhrPromise';
+import fetchData from '@/utils/fetchData';
 import appVariables from '@/config/appVariables';
 import { eventToBackground } from '@/stores/server/bus';
 import useAppStateService from '@/stores/app/AppStateProvider';
@@ -88,7 +88,7 @@ function ChangeQuery({ onClose }) {
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const store = useLocalObservable(() => ({
-        searchRequest: coreService.storage.persistent.backgroundStreamQuery?.value,
+        searchRequest: coreService.storage.persistent.data.backgroundStreamQuery?.value,
         foundRequest: '',
         list: [],
         status: FETCH.WAIT,
@@ -124,7 +124,7 @@ function ChangeQuery({ onClose }) {
     };
 
     const handleSelect = () => {
-        coreService.storage.updatePersistent({
+        coreService.storage.persistent.update({
             backgroundStreamQuery: {
                 id: 'CUSTOM_QUERY',
                 type: 'custom-query',
@@ -213,7 +213,7 @@ function ChangeQuery({ onClose }) {
                                         <BackgroundCard
                                             {...bg}
                                             source={bg.service}
-                                            select={coreService.storage.persistent.bgCurrent?.id === bg.id}
+                                            select={coreService.storage.persistent.data.bgCurrent?.id === bg.id}
                                             onSet={() => backgrounds.setBG(new Background({
                                                 ...bg,
                                                 originId: bg.bgId,

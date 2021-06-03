@@ -15,7 +15,7 @@ import {
 } from '@/enum';
 import db from '@/utils/db';
 import getPreview from '@/utils/createPreview';
-import { BackgroundSettingsStore } from '@/stores/app/settings';
+import { BackgroundsSettings } from '@/stores/universal/settings';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import { eventToBackground } from '@/stores/server/bus';
 import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrounds/service';
@@ -33,13 +33,14 @@ class BackgroundsAppService {
     constructor(coreService) {
         makeAutoObservable(this);
         this._coreService = coreService;
-        this.settings = new BackgroundSettingsStore();
+        this.settings = new BackgroundsSettings();
 
         this._coreService.globalEventBus.on('backgrounds/state', ({ state }) => {
             this.bgState = state;
         });
 
         const setCurrentBg = (setBG) => {
+            console.log('setCurrentBg:', setBG);
             const bg = new Background({
                 ...setBG,
                 id: setBG.originId,
@@ -51,48 +52,48 @@ class BackgroundsAppService {
             this._currentBG = bg;
             this.currentBGId = this._currentBG?.id;
 
-            // this._coreService.storage.updatePersistent({ bgCurrent: { ...bg } });
+            // this._coreService.storage.persistent.update({ bgCurrent: { ...bg } });
         };
 
         reaction(
-            () => this._coreService.storage.persistent?.bgCurrent?.id,
+            () => this._coreService.storage.persistent?.data.bgCurrent?.id,
             () => {
-                if (this._coreService.storage.persistent.bgCurrent) {
-                    setCurrentBg(this._coreService.storage.persistent.bgCurrent);
+                if (this._coreService.storage.persistent.data.bgCurrent) {
+                    setCurrentBg(this._coreService.storage.persistent.data.bgCurrent);
                 }
             },
         );
 
         reaction(
-            () => this._coreService.storage.persistent?.bgShowMode,
+            () => this._coreService.storage.persistent?.data.bgShowMode,
             () => {
-                this.bgShowMode = this._coreService.storage.persistent?.bgShowMode;
+                this.bgShowMode = this._coreService.storage.persistent?.data.bgShowMode;
             },
         );
 
         reaction(
-            () => this._coreService.storage.persistent?.bgCurrent?.pauseStubSrc,
-            () => {
-                if (this._coreService.storage.persistent.bgCurrent) {
-                    this._currentBG = this._coreService.storage.persistent.bgCurrent;
-                }
-            },
-        );
-        reaction(
-            () => this._coreService.storage.persistent?.bgCurrent?.pauseTimestamp,
+            () => this._coreService.storage.persistent?.data.bgCurrent?.pauseStubSrc,
             () => {
                 if (this._coreService.storage.persistent.bgCurrent) {
                     this._currentBG = this._coreService.storage.persistent.bgCurrent;
                 }
             },
         );
+        reaction(
+            () => this._coreService.storage.persistent?.data.bgCurrent?.pauseTimestamp,
+            () => {
+                if (this._coreService.storage.persistent.data.bgCurrent) {
+                    this._currentBG = this._coreService.storage.persistent.data.bgCurrent;
+                }
+            },
+        );
 
-        if (this._coreService.storage.persistent?.bgCurrent) {
-            setCurrentBg(this._coreService.storage.persistent.bgCurrent);
+        if (this._coreService.storage.persistent?.data.bgCurrent) {
+            setCurrentBg(this._coreService.storage.persistent.data.bgCurrent);
         }
-        this.bgShowMode = this._coreService.storage.persistent?.bgShowMode || BG_SHOW_MODE.LIVE;
+        this.bgShowMode = this._coreService.storage.persistent?.data.bgShowMode || BG_SHOW_MODE.LIVE;
 
-        this._coreService.globalEventBus.on('backgrounds/new', ({ bg }) => {
+        this._coreService.globalEventBus.on('backgrounds/new', ({ data: bg }) => {
             setCurrentBg(bg);
         });
 
@@ -106,7 +107,7 @@ class BackgroundsAppService {
             && (
                 (
                     this.settings.selectionMethod === BG_SELECT_MODE.STREAM
-                    && this._coreService.storage.persistent?.prepareBGStream
+                    && this._coreService.storage.persistent?.data.prepareBGStream
                 )
                 || this.settings.selectionMethod === BG_SELECT_MODE.RANDOM
             )
@@ -117,20 +118,21 @@ class BackgroundsAppService {
 
     @action('')
     setBG(bg) {
-        return new Promise(((resolve) => eventToBackground('backgrounds/setBg', { bg }, resolve)));
+        return new Promise(((resolve) => eventToBackground('backgrounds/setBg', bg, resolve)));
     }
 
     @computed
     get currentBG() {
-        return this._coreService.storage.persistent.bgCurrent;
+        console.log('this._coreService.storage:', this._coreService.storage, this._coreService.storage.persistent);
+        return this._coreService.storage.persistent.data.bgCurrent;
     }
 
     @action
     async like(bg) {
         const currentBgId = bg.id;
-        this._coreService.storage.updatePersistent({
+        this._coreService.storage.persistent.update({
             bgCurrent: {
-                ...this._coreService.storage.persistent.bgCurrent,
+                ...this._coreService.storage.persistent.data.bgCurrent,
                 isLiked: true,
                 isDisliked: false,
                 isSaved: true,
@@ -142,8 +144,8 @@ class BackgroundsAppService {
         } catch (e) {
             console.error(e);
             captureException(e);
-            if (currentBgId === this._coreService.storage.persistent.bgCurrent.id) {
-                this._coreService.storage.updatePersistent({
+            if (currentBgId === this._coreService.storage.persistent.data.bgCurrent.id) {
+                this._coreService.storage.persistent.update({
                     bgCurrent: {
                         ...this._coreService.storage.persistent.bgCurrent,
                         isLiked: false,
@@ -157,9 +159,9 @@ class BackgroundsAppService {
     @action
     async dislike(bg) {
         const currentBgId = bg.id;
-        this._coreService.storage.updatePersistent({
+        this._coreService.storage.persistent.update({
             bgCurrent: {
-                ...this._coreService.storage.persistent.bgCurrent,
+                ...this._coreService.storage.persistent.data.bgCurrent,
                 isLiked: false,
                 isDisliked: true,
                 isSaved: false,
@@ -171,10 +173,10 @@ class BackgroundsAppService {
         } catch (e) {
             console.error(e);
             captureException(e);
-            if (currentBgId === this._coreService.storage.persistent.bgCurrent.id) {
-                this._coreService.storage.updatePersistent({
+            if (currentBgId === this._coreService.storage.persistent.data.bgCurrent.id) {
+                this._coreService.storage.persistent.update({
                     bgCurrent: {
-                        ...this._coreService.storage.persistent.bgCurrent,
+                        ...this._coreService.storage.persistent.data.bgCurrent,
                         isDisliked: false,
                         isSaved: false,
                     },
@@ -185,9 +187,9 @@ class BackgroundsAppService {
 
     @action
     async unlike(bg) {
-        this._coreService.storage.updatePersistent({
+        this._coreService.storage.persistent.update({
             bgCurrent: {
-                ...this._coreService.storage.persistent.bgCurrent,
+                ...this._coreService.storage.persistent.data.bgCurrent,
                 isLiked: false,
                 isDisliked: false,
                 isSaved: false,
@@ -204,21 +206,21 @@ class BackgroundsAppService {
 
     @action('add to library')
     async addToLibrary(bg) {
-        this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.PENDING });
+        this._coreService.storage.temp.update({ addingBgToLibrary: FETCH.PENDING });
 
         try {
             await BackgroundsUniversalService.addToLibrary(bg);
-            this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.DONE });
-            this._coreService.storage.updatePersistent({
+            this._coreService.storage.temp.update({ addingBgToLibrary: FETCH.DONE });
+            this._coreService.storage.persistent.update({
                 bgCurrent: {
-                    ...this._coreService.storage.persistent.bgCurrent,
+                    ...this._coreService.storage.persistent.data.bgCurrent,
                     isSaved: true,
                 },
             });
         } catch (e) {
             console.error(e);
             captureException(e);
-            this._coreService.storage.updateTemp({ addingBgToLibrary: FETCH.FAILED });
+            this._coreService.storage.temp.update({ addingBgToLibrary: FETCH.FAILED });
         }
     }
 
@@ -311,8 +313,6 @@ class BackgroundsAppService {
             },
             downloadLink: URL.createObjectURL(bg.file),
         });
-
-        console.log('saveFromUploadQueue', saveBGId, saveBG, options, this.uploadQueue.find(({ id }) => saveBGId === id));
 
         return BackgroundsUniversalService.addToLibrary(saveBG)
             .finally(() => {

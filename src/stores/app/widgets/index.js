@@ -1,5 +1,5 @@
 import { makeAutoObservable, reaction } from 'mobx';
-import { WidgetsSettingsStore } from '@/stores/app/settings';
+import { WidgetsSettings } from '@/stores/universal/settings';
 import { FETCH } from '@/enum';
 import { eventToBackground, eventToRequestPermissions } from '@/stores/server/bus';
 import appVariables from '@/config/appVariables';
@@ -13,14 +13,14 @@ class WidgetsService {
     constructor(coreService) {
         makeAutoObservable(this);
         this._coreService = coreService;
-        this.settings = new WidgetsSettingsStore();
+        this.settings = new WidgetsSettings();
 
         reaction(
-            () => this._coreService.storage.persistent.weather,
-            () => { this.weather = this._coreService.storage.persistent.weather; },
+            () => this._coreService.storage.persistent.data.weather,
+            () => { this.weather = this._coreService.storage.persistent.data.weather; },
         );
 
-        if (this.settings.dtwUseWeather) this.weather = this._coreService.storage.persistent.weather;
+        if (this.settings.dtwUseWeather) this.weather = this._coreService.storage.persistent.data.weather;
 
         reaction(
             () => [this.settings.dtwUseWeather, this.weather?.status, this.weather?.lastUpdateStatus],

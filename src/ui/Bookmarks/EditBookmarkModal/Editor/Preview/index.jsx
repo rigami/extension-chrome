@@ -94,7 +94,7 @@ function PreviewCard(props) {
     const {
         active,
         url,
-        imageUrl,
+        icoUrl,
         icoVariant,
         onClick,
         name,
@@ -123,10 +123,10 @@ function PreviewCard(props) {
                 description={description}
                 icoVariant={icoVariant}
                 url={url}
-                imageUrl={imageUrl}
+                icoUrl={icoUrl}
                 preview
                 onClick={() => onClick({
-                    url: imageUrl,
+                    url: icoUrl,
                     icoVariant,
                 })}
                 className={clsx(active && classes.activeCard)}
@@ -253,12 +253,12 @@ function Preview({ editorService: service }) {
                             >
                                 {() => (
                                     <PreviewCard
-                                        active={service.imageUrl === service.defaultImage.url}
+                                        active={service.icoUrl === service.defaultImage.url}
                                         name={service.name}
                                         description={service.useDescription && service.description}
                                         url={service.url}
                                         icoVariant={service.defaultImage.icoVariant}
-                                        imageUrl={service.defaultImage.url}
+                                        icoUrl={service.defaultImage.url}
                                         onClick={() => service.setPreview(service.defaultImage)}
                                     />
                                 )}
@@ -283,12 +283,12 @@ function Preview({ editorService: service }) {
                                 {service.primaryImages.map(({ url, icoVariant }) => (
                                     <PreviewCard
                                         key={url}
-                                        active={service.imageUrl === url}
+                                        active={service.icoUrl === url}
                                         name={service.name}
                                         description={service.useDescription && service.description}
                                         icoVariant={icoVariant}
                                         url={service.url}
-                                        imageUrl={url}
+                                        icoUrl={url}
                                         onClick={() => service.setPreview({
                                             url,
                                             icoVariant,
@@ -298,12 +298,12 @@ function Preview({ editorService: service }) {
                                 {service.secondaryImages.map(({ url, icoVariant }) => (
                                     <PreviewCard
                                         key={url}
-                                        active={service.imageUrl === url}
+                                        active={service.icoUrl === url}
                                         name={service.name}
                                         description={service.useDescription && service.description}
                                         icoVariant={icoVariant}
                                         url={service.url}
-                                        imageUrl={url}
+                                        icoUrl={url}
                                         onClick={() => service.setPreview({
                                             url,
                                             icoVariant,

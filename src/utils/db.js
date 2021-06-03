@@ -51,6 +51,7 @@ const open = () => openDB(
     }),
 )
     .then((db) => {
+        console.log('db is open!');
         _db = db;
         openAwaitRequests.forEach(({ resolve, method, args }) => resolve(db[method](...args)));
     });

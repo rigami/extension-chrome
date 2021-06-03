@@ -77,14 +77,14 @@ function GlobalModals({ children }) {
                 message: t('settingsBackup:localBackup.create.state.success'),
                 variant: 'success',
             });
-            coreService.storage.updatePersistent({ localBackup: null });
+            coreService.storage.persistent.update({ localBackup: null });
         };
 
         const globalListeners = [
             coreService.globalEventBus.on('system/backup/local/create/progress', (data) => {
-                if (coreService.storage.temp.progressCreateSnackbar) {
-                    closeSnackbar(coreService.storage.temp.progressCreateSnackbar);
-                    coreService.storage.updateTemp({ progressCreateSnackbar: null });
+                if (coreService.storage.temp.data.progressCreateSnackbar) {
+                    closeSnackbar(coreService.storage.temp.data.progressCreateSnackbar);
+                    coreService.storage.temp.update({ progressCreateSnackbar: null });
                 }
 
                 if (data.stage === 'start') {
@@ -93,7 +93,7 @@ function GlobalModals({ children }) {
                         variant: 'progress',
                     }, { persist: true });
 
-                    coreService.storage.updateTemp({ progressCreateSnackbar: snackId });
+                    coreService.storage.temp.update({ progressCreateSnackbar: snackId });
                 } else if (data.stage === 'error') {
                     enqueueSnackbar({
                         message: t('settingsBackup:localBackup.create.error.unknown'),
@@ -104,8 +104,8 @@ function GlobalModals({ children }) {
                 }
             }),
             coreService.globalEventBus.on('system/backup/local/restore/progress', (data) => {
-                if (coreService.storage.temp.progressRestoreSnackbar) {
-                    closeSnackbar(coreService.storage.temp.progressRestoreSnackbar);
+                if (coreService.storage.temp.data.progressRestoreSnackbar) {
+                    closeSnackbar(coreService.storage.temp.data.progressRestoreSnackbar);
                 }
 
                 if (data.result === 'start') {
@@ -114,7 +114,7 @@ function GlobalModals({ children }) {
                         variant: 'progress',
                     }, { persist: true });
 
-                    coreService.storage.updateTemp({ progressRestoreSnackbar: snackId });
+                    coreService.storage.temp.update({ progressRestoreSnackbar: snackId });
                 } else if (data.result === 'done') {
                     location.reload();
                 } else if (data.result === 'error') {
@@ -123,7 +123,7 @@ function GlobalModals({ children }) {
                         variant: data.result,
                     });
 
-                    coreService.storage.updatePersistent({
+                    coreService.storage.persistent.update({
                         restoreBackup: null,
                         restoreBackupError: null,
                     });
@@ -131,46 +131,46 @@ function GlobalModals({ children }) {
             }),
         ];
 
-        if (coreService.storage.persistent.localBackup) {
-            if (coreService.storage.persistent.localBackup === 'creating') {
+        if (coreService.storage.persistent.data.localBackup) {
+            if (coreService.storage.persistent.data.localBackup === 'creating') {
                 const snackId = enqueueSnackbar({
                     message: t('settingsBackup:localBackup.create.state.creating'),
                     variant: 'progress',
                 }, { persist: true });
 
-                coreService.storage.updateTemp({ progressCreateSnackbar: snackId });
-            } else if (coreService.storage.persistent.localBackup === 'error') {
+                coreService.storage.temp.update({ progressCreateSnackbar: snackId });
+            } else if (coreService.storage.persistent.data.localBackup === 'error') {
                 enqueueSnackbar({
                     message: t('settingsBackup:localBackup.create.error.unknown'),
                     variant: 'error',
                 });
-                coreService.storage.updatePersistent({ localBackup: null });
-            } else if (coreService.storage.persistent.localBackup === 'done') {
+                coreService.storage.persistent.update({ localBackup: null });
+            } else if (coreService.storage.persistent.data.localBackup === 'done') {
                 saveLocalBackup();
             }
         }
 
-        if (coreService.storage.persistent.restoreBackup) {
-            if (coreService.storage.persistent.restoreBackup === 'restoring') {
+        if (coreService.storage.persistent.data.restoreBackup) {
+            if (coreService.storage.persistent.data.restoreBackup === 'restoring') {
                 const snackId = enqueueSnackbar({
                     message: t('settingsBackup:localBackup.restore.state.restoring'),
                     variant: 'progress',
                 }, { persist: true });
 
-                coreService.storage.updateTemp({ progressRestoreSnackbar: snackId });
-            } else if (coreService.storage.persistent.restoreBackup === 'error') {
+                coreService.storage.temp.update({ progressRestoreSnackbar: snackId });
+            } else if (coreService.storage.persistent.data.restoreBackup === 'error') {
                 enqueueSnackbar({
                     message: t(`settingsBackup:localBackup.restore.error.${
-                        coreService.storage.persistent.restoreBackupError
+                        coreService.storage.persistent.data.restoreBackupError
                     }`),
                     variant: 'error',
                 });
-                coreService.storage.updatePersistent({
+                coreService.storage.persistent.update({
                     restoreBackup: null,
                     restoreBackupError: null,
                 });
-            } else if (coreService.storage.persistent.restoreBackup === 'done') {
-                coreService.storage.updatePersistent({ restoreBackup: null });
+            } else if (coreService.storage.persistent.data.restoreBackup === 'done') {
+                coreService.storage.persistent.update({ restoreBackup: null });
                 enqueueSnackbar({
                     message: t('settingsBackup:localBackup.restore.state.success'),
                     variant: 'success',

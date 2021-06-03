@@ -12,7 +12,7 @@ import { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
 import { Provider as AppStateProvider } from '@/stores/app/AppStateProvider';
 import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import { Provider as ContextMenuProvider } from '@/stores/app/ContextMenuProvider';
-import InitAppProvider from '@/stores/app/InitApp';
+import InitApp from '@/ui/InitApp';
 import initSentry from '@/config/sentry';
 import * as Sentry from '@sentry/react';
 import FabMenu from '@/ui/Menu/FabMenu';
@@ -35,9 +35,17 @@ function RootApp({ onChangeTheme }) {
                         {children}
                     </SnackbarProvider>
                 ),
-                ({ children }) => (<BaseStateProvider side={DESTINATION.APP}>{children}</BaseStateProvider>),
-                InitAppProvider,
-                ({ children }) => (<AppStateProvider onChangeTheme={onChangeTheme}>{children}</AppStateProvider>),
+                ({ children }) => (
+                    <BaseStateProvider side={DESTINATION.APP}>
+                        {children}
+                    </BaseStateProvider>
+                ),
+                InitApp,
+                ({ children }) => (
+                    <AppStateProvider onChangeTheme={onChangeTheme}>
+                        {children}
+                    </AppStateProvider>
+                ),
                 BUILD === 'full' ? BookmarksProvider : ({ children }) => children,
                 UploadBGForm,
                 GlobalModals,

@@ -218,13 +218,13 @@ function Desktop() {
                 shadowInput.click();
             },
         }),
-    ], { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.addingBgToLibrary] });
+    ], { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.data.addingBgToLibrary] });
 
     const wheelHandler = (event) => {
         if (!event.path.includes(rootRef.current)) return;
 
-        if (coreService.storage.temp.shakeFapPopper) {
-            coreService.storage.temp.shakeFapPopper();
+        if (coreService.storage.temp.data.shakeFapPopper) {
+            coreService.storage.temp.data.shakeFapPopper();
         } else if (event.deltaY > 0) appService.setActivity(ACTIVITY.BOOKMARKS);
         else appService.setActivity(ACTIVITY.DESKTOP);
     };
@@ -254,10 +254,10 @@ function Desktop() {
         };
     }, [appService.activity]);
 
-    const bgShowMode = backgrounds.currentBG.type === BG_TYPE.VIDEO;
+    const bgShowMode = backgrounds.currentBG?.type === BG_TYPE.VIDEO;
     const saveBgLocal = (
         backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
-        && backgrounds.currentBG.source !== BG_SOURCE.USER
+        && backgrounds.currentBG?.source !== BG_SOURCE.USER
     );
     const nextBg = (
         backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM
@@ -359,7 +359,7 @@ function Desktop() {
                                             icon={
                                                 (
                                                     backgrounds.currentBG.isSaved
-                                                    || coreService.storage.temp.addingBgToLibrary === FETCH.PENDING
+                                                    || coreService.storage.temp.data.addingBgToLibrary === FETCH.PENDING
                                                 )
                                                     ? LikedIcon
                                                     : LikeIcon
@@ -473,8 +473,8 @@ function Desktop() {
                 className={classes.backdrop}
                 open={appService.activity !== ACTIVITY.BOOKMARKS}
                 onClick={() => {
-                    if (coreService.storage.temp.closeFapPopper) {
-                        coreService.storage.temp.shakeFapPopper();
+                    if (coreService.storage.temp.data.closeFapPopper) {
+                        coreService.storage.temp.data.shakeFapPopper();
                     } else {
                         appService.setActivity(ACTIVITY.BOOKMARKS);
                     }

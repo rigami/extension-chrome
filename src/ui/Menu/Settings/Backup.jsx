@@ -73,7 +73,7 @@ function BrowserSync() {
                             eventToBackground('system/importSystemBookmarks', {}, () => {
                                 console.log('FINISH SYNC!');
                                 setSyncing(false);
-                                coreService.storage.updatePersistent({ bkmsLastTruthSearchTimestamp: Date.now() });
+                                coreService.storage.persistent.update({ bkmsLastTruthSearchTimestamp: Date.now() });
                             });
                         }}
                     >

@@ -124,7 +124,7 @@ function Changelog() {
     const coreService = useCoreService();
 
     useEffect(() => {
-        if (!coreService.storage.temp.newVersion) {
+        if (!coreService.storage.temp.data.newVersion) {
             return;
         }
 
@@ -133,7 +133,7 @@ function Changelog() {
                 <ChangelogScreen
                     onClose={() => {
                         closeSnackbar(changelogSnackbar);
-                        coreService.storage.updateTemp({ newVersion: false });
+                        coreService.storage.temp.update({ newVersion: false });
                     }}
                 />
             ),

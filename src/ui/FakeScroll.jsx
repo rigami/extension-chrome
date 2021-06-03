@@ -21,7 +21,7 @@ function FakeScroll({ children }) {
 
     useEffect(() => {
         rootRef.current.style.top = `${Math.max(
-            -coreService.storage.temp.activityScrollOffset,
+            -coreService.storage.temp.data.activityScrollOffset,
             -document.documentElement.clientHeight,
         )}px`;
 

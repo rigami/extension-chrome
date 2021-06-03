@@ -7,6 +7,7 @@ import React, {
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import AppService from '@/stores/app/index';
 import useCoreService from '@/stores/app/BaseStateProvider';
+import { SERVICE_STATE } from '@/enum';
 
 const context = createContext({});
 
@@ -25,7 +26,11 @@ function AppStateProvider({ children, onChangeTheme }) {
         if (onChangeTheme) onChangeTheme(store.settings.theme);
     }, [store.settings.theme]);
 
-    return store.settings.isSync && (
+    if (store.settings.state !== SERVICE_STATE.DONE) {
+        return null;
+    }
+
+    return (
         <Context.Provider value={store}>
             {children}
         </Context.Provider>

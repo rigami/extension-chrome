@@ -61,7 +61,7 @@ function FavoriteItem(props) {
     const {
         type,
         name,
-        imageUrl,
+        icoUrl,
         icoVariant,
         color,
     } = props;
@@ -72,7 +72,7 @@ function FavoriteItem(props) {
         <Card className={classes.favoriteItem} variant="outlined">
             {type === 'bookmark' && (
                 <Image
-                    src={imageUrl}
+                    src={icoUrl}
                     alternativeIcon={first(name)?.toUpperCase()}
                     variant={icoVariant === BKMS_VARIANT.POSTER ? BKMS_VARIANT.SYMBOL : icoVariant}
                     className={classes.icon}
@@ -154,7 +154,7 @@ function Favorites({ className: externalClassName }) {
                             <FavoriteItem
                                 type="bookmark"
                                 name={fav.name}
-                                imageUrl={fav.imageUrl}
+                                icoUrl={fav.icoUrl}
                                 icoVariant={fav.icoVariant}
                             />
                         </Link>

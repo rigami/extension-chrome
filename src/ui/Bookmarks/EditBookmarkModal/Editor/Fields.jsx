@@ -161,7 +161,7 @@ function Fields(props) {
                             data-ui-path="save"
                             variant="contained"
                             color="primary"
-                            disabled={!service.url || !service.name.trim()}
+                            disabled={!service.url || !service.name?.trim()}
                             onClick={() => {
                                 service.save()
                                     .then(() => { store.saveState = FETCH.DONE; onSave(); })

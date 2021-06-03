@@ -1,8 +1,12 @@
-import BusApp, { eventToBackground, initBus, instanceId } from '@/stores/server/bus';
-import { BG_SOURCE, BG_TYPE, DESTINATION } from '@/enum';
+import BusApp, { eventToBackground, initBus } from '@/stores/server/bus';
+import {
+    BG_SOURCE,
+    BG_TYPE,
+    DESTINATION,
+    SERVICE_STATE,
+} from '@/enum';
 import {
     reaction,
-    action,
     makeAutoObservable,
     runInAction,
 } from 'mobx';
@@ -11,14 +15,14 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import db, { open as openDB } from '@/utils/db';
 import appVariables from '@/config/appVariables';
-import fs, { open as openFS } from '@/utils/fs';
 import EventBus from '@/utils/eventBus';
-import { assign, first } from 'lodash';
+import { first } from 'lodash';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import fetchData from '@/utils/xhrPromise';
-import StorageConnector from '@/utils/storageConnector';
+import fetchData from '@/utils/fetchData';
 import { captureException } from '@sentry/react';
+import BrowserAPI from '@/utils/browserAPI';
+import Storage, { StorageConnector } from '@/stores/universal/storage';
 
 const APP_STATE = {
     WAIT_INIT: 'WAIT_INIT',
@@ -38,46 +42,6 @@ const PREPARE_PROGRESS = {
     DONE: 'DONE',
 };
 
-class Storage {
-    temp;
-    persistent;
-    isSync = false;
-
-    constructor() {
-        makeAutoObservable(this);
-        this.temp = {};
-        this.persistent = {};
-        try {
-            if (!localStorage.getItem('storage')) throw new Error('Storage not exist');
-            this.updatePersistent(JSON.parse(localStorage.getItem('storage')), false);
-            this.isSync = true;
-        } catch (e) {
-            console.warn('Failed get app settings from cache. Request form background...');
-            captureException(e);
-            eventToBackground('system/getStorage', null, (persistent) => {
-                this.updatePersistent(persistent, false);
-                this.isSync = true;
-            });
-        }
-
-        BusApp().on('system/syncStorage', ({ storage, changeInitiatorId }) => {
-            if (changeInitiatorId !== instanceId) this.updatePersistent(storage, false);
-        });
-    }
-
-    @action
-    updateTemp(props = {}) {
-        assign(this.temp, props);
-    }
-
-    @action
-    updatePersistent(props = {}, sync = true) {
-        assign(this.persistent, props);
-
-        if (sync) eventToBackground('system/syncStorage', props);
-    }
-}
-
 class Core {
     globalEventBus;
     localEventBus;
@@ -88,55 +52,11 @@ class Core {
 
     constructor({ side }) {
         makeAutoObservable(this);
-        this.appState = APP_STATE.INIT;
-        initBus(side || DESTINATION.APP);
-        this.globalEventBus = BusApp();
-        this.localEventBus = new EventBus();
-        this.storage = new Storage();
 
-        const init = async () => {
-            try {
-                await this.initialization();
-
-                if (this.appState === APP_STATE.FAILED) throw new Error('Failed init app');
-
-                runInAction(() => {
-                    if (!this.storage.persistent.lastUsageVersion) {
-                        this.appState = APP_STATE.REQUIRE_SETUP;
-                    } else {
-                        this.appState = APP_STATE.WORK;
-                    }
-                });
-            } catch (e) {
-                captureException(e);
-                runInAction(() => {
-                    this.appError = this.appError || 'ERR_UNKNOWN';
-                    this.appState = APP_STATE.FAILED;
-                });
-            }
-        };
-
-        this.globalEventBus.on('system/ping', (data, options, callback) => {
-            callback({ type: data });
-        });
-
-        reaction(() => this.storage.isSync, () => { init(); });
-
-        if (this.storage.isSync) init();
-
-        window.addEventListener('offline', () => { this.isOffline = true; });
-        window.addEventListener('online', () => { this.isOffline = false; });
+        this.subscribe(side);
     }
 
     async initialization() {
-        openFS().catch((e) => {
-            console.error('Failed init fs:', e);
-            captureException(e);
-
-            this.appError = 'ERR_INIT_FS';
-            this.appState = APP_STATE.FAILED;
-        });
-
         openDB().catch((e) => {
             console.error('Failed init db:', e);
             captureException(e);
@@ -145,12 +65,21 @@ class Core {
             this.appState = APP_STATE.FAILED;
         });
 
+        let overrideLng;
+
+        if (!PRODUCTION_MODE) {
+            const { devTools = {} } = await StorageConnector.get('devTools', {});
+
+            console.log('devTools:', devTools, devTools.lng || BrowserAPI.systemLanguage || 'en');
+
+            overrideLng = devTools.lng;
+        }
+
         await i18n
             .use(initReactI18next)
             .use(Backend)
             .init({
-                lng: StorageConnector.getJSON('devTools', {}).locale
-                    || (chrome?.i18n?.getUILanguage?.() || 'en').substring(0, 2),
+                lng: overrideLng || BrowserAPI.systemLanguage || 'en',
                 load: 'languageOnly',
                 cleanCode: true,
                 nonExplicitSupportedLngs: true,
@@ -175,6 +104,9 @@ class Core {
                 },
                 partialBundledLanguages: true,
             })
+            .then(() => {
+                console.log('Load i18n!');
+            })
             .catch((e) => {
                 console.error('Failed init i18n:', e);
                 captureException(e);
@@ -185,20 +117,17 @@ class Core {
     }
 
     async setDefaultState(progressCallback) {
-        console.log('Create FS');
-        progressCallback(5, PREPARE_PROGRESS.CREATE_FS);
-        await fs().mkdir('/temp');
-        await fs().mkdir('/bookmarksIcons');
-        await fs().mkdir('/backgrounds/full');
-        await fs().mkdir('/backgrounds/preview');
-
         progressCallback(10, PREPARE_PROGRESS.CREATE_DEFAULT_STRUCTURE);
 
-        await db().add('folders', {
-            id: 1,
-            name: 'Sundry',
-            parentId: 0,
-        });
+        try {
+            await db().add('folders', {
+                id: 1,
+                name: 'Sundry',
+                parentId: 0,
+            });
+        } catch (e) {
+            console.warn(e);
+        }
 
         if (BUILD === 'full') {
             progressCallback(15, PREPARE_PROGRESS.IMPORT_BOOKMARKS);
@@ -232,7 +161,7 @@ class Core {
             bg = await BackgroundsUniversalService.addToLibrary(new Background(appVariables.backgrounds.fallback));
         }
 
-        this.storage.updatePersistent({ bgCurrent: bg });
+        this.storage.persistent.update({ bgCurrent: bg });
 
         this.appState = APP_STATE.WORK;
 
@@ -240,6 +169,76 @@ class Core {
         progressCallback(100, PREPARE_PROGRESS.DONE);
 
         return Promise.resolve();
+    }
+
+    async subscribe(side) {
+        this.appState = APP_STATE.INIT;
+        initBus(side || DESTINATION.APP);
+        this.globalEventBus = BusApp();
+        this.localEventBus = new EventBus();
+        this.storage = new Storage('storage');
+
+        this.globalEventBus.on('system/ping', ({ data, callback }) => {
+            callback({ type: data });
+        });
+
+        console.log('Await sync storage...');
+
+        try {
+            await new Promise((resolve, rejection) => {
+                console.log('this.storage.state:', this.storage.persistent.state);
+                if (this.storage.persistent.state === SERVICE_STATE.DONE) {
+                    resolve();
+                    return;
+                } else if (this.storage.persistent.state === SERVICE_STATE.FAILED) {
+                    rejection();
+                    return;
+                }
+
+                reaction(
+                    () => this.storage.persistent.state,
+                    () => {
+                        console.log('this.storage.state:', this.storage.persistent.state);
+                        if (this.storage.persistent.state === SERVICE_STATE.DONE) {
+                            resolve();
+                        } else if (this.storage.persistent.state === SERVICE_STATE.FAILED) {
+                            rejection();
+                        }
+                    },
+                );
+            });
+        } catch (e) {
+            console.error(e);
+            this.appError = 'ERR_INIT_STORAGE';
+            this.appState = APP_STATE.FAILED;
+            return;
+        }
+
+        console.log('Storage is sync!');
+
+        try {
+            await this.initialization();
+
+            if (this.appState === APP_STATE.FAILED) throw new Error('Failed init app');
+
+            runInAction(() => {
+                if (!this.storage.persistent.data.lastUsageVersion) {
+                    this.appState = APP_STATE.REQUIRE_SETUP;
+                } else {
+                    this.appState = APP_STATE.WORK;
+                }
+            });
+        } catch (e) {
+            console.error(e);
+            captureException(e);
+            runInAction(() => {
+                this.appError = this.appError || 'ERR_UNKNOWN';
+                this.appState = APP_STATE.FAILED;
+            });
+        }
+
+        window.addEventListener('offline', () => { this.isOffline = true; });
+        window.addEventListener('online', () => { this.isOffline = false; });
     }
 }
 

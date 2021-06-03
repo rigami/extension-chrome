@@ -1,10 +1,10 @@
 import appVariables from '@/config/appVariables';
-import xhrPromise, { AbortController } from '@/utils/xhrPromise';
+import fetchData from '@/utils/fetchData';
 import parseSite from '@/utils/localSiteParse';
 import { captureException } from '@sentry/react';
 
 const search = async (query, signal) => {
-    const response = await xhrPromise(
+    const response = await fetchData(
         `${
             PRODUCTION_MODE
                 ? 'https://duckduckgo.com/lite/?q'
@@ -22,8 +22,8 @@ const search = async (query, signal) => {
     }));
 };
 
-const getImageRecalc = (imageUrl, signal) => xhrPromise(
-    imageUrl,
+const getImageRecalc = (icoUrl, signal) => fetchData(
+    icoUrl,
     { signal },
 ).then(({ response }) => response);
 
@@ -34,12 +34,12 @@ const getSiteInfoLocal = async (url) => {
         localSearchUrl = `http://${localSearchUrl}`;
     }
 
-    const { response, xhr } = await xhrPromise(
+    const { response, raw } = await fetchData(
         localSearchUrl,
-        { responseType: 'document' },
+        { responseType: 'text' },
     );
 
-    const urlOrigin = xhr.responseURL.substring(0, xhr.responseURL.indexOf('/', 'http://'.length + 1));
+    const urlOrigin = raw.url.substring(0, raw.url.indexOf('/', 'http://'.length + 1));
 
     let parseData = {};
 
@@ -52,14 +52,14 @@ const getSiteInfoLocal = async (url) => {
 
     console.log('local parse data:', {
         ...parseData,
-        url: xhr.responseURL,
+        url: raw.responseURL,
         baseUrl: localSearchUrl,
         urlOrigin,
     });
 
     return {
         ...parseData,
-        url: xhr.responseURL,
+        url: raw.responseURL,
         baseUrl: localSearchUrl,
         urlOrigin,
     };
@@ -68,6 +68,8 @@ const getSiteInfoLocal = async (url) => {
 const getSiteInfo = async (url, onMeta) => {
     const localParseData = await getSiteInfoLocal(url);
 
+    console.log('localParseData:', localParseData);
+
     if (onMeta) {
         onMeta({
             title: localParseData.title,
@@ -75,22 +77,28 @@ const getSiteInfo = async (url, onMeta) => {
         });
     }
 
-    const { response: result } = await xhrPromise(
-        `${appVariables.rest.url}/site-parse/add-data`,
-        {
-            body: JSON.stringify(localParseData),
-            method: 'POST',
-            headers: [
-                {
-                    name: 'Content-type',
-                    value: 'application/json',
-                },
-            ],
-            responseType: 'json',
-        },
-    );
+    try {
+        const { response: result } = await fetchData(
+            `${appVariables.rest.url}/site-parse/add-data`,
+            {
+                body: JSON.stringify(localParseData),
+                method: 'POST',
+                headers: [
+                    {
+                        name: 'Content-type',
+                        value: 'application/json',
+                    },
+                ],
+                responseType: 'json',
+            },
+        );
 
-    return result;
+        return result;
+    } catch (e) {
+        console.error(e);
+
+        return localParseData;
+    }
 };
 
 const getFaviconUrl = (url = '') => {
@@ -107,7 +115,6 @@ const getFaviconUrl = (url = '') => {
 export {
     search,
     getFaviconUrl,
-    AbortController,
     getSiteInfo,
     getImageRecalc,
     getSiteInfoLocal,

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable, Observer } from 'mobx-react-lite';
 import {
@@ -230,9 +230,9 @@ function RecentlyClosed({ className: externalClassName }) {
     const coreService = useCoreService();
     const subheaderRef = useRef();
     const store = useLocalObservable(() => ({
-        expand: typeof coreService.storage.persistent.expandRecentlyClosed === 'undefined'
+        expand: typeof coreService.storage.persistent.data.expandRecentlyClosed === 'undefined'
             ? true
-            : coreService.storage.persistent.expandRecentlyClosed,
+            : coreService.storage.persistent.data.expandRecentlyClosed,
         openPopover: false,
         anchorEl: null,
     }));
@@ -259,7 +259,7 @@ function RecentlyClosed({ className: externalClassName }) {
                                     className={classes.action}
                                     onClick={() => {
                                         store.expand = !store.expand;
-                                        coreService.storage.updatePersistent({ expandRecentlyClosed: store.expand });
+                                        coreService.storage.persistent.update({ expandRecentlyClosed: store.expand });
                                     }}
                                 >
                                     {open ? <LessIcon /> : <MoreIcon />}
@@ -310,4 +310,4 @@ function RecentlyClosed({ className: externalClassName }) {
     );
 }
 
-export default observer(RecentlyClosed);
+export default memo(observer(RecentlyClosed));

@@ -12,6 +12,7 @@ import clsx from 'clsx';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import MenuInfo from '@/ui/Menu/MenuInfo';
+import { SERVICE_STATE } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
     greetingContainer: {
@@ -108,7 +109,7 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
         firstRender: true,
         greeting: null,
         isFirstRender: true,
-        editUserName: coreService.storage.persistent.userName || '',
+        editUserName: coreService.storage.persistent.data.userName || '',
     }));
 
     const hours = new Date().getHours();
@@ -129,11 +130,11 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
             store.firstRender = false;
             return;
         }
-        store.editUserName = coreService.storage.persistent.userName;
+        store.editUserName = coreService.storage.persistent.data.userName;
 
         let greeting;
 
-        if (typeof coreService.storage.temp.greeting === 'undefined') {
+        if (typeof coreService.storage.temp.data.greeting === 'undefined') {
             const greetings = t([time, 'default'], {
                 returnObjects: true,
                 name: '[name]',
@@ -143,20 +144,20 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
 
             greeting = sample(Array.isArray(greetings) ? greetings : []);
         } else {
-            greeting = coreService.storage.temp.greeting;
+            greeting = coreService.storage.temp.data.greeting;
         }
 
         store.greeting = store.greeting || greeting;
-    }, [coreService.storage.persistent.userName]);
+    }, [coreService.storage.persistent.data.userName]);
 
     useEffect(() => {
         if (!ready) return () => {};
 
         let greeting;
 
-        const lastShowWasRecently = coreService.storage.persistent.lastGreetingTimestamp > Date.now() - 10 * 60 * 1000;
+        const lastShowWasRecently = coreService.storage.persistent.data.lastGreetingTimestamp > Date.now() - 10 * 60 * 1000;
 
-        if (typeof coreService.storage.temp.greeting === 'undefined' && (!lastShowWasRecently || force)) {
+        if (typeof coreService.storage.temp.data.greeting === 'undefined' && (!lastShowWasRecently || force)) {
             const greetings = t([time, 'default'], {
                 returnObjects: true,
                 name: '[name]',
@@ -164,20 +165,20 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
 
             greeting = sample(Array.isArray(greetings) ? greetings : []);
 
-            if (!force) coreService.storage.updateTemp({ greeting: null });
+            if (!force) coreService.storage.temp.update({ greeting: null });
         } else {
-            greeting = coreService.storage.temp.greeting;
+            greeting = coreService.storage.temp.data.greeting;
         }
 
         store.greeting = greeting;
-        if (greeting && !force) coreService.storage.updatePersistent({ lastGreetingTimestamp: Date.now() });
+        if (greeting && !force) coreService.storage.persistent.update({ lastGreetingTimestamp: Date.now() });
 
         return () => {
-            if (!force) coreService.storage.updatePersistent({ userName: store.editUserName || null });
+            if (!force) coreService.storage.persistent.update({ userName: store.editUserName || null });
         };
     }, [ready]);
 
-    if (!ready || coreService.storage.persistent.userName === null) {
+    if (!ready || coreService.storage.persistent.data.userName === null) {
         return (<Box className={clsx(classes.greetingContainer, externalClassName)} />);
     }
 
@@ -211,7 +212,7 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
                         actions={[
                             <Button
                                 key="cancel"
-                                onClick={() => coreService.storage.updatePersistent({ userName: null })}
+                                onClick={() => coreService.storage.persistent.update({ userName: null })}
                             >
                                 {t('cancel')}
                             </Button>,
@@ -243,7 +244,7 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
                                 onInput={(event) => {
                                     store.editUserName = event.target.innerText;
                                     if (!event.target.innerText.trim()) {
-                                        coreService.storage.updatePersistent({ userName: store.editUserName });
+                                        coreService.storage.persistent.update({ userName: store.editUserName });
                                     }
                                 }}
                             />
@@ -258,14 +259,15 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
 
 const ObserverGreeting = observer(Greeting);
 
-function GreetingContainer(props) {
+function GreetingContainer({ className: externalClassName, ...props }) {
+    const classes = useStyles();
     const coreService = useCoreService();
 
-    console.log('coreService.storage', coreService.storage.isSync, 1, coreService.storage.persistent.userName, 2);
+    if (coreService.storage.persistent.state !== SERVICE_STATE.DONE) {
+        return (<Box className={clsx(classes.greetingContainer, externalClassName)} />);
+    }
 
-    if (!coreService.storage.isSync) return null;
-
-    return (<ObserverGreeting {...props} />);
+    return (<ObserverGreeting {...props} className={externalClassName} />);
 }
 
 export default observer(GreetingContainer);

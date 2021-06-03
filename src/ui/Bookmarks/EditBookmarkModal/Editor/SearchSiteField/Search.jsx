@@ -12,7 +12,6 @@ import {
     Box,
 } from '@material-ui/core';
 import { PublicRounded as WebSiteIcon } from '@material-ui/icons';
-import { AbortController } from '@/utils/xhrPromise';
 import { getFaviconUrl, getSiteInfoLocal, search } from '@/utils/siteSearch';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -88,8 +87,6 @@ function Search({ query = '', onSelect }) {
 
         setTimer(setTimeout(() => {
             setTimer(null);
-            const currController = new AbortController();
-            setController(currController);
 
             getSiteInfoLocal(query.trim())
                 .then((siteData) => {
@@ -104,7 +101,7 @@ function Search({ query = '', onSelect }) {
                     setStraightLoading(false);
                 });
 
-            search(query.trim(), currController)
+            search(query.trim())
                 .then((foundResults) => {
                     setGlobalResults(foundResults);
                 })

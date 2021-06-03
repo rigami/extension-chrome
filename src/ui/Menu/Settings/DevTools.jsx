@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import StorageConnector from '@/utils/storageConnector';
+import { StorageConnector } from '@/stores/universal/storage';
 import { Button } from '@material-ui/core';
 import { eventToBackground } from '@/stores/server/bus';
 
@@ -19,11 +19,14 @@ function HeaderActions() {
     const classes = useStyles();
     const coreService = useCoreService();
     const [changeSettings, setChangeSettings] = useState(null);
+    const [defaultData, setDefaultData] = useState(null);
 
     useEffect(() => {
         const listenerId = coreService.localEventBus.on('devTools.changed', (settings) => {
             setChangeSettings(settings);
         });
+
+        StorageConnector.get('devTools').then(({ devTools }) => setDefaultData(devTools));
 
         return () => coreService.localEventBus.removeListener(listenerId);
     }, []);
@@ -35,18 +38,18 @@ function HeaderActions() {
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                    StorageConnector.setJSON('devTools', changeSettings);
-                    eventToBackground('system.forceReload');
+                    StorageConnector.set({ 'devTools': changeSettings })
+                        .finally(() => eventToBackground('system.forceReload'));
                 }}
             >
                 Apply
             </Button>
             <Button
-                disabled={!StorageConnector.get('devTools')}
+                disabled={!defaultData}
                 className={classes.headerButton}
                 onClick={() => {
-                    StorageConnector.remove('devTools');
-                    eventToBackground('system.forceReload');
+                    StorageConnector.remove('devTools')
+                        .finally(() => eventToBackground('system.forceReload'));
                 }}
             >
                 Reset
@@ -67,9 +70,18 @@ function DevTools() {
     const coreService = useCoreService();
     const { t } = useTranslation();
     const store = useLocalObservable(() => ({
-        settings: StorageConnector.getJSON('devTools', { productionEnv: false }),
+        settings: { productionEnv: false },
         hasChange: false,
     }));
+
+    useEffect(() => {
+        StorageConnector.get('devTools').then(({ devTools = {} }) => {
+            store.settings = {
+                ...store.settings,
+                ...devTools,
+            };
+        });
+    }, []);
 
     useEffect(() => {
         if (store.hasChange) coreService.localEventBus.call('devTools.changed', store.settings);

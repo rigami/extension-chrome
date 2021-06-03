@@ -73,8 +73,8 @@ function WeatherWidget({ onSelect }) {
             <Collapse in={widgets.settings.dtwUseWeather}>
                 <MenuInfo
                     show={
-                        !coreService.storage.persistent.weatherLocation
-                        && coreService.storage.persistent.weather?.status === FETCH.FAILED
+                        !coreService.storage.persistent.data.weatherLocation
+                        && coreService.storage.persistent.data.weather?.status === FETCH.FAILED
                     }
                     message={t('weather.region.notDetected.title')}
                     description={t('weather.region.notDetected.description')}
@@ -91,8 +91,8 @@ function WeatherWidget({ onSelect }) {
                 />
                 <MenuInfo
                     show={
-                        coreService.storage.persistent.weatherLocation
-                        && coreService.storage.persistent.weather?.status === FETCH.FAILED
+                        coreService.storage.persistent.data.weatherLocation
+                        && coreService.storage.persistent.data.weather?.status === FETCH.FAILED
                     }
                     message={t('weather.error.serviceUnavailable')}
                 />
@@ -123,13 +123,13 @@ function WeatherWidget({ onSelect }) {
                     title={t('weather.region.title')}
                     description={(
                         (
-                            coreService.storage.persistent.weatherLocation
-                            && !coreService.storage.persistent.weatherLocation?.manual
+                            coreService.storage.persistent.data.weatherLocation
+                            && !coreService.storage.persistent.data.weatherLocation?.manual
                             && t('weather.region.select.auto')
                         )
                         || (
-                            coreService.storage.persistent.weatherLocation
-                            && coreService.storage.persistent.weatherLocation?.manual
+                            coreService.storage.persistent.data.weatherLocation
+                            && coreService.storage.persistent.data.weatherLocation?.manual
                             && ('weather.region.select.manual')
                         )
                         || t('weather.region.select.failed')
@@ -137,13 +137,13 @@ function WeatherWidget({ onSelect }) {
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => onSelect(changeLocationPage),
-                        component: coreService.storage.persistent.weatherLocation
+                        component: coreService.storage.persistent.data.weatherLocation
                             ? (`${
-                            coreService.storage.persistent.weatherLocation?.name || t('unknown')
+                            coreService.storage.persistent.data.weatherLocation?.name || t('unknown')
                         } [${
-                            round(coreService.storage.persistent.weatherLocation?.latitude, 1) || '-'
+                            round(coreService.storage.persistent.data.weatherLocation?.latitude, 1) || '-'
                         }, ${
-                            round(coreService.storage.persistent.weatherLocation?.longitude, 1) || '-'
+                            round(coreService.storage.persistent.data.weatherLocation?.longitude, 1) || '-'
                         }]`)
                             : (
                                 <Typography className={classes.notSetValue}>
@@ -152,7 +152,7 @@ function WeatherWidget({ onSelect }) {
                             ),
                     }}
                 />
-                {coreService.storage.persistent.weather?.status === FETCH.PENDING && (<LinearProgress />)}
+                {coreService.storage.persistent.data.weather?.status === FETCH.PENDING && (<LinearProgress />)}
                 <MenuRow
                     title={t('weather.clickAction.title')}
                     description={t('weather.clickAction.description')}

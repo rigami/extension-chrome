@@ -3,7 +3,9 @@ import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { ACTIVITY, BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
+import {
+    ACTIVITY, BKMS_FAP_POSITION, BKMS_FAP_STYLE, SERVICE_STATE,
+} from '@/enum';
 import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
@@ -116,7 +118,7 @@ function Widgets({ stickToBottom }) {
     const { height: heightRoot, ref: refRoot } = useResizeDetector();
     const { height: heightWidget, ref: refWidget } = useResizeDetector();
 
-    if (BUILD === 'full' && !bookmarksService.settings.isSync) return null;
+    if (BUILD === 'full' && bookmarksService.settings.state !== SERVICE_STATE.DONE) return null;
 
     let offset = 0;
     let positionOffset = '';

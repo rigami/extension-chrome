@@ -12,7 +12,7 @@ function LinkButton(props) {
         id,
         name,
         url,
-        imageUrl,
+        icoUrl,
         icoVariant,
         className: externalClassName,
         children,
@@ -45,7 +45,7 @@ function LinkButton(props) {
             {children}
             {!children && (
                 <Image
-                    src={imageUrl}
+                    src={icoUrl}
                     alternativeIcon={first(name)?.toUpperCase()}
                     variant={icoVariant === BKMS_VARIANT.POSTER ? BKMS_VARIANT.SYMBOL : icoVariant}
                 />

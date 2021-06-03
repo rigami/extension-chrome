@@ -69,7 +69,7 @@ function BookmarksGrid(props) {
                                     tags={card.tags}
                                     icoVariant={card.icoVariant}
                                     description={card.description}
-                                    imageUrl={card.imageUrl}
+                                    icoUrl={card.icoUrl}
                                     key={card.id}
                                     style={{ marginBottom: theme.spacing(2) }}
                                 />

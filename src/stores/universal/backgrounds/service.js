@@ -1,8 +1,7 @@
 import db from '@/utils/db';
-import fs from '@/utils/fs';
 import createPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/server/bus';
-import fetchData from '@/utils/xhrPromise';
+import fetchData from '@/utils/fetchData';
 import appVariables from '@/config/appVariables';
 import { BG_SOURCE } from '@/enum';
 import { captureException } from '@sentry/react';
@@ -20,32 +19,28 @@ class BackgroundsUniversalService {
 
     static async addToLibrary(saveBG) {
         console.log('[backgrounds] Add bg to library', saveBG);
-        let saveFileName = saveBG.fileName;
 
-        if (!saveFileName) {
-            saveFileName = await this.fetchBG(saveBG.downloadLink);
-        } else {
-            const fullBg = await fs().read(`${BackgroundsUniversalService.FULL_PATH}/${saveFileName}`, { type: 'blob' });
-            console.log('[backgrounds] Create preview...');
+        const urls = await this.fetchBG(saveBG);
 
-            const previewDefaultBG = await createPreview(fullBg, saveBG.type);
+        console.log('urls:', urls);
 
-            console.log('[backgrounds] Save preview...');
-
-            await fs().write(`${BackgroundsUniversalService.PREVIEW_PATH}/${saveFileName}`, previewDefaultBG);
-        }
-
+        const { url, previewUrl } = urls;
         const savedBG = new Background({
             ...saveBG,
             isSaved: true,
-            fileName: saveFileName,
+            fullSrc: url,
+            previewSrc: previewUrl,
         });
 
         console.log('savedBG', savedBG);
 
-        await db().add('backgrounds', savedBG);
+        try {
+            await db().add('backgrounds', savedBG);
+        } catch (e) {
+            console.error(e);
+        }
 
-        eventToApp('backgrounds/new', { bg: savedBG });
+        eventToApp('backgrounds/new', savedBG);
 
         if (savedBG.source !== BG_SOURCE.USER) {
             fetchData(`${appVariables.rest.url}/backgrounds/mark-download/${savedBG.source}/${savedBG.originId}`)
@@ -71,8 +66,7 @@ class BackgroundsUniversalService {
 
         if (!notRemoveCache) {
             try {
-                await fs().rmrf(`/backgrounds/full/${removeBG.fileName}`);
-                await fs().rmrf(`/backgrounds/preview/${removeBG.fileName}`);
+                // TODO: Added remove bg from cache
                 console.log('[backgrounds] Remove from file system...');
             } catch (e) {
                 console.log(`[backgrounds] BG with id=${removeBG.id} not find in file system`);
@@ -83,19 +77,27 @@ class BackgroundsUniversalService {
         }
     }
 
-    static async fetchBG(src, { full = true, preview = true, fileName: defaultFileName } = {}) {
-        const fileName = defaultFileName || Date.now().toString();
+    static async fetchBG(bg, options = {}) {
+        const {
+            full = true,
+            preview = true,
+        } = options;
+        const fileName = Date.now().toString();
         console.log('[backgrounds] Fetch background', {
-            src,
+            bg,
             fileName,
             full,
             preview,
         });
 
         let defaultBG;
+        let url;
+        let previewUrl;
+
+        const cache = await caches.open('backgrounds');
 
         try {
-            const response = await fetch(src);
+            const response = await fetch(bg.downloadLink);
             if (!response.ok) throw new Error(response.statusText);
             defaultBG = await response.blob();
         } catch (e) {
@@ -110,7 +112,13 @@ class BackgroundsUniversalService {
 
                 const previewDefaultBG = await createPreview(defaultBG);
 
-                await fs().write(`${BackgroundsUniversalService.PREVIEW_PATH}/${fileName}`, previewDefaultBG);
+                const previewResponse = new Response(previewDefaultBG);
+                if (bg.source === BG_SOURCE.USER) {
+                    previewUrl = `${appVariables.rest.url}/background/user/get-preview?id=${bg.id}`;
+                } else {
+                    previewUrl = `${appVariables.rest.url}/background/get-preview?src=${encodeURIComponent(bg.downloadLink)}`;
+                }
+                await cache.put(previewUrl, previewResponse);
             } catch (e) {
                 console.warn('Failed create preview:', e);
                 captureException(e);
@@ -119,14 +127,21 @@ class BackgroundsUniversalService {
 
         if (full) {
             console.log('[backgrounds] Save BG in file system...');
-            await fs().write(`${BackgroundsUniversalService.FULL_PATH}/${fileName}`, defaultBG)
-                .catch((e) => {
-                    console.error(e);
-                    captureException(e);
-                });
+
+            if (bg.source === BG_SOURCE.USER) {
+                url = `${appVariables.rest.url}/background/user?src=${bg.id}`;
+                const fullResponse = new Response(defaultBG);
+                await cache.put(url, fullResponse);
+            } else {
+                url = bg.downloadLink;
+                await cache.add(url);
+            }
         }
 
-        return fileName;
+        return {
+            url,
+            previewUrl,
+        };
     }
 
     static async getAll() {

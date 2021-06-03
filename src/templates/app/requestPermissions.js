@@ -6,7 +6,7 @@ const bus = initBus(DESTINATION.REQUEST_PERMISSIONS);
 
 eventToApp('requestPermissions/ready');
 
-bus.on('requestPermissions/geolocation', async ({}, {}, callback) => {
+bus.on('requestPermissions/geolocation', async ({ callback }) => {
     console.log('requestPermissions/geolocation');
 
     try {

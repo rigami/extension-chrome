@@ -79,8 +79,8 @@ function InterrogationRequest() {
 
     useEffect(() => {
         if (
-            coreService.storage.temp.newVersion
-            || coreService.storage.persistent.completedPoll === 'how-do-you-rigami'
+            coreService.storage.temp.data.newVersion
+            || coreService.storage.persistent.data.completedPoll === 'how-do-you-rigami'
         ) return;
 
         const rateSnackbar = enqueueSnackbar({
@@ -88,10 +88,10 @@ function InterrogationRequest() {
                 <RequestScreen
                     onClose={() => {
                         closeSnackbar(rateSnackbar);
-                        coreService.storage.updatePersistent({ completedPoll: 'how-do-you-rigami' });
+                        coreService.storage.persistent.update({ completedPoll: 'how-do-you-rigami' });
                     }}
                     onEnd={() => {
-                        coreService.storage.updatePersistent({ completedPoll: 'how-do-you-rigami' });
+                        coreService.storage.persistent.update({ completedPoll: 'how-do-you-rigami' });
                     }}
                 />
             ),

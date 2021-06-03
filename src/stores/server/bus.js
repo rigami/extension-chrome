@@ -1,6 +1,7 @@
 import EventBus from '@/utils/eventBus';
 import { DESTINATION } from '@/enum';
 import appVariables from '@/config/appVariables';
+import BrowserAPI from '@/utils/browserAPI';
 
 let bus = null;
 const instanceId = Date.now();
@@ -8,46 +9,80 @@ const instanceId = Date.now();
 class BusApp {
     _eventBus = new EventBus();
     _destination;
+    _awaitCallbacks = {};
 
     constructor(destination) {
         this._destination = destination;
+        this._channel = new BroadcastChannel(`rigami-${appVariables.extensionId}`);
 
-        if (!chrome?.runtime?.onMessage) {
-            console.error('Not find runtime onMessage module');
-            return;
-        }
+        this._channel.onmessage = ({ data: props }) => {
+            console.log('[BUS] on message:', props);
 
-        chrome.runtime.onMessage.addListener((props, info, callback) => {
-            const { event, destination: eventDestination, data, initiatorId } = props;
-            console.log('event from', eventDestination, props, info);
+            const { event, destination: eventDestination, initiatorId, callbackId } = props;
+            console.log('event from', eventDestination, event);
+            if (event === 'callback' && callbackId in this._awaitCallbacks) {
+                this._awaitCallbacks[callbackId](props.data);
+                delete this._awaitCallbacks[callbackId];
+
+                return;
+            }
+
             if (eventDestination !== this._destination || instanceId === initiatorId) return true;
-            this._eventBus.call(event, data, props, callback);
 
-            return true;
-        });
+            let callProps = {
+                event,
+                data: props.data,
+                initiatorId,
+            };
+
+            if (callbackId) {
+                callProps = {
+                    ...callProps,
+                    callbackId,
+                    callback: (callbackData) => {
+                        console.log('callback', callbackData);
+                        this.call('callback', eventDestination, callbackData, callbackId);
+                    },
+                };
+            }
+
+            this._eventBus.call(event, callProps);
+        };
     }
 
     call(event, destination, data, callback) {
-        if (this._destination !== DESTINATION.BACKGROUND) {
-            this._eventBus.call(event, data, {
-                event,
-                destination,
-                data,
-                initiatorId: instanceId,
-            }, callback);
+        let callbackId = null;
+        if (typeof callback === 'function') {
+            callbackId = `${event}#${Math.random().toString().slice(2)}`;
+            this._awaitCallbacks[callbackId] = callback;
+        }
+        if (typeof callback === 'string') {
+            callbackId = callback;
         }
 
-        chrome.runtime.sendMessage(
-            appVariables.extensionId,
-            {
-                destination,
+        if (this._destination !== DESTINATION.BACKGROUND) {
+            this._eventBus.call(event, {
                 event,
+                destination,
                 data,
+                callbackId,
                 initiatorId: instanceId,
-            },
-            {},
-            callback,
-        );
+            });
+        }
+
+        console.log('[BUS] post message:', JSON.parse(JSON.stringify({
+            destination,
+            event,
+            data,
+            initiatorId: instanceId,
+        })));
+        this._channel.postMessage(JSON.parse(JSON.stringify({
+            destination,
+            event,
+            data,
+            callbackId,
+            initiatorId: instanceId,
+        })));
     }
 
     on(event, callback) {
