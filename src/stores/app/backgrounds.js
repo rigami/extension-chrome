@@ -35,7 +35,8 @@ class BackgroundsAppService {
         this._coreService = coreService;
         this.settings = new BackgroundsSettings();
 
-        this._coreService.globalEventBus.on('backgrounds/state', ({ state }) => {
+        this._coreService.globalEventBus.on('backgrounds/state', ({ data: state }) => {
+            console.log('[backgrounds] Change background state:', state);
             this.bgState = state;
         });
 
@@ -56,7 +57,7 @@ class BackgroundsAppService {
         };
 
         reaction(
-            () => this._coreService.storage.persistent?.data.bgCurrent?.id,
+            () => this._coreService.storage.persistent.data.bgCurrent?.id,
             () => {
                 if (this._coreService.storage.persistent.data.bgCurrent) {
                     setCurrentBg(this._coreService.storage.persistent.data.bgCurrent);
@@ -65,14 +66,14 @@ class BackgroundsAppService {
         );
 
         reaction(
-            () => this._coreService.storage.persistent?.data.bgShowMode,
+            () => this._coreService.storage.persistent.data.bgShowMode,
             () => {
-                this.bgShowMode = this._coreService.storage.persistent?.data.bgShowMode;
+                this.bgShowMode = this._coreService.storage.persistent.data.bgShowMode;
             },
         );
 
         reaction(
-            () => this._coreService.storage.persistent?.data.bgCurrent?.pauseStubSrc,
+            () => this._coreService.storage.persistent.data.bgCurrent?.pauseStubSrc,
             () => {
                 if (this._coreService.storage.persistent.bgCurrent) {
                     this._currentBG = this._coreService.storage.persistent.bgCurrent;
@@ -80,7 +81,7 @@ class BackgroundsAppService {
             },
         );
         reaction(
-            () => this._coreService.storage.persistent?.data.bgCurrent?.pauseTimestamp,
+            () => this._coreService.storage.persistent.data.bgCurrent?.pauseTimestamp,
             () => {
                 if (this._coreService.storage.persistent.data.bgCurrent) {
                     this._currentBG = this._coreService.storage.persistent.data.bgCurrent;
@@ -88,10 +89,10 @@ class BackgroundsAppService {
             },
         );
 
-        if (this._coreService.storage.persistent?.data.bgCurrent) {
+        if (this._coreService.storage.persistent.data.bgCurrent) {
             setCurrentBg(this._coreService.storage.persistent.data.bgCurrent);
         }
-        this.bgShowMode = this._coreService.storage.persistent?.data.bgShowMode || BG_SHOW_MODE.LIVE;
+        this.bgShowMode = this._coreService.storage.persistent.data.bgShowMode || BG_SHOW_MODE.LIVE;
 
         this._coreService.globalEventBus.on('backgrounds/new', ({ data: bg }) => {
             setCurrentBg(bg);

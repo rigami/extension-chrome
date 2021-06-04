@@ -229,10 +229,6 @@ function Desktop() {
         else appService.setActivity(ACTIVITY.DESKTOP);
     };
 
-    if (BUILD === 'full') {
-        console.log('REMOVED_BLOCK_UNUSED_IN_BUILD');
-    }
-
     useEffect(() => {
         if (BUILD !== 'full') return () => {};
 

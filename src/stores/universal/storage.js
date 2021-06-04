@@ -37,6 +37,7 @@ class StorageConnector {
 class PersistentStorage {
     _data;
     namespace;
+    updateTimestamp = Date.now();
     state = SERVICE_STATE.WAIT;
 
     constructor(namespace, upgradeState) {
@@ -54,7 +55,12 @@ class PersistentStorage {
 
     sync = throttle(() => {
         console.log(`[storage] Update '${this.namespace}' data from cache`, toJS(this._data));
-        StorageConnector.set({ [this.namespace]: this._data })
+        StorageConnector.set({
+            [this.namespace]: {
+                ...this._data,
+                updateTimestamp: this.updateTimestamp,
+            },
+        })
             .then(() => console.log(`[storage] '${this.namespace}' is update`));
     }, 100);
 
@@ -103,8 +109,16 @@ class PersistentStorage {
         }
 
         BrowserAPI.onChangeStorage((changes, namespace) => {
-            if (namespace === 'local' && this.namespace in changes) {
-                console.log(`[storage] Data from '${this.namespace}' namespace has changed. Update cache...`, changes[this.namespace]);
+            if (
+                namespace === 'local'
+                && this.namespace in changes
+                && this.updateTimestamp < changes[this.namespace].newValue.updateTimestamp
+            ) {
+                console.log(
+                    `[storage] Data from '${this.namespace}' namespace has changed. Update cache...`,
+                    changes[this.namespace],
+                );
+                this.updateTimestamp = Date.now();
                 assign(this._data, changes[this.namespace].newValue);
             }
         });
