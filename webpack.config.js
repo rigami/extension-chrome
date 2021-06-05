@@ -16,7 +16,6 @@ module.exports = () => {
     let entry = {
         app: './templates/app/index.jsx',
         // server: './templates/server/index.js',
-        requestPermissions: './templates/app/requestPermissions.js',
     };
     const plugins = [
         new CleanWebpackPlugin({
@@ -36,12 +35,6 @@ module.exports = () => {
             chunks: ['app'],
             template: './templates/app/index.html',
             filename: 'index.html',
-        }),
-        new HtmlWebpackPlugin({
-            inject: true,
-            chunks: ['requestPermissions'],
-            template: './templates/app/requestPermissions.html',
-            filename: 'requestPermissions.html',
         }),
         new CopyWebpackPlugin({
             patterns: [

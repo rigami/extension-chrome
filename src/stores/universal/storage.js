@@ -55,6 +55,7 @@ class PersistentStorage {
 
     sync = throttle(() => {
         console.log(`[storage] Update '${this.namespace}' data from cache`, toJS(this._data));
+        this.updateTimestamp = Date.now();
         StorageConnector.set({
             [this.namespace]: {
                 ...this._data,

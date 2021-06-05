@@ -84,8 +84,7 @@ function HeaderActions() {
                                 coreService.localEventBus.call('system/widgets/weather/focusManualSearchInput');
                             } else {
                                 setLoading(true);
-                                widgets.getPermissionsToWeather()
-                                    .then(() => widgets.autoDetectWeatherLocation())
+                                widgets.autoDetectWeatherLocation()
                                     .catch((e) => {
                                         captureException(e);
                                         console.error(e);

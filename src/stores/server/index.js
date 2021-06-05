@@ -6,6 +6,7 @@ import { reaction } from 'mobx';
 import { open as openDB } from '@/utils/db';
 import * as Sentry from '@sentry/react';
 import appVariables from '@/config/appVariables';
+import awaitInstallStorage from '@/utils/awaitInstallStorage';
 import SettingsService from './settingsService';
 import SyncBookmarks from './syncBookmarks';
 import LocalBackupService from './localBackupService';
@@ -70,26 +71,7 @@ class ServerApp {
             this.settingsService.backgrounds,
             this.settingsService.widgets,
             this.settingsService.bookmarks,
-        ].map((storage) => new Promise((resolve, rejection) => {
-            if (storage.state === SERVICE_STATE.DONE) {
-                resolve();
-                return;
-            } else if (storage.state === SERVICE_STATE.FAILED) {
-                rejection();
-                return;
-            }
-
-            reaction(
-                () => storage.state,
-                () => {
-                    if (storage.state === SERVICE_STATE.DONE) {
-                        resolve();
-                    } else if (storage.state === SERVICE_STATE.FAILED) {
-                        rejection();
-                    }
-                },
-            );
-        })));
+        ].map((storage) => awaitInstallStorage(storage)));
 
         console.log('backgrounds storage state', JSON.stringify(this.settingsService.backgrounds.type), JSON.stringify(this.settingsService.backgrounds._data.type));
     }

@@ -127,7 +127,7 @@ function Stream({ onSelect }) {
                                 prepareBGStream: null,
                             });
 
-                            eventToBackground('backgrounds/nextBg');
+                            // eventToBackground('backgrounds/nextBg');
                         }
                     },
                     values: stations.map(({ id }) => id),
