@@ -229,7 +229,7 @@ class BackgroundsAppService {
     addToUploadQueue(fileList) {
         if (!fileList || fileList.length === 0) return Promise.reject(ERRORS.NO_FILES);
 
-        if (fileList.length > appVariables.maxUploadFiles) return Promise.reject(ERRORS.TOO_MANY_FILES);
+        if (fileList.length > appVariables.backgrounds.maxUploadFiles) return Promise.reject(ERRORS.TOO_MANY_FILES);
 
         const uploadTimestamp = Date.now().toString();
 

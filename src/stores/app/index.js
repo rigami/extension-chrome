@@ -1,6 +1,6 @@
 import { action, makeAutoObservable } from 'mobx';
 import { AppSettings } from '@/stores/universal/settings';
-import WidgetsService from '@/stores/app/widgets';
+import WeatherService from '@/stores/app/weather';
 import BackgroundsService from '@/stores/app/backgrounds';
 import { ACTIVITY } from '@/enum';
 
@@ -8,14 +8,14 @@ class AppStateStore {
     coreService;
     activity = ACTIVITY.DESKTOP;
     settings;
-    widgets;
+    weather;
     backgrounds;
 
     constructor({ coreService }) {
         makeAutoObservable(this);
         this.coreService = coreService;
         this.settings = new AppSettings();
-        this.widgets = new WidgetsService(coreService);
+        this.weather = new WeatherService(coreService);
         this.backgrounds = new BackgroundsService(coreService);
 
         this.activity = this.settings.defaultActivity || ACTIVITY.DESKTOP;

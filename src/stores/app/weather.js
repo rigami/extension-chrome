@@ -4,50 +4,34 @@ import { FETCH } from '@/enum';
 import { eventToBackground } from '@/stores/server/bus';
 import { captureException } from '@sentry/react';
 import awaitInstallStorage from '@/utils/awaitInstallStorage';
+import OpenWeatherMap from '@/stores/universal/weather/connectors/OpenWeatherMap';
+import WeatherLocation from '@/entities/WeatherLocation';
+import { first } from 'lodash';
+import { instanceOf } from 'prop-types';
 
-class WidgetsService {
+class WeatherService {
     _coreService;
     settings;
     weather;
     showWeather = false;
+    connector;
 
     constructor(coreService) {
         makeAutoObservable(this);
         this._coreService = coreService;
         this.settings = new WidgetsSettings();
+        this.connector = new OpenWeatherMap();
 
         this.subscribe();
     }
 
-    async autoDetectWeatherLocation() {
+    async autoDetectLocation() {
         const { state } = await navigator.permissions.query({ name: 'geolocation' });
 
         if (state !== 'granted') {
             return this._getPermissionsToGeolocation();
         }
 
-        const position = await this.getCurrentPosition();
-
-        return new Promise((resolve, reject) => eventToBackground(
-            'widgets/connectors/setLocationGeolocation',
-            position,
-            (success) => (success ? resolve() : reject()),
-        ));
-    }
-
-    async searchWeatherLocation(query) {
-        return new Promise((resolve, reject) => eventToBackground(
-            'widgets/connectors/searchLocation',
-            query,
-            ({ success, result }) => (success ? resolve(result) : reject()),
-        ));
-    }
-
-    setWeatherLocation(location) {
-        eventToBackground('widgets/connectors/setLocationManual', location);
-    }
-
-    async getCurrentPosition() {
         console.log('[weather] Update current position...');
 
         const options = {
@@ -64,10 +48,41 @@ class WidgetsService {
 
         console.log('[weather] Current position:', position);
 
-        return {
+        const results = this.connector.searchLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-        };
+        });
+
+        console.log('results:', results);
+
+        return new WeatherLocation({
+            ...first(results).location,
+            manual: false,
+        });
+    }
+
+    async searchLocation(query) {
+        const results = this.connector.searchLocation({ query });
+
+        return results.map((result) => ({
+            ...result,
+            location: new WeatherLocation({
+                ...result.location,
+                manual: true,
+            }),
+        }));
+    }
+
+    setLocation(location) {
+        if (instanceOf(location) !== WeatherLocation) throw new Error('`location` must be `WeatherLocation` instance');
+
+        eventToBackground('weather/forceUpdate', location);
+    }
+
+    async autoDetectLocationAndUpdateWeather() {
+        const location = await this.autoDetectLocation();
+
+        this.setLocation(location);
     }
 
     async _getPermissionsToGeolocation() {
@@ -118,10 +133,10 @@ class WidgetsService {
             && (this.weather?.status === FETCH.ONLINE || this.weather?.status === FETCH.PENDING)
             && this.weather?.lastUpdateStatus === FETCH.DONE;
 
-        this._coreService.globalBus.on('widgets/connectors/getCurrentWeather', ({ callback }) => {
-            this.autoDetectWeatherLocation().then(callback).catch(callback);
+        this._coreService.globalBus.on('weather/getCurrentLocation', ({ callback }) => {
+            this.autoDetectLocation().then(callback).catch(callback);
         });
     }
 }
 
-export default WidgetsService;
+export default WeatherService;

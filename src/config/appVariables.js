@@ -12,25 +12,23 @@ export default {
     },
     storage: { version: 1 },
     fs: { root: `chrome-extension://${BrowserAPI.extensionId()}/persistent/` },
-    maxUploadFiles: 15,
     rest: {
         url: PRODUCTION_MODE || PRODUCTION_ENV
             ? 'https://api.rigami.io'
             : 'http://localhost:8080',
     },
-    widgets: {
-        weather: {
-            updateTime: {
-                active: 30 * 60 * 1000,
-                inactive: 2 * 60 * 60 * 1000,
-            },
-            services: {
-                'openweathermap': { apiKey: '10ad1bca6850a2c26033e31c2a60229f' },
-                'accuweather': { apiKey: 'va8RX4nd9wx0hDVf6SdnB57tlsfAKA7m' },
-            },
+    weather: {
+        updateTime: {
+            active: 30 * 60 * 1000,
+            inactive: 2 * 60 * 60 * 1000,
+        },
+        services: {
+            'openweathermap': { apiKey: '10ad1bca6850a2c26033e31c2a60229f' },
+            'accuweather': { apiKey: 'va8RX4nd9wx0hDVf6SdnB57tlsfAKA7m' },
         },
     },
     backgrounds: {
+        maxUploadFiles: 15,
         fallback: {
             author: 'danilkinkin',
             authorAvatarSrc: 'https://images.unsplash.com/profile-1607373378133-7e664e90d70cimage?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=64&w=64',

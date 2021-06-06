@@ -1,8 +1,7 @@
 import EventBus from '@/utils/eventBus';
 import BusApp, { eventToApp, eventToPopup, initBus } from '@/stores/server/bus';
 import Storage, { StorageConnector } from '@/stores/universal/storage';
-import { DESTINATION, SERVICE_STATE } from '@/enum';
-import { reaction } from 'mobx';
+import { DESTINATION } from '@/enum';
 import { open as openDB } from '@/utils/db';
 import * as Sentry from '@sentry/react';
 import appVariables from '@/config/appVariables';
@@ -11,7 +10,7 @@ import SettingsService from './settingsService';
 import SyncBookmarks from './syncBookmarks';
 import LocalBackupService from './localBackupService';
 import BookmarksService from './bookmarksService';
-import WeatherService from './weather/service';
+import WeatherService from './weatherService';
 import BackgroundsService from './backgroundsService';
 import SyncBackgrounds from './syncBackgrounds';
 import SyncChromeBookmarksService from './syncChromeBookmarksService';

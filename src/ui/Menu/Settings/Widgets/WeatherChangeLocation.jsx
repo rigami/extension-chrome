@@ -84,7 +84,7 @@ function HeaderActions() {
                                 coreService.localEventBus.call('system/widgets/weather/focusManualSearchInput');
                             } else {
                                 setLoading(true);
-                                widgets.autoDetectWeatherLocation()
+                                widgets.autoDetectLocationAndUpdateWeather()
                                     .catch((e) => {
                                         captureException(e);
                                         console.error(e);
@@ -177,7 +177,7 @@ function WeatherChangeLocation({ onClose }) {
         store.status = FETCH.PENDING;
 
         try {
-            const list = await widgets.searchWeatherLocation(store.searchRequest);
+            const list = await widgets.searchLocation(store.searchRequest);
 
             runInAction(() => {
                 store.list = list;
@@ -233,7 +233,7 @@ function WeatherChangeLocation({ onClose }) {
                     latitude={item.location.latitude}
                     longitude={item.location.longitude}
                     onClick={() => {
-                        widgets.setWeatherLocation(item.location);
+                        widgets.setLocation(item.location);
                         onClose();
                     }}
                 />
