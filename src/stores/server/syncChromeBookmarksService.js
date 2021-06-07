@@ -20,7 +20,7 @@ class SyncChromeBookmarksService {
             return;
         }
 
-        this.core.globalBus.on('system/importSystemBookmarks', async ({ callback }) => {
+        this.core.globalEventBus.on('system/importSystemBookmarks', async ({ callback }) => {
             try {
                 await this.syncBookmarks();
             } catch (e) {

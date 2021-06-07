@@ -510,13 +510,13 @@ class BackgroundsServerService {
             this.nextBG();
         }
 
-        this.core.globalBus.on('backgrounds/nextBg', () => this.nextBG());
+        this.core.globalEventBus.on('backgrounds/nextBg', () => this.nextBG());
 
-        this.core.globalBus.on('backgrounds/setBg', ({ data: bg, callback }) => {
+        this.core.globalEventBus.on('backgrounds/setBg', ({ data: bg, callback }) => {
             this.setBG(bg).finally(callback);
         });
 
-        this.core.globalBus.on('backgrounds/play', async (data, props) => {
+        this.core.globalEventBus.on('backgrounds/play', async (data, props) => {
             console.log('backgrounds/play');
             try {
                 const result = await this.play();
@@ -526,7 +526,7 @@ class BackgroundsServerService {
             }
         });
 
-        this.core.globalBus.on('backgrounds/pause', async (data, props) => {
+        this.core.globalEventBus.on('backgrounds/pause', async (data, props) => {
             console.log('backgrounds/pause', data);
             try {
                 const result = await this.pause(data);
@@ -535,7 +535,7 @@ class BackgroundsServerService {
             }
         });
 
-        this.core.globalBus.on('backgrounds/cache', async ({ data: urls }) => {
+        this.core.globalEventBus.on('backgrounds/cache', async ({ data: urls }) => {
             console.log('backgrounds/cache', urls);
             this.cacheBackgrounds(urls);
         });

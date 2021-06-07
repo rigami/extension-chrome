@@ -56,7 +56,7 @@ function WeatherWidget({ onSelect }) {
                         setDtwUseWeather(value);
 
                         if (value) {
-                            widgets.getPermissionsToGeolocation()
+                            widgets.autoDetectLocationAndUpdateWeather()
                                 .catch(action((e) => {
                                     console.error(e);
                                     captureException(e);

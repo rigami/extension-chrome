@@ -17,14 +17,16 @@ export default {
             ? 'https://api.rigami.io'
             : 'http://localhost:8080',
     },
-    weather: {
-        updateTime: {
-            active: 30 * 60 * 1000,
-            inactive: 2 * 60 * 60 * 1000,
-        },
-        services: {
-            'openweathermap': { apiKey: '10ad1bca6850a2c26033e31c2a60229f' },
-            'accuweather': { apiKey: 'va8RX4nd9wx0hDVf6SdnB57tlsfAKA7m' },
+    widgets: {
+        weather: {
+            updateTime: {
+                active: 30 * 60 * 1000,
+                inactive: 2 * 60 * 60 * 1000,
+            },
+            services: {
+                'openweathermap': { apiKey: '10ad1bca6850a2c26033e31c2a60229f' },
+                'accuweather': { apiKey: 'va8RX4nd9wx0hDVf6SdnB57tlsfAKA7m' },
+            },
         },
     },
     backgrounds: {

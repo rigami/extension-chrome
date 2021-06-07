@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction, toJS } from 'mobx';
 import { WidgetsSettings } from '@/stores/universal/settings';
 import { FETCH } from '@/enum';
-import { eventToBackground } from '@/stores/server/bus';
+import { eventToApp, eventToBackground } from '@/stores/server/bus';
 import { captureException } from '@sentry/react';
 import awaitInstallStorage from '@/utils/awaitInstallStorage';
 import OpenWeatherMap from '@/stores/universal/weather/connectors/OpenWeatherMap';
@@ -12,6 +12,7 @@ import { instanceOf } from 'prop-types';
 class WeatherService {
     _coreService;
     settings;
+    storage;
     weather;
     showWeather = false;
     connector;
@@ -21,6 +22,7 @@ class WeatherService {
         this._coreService = coreService;
         this.settings = new WidgetsSettings();
         this.connector = new OpenWeatherMap();
+        this.storage = this._coreService.storage.persistent;
 
         this.subscribe();
     }
@@ -48,7 +50,7 @@ class WeatherService {
 
         console.log('[weather] Current position:', position);
 
-        const results = this.connector.searchLocation({
+        const results = await this.connector.searchLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
         });
@@ -62,7 +64,7 @@ class WeatherService {
     }
 
     async searchLocation(query) {
-        const results = this.connector.searchLocation({ query });
+        const results = await this.connector.searchLocation({ query });
 
         return results.map((result) => ({
             ...result,
@@ -74,7 +76,7 @@ class WeatherService {
     }
 
     setLocation(location) {
-        if (instanceOf(location) !== WeatherLocation) throw new Error('`location` must be `WeatherLocation` instance');
+        if (!(location instanceof WeatherLocation)) throw new Error('`location` must be `WeatherLocation` instance');
 
         eventToBackground('weather/forceUpdate', location);
     }
@@ -111,9 +113,9 @@ class WeatherService {
         await awaitInstallStorage(this.settings);
 
         reaction(
-            () => this._coreService.storage.persistent.data.weather,
+            () => this.storage.data.weather,
             () => {
-                this.weather = this._coreService.storage.persistent.data.weather;
+                this.weather = this.storage.data.weather;
                 console.log('[weather] Change weather:', toJS(this.weather));
             },
         );
@@ -127,13 +129,23 @@ class WeatherService {
             },
         );
 
-        if (this.settings.dtwUseWeather) this.weather = this._coreService.storage.persistent.data.weather;
+        if (this.settings.dtwUseWeather) {
+            if (!this.storage.data.location || !this.storage.data.location?.id) {
+                console.log('[weather] Location not set. Get current...');
+                const location = await this.autoDetectLocation();
 
-        this.showWeather = this.settings.dtwUseWeather
-            && (this.weather?.status === FETCH.ONLINE || this.weather?.status === FETCH.PENDING)
-            && this.weather?.lastUpdateStatus === FETCH.DONE;
+                console.log('[weather] Current location:', location);
+                this.setLocation(location);
+            } else {
+                this.weather = this.storage.data.weather;
 
-        this._coreService.globalBus.on('weather/getCurrentLocation', ({ callback }) => {
+                this.showWeather = this.settings.dtwUseWeather
+                    && (this.weather?.status === FETCH.ONLINE || this.weather?.status === FETCH.PENDING)
+                    && this.weather?.lastUpdateStatus === FETCH.DONE;
+            }
+        }
+
+        this._coreService.globalEventBus.on('weather/getCurrentLocation', ({ callback }) => {
             this.autoDetectLocation().then(callback).catch(callback);
         });
     }

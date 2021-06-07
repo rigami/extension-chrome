@@ -23,7 +23,7 @@ class WeatherService {
     }
 
     async update() {
-        if (!this._active) return;
+        if (!this._active || !this.storage.data.location || !this.storage.data.location?.id) return;
         console.log('[weather] Update...');
         this._lastUpd = Date.now();
         this.storage.update({
@@ -32,14 +32,6 @@ class WeatherService {
                 status: FETCH.PENDING,
             }),
         });
-
-        if (!this.storage.data.location) {
-            console.log('[weather] Location not set. Get current...');
-            const location = await new Promise((resolve) => eventToApp('weather/getCurrentLocation', {}, resolve));
-
-            this.storage.update({ location: new WeatherLocation(location) });
-            console.log('[weather] Current location:', location);
-        }
 
         try {
             const weather = await this.connector.getCurrentWeather(this.storage.data.location);
@@ -65,10 +57,10 @@ class WeatherService {
         }
 
         eventToApp('system/ping', 'connectors-check', (pong) => {
-            let time = appVariables.weather.updateTime.inactive;
+            let time = appVariables.widgets.weather.updateTime.inactive;
 
             if (pong && pong.type === 'connectors-check') {
-                time = appVariables.weather.updateTime.active;
+                time = appVariables.widgets.weather.updateTime.active;
             }
 
             this._lastUpd = Date.now();
@@ -91,18 +83,18 @@ class WeatherService {
         if (
             this.storage.data.weather?.lastUpdateStatus === FETCH.FAILED
             || !this._lastUpd
-            || this._lastUpd + appVariables.weather.updateTime.inactive <= Date.now()
+            || this._lastUpd + appVariables.widgets.weather.updateTime.inactive <= Date.now()
             || !isFinite(this.connector.weather?.currTemp)
         ) {
             console.log('[weather] Start service');
             this.update();
         } else {
             console.log(`[weather] Await ${
-                this._lastUpd + appVariables.weather.updateTime.inactive - Date.now()
+                this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now()
             }ms`);
             this._timer = setTimeout(
                 this.start,
-                this._lastUpd + appVariables.weather.updateTime.inactive - Date.now(),
+                this._lastUpd + appVariables.widgets.weather.updateTime.inactive - Date.now(),
             );
             this.storage.update({
                 weather: new Weather({
@@ -140,23 +132,23 @@ class WeatherService {
 
         if (this.core.settingsService.widgets.dtwUseWeather) this.start();
 
-        this.core.globalBus.on('weather/forceUpdate', ({ data: location }) => {
+        this.core.globalEventBus.on('weather/forceUpdate', ({ data: location }) => {
             console.log('[weather] Request force update. Location:', location);
 
-            if (location || this._lastUpd + appVariables.weather.updateTime.active < Date.now()) {
+            if (location || this._lastUpd + appVariables.widgets.weather.updateTime.active < Date.now()) {
                 this.storage.update({ location: new WeatherLocation(location) });
 
                 console.log('[weather] Force update...');
                 this.update();
             } else {
-                console.log(`[weather] Last update less ${appVariables.weather.updateTime.active}ms ago`);
+                console.log(`[weather] Last update less ${appVariables.widgets.weather.updateTime.active}ms ago`);
                 clearTimeout(this._timer);
                 console.log(`[weather] Await ${
-                    this._lastUpd + appVariables.weather.updateTime.active - Date.now()
+                    this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now()
                 }ms`);
                 this._timer = setTimeout(
                     this.update,
-                    this._lastUpd + appVariables.weather.updateTime.active - Date.now(),
+                    this._lastUpd + appVariables.widgets.weather.updateTime.active - Date.now(),
                 );
             }
         });

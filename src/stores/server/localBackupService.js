@@ -21,7 +21,7 @@ class LocalBackupService {
         makeAutoObservable(this);
         this.core = core;
 
-        this.core.globalBus.on('system/backup/local/create', async ({ settings, bookmarks, backgrounds }) => {
+        this.core.globalEventBus.on('system/backup/local/create', async ({ settings, bookmarks, backgrounds }) => {
             eventToApp('system/backup/local/create/progress', { stage: 'start' });
             this.core.storage.persistent.update({ localBackup: 'creating' });
 
@@ -84,7 +84,7 @@ class LocalBackupService {
             }
         });
 
-        this.core.globalBus.on('system/backup/local/restore', async ({ type = 'rigami' }) => {
+        this.core.globalEventBus.on('system/backup/local/restore', async ({ type = 'rigami' }) => {
             console.log('restoreFile:', type);
             this.core.storage.persistent.update({ restoreBackup: 'restoring' });
 

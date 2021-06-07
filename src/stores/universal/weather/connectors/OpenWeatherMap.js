@@ -3,20 +3,25 @@ import fetchData from '@/utils/fetchData';
 import WeatherLocation from '@/entities/WeatherLocation';
 import { FETCH } from '@/enum';
 import Weather from '@/entities/Weather';
+import { toJS } from 'mobx';
 import BaseWeatherConnector from './BaseWeatherConnector';
 
 class OpenWeatherMap extends BaseWeatherConnector {
     constructor() {
         super({
             name: 'OpenWeatherMap',
-            apiKey: appVariables.weather.services.openweathermap.apiKey,
+            apiKey: appVariables.widgets.weather.services.openweathermap.apiKey,
         });
     }
 
     async getCurrentWeather(location) {
+        console.log('location:', toJS(location));
+
         const { response: weather } = await fetchData(
             `http://api.openweathermap.org/data/2.5/weather?id=${location.id}&appid=${this.apiKey}`,
         );
+
+        console.log('weather:', weather);
 
         return new Weather({
             location,

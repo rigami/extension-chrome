@@ -17,7 +17,7 @@ import SyncChromeBookmarksService from './syncChromeBookmarksService';
 
 class ServerApp {
     localBus;
-    globalBus;
+    globalEventBus;
     settingsService;
     storage;
     systemBookmarksService;
@@ -38,10 +38,10 @@ class ServerApp {
         });
 
         this.localBus = new EventBus();
-        this.globalBus = BusApp();
+        this.globalEventBus = BusApp();
 
         // eslint-disable-next-line sonarjs/no-duplicate-string
-        this.globalBus.on('system.forceReload', () => {
+        this.globalEventBus.on('system.forceReload', () => {
             eventToApp('system.forceReload');
             eventToPopup('system.forceReload');
 
