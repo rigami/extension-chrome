@@ -2,7 +2,9 @@ import { action, makeAutoObservable } from 'mobx';
 import { AppSettings } from '@/stores/universal/settings';
 import WidgetsService from '@/stores/app/widgets';
 import BackgroundsService from '@/stores/app/backgrounds';
-import { ACTIVITY } from '@/enum';
+import { ACTIVITY, SERVICE_STATE } from '@/enum';
+import awaitInstallStorage from '@/utils/awaitInstallStorage';
+import { APP_STATE } from '@/stores/app/core';
 
 class AppStateStore {
     coreService;
@@ -10,6 +12,7 @@ class AppStateStore {
     settings;
     widgets;
     backgrounds;
+    state = SERVICE_STATE.WAIT;
 
     constructor({ coreService }) {
         makeAutoObservable(this);
@@ -18,7 +21,7 @@ class AppStateStore {
         this.widgets = new WidgetsService(coreService);
         this.backgrounds = new BackgroundsService(coreService);
 
-        this.activity = this.settings.defaultActivity || ACTIVITY.DESKTOP;
+        this.subscribe();
     }
 
     @action('set activity')
@@ -51,6 +54,20 @@ class AppStateStore {
                 reactions,
             });
         };
+    }
+
+    async subscribe() {
+        console.time('Await install settings services');
+        console.log('Await install services...');
+        this.state = SERVICE_STATE.INSTALL;
+        await awaitInstallStorage(this.settings);
+        await awaitInstallStorage(this.widgets.settings);
+        await awaitInstallStorage(this.backgrounds.settings);
+
+        this.activity = this.settings.defaultActivity || ACTIVITY.DESKTOP;
+        this.state = SERVICE_STATE.DONE;
+        console.log('App all services is install');
+        console.timeEnd('Await install settings services');
     }
 }
 

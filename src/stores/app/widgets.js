@@ -1,13 +1,12 @@
 import { makeAutoObservable, reaction, toJS } from 'mobx';
 import { WidgetsSettings } from '@/stores/universal/settings';
 import { FETCH } from '@/enum';
-import { eventToApp, eventToBackground } from '@/stores/server/bus';
+import { eventToBackground } from '@/stores/server/bus';
 import { captureException } from '@sentry/react';
 import awaitInstallStorage from '@/utils/awaitInstallStorage';
 import OpenWeatherMap from '@/stores/universal/weather/connectors/OpenWeatherMap';
 import WeatherLocation from '@/entities/WeatherLocation';
 import { first } from 'lodash';
-import { instanceOf } from 'prop-types';
 
 class WeatherService {
     _coreService;

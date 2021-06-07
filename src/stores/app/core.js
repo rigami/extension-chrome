@@ -23,6 +23,7 @@ import fetchData from '@/utils/fetchData';
 import { captureException } from '@sentry/react';
 import BrowserAPI from '@/utils/browserAPI';
 import Storage, { StorageConnector } from '@/stores/universal/storage';
+import awaitInstallStorage from '@/utils/awaitInstallStorage';
 
 const APP_STATE = {
     WAIT_INIT: 'WAIT_INIT',
@@ -182,31 +183,11 @@ class Core {
             callback({ type: data });
         });
 
-        console.log('Await sync storage...');
+        console.log('Await sync storage...', this.storage.persistent);
+        console.time('Await install storage service');
 
         try {
-            await new Promise((resolve, rejection) => {
-                console.log('this.storage.state:', this.storage.persistent.state);
-                if (this.storage.persistent.state === SERVICE_STATE.DONE) {
-                    resolve();
-                    return;
-                } else if (this.storage.persistent.state === SERVICE_STATE.FAILED) {
-                    rejection();
-                    return;
-                }
-
-                reaction(
-                    () => this.storage.persistent.state,
-                    () => {
-                        console.log('this.storage.state:', this.storage.persistent.state);
-                        if (this.storage.persistent.state === SERVICE_STATE.DONE) {
-                            resolve();
-                        } else if (this.storage.persistent.state === SERVICE_STATE.FAILED) {
-                            rejection();
-                        }
-                    },
-                );
-            });
+            await awaitInstallStorage(this.storage.persistent);
         } catch (e) {
             console.error(e);
             this.appError = 'ERR_INIT_STORAGE';
@@ -215,9 +196,12 @@ class Core {
         }
 
         console.log('Storage is sync!');
+        console.timeEnd('Await install storage service');
 
         try {
+            console.time('Initialization time');
             await this.initialization();
+            console.timeEnd('Initialization time');
 
             if (this.appState === APP_STATE.FAILED) throw new Error('Failed init app');
 

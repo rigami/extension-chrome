@@ -26,7 +26,7 @@ function AppStateProvider({ children, onChangeTheme }) {
         if (onChangeTheme) onChangeTheme(store.settings.theme);
     }, [store.settings.theme]);
 
-    if (store.settings.state !== SERVICE_STATE.DONE) {
+    if (store.state !== SERVICE_STATE.DONE) {
         return null;
     }
 
