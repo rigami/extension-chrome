@@ -231,7 +231,7 @@ function RecentlyClosed({ className: externalClassName }) {
     const subheaderRef = useRef();
     const store = useLocalObservable(() => ({
         expand: typeof coreService.storage.persistent.data.expandRecentlyClosed === 'undefined'
-            ? true
+            ? false
             : coreService.storage.persistent.data.expandRecentlyClosed,
         openPopover: false,
         anchorEl: null,
