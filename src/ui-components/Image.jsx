@@ -20,7 +20,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName, alternativeIcon }) {
+function Image(props) {
+    const {
+        variant = BKMS_VARIANT.SMALL,
+        src,
+        className: externalClassName,
+        alternativeIcon,
+        dense,
+    } = props;
     const classes = useStyles();
     const [isLoading, setIsLoading] = useState(true);
 
@@ -62,8 +69,8 @@ function Image({ variant = BKMS_VARIANT.SMALL, src, className: externalClassName
                     <Skeleton
                         variant="rect"
                         animation="wave"
-                        width={32}
-                        height={32}
+                        width={dense ? 28 : 32}
+                        height={dense ? 28 : 32}
                         className={clsx(classes.roundedIconStub, externalClassName)}
                     />
                 )}

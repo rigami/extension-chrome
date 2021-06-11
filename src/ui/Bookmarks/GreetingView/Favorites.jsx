@@ -32,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
     favoriteItem: {
         display: 'flex',
         alignItems: 'center',
-        minHeight: 40,
-        padding: theme.spacing(0.5, 0.75),
+        minHeight: 38,
+        padding: theme.spacing(0.5),
         borderRadius: 'inherit',
     },
     icon: {
@@ -76,6 +76,7 @@ function FavoriteItem(props) {
                     alternativeIcon={first(name)?.toUpperCase()}
                     variant={icoVariant === BKMS_VARIANT.POSTER ? BKMS_VARIANT.SYMBOL : icoVariant}
                     className={classes.icon}
+                    dense
                 />
             )}
             {type === 'folder' && (
