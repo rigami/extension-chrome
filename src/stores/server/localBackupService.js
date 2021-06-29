@@ -85,14 +85,13 @@ class LocalBackupService {
 
         const meta = [];
         const fullBlobs = new Map();
+        const cache = await caches.open('backgrounds');
 
         for await (const background of allBackgrounds) {
-            console.log(background);
+            const response = await cache.match(background.fullSrc).then((responseRaw) => responseRaw.blob());
+            const ext = response.type.substring(response.type.indexOf('/') + 1);
 
-            const { response } = await fetchData(background.fullSrc, { responseType: 'blob' });
-            console.log('full:', response);
-
-            fullBlobs.set(background.id, response);
+            fullBlobs.set(`${background.id}.${ext}`, response);
 
             meta.push(omit(background, [
                 'fullSrc',
