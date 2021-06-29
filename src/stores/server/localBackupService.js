@@ -13,6 +13,7 @@ import JSZip from 'jszip';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
 import { captureException } from '@sentry/react';
+import fetchData from '@/utils/fetchData';
 
 class LocalBackupService {
     core;
@@ -21,9 +22,104 @@ class LocalBackupService {
         makeAutoObservable(this);
         this.core = core;
 
-        this.core.globalEventBus.on('system/backup/local/create', async ({ settings, bookmarks, backgrounds }) => {
+        this.subscribe();
+    }
+
+    collectSettings() {
+        return JSON.parse(JSON.stringify(this.core.storage.persistent.data));
+    }
+
+    async collectBookmarks() {
+        if (BUILD !== 'full') return;
+
+        const { all: bookmarksAll } = await BookmarksUniversalService.query();
+
+        const bookmarks = await Promise.all(bookmarksAll.map(async (bookmark) => {
+            let image;
+
+            try {
+                const { response } = await fetchData(bookmark.icoUrl, { responseType: 'blob' });
+
+                image = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(response);
+
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                });
+            } catch (e) {
+                captureException(e);
+                console.warn('Failed get icon', e, bookmark);
+            }
+
+            return {
+                ...omit(bookmark, ['icoFileName', 'icoUrl']),
+                image,
+            };
+        }));
+
+        const tagsAll = await TagsUniversalService.getAll();
+
+        const tags = tagsAll.map((tag) => new Tag(tag));
+
+        const foldersAll = await FoldersUniversalService.getTree();
+
+        const folders = foldersAll.map((folder) => new Folder(folder));
+
+        const favoritesAll = await FavoritesUniversalService.getAll();
+
+        console.log('favoritesAll', favoritesAll);
+
+        const favorites = favoritesAll;
+
+        return {
+            bookmarks,
+            favorites,
+            tags,
+            folders,
+        };
+    }
+
+    async collectBackgrounds() {
+        const allBackgrounds = await BackgroundsUniversalService.getAll();
+
+        const meta = [];
+        const fullBlobs = new Map();
+
+        for await (const background of allBackgrounds) {
+            console.log(background);
+
+            const { response } = await fetchData(background.fullSrc, { responseType: 'blob' });
+            console.log('full:', response);
+
+            fullBlobs.set(background.id, response);
+
+            meta.push(omit(background, [
+                'fullSrc',
+                'previewSrc',
+                'isLoad',
+                'isSaved',
+                'fileName',
+                'id',
+            ]));
+        }
+
+        return {
+            meta: { all: meta },
+            full: fullBlobs,
+        };
+    }
+
+    subscribe() {
+        this.core.globalEventBus.on('system/backup/local/create', async ({ data: { settings, bookmarks, backgrounds } }) => {
             eventToApp('system/backup/local/create/progress', { stage: 'start' });
             this.core.storage.persistent.update({ localBackup: 'creating' });
+
+            console.log('system/backup/local/create:', {
+                settings,
+                bookmarks,
+                backgrounds,
+            });
 
             try {
                 const backup = {};
@@ -64,15 +160,15 @@ class LocalBackupService {
                 }
 
                 const zipBlob = await zip.generateAsync({ type: 'blob' });
-                const backupPath = '/temp/backup.zip';
 
-                await fs().write(
-                    backupPath,
-                    new Blob([zipBlob], { type: 'application/zip' }),
-                );
+                const cache = await caches.open('temp');
+
+                const zipResponse = new Response(zipBlob);
+
+                await cache.put(`${appVariables.rest.url}/temp/backup.zip`, zipResponse);
 
                 eventToApp('system/backup/local/create/progress', {
-                    path: backupPath,
+                    path: `${appVariables.rest.url}/temp/backup.zip`,
                     stage: 'done',
                 });
                 this.core.storage.persistent.update({ localBackup: 'done' });
@@ -217,94 +313,6 @@ class LocalBackupService {
                 });
             }
         });
-    }
-
-    collectSettings() {
-        return fs().read('/settings.json', { type: 'text' })
-            .then((props) => {
-                console.log(props);
-
-                return { ...JSON.parse(props) };
-            })
-            .catch((e) => {
-                console.error(e);
-                captureException(e);
-
-                return {};
-            });
-    }
-
-    async collectBookmarks() {
-        if (BUILD !== 'full') return;
-
-        const { all: bookmarksAll } = await BookmarksUniversalService.query();
-
-        const bookmarks = await Promise.all(bookmarksAll.map(async (bookmark) => {
-            let image;
-
-            try {
-                image = await fs().read(`/bookmarksIcons/${bookmark.icoFileName}`, { type: 'base64' });
-            } catch (e) {
-                captureException(e);
-                console.warn('Failed get icon', e, bookmark);
-            }
-
-            return {
-                ...omit(bookmark, ['icoFileName', 'icoUrl']),
-                image,
-            };
-        }));
-
-        const tagsAll = await TagsUniversalService.getAll();
-
-        const tags = tagsAll.map((tag) => new Tag(tag));
-
-        const foldersAll = await FoldersUniversalService.getTree();
-
-        const folders = foldersAll.map((folder) => new Folder(folder));
-
-        const favoritesAll = await FavoritesUniversalService.getAll();
-
-        console.log('favoritesAll', favoritesAll);
-
-        const favorites = favoritesAll;
-
-        return {
-            bookmarks,
-            favorites,
-            tags,
-            folders,
-        };
-    }
-
-    async collectBackgrounds() {
-        const allBackgrounds = await BackgroundsUniversalService.getAll();
-
-        const meta = [];
-        const fullBlobs = new Map();
-
-        for await (const background of allBackgrounds) {
-            console.log(background);
-
-            const full = await fs().read(`/backgrounds/full/${background.fileName}`, { type: 'blob' });
-            console.log('full:', full);
-
-            fullBlobs.set(background.id, full);
-
-            meta.push(omit(background, [
-                'fullSrc',
-                'previewSrc',
-                'isLoad',
-                'isSaved',
-                'fileName',
-                'id',
-            ]));
-        }
-
-        return {
-            meta: { all: meta },
-            full: fullBlobs,
-        };
     }
 }
 

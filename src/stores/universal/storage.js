@@ -126,14 +126,14 @@ class PersistentStorage {
 }
 
 class TempStorage {
-    _data;
+    _data = {};
 
     constructor() {
         makeAutoObservable(this);
     }
 
     @computed
-    data() {
+    get data() {
         return this._data;
     }
 

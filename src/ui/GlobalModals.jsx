@@ -17,6 +17,8 @@ import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import { useSnackbar } from 'notistack';
 import { getUrl } from '@/utils/fs';
 import MoveDialog from '@/ui/Bookmarks/MoveDialog';
+import fetchData from '@/utils/fetchData';
+import { toJS } from 'mobx';
 import Changelog from './Changelog';
 
 function GlobalModals({ children }) {
@@ -59,7 +61,8 @@ function GlobalModals({ children }) {
             })),
         ];
 
-        const saveLocalBackup = () => {
+        const saveLocalBackup = async (path) => {
+            console.log('path:', path);
             const generateFormatter = new Intl.DateTimeFormat('en', {
                 weekday: 'long',
                 month: 'short',
@@ -67,8 +70,12 @@ function GlobalModals({ children }) {
                 year: 'numeric',
             });
 
+            // FIXME: A terrible solution, first we cache, then download and create a URL, try to change it somehow
+            const { response } = await fetchData(path, { responseType: 'blob' });
+
             const link = document.createElement('a');
-            link.href = getUrl('/temp/backup.zip');
+
+            link.href = URL.createObjectURL(response);
             link.download = `Backup rigami from ${generateFormatter.format(new Date())}.rigami`;
 
             link.click();
@@ -81,7 +88,8 @@ function GlobalModals({ children }) {
         };
 
         const globalListeners = [
-            coreService.globalEventBus.on('system/backup/local/create/progress', (data) => {
+            coreService.globalEventBus.on('system/backup/local/create/progress', ({ data }) => {
+                console.log('coreService.storage.temp.data:', coreService.storage.temp.data);
                 if (coreService.storage.temp.data.progressCreateSnackbar) {
                     closeSnackbar(coreService.storage.temp.data.progressCreateSnackbar);
                     coreService.storage.temp.update({ progressCreateSnackbar: null });
@@ -94,13 +102,14 @@ function GlobalModals({ children }) {
                     }, { persist: true });
 
                     coreService.storage.temp.update({ progressCreateSnackbar: snackId });
+                    console.log('coreService.storage.temp.data:', snackId, coreService.storage.temp.data.progressCreateSnackbar);
                 } else if (data.stage === 'error') {
                     enqueueSnackbar({
                         message: t('settingsBackup:localBackup.create.error.unknown'),
                         variant: 'error',
                     });
                 } else if (data.stage === 'done') {
-                    saveLocalBackup();
+                    saveLocalBackup(data.path);
                 }
             }),
             coreService.globalEventBus.on('system/backup/local/restore/progress', (data) => {
