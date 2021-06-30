@@ -21,10 +21,10 @@ import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
 import { eventToApp, eventToBackground } from '@/stores/server/bus';
 import { observer } from 'mobx-react-lite';
-import fs from '@/utils/fs';
 import { captureException } from '@sentry/react';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import useCoreService from '@/stores/app/BaseStateProvider';
+import appVariables from '@/config/appVariables';
 
 const useStyles = makeStyles((theme) => ({
     backupButton: { flexShrink: 0 },
@@ -245,8 +245,15 @@ function BackupSettings() {
             const file = form.files[0];
             const type = file.name.substring(file.name.lastIndexOf('.') + 1);
 
-            fs().write(`/temp/restore-backup.${type}`, file).then(() => {
-                eventToBackground('system/backup/local/restore', { type });
+            const cache = await caches.open('temp');
+
+            const zipResponse = new Response(file);
+
+            await cache.put(`${appVariables.rest.url}/temp/backup.zip`, zipResponse);
+
+            eventToBackground('system/backup/local/restore', {
+                type,
+                path: `${appVariables.rest.url}/temp/backup.zip`,
             });
         } catch (e) {
             captureException(e);

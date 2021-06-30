@@ -1,5 +1,4 @@
 import { eventToApp } from '@/stores/server/bus';
-import fs from '@/utils/fs';
 import Tag from '@/stores/universal/bookmarks/entities/tag';
 import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { makeAutoObservable } from 'mobx';
@@ -14,6 +13,7 @@ import BackgroundsUniversalService from '@/stores/universal/backgrounds/service'
 import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
 import { captureException } from '@sentry/react';
 import fetchData from '@/utils/fetchData';
+import { StorageConnector } from '@/stores/universal/storage';
 
 class LocalBackupService {
     core;
@@ -25,8 +25,8 @@ class LocalBackupService {
         this.subscribe();
     }
 
-    collectSettings() {
-        return JSON.parse(JSON.stringify(this.core.storage.persistent.data));
+    async collectSettings() {
+        return StorageConnector.get(null);
     }
 
     async collectBookmarks() {
@@ -139,7 +139,7 @@ class LocalBackupService {
                     date: new Date().toISOString(),
                     appVersion: appVariables.version,
                     appType: 'extension.chrome',
-                    version: 4,
+                    version: appVariables.backup.version,
                 };
 
                 console.log('Backup:', backup);
@@ -179,15 +179,18 @@ class LocalBackupService {
             }
         });
 
-        this.core.globalEventBus.on('system/backup/local/restore', async ({ type = 'rigami' }) => {
+        this.core.globalEventBus.on('system/backup/local/restore', async ({ data: { type = 'rigami', path } }) => {
             console.log('restoreFile:', type);
             this.core.storage.persistent.update({ restoreBackup: 'restoring' });
+
+            const cache = await caches.open('temp');
+            const rawBackup = await cache.match(path);
 
             let backup = {};
 
             if (type === 'rigami') {
                 try {
-                    const restoreFile = await fs().read('/temp/restore-backup.rigami', { type: 'blob' });
+                    const restoreFile = await rawBackup.blob();
                     const zip = await new JSZip().loadAsync(restoreFile);
                     const backgrounds = {};
                     const files = map(zip.files, (file) => file);
@@ -213,7 +216,6 @@ class LocalBackupService {
                     }
                 } catch (e) {
                     captureException(e);
-                    await fs().rmrf(`/temp/restore-backup.${type}`).catch(console.warn);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'brokenFile',
@@ -227,7 +229,7 @@ class LocalBackupService {
                 }
             } else if (type === 'json' || type === 'ctbup') {
                 try {
-                    const restoreData = await fs().read(`/temp/restore-backup.${type}`, { type: 'text' });
+                    const restoreData = await rawBackup.text();
                     let file = JSON.parse(restoreData);
 
                     if (type === 'ctbup') {
@@ -237,7 +239,6 @@ class LocalBackupService {
                     backup = { ...file };
                 } catch (e) {
                     captureException(e);
-                    await fs().rmrf(`/temp/restore-backup.${type}`).catch(console.warn);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'brokenFile',
@@ -250,10 +251,6 @@ class LocalBackupService {
                     return;
                 }
             } else {
-                await fs().rmrf(`/temp/restore-backup.${type}`).catch((e) => {
-                    console.warn(e);
-                    captureException(e);
-                });
                 eventToApp('system/backup/local/restore/progress', {
                     result: 'error',
                     message: 'wrongSchema',
@@ -266,15 +263,10 @@ class LocalBackupService {
                 return;
             }
 
-            await fs().rmrf(`/temp/restore-backup.${type}`)
-                .catch((e) => {
-                    console.warn(e);
-                    captureException(e);
-                });
             console.log('restore backup', backup);
 
             try {
-                if (backup.meta.version > 4) {
+                if (backup.meta.version > appVariables.backup.version) {
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
                         message: 'wrongVersion',
@@ -287,7 +279,7 @@ class LocalBackupService {
                     return;
                 }
 
-                if (backup.settings) await this.core.settingsService.restore(backup.settings);
+                if (backup.settings) await StorageConnector.set(backup.settings);
                 if (BUILD === 'full' && backup.bookmarks) {
                     await this.core.bookmarksSyncService.restore(backup.bookmarks);
                 }

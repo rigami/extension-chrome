@@ -15,10 +15,8 @@ import { useTranslation } from 'react-i18next';
 import { default as EditBookmarkModal } from '@/ui/Bookmarks/EditBookmarkModal';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import { useSnackbar } from 'notistack';
-import { getUrl } from '@/utils/fs';
 import MoveDialog from '@/ui/Bookmarks/MoveDialog';
 import fetchData from '@/utils/fetchData';
-import { toJS } from 'mobx';
 import Changelog from './Changelog';
 
 function GlobalModals({ children }) {
@@ -112,7 +110,7 @@ function GlobalModals({ children }) {
                     saveLocalBackup(data.path);
                 }
             }),
-            coreService.globalEventBus.on('system/backup/local/restore/progress', (data) => {
+            coreService.globalEventBus.on('system/backup/local/restore/progress', ({ data }) => {
                 if (coreService.storage.temp.data.progressRestoreSnackbar) {
                     closeSnackbar(coreService.storage.temp.data.progressRestoreSnackbar);
                 }

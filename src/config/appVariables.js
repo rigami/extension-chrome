@@ -29,6 +29,7 @@ export default {
             },
         },
     },
+    backup: { version: 5 },
     backgrounds: {
         maxUploadFiles: 15,
         fallback: {
