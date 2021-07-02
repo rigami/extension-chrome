@@ -105,34 +105,20 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
     const classes = useStyles();
     const { t, ready } = useTranslation(['greeting']);
     const coreService = useCoreService();
-    const store = useLocalObservable(() => ({
-        firstRender: true,
-        greeting: null,
-        isFirstRender: true,
-        editUserName: coreService.storage.persistent.data.userName || '',
-    }));
-
     const hours = new Date().getHours();
-    let time;
-
-    if (hours <= 4 || hours >= 23) {
-        time = 'night';
-    } else if (hours <= 12) {
-        time = 'morning';
-    } else if (hours <= 16) {
-        time = 'day';
-    } else {
-        time = 'evening';
-    }
-
-    useEffect(() => {
-        if (store.firstRender) {
-            store.firstRender = false;
-            return;
-        }
-        store.editUserName = coreService.storage.persistent.data.userName;
-
+    const store = useLocalObservable(() => {
         let greeting;
+        let time;
+
+        if (hours <= 4 || hours >= 23) {
+            time = 'night';
+        } else if (hours <= 12) {
+            time = 'morning';
+        } else if (hours <= 16) {
+            time = 'day';
+        } else {
+            time = 'evening';
+        }
 
         if (typeof coreService.storage.temp.data.greeting === 'undefined') {
             const greetings = t([time, 'default'], {
@@ -147,36 +133,29 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
             greeting = coreService.storage.temp.data.greeting;
         }
 
-        store.greeting = store.greeting || greeting;
+        return {
+            time,
+            focus: false,
+            firstEdit: (coreService.storage.persistent.data.userName || '').trim() === '',
+            firstRender: true,
+            greeting,
+            userName: coreService.storage.persistent.data.userName || '',
+        };
+    });
+
+    useEffect(() => {
+        if (store.firstRender) {
+            store.firstRender = false;
+            return;
+        }
+        store.userName = coreService.storage.persistent.data.userName;
     }, [coreService.storage.persistent.data.userName]);
 
     useEffect(() => {
-        if (!ready) return () => {};
-
-        let greeting;
-
-        const lastShowWasRecently = coreService.storage.persistent.data.lastGreetingTimestamp > Date.now() - 10 * 60 * 1000;
-
-        if (typeof coreService.storage.temp.data.greeting === 'undefined' && (!lastShowWasRecently || force)) {
-            const greetings = t([time, 'default'], {
-                returnObjects: true,
-                name: '[name]',
-            });
-
-            greeting = sample(Array.isArray(greetings) ? greetings : []);
-
-            if (!force) coreService.storage.temp.update({ greeting: null });
-        } else {
-            greeting = coreService.storage.temp.data.greeting;
+        if (store.focus) {
+            coreService.storage.persistent.update({ userName: store.userName || null });
         }
-
-        store.greeting = greeting;
-        if (greeting && !force) coreService.storage.persistent.update({ lastGreetingTimestamp: Date.now() });
-
-        return () => {
-            if (!force) coreService.storage.persistent.update({ userName: store.editUserName || null });
-        };
-    }, [ready]);
+    }, [store.userName]);
 
     if (!ready || coreService.storage.persistent.data.userName === null) {
         return (<Box className={clsx(classes.greetingContainer, externalClassName)} />);
@@ -189,16 +168,16 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
             <Fade in>
                 <Box className={clsx(classes.greetingContainer, externalClassName)}>
                     <Typography variant="h1" className={classes.greeting}>
-                        {`${t(time, { context: 'appeal' })}, `}
+                        {`${t(store.time, { context: 'appeal' })}, `}
                         <span>
                             <FakeInput
                                 autoFocus
                                 className={clsx(classes.greeting, classes.input)}
-                                value={store.editUserName}
+                                value={store.userName}
                                 placeholder={t('name', { context: 'placeholder' })}
-                                onInput={(event) => {
-                                    store.editUserName = event.target.innerText;
-                                }}
+                                onFocus={() => { store.focus = true; }}
+                                onBlur={() => { store.focus = false; }}
+                                onInput={(event) => { store.userName = event.target.innerText; }}
                             />
                         </span>
                         👋!
@@ -206,7 +185,7 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
                     <MenuInfo
                         classes={{ root: classes.info }}
                         component="div"
-                        show={!store.editUserName?.trim()}
+                        show={!store.userName?.trim()}
                         message={t('cancelInfo')}
                         description={t('cancelInfo', { context: 'description' })}
                         actions={[
@@ -235,16 +214,16 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
                 <Typography variant="h1" className={classes.greeting}>
                     <span dangerouslySetInnerHTML={{ __html: first(greetingParts) }} />
                     <span>
-                        {readOnly && (userName || t('name', { context: 'stub' }))}
+                        {readOnly && (store.userName || t('name', { context: 'stub' }))}
                         {!readOnly && (
                             <FakeInput
                                 className={clsx(classes.greeting, classes.input)}
-                                value={store.editUserName}
+                                value={store.userName}
                                 placeholder={t('name', { context: 'placeholder' })}
                                 onInput={(event) => {
-                                    store.editUserName = event.target.innerText;
+                                    store.userName = event.target.innerText;
                                     if (!event.target.innerText.trim()) {
-                                        coreService.storage.persistent.update({ userName: store.editUserName });
+                                        coreService.storage.persistent.update({ userName: store.userName });
                                     }
                                 }}
                             />
