@@ -4,12 +4,12 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 const formatter = new Intl.DateTimeFormat('nu', {
     hour: '2-digit',
     minute: '2-digit',
-    hour12: false,
+    hourCycle: 'h23',
 });
 const formatter12 = new Intl.DateTimeFormat('nu', {
     hour: '2-digit',
     minute: '2-digit',
-    hour12: true,
+    hourCycle: 'h11',
 });
 
 function Time() {
