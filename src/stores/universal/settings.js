@@ -220,13 +220,13 @@ class AppSettings extends PersistentStorage {
             'defaultActivity',
         ]);
 
+        super.update(updProps);
+
         if ('localStorage' in self) {
             localStorage.setItem('theme', this.theme || defaultSettings.app.theme);
             localStorage.setItem('backdropTheme', this.backdropTheme || defaultSettings.app.backdropTheme);
             localStorage.setItem('appTabName', this.tabName || defaultSettings.app.tabName);
         }
-
-        super.update(updProps);
     }
 }
 
