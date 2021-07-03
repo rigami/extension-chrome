@@ -84,7 +84,9 @@ class PersistentStorage {
         this._data = {};
 
         try {
-            let { [this.namespace]: data } = await StorageConnector.get(this.namespace, {});
+            const t = await StorageConnector.get(this.namespace, {});
+            console.log(t);
+            let { [this.namespace]: data = {} } = await StorageConnector.get(this.namespace, {});
 
             data = upgradeState ? upgradeState(data) : data;
 

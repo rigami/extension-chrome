@@ -14,7 +14,8 @@
     },
     "exclude": [
 		"node_modules",
-		".nuxt",
+		"release",
+		"build",
 		"dist"
     ]
 }

@@ -76,7 +76,7 @@ class Core {
             overrideLng = devTools.lng;
         }
 
-        await i18n
+        i18n
             .use(initReactI18next)
             .use(Backend)
             .init({
@@ -200,7 +200,7 @@ class Core {
 
         try {
             console.time('Initialization time');
-            await this.initialization();
+            this.initialization();
             console.timeEnd('Initialization time');
 
             if (this.appState === APP_STATE.FAILED) throw new Error('Failed init app');

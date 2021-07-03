@@ -260,6 +260,7 @@ function Background() {
                 (store.stateLoadBg === FETCH.DONE || store.stateLoadBg === FETCH.FAILED)
                 && store.stateRequestLoadBg !== FETCH.DONE
             }
+            timeout={300}
             onExit={handleStartSwitch}
             onExited={handleSwitchBg}
             onEntered={handleShow}

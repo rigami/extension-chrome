@@ -1,5 +1,3 @@
-const paths = require('./alias.config.js');
-
 module.exports = {
     'extends': ['rigami'],
     'parser': '@babel/eslint-parser',
@@ -22,12 +20,7 @@ module.exports = {
     'settings': {
         'import/resolver': {
             alias: {
-                map: (() => {
-                    const p = paths(`${__dirname}/src/`);
-
-                    return Object.keys(p)
-                        .map((key) => [key, p[key]]);
-                })(),
+                map: [['@', `${__dirname}/src/`]],
                 extensions: ['.js', '.jsx', '.json'],
             },
         },

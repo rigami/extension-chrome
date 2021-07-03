@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "0.19.19",
+    "version": "0.19.20",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
@@ -22,8 +22,12 @@
         "bump:patch": "yarn version --patch --no-commit --no-git-tag-version && git add ./package.json",
         "bump:minor": "yarn version --minor --no-commit --no-git-tag-version && git add ./package.json",
         "bump:major": "yarn version --major --no-commit --no-git-tag-version && git add ./package.json",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "react-devtools": "react-devtools"
     },
+    "browserslist": [
+        "chrome > 85"
+    ],
     "repository": "https://github.com/rigami/extension-chrome",
     "author": "Danilkinkin <Danilkinkin@gmail.com>",
     "license": "ISC",
@@ -89,6 +93,7 @@
         "json-loader": "^0.5.7",
         "null-loader": "^4.0.1",
         "pnp-webpack-plugin": "^1.6.4",
+        "react-devtools": "^4.13.5",
         "react-svg-loader": "^3.0.3",
         "style-loader": "^2.0.0",
         "webpack": "^5.37.1",

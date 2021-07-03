@@ -1,38 +1,41 @@
+import { pick } from 'lodash';
+
+const localStorageStub = {
+    set(value, callback) {
+        localStorage.setItem('storage', value);
+
+        callback(value);
+    },
+    get(keyOrKeys, callback) {
+        callback(pick(
+            localStorage.getItem('storage') || {},
+            Array.isArray(keyOrKeys) ? keyOrKeys : [keyOrKeys],
+        ));
+    },
+};
+
 export default class BrowserAPI {
     static browser = 'chrome';
-    static platform = 'web';
-    static localStorage = chrome.storage.local;
-    static systemLanguage = (chrome?.i18n?.getUILanguage?.() || 'en').substring(0, 2);
+    static platform = chrome?.runtime ? 'extension' : 'web';
+    static localStorage = this.platform === 'extension' ? chrome.storage.local : localStorageStub;
+    static systemLanguage = (navigator.language || 'en').substring(0, 2);
 
     static extensionId() {
-        return 'hgniijhnpodegoppkmcgdmkdgiifjhnm'; // 'stub-extension-id';
-
-        // return chrome.runtime.id;
-    }
-
-    static onMessageIsSupport = true; // chrome?.runtime?.onMessage
-
-    static onMessageListener(...props) {
-        if (BrowserAPI.platform === 'web') {
-            console.log('onMessageListener stub', BrowserAPI.platform, props);
-
-            return null;
-        } else {
-            return chrome.runtime.onMessage.addListener;
-        }
-    }
-
-    static sendMessage(...props) {
-        if (BrowserAPI.platform === 'web') {
-            console.log('sendMessage stub', props);
-
-            return null;
-        } else {
-            return chrome.runtime.sendMessage;
-        }
+        return this.platform === 'extension' ? chrome?.runtime?.id : 'rigami';
     }
 
     static onChangeStorage(callback) {
-        chrome.storage.onChanged.addListener(callback);
+        if (this.platform === 'extension') {
+            chrome.storage.onChanged.addListener(callback);
+        } else {
+            window.addEventListener('storage', (e) => {
+                callback({
+                    [e.key]: {
+                        oldValue: e.oldValue,
+                        newValue: e.newValue,
+                    },
+                }, 'local');
+            });
+        }
     }
 }

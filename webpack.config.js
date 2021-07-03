@@ -7,7 +7,6 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const GenerateJsonPlugin = require('generate-json-from-js-webpack-plugin');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
-const paths = require('./alias.config.js');
 const packageFile = require('./package.json');
 
 module.exports = () => {
@@ -169,11 +168,12 @@ module.exports = () => {
                 '.less',
                 '.svg',
             ],
-            alias: paths(),
+            alias: { '@': './' },
         },
         optimization: {
             usedExports: true,
             splitChunks: { chunks: 'all' },
         },
+        // stats: 'verbose',
     };
 };

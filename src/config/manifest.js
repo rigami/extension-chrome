@@ -20,6 +20,12 @@ module.exports = () => {
         'background': { 'service_worker': 'server.js' },
         'chrome_url_overrides': { 'newtab': 'index.html' },
         'host_permissions': ['http://danilkinkin.com/', '*://*/*'],
+        'content_security_policy': {
+            'extension_pages':
+                'default-src \'self\' http://localhost:8097; '
+                + 'connect-src *; style-src \'unsafe-inline\'; '
+                + 'img-src * data: blob: \'unsafe-inline\';',
+        },
     };
 
     let permissions = ['storage', 'unlimitedStorage'];

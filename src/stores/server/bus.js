@@ -1,7 +1,6 @@
 import EventBus from '@/utils/eventBus';
 import { DESTINATION } from '@/enum';
 import appVariables from '@/config/appVariables';
-import BrowserAPI from '@/utils/browserAPI';
 
 let bus = null;
 const instanceId = Date.now();
