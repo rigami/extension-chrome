@@ -16,6 +16,7 @@
     }
   },
   "button": {
+    "addToLibrary": "Add to library",
     "apply": "Apply background",
     "add": "Add new background",
     "pause": "Pause background",
