@@ -241,8 +241,13 @@ const ObserverGreeting = observer(Greeting);
 function GreetingContainer({ className: externalClassName, ...props }) {
     const classes = useStyles();
     const coreService = useCoreService();
+    const [state, setState] = useState(coreService.storage.persistent.state);
 
-    if (coreService.storage.persistent.state !== SERVICE_STATE.DONE) {
+    useEffect(() => {
+        setState(coreService.storage.persistent.state);
+    }, [coreService.storage.persistent.state]);
+
+    if (state !== SERVICE_STATE.DONE) {
         return (<Box className={clsx(classes.greetingContainer, externalClassName)} />);
     }
 

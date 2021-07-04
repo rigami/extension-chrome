@@ -77,7 +77,7 @@ class PersistentStorage {
         return this._data;
     }
 
-    @action
+    @action.bound
     async subscribe(upgradeState) {
         console.log(`[storage] Subscribe to '${this.namespace}' namespace${upgradeState ? ' and upgrade...' : '...'}`);
         this.state = SERVICE_STATE.INSTALL;

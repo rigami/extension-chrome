@@ -4,7 +4,6 @@ import WidgetsService from '@/stores/app/widgets';
 import BackgroundsService from '@/stores/app/backgrounds';
 import { ACTIVITY, SERVICE_STATE } from '@/enum';
 import awaitInstallStorage from '@/utils/awaitInstallStorage';
-import { APP_STATE } from '@/stores/app/core';
 
 class AppStateStore {
     coreService;
