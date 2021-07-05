@@ -11,7 +11,6 @@ import {
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
-import db, { open as openDB } from '@/utils/db';
 import appVariables from '@/config/appVariables';
 import EventBus from '@/utils/eventBus';
 import { first } from 'lodash';
@@ -56,14 +55,6 @@ class Core {
     }
 
     async initialization() {
-        openDB().catch((e) => {
-            console.error('Failed init db:', e);
-            captureException(e);
-
-            this.appError = 'ERR_INIT_DB';
-            this.appState = APP_STATE.FAILED;
-        });
-
         let overrideLng;
 
         if (!PRODUCTION_MODE) {

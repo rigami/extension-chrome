@@ -2,8 +2,6 @@ import EventBus from '@/utils/eventBus';
 import BusApp, { eventToApp, eventToPopup, initBus } from '@/stores/server/bus';
 import Storage, { StorageConnector } from '@/stores/universal/storage';
 import { DESTINATION } from '@/enum';
-import { open as openDB } from '@/utils/db';
-import * as Sentry from '@sentry/react';
 import appVariables from '@/config/appVariables';
 import awaitInstallStorage from '@/utils/awaitInstallStorage';
 import SettingsService from './settingsService';
@@ -32,11 +30,6 @@ class ServerApp {
         console.time('Starting server time');
         // App core
         initBus(DESTINATION.BACKGROUND);
-        openDB().catch((e) => {
-            console.error('Failed init db:', e);
-            Sentry.captureException(e);
-        });
-
         this.localBus = new EventBus();
         this.globalEventBus = BusApp();
 

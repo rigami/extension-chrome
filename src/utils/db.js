@@ -1,9 +1,48 @@
 import { openDB } from 'idb/with-async-ittr.js';
 import dbConfig from '@/config/db';
+import { SERVICE_STATE } from '@/enum';
+import { forceCrash } from '@/ui/CrashCatch';
 import appVariables from '../config/appVariables';
 
 let _db = null;
 const openAwaitRequests = [];
+let state = SERVICE_STATE.WAIT;
+
+async function open() {
+    if (state !== SERVICE_STATE.WAIT && state !== SERVICE_STATE.STOP) return;
+
+    console.log('Opening db...');
+    state = SERVICE_STATE.INSTALL;
+
+    try {
+        const db = await openDB(
+            appVariables.db.name,
+            appVariables.db.version,
+            dbConfig({
+                upgrade() {
+                    console.log('upgrade');
+                },
+                blocked() {
+                    console.log('blocked');
+                },
+                blocking() {
+                    console.log('blocking');
+                },
+                terminated() {
+                    console.log('terminated');
+                },
+            }),
+        );
+
+        console.log('db is open!');
+        _db = db;
+        openAwaitRequests.forEach(({ resolve, method, args }) => resolve(db[method](...args)));
+        state = SERVICE_STATE.DONE;
+    } catch (e) {
+        state = SERVICE_STATE.FAILED;
+        forceCrash(e || new Error('ERR_INIT_DB'));
+    }
+}
 
 const methodPromise = (args, method) => new Promise((resolve, reject) => {
     openAwaitRequests.push({
@@ -12,6 +51,7 @@ const methodPromise = (args, method) => new Promise((resolve, reject) => {
         method,
         args,
     });
+    open();
 });
 
 const promiseStub = {
@@ -32,29 +72,4 @@ const promiseStub = {
     transaction: (...args) => methodPromise(args, 'transaction'),
 };
 
-const open = () => openDB(
-    appVariables.db.name,
-    appVariables.db.version,
-    dbConfig({
-        upgrade() {
-            console.log('upgrade');
-        },
-        blocked() {
-            console.log('blocked');
-        },
-        blocking() {
-            console.log('blocking');
-        },
-        terminated() {
-            console.log('terminated');
-        },
-    }),
-)
-    .then((db) => {
-        console.log('db is open!');
-        _db = db;
-        openAwaitRequests.forEach(({ resolve, method, args }) => resolve(db[method](...args)));
-    });
-
-export { open };
 export default () => _db || promiseStub;
