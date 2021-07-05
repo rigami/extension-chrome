@@ -3,10 +3,8 @@ import {
     BG_SOURCE,
     BG_TYPE,
     DESTINATION,
-    SERVICE_STATE,
 } from '@/enum';
 import {
-    reaction,
     makeAutoObservable,
     runInAction,
 } from 'mobx';
@@ -76,9 +74,9 @@ class Core {
             overrideLng = devTools.lng;
         }
 
-        i18n
-            .use(initReactI18next)
+        await i18n
             .use(Backend)
+            .use(initReactI18next)
             .init({
                 lng: overrideLng || BrowserAPI.systemLanguage || 'en',
                 load: 'languageOnly',
@@ -200,7 +198,7 @@ class Core {
 
         try {
             console.time('Initialization time');
-            this.initialization();
+            await this.initialization();
             console.timeEnd('Initialization time');
 
             if (this.appState === APP_STATE.FAILED) throw new Error('Failed init app');

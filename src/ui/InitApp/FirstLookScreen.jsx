@@ -4,35 +4,44 @@ import Stub from '@/ui-components/Stub';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import useService from '@/stores/app/BaseStateProvider';
-import asyncAction from '@/utils/asyncAction';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
 import { captureException } from '@sentry/react';
+import { observer } from 'mobx-react-lite';
 
 function FirstLookScreen({ onStart, onLoad }) {
-    const { t } = useTranslation(['firstLook']);
+    const { t, ready } = useTranslation('firstLook');
     const service = useService();
     const [progress, setProgress] = useState(0);
     const [stage, setStage] = useState(PREPARE_PROGRESS.WAIT);
 
     useEffect(() => {
-        document.title = i18n.t('common:prepare');
+        document.title = t('prepareApp');
 
-        asyncAction(async () => {
-            await service.setDefaultState((progressValue, stageValue) => {
-                setProgress(progressValue);
-                setStage(stageValue);
+        service.setDefaultState((progressValue, stageValue) => {
+            console.log(progressValue, stageValue);
+            setProgress(progressValue);
+            setStage(stageValue);
 
-                if (stageValue === PREPARE_PROGRESS.DONE) {
-                    document.title = 'Rigami';
-                    localStorage.setItem('appTabName', document.title);
-                    onLoad();
-                }
-            });
+            if (stageValue === PREPARE_PROGRESS.DONE) {
+                document.title = 'Rigami';
+                localStorage.setItem('appTabName', document.title);
+                onLoad();
+            }
         }).catch((e) => {
             console.error(e);
             captureException(e);
         });
     }, []);
+
+    console.log('stage:', stage);
+
+    if (!ready) {
+        return (
+            <Stub
+                style={{ height: '100vh' }}
+            />
+        );
+    }
 
     return (
         <React.Fragment>
@@ -71,4 +80,4 @@ function FirstLookScreen({ onStart, onLoad }) {
     );
 }
 
-export default FirstLookScreen;
+export default observer(FirstLookScreen);

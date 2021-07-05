@@ -8,7 +8,10 @@ import { StorageConnector } from '@/stores/universal/storage';
 import { Button } from '@material-ui/core';
 import { eventToBackground } from '@/stores/server/bus';
 
-const useStyles = makeStyles((theme) => ({ headerButton: { marginLeft: theme.spacing(2) } }));
+const useStyles = makeStyles((theme) => ({
+    headerButton: { marginLeft: theme.spacing(2) },
+    forceCrashButton: { flexShrink: 0 },
+}));
 
 const headerProps = {
     title: 'DevTools',
@@ -67,11 +70,13 @@ function HeaderActions() {
 }
 
 function DevTools() {
+    const classes = useStyles();
     const coreService = useCoreService();
     const { t } = useTranslation();
     const store = useLocalObservable(() => ({
         settings: { productionEnv: false },
         hasChange: false,
+        forceCrash: false,
     }));
 
     useEffect(() => {
@@ -86,6 +91,10 @@ function DevTools() {
     useEffect(() => {
         if (store.hasChange) coreService.localEventBus.call('devTools.changed', store.settings);
     }, [store.hasChange]);
+
+    if (store.forceCrash) {
+        throw new Error('Test force crash app');
+    }
 
     return (
         <React.Fragment>
@@ -112,6 +121,25 @@ function DevTools() {
                         store.hasChange = true;
                     },
                     values: ['ru', 'en'],
+                }}
+            />
+            <MenuRow
+                title={t('Force crash')}
+                action={{
+                    type: ROWS_TYPE.CUSTOM,
+                    onClick: () => {},
+                    component: (
+                        <Button
+                            variant="contained"
+                            component="span"
+                            color="primary"
+                            className={classes.forceCrashButton}
+                            fullWidth
+                            onClick={() => { store.forceCrash = true; }}
+                        >
+                            Force crash app
+                        </Button>
+                    ),
                 }}
             />
         </React.Fragment>

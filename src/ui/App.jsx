@@ -17,6 +17,7 @@ import initSentry from '@/config/sentry';
 import * as Sentry from '@sentry/react';
 import FabMenu from '@/ui/Menu/FabMenu';
 import Menu from '@/ui/Menu';
+import CrashCatch from '@/ui/CrashCatch';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
 import GlobalModals from './GlobalModals';
@@ -27,6 +28,12 @@ function RootApp({ onChangeTheme }) {
     return (
         <Nest
             components={[
+                CrashCatch,
+                ({ children }) => (
+                    <BaseStateProvider side={DESTINATION.APP}>
+                        {children}
+                    </BaseStateProvider>
+                ),
                 ({ children }) => (
                     <SnackbarProvider
                         maxSnack={4}
@@ -34,11 +41,6 @@ function RootApp({ onChangeTheme }) {
                     >
                         {children}
                     </SnackbarProvider>
-                ),
-                ({ children }) => (
-                    <BaseStateProvider side={DESTINATION.APP}>
-                        {children}
-                    </BaseStateProvider>
                 ),
                 InitApp,
                 ({ children }) => (
