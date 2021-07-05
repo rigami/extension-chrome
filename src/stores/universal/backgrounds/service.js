@@ -57,8 +57,8 @@ class BackgroundsUniversalService {
         console.log('[backgrounds] Remove from store', removeBG);
 
         try {
-            await db().delete('backgrounds', removeBG.id);
             console.log('[backgrounds] Remove from db...');
+            await db().delete('backgrounds', removeBG.id);
         } catch (e) {
             console.log(`bg ${removeBG.id} not find in db`);
             captureException(e);
@@ -73,7 +73,7 @@ class BackgroundsUniversalService {
                 captureException(e);
             }
 
-            eventToApp('backgrounds/removed', { bg: removeBG });
+            eventToApp('backgrounds/removed', removeBG);
         }
     }
 

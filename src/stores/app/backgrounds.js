@@ -98,7 +98,7 @@ class BackgroundsAppService {
             setCurrentBg(bg);
         });
 
-        this._coreService.globalEventBus.on('backgrounds/removed', ({ bg }) => {
+        this._coreService.globalEventBus.on('backgrounds/removed', ({ data: bg }) => {
             if (bg.id === this.currentBGId) eventToBackground('backgrounds/nextBg');
         });
 

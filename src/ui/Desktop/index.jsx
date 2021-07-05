@@ -43,7 +43,6 @@ import clsx from 'clsx';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
-import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from './Background';
 import Widgets from './Widgets';
 
