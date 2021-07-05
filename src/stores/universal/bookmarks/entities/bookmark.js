@@ -8,6 +8,7 @@ class Bookmark {
     name;
     description;
     icoVariant;
+    sourceIcoUrl
     icoUrl;
     imageBase64;
     icoFileName;
@@ -23,6 +24,7 @@ class Bookmark {
         this.name = bookmark.name;
         this.description = bookmark.description || '';
         this.icoVariant = bookmark.icoVariant || BKMS_VARIANT.SYMBOL;
+        this.sourceIcoUrl = bookmark.sourceIcoUrl;
         this.icoUrl = bookmark.icoUrl;
         this.imageBase64 = bookmark.imageBase64;
         this.tags = bookmark.tags || [];

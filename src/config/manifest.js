@@ -23,8 +23,10 @@ module.exports = () => {
         'content_security_policy': {
             'extension_pages':
                 'default-src \'self\' http://localhost:8097; '
-                + 'connect-src *; style-src \'unsafe-inline\'; '
-                + 'img-src * data: blob: \'unsafe-inline\';'
+                + 'connect-src *; '
+                + 'style-src \'unsafe-inline\'; '
+                + 'img-src *;'
+                + 'font-src *;'
                 + 'media-src * data: blob: \'unsafe-inline\'',
         },
     };

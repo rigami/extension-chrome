@@ -93,6 +93,8 @@ const getSiteInfo = async (url, onMeta) => {
             },
         );
 
+        if (!result?.icons) throw new Error('Broken result');
+
         return result;
     } catch (e) {
         console.error(e);

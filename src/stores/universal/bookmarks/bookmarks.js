@@ -7,6 +7,8 @@ import getImageBlob from '@/utils/getImageBlob';
 import { search as searchLight } from '@/stores/universal/bookmarks/search';
 import { cloneDeep } from 'lodash';
 import { captureException } from '@sentry/react';
+import { BG_SOURCE } from '@/enum';
+import appVariables from '@/config/appVariables';
 import { SearchQuery } from './searchQuery';
 
 class BookmarksUniversalService {
@@ -34,7 +36,7 @@ class BookmarksUniversalService {
             url,
             name,
             description,
-            icoUrl,
+            sourceIcoUrl,
             imageBase64,
             tags = [],
             folderId,
@@ -49,11 +51,19 @@ class BookmarksUniversalService {
             name: name.trim(),
             description: description && description.trim(),
             icoVariant,
+            sourceIcoUrl,
             folderId,
             tags: tags.filter((isExist) => isExist),
         };
 
         let saveBookmarkId;
+        let saveIcoUrl;
+
+        if (sourceIcoUrl) {
+            saveIcoUrl = `${appVariables.rest.url}/background/get-site-icon?ico-url=${encodeURIComponent(sourceIcoUrl)}`;
+        } else if (imageBase64) {
+            saveIcoUrl = `${appVariables.rest.url}/background/get-site-icon?site-url=${url}`;
+        }
 
         if (id) {
             const oldBookmark = await this.get(id);
@@ -61,7 +71,7 @@ class BookmarksUniversalService {
             saveBookmarkId = await db().put('bookmarks', cloneDeep({
                 id,
                 ...saveData,
-                icoUrl,
+                icoUrl: saveIcoUrl,
                 createTimestamp: oldBookmark.createTimestamp || Date.now(),
                 modifiedTimestamp: Date.now(),
             }));
@@ -69,7 +79,7 @@ class BookmarksUniversalService {
             try {
                 saveBookmarkId = await db().add('bookmarks', cloneDeep({
                     ...saveData,
-                    icoUrl,
+                    icoUrl: saveIcoUrl,
                     createTimestamp: Date.now(),
                     modifiedTimestamp: Date.now(),
                 }));
@@ -79,21 +89,19 @@ class BookmarksUniversalService {
                 throw new Error('Similar bookmark already exist');
             }
         }
-        if (imageBase64 || icoUrl) {
+        if (imageBase64 || sourceIcoUrl) {
             let blob;
 
             if (imageBase64) {
                 blob = await (await fetch(imageBase64)).blob();
             } else {
-                blob = await getImageBlob(icoUrl);
+                blob = await getImageBlob(sourceIcoUrl);
             }
 
             const cache = await caches.open('icons');
             const iconResponse = new Response(blob);
 
-            await cache.put(icoUrl, iconResponse);
-        } else if (!icoUrl && id) {
-            // TODO: Remove icon from cache
+            await cache.put(saveIcoUrl, iconResponse);
         }
 
         return saveBookmarkId;

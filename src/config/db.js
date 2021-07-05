@@ -97,6 +97,10 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
         store.createIndex('ico_url', 'icoUrl', { unique: false });
     }
 
+    if (!store.indexNames.contains('source_ico_url')) {
+        store.createIndex('source_ico_url', 'sourceIcoUrl', { unique: false });
+    }
+
     if (oldVersion !== 0 && oldVersion < 7) {
         const bookmarks = await store.getAll();
         const bookmarksByCategories = await transaction.objectStore('bookmarks_by_categories').getAll();
