@@ -54,7 +54,7 @@ class PersistentStorage {
     }
 
     sync = throttle(() => {
-        console.log(`[storage] Update '${this.namespace}' data from cache`, toJS(this._data));
+        // console.log(`[storage] Update '${this.namespace}' data from cache`, toJS(this._data));
         this._updateTimestamp = Date.now();
         StorageConnector.set({
             [this.namespace]: {
@@ -90,13 +90,13 @@ class PersistentStorage {
 
             data = upgradeState ? upgradeState(data) : data;
 
-            console.log(`[storage] Data from '${this.namespace}' namespace:`, JSON.stringify(data));
+            // console.log(`[storage] Data from '${this.namespace}' namespace:`, JSON.stringify(data));
 
             if (!data) throw new Error(`Storage '${this.namespace}' not exist`);
 
             runInAction(() => {
                 assign(this._data, data);
-                console.log(this.namespace, JSON.stringify(this._data), JSON.stringify(data));
+                // console.log(this.namespace, JSON.stringify(this._data), JSON.stringify(data));
                 this.state = SERVICE_STATE.DONE;
             });
 
@@ -117,10 +117,10 @@ class PersistentStorage {
                 && this.namespace in changes
                 && this._updateTimestamp < changes[this.namespace].newValue.updateTimestamp
             ) {
-                console.log(
+                /* console.log(
                     `[storage] Data from '${this.namespace}' namespace has changed. Update cache...`,
                     changes[this.namespace],
-                );
+                ); */
                 assign(this._data, changes[this.namespace].newValue);
             }
         });

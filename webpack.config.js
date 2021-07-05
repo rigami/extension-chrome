@@ -1,8 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin: CleanPlugin } = require('clean-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const GenerateJsonPlugin = require('generate-json-from-js-webpack-plugin');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
@@ -17,7 +17,7 @@ module.exports = () => {
         // server: './templates/server/index.js',
     };
     const plugins = [
-        new CleanWebpackPlugin({
+        new CleanPlugin({
             cleanAfterEveryBuildPatterns: [
                 '*.bundle.js',
                 '*.hot-update.js',
@@ -29,13 +29,13 @@ module.exports = () => {
                 '!server.html',
             ],
         }),
-        new HtmlWebpackPlugin({
+        new HtmlPlugin({
             inject: true,
             chunks: ['app'],
             template: './templates/app/index.html',
             filename: 'index.html',
         }),
-        new CopyWebpackPlugin({
+        new CopyPlugin({
             patterns: [
                 {
                     from: './config/manifestLocales/',
@@ -80,7 +80,7 @@ module.exports = () => {
             ...entry,
             popup: './templates/popup/index.jsx',
         };
-        plugins.push(new HtmlWebpackPlugin({
+        plugins.push(new HtmlPlugin({
             inject: true,
             chunks: ['popup'],
             template: './templates/popup/index.html',
