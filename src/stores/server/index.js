@@ -4,6 +4,7 @@ import Storage, { StorageConnector } from '@/stores/universal/storage';
 import { DESTINATION } from '@/enum';
 import appVariables from '@/config/appVariables';
 import awaitInstallStorage from '@/utils/awaitInstallStorage';
+import FactorySettingsService from '@/stores/server/factorySettingsService';
 import SettingsService from './settingsService';
 import SyncBookmarks from './syncBookmarks';
 import LocalBackupService from './localBackupService';
@@ -24,6 +25,7 @@ class ServerApp {
     bookmarksService;
     weatherService;
     backgroundsService;
+    factorySettingsService;
     isOffline = !self.navigator.onLine;
 
     constructor() {
@@ -90,6 +92,7 @@ class ServerApp {
         if (BUILD === 'full') { this.bookmarksSyncService = new SyncBookmarks(this); }
         this.localBackupService = new LocalBackupService(this);
         this.backgroundsSyncService = new SyncBackgrounds(this);
+        this.factorySettingsService = new FactorySettingsService(this);
 
         console.log('Server app is run!');
     }

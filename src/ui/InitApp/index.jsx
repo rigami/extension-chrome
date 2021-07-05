@@ -21,14 +21,11 @@ function InitApp({ children }) {
         if (service.appState === APP_STATE.WORK) {
             if (state !== STATE.FIRST_CONTACT) setState(STATE.DONE);
 
-            // service.storage.temp.update({ newVersion: true });
-
             if (
-                service.storage.persistent.data.lastUsageVersion
-                && service.storage.persistent.data.lastUsageVersion !== packageJson.version
+                service.storage.persistent.data?.lastUsageVersion !== packageJson.version
+                && appVariables.notifyNewVersion
             ) {
-                if (appVariables.notifyNewVersion) service.storage.temp.update({ newVersion: true });
-                service.storage.persistent.update({ lastUsageVersion: packageJson.version });
+                service.storage.temp.update({ newVersion: true });
             }
         } else if (service.appState === APP_STATE.REQUIRE_SETUP) {
             setState(STATE.FIRST_CONTACT);
@@ -41,12 +38,7 @@ function InitApp({ children }) {
         <React.Fragment>
             {state === STATE.DONE && children}
             {state === STATE.FIRST_CONTACT && (
-                <FirstLookScreen
-                    onLoad={() => {
-                        service.storage.persistent.update({ lastUsageVersion: packageJson.version });
-                    }}
-                    onStart={() => { setState(STATE.DONE); }}
-                />
+                <FirstLookScreen onStart={() => { setState(STATE.DONE); }} />
             )}
         </React.Fragment>
     );

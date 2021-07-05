@@ -23,7 +23,7 @@ module.exports = () => {
         'content_security_policy': {
             'extension_pages':
                 'default-src \'self\' http://localhost:8097; '
-                + 'connect-src *; '
+                + 'connect-src * data: blob: \'unsafe-inline\'; '
                 + 'style-src \'unsafe-inline\'; '
                 + 'img-src *;'
                 + 'font-src *;'

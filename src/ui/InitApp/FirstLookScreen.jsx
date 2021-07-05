@@ -2,34 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { LinearProgress, Fade } from '@material-ui/core';
 import Stub from '@/ui-components/Stub';
 import { useTranslation } from 'react-i18next';
-import i18n from 'i18next';
-import useService from '@/stores/app/BaseStateProvider';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
-import { captureException } from '@sentry/react';
 import { observer } from 'mobx-react-lite';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
-function FirstLookScreen({ onStart, onLoad }) {
+function FirstLookScreen({ onStart }) {
     const { t, ready } = useTranslation('firstLook');
-    const service = useService();
-    const [progress, setProgress] = useState(0);
-    const [stage, setStage] = useState(PREPARE_PROGRESS.WAIT);
+    const coreService = useCoreService();
+    const [progress, setProgress] = useState(coreService.storage.persistent.data?.factoryResetProgress?.percent || 0);
+    const [stage, setStage] = useState(coreService.storage.persistent.data?.factoryResetProgress?.stage || PREPARE_PROGRESS.WAIT);
 
     useEffect(() => {
         document.title = t('prepareApp');
 
-        service.setDefaultState((progressValue, stageValue) => {
-            console.log(progressValue, stageValue);
-            setProgress(progressValue);
-            setStage(stageValue);
+        coreService.globalEventBus.on('system/factoryReset/progress', ({ data }) => {
+            setProgress(data.percent);
+            setStage(data.stage);
 
-            if (stageValue === PREPARE_PROGRESS.DONE) {
+            if (data.stage === PREPARE_PROGRESS.DONE) {
                 document.title = 'Rigami';
                 localStorage.setItem('appTabName', document.title);
-                onLoad();
             }
-        }).catch((e) => {
-            console.error(e);
-            captureException(e);
         });
     }, []);
 

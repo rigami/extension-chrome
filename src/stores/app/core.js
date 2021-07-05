@@ -1,22 +1,13 @@
-import BusApp, { eventToBackground, initBus } from '@/stores/server/bus';
-import {
-    BG_SOURCE,
-    BG_TYPE,
-    DESTINATION,
-} from '@/enum';
+import BusApp, { initBus } from '@/stores/server/bus';
+import { DESTINATION } from '@/enum';
 import {
     makeAutoObservable,
-    runInAction,
+    runInAction, toJS,
 } from 'mobx';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
-import appVariables from '@/config/appVariables';
 import EventBus from '@/utils/eventBus';
-import { first } from 'lodash';
-import Background from '@/stores/universal/backgrounds/entities/background';
-import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import fetchData from '@/utils/fetchData';
 import { captureException } from '@sentry/react';
 import BrowserAPI from '@/utils/browserAPI';
 import Storage, { StorageConnector } from '@/stores/universal/storage';
@@ -106,61 +97,6 @@ class Core {
             });
     }
 
-    async setDefaultState(progressCallback) {
-        progressCallback(10, PREPARE_PROGRESS.CREATE_DEFAULT_STRUCTURE);
-
-        try {
-            await db().add('folders', {
-                id: 1,
-                name: 'Sundry',
-                parentId: 0,
-            });
-        } catch (e) {
-            console.warn(e);
-        }
-
-        if (BUILD === 'full') {
-            progressCallback(15, PREPARE_PROGRESS.IMPORT_BOOKMARKS);
-
-            console.log('Import system bookmarks');
-            await new Promise((resolve) => eventToBackground('system/importSystemBookmarks', {}, () => {
-                console.log('Finish import');
-                resolve();
-            }));
-        }
-
-        console.log('Fetch BG');
-        progressCallback(35, PREPARE_PROGRESS.FETCH_BG);
-
-        const { response } = await fetchData(
-            `${appVariables.rest.url}/backgrounds/get-from-collection?count=1&type=image&collection=best`,
-        ).catch(() => ({ response: [] }));
-
-        progressCallback(70, PREPARE_PROGRESS.SAVE_BG);
-
-        let bg;
-
-        if (response.length !== 0) {
-            bg = await BackgroundsUniversalService.addToLibrary(new Background({
-                ...first(response),
-                source: BG_SOURCE[first(response).service],
-                downloadLink: first(response).fullSrc,
-                type: BG_TYPE[first(response).type],
-            }));
-        } else {
-            bg = await BackgroundsUniversalService.addToLibrary(new Background(appVariables.backgrounds.fallback));
-        }
-
-        this.storage.persistent.update({ bgCurrent: bg });
-
-        this.appState = APP_STATE.WORK;
-
-        console.log('DONE');
-        progressCallback(100, PREPARE_PROGRESS.DONE);
-
-        return Promise.resolve();
-    }
-
     async subscribe(side) {
         this.appState = APP_STATE.INIT;
         initBus(side || DESTINATION.APP);
@@ -194,8 +130,10 @@ class Core {
 
             if (this.appState === APP_STATE.FAILED) throw new Error('Failed init app');
 
+            console.log('this.storage.persistent:', toJS(this.storage.persistent.data));
+
             runInAction(() => {
-                if (!this.storage.persistent.data.lastUsageVersion) {
+                if (this.storage.persistent.data.factoryResetProgress) {
                     this.appState = APP_STATE.REQUIRE_SETUP;
                 } else {
                     this.appState = APP_STATE.WORK;
