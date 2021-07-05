@@ -4,7 +4,7 @@ module.exports = (api) => {
     return {
         "presets": [
             ["@babel/preset-env", {
-                "debug": true,
+                // "debug": true,
                 "loose": true,
                 "modules": false,
                 "bugfixes": true,

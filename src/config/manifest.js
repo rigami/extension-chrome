@@ -24,7 +24,8 @@ module.exports = () => {
             'extension_pages':
                 'default-src \'self\' http://localhost:8097; '
                 + 'connect-src *; style-src \'unsafe-inline\'; '
-                + 'img-src * data: blob: \'unsafe-inline\';',
+                + 'img-src * data: blob: \'unsafe-inline\';'
+                + 'media-src * data: blob: \'unsafe-inline\'',
         },
     };
 
