@@ -5,7 +5,7 @@ import BackgroundsService from '@/stores/app/backgrounds';
 import { ACTIVITY, SERVICE_STATE } from '@/enum';
 import awaitInstallStorage from '@/utils/awaitInstallStorage';
 
-class AppStateStore {
+class AppState {
     coreService;
     activity = ACTIVITY.DESKTOP;
     settings;
@@ -70,4 +70,4 @@ class AppStateStore {
     }
 }
 
-export default AppStateStore;
+export default AppState;

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import useService from '@/stores/app/BaseStateProvider';
+import useBaseStateService from '@/stores/app/BaseStateProvider';
 import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
-import FirstLookScreen from '@/ui/InitApp/FirstLookScreen';
+import FirstLookScreen from '@/ui/FirstLookScreen';
 import appVariables from '@/config/appVariables';
-import packageJson from '@/../package.json';
+import packageJson from '../../../package.json';
 
 const STATE = {
     PREPARE: 'PREPARE',
@@ -13,7 +13,7 @@ const STATE = {
 };
 
 function InitApp({ children }) {
-    const service = useService();
+    const service = useBaseStateService();
     const [state, setState] = useState(STATE.PREPARE);
 
     useEffect(() => {

@@ -6,7 +6,7 @@ import React, {
     useState,
 } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import AppService from '@/stores/app/index';
+import AppService from '@/stores/app/AppState';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { SERVICE_STATE } from '@/enum';
 
