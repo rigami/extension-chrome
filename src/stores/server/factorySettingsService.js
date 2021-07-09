@@ -10,8 +10,6 @@ import { PREPARE_PROGRESS } from '@/stores/app/core';
 import { eventToApp } from '@/stores/server/bus';
 import packageJson from '@/../package.json';
 
-const timeOut = (time = 10000) => new Promise((resolve) => setTimeout(resolve, time));
-
 class FactorySettingsService {
     core;
     storage;
@@ -27,8 +25,6 @@ class FactorySettingsService {
     async setFactorySettings(progressCallback) {
         progressCallback(10, PREPARE_PROGRESS.CREATE_DEFAULT_STRUCTURE);
 
-        await timeOut();
-
         try {
             await db().add('folders', {
                 id: 1,
@@ -42,8 +38,6 @@ class FactorySettingsService {
         if (BUILD === 'full') {
             progressCallback(15, PREPARE_PROGRESS.IMPORT_BOOKMARKS);
 
-            await timeOut();
-
             console.log('Import system bookmarks');
             await this.core.systemBookmarksService.syncBookmarks();
         }
@@ -51,15 +45,11 @@ class FactorySettingsService {
         console.log('Fetch BG');
         progressCallback(35, PREPARE_PROGRESS.FETCH_BG);
 
-        await timeOut();
-
         const { response } = await fetchData(
             `${appVariables.rest.url}/backgrounds/get-from-collection?count=1&type=image&collection=best`,
         ).catch(() => ({ response: [] }));
 
         progressCallback(70, PREPARE_PROGRESS.SAVE_BG);
-
-        await timeOut();
 
         let bg;
 
