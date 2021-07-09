@@ -5,6 +5,7 @@ import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
 import { useTranslation } from 'react-i18next';
 import { first } from 'lodash';
+import FavoriteItem from '@/ui-components/FavoriteItem';
 import FAPButton from './Button';
 
 function LinkButton(props) {
@@ -16,6 +17,7 @@ function LinkButton(props) {
         icoVariant,
         className: externalClassName,
         children,
+        dense,
     } = props;
     const { t } = useTranslation();
 
@@ -42,8 +44,16 @@ function LinkButton(props) {
             )}
             onMouseUp={handleClick}
         >
+            {!children && dense && (
+                <FavoriteItem
+                    type="bookmark"
+                    name={name}
+                    icoUrl={icoUrl}
+                    icoVariant={icoVariant}
+                />
+            )}
             {children}
-            {!children && (
+            {!children && !dense && (
                 <Image
                     src={icoUrl}
                     alternativeIcon={first(name)?.toUpperCase()}

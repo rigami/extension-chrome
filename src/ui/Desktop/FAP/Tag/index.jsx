@@ -1,6 +1,7 @@
 import React from 'react';
 import { LabelRounded as TagIcon } from '@material-ui/icons';
 import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
+import FavoriteItem from '@/ui-components/FavoriteItem';
 import Explorer from './Explorer';
 
 function Tag(props) {
@@ -10,6 +11,7 @@ function Tag(props) {
         color,
         classes: externalClasses,
         children,
+        dense,
     } = props;
 
     return (
@@ -20,7 +22,18 @@ function Tag(props) {
             classes={externalClasses}
             iconOpen={TagIcon}
             iconOpenProps={{ style: { color } }}
-            button={children}
+            button={(children || dense) && (
+                <React.Fragment>
+                    {!dense && children}
+                    {!children && dense && (
+                        <FavoriteItem
+                            type="tag"
+                            name={name}
+                            color={color}
+                        />
+                    )}
+                </React.Fragment>
+            )}
         >
             <Explorer id={id} />
         </ButtonWithPopper>

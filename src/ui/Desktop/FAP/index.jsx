@@ -189,19 +189,19 @@ function FAP() {
                                 classes: {
                                     root: classes.link,
                                     backdrop: clsx(
-                                        !isContained && classes.linkBackdropBlur,
-                                        isContained && classes.linkBackdrop,
+                                        /* !isContained && */ classes.linkBackdropBlur,
+                                        // isContained && classes.linkBackdrop,
                                     ),
                                 },
                             };
                         }
 
                         if (fav instanceof BookmarkEntity) {
-                            return (<Link {...a11props} className={classes.link} />);
+                            return (<Link {...a11props} className={clsx(classes.link, classes.linkBackdropBlur)} dense />);
                         } else if (fav instanceof FolderEntity) {
-                            return (<Folder {...a11props} />);
+                            return (<Folder {...a11props} dense />);
                         } else if (fav instanceof TagEntity) {
-                            return (<Tag {...a11props} />);
+                            return (<Tag {...a11props} dense />);
                         }
 
                         return null;
