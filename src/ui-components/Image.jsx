@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
     Avatar,
     CardMedia,
+    Box,
 } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
 import { LinkRounded as LinkIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.backdrop,
         fontFamily: theme.typography.primaryFontFamily,
     },
+    skeleton: { backgroundColor: theme.palette.background.backdrop },
 }));
 
 function Image(props) {
@@ -49,12 +50,10 @@ function Image(props) {
         return (
             <React.Fragment>
                 {isLoading && (
-                    <Skeleton
-                        variant="rect"
-                        animation="wave"
+                    <Box
                         width={180}
                         height={84}
-                        className={externalClassName}
+                        className={clsx(classes.skeleton, externalClassName)}
                     />
                 )}
                 {!isLoading && (
@@ -66,12 +65,10 @@ function Image(props) {
         return (
             <React.Fragment>
                 {isLoading && (
-                    <Skeleton
-                        variant="rect"
-                        animation="wave"
+                    <Box
                         width={dense ? 28 : 32}
                         height={dense ? 28 : 32}
-                        className={clsx(classes.roundedIconStub, externalClassName)}
+                        className={clsx(classes.skeleton, classes.roundedIconStub, externalClassName)}
                     />
                 )}
                 {!isLoading && (
