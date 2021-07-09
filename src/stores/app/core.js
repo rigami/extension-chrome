@@ -75,7 +75,6 @@ class Core {
                     'desktop',
                     'settings',
                     'settingsBackup',
-                    `changelog_${BUILD}`,
                 ],
                 defaultNS: 'common',
                 backend: { loadPath: 'resource/i18n/{{lng}}/{{ns}}.json' },

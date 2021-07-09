@@ -75,7 +75,9 @@ const useStyles = makeStyles((theme) => ({
 
 function ChangelogScreen({ onClose }) {
     const classes = useStyles();
-    const { t } = useTranslation([`changelog_${BUILD}`]);
+    const { t, ready } = useTranslation([`changelog_${BUILD}`]);
+
+    if (!ready) return null;
 
     return (
         <Box className={classes.root}>
