@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 'inherit',
     },
     icon: {
-        marginRight: theme.spacing(1.25),
+        marginRight: theme.spacing(1),
         width: 28,
         height: 28,
         flexShrink: 0,
