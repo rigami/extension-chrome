@@ -4,7 +4,7 @@ import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
 import FirstLookScreen from '@/ui/InitApp/FirstLookScreen';
 import appVariables from '@/config/appVariables';
-import packageJson from '../../../package.json';
+import packageJson from '@/../package.json';
 
 const STATE = {
     PREPARE: 'PREPARE',
@@ -26,6 +26,7 @@ function InitApp({ children }) {
                 && appVariables.notifyNewVersion
             ) {
                 service.storage.temp.update({ newVersion: true });
+                service.storage.persistent.update({ lastUsageVersion: packageJson.version });
             }
         } else if (service.appState === APP_STATE.REQUIRE_SETUP) {
             setState(STATE.FIRST_CONTACT);
