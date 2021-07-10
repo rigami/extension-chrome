@@ -567,7 +567,7 @@ class BackgroundsServerService {
         );
 
         reaction(
-            () => this.storage.data.backgroundStreamQuery,
+            () => JSON.stringify(this.storage.data.backgroundStreamQuery),
             () => {
                 this.nextBGStream()
                     .catch((e) => {

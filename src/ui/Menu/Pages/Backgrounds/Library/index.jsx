@@ -16,7 +16,7 @@ import { last } from 'lodash';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import BackgroundCard from '@/ui/Menu/Settings/Backgrounds/BackgroundCard';
+import BackgroundCard from '@/ui/Menu/Pages/Backgrounds/BackgroundCard';
 import { captureException } from '@sentry/react';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 

@@ -25,7 +25,7 @@ import fetchData from '@/utils/fetchData';
 import appVariables from '@/config/appVariables';
 import { eventToBackground } from '@/stores/server/bus';
 import useAppStateService from '@/stores/app/AppStateProvider';
-import BackgroundCard from '@/ui/Menu/Settings/Backgrounds/BackgroundCard';
+import BackgroundCard from '@/ui/Menu/Pages/Backgrounds/BackgroundCard';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import { captureException } from '@sentry/react';
@@ -133,8 +133,6 @@ function ChangeQuery({ onClose }) {
             bgsStream: [],
             prepareBGStream: null,
         });
-
-        eventToBackground('backgrounds/nextBg');
 
         onClose();
     };
