@@ -18,10 +18,16 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import BackgroundCard from '@/ui/Menu/Pages/Backgrounds/BackgroundCard';
 import { captureException } from '@sentry/react';
+import { PhotoLibraryRounded as EmptyLibraryIcon } from '@material-ui/icons';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 
 const useStyles = makeStyles(() => ({
-    root: { overflow: 'hidden' },
+    root: {
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+    },
     centerPage: {
         flexGrow: 1,
         display: 'flex',
@@ -141,7 +147,10 @@ function LibraryMenu() {
                         </GridList>
                     )}
                     {bgs.length === 0 && (
-                        <Stub message={t('library.error.notFound')} />
+                        <Stub
+                            icon={EmptyLibraryIcon}
+                            message={t('library.error.notFound')}
+                        />
                     )}
                 </Box>
             )}
