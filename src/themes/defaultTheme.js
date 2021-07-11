@@ -42,6 +42,10 @@ const theme = {
             fontFamily: primaryFontFamily,
             fontWeight: 900,
         },
+        h2: {
+            fontFamily: primaryFontFamily,
+            fontWeight: 900,
+        },
         body1: {
             fontFamily: primaryFontFamily,
             fontWeight: 600,

@@ -4,6 +4,8 @@ import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
 import FirstLookScreen from '@/ui/FirstLookScreen';
 import appVariables from '@/config/appVariables';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
+import useAppService from '@/stores/app/AppStateProvider';
 import packageJson from '../../../package.json';
 
 const STATE = {
@@ -11,6 +13,29 @@ const STATE = {
     DONE: 'DONE',
     FIRST_CONTACT: 'FIRST_CONTACT',
 };
+
+function ApplyWizardSettingsProvider({ children }) {
+    const coreService = useBaseStateService();
+    const bookmarksService = useBookmarksService();
+    const appService = useAppService();
+    const { widgets } = appService;
+
+    const { wizardSettings } = coreService.storage.persistent.data;
+
+    if (!wizardSettings) return children;
+
+    coreService.storage.persistent.update({ wizardSettings: null });
+
+    bookmarksService.settings.update({ fapStyle: wizardSettings.fapStyle });
+    widgets.settings.update({
+        dtwUseDate: wizardSettings.useDate,
+        dtwUseTime: wizardSettings.useTime,
+    });
+    appService.settings.update({ defaultActivity: wizardSettings.activity });
+    appService.setActivity(wizardSettings.activity);
+
+    return children;
+}
 
 function InitApp({ children }) {
     const service = useBaseStateService();
@@ -46,3 +71,4 @@ function InitApp({ children }) {
 }
 
 export default observer(InitApp);
+export { ApplyWizardSettingsProvider };

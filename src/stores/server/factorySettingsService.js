@@ -8,7 +8,6 @@ import { first } from 'lodash';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
 import { eventToApp } from '@/stores/server/bus';
-import packageJson from '@/../package.json';
 
 class FactorySettingsService {
     core;
@@ -85,10 +84,7 @@ class FactorySettingsService {
             this.setFactorySettings((percent, stage) => {
                 if (stage === PREPARE_PROGRESS.DONE) {
                     console.log('Done factory reset!');
-                    this.storage.update({
-                        factoryResetProgress: null,
-                        lastUsageVersion: packageJson.version,
-                    });
+                    this.storage.update({ factoryResetProgress: null });
                     resolve();
                 } else {
                     this.storage.update({
@@ -112,10 +108,7 @@ class FactorySettingsService {
             this.factoryReset().then(callback);
         });
 
-        if (
-            !this.storage.data.lastUsageVersion
-            || this.storage.data.factoryResetProgress
-        ) {
+        if (this.storage.data.factoryResetProgress || !this.storage.data.lastUsageVersion) {
             this.factoryReset();
         }
     }

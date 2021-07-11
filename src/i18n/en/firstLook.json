@@ -1,18 +1,46 @@
 {
   "prepareApp": "Preparing the application",
-  "pleaseWait": "Preparing the application...",
-  "allDone": "All is ready",
-  "prepareAppDoneDescription": "The application is under testing and active development, I would like to hear about all the problems you face, as well as all your ideas for development. You can tell in the application settings in the \"about application\" tab. Thank you very much)",
+  "greeting": "Hello welcome to rigami",
+  "wizardDescription": "Let's quickly set up rigami for you to be as productive as possible",
+  "question": "Question {{now}} of {{total}}",
   "button": {
-    "continue": "Continue"
+    "continue": "Continue",
+    "skipAndApplyDefaultSettings": "Skip and apply default settings",
+    "startSettingsWizard": "Set up",
+    "next": "Next",
+    "back": "Back"
+  },
+  "beta": {
+    "title": "The extension is still in beta testing",
+    "description": "The extension is still in beta testing, the functionality may be unstable or vary greatly"
+  },
+  "defaultActivityQuestion": {
+    "title": "What is more important to you?",
+    "button": {
+      "desktop": "Beautiful clean background",
+      "bookmarks": "Quick bookmark management"
+    }
+  },
+  "desktopEnvironmentQuestion": {
+    "title": "What would you like to see on this screen?",
+    "widgets": "Widgets",
+    "fap": "Favorites bookmarks",
+    "button": {
+      "useTime": "Current time",
+      "useDate": "Current date",
+      "useWeather": "Current weather outside the window",
+      "disableFap": "Do not display",
+      "productivityFap": "With titles",
+      "zenFap": "Icons only"
+    }
   },
   "stage": {
     "WAIT": "Waiting...",
-    "CREATE_FS": "Creating file system",
-    "CREATE_DEFAULT_STRUCTURE": "Adding magic",
-    "IMPORT_BOOKMARKS": "Importing bookmarks from chrome",
-    "FETCH_BG": "Fetching first background",
-    "SAVE_BG": "Saving background",
+    "CREATE_FS": "Creating file system...",
+    "CREATE_DEFAULT_STRUCTURE": "Adding magic...",
+    "IMPORT_BOOKMARKS": "Importing bookmarks from chrome...",
+    "FETCH_BG": "Fetching first background...",
+    "SAVE_BG": "Saving background...",
     "DONE": "Done!"
   }
 }

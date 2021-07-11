@@ -51,9 +51,9 @@ class Core {
         if (!PRODUCTION_MODE) {
             const { devTools = {} } = await StorageConnector.get('devTools', {});
 
-            console.log('devTools:', devTools, devTools.lng || BrowserAPI.systemLanguage || 'en');
+            console.log('devTools:', devTools, devTools.locale || BrowserAPI.systemLanguage || 'en');
 
-            overrideLng = devTools.lng;
+            overrideLng = devTools.locale;
         }
 
         return i18n
@@ -132,7 +132,10 @@ class Core {
         console.timeEnd('Await install storage service');
 
         runInAction(() => {
-            if (this.storage.persistent.data.factoryResetProgress) {
+            if (
+                this.storage.persistent.data.factoryResetProgress
+                || !this.storage.persistent.data.lastUsageVersion
+            ) {
                 this.appState = APP_STATE.REQUIRE_SETUP;
             } else {
                 this.appState = APP_STATE.WORK;
