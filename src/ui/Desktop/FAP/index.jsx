@@ -85,7 +85,11 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusBold,
     },
     contrastBackdrop: { backgroundColor: fade(theme.palette.background.backdrop, 0.95) },
-    disableLeftPadding: { paddingLeft: 0 },
+    disableLeftPadding: {
+        paddingLeft: 0,
+        paddingRight: 0,
+        minWidth: 'unset',
+    },
 }));
 
 function FAP() {
