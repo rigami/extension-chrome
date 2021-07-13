@@ -21,6 +21,7 @@ import useAppService from '@/stores/app/AppStateProvider';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import asyncAction from '@/utils/asyncAction';
 import { captureException } from '@sentry/react';
+import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
 import Folder from './Folder';
 import Tag from './Tag';
 import Link from './Link';
@@ -84,6 +85,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusBold,
     },
     contrastBackdrop: { backgroundColor: fade(theme.palette.background.backdrop, 0.95) },
+    disableLeftPadding: { paddingLeft: 0 },
 }));
 
 function FAP() {
@@ -154,7 +156,8 @@ function FAP() {
 
     const overload = store.maxCount < bookmarksService.favorites.length;
 
-    const isContained = fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED || appService.activity === ACTIVITY.FAVORITES;
+    const isContained = (fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED || appService.activity === ACTIVITY.FAVORITES)
+    && fapSettings.fapStyle !== BKMS_FAP_STYLE.PRODUCTIVITY;
 
     return (
         <Fade in={!store.isLoading}>
@@ -174,6 +177,7 @@ function FAP() {
                         isContained && classes.backdrop,
                         fapSettings.fapAlign === BKMS_FAP_ALIGN.LEFT && classes.leftAlign,
                         appService.activity === ACTIVITY.BOOKMARKS && classes.contrastBackdrop,
+                        fapSettings.fapStyle === BKMS_FAP_STYLE.PRODUCTIVITY && classes.disableLeftPadding,
                     )}
                 >
                     {store.maxCount.length !== 0 && store.favorites.slice(0, store.maxCount).map((fav) => {
@@ -181,6 +185,7 @@ function FAP() {
                             ...fav,
                             key: `${fav.constructor.name}-${fav.id}`,
                             isBlurBackdrop: !isContained,
+                            dense: fapSettings.fapStyle === FAP_STYLE.PRODUCTIVITY,
                         };
 
                         if (fav instanceof FolderEntity || fav instanceof TagEntity) {
@@ -189,15 +194,15 @@ function FAP() {
                                 classes: {
                                     root: classes.link,
                                     backdrop: clsx(
-                                        !isContained && classes.linkBackdropBlur,
-                                        isContained && classes.linkBackdrop,
+                                        /* !isContained && */ classes.linkBackdropBlur,
+                                        // isContained && classes.linkBackdrop,
                                     ),
                                 },
                             };
                         }
 
                         if (fav instanceof BookmarkEntity) {
-                            return (<Link {...a11props} className={classes.link} />);
+                            return (<Link {...a11props} className={clsx(classes.link, classes.linkBackdropBlur)} />);
                         } else if (fav instanceof FolderEntity) {
                             return (<Folder {...a11props} />);
                         } else if (fav instanceof TagEntity) {

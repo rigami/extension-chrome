@@ -14,7 +14,8 @@
     "title":"Стиль панели",
     "value":{
       "CONTAINED":"С подложкой",
-      "TRANSPARENT":"Прозрачный"
+      "TRANSPARENT":"Прозрачный",
+      "PRODUCTIVITY":"Продуктивный"
     }
   },
   "fapPosition":{

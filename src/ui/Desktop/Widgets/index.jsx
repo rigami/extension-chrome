@@ -130,12 +130,21 @@ function Widgets({ stickToBottom }) {
 
     if (BUILD === 'full') {
         if (
-            (bookmarksService.fapIsDisplay
-                && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED)
-            || appService.activity === ACTIVITY.FAVORITES
+            (
+                bookmarksService.fapIsDisplay
+                && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED
+            ) || appService.activity === ACTIVITY.FAVORITES
         ) {
             offset = 40 + theme.spacing(6) + theme.spacing(2.5);
-        } else if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT) {
+        } else if (
+            bookmarksService.fapIsDisplay
+            && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
+        ) {
+            offset = 40 + theme.spacing(6);
+        } else if (
+            bookmarksService.fapIsDisplay
+            && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.PRODUCTIVITY
+        ) {
             offset = 40 + theme.spacing(6);
         }
 

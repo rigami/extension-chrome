@@ -45,6 +45,7 @@ function ButtonWithPopper(props) {
     const {
         id,
         name,
+        className: externalClassName,
         classes: externalClasses = {},
         iconOpen,
         iconOpenProps = {},
@@ -112,6 +113,7 @@ function ButtonWithPopper(props) {
                     <FAPButton
                         className={clsx(
                             classes.root,
+                            externalClassName,
                             externalClasses.backdrop,
                             classes.transition,
                             store.isOpen && offsetToTop && classes.offsetButtonTop,

@@ -3,6 +3,7 @@ import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
 import { useTheme, fade, makeStyles } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
+import FavoriteItem from '@/ui-components/FavoriteItem';
 import Explorer from './Explorer';
 
 const useStyles = makeStyles(() => ({
@@ -11,16 +12,22 @@ const useStyles = makeStyles(() => ({
         height: 620,
         maxHeight: 'inherit',
     },
+    dense: {
+        background: 'none',
+        border: 'none',
+    },
 }));
 
 function Folder(props) {
-    const classes = useStyles();
     const {
         id,
         name,
         classes: externalClasses,
+        className: externalClassName,
         children,
+        dense,
     } = props;
+    const classes = useStyles();
     const theme = useTheme();
 
     return (
@@ -32,8 +39,20 @@ function Folder(props) {
             type="folder"
             iconOpen={FolderIcon}
             classes={externalClasses}
+            className={externalClassName}
             iconOpenProps={{ style: { color: fade(theme.palette.text.secondary, 0.23) } }}
-            button={children}
+            button={(children || dense) && (
+                <React.Fragment>
+                    {!dense && children}
+                    {!children && dense && (
+                        <FavoriteItem
+                            type="folder"
+                            name={name}
+                            className={classes.dense}
+                        />
+                    )}
+                </React.Fragment>
+            )}
         >
             <Box className={classes.root}>
                 <Explorer id={id} />
