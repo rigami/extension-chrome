@@ -6,7 +6,15 @@ import { BKMS_VARIANT } from '@/enum';
 import { useTranslation } from 'react-i18next';
 import { first } from 'lodash';
 import FavoriteItem from '@/ui-components/FavoriteItem';
+import { makeStyles } from '@material-ui/core/styles';
 import FAPButton from './Button';
+
+const useStyles = makeStyles(() => ({
+    dense: {
+        background: 'none',
+        border: 'none',
+    },
+}));
 
 function LinkButton(props) {
     const {
@@ -19,6 +27,7 @@ function LinkButton(props) {
         children,
         dense,
     } = props;
+    const classes = useStyles();
     const { t } = useTranslation();
 
     const handleClick = (event) => {
@@ -50,6 +59,7 @@ function LinkButton(props) {
                     name={name}
                     icoUrl={icoUrl}
                     icoVariant={icoVariant}
+                    className={classes.dense}
                 />
             )}
             {children}

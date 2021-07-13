@@ -5,6 +5,7 @@ import Image from '@/ui-components/Image';
 import { first } from 'lodash';
 import { BKMS_VARIANT } from '@/enum';
 import { FolderRounded as FolderIcon, LabelRounded as TagIcon } from '@material-ui/icons';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     favoriteItem: {
@@ -41,12 +42,13 @@ function FavoriteItem(props) {
         icoUrl,
         icoVariant,
         color,
+        className: externalClassName,
     } = props;
     const classes = useStyles();
     const theme = useTheme();
 
     return (
-        <Card className={classes.favoriteItem} variant="outlined">
+        <Card className={clsx(classes.favoriteItem, externalClassName)} variant="outlined">
             {type === 'bookmark' && (
                 <Image
                     src={icoUrl}

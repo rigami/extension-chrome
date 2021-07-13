@@ -61,7 +61,7 @@ function BookmarksSettings() {
                         format: (value) => t(`fapStyle.value.${value}`),
                         value: bookmarksService.settings.fapStyle,
                         onChange: (event) => bookmarksService.settings.update({ fapStyle: event.target.value }),
-                        values: [BKMS_FAP_STYLE.CONTAINED, BKMS_FAP_STYLE.TRANSPARENT],
+                        values: [BKMS_FAP_STYLE.CONTAINED, BKMS_FAP_STYLE.TRANSPARENT, BKMS_FAP_STYLE.PRODUCTIVITY],
                     }}
                 />
                 <MenuRow

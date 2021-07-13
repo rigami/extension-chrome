@@ -15,7 +15,6 @@ import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import { captureException } from '@sentry/react';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import FavoriteItem from '@/ui-components/FavoriteItem';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
             marginBottom: theme.spacing(1.5),
         },
     },
-    itemBackdrop: { backgroundColor: 'transparent' },
+    item: { border: `1px solid ${theme.palette.divider}` },
 }));
 
 function Favorites({ className: externalClassName }) {
@@ -88,15 +87,15 @@ function Favorites({ className: externalClassName }) {
 
                 if (fav instanceof BookmarkEntity) {
                     return (
-                        <Link {...a11props} dense />
+                        <Link {...a11props} className={classes.item} dense />
                     );
                 } else if (fav instanceof FolderEntity) {
                     return (
-                        <Folder {...a11props} classes={{ backdrop: classes.itemBackdrop }} dense />
+                        <Folder {...a11props} className={classes.item} dense />
                     );
                 } else if (fav instanceof TagEntity) {
                     return (
-                        <Tag {...a11props} classes={{ backdrop: classes.itemBackdrop }} dense />
+                        <Tag {...a11props} className={classes.item} dense />
                     );
                 }
 

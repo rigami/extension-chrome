@@ -12,17 +12,22 @@ const useStyles = makeStyles(() => ({
         height: 620,
         maxHeight: 'inherit',
     },
+    dense: {
+        background: 'none',
+        border: 'none',
+    },
 }));
 
 function Folder(props) {
-    const classes = useStyles();
     const {
         id,
         name,
         classes: externalClasses,
+        className: externalClassName,
         children,
         dense,
     } = props;
+    const classes = useStyles();
     const theme = useTheme();
 
     return (
@@ -34,6 +39,7 @@ function Folder(props) {
             type="folder"
             iconOpen={FolderIcon}
             classes={externalClasses}
+            className={externalClassName}
             iconOpenProps={{ style: { color: fade(theme.palette.text.secondary, 0.23) } }}
             button={(children || dense) && (
                 <React.Fragment>
@@ -42,6 +48,7 @@ function Folder(props) {
                         <FavoriteItem
                             type="folder"
                             name={name}
+                            className={classes.dense}
                         />
                     )}
                 </React.Fragment>

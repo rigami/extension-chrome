@@ -2,7 +2,15 @@ import React from 'react';
 import { LabelRounded as TagIcon } from '@material-ui/icons';
 import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
 import FavoriteItem from '@/ui-components/FavoriteItem';
+import { makeStyles } from '@material-ui/core/styles';
 import Explorer from './Explorer';
+
+const useStyles = makeStyles(() => ({
+    dense: {
+        background: 'none',
+        border: 'none',
+    },
+}));
 
 function Tag(props) {
     const {
@@ -10,9 +18,11 @@ function Tag(props) {
         name,
         color,
         classes: externalClasses,
+        className: externalClassName,
         children,
         dense,
     } = props;
+    const classes = useStyles();
 
     return (
         <ButtonWithPopper
@@ -20,6 +30,7 @@ function Tag(props) {
             name={name}
             type="tag"
             classes={externalClasses}
+            className={externalClassName}
             iconOpen={TagIcon}
             iconOpenProps={{ style: { color } }}
             button={(children || dense) && (
@@ -30,6 +41,7 @@ function Tag(props) {
                             type="tag"
                             name={name}
                             color={color}
+                            className={classes.dense}
                         />
                     )}
                 </React.Fragment>

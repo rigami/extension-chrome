@@ -14,7 +14,8 @@
     "title":"Panel Style",
     "value":{
       "CONTAINED":"With backdrop",
-      "TRANSPARENT":"Transparent"
+      "TRANSPARENT":"Transparent",
+      "PRODUCTIVITY":"Productivity"
     }
   },
   "fapPosition":{
