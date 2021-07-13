@@ -21,9 +21,9 @@ export default {
         dimmingPower: 25,
     },
     bookmarks: {
-        fapStyle: BKMS_FAP_STYLE.CONTAINED,
+        fapStyle: BKMS_FAP_STYLE.PRODUCTIVITY,
         fapPosition: BKMS_FAP_POSITION.BOTTOM,
-        fapAlign: BKMS_FAP_ALIGN.CENTER,
+        fapAlign: BKMS_FAP_ALIGN.LEFT,
         openOnStartup: false,
         favorites: [],
         syncWithSystem: false,
@@ -32,8 +32,8 @@ export default {
     widgets: {
         useWidgets: true,
         dtw: {
-            position: WIDGET_DTW_POSITION.LEFT_MIDDLE,
-            size: WIDGET_DTW_SIZE.BIG,
+            position: WIDGET_DTW_POSITION.LEFT_BOTTOM,
+            size: WIDGET_DTW_SIZE.SMALL,
             date: {
                 useDate: true,
                 defaultAction: '',
