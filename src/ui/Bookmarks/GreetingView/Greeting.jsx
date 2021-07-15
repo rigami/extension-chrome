@@ -13,6 +13,7 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import { SERVICE_STATE } from '@/enum';
+import { toJS } from 'mobx';
 
 const useStyles = makeStyles((theme) => ({
     greetingContainer: {
@@ -136,9 +137,9 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
         return {
             time,
             focus: false,
-            firstEdit: (coreService.storage.persistent.data.userName || '').trim() === '',
             firstRender: true,
             greeting,
+            enabled: coreService.storage.persistent.data.userName !== null,
             userName: coreService.storage.persistent.data.userName || '',
         };
     });
@@ -149,6 +150,7 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
             return;
         }
         store.userName = coreService.storage.persistent.data.userName;
+        store.enabled = store.userName !== null;
     }, [coreService.storage.persistent.data.userName]);
 
     useEffect(() => {
@@ -157,7 +159,7 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
         }
     }, [store.userName]);
 
-    if (!ready || coreService.storage.persistent.data.userName === null) {
+    if (!ready || (coreService.storage.persistent.data.userName === null && !store.enabled)) {
         return (<Box className={clsx(classes.greetingContainer, externalClassName)} />);
     }
 
@@ -191,7 +193,10 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
                         actions={[
                             <Button
                                 key="cancel"
-                                onClick={() => coreService.storage.persistent.update({ userName: null })}
+                                onClick={() => {
+                                    store.enabled = false;
+                                    coreService.storage.persistent.update({ userName: null });
+                                }}
                             >
                                 {t('cancel')}
                             </Button>,
@@ -202,7 +207,7 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
         );
     }
 
-    if (!store.greeting) {
+    if (!store.greeting && !force) {
         return (<Box className={clsx(classes.greetingContainer, externalClassName)} />);
     }
 
