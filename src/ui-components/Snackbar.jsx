@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         maxWidth: 400,
         minWidth: 344,
+        pointerEvents: 'all',
     },
     header: {
         minHeight: 56,
