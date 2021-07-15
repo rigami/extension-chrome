@@ -17,6 +17,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -215,4 +216,4 @@ function MenuRow(props) {
 }
 
 export const ROWS_TYPE = TYPE;
-export default MenuRow;
+export default observer(MenuRow);

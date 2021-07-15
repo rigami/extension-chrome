@@ -115,7 +115,7 @@ function DevTools() {
                 title={t('Locale')}
                 action={{
                     type: ROWS_TYPE.SELECT,
-                    value: store.settings.locale,
+                    value: store.settings.locale || '',
                     onChange: (event) => {
                         store.settings.locale = event.target.value;
                         store.hasChange = true;
