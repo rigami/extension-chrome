@@ -11,8 +11,8 @@ import FAPButton from './Button';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        borderRadius: theme.shape.borderRadiusBold,
-        backgroundColor: theme.palette.common.white,
+        // borderRadius: theme.shape.borderRadiusBold,
+        // backgroundColor: theme.palette.common.white,
     },
     activeIconButton: { backgroundColor: theme.palette.common.white },
     icon: {
