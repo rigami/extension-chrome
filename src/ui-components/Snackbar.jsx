@@ -21,6 +21,8 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 400,
         minWidth: 344,
         pointerEvents: 'all',
+        border: `1px solid ${theme.palette.divider}`,
+        marginTop: theme.spacing(2),
     },
     header: {
         minHeight: 56,
