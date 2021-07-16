@@ -10,14 +10,13 @@ import SearchField from '@/ui/Bookmarks/ToolsPanel/Search/SearchField';
 import Tags from '@/ui/Bookmarks/Tags';
 import CustomScroll from '@/ui-components/CustomScroll';
 import FastResults from '@/ui/Bookmarks/ToolsPanel/Search/FastResults';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, alpha } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const useStyles = makeStyles((theme) => ({
     fullSearch: {
         minHeight: 40,
-        border: `1px solid ${fade(theme.palette.background.backdrop, 0.52)}`,
+        border: `1px solid ${alpha(theme.palette.background.backdrop, 0.52)}`,
         overflow: 'hidden',
         boxSizing: 'border-box',
     },

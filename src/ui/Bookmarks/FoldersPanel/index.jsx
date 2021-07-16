@@ -2,7 +2,7 @@ import React from 'react';
 import {
     Box, CardActionArea, CardHeader, Tooltip,
 } from '@material-ui/core';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles } from '@material-ui/core/styles';
 import LogoIcon from '@/images/logo-icon.svg';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
         height: '100vh',
         position: 'sticky',
         top: 0,
-        backgroundColor: fade(theme.palette.background.backdrop, 0.3),
+        backgroundColor: alpha(theme.palette.background.backdrop, 0.3),
         paddingTop: theme.spacing(2),
     },
     avatar: {

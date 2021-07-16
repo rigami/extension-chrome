@@ -1,5 +1,4 @@
-import { createMuiTheme } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
+import { createTheme, alpha } from '@material-ui/core/styles';
 
 const primaryFontFamily = '"Manrope", "Open Sans", sans-serif';
 const secondaryFontFamily = primaryFontFamily; // 'Roboto, "Open Sans", sans-serif';
@@ -21,9 +20,9 @@ const theme = {
             main: '#f46600',
             contrastText: '#fff',
         },
-        divider: fade('#000', 0.09),
+        divider: alpha('#000', 0.09),
         favorite: { main: '#F4C620' },
-        snackbar: { default: fade('#fff', 0.95) },
+        snackbar: { default: alpha('#fff', 0.95) },
         background: { backdrop: '#ececec' },
     },
     shape: {
@@ -72,7 +71,7 @@ const theme = {
         },
         MuiTooltip: {
             tooltip: {
-                backgroundColor: fade('#000', 0.82),
+                backgroundColor: alpha('#000', 0.82),
                 fontSize: '0.85rem',
                 padding: '6px 12px',
             },
@@ -124,4 +123,4 @@ const theme = {
 
 export { theme };
 
-export default createMuiTheme({}, theme);
+export default createTheme({}, theme);

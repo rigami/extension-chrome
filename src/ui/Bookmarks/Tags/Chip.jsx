@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { Box, ButtonBase, Typography } from '@material-ui/core';
 import clsx from 'clsx';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles } from '@material-ui/core/styles';
 import { StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
@@ -83,7 +83,7 @@ function Tag(props) {
         <ButtonBase
             className={clsx(classes.root, isSelect && classes.active, externalClassName)}
             style={{
-                backgroundColor: isSelect && fade(repairColor, 0.14),
+                backgroundColor: isSelect && alpha(repairColor, 0.14),
                 borderColor: isSelect && repairColor,
             }}
             onClick={onClick}

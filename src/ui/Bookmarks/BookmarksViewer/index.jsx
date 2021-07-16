@@ -5,7 +5,7 @@ import {
     CircularProgress,
 } from '@material-ui/core';
 import Stub from '@/ui-components/Stub';
-import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
+import { alpha, makeStyles, useTheme } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     stub: { maxHeight: 750 },
     emoticon: {
         fontSize: '10rem',
-        color: fade(theme.palette.text.secondary, 0.06),
+        color: alpha(theme.palette.text.secondary, 0.06),
         fontWeight: 700,
     },
     message: {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
-import { useTheme, fade, makeStyles } from '@material-ui/core/styles';
+import { useTheme, alpha, makeStyles } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
 import FavoriteItem from '@/ui-components/FavoriteItem';
 import Explorer from './Explorer';
@@ -40,7 +40,7 @@ function Folder(props) {
             iconOpen={FolderIcon}
             classes={externalClasses}
             className={externalClassName}
-            iconOpenProps={{ style: { color: fade(theme.palette.text.secondary, 0.23) } }}
+            iconOpenProps={{ style: { color: alpha(theme.palette.text.secondary, 0.23) } }}
             button={(children || dense) && (
                 <React.Fragment>
                     {!dense && children}

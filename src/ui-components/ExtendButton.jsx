@@ -5,14 +5,13 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
+import { makeStyles, alpha } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     card: {
         borderRadius: theme.shape.borderRadius,
         backdropFilter: 'blur(10px) brightness(200%)',
-        backgroundColor: fade(theme.palette.background.backdrop, 0.52),
+        backgroundColor: alpha(theme.palette.background.backdrop, 0.52),
         display: 'flex',
         flexDirection: 'column',
         // marginTop: theme.spacing(2),

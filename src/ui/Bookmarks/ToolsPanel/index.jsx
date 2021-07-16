@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppBar, Toolbar, Box } from '@material-ui/core';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { SelfImprovementRounded as DesktopIcon } from '@/icons';
@@ -12,7 +12,7 @@ import SearchBlock from './Search';
 import ShowFavorites from './ShowFavorites';
 
 const useStyles = makeStyles((theme) => ({
-    root: { backgroundColor: fade(theme.palette.background.paper, 0.91) },
+    root: { backgroundColor: alpha(theme.palette.background.paper, 0.91) },
     toolbar: {
         minHeight: 40,
         display: 'flex',

@@ -6,7 +6,7 @@ import {
     Slide,
     Box,
 } from '@material-ui/core';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import Header from '@/ui/Menu/PageHeader';
 import Scrollbar from '@/ui-components/CustomScroll';
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     },
     thumbY: { backgroundColor: theme.palette.background.paper },
     backdrop: { zIndex: theme.zIndex.drawer },
-    darkBackdrop: { backgroundColor: fade(theme.palette.common.black, 0.5) },
+    darkBackdrop: { backgroundColor: alpha(theme.palette.common.black, 0.5) },
     drawer: {
         position: 'absolute !important',
         top: 0,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
+import { alpha, makeStyles, useTheme } from '@material-ui/core/styles';
 import { Card, Typography } from '@material-ui/core';
 import Image from '@/ui-components/Image';
 import { first } from 'lodash';
@@ -59,7 +59,7 @@ function FavoriteItem(props) {
                 />
             )}
             {type === 'folder' && (
-                <FolderIcon className={classes.icon} style={{ color: fade(theme.palette.text.secondary, 0.23) }} />
+                <FolderIcon className={classes.icon} style={{ color: alpha(theme.palette.text.secondary, 0.23) }} />
             )}
             {type === 'tag' && (
                 <TagIcon className={classes.icon} style={{ color }} />

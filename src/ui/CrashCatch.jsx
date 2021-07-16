@@ -1,6 +1,6 @@
 import React from 'react';
 import Stub from '@/ui-components/Stub';
-import { fade, withStyles } from '@material-ui/core/styles';
+import { alpha, withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import EventBus from '@/utils/eventBus';
 
@@ -15,7 +15,7 @@ const styles = (theme) => ({
     },
     emoticon: {
         fontSize: '10rem',
-        color: fade(theme.palette.text.secondary, 0.06),
+        color: alpha(theme.palette.text.secondary, 0.06),
         fontWeight: 700,
     },
     error: {

@@ -20,7 +20,7 @@ import {
     IconButton,
 } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme, alpha } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import {
     WarningRounded as WarningIcon,
@@ -28,7 +28,6 @@ import {
     CloseRounded as CloseIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import Scrollbar from '@/ui-components/CustomScroll';
 import BeautifulFileSize from '@/utils/beautifulFileSize';
 import useAppStateService from '@/stores/app/AppStateProvider';
@@ -85,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
         right: 0,
         bottom: 0,
         zIndex: theme.zIndex.dropFiles,
-        backgroundColor: fade(theme.palette.common.black, 0.65),
+        backgroundColor: alpha(theme.palette.common.black, 0.65),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

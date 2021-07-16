@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect } from 'react';
 import { Box, Card, Fade } from '@material-ui/core';
 import { useResizeDetector } from 'react-resize-detector';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, alpha } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import {
@@ -65,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     leftAlign: { marginLeft: 0 },
     backdrop: {
         backdropFilter: 'blur(40px) brightness(110%)  contrast(1.2) invert(0.06)',
-        backgroundColor: fade(theme.palette.background.backdrop, 0.22),
+        backgroundColor: alpha(theme.palette.background.backdrop, 0.22),
         marginBottom: theme.spacing(3),
         minHeight: 60,
     },
@@ -77,14 +76,14 @@ const useStyles = makeStyles((theme) => ({
     linkBackdrop: { backgroundColor: theme.palette.background.default },
     linkBackdropBlur: {
         backdropFilter: 'blur(10px) brightness(200%)',
-        backgroundColor: fade(theme.palette.background.default, 0.82),
+        backgroundColor: alpha(theme.palette.background.default, 0.82),
     },
     overload: {
         width: 40,
         height: 40,
         borderRadius: theme.shape.borderRadiusBold,
     },
-    contrastBackdrop: { backgroundColor: fade(theme.palette.background.backdrop, 0.95) },
+    contrastBackdrop: { backgroundColor: alpha(theme.palette.background.backdrop, 0.95) },
     disableLeftPadding: {
         paddingLeft: 0,
         paddingRight: 0,

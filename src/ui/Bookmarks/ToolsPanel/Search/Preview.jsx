@@ -3,10 +3,9 @@ import { SearchRounded as SearchIcon } from '@material-ui/icons';
 import clsx from 'clsx';
 import { ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, alpha } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -14,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 2,
         border: '1px solid transparent',
         backdropFilter: 'none',
-        backgroundColor: fade(theme.palette.background.backdrop, 0.52),
+        backgroundColor: alpha(theme.palette.background.backdrop, 0.52),
     },
     icon: {
         margin: theme.spacing(1 - 0.125),

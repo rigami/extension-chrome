@@ -1,11 +1,9 @@
 import React from 'react';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import {
     ListItem,
     ListItemIcon,
     ListItemText,
     Collapse,
-    ListItemSecondaryAction,
     Box,
 } from '@material-ui/core';
 import {
@@ -13,7 +11,7 @@ import {
     WarningRounded as WarnIcon,
     ErrorRounded as ErrorIcon,
 } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, alpha } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
@@ -21,21 +19,21 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.info.main,
         '& $icon': { color: theme.palette.info.contrastText },
         '& $messageText': { color: theme.palette.info.contrastText },
-        '& $descriptionText': { color: fade(theme.palette.info.contrastText, 0.8) },
+        '& $descriptionText': { color: alpha(theme.palette.info.contrastText, 0.8) },
         '& $actions': { color: theme.palette.info.contrastText },
     },
     warn: {
         backgroundColor: theme.palette.warning.main,
         '& $icon': { color: theme.palette.warning.contrastText },
         '& $messageText': { color: theme.palette.warning.contrastText },
-        '& $descriptionText': { color: fade(theme.palette.warning.contrastText, 0.8) },
+        '& $descriptionText': { color: alpha(theme.palette.warning.contrastText, 0.8) },
         '& $actions': { color: theme.palette.warning.contrastText },
     },
     error: {
         backgroundColor: theme.palette.error.main,
         '& $icon': { color: theme.palette.error.contrastText },
         '& $messageText': { color: theme.palette.error.contrastText },
-        '& $descriptionText': { color: fade(theme.palette.error.contrastText, 0.8) },
+        '& $descriptionText': { color: alpha(theme.palette.error.contrastText, 0.8) },
         '& $actions': { color: theme.palette.error.contrastText },
     },
     icon: {},

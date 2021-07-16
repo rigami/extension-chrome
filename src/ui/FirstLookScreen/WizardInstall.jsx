@@ -20,7 +20,7 @@ import {
 import Logo from '@/ui-components/Logo';
 import { ArrowForward as NextIcon, ArrowBack as BackIcon, WarningRounded as WarnIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles } from '@material-ui/core/styles';
 import { ACTIVITY } from '@/enum';
 import clsx from 'clsx';
 import SchemeBackground from '@/images/scheme_background.svg';
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
     },
     activeCheckboxButton: {
-        backgroundColor: fade(theme.palette.primary.main, 0.1),
+        backgroundColor: alpha(theme.palette.primary.main, 0.1),
         border: `1px solid ${theme.palette.primary.main}`,
     },
     image: {

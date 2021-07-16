@@ -17,8 +17,7 @@ import {
     WallpaperRounded as WallpaperIcon,
     AddRounded as AddIcon,
 } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
+import { makeStyles, alpha } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
@@ -39,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        backgroundColor: fade(theme.palette.common.black, 0.7),
+        backgroundColor: alpha(theme.palette.common.black, 0.7),
         opacity: 0,
         transition: theme.transitions.create('', {
             easing: theme.transitions.easing.easeInOut,
@@ -80,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1, 0),
         paddingRight: theme.spacing(2),
         background: 'none',
-        borderTop: `1px solid ${fade(theme.palette.common.white, 0.12)}`,
+        borderTop: `1px solid ${alpha(theme.palette.common.white, 0.12)}`,
     },
     icon: {
         display: 'flex',
