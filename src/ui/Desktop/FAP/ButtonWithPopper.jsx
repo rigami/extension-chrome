@@ -14,7 +14,9 @@ const useStyles = makeStyles((theme) => ({
         // borderRadius: theme.shape.borderRadiusBold,
         // backgroundColor: theme.palette.common.white,
     },
-    activeIconButton: { backgroundColor: theme.palette.common.white },
+    activeIconButton: {
+        // backgroundColor: theme.palette.common.white
+    },
     icon: {
         width: 28,
         height: 28,
