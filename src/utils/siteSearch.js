@@ -52,14 +52,14 @@ const getSiteInfoLocal = async (url) => {
 
     console.log('local parse data:', {
         ...parseData,
-        url: raw.responseURL,
+        url: raw.url,
         baseUrl: localSearchUrl,
         urlOrigin,
-    });
+    }, raw);
 
     return {
         ...parseData,
-        url: raw.responseURL,
+        url: raw.url,
         baseUrl: localSearchUrl,
         urlOrigin,
     };
@@ -83,12 +83,7 @@ const getSiteInfo = async (url, onMeta) => {
             {
                 body: JSON.stringify(localParseData),
                 method: 'POST',
-                headers: [
-                    {
-                        name: 'Content-type',
-                        value: 'application/json',
-                    },
-                ],
+                headers: { 'Content-type': 'application/json' },
                 responseType: 'json',
             },
         );
