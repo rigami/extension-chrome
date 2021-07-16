@@ -1,33 +1,51 @@
 {
   "morning_appeal": "Good morning",
+  "lateMorning_appeal": "Good morning",
   "day_appeal": "Hello",
+  "lateDay_appeal": "Hello",
   "evening_appeal": "Good evening",
+  "lateEvening_appeal": "Good evening",
   "night_appeal": "Good night",
+  "lateNight_appeal": "Good night",
   "name_placeholder": "what should I call you?",
-  "name_stub": "friend",
+  "name_stub": "dear friend",
   "cancelInfo": "If you do not want rigami to contact you, then click the '$t(cancel)'.",
   "cancelInfo_description": "You can turn it back on in the settings.",
   "cancel": "Do not show appeal",
-  "morning": [
-    "Good morning, {{name}} \uD83C\uDF05 </br>Have a good day!",
-    "Good morning, {{name}} \uD83D\uDE34 </br>Have a good day!",
-    "Good morning, {{name}} \uD83D\uDC23",
-    "Good morning, {{name}} \uD83C\uDF04"
-  ],
-  "day": [
-    "Hello, {{name}} \uD83D\uDC4B"
-  ],
-  "evening": [
-    "Good evening, {{name}} \uD83D\uDC4B",
-    "Good evening, {{name}} \uD83D\uDCA4"
-  ],
-  "night": [
-    "Good night, {{name}} \uD83C\uDF03",
-    "Good night, {{name}} \uD83C\uDF1B",
-    "Good night, {{name}} \uD83D\uDCA4 </br>Goes to bed soon",
-    "Good night, {{name}} \uD83D\uDE34 </br>Can not sleep?"
-  ],
-  "default": [
-    "Hello, {{name}} \uD83D\uDC4B"
-  ]
+  "greeting": {
+    "morning": [
+      "Good morning, {{name}} \uD83D\uDC23",
+      "Good morning, {{name}} \uD83C\uDF04",
+      "Good morning, {{name}} \uD83D\uDE34"
+    ],
+    "lateMorning": [
+      "Good morning, {{name}} \uD83C\uDF05 </br> Have a nice day!",
+      "Good morning, {{name}} </br> Have a nice day!"
+    ],
+    "day": [
+      "Hello, {{name}} \uD83D\uDC4B"
+    ],
+    "lateDay": [
+      "Hello, {{name}} \uD83D\uDC4B"
+    ],
+    "evening": [
+      "Good evening, {{name}}"
+    ],
+    "lateEvening": [
+      "Good evening, {{name}}"
+    ],
+    "night": [
+      "Good night, {{name}} \uD83C\uDF03",
+      "Good night, {{name}} \uD83C\uDF1B",
+      "Good night, {{name}} \uD83D\uDCA4 </br> It's time to go to bed"
+    ],
+    "lateNight": [
+      "Good night, {{name}} \uD83C\uDF03",
+      "Good night, {{name}} \uD83C\uDF1B",
+      "Good night, {{name}} \uD83D\uDE34 </br> Can't sleep?"
+    ],
+    "default": [
+      "Hello, {{name}} \uD83D\uDC4B"
+    ]
+  }
 }

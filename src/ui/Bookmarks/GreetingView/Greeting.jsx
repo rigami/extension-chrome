@@ -108,38 +108,34 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
     const coreService = useCoreService();
     const hours = new Date().getHours();
     const store = useLocalObservable(() => {
-        let greeting;
-        let time;
+        let timesOfDay;
 
-        if (hours <= 4 || hours >= 23) {
-            time = 'night';
-        } else if (hours <= 12) {
-            time = 'morning';
-        } else if (hours <= 16) {
-            time = 'day';
+        if (hours >= 5 && hours <= 9) {
+            timesOfDay = 'morning';
+        } else if (hours >= 9 && hours <= 12) {
+            timesOfDay = 'lateMorning';
+        } else if (hours >= 12 && hours <= 15) {
+            timesOfDay = 'day';
+        } else if (hours >= 15 && hours <= 18) {
+            timesOfDay = 'lateDay';
+        } else if (hours >= 18 && hours <= 22) {
+            timesOfDay = 'evening';
+        } else if (hours >= 22 && hours <= 24) {
+            timesOfDay = 'lateEvening';
+        } else if (hours >= 24 || hours <= 2) {
+            timesOfDay = 'night';
         } else {
-            time = 'evening';
-        }
-
-        if (typeof coreService.storage.temp.data.greeting === 'undefined') {
-            const greetings = t([time, 'default'], {
-                returnObjects: true,
-                name: '[name]',
-            });
-
-            console.log(greetings, time);
-
-            greeting = sample(Array.isArray(greetings) ? greetings : []);
-        } else {
-            greeting = coreService.storage.temp.data.greeting;
+            timesOfDay = 'lateNight';
         }
 
         return {
-            time,
+            timesOfDay,
             focus: false,
             firstRender: true,
-            greeting,
+            greeting: null,
             enabled: coreService.storage.persistent.data.userName !== null,
+            edit: coreService.storage.persistent.data.userName === undefined
+                || coreService.storage.persistent.data.userName === '',
             userName: coreService.storage.persistent.data.userName || '',
         };
     });
@@ -151,26 +147,51 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
         }
         store.userName = coreService.storage.persistent.data.userName;
         store.enabled = store.userName !== null;
+        store.edit = store.edit || store.enabled;
     }, [coreService.storage.persistent.data.userName]);
 
     useEffect(() => {
+        console.log('store.focus:', store.focus);
         if (store.focus) {
-            coreService.storage.persistent.update({ userName: store.userName || null });
+            coreService.storage.persistent.update({ userName: store.userName || '' });
         }
     }, [store.userName]);
 
-    if (!ready || (coreService.storage.persistent.data.userName === null && !store.enabled)) {
+    useEffect(() => {
+        if (!ready) return;
+
+        let greeting;
+
+        if (typeof coreService.storage.temp.data.greeting === 'undefined') {
+            const greetings = t([`greeting.${store.timesOfDay}`, 'greeting.default'], {
+                returnObjects: true,
+                name: '[name]',
+            });
+
+            console.log('greetings:', greetings, store.timesOfDay);
+
+            greeting = sample(Array.isArray(greetings) ? greetings : []);
+        } else {
+            greeting = coreService.storage.temp.data.greeting;
+        }
+
+        console.log('greeting:', greeting);
+
+        store.greeting = greeting;
+    }, [ready]);
+
+    if (!ready || (coreService.storage.persistent.data.userName === null && !store.enabled) || !store.greeting) {
         return (<Box className={clsx(classes.greetingContainer, externalClassName)} />);
     }
 
-    const { userName } = coreService.storage.persistent;
+    const { userName } = coreService.storage.persistent.data;
 
-    if (!userName?.trim() && !readOnly) {
+    if ((!userName?.trim() || store.edit) && !readOnly) {
         return (
             <Fade in>
                 <Box className={clsx(classes.greetingContainer, externalClassName)}>
                     <Typography variant="h1" className={classes.greeting}>
-                        {`${t(store.time, { context: 'appeal' })}, `}
+                        {`${t(store.timesOfDay, { context: 'appeal' })}, `}
                         <span>
                             <FakeInput
                                 autoFocus
@@ -207,10 +228,6 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
         );
     }
 
-    if (!store.greeting && !force) {
-        return (<Box className={clsx(classes.greetingContainer, externalClassName)} />);
-    }
-
     const greetingParts = store.greeting.split('[name]');
 
     return (
@@ -225,6 +242,8 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
                                 className={clsx(classes.greeting, classes.input)}
                                 value={store.userName}
                                 placeholder={t('name', { context: 'placeholder' })}
+                                onFocus={() => { store.focus = true; }}
+                                onBlur={() => { store.focus = false; }}
                                 onInput={(event) => {
                                     store.userName = event.target.innerText;
                                     if (!event.target.innerText.trim()) {
