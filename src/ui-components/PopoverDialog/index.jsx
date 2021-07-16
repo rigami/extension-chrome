@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Popover, Box } from '@material-ui/core';
+import { Popover, Box, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import ReactResizeDetector from 'react-resize-detector';
@@ -7,7 +7,12 @@ import PopoverCard from './PopoverCard';
 import PopoverDialogHeader from './PopoverDialogHeader';
 
 const useStyles = makeStyles((theme) => ({
+    resetPaper: {
+        background: 'none',
+        overflow: 'unset',
+    },
     paper: {
+        margin: theme.spacing(1),
         border: `1px solid ${theme.palette.divider}`,
         display: 'flex',
         flexDirection: 'column',
@@ -37,20 +42,19 @@ function PopoverDialog({ children, PaperProps = {}, ...props }) {
                 vertical: 'top',
                 horizontal: 'left',
             }}
-            elevation={22}
+            elevation={0}
             {...props}
-            PaperProps={{
-                ...PaperProps,
-                className: clsx(classes.paper, PaperProps.className),
-            }}
+            PaperProps={{ className: classes.resetPaper }}
         >
-            <ReactResizeDetector handleWidth handleHeight onResize={updatePopper}>
-                {() => (
-                    <Box>
-                        {children}
-                    </Box>
-                )}
-            </ReactResizeDetector>
+            <Paper {...PaperProps} className={clsx(classes.paper, PaperProps.className)} elevation={22}>
+                <ReactResizeDetector handleWidth handleHeight onResize={updatePopper}>
+                    {() => (
+                        <Box>
+                            {children}
+                        </Box>
+                    )}
+                </ReactResizeDetector>
+            </Paper>
         </Popover>
     );
 }

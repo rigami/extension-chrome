@@ -76,7 +76,7 @@ function FullSearch({ searchService: globalService, open, onClose }) {
                 elevation={open ? 18 : 0}
             >
                 <Collapse
-                    collapsedHeight={40}
+                    collapsedSize={40}
                     in={open}
                     unmountOnExit
                     onEntered={() => { store.showFastResults = true; }}
