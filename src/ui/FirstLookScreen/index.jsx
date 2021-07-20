@@ -8,9 +8,6 @@ import { ACTIVITY } from '@/enum';
 import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
 import packageJson from '@/../package.json';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import useAppStateService from '@/stores/app/AppStateProvider';
-import useAppService from '@/stores/app/AppStateProvider';
 import WaitEndInstall from './WaitEndInstall';
 import Hello from './Hello';
 import WizardInstall from './WizardInstall';
@@ -48,6 +45,11 @@ function FirstLookScreen({ onStart }) {
                 localStorage.setItem('appTabName', document.title);
             }
         });
+
+        if (!coreService.storage.persistent.data?.factoryResetProgress) {
+            document.title = 'Rigami';
+            localStorage.setItem('appTabName', document.title);
+        }
     }, [ready]);
 
     if (!ready) {
