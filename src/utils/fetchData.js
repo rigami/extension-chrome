@@ -14,6 +14,8 @@ const fetchData = async (url, options = {}) => {
         parsedResponse = await response.blob();
     } else if (responseType === 'text') {
         parsedResponse = await response.text();
+    } else if (responseType === 'arrayBuffer') {
+        parsedResponse = await response.arrayBuffer();
     } else if (responseType === 'raw') {
         parsedResponse = await response;
     }
