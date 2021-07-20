@@ -36,15 +36,21 @@ const getSiteInfoLocal = async (url) => {
 
     const { response, raw } = await fetchData(
         localSearchUrl,
-        { responseType: 'text' },
+        { responseType: 'arrayBuffer' },
     );
 
+    const contentType = raw.headers.get('content-type');
+    const charset = contentType.indexOf('charset=') !== -1
+        ? contentType.slice(contentType.indexOf('charset=') + 8)
+        : 'UTF-8';
+
+    const result = new TextDecoder(charset).decode(response);
     const urlOrigin = raw.url.substring(0, raw.url.indexOf('/', 'http://'.length + 1));
 
     let parseData = {};
 
     try {
-        parseData = { ...parseSite(response, urlOrigin) };
+        parseData = { ...parseSite(result, urlOrigin) };
     } catch (e) {
         captureException(e);
         console.log('Failed parse site', e);
