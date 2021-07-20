@@ -119,7 +119,7 @@ function FolderItem(props) {
                     disabled={isDisabled}
                     className={clsx(classes.expandIcon, isDisabled && classes.disabledExpand)}
                     onClick={onExpandChange}
-                    style={{ marginLeft: level * 8 }}
+                    // style={{ marginLeft: level * 8 }}
                 >
                     {isExpand ? (<ExpandMoreRounded />) : (<ChevronRightIcon />)}
                 </ButtonBase>
