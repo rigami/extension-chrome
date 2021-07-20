@@ -5,6 +5,7 @@ import fetchData from '@/utils/fetchData';
 import appVariables from '@/config/appVariables';
 import { BG_SOURCE } from '@/enum';
 import { captureException } from '@sentry/react';
+import { cloneDeep } from 'lodash';
 import Background from './entities/background';
 
 export const ERRORS = {
@@ -34,16 +35,15 @@ class BackgroundsUniversalService {
 
         console.log('savedBG', savedBG);
 
-        try {
-            await db().add('backgrounds', savedBG);
-        } catch (e) {
-            console.error(e);
-        }
+        await db().add('backgrounds', cloneDeep(savedBG));
 
         eventToApp('backgrounds/new', savedBG);
 
         if (savedBG.source !== BG_SOURCE.USER) {
-            fetchData(`${appVariables.rest.url}/backgrounds/mark-download/${savedBG.source}/${savedBG.originId}`)
+            fetchData(
+                `${appVariables.rest.url}/backgrounds/mark-download/${savedBG.source}/${savedBG.originId}`,
+                { responseType: 'raw' },
+            )
                 .catch((e) => {
                     console.error(e);
                     captureException(e);
