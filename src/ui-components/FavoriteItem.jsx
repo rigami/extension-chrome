@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     favoriteItem: {
         display: 'flex',
         alignItems: 'center',
-        minHeight: 38,
+        minHeight: 36,
         padding: theme.spacing(0.5),
         borderRadius: 'inherit',
     },
@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
         width: 28,
         height: 28,
         flexShrink: 0,
+        borderRadius: 6,
     },
     title: {
         overflow: 'hidden',
