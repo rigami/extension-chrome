@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
     subheader: { '&:hover $action': { display: 'flex' } },
     action: { display: 'none' },
     dialog: {
+        minWidth: 320,
         maxWidth: 400,
         width: '100%',
         minHeight: 400,
