@@ -73,7 +73,7 @@ function WeatherWidget({ onSelect }) {
             <Collapse in={widgets.settings.dtwUseWeather}>
                 <MenuInfo
                     show={
-                        !coreService.storage.persistent.data.weatherLocation
+                        !coreService.storage.persistent.data.location
                         && coreService.storage.persistent.data.weather?.status === FETCH.FAILED
                     }
                     message={t('weather.region.notDetected.title')}
@@ -91,7 +91,7 @@ function WeatherWidget({ onSelect }) {
                 />
                 <MenuInfo
                     show={
-                        coreService.storage.persistent.data.weatherLocation
+                        coreService.storage.persistent.data.location
                         && coreService.storage.persistent.data.weather?.status === FETCH.FAILED
                     }
                     message={t('weather.error.serviceUnavailable')}
@@ -123,13 +123,13 @@ function WeatherWidget({ onSelect }) {
                     title={t('weather.region.title')}
                     description={(
                         (
-                            coreService.storage.persistent.data.weatherLocation
-                            && !coreService.storage.persistent.data.weatherLocation?.manual
+                            coreService.storage.persistent.data.location
+                            && !coreService.storage.persistent.data.location?.manual
                             && t('weather.region.select.auto')
                         )
                         || (
-                            coreService.storage.persistent.data.weatherLocation
-                            && coreService.storage.persistent.data.weatherLocation?.manual
+                            coreService.storage.persistent.data.location
+                            && coreService.storage.persistent.data.location?.manual
                             && ('weather.region.select.manual')
                         )
                         || t('weather.region.select.failed')
@@ -137,13 +137,13 @@ function WeatherWidget({ onSelect }) {
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => onSelect(changeLocationPage),
-                        component: coreService.storage.persistent.data.weatherLocation
+                        component: coreService.storage.persistent.data.location
                             ? (`${
-                            coreService.storage.persistent.data.weatherLocation?.name || t('unknown')
+                            coreService.storage.persistent.data.location?.name || t('unknown')
                         } [${
-                            round(coreService.storage.persistent.data.weatherLocation?.latitude, 1) || '-'
+                            round(coreService.storage.persistent.data.location?.latitude, 1) || '-'
                         }, ${
-                            round(coreService.storage.persistent.data.weatherLocation?.longitude, 1) || '-'
+                            round(coreService.storage.persistent.data.location?.longitude, 1) || '-'
                         }]`)
                             : (
                                 <Typography className={classes.notSetValue}>

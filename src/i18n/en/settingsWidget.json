@@ -1,6 +1,6 @@
 {
-  "useWidgets": {
-    "title": "Use desktop widgets",
+  "useWidgetsOnDesktop": {
+    "title": "Use widgets on desktop",
     "description": "Widgets help you get quick access to time, date and weather"
   },
   "dtw": "Date, time and weather",

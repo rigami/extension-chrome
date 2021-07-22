@@ -37,8 +37,8 @@ function Widgets({ onSelect }) {
     return (
         <React.Fragment>
             <MenuRow
-                title={t('useWidgets.title')}
-                description={t('useWidgets.description')}
+                title={t('useWidgetsOnDesktop.title')}
+                description={t('useWidgetsOnDesktop.description')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     value: widgets.settings.useWidgets,
@@ -48,57 +48,55 @@ function Widgets({ onSelect }) {
                 }}
                 type={ROWS_TYPE.CHECKBOX}
             />
-            <Collapse in={widgets.settings.useWidgets}>
-                <SectionHeader title={t('dtw')} />
-                <MenuRow
-                    title={t('dtwPlace.title')}
-                    // description={t('dtwPlace.description')}
-                    action={{
-                        type: ROWS_TYPE.SELECT,
-                        format: (value) => t(`dtwPlace.value.${value}`),
-                        value: widgets.settings.dtwPosition,
-                        onChange: (event) => {
-                            widgets.settings.update({ dtwPosition: event.target.value });
+            <SectionHeader title={t('dtw')} />
+            <MenuRow
+                title={t('dtwPlace.title')}
+                // description={t('dtwPlace.description')}
+                action={{
+                    type: ROWS_TYPE.SELECT,
+                    format: (value) => t(`dtwPlace.value.${value}`),
+                    value: widgets.settings.dtwPosition,
+                    onChange: (event) => {
+                        widgets.settings.update({ dtwPosition: event.target.value });
+                    },
+                    values: map(WIDGET_DTW_POSITION, (key) => WIDGET_DTW_POSITION[key]),
+                }}
+            />
+            <MenuRow
+                title={t('dtwSize.title')}
+                // description={t('dtwSize.description')}
+                action={{
+                    type: ROWS_TYPE.SLIDER,
+                    value: enumSizeToNumber(widgets.settings.dtwSize),
+                    onChange: (event, value) => {
+                        console.log('onChange', value, numberToEnumSize(value));
+                        widgets.settings.update({ dtwSize: numberToEnumSize(value) });
+                    },
+                    onChangeCommitted: (event, value) => {
+                        widgets.settings.update({ dtwSize: numberToEnumSize(value) });
+                    },
+                    min: 1,
+                    max: 5,
+                    marks: [
+                        {
+                            value: 1,
+                            label: t('dtwSize.value.smaller'),
                         },
-                        values: map(WIDGET_DTW_POSITION, (key) => WIDGET_DTW_POSITION[key]),
-                    }}
-                />
-                <MenuRow
-                    title={t('dtwSize.title')}
-                    // description={t('dtwSize.description')}
-                    action={{
-                        type: ROWS_TYPE.SLIDER,
-                        value: enumSizeToNumber(widgets.settings.dtwSize),
-                        onChange: (event, value) => {
-                            console.log('onChange', value, numberToEnumSize(value));
-                            widgets.settings.update({ dtwSize: numberToEnumSize(value) });
+                        { value: 2 },
+                        { value: 3 },
+                        { value: 4 },
+                        {
+                            value: 5,
+                            label: t('dtwSize.value.bigger'),
                         },
-                        onChangeCommitted: (event, value) => {
-                            widgets.settings.update({ dtwSize: numberToEnumSize(value) });
-                        },
-                        min: 1,
-                        max: 5,
-                        marks: [
-                            {
-                                value: 1,
-                                label: t('dtwSize.value.smaller'),
-                            },
-                            { value: 2 },
-                            { value: 3 },
-                            { value: 4 },
-                            {
-                                value: 5,
-                                label: t('dtwSize.value.bigger'),
-                            },
-                        ],
-                        step: 1,
-                        valueLabelDisplay: 'off',
-                    }}
-                />
-                <TimeWidget />
-                <DateWidget />
-                <WeatherWidget onSelect={onSelect} />
-            </Collapse>
+                    ],
+                    step: 1,
+                    valueLabelDisplay: 'off',
+                }}
+            />
+            <TimeWidget />
+            <DateWidget />
+            <WeatherWidget onSelect={onSelect} />
         </React.Fragment>
     );
 }

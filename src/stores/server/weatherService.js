@@ -73,7 +73,7 @@ class WeatherService {
         console.log('Set location:', location);
         this.location = location;
 
-        this.storage.persistent.update({ weatherLocation: location });
+        this.storage.persistent.update({ location });
     }
 
     start() {
