@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         position: 'relative',
         height: theme.shape.dataCard.height,
-        overflow: 'unset',
+        overflow: 'hidden',
         boxSizing: 'border-box',
         '&:hover $menuIconButton': {
             opacity: 1,
