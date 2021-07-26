@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundPosition: '50%',
         height: '100%',
         width: '100%',
+        backgroundColor: theme.palette.background.backdrop,
     },
     bgActionsWrapper: {
         position: 'absolute',
