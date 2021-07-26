@@ -94,10 +94,6 @@ class BackgroundsAppService {
         }
         this.bgShowMode = this._coreService.storage.persistent.data.bgShowMode || BG_SHOW_MODE.LIVE;
 
-        this._coreService.globalEventBus.on('backgrounds/new', ({ data: bg }) => {
-            setCurrentBg(bg);
-        });
-
         this._coreService.globalEventBus.on('backgrounds/removed', ({ data: bg }) => {
             if (bg.id === this.currentBGId) eventToBackground('backgrounds/nextBg');
         });
