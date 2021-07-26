@@ -49,6 +49,11 @@ const theme = {
             fontFamily: primaryFontFamily,
             fontWeight: 600,
         },
+        body2: {
+            fontFamily: primaryFontFamily,
+            fontWeight: 400,
+            fontSize: '0.85rem',
+        },
     },
     transitions: {
         easing: { shiftEaseInOut: 'cubic-bezier(0.1, 0.84, 0.2, 1)' },
