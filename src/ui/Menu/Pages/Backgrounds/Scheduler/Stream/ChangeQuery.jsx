@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Divider,
@@ -23,7 +23,6 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import { runInAction } from 'mobx';
 import fetchData from '@/utils/fetchData';
 import appVariables from '@/config/appVariables';
-import { eventToBackground } from '@/stores/server/bus';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundCard from '@/ui/Menu/Pages/Backgrounds/BackgroundCard';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
@@ -82,6 +81,24 @@ const useStyles = makeStyles((theme) => ({
 const headerProps = { title: 'settingsBackground:query.custom.create' };
 const pageProps = { width: 960 };
 
+function BackgroundPreview({ bg, isAdded = false }) {
+    const coreService = useCoreService();
+    const { backgrounds } = useAppStateService();
+    const [isLoaded, setIsLoaded] = useState(isAdded);
+
+    return (
+        <BackgroundCard
+            {...bg}
+            select={coreService.storage.persistent.data.bgCurrent?.id === bg.id}
+            onSet={() => backgrounds.setBG(bg)}
+            onAdd={!isLoaded && (() => {
+                setIsLoaded(true);
+                BackgroundsUniversalService.addToLibrary(bg);
+            })}
+        />
+    );
+}
+
 function ChangeQuery({ onClose }) {
     const classes = useStyles();
     const { t } = useTranslation(['settingsBackground']);
@@ -91,6 +108,7 @@ function ChangeQuery({ onClose }) {
         searchRequest: coreService.storage.persistent.data.backgroundStreamQuery?.value,
         foundRequest: '',
         list: [],
+        addedList: [],
         status: FETCH.WAIT,
     }));
     const inputRef = useRef(null);
@@ -104,7 +122,7 @@ function ChangeQuery({ onClose }) {
         store.status = FETCH.PENDING;
 
         try {
-            const { response: list } = await fetchData(`${
+            let { response: list } = await fetchData(`${
                 appVariables.rest.url
             }/backgrounds/search?count=30&type=${
                 backgrounds.settings.type.join(',').toLowerCase()
@@ -112,8 +130,19 @@ function ChangeQuery({ onClose }) {
                 store.searchRequest
             }`);
 
+            const allAdded = await backgrounds.getAll();
+
+            list = list.map((bg) => new Background({
+                ...bg,
+                originId: bg.bgId,
+                source: BG_SOURCE[bg.service],
+                type: BG_TYPE[bg.type],
+                downloadLink: bg.fullSrc,
+            }));
+
             runInAction(() => {
                 store.list = list;
+                store.addedList = allAdded;
                 store.status = FETCH.DONE;
             });
         } catch (e) {
@@ -208,24 +237,9 @@ function ChangeQuery({ onClose }) {
                             <GridList cellHeight={220} cols={3}>
                                 {store.list.map((bg) => (
                                     <GridListTile key={bg.id}>
-                                        <BackgroundCard
-                                            {...bg}
-                                            source={bg.service}
-                                            select={coreService.storage.persistent.data.bgCurrent?.id === bg.id}
-                                            onSet={() => backgrounds.setBG(new Background({
-                                                ...bg,
-                                                originId: bg.bgId,
-                                                source: BG_SOURCE[bg.service],
-                                                type: BG_TYPE[bg.type],
-                                                downloadLink: bg.fullSrc,
-                                            }))}
-                                            onAdd={() => BackgroundsUniversalService.addToLibrary(new Background({
-                                                ...bg,
-                                                originId: bg.bgId,
-                                                source: BG_SOURCE[bg.service],
-                                                type: BG_TYPE[bg.type],
-                                                downloadLink: bg.fullSrc,
-                                            }))}
+                                        <BackgroundPreview
+                                            bg={bg}
+                                            isAdded={store.addedList.find(({ id }) => id === bg.id)}
                                         />
                                     </GridListTile>
                                 ))}
