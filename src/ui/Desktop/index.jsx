@@ -43,6 +43,7 @@ import clsx from 'clsx';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
+import useBaseStateService from '@/stores/app/BaseStateProvider';
 import Background from './Background';
 import Widgets from './Widgets';
 
@@ -95,12 +96,6 @@ const useStyles = makeStyles((theme) => ({
         top: theme.spacing(2),
         right: theme.spacing(2) * 2 + 40,
     },
-    showBookmarks: {
-        position: 'absolute',
-        zIndex: 100,
-        bottom: theme.spacing(6) + theme.spacing(2.5) + 40,
-        right: theme.spacing(2) * 2 + 40,
-    },
     desktopBackdrop: {
         backgroundColor: theme.palette.common.black,
         position: 'absolute',
@@ -135,6 +130,7 @@ function Desktop() {
     const classes = useStyles();
     const theme = useTheme();
     const appService = useAppService();
+    const service = useBaseStateService();
     const { widgets, backgrounds } = appService;
     const coreService = useCoreService();
     const rootRef = useRef();
@@ -439,6 +435,14 @@ function Desktop() {
                     appService.activity === ACTIVITY.FAVORITES && classes.favoritesActivity,
                     appService.activity === ACTIVITY.DESKTOP && classes.desktopActivity,
                 )}
+                style={{
+                    transform: appService.activity === ACTIVITY.FAVORITES
+                        ? `translateY(calc(-100vh + ${
+                            Math.max(service.storage.temp.data.desktopWidgetsHeight, 72)
+                        + service.storage.temp.data.desktopFapHeight
+                    }px))`
+                        : '',
+                }}
                 onContextMenu={contextMenu}
             >
                 {store.isRender && (

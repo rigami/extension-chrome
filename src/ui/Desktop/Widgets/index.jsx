@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
@@ -118,7 +118,12 @@ function Widgets({ stickToBottom }) {
     const { widgets } = appService;
     const bookmarksService = useBookmarksService();
     const { height: heightRoot, ref: refRoot } = useResizeDetector();
-    const { height: heightWidget, ref: refWidget } = useResizeDetector();
+
+    const onResize = useCallback((width, height) => {
+        service.storage.temp.update({ desktopWidgetsHeight: height });
+    }, []);
+
+    const { height: heightWidget, ref: refWidget } = useResizeDetector({ onResize });
     const [state, setState] = useState(bookmarksService.settings.state);
 
     useEffect(() => {
