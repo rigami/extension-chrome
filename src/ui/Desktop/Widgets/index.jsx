@@ -12,6 +12,7 @@ import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
 import { useTheme } from '@material-ui/styles';
 import { useResizeDetector } from 'react-resize-detector';
 import useAppService from '@/stores/app/AppStateProvider';
+import useBaseStateService from '@/stores/app/BaseStateProvider';
 import Time from './Time';
 import Date from './Date';
 
@@ -112,6 +113,7 @@ const useStyles = makeStyles((theme) => ({
 function Widgets({ stickToBottom }) {
     const classes = useStyles();
     const theme = useTheme();
+    const service = useBaseStateService();
     const appService = useAppService();
     const { widgets } = appService;
     const bookmarksService = useBookmarksService();
@@ -167,7 +169,7 @@ function Widgets({ stickToBottom }) {
                 widgets.settings.dtwPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddle,
                 widgets.settings.dtwPosition === DTW_POSITION.CENTER_TOP && classes.centerTop,
             )}
-            style={{ [positionOffset]: offset }}
+            style={{ [positionOffset]: service.storage.temp.data.desktopFapHeight }}
             ref={refRoot}
         >
             <Box

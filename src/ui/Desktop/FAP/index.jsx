@@ -21,6 +21,7 @@ import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import asyncAction from '@/utils/asyncAction';
 import { captureException } from '@sentry/react';
 import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
+import useBaseStateService from '@/stores/app/BaseStateProvider';
 import Folder from './Folder';
 import Tag from './Tag';
 import Link from './Link';
@@ -39,13 +40,15 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         boxSizing: 'border-box',
         top: 0,
-        height: theme.spacing(6) + 40,
+        // minHeight: theme.spacing(6) + 40,
     },
     stickyRoot: {
         top: 'auto',
         bottom: 0,
     },
-    contained: { height: theme.spacing(6) + theme.spacing(2.5) + 40 },
+    contained: {
+        // minHeight: theme.spacing(6) + theme.spacing(2.5) + 40,
+    },
     card: {
         minWidth: (40 + theme.spacing(2)) * 6 + 40 + theme.spacing(1.25) * 2,
         margin: 'auto',
@@ -54,8 +57,10 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'unset',
         display: 'flex',
         background: 'none',
-        marginBottom: theme.spacing(1.75),
-        padding: theme.spacing(1.25),
+        flexWrap: 'wrap',
+        marginBottom: 0,
+        padding: theme.spacing(2, 0),
+        paddingBottom: 0,
         transition: theme.transitions.create(['background-color'], {
             duration: theme.transitions.duration.short,
             easing: theme.transitions.easing.easeInOut,
@@ -65,9 +70,12 @@ const useStyles = makeStyles((theme) => ({
     backdrop: {
         backdropFilter: 'blur(40px) brightness(110%)  contrast(1.2) invert(0.06)',
         backgroundColor: alpha(theme.palette.background.backdrop, 0.22),
-        marginBottom: theme.spacing(3),
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+        padding: theme.spacing(1.25),
         minHeight: 60,
     },
+    linkDense: { marginBottom: theme.spacing(2) },
     link: {
         marginRight: theme.spacing(2),
         padding: 0,
@@ -93,6 +101,7 @@ const useStyles = makeStyles((theme) => ({
 
 function FAP() {
     const classes = useStyles();
+    const service = useBaseStateService();
     const appService = useAppService();
     const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
@@ -102,8 +111,9 @@ function FAP() {
     }));
     const fapSettings = bookmarksService.settings;
 
-    const onResize = useCallback((width) => {
+    const onResize = useCallback((width, height) => {
         store.maxCount = Math.max(Math.floor((width + 16) / 56) - 1, 0);
+        service.storage.temp.update({ desktopFapHeight: height });
     }, []);
 
     const { ref } = useResizeDetector({ onResize });
@@ -159,8 +169,7 @@ function FAP() {
 
     const overload = store.maxCount < bookmarksService.favorites.length;
 
-    const isContained = (fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED || appService.activity === ACTIVITY.FAVORITES)
-    && fapSettings.fapStyle !== BKMS_FAP_STYLE.PRODUCTIVITY;
+    const isContained = fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED;
 
     return (
         <Fade in={!store.isLoading}>
@@ -195,7 +204,7 @@ function FAP() {
                             a11props = {
                                 ...a11props,
                                 classes: {
-                                    root: classes.link,
+                                    root: clsx(classes.link, !isContained && classes.linkDense),
                                     backdrop: clsx(
                                         /* !isContained && */ classes.linkBackdropBlur,
                                         // isContained && classes.linkBackdrop,
@@ -205,7 +214,16 @@ function FAP() {
                         }
 
                         if (fav instanceof BookmarkEntity) {
-                            return (<Link {...a11props} className={clsx(classes.link, classes.linkBackdropBlur)} />);
+                            return (
+                                <Link
+                                    {...a11props}
+                                    className={clsx(
+                                        classes.link,
+                                        classes.linkBackdropBlur,
+                                        !isContained && classes.linkDense,
+                                    )}
+                                />
+                            );
                         } else if (fav instanceof FolderEntity) {
                             return (<Folder {...a11props} />);
                         } else if (fav instanceof TagEntity) {
