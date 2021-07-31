@@ -83,6 +83,7 @@ function FakeInput(props) {
                     setState(event.currentTarget.innerText);
                     if (onInput) onInput(event);
                 }}
+                autoCorrect={false}
             >
                 {defaultState}
             </div>

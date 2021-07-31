@@ -8,6 +8,7 @@ import { ACTIVITY } from '@/enum';
 import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
 import packageJson from '@/../package.json';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
+import defaultSettings from '@/config/settings';
 import WaitEndInstall from './WaitEndInstall';
 import Hello from './Hello';
 import WizardInstall from './WizardInstall';
@@ -18,7 +19,7 @@ const INSTALL_STAGE = {
     WAIT_END_INSTALL: 'WAIT_END_INSTALL',
 };
 
-const defaultSettings = {
+const defaultWizardSettings = {
     activity: ACTIVITY.DESKTOP,
     useTime: true,
     useDate: true,
@@ -40,12 +41,12 @@ function FirstLookScreen({ onStart }) {
 
         coreService.globalEventBus.on('system/factoryReset/progress', ({ data }) => {
             if (data.stage === PREPARE_PROGRESS.DONE) {
-                localStorage.setItem('appTabName', 'Rigami');
+                localStorage.setItem('appTabName', defaultSettings.app.tabName);
             }
         });
 
         if (!coreService.storage.persistent.data?.factoryResetProgress) {
-            localStorage.setItem('appTabName', 'Rigami');
+            localStorage.setItem('appTabName', defaultSettings.app.tabName);
         }
 
         document.title = t('prepareApp');
@@ -57,7 +58,7 @@ function FirstLookScreen({ onStart }) {
 
     const handleStart = () => {
         coreService.storage.persistent.update({ lastUsageVersion: packageJson.version });
-        document.title = 'Rigami';
+        document.title = defaultSettings.app.tabName;
         onStart();
     };
 
@@ -82,14 +83,14 @@ function FirstLookScreen({ onStart }) {
             )}
             {stage === INSTALL_STAGE.HELLO && (
                 <Hello
-                    onApplyDefaultSetting={() => applySettings(defaultSettings)}
+                    onApplyDefaultSetting={() => applySettings(defaultWizardSettings)}
                     onStartWizard={handleStartWizard}
                 />
             )}
             {stage === INSTALL_STAGE.WAIT_END_INSTALL && (<WaitEndInstall onDone={handleStart} />)}
             {stage === INSTALL_STAGE.WIZARD && (
                 <WizardInstall
-                    defaultSettings={defaultSettings}
+                    defaultSettings={defaultWizardSettings}
                     onCancel={() => setStage(INSTALL_STAGE.HELLO)}
                     onEnd={(wizardSettings) => applySettings(wizardSettings)}
                 />

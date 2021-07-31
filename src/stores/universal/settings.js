@@ -225,7 +225,7 @@ class AppSettings extends PersistentStorage {
         if ('localStorage' in self) {
             localStorage.setItem('theme', this.theme || defaultSettings.app.theme);
             localStorage.setItem('backdropTheme', this.backdropTheme || defaultSettings.app.backdropTheme);
-            localStorage.setItem('appTabName', this.tabName || defaultSettings.app.tabName);
+            localStorage.setItem('appTabName', this.tabName);
         }
     }
 }

@@ -11,7 +11,6 @@ import {
     WIDGET_DTW_UNITS,
     BKMS_FAP_ALIGN,
 } from '@/enum';
-import i18n from 'i18next';
 
 export default {
     backgrounds: {
@@ -52,7 +51,7 @@ export default {
     app: {
         backdropTheme: THEME.DARK,
         theme: THEME.LIGHT,
-        tabName: i18n.t('tabName.default') || 'Rigami',
+        tabName: 'Rigami',
         defaultActivity: ACTIVITY.DESKTOP,
     },
 };
