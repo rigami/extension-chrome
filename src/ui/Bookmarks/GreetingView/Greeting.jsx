@@ -13,7 +13,6 @@ import useCoreService from '@/stores/app/BaseStateProvider';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import { SERVICE_STATE } from '@/enum';
-import { toJS } from 'mobx';
 
 const useStyles = makeStyles((theme) => ({
     greetingContainer: {
@@ -102,7 +101,14 @@ function FakeInput(props) {
     );
 }
 
-function Greeting({ className: externalClassName, readOnly = false, force = false }) {
+function Greeting(props) {
+    const {
+        readOnly = false,
+        force = false,
+        className: externalClassName,
+        onHide,
+        onChange,
+    } = props;
     const classes = useStyles();
     const { t, ready } = useTranslation(['greeting']);
     const coreService = useCoreService();
@@ -133,7 +139,7 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
             focus: false,
             firstRender: true,
             greeting: null,
-            enabled: coreService.storage.persistent.data.userName !== null,
+            enabled: coreService.storage.persistent.data.userName !== null || force,
             edit: coreService.storage.persistent.data.userName === undefined
                 || coreService.storage.persistent.data.userName === '',
             userName: coreService.storage.persistent.data.userName || '',
@@ -146,12 +152,13 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
             return;
         }
         store.userName = coreService.storage.persistent.data.userName;
-        store.enabled = store.userName !== null;
+        store.enabled = store.userName !== null || force;
         store.edit = store.edit || store.enabled;
     }, [coreService.storage.persistent.data.userName]);
 
     useEffect(() => {
         console.log('store.focus:', store.focus);
+        if (onChange) onChange(store.userName);
         if (store.focus) {
             coreService.storage.persistent.update({ userName: store.userName || '' });
         }
@@ -203,7 +210,6 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
                                 onInput={(event) => { store.userName = event.target.innerText; }}
                             />
                         </span>
-                        👋!
                     </Typography>
                     <MenuInfo
                         classes={{ root: classes.info }}
@@ -215,8 +221,10 @@ function Greeting({ className: externalClassName, readOnly = false, force = fals
                             <Button
                                 key="cancel"
                                 onClick={() => {
-                                    store.enabled = false;
+                                    if (!force) store.enabled = false;
                                     coreService.storage.persistent.update({ userName: null });
+
+                                    if (onHide) onHide();
                                 }}
                             >
                                 {t('cancel')}

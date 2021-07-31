@@ -30,6 +30,7 @@ import SchemeFapProductivity from '@/images/scheme_fap_productivity.svg';
 import SchemeWidgetDate from '@/images/scheme_widget_date.svg';
 import SchemeWidgetTime from '@/images/scheme_widget_time.svg';
 import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
+import GreetingPreview from '@/ui/Bookmarks/GreetingView/Greeting';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -251,6 +252,30 @@ function DesktopEnvironment({ defaultSettings, onMutationSettings }) {
     );
 }
 
+function Greeting({ defaultSettings, onMutationSettings, onNext, onDisabledNext }) {
+    return (
+        <Box display="flex" my={4}>
+            <GreetingPreview
+                force
+                onHide={() => {
+                    onMutationSettings({
+                        ...defaultSettings,
+                        userName: null,
+                    });
+                    onNext();
+                }}
+                onChange={(userName) => {
+                    onDisabledNext(!userName);
+                    onMutationSettings({
+                        ...defaultSettings,
+                        userName: userName || null,
+                    });
+                }}
+            />
+        </Box>
+    );
+}
+
 const questions = [
     {
         id: 'defaultActivity',
@@ -260,6 +285,10 @@ const questions = [
         id: 'desktopEnvironment',
         ui: DesktopEnvironment,
     },
+    {
+        id: 'greeting',
+        ui: Greeting,
+    },
 ];
 
 function WizardInstall({ defaultSettings, onCancel, onEnd }) {
@@ -267,12 +296,14 @@ function WizardInstall({ defaultSettings, onCancel, onEnd }) {
     const { t } = useTranslation('firstLook');
     const [settings, setSettings] = useState(defaultSettings);
     const [question, setQuestion] = useState(0);
+    const [disabledNext, setDisabledNext] = useState(false);
 
     const handleNext = () => {
         setQuestion(question + 1);
     };
 
     const handleBack = () => {
+        setDisabledNext(false);
         setQuestion(question - 1);
     };
 
@@ -301,7 +332,12 @@ function WizardInstall({ defaultSettings, onCancel, onEnd }) {
                     })}
                 </Typography>
                 <Typography variant="h2">{t(`${questions[question].id}Question.title`)}</Typography>
-                <Question defaultSettings={settings} onMutationSettings={handleMutationSettings} />
+                <Question
+                    defaultSettings={settings}
+                    onMutationSettings={handleMutationSettings}
+                    onNext={question === questions.length - 1 ? handleEnd : handleNext}
+                    onDisabledNext={(isDisabled) => setDisabledNext(isDisabled)}
+                />
                 <DialogActions className={classes.actions}>
                     <Button
                         startIcon={(<BackIcon />)}
@@ -315,7 +351,7 @@ function WizardInstall({ defaultSettings, onCancel, onEnd }) {
                         color="primary"
                         endIcon={(<NextIcon />)}
                         onClick={question === questions.length - 1 ? handleEnd : handleNext}
-                        disabled={question > questions.length - 1}
+                        disabled={question > questions.length - 1 || disabledNext}
                     >
                         {t('button.next')}
                     </Button>

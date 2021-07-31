@@ -23,6 +23,7 @@ const defaultSettings = {
     useTime: true,
     useDate: true,
     fapStyle: FAP_STYLE.PRODUCTIVITY,
+    userName: undefined,
 };
 
 function FirstLookScreen({ onStart }) {
@@ -37,19 +38,17 @@ function FirstLookScreen({ onStart }) {
     useEffect(() => {
         if (!ready) return;
 
-        document.title = t('prepareApp');
-
         coreService.globalEventBus.on('system/factoryReset/progress', ({ data }) => {
             if (data.stage === PREPARE_PROGRESS.DONE) {
-                document.title = 'Rigami';
-                localStorage.setItem('appTabName', document.title);
+                localStorage.setItem('appTabName', 'Rigami');
             }
         });
 
         if (!coreService.storage.persistent.data?.factoryResetProgress) {
-            document.title = 'Rigami';
-            localStorage.setItem('appTabName', document.title);
+            localStorage.setItem('appTabName', 'Rigami');
         }
+
+        document.title = t('prepareApp');
     }, [ready]);
 
     if (!ready) {
@@ -58,6 +57,7 @@ function FirstLookScreen({ onStart }) {
 
     const handleStart = () => {
         coreService.storage.persistent.update({ lastUsageVersion: packageJson.version });
+        document.title = 'Rigami';
         onStart();
     };
 

@@ -24,8 +24,10 @@ function ApplyWizardSettingsProvider({ children }) {
 
     if (!wizardSettings) return children;
 
-    coreService.storage.persistent.update({ wizardSettings: null });
-
+    coreService.storage.persistent.update({
+        wizardSettings: null,
+        userName: wizardSettings.userName,
+    });
     bookmarksService.settings.update({ fapStyle: wizardSettings.fapStyle });
     widgets.settings.update({
         dtwUseDate: wizardSettings.useDate,

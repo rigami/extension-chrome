@@ -34,6 +34,9 @@
       "zenFap": "Icons only"
     }
   },
+  "greetingQuestion": {
+    "title": ""
+  },
   "stage": {
     "WAIT": "Waiting...",
     "CREATE_FS": "Creating file system...",
