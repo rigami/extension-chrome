@@ -1,13 +1,11 @@
 import { action } from 'mobx';
 import db from '@/utils/db';
-import fs from '@/utils/fs';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import getImageBlob from '@/utils/getImageBlob';
 import { search as searchLight } from '@/stores/universal/bookmarks/search';
 import { cloneDeep } from 'lodash';
 import { captureException } from '@sentry/react';
-import { BG_SOURCE } from '@/enum';
 import appVariables from '@/config/appVariables';
 import { SearchQuery } from './searchQuery';
 
@@ -122,7 +120,7 @@ class BookmarksUniversalService {
         await db().delete('bookmarks', bookmarkId);
 
         try {
-            await fs().rmrf(`/bookmarksIcons/${oldBookmark.icoFileName}`);
+            // TODO: Remove bookmark icon from cache
         } catch (e) {
             console.log('Failed remove bookmark icon', e);
             captureException(e);
