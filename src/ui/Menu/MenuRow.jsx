@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
         transform: 'unset',
         flexShrink: 0,
         flexGrow: 1,
+        marginLeft: theme.spacing(1),
     },
     noPointerEvents: { pointerEvents: 'none' },
     rowWrapper: {
