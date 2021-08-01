@@ -7,7 +7,7 @@ import Background from '@/stores/universal/backgrounds/entities/background';
 import { first } from 'lodash';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
-import { eventToApp } from '@/stores/server/bus';
+import { eventToApp } from '@/stores/universal/serviceBus';
 
 class FactorySettingsService {
     core;

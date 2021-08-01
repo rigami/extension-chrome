@@ -12,7 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import appVariables from '@/config/appVariables';
-import { eventToBackground } from '@/stores/server/bus';
+import { eventToBackground } from '@/stores/universal/serviceBus';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import changeLocationPage from './ChangeQuery';
 

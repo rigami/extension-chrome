@@ -1,6 +1,6 @@
 import db from '@/utils/db';
 import createPreview from '@/utils/createPreview';
-import { eventToApp } from '@/stores/server/bus';
+import { eventToApp } from '@/stores/universal/serviceBus';
 import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import { BG_SOURCE } from '@/enum';

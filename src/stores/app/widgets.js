@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction, toJS } from 'mobx';
 import { WidgetsSettings } from '@/stores/universal/settings';
 import { FETCH } from '@/enum';
-import { eventToBackground } from '@/stores/server/bus';
+import { eventToBackground } from '@/stores/universal/serviceBus';
 import { captureException } from '@sentry/react';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import OpenWeatherMap from '@/stores/universal/weather/connectors/OpenWeatherMap';

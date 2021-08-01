@@ -27,7 +27,7 @@ import {
 } from '@material-ui/core';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
-import { eventToBackground } from '@/stores/server/bus';
+import { eventToBackground } from '@/stores/universal/serviceBus';
 import {
     ACTIVITY,
     BG_SELECT_MODE, BG_SHOW_MODE,

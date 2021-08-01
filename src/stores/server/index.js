@@ -1,5 +1,5 @@
 import EventBus from '@/utils/eventBus';
-import BusApp, { eventToApp, eventToPopup, initBus } from '@/stores/server/bus';
+import BusService, { eventToApp, eventToPopup, initBus } from '@/stores/universal/serviceBus';
 import Storage, { StorageConnector } from '@/stores/universal/storage';
 import { DESTINATION } from '@/enum';
 import appVariables from '@/config/appVariables';
@@ -33,7 +33,7 @@ class ServerApp {
         // App core
         initBus(DESTINATION.BACKGROUND);
         this.localBus = new EventBus();
-        this.globalEventBus = BusApp();
+        this.globalEventBus = BusService();
 
         // eslint-disable-next-line sonarjs/no-duplicate-string
         this.globalEventBus.on('system.forceReload', () => {

@@ -1,4 +1,4 @@
-import BusApp, { initBus } from '@/stores/server/bus';
+import BusService, { initBus } from '@/stores/universal/serviceBus';
 import { DESTINATION } from '@/enum';
 import {
     makeAutoObservable,
@@ -92,7 +92,7 @@ class Core {
     async subscribe(side) {
         this.appState = APP_STATE.INIT;
         initBus(side || DESTINATION.APP);
-        this.globalEventBus = BusApp();
+        this.globalEventBus = BusService();
         this.localEventBus = new EventBus();
         this.storage = new Storage('storage');
 

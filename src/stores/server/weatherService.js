@@ -1,6 +1,6 @@
 import { makeAutoObservable, reaction } from 'mobx';
 import appVariables from '@/config/appVariables';
-import { eventToApp } from '@/stores/server/bus';
+import { eventToApp } from '@/stores/universal/serviceBus';
 import { FETCH } from '@/enum';
 import WeatherLocation from '@/entities/WeatherLocation';
 import Weather from '@/entities/Weather';

@@ -16,7 +16,7 @@ import appVariables from '@/config/appVariables';
 import fetchData from '@/utils/helpers/fetchData';
 import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrounds/service';
 import getPreview from '@/utils/createPreview';
-import { eventToApp } from '@/stores/server/bus';
+import { eventToApp } from '@/stores/universal/serviceBus';
 import { captureException } from '@sentry/react';
 
 class BackgroundsServerService {

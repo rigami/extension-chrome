@@ -6,7 +6,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { StorageConnector } from '@/stores/universal/storage';
 import { Button } from '@material-ui/core';
-import { eventToBackground } from '@/stores/server/bus';
+import { eventToBackground } from '@/stores/universal/serviceBus';
 
 const useStyles = makeStyles((theme) => ({
     headerButton: { marginLeft: theme.spacing(2) },

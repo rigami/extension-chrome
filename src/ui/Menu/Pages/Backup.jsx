@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
-import { eventToApp, eventToBackground } from '@/stores/server/bus';
+import { eventToApp, eventToBackground } from '@/stores/universal/serviceBus';
 import { observer } from 'mobx-react-lite';
 import { captureException } from '@sentry/react';
 import SectionHeader from '@/ui/Menu/SectionHeader';

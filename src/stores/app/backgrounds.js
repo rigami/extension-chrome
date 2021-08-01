@@ -17,7 +17,7 @@ import db from '@/utils/db';
 import getPreview from '@/utils/createPreview';
 import { BackgroundsSettings } from '@/stores/universal/settings';
 import Background from '@/stores/universal/backgrounds/entities/background';
-import { eventToBackground } from '@/stores/server/bus';
+import { eventToBackground } from '@/stores/universal/serviceBus';
 import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrounds/service';
 import { captureException } from '@sentry/react';
 

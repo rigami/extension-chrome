@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { action, toJS } from 'mobx';
 import BackgroundEntity from '@/stores/universal/backgrounds/entities/background';
 import BackgroundInfo from '@/ui/Desktop/BackgroundInfo';
-import { eventToBackground } from '@/stores/server/bus';
+import { eventToBackground } from '@/stores/universal/serviceBus';
 import useAppService from '@/stores/app/AppStateProvider';
 import { captureException } from '@sentry/react';
 

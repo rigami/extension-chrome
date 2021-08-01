@@ -2,10 +2,10 @@ import EventBus from '@/utils/eventBus';
 import { DESTINATION } from '@/enum';
 import appVariables from '@/config/appVariables';
 
-let bus = null;
+let serviceBus = null;
 const instanceId = Date.now();
 
-class BusApp {
+class BusService {
     _eventBus = new EventBus();
     _destination;
     _awaitCallbacks = {};
@@ -94,32 +94,32 @@ class BusApp {
 }
 
 function initBus(destination) {
-    bus = new BusApp(destination);
+    serviceBus = new BusService(destination);
 
-    return bus;
+    return serviceBus;
 }
 
 function eventToApp(event, data, callback) {
     console.log('eventToApp', event, data);
-    bus.call(event, DESTINATION.APP, data, callback);
+    serviceBus.call(event, DESTINATION.APP, data, callback);
 }
 
 function eventToBackground(event, data, callback) {
     console.log('eventToBackground', event, data);
-    bus.call(event, DESTINATION.BACKGROUND, data, callback);
+    serviceBus.call(event, DESTINATION.BACKGROUND, data, callback);
 }
 
 function eventToRequestPermissions(event, data, callback) {
     console.log('eventToRequestPermissions', event, data);
-    bus.call(event, DESTINATION.REQUEST_PERMISSIONS, data, callback);
+    serviceBus.call(event, DESTINATION.REQUEST_PERMISSIONS, data, callback);
 }
 
 function eventToPopup(event, data, callback) {
     console.log('eventToPopup', event, data);
-    bus.call(event, DESTINATION.POPUP, data, callback);
+    serviceBus.call(event, DESTINATION.POPUP, data, callback);
 }
 
-export default () => bus;
+export default () => serviceBus;
 export {
     initBus,
     eventToApp,

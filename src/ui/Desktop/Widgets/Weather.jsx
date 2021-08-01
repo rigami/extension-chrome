@@ -10,7 +10,7 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
-import { eventToBackground } from '@/stores/server/bus';
+import { eventToBackground } from '@/stores/universal/serviceBus';
 
 const useStyles = makeStyles((theme) => ({
     root: {

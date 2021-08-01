@@ -1,4 +1,4 @@
-import { eventToApp } from '@/stores/server/bus';
+import { eventToApp } from '@/stores/universal/serviceBus';
 import Tag from '@/stores/universal/bookmarks/entities/tag';
 import Folder from '@/stores/universal/bookmarks/entities/folder';
 import { makeAutoObservable } from 'mobx';
