@@ -7,6 +7,7 @@ import { SelfImprovementRounded as DesktopIcon } from '@/icons';
 import { ACTIVITY } from '@/enum';
 import { useTranslation } from 'react-i18next';
 import useAppService from '@/stores/app/AppStateProvider';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import FolderBreadcrumbs from './FolderBreadcrumbs';
 import SearchBlock from './Search';
 import ShowFavorites from './ShowFavorites';
@@ -54,6 +55,7 @@ function ToolsPanel({ searchService: service }) {
     const classes = useStyles();
     const { t } = useTranslation(['desktop']);
     const appService = useAppService();
+    const bookmarksService = useBookmarksService();
 
     return (
         <AppBar
@@ -76,7 +78,9 @@ function ToolsPanel({ searchService: service }) {
                     )}
                 </Box>
                 <Box className={classes.wrapperTools}>
-                    <ShowFavorites />
+                    {bookmarksService.favorites.length > 0 && (
+                        <ShowFavorites />
+                    )}
                     <ExtendButtonGroup>
                         <ExtendButton
                             tooltip={t('desktop:button.open')}
