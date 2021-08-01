@@ -5,7 +5,7 @@ import {
     Avatar,
     Box,
     Button,
-    GridListTileBar,
+    ImageListItemBar,
     IconButton,
     Link,
     Tooltip,
@@ -175,7 +175,7 @@ function BackgroundCard(props) {
                             href={sourceLink}
                             target="_blank"
                         >
-                            <GridListTileBar
+                            <ImageListItemBar
                                 className={classes.titleBar}
                                 classes={{ actionIcon: classes.icon }}
                                 subtitle={t('backgroundSource', {

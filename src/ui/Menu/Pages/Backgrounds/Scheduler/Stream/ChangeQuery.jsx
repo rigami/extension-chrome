@@ -4,9 +4,9 @@ import {
     Divider,
     InputBase,
     LinearProgress,
-    GridListTile,
+    ImageListItem,
     Box,
-    GridList,
+    ImageList,
     Chip,
     Button,
 } from '@material-ui/core';
@@ -234,16 +234,16 @@ function ChangeQuery({ onClose }) {
                 <React.Fragment>
                     <Box className={classes.root}>
                         {store.list.length !== 0 && (
-                            <GridList cellHeight={220} cols={3}>
+                            <ImageList cellHeight={220} cols={3}>
                                 {store.list.map((bg) => (
-                                    <GridListTile key={bg.id}>
+                                    <ImageListItem key={bg.id}>
                                         <BackgroundPreview
                                             bg={bg}
                                             isAdded={store.addedList.find(({ id }) => id === bg.id)}
                                         />
-                                    </GridListTile>
+                                    </ImageListItem>
                                 ))}
-                            </GridList>
+                            </ImageList>
                         )}
                     </Box>
                     {store.list.length !== 0 && (

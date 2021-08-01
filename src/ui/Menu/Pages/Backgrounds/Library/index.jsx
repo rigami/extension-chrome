@@ -3,9 +3,8 @@ import { FETCH } from '@/enum';
 import {
     Box,
     CircularProgress,
-    Typography,
-    GridList,
-    GridListTile,
+    ImageList,
+    ImageListItem,
     ListSubheader,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
@@ -124,27 +123,27 @@ function LibraryMenu() {
             {state === FETCH.DONE && (
                 <Box className={classes.root}>
                     {bgs.length !== 0 && (
-                        <GridList cellHeight={160} cols={4}>
+                        <ImageList cellHeight={160} cols={4}>
                             {bgs.map((group) => [
                                 (
-                                    <GridListTile cols={4} style={{ height: 'auto' }} key={group.type}>
+                                    <ImageListItem cols={4} style={{ height: 'auto' }} key={group.type}>
                                         <ListSubheader component="div">
                                             {t(`background:type.${group.type}`, { context: 'plural' })}
                                         </ListSubheader>
-                                    </GridListTile>
+                                    </ImageListItem>
                                 ),
                                 ...group.list.map((bg) => (
-                                    <GridListTile key={bg.id}>
+                                    <ImageListItem key={bg.id}>
                                         <BackgroundCard
                                             {...bg}
                                             select={coreService.storage.persistent.data.bgCurrent?.id === bg.id}
                                             onSet={() => backgrounds.setBG(bg)}
                                             onRemove={() => BackgroundsUniversalService.removeFromLibrary(bg)}
                                         />
-                                    </GridListTile>
+                                    </ImageListItem>
                                 )),
                             ])}
-                        </GridList>
+                        </ImageList>
                     )}
                     {bgs.length === 0 && (
                         <Stub
