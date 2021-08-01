@@ -3,7 +3,7 @@ import { WidgetsSettings } from '@/stores/universal/settings';
 import { FETCH } from '@/enum';
 import { eventToBackground } from '@/stores/server/bus';
 import { captureException } from '@sentry/react';
-import awaitInstallStorage from '@/utils/awaitInstallStorage';
+import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import OpenWeatherMap from '@/stores/universal/weather/connectors/OpenWeatherMap';
 import WeatherLocation from '@/entities/WeatherLocation';
 import { first } from 'lodash';

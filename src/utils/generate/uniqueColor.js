@@ -1,6 +1,6 @@
 import { hslToRgb, recomposeColor } from '@material-ui/core/styles/colorManipulator';
 
-function getUniqueColor(key) {
+export default (key) => {
     const computeKey = key % 98;
     const stepH = 30;
     const shiftH = 20;
@@ -34,6 +34,4 @@ function getUniqueColor(key) {
         type: 'hsl',
         values: [color.h, color.s, color.l],
     }));
-}
-
-export default getUniqueColor;
+};

@@ -1,8 +1,8 @@
 import BackgroundApp from '@/stores/server';
 import { DESTINATION } from '@/enum';
-import asyncAction from '@/utils/asyncAction';
+import asyncAction from '@/utils/helpers/asyncAction';
 import initSentry from '@/config/sentry';
-import generateUUID from '@/utils/generateUUID';
+import generateUUID from '@/utils/generate/generateUUID';
 import * as Sentry from '@sentry/react';
 import { StorageConnector } from '@/stores/universal/storage';
 

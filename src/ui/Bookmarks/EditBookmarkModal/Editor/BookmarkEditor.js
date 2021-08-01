@@ -1,9 +1,9 @@
 import { BKMS_VARIANT } from '@/enum';
 import { makeAutoObservable, toJS } from 'mobx';
-import { getImageRecalc, getSiteInfo } from '@/utils/siteSearch';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import { getNextImage, getDefaultImage } from '@/utils/checkIcons';
 import { captureException } from '@sentry/react';
+import { getImageRecalc, getSiteInfo } from './utils/siteSearch';
+import { getNextImage, getDefaultImage } from './utils/checkIcons';
 
 export const STATE_EDITOR = {
     LOADING_EDITOR: 'LOADING_EDITOR',

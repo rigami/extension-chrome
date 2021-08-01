@@ -10,10 +10,10 @@ import appVariables from '@/config/appVariables';
 import { omit, map } from 'lodash';
 import JSZip from 'jszip';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import convertClockTabToRigami from '@/utils/convetClockTabToRigami';
 import { captureException } from '@sentry/react';
-import fetchData from '@/utils/fetchData';
+import fetchData from '@/utils/helpers/fetchData';
 import { StorageConnector } from '@/stores/universal/storage';
+import convertBackupClockTabToRigamiFormat from './utils/convertBackupClockTabToRigamiFormat';
 
 class LocalBackupService {
     core;
@@ -233,7 +233,7 @@ class LocalBackupService {
                     let file = JSON.parse(restoreData);
 
                     if (type === 'ctbup') {
-                        file = convertClockTabToRigami(file);
+                        file = convertBackupClockTabToRigamiFormat(file);
                     }
 
                     backup = { ...file };

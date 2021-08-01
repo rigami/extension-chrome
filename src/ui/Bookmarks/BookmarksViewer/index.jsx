@@ -9,7 +9,7 @@ import { alpha, makeStyles, useTheme } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import stateRender from '@/utils/stateRender';
+import stateRender from '@/utils/helpers/stateRender';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import { useResizeDetector } from 'react-resize-detector';
 import useCoreService from '@/stores/app/BaseStateProvider';

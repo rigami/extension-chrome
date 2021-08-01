@@ -19,6 +19,17 @@ function getDomain(url) {
     return domain;
 }
 
+const getFaviconUrl = (url = '') => {
+    let origin;
+    if (url.indexOf('/', 8) === -1) {
+        origin = url;
+    } else {
+        origin = url.substring(0, url.indexOf('/', 8));
+    }
+
+    return `${origin}/favicon.ico`;
+};
+
 function parseSite(textXml, urlOrigin) {
     const xml = new DOMParser().parseFromString(textXml, 'text/html');
 
@@ -141,4 +152,4 @@ function parseSite(textXml, urlOrigin) {
 
 export default parseSite;
 
-export { getDomain };
+export { getDomain, getFaviconUrl };

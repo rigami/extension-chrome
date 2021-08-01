@@ -8,7 +8,7 @@ import Tag from '@/ui/Desktop/FAP/Tag';
 import { Box } from '@material-ui/core';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useLocalObservable, observer } from 'mobx-react-lite';
-import asyncAction from '@/utils/asyncAction';
+import asyncAction from '@/utils/helpers/asyncAction';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';

@@ -18,7 +18,7 @@ import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
 import TagEntity from '@/stores/universal/bookmarks/entities/tag';
 import useAppService from '@/stores/app/AppStateProvider';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import asyncAction from '@/utils/asyncAction';
+import asyncAction from '@/utils/helpers/asyncAction';
 import { captureException } from '@sentry/react';
 import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
 import useBaseStateService from '@/stores/app/BaseStateProvider';

@@ -3,7 +3,7 @@ import BusApp, { eventToApp, eventToPopup, initBus } from '@/stores/server/bus';
 import Storage, { StorageConnector } from '@/stores/universal/storage';
 import { DESTINATION } from '@/enum';
 import appVariables from '@/config/appVariables';
-import awaitInstallStorage from '@/utils/awaitInstallStorage';
+import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import FactorySettingsService from '@/stores/server/factorySettingsService';
 import SettingsService from './settingsService';
 import SyncBookmarks from './syncBookmarks';

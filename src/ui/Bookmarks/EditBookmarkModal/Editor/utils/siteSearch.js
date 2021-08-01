@@ -1,5 +1,5 @@
 import appVariables from '@/config/appVariables';
-import fetchData from '@/utils/fetchData';
+import fetchData from '@/utils/helpers/fetchData';
 import parseSite from '@/utils/localSiteParse';
 import { captureException } from '@sentry/react';
 
@@ -104,20 +104,8 @@ const getSiteInfo = async (url, onMeta) => {
     }
 };
 
-const getFaviconUrl = (url = '') => {
-    let origin;
-    if (url.indexOf('/', 8) === -1) {
-        origin = url;
-    } else {
-        origin = url.substring(0, url.indexOf('/', 8));
-    }
-
-    return `${origin}/favicon.ico`;
-};
-
 export {
     search,
-    getFaviconUrl,
     getSiteInfo,
     getImageRecalc,
     getSiteInfoLocal,

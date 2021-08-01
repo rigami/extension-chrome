@@ -21,7 +21,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Stub from '@/ui-components/Stub';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { runInAction } from 'mobx';
-import fetchData from '@/utils/fetchData';
+import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundCard from '@/ui/Menu/Pages/Backgrounds/BackgroundCard';

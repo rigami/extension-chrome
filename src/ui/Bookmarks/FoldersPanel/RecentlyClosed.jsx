@@ -23,8 +23,7 @@ import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
 import Subheader from '@/ui/Bookmarks/FoldersPanel/Subheader';
 import PopperDialog, { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
 import Stub from '@/ui-components/Stub';
-import clsx from 'clsx';
-import { getFaviconUrl } from '@/utils/siteSearch';
+import { getFaviconUrl } from '@/utils/localSiteParse';
 import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({

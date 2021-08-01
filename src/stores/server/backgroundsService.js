@@ -13,7 +13,7 @@ import Background from '@/stores/universal/backgrounds/entities/background';
 import db from '@/utils/db';
 import { first } from 'lodash';
 import appVariables from '@/config/appVariables';
-import fetchData from '@/utils/fetchData';
+import fetchData from '@/utils/helpers/fetchData';
 import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrounds/service';
 import getPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/server/bus';

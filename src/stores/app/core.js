@@ -12,7 +12,7 @@ import EventBus from '@/utils/eventBus';
 import { captureException } from '@sentry/react';
 import BrowserAPI from '@/utils/browserAPI';
 import Storage, { StorageConnector } from '@/stores/universal/storage';
-import awaitInstallStorage from '@/utils/awaitInstallStorage';
+import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import { forceCrash } from '@/ui/CrashCatch';
 
 const APP_STATE = {

@@ -1,7 +1,7 @@
 import db from '@/utils/db';
 import createPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/server/bus';
-import fetchData from '@/utils/fetchData';
+import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import { BG_SOURCE } from '@/enum';
 import { captureException } from '@sentry/react';

@@ -1,4 +1,4 @@
-export const queuingDecorator = (func) => {
+export default (func) => {
     const queue = [];
     let pendingPromise = false;
 
@@ -23,19 +23,4 @@ export const queuingDecorator = (func) => {
 
         runQueue();
     });
-};
-
-export const cachingDecorator = (func) => {
-    const cache = new Map();
-
-    return (x) => {
-        if (cache.has(x)) {
-            return cache.get(x);
-        }
-
-        const result = func(x);
-
-        cache.set(x, result);
-        return result;
-    };
 };

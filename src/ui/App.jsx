@@ -7,7 +7,7 @@ import UploadBGForm from '@/ui/UploadBackground';
 import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
-import Nest from '@/utils/Nest';
+import Nest from '@/utils/helpers/Nest';
 import { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
 import { Provider as AppStateProvider } from '@/stores/app/AppStateProvider';
 import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';

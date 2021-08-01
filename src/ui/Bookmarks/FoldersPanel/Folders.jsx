@@ -21,7 +21,7 @@ import { FETCH } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { makeStyles } from '@material-ui/core/styles';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
-import asyncAction from '@/utils/asyncAction';
+import asyncAction from '@/utils/helpers/asyncAction';
 import { captureException } from '@sentry/react';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import clsx from 'clsx';

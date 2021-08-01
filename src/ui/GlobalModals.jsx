@@ -16,7 +16,7 @@ import { default as EditBookmarkModal } from '@/ui/Bookmarks/EditBookmarkModal';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import { useSnackbar } from 'notistack';
 import MoveDialog from '@/ui/Bookmarks/MoveDialog';
-import fetchData from '@/utils/fetchData';
+import fetchData from '@/utils/helpers/fetchData';
 import Changelog from './Changelog';
 
 function GlobalModals({ children }) {

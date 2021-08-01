@@ -1,5 +1,5 @@
 import appVariables from '@/config/appVariables';
-import fetchData from '@/utils/fetchData';
+import fetchData from '@/utils/helpers/fetchData';
 import WeatherLocation from '@/entities/WeatherLocation';
 import { FETCH } from '@/enum';
 import Weather from '@/entities/Weather';

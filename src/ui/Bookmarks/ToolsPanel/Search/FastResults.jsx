@@ -8,7 +8,7 @@ import {
 import { FETCH } from '@/enum';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { useLocalObservable, observer } from 'mobx-react-lite';
-import stateRender from '@/utils/stateRender';
+import stateRender from '@/utils/helpers/stateRender';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import { ArrowForward as GoToIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';

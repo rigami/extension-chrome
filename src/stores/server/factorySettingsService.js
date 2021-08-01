@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import db from '@/utils/db';
-import fetchData from '@/utils/fetchData';
+import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from '@/stores/universal/backgrounds/entities/background';

@@ -12,11 +12,12 @@ import {
     Box,
 } from '@material-ui/core';
 import { PublicRounded as WebSiteIcon } from '@material-ui/icons';
-import { getFaviconUrl, getSiteInfoLocal, search } from '@/utils/siteSearch';
+import { getFaviconUrl } from '@/utils/localSiteParse';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { captureException } from '@sentry/react';
+import { getSiteInfoLocal, search } from '../utils/siteSearch';
 
 const useStyles = makeStyles((theme) => ({
     root: {

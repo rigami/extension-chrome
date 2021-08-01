@@ -1,6 +1,6 @@
 import { action } from 'mobx';
 import db from '@/utils/db';
-import getUniqueColor from '@/utils/uniqueColor';
+import getUniqueColor from '@/utils/generate/uniqueColor';
 import { last } from 'lodash';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import Tag from '@/stores/universal/bookmarks/entities/tag';

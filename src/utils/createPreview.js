@@ -1,6 +1,4 @@
 import { BG_TYPE } from '@/enum';
-import { captureException } from '@sentry/react';
-import { instanceOf } from 'prop-types';
 
 function postprocessing(cnvs, { /* antiAliasing */ }) {
     return new Promise((resolve) => {

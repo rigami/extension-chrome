@@ -29,7 +29,7 @@ import {
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import Scrollbar from '@/ui-components/CustomScroll';
-import BeautifulFileSize from '@/utils/beautifulFileSize';
+import BeautifulFileSize from '@/utils/prettyFileSize';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import { captureException } from '@sentry/react';
 

@@ -1,4 +1,4 @@
-function BeautifulFileSize(bytes) {
+export default (bytes) => {
     const kb = bytes / 1024;
 
     if (kb <= 1024) {
@@ -6,6 +6,4 @@ function BeautifulFileSize(bytes) {
     }
 
     return [Math.round(kb / 1024), 'mb'];
-}
-
-export default BeautifulFileSize;
+};
