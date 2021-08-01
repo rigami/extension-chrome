@@ -1,4 +1,5 @@
 import { BKMS_VARIANT } from '@/enum';
+import fetchData from '@/utils/helpers/fetchData';
 
 export const checkValidImage = async (url) => new Promise(((resolve, reject) => {
     const imgCache = document.createElement('img');
@@ -24,6 +25,8 @@ export const getNextBestImage = (list, onChangeList) => {
 
     return {
         url: bestImage.url,
+        processedStage: bestImage.processedStage,
+        score: bestImage.score,
         icoVariant: bestImage.type,
     };
 };
@@ -31,11 +34,29 @@ export const getNextBestImage = (list, onChangeList) => {
 export const getNextImage = async (list, onChangeList) => {
     let currList = list;
 
-    const nextImage = getNextBestImage(currList, (newList) => {
+    let nextImage = getNextBestImage(currList, (newList) => {
         currList = newList;
         onChangeList(newList);
     });
-    const isValid = nextImage && await checkValidImage(nextImage.url).catch(() => null);
+
+    let isValid;
+
+    if (nextImage && nextImage.processedStage === 'IS_PROCESSED') {
+        isValid = await checkValidImage(nextImage.url).catch(() => null);
+    } else if (nextImage && nextImage.processedStage === 'WAIT') {
+        try {
+            const { response: updateData } = await fetchData(nextImage.url);
+
+            nextImage = updateData;
+
+            isValid = await checkValidImage(updateData.url).catch(() => null);
+        } catch (e) {
+            console.warn('Failed recalc image', e);
+            isValid = false;
+        }
+    } else {
+        isValid = false;
+    }
 
     return !nextImage || isValid ? nextImage : getNextImage(currList, (newList) => {
         currList = newList;
