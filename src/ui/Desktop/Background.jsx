@@ -12,6 +12,7 @@ import {
     BG_SHOW_STATE,
     BG_SOURCE,
     ACTIVITY,
+    BG_SHOW_MODE,
 } from '@/enum';
 import clsx from 'clsx';
 import { Fade } from '@material-ui/core';
@@ -110,16 +111,38 @@ function Background() {
         store.showBg = true;
     };
 
+    const generatePreview = async (video) => {
+        console.log('Generate preview...');
+        const drawElement = video;
+        const drawWidth = video.videoWidth;
+        const drawHeight = video.videoHeight;
+
+        const canvas = new OffscreenCanvas(drawWidth, drawHeight);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(drawElement, 0, 0);
+
+        const fullBlob = await canvas.convertToBlob({
+            type: 'image/jpeg',
+            quality: 1,
+        });
+
+        return URL.createObjectURL(fullBlob);
+    };
+
     useEffect(() => {
         const listeners = [
             coreService.localEventBus.on('background/pause', () => {
-                bgRef.current.onpause = async () => {
+                bgRef.current.onpause = async (event) => {
+                    const video = event.target;
                     const pauseTimestamp = bgRef.current.currentTime;
                     const captureBGId = store.currentBg.id;
 
                     try {
+                        const frameURL = await generatePreview(video);
+
                         await new Promise((resolve, reject) => eventToBackground('backgrounds/pause', {
                             bgId: captureBGId,
+                            frameURL,
                             timestamp: pauseTimestamp,
                         }, (data) => {
                             console.log('backgrounds/pause', data);
@@ -136,7 +159,15 @@ function Background() {
                     }
 
                     store.captureFrameTimer = setTimeout(() => {
-                        if (pauseTimestamp !== bgRef.current.currentTime) return;
+                        console.log(store.currentBg.id, backgrounds.currentBGId, backgrounds.bgShowMode);
+                        if (
+                            !store.currentBg
+                            || store.currentBg.id !== backgrounds.currentBGId
+                            || backgrounds.bgShowMode !== BG_SHOW_MODE.STATIC
+                            || pauseTimestamp !== bgRef.current.currentTime
+                        ) {
+                            return;
+                        }
 
                         store.requestBg = backgrounds.currentBG;
                     }, 5000);
@@ -151,6 +182,7 @@ function Background() {
 
                 try {
                     await new Promise((resolve, reject) => eventToBackground('backgrounds/play', {}, (data) => {
+                        console.log('background/play callback:', data);
                         if (data.success) {
                             resolve();
                         } else {
@@ -168,7 +200,13 @@ function Background() {
                     bgRef.current.play();
                     bgRef.current.onpause = null;
                 } else {
-                    store.requestBg = backgrounds.currentBG;
+                    const currBG = backgrounds.currentBG;
+
+                    store.requestBg = new BackgroundEntity({
+                        ...currBG,
+                        pauseTimestamp: null,
+                        pauseStubSrc: null,
+                    });
                 }
             }),
         ];
@@ -237,7 +275,7 @@ function Background() {
             store.loadBgId = null;
         };
 
-        if (store.requestBg.type === BG_TYPE.VIDEO && store.requestBg.fileName !== 'temporaryVideoFrame') {
+        if (store.requestBg.type === BG_TYPE.VIDEO && !store.requestBg.pauseStubSrc) {
             const video = document.createElement('video');
 
             video.onloadedmetadata = successLoad;
@@ -250,9 +288,16 @@ function Background() {
             image.onload = successLoad;
             image.onerror = failedLoad;
 
-            image.src = store.requestBg.fullSrc;
+            image.src = store.requestBg.pauseStubSrc || store.requestBg.fullSrc;
         }
     }, [store.requestBg]);
+
+    useEffect(() => {
+        console.log('stae load bg:', {
+            stateLoadBg: store.stateLoadBg,
+            stateRequestLoadBg: store.stateRequestLoadBg,
+        });
+    }, [store.stateLoadBg, store.stateRequestLoadBg]);
 
     return (
         <Fade

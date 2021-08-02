@@ -1,5 +1,4 @@
 import db from '@/utils/db';
-import createPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/universal/serviceBus';
 import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
@@ -90,16 +89,15 @@ class BackgroundsUniversalService {
             preview,
         });
 
-        let defaultBG;
+        let fullBG;
+        let previewBG;
         let url;
         let previewUrl;
 
         const cache = await caches.open('backgrounds');
 
         try {
-            const response = await fetch(bg.downloadLink);
-            if (!response.ok) throw new Error(response.statusText);
-            defaultBG = await response.blob();
+            fullBG = (await fetchData(bg.downloadLink, { responseType: 'blob' })).response;
         } catch (e) {
             console.error('[backgrounds] Failed fetch bg', e);
             captureException(e);
@@ -110,15 +108,15 @@ class BackgroundsUniversalService {
             try {
                 console.log('[backgrounds] Create preview...');
 
-                const previewDefaultBG = await createPreview(defaultBG);
-
-                const previewResponse = new Response(previewDefaultBG);
                 if (bg.source === BG_SOURCE.USER) {
                     previewUrl = `${appVariables.rest.url}/background/user/get-preview?id=${bg.id}`;
+                    previewBG = (await fetchData(bg.previewLink, { responseType: 'blob' })).response;
+                    const previewResponse = new Response(previewBG);
+                    await cache.put(previewUrl, previewResponse);
                 } else {
-                    previewUrl = `${appVariables.rest.url}/background/get-preview?src=${encodeURIComponent(bg.downloadLink)}`;
+                    previewUrl = bg.previewLink || `${appVariables.rest.url}/background/get-preview?src=${encodeURIComponent(bg.downloadLink)}`;
+                    await cache.add(previewUrl);
                 }
-                await cache.put(previewUrl, previewResponse);
             } catch (e) {
                 console.warn('Failed create preview:', e);
                 captureException(e);
@@ -130,7 +128,7 @@ class BackgroundsUniversalService {
 
             if (bg.source === BG_SOURCE.USER) {
                 url = `${appVariables.rest.url}/background/user?src=${bg.id}`;
-                const fullResponse = new Response(defaultBG);
+                const fullResponse = new Response(fullBG);
                 await cache.put(url, fullResponse);
             } else {
                 url = bg.downloadLink;

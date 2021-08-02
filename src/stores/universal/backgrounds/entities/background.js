@@ -15,6 +15,7 @@ class Background {
     @observable source;
     @observable sourceLink;
     @observable downloadLink;
+    @observable previewLink;
     @observable type;
     @observable previewSrc;
     @observable pauseStubSrc;
@@ -35,6 +36,7 @@ class Background {
         this.id = `${this.source.toLowerCase()}-${this.originId}`;
         this.sourceLink = background.sourceLink;
         this.downloadLink = background.downloadLink;
+        this.previewLink = background.previewLink;
         this.type = background.type;
         this.previewSrc = background.previewSrc;
         this.pauseStubSrc = background.pauseStubSrc;

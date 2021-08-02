@@ -1,8 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from '@/stores/universal/backgrounds/entities/background';
-import createPreview from '@/utils/createPreview';
-import { captureException } from '@sentry/react';
 
 class SyncBookmarks {
     core;
@@ -28,20 +26,6 @@ class SyncBookmarks {
                 console.log(`Background '${computeId}' find in local store. Skip...`);
             } else {
                 console.log(`Background '${computeId}' not find in local store. Save as new`);
-
-                console.log('[backgrounds] Create preview...');
-
-                let previewDefaultBG;
-
-                try {
-                    previewDefaultBG = await createPreview(files[computeId], background.type);
-                } catch (e) {
-                    console.error(e);
-                    captureException(e);
-                }
-
-                console.log('[backgrounds] Save BG in file system...');
-                // TODO: Added bgs in cache
 
                 console.log('[backgrounds] Added to library...');
                 await BackgroundsUniversalService.addToLibrary(new Background({

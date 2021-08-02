@@ -309,6 +309,7 @@ class BackgroundsAppService {
                 ...options,
             },
             downloadLink: URL.createObjectURL(bg.file),
+            previewLink: URL.createObjectURL(bg.preview),
         });
 
         return BackgroundsUniversalService.addToLibrary(saveBG)

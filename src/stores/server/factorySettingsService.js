@@ -57,6 +57,7 @@ class FactorySettingsService {
                 ...first(response),
                 source: BG_SOURCE[first(response).service],
                 downloadLink: first(response).fullSrc,
+                previewLink: first(response).previewSrc,
                 type: BG_TYPE[first(response).type],
             }));
         } else {

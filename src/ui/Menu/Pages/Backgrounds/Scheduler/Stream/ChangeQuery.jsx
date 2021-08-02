@@ -138,6 +138,7 @@ function ChangeQuery({ onClose }) {
                 source: BG_SOURCE[bg.service],
                 type: BG_TYPE[bg.type],
                 downloadLink: bg.fullSrc,
+                previewLink: bg.previewSrc,
             }));
 
             runInAction(() => {

@@ -292,6 +292,7 @@ class BackgroundsServerService {
                         source: BG_SOURCE[bg.service],
                         type: BG_TYPE[bg.type],
                         downloadLink: bg.fullSrc,
+                        previewLink: bg.previewSrc,
                     })),
                 ],
             });
@@ -431,34 +432,16 @@ class BackgroundsServerService {
         return Promise.resolve();
     }
 
-    async pause({ bgId, timestamp }) {
-        console.log('pause bg:', this.currentBGId, (this));
+    async pause({ bgId, frameURL, timestamp }) {
+        console.log('pause bg:', this.currentBGId, bgId);
         if (bgId !== this.currentBGId) return Promise.reject(new Error(ERRORS.ID_BG_IS_CHANGED));
 
-        this._currentBG.pauseTimestamp = timestamp;
-        this.bgShowMode = BG_SHOW_MODE.STATIC;
-
-        this.storage.update({
-            bgCurrent: this._currentBG,
-            bgShowMode: BG_SHOW_MODE.STATIC,
-        });
-        const frame = await getPreview(
-            this._currentBG.fullSrc,
-            this._currentBG.type,
-            {
-                size: 'full',
-                timeStamp: timestamp,
-            },
-        );
-
-        if (bgId !== this.currentBGId || this.bgShowMode !== BG_SHOW_MODE.STATIC) {
-            return Promise.reject(new Error(ERRORS.ID_BG_IS_CHANGED));
-        }
-
+        const { response: frameBlob } = await fetchData(frameURL, { responseType: 'blob' });
         const cache = await caches.open('backgrounds');
 
+        const frameResponse = new Response(frameBlob);
         let frameUrl;
-        const frameResponse = new Response(frame);
+
         if (this._currentBG.source === BG_SOURCE.USER) {
             frameUrl = `${appVariables.rest.url}/background/user/get-frame?id=${this._currentBG.id}&timestamp=${timestamp}`;
         } else {
@@ -466,9 +449,15 @@ class BackgroundsServerService {
         }
         await cache.put(frameUrl, frameResponse);
 
+        this._currentBG.pauseTimestamp = timestamp;
         this._currentBG.pauseStubSrc = frameUrl;
+        this.bgShowMode = BG_SHOW_MODE.STATIC;
 
-        this.storage.update({ bgCurrent: this._currentBG });
+        this.storage.update({
+            bgCurrent: this._currentBG,
+            bgShowMode: BG_SHOW_MODE.STATIC,
+        });
+        console.log('Set bgShowMode:', this.bgShowMode);
 
         return Promise.resolve();
     }
@@ -516,21 +505,31 @@ class BackgroundsServerService {
             this.setBG(bg).finally(callback);
         });
 
-        this.core.globalEventBus.on('backgrounds/play', async (data, props) => {
+        this.core.globalEventBus.on('backgrounds/play', async ({ callback }) => {
             console.log('backgrounds/play');
             try {
-                const result = await this.play();
+                await this.play();
+                callback({ success: true });
             } catch (e) {
+                callback({
+                    success: false,
+                    error: e,
+                });
                 console.log(e);
                 captureException(e);
             }
         });
 
-        this.core.globalEventBus.on('backgrounds/pause', async (data, props) => {
+        this.core.globalEventBus.on('backgrounds/pause', async ({ data, callback }) => {
             console.log('backgrounds/pause', data);
             try {
-                const result = await this.pause(data);
+                await this.pause(data);
+                callback({ success: true });
             } catch (e) {
+                callback({
+                    success: false,
+                    error: e,
+                });
                 captureException(e);
             }
         });

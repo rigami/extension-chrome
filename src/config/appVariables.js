@@ -45,6 +45,7 @@ export default {
             sourceLink: 'https://unsplash.com/photos/nL1pAWmRFYU',
             source: BG_SOURCE.UNSPLASH,
             downloadLink: 'https://images.unsplash.com/photo-1607374904945-feef89bffa1f?crop=entropy&cs=srgb&fm=jpg&ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1&q=85',
+            previewLink: 'https://images.unsplash.com/photo-1607374904945-feef89bffa1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1&q=80&w=400',
             type: BG_TYPE.IMAGE,
         },
         stream: {

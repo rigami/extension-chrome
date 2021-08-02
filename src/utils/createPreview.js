@@ -94,22 +94,28 @@ const getPreview = async (fileOrSrc, type, { size = 'preview', antiAliasing = tr
     let drawWidth;
 
     if (~fileType.indexOf(BG_TYPE.VIDEO)) {
-        /* const video = document.createElement('video');
-        video.setAttribute('src', fileSrc);
+        await new Promise((resolve, reject) => {
+            const video = document.createElement('video');
+            video.setAttribute('src', URL.createObjectURL(blobFile));
 
-        video.onseeked = () => {
-            render(video, video.videoWidth, video.videoHeight);
+            video.onseeked = () => {
+                drawElement = video;
+                drawWidth = video.videoWidth;
+                drawHeight = video.videoHeight;
+                resolve();
 
-            setTimeout(() => video.pause(), 100);
-        };
+                setTimeout(() => video.pause(), 100);
+            };
 
-        video.onloadedmetadata = () => {
-            video.muted = true;
-            video.play().then(() => {
-                video.currentTime = timeStamp || video.duration / 2;
-            });
-        }; */
-        // TODO: Draw video frame
+            video.onerror = reject;
+
+            video.onloadedmetadata = () => {
+                video.muted = true;
+                video.play().then(() => {
+                    video.currentTime = timeStamp || video.duration / 2;
+                });
+            };
+        });
     } else {
         drawElement = await createImageBitmap(blobFile);
         drawWidth = drawElement.width;
