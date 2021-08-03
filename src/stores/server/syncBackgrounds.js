@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from '@/stores/universal/backgrounds/entities/background';
 
-class SyncBookmarks {
+class SyncBackgrounds {
     core;
 
     constructor(core) {
@@ -10,8 +10,8 @@ class SyncBookmarks {
         this.core = core;
     }
 
-    async restore(backgrounds, files) {
-        console.log('restore backgrounds', backgrounds, files, this.core);
+    async restore(backgrounds, files, previewFiles) {
+        console.log('restore backgrounds', backgrounds, files, previewFiles, this.core);
 
         const localBackgrounds = await BackgroundsUniversalService.getAll();
 
@@ -28,10 +28,17 @@ class SyncBookmarks {
                 console.log(`Background '${computeId}' not find in local store. Save as new`);
 
                 console.log('[backgrounds] Added to library...');
-                await BackgroundsUniversalService.addToLibrary(new Background({
-                    ...background,
-                    id: null,
-                }));
+                try {
+                    await BackgroundsUniversalService.addToLibrary(new Background({
+                        ...background,
+                        id: null,
+                    }), {
+                        fullBlob: files[computeId],
+                        previewBlob: (computeId in previewFiles) ? previewFiles[computeId] : null,
+                    });
+                } catch (e) {
+                    console.warn('Failed add background:', e);
+                }
             }
         }
 
@@ -39,4 +46,4 @@ class SyncBookmarks {
     }
 }
 
-export default SyncBookmarks;
+export default SyncBackgrounds;

@@ -13,6 +13,7 @@ import BackgroundsUniversalService from '@/stores/universal/backgrounds/service'
 import { captureException } from '@sentry/react';
 import fetchData from '@/utils/helpers/fetchData';
 import { StorageConnector } from '@/stores/universal/storage';
+import { BG_TYPE } from '@/enum';
 import convertBackupClockTabToRigamiFormat from './utils/convertBackupClockTabToRigamiFormat';
 
 class LocalBackupService {
@@ -85,13 +86,16 @@ class LocalBackupService {
 
         const meta = [];
         const fullBlobs = new Map();
+        const previewBlobs = new Map();
         const cache = await caches.open('backgrounds');
 
         for await (const background of allBackgrounds) {
-            const response = await cache.match(background.fullSrc).then((responseRaw) => responseRaw.blob());
-            const ext = response.type.substring(response.type.indexOf('/') + 1);
+            const fullBlob = await cache.match(background.fullSrc).then((responseRaw) => responseRaw.blob());
+            const previewBlob = await cache.match(background.previewSrc).then((responseRaw) => responseRaw.blob());
+            const ext = fullBlob.type.substring(fullBlob.type.indexOf('/') + 1);
 
-            fullBlobs.set(`${background.id}.${ext}`, response);
+            fullBlobs.set(`${background.id}.${ext}`, fullBlob);
+            previewBlobs.set(`${background.id}.jpeg`, previewBlob);
 
             meta.push(omit(background, [
                 'fullSrc',
@@ -106,6 +110,7 @@ class LocalBackupService {
         return {
             meta: { all: meta },
             full: fullBlobs,
+            preview: previewBlobs,
         };
     }
 
@@ -152,9 +157,14 @@ class LocalBackupService {
                 if (backgrounds) {
                     zip.file('backgrounds.json', JSON.stringify(backup.backgrounds.meta));
                     zip.folder('backgrounds');
+                    zip.folder('previews');
 
                     backup.backgrounds.full.forEach((file, fileName) => {
                         zip.file(`backgrounds/${fileName}`, file);
+                    });
+
+                    backup.backgrounds.preview.forEach((file, fileName) => {
+                        zip.file(`previews/${fileName}`, file);
                     });
                 }
 
@@ -193,6 +203,7 @@ class LocalBackupService {
                     const restoreFile = await rawBackup.blob();
                     const zip = await new JSZip().loadAsync(restoreFile);
                     const backgrounds = {};
+                    const previews = {};
                     const files = map(zip.files, (file) => file);
 
                     for await (const file of files) {
@@ -208,13 +219,34 @@ class LocalBackupService {
                             backup[file.name.slice(0, -5)] = JSON.parse(value);
                         }
 
-                        if (file.name.indexOf('backgrounds/') === -1 || file.dir) continue;
+                        if (file.name.indexOf('backgrounds/') !== -1 && !file.dir) {
+                            const fileName = file.name.substring(12);
+                            const splitIndex = fileName.indexOf('.');
+                            const id = splitIndex === -1 ? fileName : fileName.substring(0, splitIndex);
+                            const ext = splitIndex === -1 ? '' : fileName.substring(splitIndex + 1);
+                            const bgType = backup.backgrounds.all
+                                .find(({ originId, source }) => `${source.toLowerCase()}-${originId}` === id)
+                                .type;
+                            const blob = await file.async('blob');
 
-                        backgrounds[file.name.substring(12)] = await file.async('blob');
+                            backgrounds[id] = new Blob(
+                                [blob],
+                                { type: `${bgType === BG_TYPE.VIDEO ? 'video' : 'image'}/${ext}` },
+                            );
+                        } else if (file.name.indexOf('previews/') !== -1 && !file.dir) {
+                            const fileName = file.name.substring(9);
+                            const splitIndex = fileName.indexOf('.');
+                            const id = fileName.substring(0, splitIndex);
+                            const blob = await file.async('blob');
 
-                        backup.backgroundsFiles = backgrounds;
+                            previews[id] = new Blob([blob], { type: 'image/jpeg' });
+                        }
                     }
+
+                    backup.backgroundsFiles = backgrounds;
+                    backup.previewsFiles = previews;
                 } catch (e) {
+                    console.error(e);
                     captureException(e);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
@@ -238,6 +270,7 @@ class LocalBackupService {
 
                     backup = { ...file };
                 } catch (e) {
+                    console.error(e);
                     captureException(e);
                     eventToApp('system/backup/local/restore/progress', {
                         result: 'error',
@@ -287,6 +320,7 @@ class LocalBackupService {
                     await this.core.backgroundsSyncService.restore(
                         backup.backgrounds.all,
                         backup.backgroundsFiles,
+                        backup.previewsFiles,
                     );
                 }
                 eventToApp('system/backup/local/restore/progress', { result: 'done' });

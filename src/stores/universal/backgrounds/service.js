@@ -17,10 +17,10 @@ class BackgroundsUniversalService {
     static FULL_PATH = '/backgrounds/full';
     static PREVIEW_PATH = '/backgrounds/preview';
 
-    static async addToLibrary(saveBG) {
-        console.log('[backgrounds] Add bg to library', saveBG);
+    static async addToLibrary(saveBG, blobs = {}) {
+        console.log('[backgrounds] Add bg to library', saveBG, blobs);
 
-        const urls = await this.fetchBG(saveBG);
+        const urls = await this.fetchBG(saveBG, blobs);
 
         console.log('urls:', urls);
 
@@ -80,6 +80,8 @@ class BackgroundsUniversalService {
         const {
             full = true,
             preview = true,
+            fullBlob,
+            previewBlob,
         } = options;
         const fileName = Date.now().toString();
         console.log('[backgrounds] Fetch background', {
@@ -87,6 +89,8 @@ class BackgroundsUniversalService {
             fileName,
             full,
             preview,
+            fullBlob,
+            previewBlob,
         });
 
         let fullBG;
@@ -97,7 +101,7 @@ class BackgroundsUniversalService {
         const cache = await caches.open('backgrounds');
 
         try {
-            fullBG = (await fetchData(bg.downloadLink, { responseType: 'blob' })).response;
+            fullBG = fullBlob || (await fetchData(bg.downloadLink, { responseType: 'blob' })).response;
         } catch (e) {
             console.error('[backgrounds] Failed fetch bg', e);
             captureException(e);
@@ -110,7 +114,7 @@ class BackgroundsUniversalService {
 
                 if (bg.source === BG_SOURCE.USER) {
                     previewUrl = `${appVariables.rest.url}/background/user/get-preview?id=${bg.id}`;
-                    previewBG = (await fetchData(bg.previewLink, { responseType: 'blob' })).response;
+                    previewBG = previewBlob || (await fetchData(bg.previewLink, { responseType: 'blob' })).response;
                     const previewResponse = new Response(previewBG);
                     await cache.put(previewUrl, previewResponse);
                 } else {
