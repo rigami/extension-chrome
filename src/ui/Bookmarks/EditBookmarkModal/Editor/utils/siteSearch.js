@@ -1,6 +1,6 @@
 import appVariables from '@/config/appVariables';
 import fetchData from '@/utils/helpers/fetchData';
-import parseSite from '@/utils/localSiteParse';
+import parseSite, { getDomain } from '@/utils/localSiteParse';
 import { captureException } from '@sentry/react';
 
 const search = async (query, signal) => {
@@ -65,6 +65,7 @@ const getSiteInfoLocal = async (url) => {
 
     return {
         ...parseData,
+        title: parseData.title || getDomain(raw.url),
         url: raw.url,
         baseUrl: localSearchUrl,
         urlOrigin,
