@@ -19,6 +19,7 @@ const APP_STATE = {
     WAIT: 'WAIT',
     INIT: 'INIT',
     REQUIRE_SETUP: 'REQUIRE_SETUP',
+    REQUIRE_MIGRATE: 'REQUIRE_MIGRATE',
     WORK: 'WORK',
 };
 
@@ -132,7 +133,9 @@ class Core {
         console.timeEnd('Await install storage service');
 
         runInAction(() => {
-            if (
+            if (this.storage.persistent.data.migrateToMv3Progress) {
+                this.appState = APP_STATE.REQUIRE_MIGRATE;
+            } else if (
                 this.storage.persistent.data.factoryResetProgress
                 || !this.storage.persistent.data.lastUsageVersion
             ) {

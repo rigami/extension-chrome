@@ -45,5 +45,6 @@
     "FETCH_BG": "Fetching first background...",
     "SAVE_BG": "Saving background...",
     "DONE": "Done!"
-  }
+  },
+  "migrate": "Migrate. Please wait..."
 }

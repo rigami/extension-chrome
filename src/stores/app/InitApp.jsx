@@ -6,12 +6,14 @@ import FirstLookScreen from '@/ui/FirstLookScreen';
 import appVariables from '@/config/appVariables';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useAppService from '@/stores/app/AppStateProvider';
+import MigrateScreen from '@/ui/MigrateScreen';
 import packageJson from '../../../package.json';
 
 const STATE = {
     PREPARE: 'PREPARE',
     DONE: 'DONE',
     FIRST_CONTACT: 'FIRST_CONTACT',
+    MIGRATE: 'MIGRATE',
 };
 
 function ApplyWizardSettingsProvider({ children }) {
@@ -57,6 +59,8 @@ function InitApp({ children }) {
             }
         } else if (service.appState === APP_STATE.REQUIRE_SETUP) {
             setState(STATE.FIRST_CONTACT);
+        } else if (service.appState === APP_STATE.REQUIRE_MIGRATE) {
+            setState(STATE.MIGRATE);
         }
     }, [service.appState]);
 
@@ -67,6 +71,9 @@ function InitApp({ children }) {
             {state === STATE.DONE && children}
             {state === STATE.FIRST_CONTACT && (
                 <FirstLookScreen onStart={() => { setState(STATE.DONE); }} />
+            )}
+            {state === STATE.MIGRATE && (
+                <MigrateScreen onStart={() => { setState(STATE.DONE); }} />
             )}
         </React.Fragment>
     );

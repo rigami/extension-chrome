@@ -42,13 +42,13 @@ function RootApp({ onChangeTheme }) {
                         {children}
                     </SnackbarProvider>
                 ),
-                InitApp,
+                BUILD === 'full' ? BookmarksProvider : ({ children }) => children,
                 ({ children }) => (
                     <AppStateProvider onChangeTheme={onChangeTheme}>
                         {children}
                     </AppStateProvider>
                 ),
-                BUILD === 'full' ? BookmarksProvider : ({ children }) => children,
+                InitApp,
                 UploadBGForm,
                 GlobalModals,
                 ContextMenuProvider,

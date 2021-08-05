@@ -229,6 +229,19 @@ export default ({ upgrade }) => ({
         if (newVersion >= 7 && transaction.objectStoreNames.contains('bookmarks_by_categories')) {
             db.deleteObjectStore('bookmarks_by_categories');
         }
+        if (oldVersion <= 8) {
+            const store = db.createObjectStore('temp', {
+                keyPath: 'id',
+                autoIncrement: true,
+            });
+            store.createIndex('name', 'name', { unique: true });
+            store.createIndex('value', 'value', { unique: false });
+
+            await store.add({
+                name: 'migrate-to-mv3-require',
+                value: true,
+            });
+        }
 
         upgrade();
     },

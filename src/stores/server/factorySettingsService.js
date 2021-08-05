@@ -104,13 +104,24 @@ class FactorySettingsService {
         });
     }
 
-    subscribe() {
+    async subscribe() {
         this.core.globalEventBus.on('system/factoryReset', ({ callback }) => {
             this.factoryReset().then(callback);
         });
 
-        if (this.storage.data.factoryResetProgress || !this.storage.data.lastUsageVersion) {
+        const migrateToMv3 = await db().getFromIndex('temp', 'name', 'migrate-to-mv3-require');
+
+        if (!migrateToMv3 && (this.storage.data.factoryResetProgress || !this.storage.data.lastUsageVersion)) {
             this.factoryReset();
+        }
+
+        if (migrateToMv3) {
+            this.storage.update({
+                migrateToMv3Progress: {
+                    percent: 0,
+                    stage: PREPARE_PROGRESS.WAIT,
+                },
+            });
         }
     }
 }
