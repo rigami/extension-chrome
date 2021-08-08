@@ -51,7 +51,7 @@ const theme = {
         },
         body2: {
             fontFamily: primaryFontFamily,
-            fontWeight: 400,
+            fontWeight: 450,
             fontSize: '0.85rem',
         },
     },
