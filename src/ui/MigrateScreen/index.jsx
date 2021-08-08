@@ -138,10 +138,9 @@ function MigrateScreen({ onStart }) {
 
         await db().delete('temp', migrateToMv3.id);
 
-        await new Promise((resolve, reject) => fs.root.removeRecursively(resolve, (e) => {
-            console.error(e);
-            reject(e);
-        }));
+        await Promise.allSettled(['backgrounds', 'bookmarksIcons', 'temp'].map((path) => new Promise((resolve, reject) => {
+            fs.root.getDirectory(path, { }, (dir) => dir.removeRecursively(resolve, reject), reject);
+        })));
 
         coreService.storage.persistent.update({ migrateToMv3Progress: null });
 
