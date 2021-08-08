@@ -70,8 +70,9 @@ const theme = {
     },
     overrides: {
         MuiButton: {
+            root: { fontWeight: 800 },
             label: {
-                fontWeight: 800,
+                fontWeight: 'inherit',
                 fontFamily: primaryFontFamily,
                 wordBreak: 'break-word',
             },
