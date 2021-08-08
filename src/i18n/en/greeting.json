@@ -47,5 +47,8 @@
     "default": [
       "Hello, {{name}} \uD83D\uDC4B"
     ]
+  },
+  "button": {
+    "edit": "Change appeal"
   }
 }

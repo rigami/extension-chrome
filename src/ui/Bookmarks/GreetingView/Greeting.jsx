@@ -3,6 +3,7 @@ import {
     Box,
     Button,
     Fade,
+    Tooltip,
     Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -57,6 +58,7 @@ function FakeInput(props) {
     const inputRef = useRef(null);
     const [defaultState, setDefaultState] = useState(value);
     const [state, setState] = useState(value);
+    const { t } = useTranslation(['greeting']);
 
     useEffect(() => {
         if (document.activeElement !== inputRef.current) {
@@ -67,38 +69,39 @@ function FakeInput(props) {
     }, [value]);
 
     return (
-        <span>
-            <div
-                tabIndex={0}
-                role="textbox"
-                ref={inputRef}
-                className={clsx(classes.fakeInput, externalClassName)}
-                contentEditable
-                suppressContentEditableWarning
-                {...otherProps}
-                onKeyDown={(event) => {
-                    if (event.key === 'Enter') event.preventDefault();
-                }}
-                onInput={(event) => {
-                    setState(event.currentTarget.innerText);
-                    if (onInput) onInput(event);
-                }}
-                autoCorrect={false}
-            >
-                {defaultState}
-            </div>
-            {!state && (
-                <span
+        <Tooltip title={t('button.edit')}>
+            <span>
+                <div
                     tabIndex={0}
-                    role="button"
-                    className={clsx(classes.fakeInput, classes.fakePlaceholder, externalClassName)}
+                    role="textbox"
+                    ref={inputRef}
+                    className={clsx(classes.fakeInput, externalClassName)}
+                    contentEditable
+                    suppressContentEditableWarning
                     {...otherProps}
-                    onClick={() => inputRef.current.focus()}
+                    onKeyDown={(event) => {
+                        if (event.key === 'Enter') event.preventDefault();
+                    }}
+                    onInput={(event) => {
+                        setState(event.currentTarget.innerText);
+                        if (onInput) onInput(event);
+                    }}
                 >
-                    {placeholder}
-                </span>
-            )}
-        </span>
+                    {defaultState}
+                </div>
+                {!state && (
+                    <span
+                        tabIndex={0}
+                        role="button"
+                        className={clsx(classes.fakeInput, classes.fakePlaceholder, externalClassName)}
+                        {...otherProps}
+                        onClick={() => inputRef.current.focus()}
+                    >
+                        {placeholder}
+                    </span>
+                )}
+            </span>
+        </Tooltip>
     );
 }
 
