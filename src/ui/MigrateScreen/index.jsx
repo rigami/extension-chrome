@@ -117,7 +117,7 @@ function MigrateScreen({ onStart }) {
 
         for await (const bookmark of allBookmarks) {
             index += 1;
-            setProgress(75 + 25 * (index / allBookmarks.length));
+            setProgress(75 + 20 * (index / allBookmarks.length));
 
             if (bookmark.icoVariant !== BKMS_VARIANT.SYMBOL) {
                 const iconSrc = `${appVariables.rest.url}/background/get-site-icon?site-url=${bookmark.url}`;
@@ -138,6 +138,8 @@ function MigrateScreen({ onStart }) {
 
         await db().delete('temp', migrateToMv3.id);
 
+        setProgress(97);
+
         await Promise.allSettled(['backgrounds', 'bookmarksIcons', 'temp'].map((path) => new Promise((resolve, reject) => {
             fs.root.getDirectory(path, { }, (dir) => dir.removeRecursively(resolve, reject), reject);
         })));
@@ -146,6 +148,8 @@ function MigrateScreen({ onStart }) {
 
         localStorage.removeItem('storage');
         localStorage.removeItem('settings');
+
+        setProgress(100);
 
         // throw new Error('not end');
     };
