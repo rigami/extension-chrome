@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Popover, Box, Paper } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import ReactResizeDetector from 'react-resize-detector';
 import PopoverCard from './PopoverCard';
@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 function PopoverDialog({ children, PaperProps = {}, ...props }) {
     const classes = useStyles();
+    const theme = useTheme();
     const updatePosition = useRef(null);
 
     const updatePopper = () => {
@@ -43,6 +44,11 @@ function PopoverDialog({ children, PaperProps = {}, ...props }) {
                 horizontal: 'left',
             }}
             elevation={0}
+            transitionDuration={{
+                appear: theme.transitions.duration.standard,
+                enter: theme.transitions.duration.enteringScreen,
+                exit: theme.transitions.duration.leavingScreen,
+            }}
             {...props}
             PaperProps={{ className: classes.resetPaper }}
         >

@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     dialog: {
         minWidth: 320,
         maxWidth: 400,
-        width: '100%',
+        width: 400,
         minHeight: 400,
     },
     listContainer: {

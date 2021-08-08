@@ -57,7 +57,16 @@ const theme = {
     },
     transitions: {
         easing: { shiftEaseInOut: 'cubic-bezier(0.1, 0.84, 0.2, 1)' },
-        duration: { long: 750 },
+        duration: {
+            shortest: 75,
+            leavingScreen: 100,
+            shorter: 120,
+            enteringScreen: 175,
+            short: 200,
+            standard: 250,
+            complex: 300,
+            long: 550,
+        },
     },
     overrides: {
         MuiButton: {
