@@ -20,7 +20,7 @@ import {
     KeyboardArrowRight as ItemIcon,
     CloseRounded as CloseIcon,
 } from '@material-ui/icons';
-import requestSrc from '@/images/request.png';
+import updateImageSrc from '@/images/update.png';
 import appVariables from '@/config/appVariables';
 import CustomScroll from '@/ui-components/CustomScroll';
 
@@ -33,8 +33,9 @@ const useStyles = makeStyles((theme) => ({
     container: { padding: 0 },
     scroller: { height: 600 },
     rateScreenIcon: {
-        width: 200,
+        width: 140,
         height: 200,
+        backgroundSize: 'contain',
     },
     dismissButton: {
         position: 'absolute',
@@ -91,7 +92,7 @@ function ChangelogScreen({ onClose }) {
                         icon={CardMedia}
                         iconProps={{
                             className: classes.rateScreenIcon,
-                            image: requestSrc,
+                            image: updateImageSrc,
                         }}
                         message={t('title')}
                     />
