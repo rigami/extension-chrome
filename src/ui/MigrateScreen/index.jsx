@@ -134,6 +134,20 @@ function MigrateScreen({ onStart }) {
             console.log('bookmark:', bookmark);
         }
 
+        const migrateToMv3 = await db().getFromIndex('temp', 'name', 'migrate-to-mv3-require');
+
+        await db().delete('temp', migrateToMv3.id);
+
+        await new Promise((resolve, reject) => fs.root.removeRecursively(resolve, (e) => {
+            console.error(e);
+            reject(e);
+        }));
+
+        coreService.storage.persistent.update({ migrateToMv3Progress: null });
+
+        localStorage.removeItem('storage');
+        localStorage.removeItem('settings');
+
         // throw new Error('not end');
     };
 
