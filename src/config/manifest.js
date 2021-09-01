@@ -9,7 +9,7 @@ module.exports = () => {
         'default_locale': 'en',
         'version': packageJson.version,
         'homepage_url': 'https://rigami.io/',
-        'minimum_chrome_version': '85',
+        'minimum_chrome_version': '88',
         'offline_enabled': true,
         'icons': {
             '16': 'resource/16x16.png',
