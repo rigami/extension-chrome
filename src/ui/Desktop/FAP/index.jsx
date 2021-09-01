@@ -75,11 +75,14 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1.25),
         minHeight: 60,
     },
-    linkDense: { marginBottom: theme.spacing(2) },
     link: {
         marginRight: theme.spacing(2),
         padding: 0,
         '&:last-child': { marginRight: 0 },
+    },
+    linkDense: {
+        marginRight: theme.spacing(1.5),
+        marginBottom: theme.spacing(1.5),
     },
     linkBackdrop: { backgroundColor: theme.palette.background.default },
     linkBackdropBlur: {
@@ -97,6 +100,7 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: 0,
         minWidth: 'unset',
         maxWidth: 1200,
+        paddingBottom: theme.spacing(0.5),
     },
 }));
 
