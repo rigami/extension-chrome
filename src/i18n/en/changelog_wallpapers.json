@@ -4,6 +4,7 @@
     "ok": "Good"
   },
   "changelog": [
-    "First release"
+    "The application has been moved to a new architecture. It should now run faster",
+    "Many problems fixed"
   ]
 }

@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "0.19.98",
+    "version": "0.19.99",
     "description": "Rigami",
     "main": "index.js",
     "scripts": {
