@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     identBlockIcon: { marginRight: theme.spacing(1) },
     identBlockIconTopAlign: {
         height: theme.spacing(4),
-        alignSelf: 'end',
+        alignSelf: 'flex-start',
     },
 }));
 

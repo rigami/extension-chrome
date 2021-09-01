@@ -42,17 +42,17 @@ const useStyles = makeStyles((theme) => ({
         }),
     },
     leftBottom: {
-        alignItems: 'end',
+        alignItems: 'flex-start',
         justifyContent: 'flex-end',
         '& $widget': {
-            alignItems: 'end',
+            alignItems: 'flex-start',
             transformOrigin: 'left bottom',
         },
     },
     leftMiddle: {
-        alignItems: 'end',
+        alignItems: 'flex-start',
         '& $widget': {
-            alignItems: 'end',
+            alignItems: 'flex-start',
             transformOrigin: 'left bottom',
         },
     },
