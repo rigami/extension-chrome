@@ -83,8 +83,8 @@ function About() {
                 <LogoIcon className={classes.appLogoIcon} />
                 <LogoText className={classes.appLogoText} />
                 <Typography className={classes.appVersion} variant="body2">
-                    {BUILD === 'full' && `v${appVariables.version || '-'} (BETA)`}
-                    {BUILD === 'wallpapers' && `v${appVariables.version || '-'} (${t('onlyWallpapers')}) (BETA)`}
+                    {BUILD === 'full' && `v${appVariables.version || '-'}`}
+                    {BUILD === 'wallpapers' && `v${appVariables.version || '-'} (${t('onlyWallpapers')})`}
                 </Typography>
             </Box>
             <Divider />
