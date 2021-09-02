@@ -39,7 +39,6 @@ module.exports = () => {
             ...permissions,
             'activeTab',
             'sessions',
-            'notifications',
             'bookmarks',
             'http://danilkinkin.com/',
         ];
