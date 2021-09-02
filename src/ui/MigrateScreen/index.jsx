@@ -52,7 +52,25 @@ function MigrateScreen({ onStart }) {
         if (localStorage.getItem('storage')) {
             const storage = JSON.parse(localStorage.getItem('storage'));
 
-            coreService.storage.persistent.update(storage);
+            coreService.storage.persistent.update({
+                ...storage,
+                bgCurrent: new Background({
+                    ...storage.bgCurrent,
+                    isSaved: true,
+                    fullSrc: storage.bgCurrent.source === BG_SOURCE.USER
+                        ? `${appVariables.rest.url}/background/user?src=${storage.bgCurrent.id}`
+                        : storage.bgCurrent.downloadLink,
+                    previewSrc: `${appVariables.rest.url}/background/user/get-preview?id=${storage.bgCurrent.id}`,
+                }),
+                bgsStream: (storage.bgsStream || []).map((bg) => new Background({
+                    ...storage.bgCurrent,
+                    isSaved: true,
+                    fullSrc: bg.source === BG_SOURCE.USER
+                        ? `${appVariables.rest.url}/background/user?src=${bg.id}`
+                        : bg.downloadLink,
+                    previewSrc: `${appVariables.rest.url}/background/user/get-preview?id=${bg.id}`,
+                })),
+            });
         }
 
         if (localStorage.getItem('settings')) {
