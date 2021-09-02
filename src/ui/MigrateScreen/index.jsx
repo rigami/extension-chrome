@@ -49,14 +49,20 @@ function MigrateScreen({ onStart }) {
     const migrate = async () => {
         setProgress(0);
 
-        const storage = JSON.parse(localStorage.getItem('storage'));
-        const settings = JSON.parse(localStorage.getItem('settings'));
+        if (localStorage.getItem('storage')) {
+            const storage = JSON.parse(localStorage.getItem('storage'));
 
-        coreService.storage.persistent.update(storage);
-        bookmarksService.settings.update(settings.bookmarks);
-        backgrounds.settings.update(settings.backgrounds);
-        widgets.settings.update(settings.widgets);
-        appService.settings.update(settings.app);
+            coreService.storage.persistent.update(storage);
+        }
+
+        if (localStorage.getItem('settings')) {
+            const settings = JSON.parse(localStorage.getItem('settings'));
+
+            bookmarksService.settings.update(settings.bookmarks);
+            backgrounds.settings.update(settings.backgrounds);
+            widgets.settings.update(settings.widgets);
+            appService.settings.update(settings.app);
+        }
 
         setProgress(25);
 
@@ -76,73 +82,90 @@ function MigrateScreen({ onStart }) {
             return new Promise(((resolve) => file.file(resolve)));
         };
 
-        const allBackgrounds = await BackgroundsUniversalService.getAll();
-        const cacheBackgrounds = await caches.open('backgrounds');
-        let index = 0;
+        let existFolders;
 
-        for await (const background of allBackgrounds) {
-            index += 1;
-            setProgress(25 + 50 * (index / allBackgrounds.length));
-
-            let fullSrc;
-
-            if (background.source === BG_SOURCE.USER) {
-                fullSrc = `${appVariables.rest.url}/background/user?src=${background.id}`;
-                const fullBlob = await getFile(`backgrounds/full/${background.fileName}`);
-                const fullResponse = new Response(fullBlob);
-                await cacheBackgrounds.put(fullSrc, fullResponse);
-            } else {
-                fullSrc = background.downloadLink;
-                await cacheBackgrounds.add(fullSrc);
-            }
-
-            const previewSrc = `${appVariables.rest.url}/background/user/get-preview?id=${background.id}`;
-            const previewBlob = await getFile(`backgrounds/preview/${background.fileName}`);
-            const previewResponse = new Response(previewBlob);
-            await cacheBackgrounds.put(previewSrc, previewResponse);
-
-            await db().put('backgrounds', cloneDeep(new Background({
-                ...background,
-                isSaved: true,
-                fullSrc,
-                previewSrc,
-            })));
-
-            console.log('background:', background);
+        try {
+            existFolders = await new Promise((resolve, reject) => {
+                fs.root.getDirectory('backgrounds', { }, (dir) => resolve(dir), reject);
+            });
+        } catch (e) {
+            existFolders = false;
         }
 
-        const { all: allBookmarks } = await BookmarksUniversalService.query();
-        const cacheIcons = await caches.open('icons');
-        index = 0;
+        if (existFolders) {
+            const allBackgrounds = await BackgroundsUniversalService.getAll();
+            const cacheBackgrounds = await caches.open('backgrounds');
+            let index = 0;
 
-        for await (const bookmark of allBookmarks) {
-            index += 1;
-            setProgress(75 + 20 * (index / allBookmarks.length));
+            for await (const background of allBackgrounds) {
+                index += 1;
+                setProgress(25 + 50 * (index / allBackgrounds.length));
 
-            if (bookmark.icoVariant !== BKMS_VARIANT.SYMBOL) {
-                const iconSrc = `${appVariables.rest.url}/background/get-site-icon?site-url=${bookmark.url}`;
-                const iconBlob = await getFile(`bookmarksIcons/${bookmark.icoFileName}`);
-                const iconResponse = new Response(iconBlob);
-                await cacheIcons.put(iconSrc, iconResponse);
+                let fullSrc;
 
-                await db().put('bookmarks', cloneDeep(new Bookmark({
-                    ...bookmark,
-                    icoUrl: iconSrc,
+                if (background.source === BG_SOURCE.USER) {
+                    fullSrc = `${appVariables.rest.url}/background/user?src=${background.id}`;
+                    const fullBlob = await getFile(`backgrounds/full/${background.fileName}`);
+                    const fullResponse = new Response(fullBlob);
+                    await cacheBackgrounds.put(fullSrc, fullResponse);
+                } else {
+                    fullSrc = background.downloadLink;
+                    await cacheBackgrounds.add(fullSrc);
+                }
+
+                const previewSrc = `${appVariables.rest.url}/background/user/get-preview?id=${background.id}`;
+                const previewBlob = await getFile(`backgrounds/preview/${background.fileName}`);
+                const previewResponse = new Response(previewBlob);
+                await cacheBackgrounds.put(previewSrc, previewResponse);
+
+                await db().put('backgrounds', cloneDeep(new Background({
+                    ...background,
+                    isSaved: true,
+                    fullSrc,
+                    previewSrc,
                 })));
+
+                console.log('background:', background);
             }
 
-            console.log('bookmark:', bookmark);
+            const { all: allBookmarks } = await BookmarksUniversalService.query();
+            const cacheIcons = await caches.open('icons');
+            index = 0;
+
+            for await (const bookmark of allBookmarks) {
+                index += 1;
+                setProgress(75 + 20 * (index / allBookmarks.length));
+
+                if (bookmark.icoVariant !== BKMS_VARIANT.SYMBOL) {
+                    const iconSrc = `${appVariables.rest.url}/background/get-site-icon?site-url=${bookmark.url}`;
+                    const iconBlob = await getFile(`bookmarksIcons/${bookmark.icoFileName}`);
+                    const iconResponse = new Response(iconBlob);
+                    await cacheIcons.put(iconSrc, iconResponse);
+
+                    await db().put('bookmarks', cloneDeep(new Bookmark({
+                        ...bookmark,
+                        icoUrl: iconSrc,
+                    })));
+                }
+
+                console.log('bookmark:', bookmark);
+            }
         }
 
         const migrateToMv3 = await db().getFromIndex('temp', 'name', 'migrate-to-mv3-require');
 
-        await db().delete('temp', migrateToMv3.id);
+        if (migrateToMv3) await db().delete('temp', migrateToMv3.id);
 
         setProgress(97);
 
-        await Promise.allSettled(['backgrounds', 'bookmarksIcons', 'temp'].map((path) => new Promise((resolve, reject) => {
-            fs.root.getDirectory(path, { }, (dir) => dir.removeRecursively(resolve, reject), reject);
-        })));
+        if (existFolders) {
+            await Promise.allSettled(
+                ['backgrounds', 'bookmarksIcons', 'temp']
+                    .map((path) => new Promise((resolve, reject) => {
+                        fs.root.getDirectory(path, {}, (dir) => dir.removeRecursively(resolve, reject), reject);
+                    })),
+            );
+        }
 
         coreService.storage.persistent.update({ migrateToMv3Progress: null });
 

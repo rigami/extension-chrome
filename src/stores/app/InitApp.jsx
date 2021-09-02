@@ -7,7 +7,7 @@ import appVariables from '@/config/appVariables';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useAppService from '@/stores/app/AppStateProvider';
 import MigrateScreen from '@/ui/MigrateScreen';
-import packageJson from '../../../package.json';
+import packageJson from '@/../package.json';
 
 const STATE = {
     PREPARE: 'PREPARE',
@@ -45,18 +45,22 @@ function InitApp({ children }) {
     const service = useBaseStateService();
     const [state, setState] = useState(STATE.PREPARE);
 
+    const checkVersion = () => {
+        if (
+            service.storage.persistent.data?.lastUsageVersion !== packageJson.version
+            && appVariables.notifyNewVersion
+        ) {
+            service.storage.temp.update({ newVersion: true });
+            service.storage.persistent.update({ lastUsageVersion: packageJson.version });
+        }
+    };
+
     useEffect(() => {
         console.log('INIT APP STATE', service.appState);
         if (service.appState === APP_STATE.WORK) {
             if (state !== STATE.FIRST_CONTACT) setState(STATE.DONE);
 
-            if (
-                service.storage.persistent.data?.lastUsageVersion !== packageJson.version
-                && appVariables.notifyNewVersion
-            ) {
-                service.storage.temp.update({ newVersion: true });
-                service.storage.persistent.update({ lastUsageVersion: packageJson.version });
-            }
+            checkVersion();
         } else if (service.appState === APP_STATE.REQUIRE_SETUP) {
             setState(STATE.FIRST_CONTACT);
         } else if (service.appState === APP_STATE.REQUIRE_MIGRATE) {
@@ -73,7 +77,12 @@ function InitApp({ children }) {
                 <FirstLookScreen onStart={() => { setState(STATE.DONE); }} />
             )}
             {state === STATE.MIGRATE && (
-                <MigrateScreen onStart={() => { setState(STATE.DONE); }} />
+                <MigrateScreen
+                    onStart={() => {
+                        setState(STATE.DONE);
+                        checkVersion();
+                    }}
+                />
             )}
         </React.Fragment>
     );

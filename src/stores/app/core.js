@@ -14,6 +14,7 @@ import BrowserAPI from '@/utils/browserAPI';
 import Storage, { StorageConnector } from '@/stores/universal/storage';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import { forceCrash } from '@/ui/CrashCatch';
+import packageJson from '@/../package.json';
 
 const APP_STATE = {
     WAIT: 'WAIT',
@@ -133,7 +134,10 @@ class Core {
         console.timeEnd('Await install storage service');
 
         runInAction(() => {
-            if (this.storage.persistent.data.migrateToMv3Progress) {
+            if (
+                this.storage.persistent.data.migrateToMv3Progress
+                || this.storage.persistent.data.lastUsageVersion !== packageJson.version
+            ) {
                 this.appState = APP_STATE.REQUIRE_MIGRATE;
             } else if (
                 this.storage.persistent.data.factoryResetProgress
