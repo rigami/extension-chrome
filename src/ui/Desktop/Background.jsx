@@ -26,6 +26,7 @@ import BackgroundInfo from '@/ui/Desktop/BackgroundInfo';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import useAppService from '@/stores/app/AppStateProvider';
 import { captureException } from '@sentry/react';
+import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -343,8 +344,8 @@ function Background() {
                             {
                                 title: t('button.remove'),
                                 onClick: () => {
-                                    backgrounds.removeFromLibrary(store.currentBg.id)
-                                        .then(() => backgrounds.nextBG())
+                                    BackgroundsUniversalService.removeFromLibrary(store.currentBg.id)
+                                        .then(() => eventToBackground('backgrounds/nextBg'))
                                         .then(() => enqueueSnackbar({
                                             message: t('removedBrokenBG'),
                                             variant: 'warning',
