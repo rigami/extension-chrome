@@ -14,6 +14,10 @@ const useStyles = makeStyles(() => ({
         background: 'none',
         border: 'none',
     },
+    image: {
+        width: 40,
+        height: 40,
+    },
 }));
 
 function LinkButton(props) {
@@ -68,6 +72,7 @@ function LinkButton(props) {
                     src={icoUrl}
                     alternativeIcon={first(name)?.toUpperCase()}
                     variant={icoVariant === BKMS_VARIANT.POSTER ? BKMS_VARIANT.SYMBOL : icoVariant}
+                    className={classes.image}
                 />
             )}
         </FAPButton>
