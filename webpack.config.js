@@ -133,7 +133,6 @@ module.exports = () => {
                 },
                 {
                     test: /\.svg$/,
-                    exclude: /_src\.svg/,
                     loader: require.resolve('react-svg-loader'),
                     options: { svgo: { plugins: [{ removeViewBox: false }] } },
                 },
@@ -148,7 +147,7 @@ module.exports = () => {
                     sideEffects: true,
                 },
                 {
-                    test: /\.(woff(2)?|ttf|eot|png|jpg|gif)(\?v=\d+\.\d+\.\d+)?$|_src\.svg/,
+                    test: /\.(woff(2)?|ttf|eot|png|jpg|gif)(\?v=\d+\.\d+\.\d+)?$/,
                     use: [
                         {
                             loader: require.resolve('file-loader'),

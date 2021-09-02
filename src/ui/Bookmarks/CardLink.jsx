@@ -20,7 +20,6 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import { observer } from 'mobx-react-lite';
 import { getDomain } from '@/utils/localSiteParse';
-import maskImageSrc from '@/images/bkms_mask_src.svg';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -37,10 +36,7 @@ const useStyles = makeStyles((theme) => ({
             pointerEvents: 'auto',
         },
     },
-    middle: {
-        height: (theme.shape.dataCard.height + theme.spacing(2)) * 2 - theme.spacing(2),
-        maskImage: `url(${maskImageSrc})`,
-    },
+    middle: { height: (theme.shape.dataCard.height + theme.spacing(2)) * 2 - theme.spacing(2) },
     large: { height: (theme.shape.dataCard.height + theme.spacing(2)) * 3 - theme.spacing(2) },
     rootActionWrapper: {
         width: '100%',

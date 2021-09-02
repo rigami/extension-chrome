@@ -8,7 +8,6 @@ import { LinkRounded as LinkIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { BKMS_VARIANT } from '@/enum';
-import maskImageSrc from '@/images/bkms_mask_src.svg';
 
 const useStyles = makeStyles((theme) => ({
     roundedIconStub: { borderRadius: theme.shape.borderRadiusBold },
@@ -18,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 800,
         backgroundColor: theme.palette.background.backdrop,
         fontFamily: theme.typography.primaryFontFamily,
-        maskImage: `url(${maskImageSrc})`,
     },
     skeleton: { backgroundColor: theme.palette.background.backdrop },
 }));
