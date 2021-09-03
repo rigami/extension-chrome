@@ -604,7 +604,7 @@ class BackgroundsServerService {
         }
 
         reaction(
-            () => JSON.stringify(this.storage.data.backgroundStreamQuery),
+            () => this.storage.data.backgroundStreamQuery.value || this.storage.data.backgroundStreamQuery.id,
             () => {
                 console.log('[backgrounds] Change stream query. Reload worker...');
                 this.nextBGStream()
