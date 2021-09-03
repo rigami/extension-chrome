@@ -15,7 +15,6 @@ import { first } from 'lodash';
 import appVariables from '@/config/appVariables';
 import fetchData from '@/utils/helpers/fetchData';
 import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrounds/service';
-import getPreview from '@/utils/createPreview';
 import { eventToApp } from '@/stores/universal/serviceBus';
 import { captureException } from '@sentry/react';
 
@@ -566,17 +565,6 @@ class BackgroundsServerService {
         );
 
         reaction(
-            () => JSON.stringify(this.storage.data.backgroundStreamQuery),
-            () => {
-                this.nextBGStream()
-                    .catch((e) => {
-                        console.error(e);
-                        captureException(e);
-                    });
-            },
-        );
-
-        reaction(
             () => first(this.storage.data.bgsStream)?.state,
             () => {
                 const bg = first(this.storage.data.bgsStream);
@@ -601,9 +589,11 @@ class BackgroundsServerService {
             },
         );
 
-        if (this.settings.changeInterval && this.storage.data.lastUsageVersion) this._schedulerSwitch();
-
-        if (!this.storage.data.lastUsageVersion && !this.storage.data.backgroundStreamQuery) {
+        if (
+            !this.storage.data.lastUsageVersion
+            && this.settings.selectionMethod === BG_SELECT_MODE.STREAM
+            && !this.storage.data.backgroundStreamQuery
+        ) {
             console.log('[backgrounds] Not set stream query. Set default...');
             this.storage.update({
                 backgroundStreamQuery: {
@@ -612,6 +602,20 @@ class BackgroundsServerService {
                 },
             });
         }
+
+        reaction(
+            () => JSON.stringify(this.storage.data.backgroundStreamQuery),
+            () => {
+                console.log('[backgrounds] Change stream query. Reload worker...');
+                this.nextBGStream()
+                    .catch((e) => {
+                        console.error(e);
+                        captureException(e);
+                    });
+            },
+        );
+
+        if (this.settings.changeInterval && this.storage.data.lastUsageVersion) this._schedulerSwitch();
     }
 }
 
