@@ -136,7 +136,10 @@ class Core {
         runInAction(() => {
             if (
                 this.storage.persistent.data.migrateToMv3Progress
-                || this.storage.persistent.data.lastUsageVersion !== packageJson.version
+                || (
+                    this.storage.persistent.data.lastUsageVersion
+                    && this.storage.persistent.data.lastUsageVersion !== packageJson.version
+                )
             ) {
                 this.appState = APP_STATE.REQUIRE_MIGRATE;
             } else if (

@@ -237,10 +237,12 @@ export default ({ upgrade }) => ({
             store.createIndex('name', 'name', { unique: true });
             store.createIndex('value', 'value', { unique: false });
 
-            await store.add({
-                name: 'migrate-to-mv3-require',
-                value: true,
-            });
+            if (oldVersion !== 0) {
+                await store.add({
+                    name: 'migrate-to-mv3-require',
+                    value: true,
+                });
+            }
         }
 
         upgrade();

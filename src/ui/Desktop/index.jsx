@@ -138,6 +138,7 @@ function Desktop() {
         isRender: appService.activity !== ACTIVITY.BOOKMARKS,
         stickWidgetsToBottom: appService.activity !== ACTIVITY.DESKTOP,
     }));
+
     const contextMenu = useContextMenu(() => [
         ...(BUILD === 'full' ? [
             new ContextMenuItem({
