@@ -23,7 +23,7 @@ const defaultWizardSettings = {
     activity: ACTIVITY.DESKTOP,
     useTime: true,
     useDate: true,
-    fapStyle: FAP_STYLE.PRODUCTIVITY,
+    fapStyle: BUILD === 'full' ? FAP_STYLE.PRODUCTIVITY : FAP_STYLE.HIDDEN,
     userName: undefined,
 };
 

@@ -61,6 +61,7 @@ class CrashCatch extends React.Component {
     }
 
     componentDidCatch(error, errorInfo) {
+        console.error('APP DOWN ERROR:', error, errorInfo);
     }
 
     render() {

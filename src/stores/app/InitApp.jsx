@@ -30,7 +30,9 @@ function ApplyWizardSettingsProvider({ children }) {
         wizardSettings: null,
         userName: wizardSettings.userName,
     });
-    bookmarksService.settings.update({ fapStyle: wizardSettings.fapStyle });
+    if (BUILD === 'full') {
+        bookmarksService.settings.update({ fapStyle: wizardSettings.fapStyle });
+    }
     widgets.settings.update({
         dtwUseDate: wizardSettings.useDate,
         dtwUseTime: wizardSettings.useTime,

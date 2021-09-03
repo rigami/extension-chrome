@@ -227,26 +227,28 @@ function DesktopEnvironment({ defaultSettings, onMutationSettings }) {
                         />
                     </FormGroup>
                 </FormControl>
-                <FormControl component="fieldset" className={classes.marginTop}>
-                    <FormLabel component="legend">{t('desktopEnvironmentQuestion.fap')}</FormLabel>
-                    <RadioGroup value={fapStyle} onChange={(event) => setFapStyle(event.target.value)}>
-                        <FormControlLabel
-                            value={FAP_STYLE.HIDDEN}
-                            control={<Radio />}
-                            label={t('desktopEnvironmentQuestion.button.disableFap')}
-                        />
-                        <FormControlLabel
-                            value={FAP_STYLE.PRODUCTIVITY}
-                            control={<Radio />}
-                            label={t('desktopEnvironmentQuestion.button.productivityFap')}
-                        />
-                        <FormControlLabel
-                            value={FAP_STYLE.CONTAINED}
-                            control={<Radio />}
-                            label={t('desktopEnvironmentQuestion.button.zenFap')}
-                        />
-                    </RadioGroup>
-                </FormControl>
+                {BUILD === 'full' && (
+                    <FormControl component="fieldset" className={classes.marginTop}>
+                        <FormLabel component="legend">{t('desktopEnvironmentQuestion.fap')}</FormLabel>
+                        <RadioGroup value={fapStyle} onChange={(event) => setFapStyle(event.target.value)}>
+                            <FormControlLabel
+                                value={FAP_STYLE.HIDDEN}
+                                control={<Radio />}
+                                label={t('desktopEnvironmentQuestion.button.disableFap')}
+                            />
+                            <FormControlLabel
+                                value={FAP_STYLE.PRODUCTIVITY}
+                                control={<Radio />}
+                                label={t('desktopEnvironmentQuestion.button.productivityFap')}
+                            />
+                            <FormControlLabel
+                                value={FAP_STYLE.CONTAINED}
+                                control={<Radio />}
+                                label={t('desktopEnvironmentQuestion.button.zenFap')}
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                )}
             </Box>
         </Box>
     );
@@ -277,7 +279,7 @@ function Greeting({ defaultSettings, onMutationSettings, onNext, onDisabledNext 
 }
 
 const questions = [
-    {
+    BUILD === 'full' && {
         id: 'defaultActivity',
         ui: DefaultActivity,
     },
@@ -285,11 +287,11 @@ const questions = [
         id: 'desktopEnvironment',
         ui: DesktopEnvironment,
     },
-    {
+    BUILD === 'full' && {
         id: 'greeting',
         ui: Greeting,
     },
-];
+].filter((isExist) => isExist);
 
 function WizardInstall({ defaultSettings, onCancel, onEnd }) {
     const classes = useStyles();

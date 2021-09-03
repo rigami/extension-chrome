@@ -1,15 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import {
-    ACTIVITY, BKMS_FAP_POSITION, BKMS_FAP_STYLE, SERVICE_STATE,
+    ACTIVITY,
+    BKMS_FAP_POSITION,
 } from '@/enum';
 import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
-import { useTheme } from '@material-ui/styles';
 import { useResizeDetector } from 'react-resize-detector';
 import useAppService from '@/stores/app/AppStateProvider';
 import useBaseStateService from '@/stores/app/BaseStateProvider';
@@ -112,7 +112,6 @@ const useStyles = makeStyles((theme) => ({
 
 function Widgets({ stickToBottom }) {
     const classes = useStyles();
-    const theme = useTheme();
     const service = useBaseStateService();
     const appService = useAppService();
     const { widgets } = appService;
@@ -124,44 +123,21 @@ function Widgets({ stickToBottom }) {
     }, []);
 
     const { height: heightWidget, ref: refWidget } = useResizeDetector({ onResize });
-    const [state, setState] = useState(bookmarksService.settings.state);
 
-    useEffect(() => {
-        setState(bookmarksService.settings.state);
-    }, [bookmarksService.settings.state]);
-
-    if (BUILD === 'full' && state !== SERVICE_STATE.DONE) return null;
-
-    let offset = 0;
     let positionOffset = '';
 
     if (BUILD === 'full') {
         if (
             (
                 bookmarksService.fapIsDisplay
-                && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED
+                && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
             ) || appService.activity === ACTIVITY.FAVORITES
         ) {
-            offset = 40 + theme.spacing(6) + theme.spacing(2.5);
-        } else if (
-            bookmarksService.fapIsDisplay
-            && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.TRANSPARENT
-        ) {
-            offset = 40 + theme.spacing(6);
-        } else if (
-            bookmarksService.fapIsDisplay
-            && bookmarksService.settings.fapStyle === BKMS_FAP_STYLE.PRODUCTIVITY
-        ) {
-            offset = 40 + theme.spacing(6);
-        }
-
-        if (
-            (bookmarksService.fapIsDisplay
-                && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM)
-            || appService.activity === ACTIVITY.FAVORITES
-        ) {
             positionOffset = 'bottom';
-        } else if (bookmarksService.fapIsDisplay && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP) {
+        } else if (
+            bookmarksService.fapIsDisplay
+            && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
+        ) {
             positionOffset = 'top';
         }
     }
