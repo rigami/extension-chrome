@@ -22,12 +22,16 @@ module.exports = () => {
         'host_permissions': ['http://danilkinkin.com/', '*://*/*'],
         'content_security_policy': {
             'extension_pages':
-                'default-src \'self\' http://localhost:8097; '
-                + 'connect-src * data: blob: \'unsafe-inline\'; '
-                + 'style-src \'unsafe-inline\'; '
+                'default-src \'self\';'
+                + 'script-src http://localhost:8097/;'
+                + 'script-src-elem \'self\' http://localhost:8097/;'
+                + 'style-src \'unsafe-inline\';'
+                + 'object-src \'none\';'
                 + 'img-src *;'
                 + 'font-src *;'
-                + 'media-src * data: blob: \'unsafe-inline\'',
+                + 'connect-src \'unsafe-inline\' data: blob: *;'
+                + 'form-action \'self\';'
+                + 'media-src \'unsafe-inline\' data: blob: *;',
         },
     };
 
