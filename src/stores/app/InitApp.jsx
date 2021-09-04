@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import useBaseStateService from '@/stores/app/BaseStateProvider';
 import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
 import FirstLookScreen from '@/ui/FirstLookScreen';
@@ -8,6 +7,7 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useAppService from '@/stores/app/AppStateProvider';
 import MigrateScreen from '@/ui/MigrateScreen';
 import packageJson from '@/../package.json';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const STATE = {
     PREPARE: 'PREPARE',
@@ -17,7 +17,7 @@ const STATE = {
 };
 
 function ApplyWizardSettingsProvider({ children }) {
-    const coreService = useBaseStateService();
+    const coreService = useCoreService();
     const bookmarksService = useBookmarksService();
     const appService = useAppService();
     const { widgets } = appService;
@@ -44,31 +44,30 @@ function ApplyWizardSettingsProvider({ children }) {
 }
 
 function InitApp({ children }) {
-    const service = useBaseStateService();
+    const coreService = useCoreService();
     const [state, setState] = useState(STATE.PREPARE);
 
     const checkVersion = () => {
         if (
-            service.storage.persistent.data?.lastUsageVersion !== packageJson.version
+            coreService.storage.persistent.data?.lastUsageVersion !== packageJson.version
             && appVariables.notifyNewVersion
         ) {
-            service.storage.temp.update({ newVersion: true });
-            service.storage.persistent.update({ lastUsageVersion: packageJson.version });
+            coreService.storage.temp.update({ newVersion: true });
+            coreService.storage.persistent.update({ lastUsageVersion: packageJson.version });
         }
     };
 
     useEffect(() => {
-        console.log('INIT APP STATE', service.appState);
-        if (service.appState === APP_STATE.WORK) {
-            if (state !== STATE.FIRST_CONTACT) setState(STATE.DONE);
-
+        console.log('INIT APP STATE', coreService.appState);
+        if (coreService.appState === APP_STATE.WORK) {
             checkVersion();
-        } else if (service.appState === APP_STATE.REQUIRE_SETUP) {
+            if (state !== STATE.FIRST_CONTACT) setState(STATE.DONE);
+        } else if (coreService.appState === APP_STATE.REQUIRE_SETUP) {
             setState(STATE.FIRST_CONTACT);
-        } else if (service.appState === APP_STATE.REQUIRE_MIGRATE) {
+        } else if (coreService.appState === APP_STATE.REQUIRE_MIGRATE) {
             setState(STATE.MIGRATE);
         }
-    }, [service.appState]);
+    }, [coreService.appState]);
 
     console.log('state:', state);
 
@@ -81,8 +80,8 @@ function InitApp({ children }) {
             {state === STATE.MIGRATE && (
                 <MigrateScreen
                     onStart={() => {
-                        setState(STATE.DONE);
                         checkVersion();
+                        setState(STATE.DONE);
                     }}
                 />
             )}

@@ -139,7 +139,7 @@ class TempStorage {
         return this._data;
     }
 
-    @action
+    @action.bound
     update(changeData = {}) {
         assign(this._data, changeData);
     }
