@@ -116,13 +116,25 @@ module.exports = () => {
         },
         devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'cheap-source-map',
         devServer: {
-            contentBase: path.resolve(__dirname, 'public'),
-            hot: true,
+            hot: 'only',
             open: false,
-            overlay: true,
-            writeToDisk: true,
-            disableHostCheck: true,
+            allowedHosts: 'all',
             port: 3000,
+            devMiddleware: {
+                index: true,
+                writeToDisk: true,
+            },
+            client: {
+                overlay: {
+                    errors: true,
+                    warnings: false,
+                },
+                progress: true,
+            },
+            static: {
+                directory: path.resolve(__dirname, 'public'),
+                watch: true,
+            },
         },
         plugins,
         module: {
