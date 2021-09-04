@@ -8,13 +8,13 @@ import {
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
-import EventBus from '@/utils/eventBus';
 import { captureException } from '@sentry/react';
 import BrowserAPI from '@/utils/browserAPI';
 import Storage, { StorageConnector } from '@/stores/universal/storage';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
-import { forceCrash } from '@/ui/CrashCatch';
+import forceCrash from '@/utils/helpers/forceCrash';
 import packageJson from '@/../package.json';
+import localEventBus from '@/stores/app/localEventBus';
 
 const APP_STATE = {
     WAIT: 'WAIT',
@@ -95,7 +95,7 @@ class Core {
         this.appState = APP_STATE.INIT;
         initBus(side || DESTINATION.APP);
         this.globalEventBus = BusService();
-        this.localEventBus = new EventBus();
+        this.localEventBus = localEventBus;
         this.storage = new Storage('storage');
 
         this.globalEventBus.on('system/ping', ({ data, callback }) => {

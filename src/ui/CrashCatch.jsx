@@ -2,7 +2,7 @@ import React from 'react';
 import Stub from '@/ui-components/Stub';
 import { alpha, withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import EventBus from '@/utils/eventBus';
+import localEventBus from '@/stores/app/localEventBus';
 
 const styles = (theme) => ({
     stub: {
@@ -30,12 +30,6 @@ const styles = (theme) => ({
     },
 });
 
-const crashEventBus = new EventBus();
-
-function forceCrash(error) {
-    crashEventBus.call('forceCrash', error);
-}
-
 class CrashCatch extends React.Component {
     constructor(props) {
         super(props);
@@ -44,7 +38,7 @@ class CrashCatch extends React.Component {
             error: null,
         };
 
-        crashEventBus.on('forceCrash', (error) => {
+        localEventBus.on('system.forceCrash', (error) => {
             this.setState({
                 hasError: true,
                 error,
@@ -89,4 +83,3 @@ class CrashCatch extends React.Component {
 }
 
 export default withStyles(styles)(CrashCatch);
-export { forceCrash };

@@ -1,7 +1,7 @@
 import { openDB } from 'idb/with-async-ittr.js';
 import dbConfig from '@/config/db';
 import { SERVICE_STATE } from '@/enum';
-import { forceCrash } from '@/ui/CrashCatch';
+import forceCrash from '@/utils/helpers/forceCrash';
 import appVariables from '../config/appVariables';
 
 let _db = null;
