@@ -130,7 +130,7 @@ function WeatherWidget({ onSelect }) {
                         || (
                             coreService.storage.persistent.data.location
                             && coreService.storage.persistent.data.location?.manual
-                            && ('weather.region.select.manual')
+                            && t('weather.region.select.manual')
                         )
                         || t('weather.region.select.failed')
                     )}
