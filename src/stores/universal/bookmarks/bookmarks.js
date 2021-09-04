@@ -2,11 +2,12 @@ import { action } from 'mobx';
 import db from '@/utils/db';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
-import getImageBlob from '@/utils/getImageBlob';
 import { search as searchLight } from '@/stores/universal/bookmarks/search';
 import { cloneDeep } from 'lodash';
 import { captureException } from '@sentry/react';
 import appVariables from '@/config/appVariables';
+import getPreview from '@/utils/createPreview';
+import { BG_TYPE } from '@/enum';
 import { SearchQuery } from './searchQuery';
 
 class BookmarksUniversalService {
@@ -93,7 +94,7 @@ class BookmarksUniversalService {
             if (imageBase64) {
                 blob = await (await fetch(imageBase64)).blob();
             } else {
-                blob = await getImageBlob(sourceIcoUrl);
+                blob = await getPreview(sourceIcoUrl, BG_TYPE.IMAGE, { size: 'full' });
             }
 
             const cache = await caches.open('icons');

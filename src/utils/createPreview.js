@@ -94,6 +94,8 @@ const getPreview = async (fileOrSrc, type, { size = 'preview', antiAliasing = tr
     let drawWidth;
 
     if (~fileType.indexOf(BG_TYPE.VIDEO)) {
+        if (TARGET === 'server') throw new Error('Not support create preview of video in service worker');
+
         await new Promise((resolve, reject) => {
             const video = document.createElement('video');
             video.setAttribute('src', URL.createObjectURL(blobFile));

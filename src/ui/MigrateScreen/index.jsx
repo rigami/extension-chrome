@@ -13,7 +13,6 @@ import Logo from '@/ui-components/Logo';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import { BG_SOURCE, BKMS_VARIANT } from '@/enum';
 import db from '@/utils/db';
@@ -21,7 +20,6 @@ import { cloneDeep } from 'lodash';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
-import getImageBlob from '@/utils/getImageBlob';
 
 const useStyles = makeStyles((theme) => ({
     root: {

@@ -16,6 +16,7 @@ module.exports = {
         'PRODUCTION_ENV': true,
         'COLLECT_LOGS': true,
         'BUILD': true,
+        'TARGET:': true,
     },
     'settings': {
         'import/resolver': {

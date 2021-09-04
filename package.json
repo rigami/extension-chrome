@@ -1,13 +1,15 @@
 {
     "name": "rigami",
-    "version": "1.0.20",
-    "description": "Rigami",
+    "version": "1.0.21",
+    "description": "rigami",
     "main": "index.js",
     "scripts": {
         "lint": "eslint --fix --ext .jsx,.js,.json --ignore-path .gitignore .",
         "release": "git tag -a v$npm_package_version && git push --tags",
-        "build": "NODE_ENV=production webpack",
-        "build:clear": "yarn rimraf ./release/* && mkdirp ./release",
+        "build": "NODE_ENV=production yarn build:clear && webpack",
+        "dev": "NODE_ENV=development yarn build:clear && webpack-cli",
+        "build:clear": "yarn rimraf ./build/* && mkdirp ./build",
+        "release:clear": "yarn rimraf ./release/* && mkdirp ./release",
         "build:zip": "zip -r release/rigami-$BUILD-$npm_package_version.zip build",
         "prepare": "husky install",
         "react-devtools": "react-devtools",
@@ -15,20 +17,20 @@
         "bump:patch": "yarn version --patch --no-commit --no-git-tag-version && git add ./package.json",
         "bump:minor": "yarn version --minor --no-commit --no-git-tag-version && git add ./package.json",
         "bump:major": "yarn version --major --no-commit --no-git-tag-version && git add ./package.json",
-        "dev-full": "NODE_ENV=development webpack-cli serve",
-        "dev-full:prod-env": "NODE_ENV=development PRODUCTION_ENV=true webpack-cli serve",
-        "dev-wallpapers": "NODE_ENV=development BUILD=wallpapers webpack-cli serve",
-        "dev-wallpapers:prod-env": "NODE_ENV=development BUILD=wallpapers PRODUCTION_ENV=true webpack-cli serve",
+        "dev-full": "yarn dev",
+        "dev-full:prod-env": "PRODUCTION_ENV=true yarn dev",
+        "dev-wallpapers": "BUILD=wallpapers yarn dev",
+        "dev-wallpapers:prod-env": "BUILD=wallpapers PRODUCTION_ENV=true yarn dev",
         "build-full": "BUILD=full yarn build",
         "build-full:release-build": "COLLECT_LOGS=true yarn build-full && BUILD=full yarn build:zip",
         "build-full:analyze": "ANALYZE=true yarn build",
         "build-wallpapers": "BUILD=wallpapers yarn build",
         "build-wallpapers:release-build": "COLLECT_LOGS=true yarn build-wallpapers && BUILD=wallpapers yarn build:zip",
         "build-wallpapers:analyze": "ANALYZE=true yarn build-wallpapers",
-        "build:release": "yarn build:clear && yarn build-full:release-build && yarn build-wallpapers:release-build && yarn release"
+        "build:release": "yarn release:clear && yarn build-full:release-build && yarn build-wallpapers:release-build && yarn release"
     },
     "browserslist": [
-        "chrome > 85"
+        "chrome > 88"
     ],
     "repository": "https://github.com/rigami/extension-chrome",
     "author": "Danilkinkin <Danilkinkin@gmail.com>",
@@ -99,12 +101,7 @@
         "style-loader": "^3.1.0",
         "webpack": "^5.52.0",
         "webpack-bundle-analyzer": "^4.4.2",
-        "webpack-cli": "^4.8.0",
-        "webpack-dev-server": "^4.1.0",
-        "workbox-core": "^6.2.4",
-        "workbox-precaching": "^6.2.4",
-        "workbox-routing": "^6.2.4",
-        "workbox-webpack-plugin": "^6.2.4"
+        "webpack-cli": "^4.8.0"
     },
     "sideEffects": false
 }
