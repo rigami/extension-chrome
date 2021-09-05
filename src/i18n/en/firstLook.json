@@ -46,5 +46,5 @@
     "SAVE_BG": "Saving background...",
     "DONE": "Done!"
   },
-  "migrate": "Migrate. Please wait..."
+  "migrate": "Migrate. Please wait... Don't close the tab"
 }

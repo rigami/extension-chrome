@@ -175,12 +175,16 @@ function MigrateScreen({ onStart }) {
         setProgress(97);
 
         if (existFolders) {
-            await Promise.allSettled(
-                ['backgrounds', 'bookmarksIcons', 'temp']
-                    .map((path) => new Promise((resolve, reject) => {
-                        fs.root.getDirectory(path, {}, (dir) => dir.removeRecursively(resolve, reject), reject);
-                    })),
-            );
+            try {
+                await Promise.allSettled(
+                    ['backgrounds', 'bookmarksIcons', 'temp']
+                        .map((path) => new Promise((resolve, reject) => {
+                            fs.root.getDirectory(path, {}, (dir) => dir.removeRecursively(resolve, reject), reject);
+                        })),
+                );
+            } catch (e) {
+                console.warn(e);
+            }
         }
 
         coreService.storage.persistent.update({ migrateToMv3Progress: null });
