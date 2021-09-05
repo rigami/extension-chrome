@@ -102,7 +102,7 @@ function MigrateScreen({ onStart }) {
 
         try {
             existFolders = await new Promise((resolve, reject) => {
-                fs.root.getDirectory('backgrounds', { }, (dir) => resolve(dir), reject);
+                fs.root.getDirectory('bookmarksIcons', { }, (dir) => resolve(dir), reject);
             });
         } catch (e) {
             existFolders = false;
@@ -117,29 +117,33 @@ function MigrateScreen({ onStart }) {
                 index += 1;
                 setProgress(25 + 50 * (index / allBackgrounds.length));
 
-                let fullSrc;
+                try {
+                    let fullSrc;
 
-                if (background.source === BG_SOURCE.USER) {
-                    fullSrc = `${appVariables.rest.url}/background/user?src=${background.id}`;
-                    const fullBlob = await getFile(`backgrounds/full/${background.fileName}`);
-                    const fullResponse = new Response(fullBlob);
-                    await cacheBackgrounds.put(fullSrc, fullResponse);
-                } else {
-                    fullSrc = background.downloadLink;
-                    await cacheBackgrounds.add(fullSrc);
+                    if (background.source === BG_SOURCE.USER) {
+                        fullSrc = `${appVariables.rest.url}/background/user?src=${background.id}`;
+                        const fullBlob = await getFile(`backgrounds/full/${background.fileName}`);
+                        const fullResponse = new Response(fullBlob);
+                        await cacheBackgrounds.put(fullSrc, fullResponse);
+                    } else {
+                        fullSrc = background.downloadLink;
+                        await cacheBackgrounds.add(fullSrc);
+                    }
+
+                    const previewSrc = `${appVariables.rest.url}/background/user/get-preview?id=${background.id}`;
+                    const previewBlob = await getFile(`backgrounds/preview/${background.fileName}`);
+                    const previewResponse = new Response(previewBlob);
+                    await cacheBackgrounds.put(previewSrc, previewResponse);
+
+                    await db().put('backgrounds', cloneDeep(new Background({
+                        ...background,
+                        isSaved: true,
+                        fullSrc,
+                        previewSrc,
+                    })));
+                } catch (e) {
+                    console.error(e);
                 }
-
-                const previewSrc = `${appVariables.rest.url}/background/user/get-preview?id=${background.id}`;
-                const previewBlob = await getFile(`backgrounds/preview/${background.fileName}`);
-                const previewResponse = new Response(previewBlob);
-                await cacheBackgrounds.put(previewSrc, previewResponse);
-
-                await db().put('backgrounds', cloneDeep(new Background({
-                    ...background,
-                    isSaved: true,
-                    fullSrc,
-                    previewSrc,
-                })));
 
                 console.log('background:', background);
             }
@@ -151,15 +155,23 @@ function MigrateScreen({ onStart }) {
             for await (const bookmark of allBookmarks) {
                 index += 1;
                 setProgress(75 + 20 * (index / allBookmarks.length));
+                console.log('bookmark check:', bookmark);
 
                 if (bookmark.icoVariant !== BKMS_VARIANT.SYMBOL) {
                     const iconSrc = `${appVariables.rest.url}/background/get-site-icon?site-url=${bookmark.url}`;
-                    const iconBlob = await getFile(`bookmarksIcons/${bookmark.icoFileName}`);
-                    const iconResponse = new Response(iconBlob);
-                    await cacheIcons.put(iconSrc, iconResponse);
+                    let iconBlob;
+
+                    try {
+                        iconBlob = await getFile(`bookmarksIcons/${bookmark.icoFileName}`);
+                        const iconResponse = new Response(iconBlob);
+                        await cacheIcons.put(iconSrc, iconResponse);
+                    } catch (e) {
+                        console.warn(e);
+                    }
 
                     await db().put('bookmarks', cloneDeep(new Bookmark({
                         ...bookmark,
+                        icoVariant: iconBlob ? bookmark.icoVariant : BKMS_VARIANT.SYMBOL,
                         icoUrl: iconSrc,
                     })));
                 }
