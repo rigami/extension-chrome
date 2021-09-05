@@ -1,13 +1,13 @@
 {
     "name": "rigami",
-    "version": "1.0.21",
+    "version": "1.0.23",
     "description": "rigami",
     "main": "index.js",
     "scripts": {
         "lint": "eslint --fix --ext .jsx,.js,.json --ignore-path .gitignore .",
         "release": "git tag -a v$npm_package_version && git push --tags",
-        "build": "NODE_ENV=production yarn build:clear && webpack",
-        "dev": "NODE_ENV=development yarn build:clear && webpack-cli",
+        "build": "yarn build:clear && NODE_ENV=production webpack",
+        "dev": "yarn build:clear && NODE_ENV=development webpack-cli",
         "build:clear": "yarn rimraf ./build/* && mkdirp ./build",
         "release:clear": "yarn rimraf ./release/* && mkdirp ./release",
         "build:zip": "zip -r release/rigami-$BUILD-$npm_package_version.zip build",
@@ -27,7 +27,7 @@
         "build-wallpapers": "BUILD=wallpapers yarn build",
         "build-wallpapers:release-build": "COLLECT_LOGS=true yarn build-wallpapers && BUILD=wallpapers yarn build:zip",
         "build-wallpapers:analyze": "ANALYZE=true yarn build-wallpapers",
-        "build:release": "yarn release:clear && yarn build-full:release-build && yarn build-wallpapers:release-build && yarn release"
+        "build:release": "yarn release:clear && yarn build-full:release-build && yarn build-wallpapers:release-build"
     },
     "browserslist": [
         "chrome > 88"

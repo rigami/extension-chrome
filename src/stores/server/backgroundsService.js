@@ -604,8 +604,9 @@ class BackgroundsServerService {
         }
 
         reaction(
-            () => this.storage.data.backgroundStreamQuery.value || this.storage.data.backgroundStreamQuery.id,
+            () => this.storage.data.backgroundStreamQuery?.value || this.storage.data.backgroundStreamQuery?.id,
             () => {
+                if (!this.storage.data.backgroundStreamQuery) return;
                 console.log('[backgrounds] Change stream query. Reload worker...');
                 this.nextBGStream()
                     .catch((e) => {
