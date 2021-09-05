@@ -9,7 +9,7 @@ import useCoreService, { Provider as BaseStateProvider } from '@/stores/app/Base
 import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
-import initSentry from '@/config/sentry';
+import initSentry from '@/config/sentry/app';
 import * as Sentry from '@sentry/react';
 import Stub from '@/ui-components/Stub';
 import Nest from '@/utils/helpers/Nest';

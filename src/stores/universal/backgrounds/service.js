@@ -3,7 +3,7 @@ import { eventToApp } from '@/stores/universal/serviceBus';
 import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import { BG_SOURCE } from '@/enum';
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import { cloneDeep } from 'lodash';
 import Background from './entities/background';
 

@@ -1,5 +1,5 @@
 import { BG_SOURCE, BG_TYPE } from '@/enum';
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import { omit } from 'lodash';
 
 async function upgradeOrCreateBackgrounds(db, transaction, oldVersion, newVersion) {

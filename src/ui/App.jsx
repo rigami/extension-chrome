@@ -13,7 +13,7 @@ import { Provider as AppStateProvider } from '@/stores/app/AppStateProvider';
 import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import { Provider as ContextMenuProvider } from '@/stores/app/ContextMenuProvider';
 import InitApp, { ApplyWizardSettingsProvider } from '@/stores/app/InitApp';
-import initSentry from '@/config/sentry';
+import initSentry from '@/config/sentry/app';
 import * as Sentry from '@sentry/react';
 import FabMenu from '@/ui/Menu/FabMenu';
 import Menu from '@/ui/Menu';

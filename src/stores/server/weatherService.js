@@ -4,7 +4,7 @@ import { eventToApp } from '@/stores/universal/serviceBus';
 import { FETCH } from '@/enum';
 import WeatherLocation from '@/entities/WeatherLocation';
 import Weather from '@/entities/Weather';
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import OpenWeatherMap from '@/stores/universal/weather/connectors/OpenWeatherMap';
 
 class WeatherService {

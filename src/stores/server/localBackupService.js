@@ -10,7 +10,7 @@ import appVariables from '@/config/appVariables';
 import { omit, map } from 'lodash';
 import JSZip from 'jszip';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import fetchData from '@/utils/helpers/fetchData';
 import { StorageConnector } from '@/stores/universal/storage';
 import { BG_TYPE } from '@/enum';

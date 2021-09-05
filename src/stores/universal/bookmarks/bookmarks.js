@@ -4,7 +4,7 @@ import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import { search as searchLight } from '@/stores/universal/bookmarks/search';
 import { cloneDeep } from 'lodash';
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import appVariables from '@/config/appVariables';
 import getPreview from '@/utils/createPreview';
 import { BG_TYPE } from '@/enum';

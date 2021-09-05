@@ -121,6 +121,10 @@ const serverConfig = () => {
             filename: '[name].js',
             path: path.resolve(__dirname, 'build'),
         },
+        optimization: {
+            usedExports: true,
+            splitChunks: false,
+        },
     };
 };
 

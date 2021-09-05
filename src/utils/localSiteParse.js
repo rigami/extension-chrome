@@ -1,5 +1,5 @@
 import { BKMS_VARIANT } from '@/enum';
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import { startsWith } from 'lodash';
 
 function getDomain(url) {

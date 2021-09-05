@@ -4,11 +4,11 @@ import {
     makeAutoObservable,
     makeObservable,
     observable,
-    runInAction, toJS,
+    runInAction,
 } from 'mobx';
 import { assign, throttle } from 'lodash';
 import BrowserAPI from '@/utils/browserAPI';
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 import { SERVICE_STATE } from '@/enum';
 
 class StorageConnector {

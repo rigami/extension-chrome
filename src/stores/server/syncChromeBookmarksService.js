@@ -6,7 +6,7 @@ import { makeAutoObservable } from 'mobx';
 import { first } from 'lodash';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
-import { captureException } from '@sentry/react';
+import { captureException } from '@sentry/browser';
 
 class SyncChromeBookmarksService {
     core;
