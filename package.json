@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "1.0.25",
+    "version": "1.0.26",
     "description": "rigami",
     "main": "index.js",
     "scripts": {
@@ -27,7 +27,7 @@
         "build-wallpapers": "BUILD=wallpapers yarn build",
         "build-wallpapers:release-build": "COLLECT_LOGS=true yarn build-wallpapers && BUILD=wallpapers yarn build:zip",
         "build-wallpapers:analyze": "ANALYZE=true yarn build-wallpapers",
-        "build:release": "yarn release:clear && yarn build-full:release-build && yarn build-wallpapers:release-build"
+        "build:release": "yarn release:clear && yarn build-full:release-build && yarn build-wallpapers:release-build && yarn release"
     },
     "browserslist": [
         "chrome > 88"
