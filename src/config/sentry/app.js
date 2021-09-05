@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+import { init, setTag, setUser } from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import packageFile from '@/../package.json';
 import { StorageConnector } from '@/stores/universal/storage';
@@ -28,7 +28,7 @@ const beforeBreadcrumb = (breadcrumb, hint) => {
 export default (destination) => {
     if (!COLLECT_LOGS) return;
 
-    Sentry.init({
+    init({
         dsn: 'https://dcf285a0b58e41f287ed4e608297150f@o527213.ingest.sentry.io/5643252',
         integrations: [new Integrations.BrowserTracing()],
         release: BUILD === 'full'
@@ -41,11 +41,11 @@ export default (destination) => {
         beforeBreadcrumb,
     });
 
-    Sentry.setTag('destination', destination.toLowerCase());
+    setTag('destination', destination.toLowerCase());
 
     StorageConnector.get('userId', null).then(({ userId }) => {
         if (!userId) return;
 
-        Sentry.setUser({ id: userId });
+        setUser({ id: userId });
     });
 };

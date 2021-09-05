@@ -14,7 +14,7 @@ import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import { Provider as ContextMenuProvider } from '@/stores/app/ContextMenuProvider';
 import InitApp, { ApplyWizardSettingsProvider } from '@/stores/app/InitApp';
 import initSentry from '@/config/sentry/app';
-import * as Sentry from '@sentry/react';
+import { withProfiler } from '@sentry/react';
 import FabMenu from '@/ui/Menu/FabMenu';
 import Menu from '@/ui/Menu';
 import CrashCatch from '@/ui/CrashCatch';
@@ -78,4 +78,4 @@ function App() {
     );
 }
 
-export default Sentry.withProfiler(App);
+export default withProfiler(App);

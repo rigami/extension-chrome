@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { render } from 'react-dom';
 import { Box, CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 import { DESTINATION, THEME } from '@/enum';
@@ -10,7 +9,6 @@ import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
 import initSentry from '@/config/sentry/app';
-import * as Sentry from '@sentry/react';
 import Stub from '@/ui-components/Stub';
 import Nest from '@/utils/helpers/Nest';
 import EditorBookmark from '@/ui/Bookmarks/EditBookmarkModal/Editor';
@@ -19,7 +17,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import asyncAction from '@/utils/helpers/asyncAction';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { first } from 'lodash';
-import { captureException } from '@sentry/react';
+import { captureException, withProfiler } from '@sentry/react';
 
 initSentry(DESTINATION.POPUP);
 
@@ -129,4 +127,4 @@ function PopupRoot() {
     );
 }
 
-export default Sentry.withProfiler(PopupRoot);
+export default withProfiler(PopupRoot);
