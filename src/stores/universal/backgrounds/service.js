@@ -105,7 +105,7 @@ class BackgroundsUniversalService {
         } catch (e) {
             console.error('[backgrounds] Failed fetch bg', e);
             captureException(e);
-            return Promise.reject();
+            return Promise.reject(e);
         }
 
         if (preview) {
