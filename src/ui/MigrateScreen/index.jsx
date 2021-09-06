@@ -52,14 +52,14 @@ function MigrateScreen({ onStart }) {
 
             coreService.storage.persistent.update({
                 ...storage,
-                bgCurrent: new Background({
+                bgCurrent: storage.bgCurrent ? new Background({
                     ...storage.bgCurrent,
                     isSaved: true,
                     fullSrc: storage.bgCurrent.source === BG_SOURCE.USER
                         ? `${appVariables.rest.url}/background/user?src=${storage.bgCurrent.id}`
                         : storage.bgCurrent.downloadLink,
                     previewSrc: `${appVariables.rest.url}/background/user/get-preview?id=${storage.bgCurrent.id}`,
-                }),
+                }) : null,
                 bgsStream: (storage.bgsStream || []).map((bg) => new Background({
                     ...storage.bgCurrent,
                     isSaved: true,
