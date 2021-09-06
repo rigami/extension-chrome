@@ -57,7 +57,7 @@ function Popup() {
 
             await new Promise((resolve, reject) => chrome.tabs.query({ active: true }, ([tab]) => {
                 if (!tab) {
-                    reject();
+                    reject(new Error('Tab not found'));
                     return;
                 }
 

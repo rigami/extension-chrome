@@ -150,7 +150,7 @@ function Background() {
                             if (data.success) {
                                 resolve();
                             } else {
-                                reject();
+                                reject(new Error(`Failed pause (${JSON.stringify(data)})`));
                             }
                         }));
                     } catch (e) {

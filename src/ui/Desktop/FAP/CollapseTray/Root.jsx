@@ -101,7 +101,7 @@ function Explorer(props) {
                     return TagsUniversalService.get(fav.itemId);
                 }
 
-                return Promise.reject();
+                return Promise.reject(new Error(`Unknown favorite item with keys (${Object.keys(fav || {}).join(', ')})`));
             }),
         )
             .then((findFavorites) => {

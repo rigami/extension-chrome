@@ -6,7 +6,7 @@ export default (storage) => new Promise((resolve, rejection) => {
         resolve();
         return;
     } else if (storage.state === SERVICE_STATE.FAILED) {
-        rejection();
+        rejection(new Error('Failed init storage'));
         return;
     }
 
@@ -15,7 +15,7 @@ export default (storage) => new Promise((resolve, rejection) => {
             if (storage.state === SERVICE_STATE.DONE) {
                 resolve();
             } else if (storage.state === SERVICE_STATE.FAILED) {
-                rejection();
+                rejection(new Error('Failed init storage'));
             }
         });
 });

@@ -278,7 +278,7 @@ class BackgroundsServerService {
                 console.log('[backgrounds] Response empty');
 
                 if (!force) this._queueIsPreloaded = false;
-                return Promise.reject();
+                return Promise.reject(new Error('No results'));
             }
 
             this._fetchCount = 0;
@@ -365,7 +365,7 @@ class BackgroundsServerService {
                 console.error('[backgrounds] Failed get background. Get next...', e);
                 captureException(e);
 
-                return Promise.reject();
+                return Promise.reject(e);
             }
 
             return this.setBG(new Background({
