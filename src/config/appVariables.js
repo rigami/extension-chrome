@@ -3,7 +3,7 @@ import packageFile from '@/../package.json';
 import BrowserAPI from '@/utils/browserAPI';
 
 export default {
-    notifyNewVersion: true,
+    notifyNewVersion: false,
     extensionId: BrowserAPI.extensionId(),
     version: packageFile.version,
     db: {
