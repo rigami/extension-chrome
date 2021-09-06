@@ -48,11 +48,8 @@ function InitApp({ children }) {
     const [state, setState] = useState(STATE.PREPARE);
 
     const checkVersion = () => {
-        if (
-            coreService.storage.persistent.data?.lastUsageVersion !== packageJson.version
-            && appVariables.notifyNewVersion
-        ) {
-            coreService.storage.temp.update({ newVersion: true });
+        if (coreService.storage.persistent.data?.lastUsageVersion !== packageJson.version) {
+            if (appVariables.notifyNewVersion) coreService.storage.temp.update({ newVersion: true });
             coreService.storage.persistent.update({ lastUsageVersion: packageJson.version });
         }
     };
