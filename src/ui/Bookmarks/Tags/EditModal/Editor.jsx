@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Editor({ onSave, onError, editId }) {
+function Editor({ onSave, editId }) {
     const classes = useStyles();
     const { t } = useTranslation(['tag']);
     const [tagName, setTagName] = useState('');
@@ -44,7 +44,6 @@ function Editor({ onSave, onError, editId }) {
                 .then((tagId) => onSave(tagId))
                 .catch((e) => {
                     captureException(e);
-                    onError(e.message);
                     setError(e.message);
                 });
         }
@@ -75,7 +74,6 @@ function Editor({ onSave, onError, editId }) {
                     defaultValue={editTag?.name}
                     onChange={(event) => {
                         setTagName(event.target.value);
-                        onError(null);
                         setError(null);
                     }}
                 />
