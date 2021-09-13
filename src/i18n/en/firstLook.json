@@ -1,6 +1,6 @@
 {
   "prepareApp": "Preparing the application",
-  "greeting": "Hello welcome to rigami",
+  "greeting": "Hello, welcome to rigami",
   "wizardDescription": "Let's quickly set up rigami for you to be as productive as possible",
   "question": "Question {{now}} of {{total}}",
   "button": {
