@@ -123,6 +123,11 @@ const useStyles = makeStyles((theme) => ({
         height: 16,
         marginLeft: 'auto',
     },
+    url: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
 }));
 
 function CardLink(props) {
@@ -226,7 +231,11 @@ function CardLink(props) {
                         <Typography variant="body2" className={classes.description}>{description}</Typography>
                     )}
                     <Box className={classes.infoWrapper}>
-                        <Typography variant="caption" color="textSecondary">
+                        <Typography
+                            className={classes.url}
+                            variant="caption"
+                            color="textSecondary"
+                        >
                             {getDomain(url)}
                         </Typography>
                         {isPin && (<FavoriteIcon className={classes.favorite} />)}

@@ -22,10 +22,7 @@ const search = async (query, signal) => {
     }));
 };
 
-const getImageRecalc = (icoUrl, signal) => fetchData(
-    icoUrl,
-    { signal },
-).then(({ response }) => response);
+const getImageRecalc = (icoUrl) => fetchData(icoUrl).then(({ response }) => response);
 
 const getSiteInfoLocal = async (url) => {
     let localSearchUrl = url;
