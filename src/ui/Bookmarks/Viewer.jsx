@@ -89,7 +89,10 @@ function Bookmarks() {
                 <Fab
                     className={classes.fab}
                     color="primary"
-                    onClick={() => coreService.localEventBus.call('bookmark/create')}
+                    onClick={() => coreService.localEventBus.call(
+                        'bookmark/create',
+                        { defaultFolderId: service.activeFolderId },
+                    )}
                 >
                     <AddBookmarkIcon />
                 </Fab>
