@@ -22,6 +22,8 @@ import clsx from 'clsx';
 import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import { FETCH } from '@/enum';
+import api from '@/utils/helpers/api';
+import { StorageConnector } from '@/stores/universal/storage';
 
 const useStyles = makeStyles((theme) => ({
     fullWidth: { width: '100%' },
@@ -81,23 +83,71 @@ function CreateRequest() {
         setStatus(FETCH.PENDING);
 
         try {
-            const { response } = await fetchData(`${appVariables.rest.url}/v1/users/merge/create-request`);
+            const eventTarget = api.sse('users/merge/create-request');
 
-            setCode(response.code);
-            setStatus(FETCH.DONE);
+            eventTarget.addEventListener('start', (event) => {
+                console.log('start:', event);
+            });
+
+            eventTarget.addEventListener('code', (event) => {
+                setCode(event.data);
+                setStatus(FETCH.DONE);
+            });
+
+            eventTarget.addEventListener('cancel-merge', (event) => {
+                console.log('cancel-merge:', event);
+            });
+
+            eventTarget.addEventListener('done-merge', async (event) => {
+                console.log('done-merge:', event.data);
+
+                const { response: registrationResponse } = await api.post(
+                    'auth/login',
+                    {
+                        useToken: false,
+                        headers: { 'Content-type': 'application/json' },
+                        responseType: 'json',
+                        body: JSON.stringify({
+                            email: event.data.newUsername,
+                            password: event.data.newUsername,
+                        }),
+                    },
+                );
+
+                const { auth } = await StorageConnector.get('auth', null);
+
+                await StorageConnector.set({
+                    auth: {
+                        ...auth,
+                        accessToken: registrationResponse.accessToken,
+                        refreshToken: registrationResponse.refreshToken,
+                    },
+                });
+
+                api.clearCache();
+
+                setIsOpen(false);
+            });
+
+            eventTarget.addEventListener('close', (event) => {
+                console.log('close:', event);
+                setStatus(FETCH.FAILED);
+            });
+
+            eventTarget.addEventListener('abort', (event) => {
+                console.log('abort:', event);
+                setStatus(FETCH.FAILED);
+            });
+
+            // setCode(response.code);
+            // setStatus(FETCH.DONE);
         } catch (e) {
             setStatus(FETCH.FAILED);
         }
     };
 
     const deleteRequest = async () => {
-        await fetchData(
-            `${appVariables.rest.url}/v1/users/merge/delete-request`,
-            {
-                method: 'DELETE',
-                responseType: 'raw',
-            },
-        );
+        await api.delete('users/merge/delete-request', { responseType: null });
     };
 
     useEffect(() => {
@@ -187,9 +237,7 @@ function ApplyRequest() {
         setStatus(FETCH.PENDING);
 
         try {
-            const { response, ok } = await fetchData(
-                `${appVariables.rest.url}/v1/users/merge/apply-request?code=${code}`,
-            );
+            const { response, ok } = await api.get('users/merge/apply-request', { query: { code } });
 
             console.log('response:', response);
 

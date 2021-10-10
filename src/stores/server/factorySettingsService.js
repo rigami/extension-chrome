@@ -10,6 +10,7 @@ import { PREPARE_PROGRESS } from '@/stores/app/core';
 import { eventToApp } from '@/stores/universal/serviceBus';
 import { StorageConnector } from '@/stores/universal/storage';
 import { v4 as UUIDv4 } from 'uuid';
+import api from '@/utils/helpers/api';
 
 class FactorySettingsService {
     core;
@@ -46,13 +47,9 @@ class FactorySettingsService {
 
         if (!defaultDeviceToken) await StorageConnector.set({ auth: { deviceToken } });
 
-        const { response: registrationResponse } = await fetchData(
-            `${appVariables.rest.url}/v1/auth/virtual/registration`,
-            {
-                method: 'POST',
-                cache: 'no-store',
-                withoutToken: true,
-            },
+        const { response: registrationResponse } = await api.post(
+            'auth/virtual/registration',
+            { useToken: false },
         );
 
         await StorageConnector.set({
