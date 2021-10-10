@@ -8,6 +8,8 @@ import { first } from 'lodash';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
 import { eventToApp } from '@/stores/universal/serviceBus';
+import { StorageConnector } from '@/stores/universal/storage';
+import { v4 as UUIDv4 } from 'uuid';
 
 class FactorySettingsService {
     core;
@@ -34,17 +36,39 @@ class FactorySettingsService {
             console.warn(e);
         }
 
-        if (BUILD === 'full') {
-            progressCallback(15, PREPARE_PROGRESS.IMPORT_BOOKMARKS);
+        progressCallback(15, PREPARE_PROGRESS.REGISTRATION_IN_CLOUD);
 
-            console.log('Import system bookmarks');
-            await this.core.systemBookmarksService.syncBookmarks();
-        }
+        const { auth: { deviceToken: defaultDeviceToken } = {} } = await StorageConnector.get('auth', null);
+
+        const deviceToken = defaultDeviceToken || UUIDv4();
+
+        console.log({ uuid: UUIDv4() });
+
+        if (!defaultDeviceToken) await StorageConnector.set({ auth: { deviceToken } });
+
+        const { response: registrationResponse } = await fetchData(
+            `${appVariables.rest.url}/v1/auth/virtual/registration`,
+            {
+                method: 'POST',
+                cache: 'no-store',
+                withoutToken: true,
+            },
+        );
+
+        await StorageConnector.set({
+            auth: {
+                deviceToken,
+                accessToken: registrationResponse.accessToken,
+                refreshToken: registrationResponse.refreshToken,
+            },
+        });
+
+        console.log('registration in cloud:', registrationResponse);
 
         console.log('Fetch BG');
         progressCallback(35, PREPARE_PROGRESS.FETCH_BG);
 
-        const { response } = await fetchData(
+        const { response: bgListResponse } = await fetchData(
             `${appVariables.rest.url}/backgrounds/get-from-collection?count=1&type=image&collection=best`,
         ).catch(() => ({ response: [] }));
 
@@ -52,15 +76,19 @@ class FactorySettingsService {
 
         let bg;
 
-        if (response.length !== 0) {
-            bg = await BackgroundsUniversalService.addToLibrary(new Background({
-                ...first(response),
-                source: BG_SOURCE[first(response).service],
-                downloadLink: first(response).fullSrc,
-                previewLink: first(response).previewSrc,
-                type: BG_TYPE[first(response).type],
-            }));
-        } else {
+        try {
+            if (bgListResponse.length !== 0) {
+                bg = await BackgroundsUniversalService.addToLibrary(new Background({
+                    ...first(bgListResponse),
+                    source: BG_SOURCE[first(bgListResponse).service],
+                    downloadLink: first(bgListResponse).fullSrc,
+                    previewLink: first(bgListResponse).previewSrc,
+                    type: BG_TYPE[first(bgListResponse).type],
+                }));
+            } else {
+                bg = await BackgroundsUniversalService.addToLibrary(new Background(appVariables.backgrounds.fallback));
+            }
+        } catch (e) {
             bg = await BackgroundsUniversalService.addToLibrary(new Background(appVariables.backgrounds.fallback));
         }
 

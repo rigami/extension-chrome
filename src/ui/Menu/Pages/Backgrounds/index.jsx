@@ -125,6 +125,7 @@ export {
 };
 
 export default {
+    id: 'backgrounds',
     header: headerProps,
     content: ObserverBackgroundsMenu,
     props: pageProps,

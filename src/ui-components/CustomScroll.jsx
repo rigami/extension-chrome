@@ -15,6 +15,7 @@ const exportClasses = (theme) => ({
         bottom: 0,
         transform: 'translate3d(0,0,0)',
     },
+    scrollContent: { padding: 0.05 },
     reverse: {
         display: 'flex',
         flexDirection: 'column-reverse',
@@ -63,6 +64,18 @@ function CustomScroll(rootProps, ref) {
                             {...restProps}
                             ref={elementRef}
                             className={clsx(reverse && classes.reverse)}
+                        />
+                    );
+                },
+            }}
+            contentProps={{
+                renderer: (props) => {
+                    const { elementRef, ...restProps } = props;
+                    return (
+                        <div
+                            {...restProps}
+                            ref={elementRef}
+                            className={clsx(classes.scrollContent, externalClasses.content)}
                         />
                     );
                 },

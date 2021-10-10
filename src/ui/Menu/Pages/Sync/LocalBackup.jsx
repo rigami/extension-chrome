@@ -1,30 +1,24 @@
-import React, {
-    Fragment,
-    useState,
-    useRef,
-} from 'react';
+import React, { Fragment, useRef, useState } from 'react';
+import SectionHeader from '@/ui/Menu/SectionHeader';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import {
-    Popper,
     Button,
-    Grow,
-    Paper,
-    ClickAwayListener,
-    MenuList,
-    MenuItem,
     Checkbox,
-    ListItemText,
-    ListItemIcon,
+    ClickAwayListener,
+    Grow,
+    ListItemIcon, ListItemText,
+    MenuItem,
+    MenuList,
+    Paper,
+    Popper,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { makeStyles } from '@material-ui/core/styles';
-import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
 import { eventToApp, eventToBackground } from '@/stores/universal/serviceBus';
-import { observer } from 'mobx-react-lite';
-import { captureException } from '@sentry/react';
-import SectionHeader from '@/ui/Menu/SectionHeader';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import appVariables from '@/config/appVariables';
+import { captureException } from '@sentry/react';
+import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/core/styles';
+import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     backupButton: { flexShrink: 0 },
@@ -40,58 +34,13 @@ const useStyles = makeStyles((theme) => ({
     },
     popper: { zIndex: theme.zIndex.modal },
     input: { display: 'none' },
-    reRunSyncButton: { flexShrink: 0 },
     fixOverflow: { whiteSpace: 'normal' },
     alignTop: { alignSelf: 'flex-start' },
 }));
 
-const headerProps = { title: 'settings:backup' };
-const pageProps = { width: 750 };
-
-function BrowserSync() {
+function BackupCreate() {
     const classes = useStyles();
-    const { t } = useTranslation(['settingsBackup']);
-    const coreService = useCoreService();
-    const [syncing, setSyncing] = useState(false);
-
-    return (
-        <MenuRow
-            title={t('import.chrome.title')}
-            action={{
-                type: ROWS_TYPE.CUSTOM,
-                onClick: () => {},
-                component: (
-                    <Button
-                        variant="contained"
-                        component="span"
-                        color="primary"
-                        className={classes.reRunSyncButton}
-                        fullWidth
-                        disabled={syncing}
-                        onClick={() => {
-                            setSyncing(true);
-                            eventToBackground('system/importSystemBookmarks', {}, () => {
-                                console.log('FINISH SYNC!');
-                                setSyncing(false);
-                                coreService.storage.persistent.update({ bkmsLastTruthSearchTimestamp: Date.now() });
-                            });
-                        }}
-                    >
-                        {
-                            syncing
-                                ? t('import.chrome.state.importing')
-                                : t('import.chrome.button.import')
-                        }
-                    </Button>
-                ),
-            }}
-        />
-    );
-}
-
-function LocalBackup() {
-    const classes = useStyles();
-    const { t } = useTranslation(['settingsBackup']);
+    const { t } = useTranslation(['settingsSync']);
     const anchorRef = useRef(null);
     const [open, setOpen] = useState(false);
     const [saveItems, setSaveItems] = useState({
@@ -204,7 +153,10 @@ function LocalBackup() {
                                                 secondary: classes.fixOverflow,
                                             }}
                                             primary={t('localBackup.syncItem.backgrounds')}
-                                            secondary={t('localBackup.syncItem.backgrounds', { context: 'description' })}
+                                            secondary={t(
+                                                'localBackup.syncItem.backgrounds',
+                                                { context: 'description' },
+                                            )}
                                         />
                                     </MenuItem>
                                     <MenuItem
@@ -230,11 +182,9 @@ function LocalBackup() {
     );
 }
 
-const ObserverBrowserSync = observer(BrowserSync);
-
-function BackupSettings() {
+function LocalBackup() {
     const classes = useStyles();
-    const { t } = useTranslation(['settingsBackup']);
+    const { t } = useTranslation(['settingsSync']);
 
     const handleLocalRestore = async (event) => {
         const form = event.target;
@@ -262,13 +212,7 @@ function BackupSettings() {
     };
 
     return (
-        <React.Fragment>
-            {BUILD === 'full' && (
-                <React.Fragment>
-                    <SectionHeader title={t('import.title')} />
-                    <ObserverBrowserSync />
-                </React.Fragment>
-            )}
+        <Fragment>
             <SectionHeader title={t('localBackup.title')} />
             <MenuRow
                 title={t('localBackup.create.title')}
@@ -276,7 +220,7 @@ function BackupSettings() {
                 action={{
                     type: ROWS_TYPE.CUSTOM,
                     onClick: () => {},
-                    component: (<LocalBackup />),
+                    component: (<BackupCreate />),
                 }}
             />
             <MenuRow
@@ -308,20 +252,8 @@ function BackupSettings() {
                     ),
                 }}
             />
-        </React.Fragment>
+        </Fragment>
     );
 }
 
-const ObserverBackupSettings = observer(BackupSettings);
-
-export {
-    headerProps as header,
-    ObserverBackupSettings as content,
-    pageProps as props,
-};
-
-export default {
-    header: headerProps,
-    content: ObserverBackupSettings,
-    props: pageProps,
-};
+export default observer(LocalBackup);

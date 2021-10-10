@@ -8,8 +8,8 @@
   "widgets_description": "Customize desktop widgets: time, date and weather",
   "app": "App",
   "app_description": "Enable dark theme. Change tab name",
-  "backup": "Backup & Import",
-  "backup_description": "Save app data to computer and import bookmarks from chrome",
+  "sync": "Sync & Backup",
+  "sync_description": "Set up synchronization or make a local backup to your computer",
   "about": "About",
   "about_description": "Email the developer, submit a bug report, suggest an idea",
   "devTools": "Dev Tools",
@@ -23,7 +23,7 @@
     }
   },
   "betaBanner": {
-    "message": "The extension is in beta testing",
+    "message": "Rigami in beta testing",
     "button": {
       "sendEmail": "Write a letter to the developer",
       "openIssue": "Open issue on github"

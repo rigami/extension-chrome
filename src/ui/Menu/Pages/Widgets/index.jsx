@@ -110,6 +110,7 @@ export {
 };
 
 export default {
+    id: 'widgets',
     header: headerProps,
     content: ObserverWidgets,
     props: pageProps,

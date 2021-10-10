@@ -98,6 +98,7 @@ export {
 };
 
 export default {
+    id: 'bookmarks',
     header: headerProps,
     content: ObserverBookmarksSettings,
     props: pageProps,

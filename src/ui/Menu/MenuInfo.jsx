@@ -44,7 +44,8 @@ const useStyles = makeStyles((theme) => ({
         '& > *': { color: 'inherit' },
     },
     iconWrapper: {
-        minWidth: theme.spacing(5),
+        minWidth: theme.spacing(7),
+        paddingLeft: theme.spacing(1),
         alignSelf: 'baseline',
         marginTop: theme.spacing(0.75),
         marginBottom: theme.spacing(0.75),

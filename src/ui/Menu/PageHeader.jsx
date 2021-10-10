@@ -9,6 +9,7 @@ import { ArrowBackRounded as BackIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { alpha } from '@material-ui/core/styles/colorManipulator';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '22px',
         fontWeight: 800,
         flexShrink: 0,
+        marginLeft: 40 + theme.spacing(2),
     },
     actions: {
         marginLeft: theme.spacing(4),
@@ -40,24 +42,31 @@ const useStyles = makeStyles((theme) => ({
     grow: { flexGrow: 1 },
 }));
 
-function PageHeader({ title, onBack, actions, ...other }) {
+function PageHeader({
+    title, onBack, actions, className: externalClassName, ...other
+}) {
     const classes = useStyles();
     const { t } = useTranslation(['settings']);
 
     return (
         <AppBar
-            position="sticky" color="transparent" elevation={0}
-            className={classes.root} {...other}
+            position="sticky"
+            color="transparent"
+            elevation={0}
+            className={clsx(classes.root, externalClassName)}
+            {...other}
         >
             <Toolbar className={classes.toolbar}>
-                <IconButton
-                    data-ui-path="settings.back"
-                    className={classes.backButton}
-                    onClick={() => onBack()}
-                >
-                    <BackIcon />
-                </IconButton>
-                <Typography className={classes.title} variant="h6" noWrap>{t(title)}</Typography>
+                {onBack && (
+                    <IconButton
+                        data-ui-path="settings.back"
+                        className={classes.backButton}
+                        onClick={() => onBack()}
+                    >
+                        <BackIcon />
+                    </IconButton>
+                )}
+                <Typography className={clsx(!onBack && classes.title)} variant="h6" noWrap>{t(title)}</Typography>
                 <div className={classes.actions}>
                     {actions}
                 </div>

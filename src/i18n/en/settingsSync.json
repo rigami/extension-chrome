@@ -11,6 +11,25 @@
       }
     }
   },
+  "mergeUsers": {
+    "title": "Local backup",
+    "createRequest": {
+      "title": "Local backup",
+      "button": {
+        "generateCode": "Create backup"
+      },
+      "dialog": {
+        "title": "",
+        "description": "Save extension settings and bookmarks on your computer"
+      }
+    },
+    "applyRequest": {
+      "title": "Local backup",
+      "button": {
+        "apply": "Create backup"
+      }
+    }
+  },
   "localBackup": {
     "title": "Local backup",
     "create": {

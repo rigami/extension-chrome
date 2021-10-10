@@ -40,19 +40,23 @@ const theme = {
         h1: {
             fontFamily: primaryFontFamily,
             fontWeight: 900,
+            letterSpacing: 'unset',
         },
         h2: {
             fontFamily: primaryFontFamily,
             fontWeight: 900,
+            letterSpacing: 'unset',
         },
         body1: {
             fontFamily: primaryFontFamily,
             fontWeight: 600,
+            letterSpacing: 'unset',
         },
         body2: {
             fontFamily: primaryFontFamily,
             fontWeight: 450,
             fontSize: '0.85rem',
+            letterSpacing: 'unset',
         },
     },
     transitions: {

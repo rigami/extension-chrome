@@ -77,6 +77,7 @@ const ObserverAppSettings = observer(AppSettings);
 export { headerProps as header, ObserverAppSettings as content };
 
 export default {
+    id: 'app',
     header: headerProps,
     content: ObserverAppSettings,
 };

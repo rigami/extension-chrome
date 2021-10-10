@@ -18,6 +18,7 @@ module.exports = {
         'BUILD': true,
         'TARGET:': true,
     },
+    'rules': { 'prefer-arrow-callback': 'off' },
     'settings': {
         'import/resolver': {
             alias: {

@@ -36,7 +36,8 @@
     "all_helper": "Показать все"
   },
   "error": {
-    "notFound": "Ничего не найдено"
+    "notFound": "Ничего не найдено",
+    "tryLater": "Ошибка, попробуйте позже"
   },
   "crashApp": {
     "title": "Rigami упал(",

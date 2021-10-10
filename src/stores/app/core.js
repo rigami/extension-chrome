@@ -31,6 +31,7 @@ const PREPARE_PROGRESS = {
     IMPORT_BOOKMARKS: 'IMPORT_BOOKMARKS',
     FETCH_BG: 'FETCH_BG',
     SAVE_BG: 'SAVE_BG',
+    REGISTRATION_IN_CLOUD: 'REGISTRATION_IN_CLOUD',
     DONE: 'DONE',
 };
 
@@ -76,7 +77,7 @@ class Core {
                     'tag',
                     'desktop',
                     'settings',
-                    'settingsBackup',
+                    'settingsSync',
                 ],
                 defaultNS: 'common',
                 backend: { loadPath: 'resource/i18n/{{lng}}/{{ns}}.json' },

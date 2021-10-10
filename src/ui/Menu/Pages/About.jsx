@@ -140,6 +140,7 @@ function About() {
 export { headerProps as header, About as content };
 
 export default {
+    id: 'about',
     header: headerProps,
     content: About,
 };

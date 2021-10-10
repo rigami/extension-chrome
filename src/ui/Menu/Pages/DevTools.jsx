@@ -151,6 +151,7 @@ const ObserverDevTools = observer(DevTools);
 export { headerProps as header, ObserverDevTools as content };
 
 export default {
+    id: 'devTools',
     header: headerProps,
     content: ObserverDevTools,
 };
