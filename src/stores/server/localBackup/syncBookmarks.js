@@ -1,10 +1,14 @@
 import { makeAutoObservable } from 'mobx';
-import { uniq } from 'lodash';
+import { omit, uniq } from 'lodash';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import fetchData from '@/utils/helpers/fetchData';
+import { captureException } from '@sentry/browser';
+import Tag from '@/stores/universal/bookmarks/entities/tag';
+import Folder from '@/stores/universal/bookmarks/entities/folder';
 
 class SyncBookmarks {
     core;
@@ -12,6 +16,57 @@ class SyncBookmarks {
     constructor(core) {
         makeAutoObservable(this);
         this.core = core;
+    }
+
+    async collect() {
+        if (BUILD !== 'full') return;
+
+        const { all: bookmarksAll } = await BookmarksUniversalService.query();
+
+        const bookmarks = await Promise.all(bookmarksAll.map(async (bookmark) => {
+            let image;
+
+            try {
+                const { response } = await fetchData(bookmark.icoUrl, { responseType: 'blob' });
+
+                image = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(response);
+
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                });
+            } catch (e) {
+                captureException(e);
+                console.warn('Failed get icon', e, bookmark);
+            }
+
+            return {
+                ...omit(bookmark, ['icoFileName', 'icoUrl']),
+                image,
+            };
+        }));
+
+        const tagsAll = await TagsUniversalService.getAll();
+
+        const tags = tagsAll.map((tag) => new Tag(tag));
+
+        const foldersAll = await FoldersUniversalService.getTree();
+
+        const folders = foldersAll.map((folder) => new Folder(folder));
+
+        const favoritesAll = await FavoritesUniversalService.getAll();
+
+        console.log('favoritesAll', favoritesAll);
+
+        const favorites = favoritesAll;
+
+        return {
+            bookmarks,
+            favorites,
+            tags,
+            folders,
+        };
     }
 
     async restore(bookmarks) {

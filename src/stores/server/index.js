@@ -5,23 +5,20 @@ import { DESTINATION } from '@/enum';
 import appVariables from '@/config/appVariables';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import FactorySettingsService from '@/stores/server/factorySettingsService';
+import SyncChromeBookmarksService from '@/stores/server/localSync/syncChromeBookmarksService';
 import SettingsService from './settingsService';
-import SyncBookmarks from './syncBookmarks';
-import LocalBackupService from './localBackupService';
+import LocalBackupService from './localBackup';
 import BookmarksService from './bookmarksService';
 import WeatherService from './weatherService';
 import BackgroundsService from './backgroundsService';
-import SyncBackgrounds from './syncBackgrounds';
-import SyncChromeBookmarksService from './syncChromeBookmarksService';
 
 class ServerApp {
     localBus;
     globalEventBus;
-    settingsService;
     storage;
-    systemBookmarksService;
-    bookmarksSyncService;
+    settingsService;
     localBackupService;
+    systemBookmarksService;
     bookmarksService;
     weatherService;
     backgroundsService;
@@ -67,7 +64,11 @@ class ServerApp {
             this.settingsService.bookmarks,
         ].map((storage) => awaitInstallStorage(storage)));
 
-        console.log('backgrounds storage state', JSON.stringify(this.settingsService.backgrounds.type), JSON.stringify(this.settingsService.backgrounds._data.type));
+        console.log(
+            'backgrounds storage state',
+            JSON.stringify(this.settingsService.backgrounds.type),
+            JSON.stringify(this.settingsService.backgrounds._data.type),
+        );
     }
 
     async start() {
@@ -88,10 +89,10 @@ class ServerApp {
         this.backgroundsService = new BackgroundsService(this);
 
         // Sync & backup
-        if (BUILD === 'full') { this.systemBookmarksService = new SyncChromeBookmarksService(this); }
-        if (BUILD === 'full') { this.bookmarksSyncService = new SyncBookmarks(this); }
         this.localBackupService = new LocalBackupService(this);
-        this.backgroundsSyncService = new SyncBackgrounds(this);
+
+        if (BUILD === 'full') { this.systemBookmarksService = new SyncChromeBookmarksService(this); }
+
         this.factorySettingsService = new FactorySettingsService(this);
 
         console.log('Server app is run!');
