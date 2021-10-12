@@ -8,7 +8,7 @@ export default {
     version: packageFile.version,
     db: {
         name: 'rigami',
-        version: 9,
+        version: 10,
     },
     storage: { version: 1 },
     fs: { root: `chrome-extension://${BrowserAPI.extensionId()}/persistent/` },

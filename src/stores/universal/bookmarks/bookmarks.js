@@ -8,6 +8,7 @@ import { captureException } from '@sentry/browser';
 import appVariables from '@/config/appVariables';
 import getPreview from '@/utils/createPreview';
 import { BG_TYPE } from '@/enum';
+import { v4 as UUIDv4 } from 'uuid';
 import { SearchQuery } from './searchQuery';
 
 class BookmarksUniversalService {
@@ -57,6 +58,7 @@ class BookmarksUniversalService {
 
         let saveBookmarkId;
         let saveIcoUrl;
+        let action;
 
         if (sourceIcoUrl) {
             saveIcoUrl = `${appVariables.rest.url}/background/get-site-icon?ico-url=${encodeURIComponent(sourceIcoUrl)}`;
@@ -74,10 +76,12 @@ class BookmarksUniversalService {
                 createTimestamp: oldBookmark.createTimestamp || Date.now(),
                 modifiedTimestamp: Date.now(),
             }));
+            action = 'update';
         } else {
             try {
                 saveBookmarkId = await db().add('bookmarks', cloneDeep({
                     ...saveData,
+                    id: UUIDv4(),
                     icoUrl: saveIcoUrl,
                     createTimestamp: Date.now(),
                     modifiedTimestamp: Date.now(),
@@ -87,6 +91,7 @@ class BookmarksUniversalService {
                 captureException(e);
                 throw new Error('Similar bookmark already exist');
             }
+            action = 'create';
         }
         if (imageBase64 || sourceIcoUrl) {
             let blob;
@@ -102,6 +107,12 @@ class BookmarksUniversalService {
 
             await cache.put(saveIcoUrl, iconResponse);
         }
+
+        // TODO: If only enabling sync
+        await db().add('bookmarks_wait_sync', {
+            action,
+            bookmarkId: saveBookmarkId,
+        });
 
         return saveBookmarkId;
     }
@@ -126,6 +137,12 @@ class BookmarksUniversalService {
             console.log('Failed remove bookmark icon', e);
             captureException(e);
         }
+
+        // TODO: If only enabling sync
+        await db().add('bookmarks_wait_sync', {
+            action: 'delete',
+            bookmarkId,
+        });
     }
 
     @action('query bookmarks')

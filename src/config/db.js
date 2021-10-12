@@ -1,6 +1,7 @@
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 import { captureException } from '@sentry/browser';
 import { omit } from 'lodash';
+import { v4 as UUIDv4 } from 'uuid';
 
 async function upgradeOrCreateBackgrounds(db, transaction, oldVersion, newVersion) {
     let store;
@@ -58,7 +59,7 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
     } else {
         store = db.createObjectStore('bookmarks', {
             keyPath: 'id',
-            autoIncrement: true,
+            unique: true,
         });
         store.createIndex('ico_variant', 'icoVariant', { unique: false });
         store.createIndex('url', 'url', { unique: false });
@@ -126,6 +127,33 @@ async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion)
                 modifiedTimestamp: Date.now(),
             });
         }
+    }
+    if (oldVersion !== 0 && oldVersion < 10) {
+        store.deleteIndex('id');
+        store.createIndex('id', 'id', { unique: false });
+        const bookmarks = await store.getAll();
+
+        for await (const bookmark of bookmarks) {
+            transaction.objectStore('bookmarks').put({
+                ...bookmark,
+                id: UUIDv4(),
+            });
+        }
+    }
+}
+
+async function upgradeOrCreateBookmarksWaitSync(db, transaction, oldVersion, newVersion) {
+    let store;
+
+    if (transaction.objectStoreNames.contains('bookmarks_wait_sync')) {
+        store = transaction.objectStore('bookmarks_wait_sync');
+    } else {
+        store = db.createObjectStore('bookmarks_wait_sync', {
+            keyPath: 'id',
+            autoIncrement: true,
+        });
+        store.createIndex('action', 'action', { unique: false });
+        store.createIndex('bookmark_id', 'bookmarkId', { unique: false });
     }
 }
 
@@ -222,6 +250,7 @@ export default ({ upgrade }) => ({
         console.log(`Require upgrade db version from ${oldVersion} to ${newVersion}`);
         await upgradeOrCreateBackgrounds(db, transaction, oldVersion, newVersion);
         await upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion);
+        await upgradeOrCreateBookmarksWaitSync(db, transaction, oldVersion, newVersion);
         await upgradeOrCreateSystemBookmarks(db, transaction, oldVersion, newVersion);
         await upgradeOrCreateTags(db, transaction, oldVersion, newVersion);
         await upgradeOrCreateFolders(db, transaction, oldVersion, newVersion);
