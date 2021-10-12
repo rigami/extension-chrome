@@ -12,13 +12,7 @@ class BackgroundsSettings extends PersistentStorage {
             dimmingPower: defaultSettings.backgrounds.dimmingPower,
             ...(currState || {}),
         })));
-        makeObservable(this, {
-            selectionMethod: computed,
-            type: computed,
-            changeInterval: computed,
-            dimmingPower: computed,
-            update: override,
-        });
+        makeObservable(this);
     }
 
     @computed
@@ -62,19 +56,7 @@ class WidgetsSettings extends PersistentStorage {
             dtwWeatherAction: defaultSettings.widgets.dtw.weather.defaultAction,
             ...(currState || {}),
         })));
-        makeObservable(this, {
-            useWidgets: computed,
-            dtwPosition: computed,
-            dtwSize: computed,
-            dtwUseTime: computed,
-            dtwTimeFormat12: computed,
-            dtwUseDate: computed,
-            dtwDateAction: computed,
-            dtwUseWeather: computed,
-            dtwWeatherMetrics: computed,
-            dtwWeatherAction: computed,
-            update: override,
-        });
+        makeObservable(this);
     }
 
     @computed
@@ -136,14 +118,7 @@ class BookmarksSettings extends PersistentStorage {
             syncWithSystem: defaultSettings.bookmarks.syncWithSystem,
             ...(currState || {}),
         })));
-        makeObservable(this, {
-            fapStyle: computed,
-            fapPosition: computed,
-            fapAlign: computed,
-            favorites: computed,
-            syncWithSystem: computed,
-            update: override,
-        });
+        makeObservable(this);
     }
 
     @computed
@@ -185,14 +160,7 @@ class AppSettings extends PersistentStorage {
             lastUsageVersion: null,
             ...(currState || {}),
         })));
-        makeObservable(this, {
-            theme: computed,
-            tabName: computed,
-            defaultActivity: computed,
-            backdropTheme: computed,
-            lastUsageVersion: computed,
-            update: override,
-        });
+        makeObservable(this);
     }
 
     @computed

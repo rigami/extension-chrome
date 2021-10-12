@@ -35,19 +35,13 @@ class StorageConnector {
 }
 
 class PersistentStorage {
-    _data;
+    @observable _data;
     namespace;
     _updateTimestamp = Date.now();
-    state = SERVICE_STATE.WAIT;
+    @observable state = SERVICE_STATE.WAIT;
 
     constructor(namespace, upgradeState) {
-        makeObservable(this, {
-            _data: observable,
-            state: observable,
-            update: action,
-            data: computed,
-            subscribe: action,
-        });
+        makeObservable(this);
 
         this.namespace = namespace;
         this.subscribe(upgradeState);
@@ -84,8 +78,7 @@ class PersistentStorage {
         this._data = {};
 
         try {
-            const t = await StorageConnector.get(this.namespace, {});
-            console.log(t);
+            // const t = await StorageConnector.get(this.namespace, {});
             let { [this.namespace]: data = {} } = await StorageConnector.get(this.namespace, {});
 
             data = upgradeState ? upgradeState(data) : data;
