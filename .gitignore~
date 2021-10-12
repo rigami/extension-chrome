@@ -3,7 +3,6 @@ temp
 release
 .idea
 build
-build-2
 .yarn
 .pnp.*
 *.log
