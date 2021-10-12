@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "1.0.42",
+    "version": "1.0.43",
     "description": "rigami",
     "main": "index.js",
     "scripts": {
@@ -18,6 +18,7 @@
         "bump:minor": "yarn version --minor --no-commit --no-git-tag-version && git add ./package.json",
         "bump:major": "yarn version --major --no-commit --no-git-tag-version && git add ./package.json",
         "dev-full": "yarn dev",
+        "dev-full-inst2": "BUILD_PATH=build-2 yarn dev",
         "dev-full:prod-env": "PRODUCTION_ENV=true yarn dev",
         "dev-wallpapers": "BUILD=wallpapers yarn dev",
         "dev-wallpapers:prod-env": "BUILD=wallpapers PRODUCTION_ENV=true yarn dev",

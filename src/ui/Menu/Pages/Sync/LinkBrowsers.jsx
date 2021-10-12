@@ -24,6 +24,7 @@ import appVariables from '@/config/appVariables';
 import { FETCH } from '@/enum';
 import api from '@/utils/helpers/api';
 import { StorageConnector } from '@/stores/universal/storage';
+import authStorage from '@/stores/universal/AuthStorage';
 
 const useStyles = makeStyles((theme) => ({
     fullWidth: { width: '100%' },
@@ -105,26 +106,19 @@ function CreateRequest() {
                     'auth/login',
                     {
                         useToken: false,
-                        headers: { 'Content-type': 'application/json' },
                         responseType: 'json',
-                        body: JSON.stringify({
+                        body: {
                             email: event.data.newUsername,
                             password: event.data.newUsername,
-                        }),
+                        },
                     },
                 );
 
-                const { auth } = await StorageConnector.get('auth', null);
-
-                await StorageConnector.set({
-                    auth: {
-                        ...auth,
-                        accessToken: registrationResponse.accessToken,
-                        refreshToken: registrationResponse.refreshToken,
-                    },
+                authStorage.update({
+                    username: event.data.newUsername,
+                    accessToken: registrationResponse.accessToken,
+                    refreshToken: registrationResponse.refreshToken,
                 });
-
-                api.clearCache();
 
                 setIsOpen(false);
             });

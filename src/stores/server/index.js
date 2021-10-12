@@ -6,6 +6,7 @@ import appVariables from '@/config/appVariables';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import FactorySettingsService from '@/stores/server/factorySettingsService';
 import SyncChromeBookmarksService from '@/stores/server/localSync/syncChromeBookmarksService';
+import authStorage from '@/stores/universal/AuthStorage';
 import SettingsService from './settingsService';
 import LocalBackupService from './localBackup';
 import BookmarksService from './bookmarksService';
@@ -58,6 +59,7 @@ class ServerApp {
 
         await Promise.all([
             this.storage.persistent,
+            authStorage,
             this.settingsService.settings,
             this.settingsService.backgrounds,
             this.settingsService.widgets,

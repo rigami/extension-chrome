@@ -1,22 +1,20 @@
-import { StorageConnector } from '@/stores/universal/storage';
 import mergeObjects from '@/utils/mergeObjects';
 import appVariables from '@/config/appVariables';
 import fetchData from '@/utils/helpers/fetchData';
 import { map, startsWith } from 'lodash';
+import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
+import { SERVICE_STATE } from '@/enum';
+import authStorage from '@/stores/universal/AuthStorage';
+import { toJS } from 'mobx';
 
-const cache = {
-    deviceToken: '',
-    accessToken: '',
-    expiredTimestamp: Date.now(),
-};
+const queueAwaitRequests = [];
+let refreshingAccessToken = false;
 
-const refreshToken = async () => {
-    console.log('Get token...');
-    const { auth } = await StorageConnector.get('auth');
+const refreshAccessToken = async () => {
+    console.log('Check token is expired...');
 
-    console.log('auth:', auth);
-
-    let { accessToken, expiredTimestamp } = auth;
+    let { accessToken, expiredTimestamp } = authStorage.data;
+    const { deviceToken, refreshToken } = authStorage.data;
     let expired = true;
 
     if (accessToken) {
@@ -27,7 +25,7 @@ const refreshToken = async () => {
                 cache: 'no-store',
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'Device-Token': auth.deviceToken,
+                    'Device-Token': deviceToken,
                     'Device-Type': 'extension-chrome',
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -35,7 +33,7 @@ const refreshToken = async () => {
         );
         console.log('Check token:', checkExpiredResponse);
 
-        expiredTimestamp = Date.now() + checkExpiredResponse.expiredTimeout;
+        expiredTimestamp = Date.now() + checkExpiredResponse.expiredTimeout - 5 * 1000;
         expired = checkExpiredResponse.expired;
     }
 
@@ -47,60 +45,96 @@ const refreshToken = async () => {
                 cache: 'no-store',
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'Device-Token': auth.deviceToken,
+                    'Device-Token': deviceToken,
                     'Device-Type': 'extension-chrome',
-                    'Authorization': `Bearer ${auth.refreshToken}`,
+                    'Authorization': `Bearer ${refreshToken}`,
                 },
             },
         );
 
         console.log('Refresh response:', response);
 
-        expiredTimestamp = Date.now() + response.expiredTimeout;
+        expiredTimestamp = Date.now() + response.expiredTimeout - 5 * 1000;
         accessToken = response.accessToken;
 
-        await StorageConnector.set({
-            auth: {
-                ...auth,
-                accessToken,
-                expiredTimestamp,
-            },
+        authStorage.update({
+            accessToken,
+            expiredTimestamp,
+        });
+    } else {
+        authStorage.update({ expiredTimestamp });
+    }
+};
+
+async function getAccessToken() {
+    if (refreshingAccessToken) {
+        return new Promise((resolve, reject) => {
+            queueAwaitRequests.push({
+                resolve,
+                reject,
+            });
         });
     }
 
-    cache.accessToken = accessToken;
-    cache.expiredTimestamp = expiredTimestamp - 30 * 1000;
-};
+    if (authStorage.data.accessToken && authStorage.data.expiredTimestamp > Date.now()) {
+        return authStorage.data.accessToken;
+    }
+
+    refreshingAccessToken = true;
+
+    try {
+        await refreshAccessToken();
+
+        refreshingAccessToken = false;
+        queueAwaitRequests.map(({ resolve }) => resolve(authStorage.data.accessToken));
+    } catch (e) {
+        refreshingAccessToken = false;
+        queueAwaitRequests.map(({ reject }) => reject(authStorage.data.accessToken));
+    }
+
+    return authStorage.data.accessToken;
+}
+
+async function getDeviceToken() {
+    if (authStorage.state !== SERVICE_STATE.DONE) {
+        await awaitInstallStorage(authStorage);
+    }
+
+    return authStorage.data.deviceToken;
+}
 
 async function api(path, options = {}) {
-    const { useToken = true, version = 1, query, ...userOptions } = options;
+    const {
+        useToken = true,
+        version = 1,
+        query,
+        body,
+        ...userOptions
+    } = options;
 
-    if (!cache.deviceToken) {
-        const { auth } = await StorageConnector.get('auth');
-
-        cache.deviceToken = auth.deviceToken;
-    }
+    const deviceToken = await getDeviceToken();
 
     const defaultOptions = {
         cache: 'no-store',
         headers: {
             'Access-Control-Allow-Origin': '*',
-            'Device-Token': cache.deviceToken,
+            'Device-Token': deviceToken,
             'Device-Type': 'extension-chrome',
         },
     };
 
     if (useToken) {
-        if (!cache.accessToken || cache.expiredTimestamp < Date.now()) {
-            await refreshToken();
-        }
+        const accessToken = await getAccessToken();
 
-        if (!cache.accessToken) throw new Error('accessToken in undefined');
-
-        defaultOptions.headers.Authorization = `Bearer ${cache.accessToken}`;
+        defaultOptions.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     let url = `${appVariables.rest.url}/v${version}/${path}`;
+
+    if (body) {
+        defaultOptions.body = JSON.stringify(body);
+        defaultOptions.headers['Content-type'] = 'application/json';
+    }
 
     if (query) {
         url = `${url}?${map(query, (value, key) => `${key}=${value}`).join('&')}`;
@@ -207,12 +241,6 @@ api.sse = function sse(path, options = {}) {
         });
 
     return eventTarget;
-};
-
-api.clearCache = function clearCache() {
-    cache.deviceToken = '';
-    cache.accessToken = '';
-    cache.expiredTimestamp = Date.now();
 };
 
 export default api;

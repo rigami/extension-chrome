@@ -8,9 +8,9 @@ import { first } from 'lodash';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
 import { eventToApp } from '@/stores/universal/serviceBus';
-import { StorageConnector } from '@/stores/universal/storage';
 import { v4 as UUIDv4 } from 'uuid';
 import api from '@/utils/helpers/api';
+import authStorage from '@/stores/universal/AuthStorage';
 
 class FactorySettingsService {
     core;
@@ -39,25 +39,15 @@ class FactorySettingsService {
 
         progressCallback(15, PREPARE_PROGRESS.REGISTRATION_IN_CLOUD);
 
-        const { auth: { deviceToken: defaultDeviceToken } = {} } = await StorageConnector.get('auth', null);
-
-        const deviceToken = defaultDeviceToken || UUIDv4();
-
-        console.log({ uuid: UUIDv4() });
-
-        if (!defaultDeviceToken) await StorageConnector.set({ auth: { deviceToken } });
-
         const { response: registrationResponse } = await api.post(
             'auth/virtual/registration',
             { useToken: false },
         );
 
-        await StorageConnector.set({
-            auth: {
-                deviceToken,
-                accessToken: registrationResponse.accessToken,
-                refreshToken: registrationResponse.refreshToken,
-            },
+        authStorage.update({
+            username: registrationResponse.username,
+            accessToken: registrationResponse.accessToken,
+            refreshToken: registrationResponse.refreshToken,
         });
 
         console.log('registration in cloud:', registrationResponse);
@@ -110,7 +100,10 @@ class FactorySettingsService {
             this.setFactorySettings((percent, stage) => {
                 if (stage === PREPARE_PROGRESS.DONE) {
                     console.log('Done factory reset!');
-                    this.storage.update({ factoryResetProgress: null });
+                    this.storage.update({
+                        factoryResetProgress: null,
+                        startUsageVersion: appVariables.version,
+                    });
                     resolve();
                 } else {
                     this.storage.update({
@@ -136,7 +129,7 @@ class FactorySettingsService {
 
         const migrateToMv3 = await db().getFromIndex('temp', 'name', 'migrate-to-mv3-require');
 
-        if (!migrateToMv3 && (this.storage.data.factoryResetProgress || !this.storage.data.lastUsageVersion)) {
+        if (!migrateToMv3 && (this.storage.data.factoryResetProgress || !this.storage.data.startUsageVersion)) {
             this.factoryReset();
         }
 
