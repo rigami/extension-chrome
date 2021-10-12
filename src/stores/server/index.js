@@ -1,11 +1,13 @@
 import EventBus from '@/utils/eventBus';
 import BusService, { eventToApp, eventToPopup, initBus } from '@/stores/universal/serviceBus';
-import Storage, { StorageConnector } from '@/stores/universal/storage';
+import Storage, { PersistentStorage, StorageConnector } from '@/stores/universal/storage';
 import { DESTINATION } from '@/enum';
 import appVariables from '@/config/appVariables';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import FactorySettingsService from '@/stores/server/factorySettingsService';
 import SyncChromeBookmarksService from '@/stores/server/localSync/syncChromeBookmarksService';
+import CloudSyncService from '@/stores/server/cloudSync';
+import { v4 as UUIDv4 } from 'uuid';
 import authStorage from '@/stores/universal/AuthStorage';
 import SettingsService from './settingsService';
 import LocalBackupService from './localBackup';
@@ -19,6 +21,7 @@ class ServerApp {
     storage;
     settingsService;
     localBackupService;
+    cloudSyncService;
     systemBookmarksService;
     bookmarksService;
     weatherService;
@@ -90,11 +93,16 @@ class ServerApp {
         // Backgrounds
         this.backgroundsService = new BackgroundsService(this);
 
-        // Sync & backup
+        // Local backup
         this.localBackupService = new LocalBackupService(this);
 
+        // Cloud Sync
+        this.cloudSyncService = new CloudSyncService(this);
+
+        // Local Sync
         if (BUILD === 'full') { this.systemBookmarksService = new SyncChromeBookmarksService(this); }
 
+        // Other
         this.factorySettingsService = new FactorySettingsService(this);
 
         console.log('Server app is run!');
