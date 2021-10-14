@@ -137,7 +137,11 @@ async function api(path, options = {}) {
     }
 
     if (query) {
-        url = `${url}?${map(query, (value, key) => `${key}=${value}`).join('&')}`;
+        const queries = map(query, (value, key) => (value ? `${key}=${value}` : null))
+            .filter((isExist) => isExist)
+            .join('&');
+
+        url = `${url}${queries ? `?${queries}` : ''}`;
     }
 
     return fetchData(url, mergeObjects(defaultOptions, userOptions));
