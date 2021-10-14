@@ -9,6 +9,7 @@ import appVariables from '@/config/appVariables';
 import getPreview from '@/utils/createPreview';
 import { BG_TYPE } from '@/enum';
 import { v4 as UUIDv4 } from 'uuid';
+import nowInISO from '@/utils/nowInISO';
 import { SearchQuery } from './searchQuery';
 
 class BookmarksUniversalService {
@@ -31,7 +32,7 @@ class BookmarksUniversalService {
     }
 
     @action('save bookmarks')
-    static async save(props) {
+    static async save(props, sync = true) {
         const {
             url,
             name,
@@ -108,17 +109,20 @@ class BookmarksUniversalService {
             await cache.put(saveIcoUrl, iconResponse);
         }
 
-        // TODO: If only enabling sync
-        await db().add('bookmarks_wait_sync', {
-            action,
-            bookmarkId: saveBookmarkId,
-        });
+        if (sync) {
+            // TODO: If only enabling sync
+            await db().add('bookmarks_wait_sync', {
+                action,
+                commitDate: nowInISO(),
+                bookmarkId: saveBookmarkId,
+            });
+        }
 
         return saveBookmarkId;
     }
 
     @action('remove bookmark')
-    static async remove(bookmarkId) {
+    static async remove(bookmarkId, sync = true) {
         const favoriteItem = FavoritesUniversalService.findFavorite({
             itemType: 'bookmark',
             itemId: bookmarkId,
@@ -138,11 +142,14 @@ class BookmarksUniversalService {
             captureException(e);
         }
 
-        // TODO: If only enabling sync
-        await db().add('bookmarks_wait_sync', {
-            action: 'delete',
-            bookmarkId,
-        });
+        if (sync) {
+            // TODO: If only enabling sync
+            await db().add('bookmarks_wait_sync', {
+                action: 'delete',
+                commitDate: nowInISO(),
+                bookmarkId,
+            });
+        }
     }
 
     @action('query bookmarks')

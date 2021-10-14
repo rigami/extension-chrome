@@ -15,6 +15,7 @@ import timeout from '@/utils/helpers/timeout';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import { captureException } from '@sentry/react';
 import { DESTINATION } from '@/enum';
+import setAwaitInterval from '@/utils/helpers/setAwaitInterval';
 
 class CloudSyncService {
     core;
@@ -68,16 +69,19 @@ class CloudSyncService {
     async pullChanges(localCommit, serverCommit) {
         console.log('[CloudSync] Pull changes...');
 
-        const { response } = await api.get('bookmarks/state/pull', { query: { commit: localCommit } });
+        const { response, ok } = await api.get('bookmarks/state/pull', { query: { commit: localCommit } });
 
         console.log('response:', response);
 
         if (response.length === 0) {
             console.log('[CloudSync] Nothing for pull');
-            return;
         }
 
-        await Promise.all(response.map((bookmark) => BookmarksUniversalService
+        if (!ok) {
+            throw new Error(`Failed pull '${response.message}'`);
+        }
+
+        await Promise.all(response.create.map((bookmark) => BookmarksUniversalService
             .save({
                 ...bookmark,
                 id: bookmark.id,
@@ -90,11 +94,31 @@ class CloudSyncService {
                 folderId: bookmark.folderId,
                 createTimestamp: new Date(bookmark.createDate).valueOf(),
                 modifiedTimestamp: new Date(bookmark.updateDate).valueOf(),
-            })));
+            }, false)));
+
+        await Promise.all(response.update.map((bookmark) => BookmarksUniversalService
+            .save({
+                ...bookmark,
+                id: bookmark.id,
+                icoVariant: bookmark.variant.toUpperCase(),
+                url: bookmark.url,
+                icoUrl: bookmark.imageUrl || '',
+                name: bookmark.title,
+                description: bookmark.description,
+                tags: bookmark.tagsIds,
+                folderId: bookmark.folderId,
+                createTimestamp: new Date(bookmark.createDate).valueOf(),
+                modifiedTimestamp: new Date(bookmark.updateDate).valueOf(),
+            }, false)));
+
+        await Promise.all(response.delete.map((bookmarkId) => BookmarksUniversalService
+            .remove(bookmarkId, false)));
 
         this.storage.update({ bookmarks: serverCommit });
 
-        this.core.globalEventBus.call('bookmark/new', DESTINATION.APP);
+        if (response.create.length + response.update.length + response.delete.length !== 0) {
+            this.core.globalEventBus.call('bookmark/new', DESTINATION.APP);
+        }
     }
 
     async pushChanges() {
@@ -106,88 +130,114 @@ class CloudSyncService {
             return;
         }
 
-        await db().clear('bookmarks_wait_sync');
-
         let changesItems = {};
         commits.forEach((commit) => {
-            changesItems[commit.bookmarkId] = [...(changesItems[commit.bookmarkId] || []), commit.action];
+            changesItems[commit.bookmarkId] = [
+                ...(changesItems[commit.bookmarkId] || []),
+                {
+                    action: commit.action,
+                    commitDate: commit.commitDate,
+                },
+            ];
         });
         console.log('changesItems:', changesItems);
 
         changesItems = pickBy(changesItems, (actions) => (
             actions.length === 1
-            || first(actions) !== 'create'
-            || last(actions) !== 'delete'
+            || first(actions).action !== 'create'
+            || last(actions).action !== 'delete'
         ));
 
         changesItems = mapValues(changesItems, (actions) => last(actions));
 
         const changesItemsByActions = {};
 
-        each(changesItems, (action, bookmarkId) => {
-            changesItemsByActions[action] = [...(changesItemsByActions[action] || []), bookmarkId];
+        each(changesItems, ({ action, commitDate }, bookmarkId) => {
+            changesItemsByActions[action] = [
+                ...(changesItemsByActions[action] || []),
+                {
+                    bookmarkId,
+                    commitDate,
+                },
+            ];
         });
 
         if ('create' in changesItemsByActions) {
             changesItemsByActions.create = await Promise.all(
-                changesItemsByActions.create.map((bookmarkId) => db().get('bookmarks', bookmarkId)),
+                changesItemsByActions.create.map(async ({ bookmarkId, commitDate }) => {
+                    const bookmark = await db().get('bookmarks', bookmarkId);
+
+                    return {
+                        id: bookmark.id,
+                        variant: bookmark.icoVariant?.toLowerCase() || 'symbol',
+                        url: bookmark.url,
+                        imageUrl: bookmark.icoUrl || '',
+                        title: bookmark.name,
+                        description: bookmark.description,
+                        tagsIds: bookmark.tags,
+                        folderId: bookmark.folderId,
+                        lastAction: 'create',
+                        createDate: new Date(bookmark.createTimestamp).toISOString(),
+                        updateDate: commitDate,
+                    };
+                }),
             );
 
             console.log('changesItemsByActions.create:', changesItemsByActions.create);
-
-            changesItemsByActions.create = changesItemsByActions.create.map((bookmark) => ({
-                id: bookmark.id,
-                variant: bookmark.icoVariant?.toLowerCase() || 'symbol',
-                url: bookmark.url,
-                imageUrl: bookmark.icoUrl || '',
-                title: bookmark.name,
-                description: bookmark.description,
-                tagsIds: bookmark.tags,
-                folderId: bookmark.folderId,
-                lastAction: 'create',
-                createDate: new Date(bookmark.createTimestamp).toISOString(),
-                updateDate: new Date(bookmark.modifiedTimestamp).toISOString(),
-            }));
         }
 
         if ('update' in changesItemsByActions) {
             changesItemsByActions.update = await Promise.all(
-                changesItemsByActions.update.map((bookmarkId) => db().get('bookmarks', bookmarkId)),
+                changesItemsByActions.update.map(async ({ bookmarkId, commitDate }) => {
+                    const bookmark = await db().get('bookmarks', bookmarkId);
+
+                    return {
+                        id: bookmark.id,
+                        variant: bookmark.icoVariant?.toLowerCase() || 'symbol',
+                        url: bookmark.url,
+                        imageUrl: bookmark.icoUrl || '',
+                        title: bookmark.name,
+                        description: bookmark.description,
+                        tagsIds: bookmark.tags,
+                        folderId: bookmark.folderId,
+                        lastAction: 'update',
+                        createDate: new Date(bookmark.createTimestamp).toISOString(),
+                        updateDate: commitDate,
+                    };
+                }),
             );
 
             console.log('changesItemsByActions.update:', changesItemsByActions.update);
+        }
 
-            changesItemsByActions.update = changesItemsByActions.update.map((bookmark) => ({
-                id: bookmark.id,
-                variant: bookmark.icoVariant?.toLowerCase() || 'symbol',
-                url: bookmark.url,
-                imageUrl: bookmark.icoUrl || '',
-                title: bookmark.name,
-                description: bookmark.description,
-                tagsIds: bookmark.tags,
-                folderId: bookmark.folderId,
-                lastAction: 'update',
-                createDate: new Date(bookmark.createTimestamp).toISOString(),
-                updateDate: new Date(bookmark.modifiedTimestamp).toISOString(),
+        if ('delete' in changesItemsByActions) {
+            changesItemsByActions.delete = changesItemsByActions.delete.map(({ bookmarkId, commitDate }) => ({
+                id: bookmarkId,
+                updateDate: commitDate,
             }));
+
+            console.log('changesItemsByActions.update:', changesItemsByActions.update);
         }
 
         console.log('changesItems:', changesItemsByActions);
 
         console.log('[CloudSync] Push changes...', this.storage.data);
 
-        const { response } = await api.put(
+        const { response, ok } = await api.put(
             'bookmarks/state/push', {
                 body: {
-                    commit: this.storage.data?.bookmarks,
+                    // commit: this.storage.data?.bookmarks,
                     ...changesItemsByActions,
                 },
             },
         );
 
-        console.log('response:', response);
+        console.log('response:', ok, response);
 
-        if (response.serverCommit) this.storage.update({ bookmarks: response.serverCommit });
+        if (ok) {
+            await db().clear('bookmarks_wait_sync');
+            // if (response.serverCommit) this.storage.update({ bookmarks: response.serverCommit });
+        }
     }
 
     async subscribe() {
@@ -195,10 +245,14 @@ class CloudSyncService {
 
         await awaitInstallStorage(this.storage);
 
-        setInterval(async () => {
-            await this.checkUpdates();
-            await this.pushChanges();
-        }, 10000);
+        setAwaitInterval(async () => {
+            try {
+                if (this.storage.data?.bookmarks) await this.pushChanges();
+                await this.checkUpdates();
+            } catch (e) {
+                console.error('Failed sync:', e);
+            }
+        }, 3000);
     }
 }
 

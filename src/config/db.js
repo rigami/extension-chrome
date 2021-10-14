@@ -154,6 +154,7 @@ async function upgradeOrCreateBookmarksWaitSync(db, transaction, oldVersion, new
         });
         store.createIndex('action', 'action', { unique: false });
         store.createIndex('bookmark_id', 'bookmarkId', { unique: false });
+        store.createIndex('commit_date', 'commitDate', { unique: false });
     }
 }
 
