@@ -69,12 +69,13 @@ class CloudSyncService {
     async pullChanges(localCommit, serverCommit) {
         console.log('[CloudSync] Pull changes...');
 
-        const { response, ok } = await api.get('bookmarks/state/pull', { query: { commit: localCommit } });
+        const { response, ok, statusCode } = await api.get('bookmarks/state/pull', { query: { commit: localCommit } });
 
-        console.log('response:', response);
+        console.log('response:', statusCode, response);
 
-        if (response.length === 0) {
+        if (statusCode === 304) {
             console.log('[CloudSync] Nothing for pull');
+            return;
         }
 
         if (!ok) {
