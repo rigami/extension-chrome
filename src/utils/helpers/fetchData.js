@@ -10,7 +10,8 @@ const fetchData = async (url, options = {}) => {
     let parsedResponse;
 
     if (responseType === 'json') {
-        parsedResponse = await response.json();
+        parsedResponse = await response.text();
+        parsedResponse = parsedResponse.length === 0 ? null : JSON.parse(parsedResponse);
     } else if (responseType === 'blob') {
         parsedResponse = await response.blob();
     } else if (responseType === 'text') {
