@@ -59,7 +59,7 @@ class BookmarksUniversalService {
 
         let saveBookmarkId;
         let saveIcoUrl;
-        let action;
+        let actionWithBookmark;
 
         if (sourceIcoUrl) {
             saveIcoUrl = `${appVariables.rest.url}/background/get-site-icon?ico-url=${encodeURIComponent(sourceIcoUrl)}`;
@@ -69,15 +69,16 @@ class BookmarksUniversalService {
 
         if (id) {
             const oldBookmark = await this.get(id);
-
-            saveBookmarkId = await db().put('bookmarks', cloneDeep({
+            const newBookmark = cloneDeep({
                 id,
                 ...saveData,
                 icoUrl: saveIcoUrl,
                 createTimestamp: oldBookmark.createTimestamp || Date.now(),
                 modifiedTimestamp: Date.now(),
-            }));
-            action = 'update';
+            });
+
+            saveBookmarkId = await db().put('bookmarks', newBookmark);
+            actionWithBookmark = 'update';
         } else {
             try {
                 saveBookmarkId = await db().add('bookmarks', cloneDeep({
@@ -92,7 +93,7 @@ class BookmarksUniversalService {
                 captureException(e);
                 throw new Error('Similar bookmark already exist');
             }
-            action = 'create';
+            actionWithBookmark = 'create';
         }
         if (imageBase64 || sourceIcoUrl) {
             let blob;
@@ -110,9 +111,9 @@ class BookmarksUniversalService {
         }
 
         if (sync) {
-            // TODO: If only enabling sync
+            // TODO: If only user register
             await db().add('bookmarks_wait_sync', {
-                action,
+                action: actionWithBookmark,
                 commitDate: nowInISO(),
                 bookmarkId: saveBookmarkId,
             });
