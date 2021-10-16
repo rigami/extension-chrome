@@ -51,11 +51,6 @@ class CloudSyncService {
         console.log('response:', response);
 
         if (!response.existUpdate) {
-            if (!this.storage.data?.bookmarks) {
-                console.log('[CloudSync] Not set local commit. Save server commit...');
-                this.storage.update({ bookmarks: response.serverCommit });
-            }
-
             console.log('[CloudSync] Nothing for updates');
 
             return null;
@@ -63,7 +58,7 @@ class CloudSyncService {
 
         console.log('Check updates:', response);
 
-        return this.pullChanges(this.storage.data?.bookmarks, response.serverCommit);
+        return response.serverCommit;
     }
 
     async pullChanges(localCommit, serverCommit) {
@@ -82,38 +77,49 @@ class CloudSyncService {
             throw new Error(`Failed pull '${response.message}'`);
         }
 
-        await Promise.all(response.create.map((bookmark) => BookmarksUniversalService
+        await Promise.all(response.create.map((serverBookmark) => BookmarksUniversalService
             .save({
-                ...bookmark,
-                id: bookmark.id,
-                icoVariant: bookmark.variant.toUpperCase(),
-                url: bookmark.url,
-                icoUrl: bookmark.imageUrl || '',
-                name: bookmark.title,
-                description: bookmark.description,
-                tags: bookmark.tagsIds,
-                folderId: bookmark.folderId,
-                createTimestamp: new Date(bookmark.createDate).valueOf(),
-                modifiedTimestamp: new Date(bookmark.updateDate).valueOf(),
+                ...serverBookmark,
+                id: serverBookmark.id,
+                icoVariant: serverBookmark.variant.toUpperCase(),
+                url: serverBookmark.url,
+                icoUrl: serverBookmark.imageUrl || '',
+                name: serverBookmark.title,
+                description: serverBookmark.description,
+                tags: serverBookmark.tagsIds,
+                folderId: serverBookmark.folderId,
+                createTimestamp: new Date(serverBookmark.createDate).valueOf(),
+                modifiedTimestamp: new Date(serverBookmark.updateDate).valueOf(),
             }, false)));
 
-        await Promise.all(response.update.map((bookmark) => BookmarksUniversalService
-            .save({
-                ...bookmark,
-                id: bookmark.id,
-                icoVariant: bookmark.variant.toUpperCase(),
-                url: bookmark.url,
-                icoUrl: bookmark.imageUrl || '',
-                name: bookmark.title,
-                description: bookmark.description,
-                tags: bookmark.tagsIds,
-                folderId: bookmark.folderId,
-                createTimestamp: new Date(bookmark.createDate).valueOf(),
-                modifiedTimestamp: new Date(bookmark.updateDate).valueOf(),
-            }, false)));
+        await Promise.all(response.update.map(async (serverBookmark) => {
+            const localBookmark = await BookmarksUniversalService.get(serverBookmark.id);
 
-        await Promise.all(response.delete.map((bookmarkId) => BookmarksUniversalService
-            .remove(bookmarkId, false)));
+            if (localBookmark.modifiedTimestamp >= new Date(serverBookmark.updateDate).valueOf()) return;
+
+            await BookmarksUniversalService
+                .save({
+                    ...serverBookmark,
+                    id: serverBookmark.id,
+                    icoVariant: serverBookmark.variant.toUpperCase(),
+                    url: serverBookmark.url,
+                    icoUrl: serverBookmark.imageUrl || '',
+                    name: serverBookmark.title,
+                    description: serverBookmark.description,
+                    tags: serverBookmark.tagsIds,
+                    folderId: serverBookmark.folderId,
+                    createTimestamp: new Date(serverBookmark.createDate).valueOf(),
+                    modifiedTimestamp: new Date(serverBookmark.updateDate).valueOf(),
+                }, false);
+        }));
+
+        await Promise.all(response.delete.map(async ({ id, updateDate }) => {
+            const localBookmark = await BookmarksUniversalService.get(id);
+
+            if (!localBookmark || localBookmark.modifiedTimestamp >= new Date(updateDate).valueOf()) return;
+
+            await BookmarksUniversalService.remove(id, false);
+        }));
 
         this.storage.update({ bookmarks: serverCommit });
 
@@ -163,10 +169,14 @@ class CloudSyncService {
             ];
         });
 
+        console.log('changesItemsByActions:', changesItemsByActions);
+
         if ('create' in changesItemsByActions) {
             changesItemsByActions.create = await Promise.all(
                 changesItemsByActions.create.map(async ({ bookmarkId, commitDate }) => {
                     const bookmark = await db().get('bookmarks', bookmarkId);
+
+                    if (!bookmark) return null;
 
                     return {
                         id: bookmark.id,
@@ -184,6 +194,8 @@ class CloudSyncService {
                 }),
             );
 
+            changesItemsByActions.create = changesItemsByActions.create.filter((isExist) => isExist);
+
             console.log('changesItemsByActions.create:', changesItemsByActions.create);
         }
 
@@ -191,6 +203,8 @@ class CloudSyncService {
             changesItemsByActions.update = await Promise.all(
                 changesItemsByActions.update.map(async ({ bookmarkId, commitDate }) => {
                     const bookmark = await db().get('bookmarks', bookmarkId);
+
+                    if (!bookmark) return null;
 
                     return {
                         id: bookmark.id,
@@ -207,6 +221,8 @@ class CloudSyncService {
                     };
                 }),
             );
+
+            changesItemsByActions.update = changesItemsByActions.update.filter((isExist) => isExist);
 
             console.log('changesItemsByActions.update:', changesItemsByActions.update);
         }
@@ -227,7 +243,7 @@ class CloudSyncService {
         const { response, ok } = await api.put(
             'bookmarks/state/push', {
                 body: {
-                    // commit: this.storage.data?.bookmarks,
+                    commit: this.storage.data?.bookmarks,
                     ...changesItemsByActions,
                 },
             },
@@ -237,7 +253,7 @@ class CloudSyncService {
 
         if (ok) {
             await db().clear('bookmarks_wait_sync');
-            // if (response.serverCommit) this.storage.update({ bookmarks: response.serverCommit });
+            if (response.serverCommit) this.storage.update({ bookmarks: response.serverCommit });
         }
     }
 
@@ -248,12 +264,13 @@ class CloudSyncService {
 
         setAwaitInterval(async () => {
             try {
-                if (this.storage.data?.bookmarks) await this.pushChanges();
-                await this.checkUpdates();
+                const updates = await this.checkUpdates();
+                if (updates) await this.pullChanges(this.storage.data?.bookmarks, updates);
+                await this.pushChanges();
             } catch (e) {
                 console.error('Failed sync:', e);
             }
-        }, 3000);
+        }, 10000);
     }
 }
 
