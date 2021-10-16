@@ -5,7 +5,6 @@ import { map, startsWith } from 'lodash';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import { SERVICE_STATE } from '@/enum';
 import authStorage from '@/stores/universal/AuthStorage';
-import { toJS } from 'mobx';
 
 const queueAwaitRequests = [];
 let refreshingAccessToken = false;
