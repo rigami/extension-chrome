@@ -1,7 +1,7 @@
 {
   "title": "Settings",
-  "backgrounds": "Backgrounds",
-  "backgrounds_description": "Select, add or remove a background. Configure switching",
+  "quietMode": "Quiet mode",
+  "quietMode_description": "Select, add or remove a background. Configure switching",
   "bookmarks": "Bookmarks",
   "bookmarks_description": "Customize your favorites bar. Choose the default interfacу",
   "widgets": "Widgets",

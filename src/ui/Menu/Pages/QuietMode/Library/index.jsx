@@ -15,7 +15,7 @@ import { last } from 'lodash';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import BackgroundCard from '@/ui/Menu/Pages/Backgrounds/BackgroundCard';
+import BackgroundCard from '@/ui/Menu/Pages/QuietMode/BackgroundCard';
 import { captureException } from '@sentry/react';
 import { PhotoLibraryRounded as EmptyLibraryIcon } from '@material-ui/icons';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
@@ -37,7 +37,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const headerProps = {
-    title: 'settingsBackground:library.title',
+    title: 'settingsQuietMode:library.title',
     actions: (<HeaderActions />),
 };
 const pageProps = { width: 960 };
@@ -53,7 +53,7 @@ function HeaderActions() {
 function LibraryMenu() {
     const { backgrounds } = useAppStateService();
     const coreService = useCoreService();
-    const { t } = useTranslation(['settingsBackground', 'background']);
+    const { t } = useTranslation(['settingsQuietMode', 'background']);
     const classes = useStyles();
 
     const [bgs, setBgs] = useState(null);

@@ -1,6 +1,10 @@
 {
   "darkThemeBackdrop":"Dark matte under backgrounds",
   "darkThemeApp":"Application dark theme",
+  "openOnStartup": {
+    "title": "Open bookmarks panel at startup",
+    "description": "Bookmarks panel will open when opening a new tab"
+  },
   "tabName":{
     "title":"Tab name",
     "description":"Enter your tab name",

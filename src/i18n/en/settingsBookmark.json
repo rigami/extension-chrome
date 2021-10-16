@@ -2,9 +2,9 @@
   "general": "General",
   "fap": "Quick Access Toolbar",
   "fapEmptyWarningMessage":"The panel is not displayed because no item has been added to favorites. Add folder, bookmark or tag to favorites",
-  "openOnStartup": {
-    "title": "Open bookmarks panel at startup",
-    "description": "Bookmarks panel will open when opening a new tab"
+  "useWidgetsOnDesktop": {
+    "title": "Use widgets on desktop",
+    "description": "Widgets help you get quick access to time, date and weather"
   },
   "useFap":{
     "title":"Use Quick Access Toolbar",

@@ -36,18 +36,6 @@ function Widgets({ onSelect }) {
 
     return (
         <React.Fragment>
-            <MenuRow
-                title={t('useWidgetsOnDesktop.title')}
-                description={t('useWidgetsOnDesktop.description')}
-                action={{
-                    type: ROWS_TYPE.CHECKBOX,
-                    value: widgets.settings.useWidgets,
-                    onChange: (event, value) => {
-                        widgets.settings.update({ useWidgets: value });
-                    },
-                }}
-                type={ROWS_TYPE.CHECKBOX}
-            />
             <SectionHeader title={t('dtw')} />
             <MenuRow
                 title={t('dtwPlace.title')}

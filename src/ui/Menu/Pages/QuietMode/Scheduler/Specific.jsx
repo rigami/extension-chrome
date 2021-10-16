@@ -10,7 +10,7 @@ import libraryPage from '../Library';
 
 function Specific({ onSelect }) {
     const { backgrounds } = useAppStateService();
-    const { t } = useTranslation(['settingsBackground', 'background']);
+    const { t } = useTranslation(['settingsQuietMode', 'background']);
 
     return (
         <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC}>

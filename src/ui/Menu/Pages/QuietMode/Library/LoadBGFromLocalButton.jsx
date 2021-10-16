@@ -11,7 +11,7 @@ const useStyles = makeStyles(() => ({ input: { display: 'none' } }));
 function LoadBGFromLocalButton() {
     const { backgrounds } = useAppStateService();
     const classes = useStyles();
-    const { t } = useTranslation(['settingsBackground']);
+    const { t } = useTranslation(['settingsQuietMode']);
 
     return (
         <React.Fragment>

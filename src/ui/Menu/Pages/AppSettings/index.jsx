@@ -3,7 +3,7 @@ import { Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import { THEME } from '@/enum';
+import { ACTIVITY, THEME } from '@/enum';
 import useAppService from '@/stores/app/AppStateProvider';
 import { observer } from 'mobx-react-lite';
 import tabNamePage from './TabName';
@@ -25,6 +25,16 @@ function AppSettings({ onSelect }) {
 
     return (
         <React.Fragment>
+            <MenuRow
+                title={t('openOnStartup.title')}
+                description={t('openOnStartup.description')}
+                action={{
+                    type: ROWS_TYPE.CHECKBOX,
+                    value: appService.settings.defaultActivity === ACTIVITY.BOOKMARKS,
+                    onChange: (event, value) => appService.settings
+                        .update({ defaultActivity: value ? ACTIVITY.BOOKMARKS : ACTIVITY.DESKTOP }),
+                }}
+            />
             <MenuRow
                 title={t('darkThemeBackdrop')}
                 action={{

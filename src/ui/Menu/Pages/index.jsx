@@ -10,14 +10,18 @@ import {
 } from '@material-ui/core';
 import {
     SettingsRounded as SettingsIcon,
-    CollectionsRounded as BackgroundsIcon,
     CollectionsBookmarkRounded as BookmarksIcon,
     HelpRounded as AboutIcon,
     BackupRounded as SyncIcon,
     WidgetsRounded as WidgetsIcon,
-    DeveloperBoardRounded as DevToolsIcon, ArrowBackRounded as BackIcon,
+    DeveloperBoardRounded as DevToolsIcon,
+    ArrowBackRounded as BackIcon,
 } from '@material-ui/icons';
-import { VolunteerActivismRounded as ShareIcon } from '@/icons';
+import {
+    SelfImprovementRounded as QuietModeIcon,
+    VolunteerActivismRounded as ShareIcon,
+} from '@/icons';
+
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuInfo from '@/ui/Menu/MenuInfo';
@@ -25,10 +29,9 @@ import appVariables from '@/config/appVariables';
 import Header from '@/ui/Menu/PageHeader';
 import clsx from 'clsx';
 import { alpha } from '@material-ui/core/styles/colorManipulator';
-import backgroundsPage from './Backgrounds';
+import quietModePage from './QuietMode';
 import aboutPage from './About';
 import appSettingsPage from './AppSettings';
-import bookmarksPage from './Bookmarks';
 import syncPage from './Sync';
 import widgetsPage from './Widgets';
 import devTools from './DevTools';
@@ -109,14 +112,9 @@ const useStyles = makeStyles((theme) => ({
 
 const general = [
     {
-        icon: <BackgroundsIcon />,
-        page: backgroundsPage,
+        icon: <QuietModeIcon />,
+        page: quietModePage,
         color: '#2675F0',
-    },
-    BUILD === 'full' && {
-        icon: <BookmarksIcon />,
-        page: bookmarksPage,
-        color: '#ff4f88',
     },
     {
         icon: <WidgetsIcon />,

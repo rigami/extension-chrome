@@ -59,7 +59,7 @@ function Stream({ onSelect }) {
     const classes = useStyles();
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
-    const { t } = useTranslation(['settingsBackground']);
+    const { t } = useTranslation(['settingsQuietMode']);
     const [isCustomQuery, setIsCustomQuery] = useState(
         coreService.storage.persistent.data.backgroundStreamQuery?.type === 'custom-query',
     );

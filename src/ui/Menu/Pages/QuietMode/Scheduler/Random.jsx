@@ -8,7 +8,7 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 
 function Random() {
     const { backgrounds } = useAppStateService();
-    const { t } = useTranslation(['settingsBackground']);
+    const { t } = useTranslation(['settingsQuietMode']);
 
     return (
         <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM}>

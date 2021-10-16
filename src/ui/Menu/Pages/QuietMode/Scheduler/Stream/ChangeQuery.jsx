@@ -24,7 +24,7 @@ import { runInAction } from 'mobx';
 import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import useAppStateService from '@/stores/app/AppStateProvider';
-import BackgroundCard from '@/ui/Menu/Pages/Backgrounds/BackgroundCard';
+import BackgroundCard from '@/ui/Menu/Pages/QuietMode/BackgroundCard';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import { captureException } from '@sentry/react';
@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
     footer: { height: 400 },
 }));
 
-const headerProps = { title: 'settingsBackground:query.custom.create' };
+const headerProps = { title: 'settingsQuietMode:query.custom.create' };
 const pageProps = { width: 960 };
 
 function BackgroundPreview({ bg, isAdded = false }) {
@@ -101,7 +101,7 @@ function BackgroundPreview({ bg, isAdded = false }) {
 
 function ChangeQuery({ onClose }) {
     const classes = useStyles();
-    const { t } = useTranslation(['settingsBackground']);
+    const { t } = useTranslation(['settingsQuietMode']);
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const store = useLocalObservable(() => ({

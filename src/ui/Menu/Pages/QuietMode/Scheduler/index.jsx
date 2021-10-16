@@ -12,7 +12,7 @@ import Specific from './Specific';
 
 function SchedulerSection({ onSelect }) {
     const { backgrounds } = useAppStateService();
-    const { t } = useTranslation(['settingsBackground']);
+    const { t } = useTranslation(['settingsQuietMode']);
 
     return (
         <React.Fragment>

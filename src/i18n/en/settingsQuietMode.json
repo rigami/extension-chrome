@@ -1,4 +1,38 @@
 {
+  "fap": "Quick Access Toolbar",
+  "widgets": "Widgets",
+  "backgrounds": "Backgrounds",
+  "fapEmptyWarningMessage":"The panel is not displayed because no item has been added to favorites. Add folder, bookmark or tag to favorites",
+  "useWidgetsOnDesktop": {
+    "title": "Use widgets on desktop",
+    "description": "Widgets help you get quick access to time, date and weather"
+  },
+  "useFap":{
+    "title":"Use Quick Access Toolbar",
+    "description":"Pin your most important bookmarks and tags to always have quick access to them"
+  },
+  "fapStyle":{
+    "title":"Panel Style",
+    "value":{
+      "CONTAINED":"With backdrop",
+      "TRANSPARENT":"Transparent",
+      "PRODUCTIVITY":"Productivity"
+    }
+  },
+  "fapPosition":{
+    "title":"Panel position",
+    "value":{
+      "TOP":"From above",
+      "BOTTOM":"From below"
+    }
+  },
+  "fapAlign":{
+    "title":"Panel align",
+    "value":{
+      "LEFT":"Be left side",
+      "CENTER":"Center"
+    }
+  },
   "general": "General",
   "scheduler": "Switch mode",
   "specificBg": "Specific background",

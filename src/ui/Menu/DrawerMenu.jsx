@@ -14,7 +14,7 @@ import clsx from 'clsx';
 import useAppService from '@/stores/app/AppStateProvider';
 import { ACTIVITY } from '@/enum';
 import { useTheme } from '@material-ui/styles';
-import backgroundsPage from './Pages/Backgrounds';
+import backgroundsPage from './Pages/QuietMode';
 import MenuList from './Pages';
 
 const useStyles = makeStyles((theme) => ({
