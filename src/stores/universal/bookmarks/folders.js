@@ -3,6 +3,8 @@ import db from '@/utils/db';
 import Folder from '@/stores/universal/bookmarks/entities/folder';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import nowInISO from '@/utils/nowInISO';
+import { v4 as UUIDv4 } from 'uuid';
 
 class FoldersUniversalService {
     @action('get folders root')
@@ -53,32 +55,45 @@ class FoldersUniversalService {
     }
 
     @action('save folder')
-    static async save({ name, id, parentId }) {
-        console.log('universal create folder:', {
-            name,
-            id,
-            parentId,
-        });
-        let newFolderId = id;
+    static async save({ name, id, parentId }, sync = true) {
+        const oldFolder = id ? await this.get(id) : {};
+        let saveFolderId = id;
+        let actionWithBookmark;
 
         if (id) {
             await db().put('folders', {
                 id,
                 name: name.trim(),
                 parentId,
+                createTimestamp: oldFolder.createTimestamp || Date.now(),
+                modifiedTimestamp: Date.now(),
             });
+            actionWithBookmark = 'update';
         } else {
-            newFolderId = await db().add('folders', {
+            saveFolderId = await db().add('folders', {
+                id: UUIDv4(),
                 name: name.trim(),
                 parentId,
+                createTimestamp: Date.now(),
+                modifiedTimestamp: Date.now(),
+            });
+            actionWithBookmark = 'create';
+        }
+
+        if (sync) {
+            // TODO: If only user register
+            await db().add('folders_wait_sync', {
+                action: actionWithBookmark,
+                commitDate: nowInISO(),
+                folderId: saveFolderId,
             });
         }
 
-        return newFolderId;
+        return saveFolderId;
     }
 
     @action('remove folder')
-    static async remove(folderId) {
+    static async remove(folderId, sync = true) {
         if (folderId === 1) return Promise.reject(new Error('Cannon remove first folder'));
 
         const favoriteItem = FavoritesUniversalService.findFavorite({
@@ -103,6 +118,15 @@ class FoldersUniversalService {
         await Promise.all(childFolders.map(({ id }) => this.remove(id)));
 
         await db().delete('folders', folderId);
+
+        if (sync) {
+            // TODO: If only enabling sync
+            await db().add('folders_wait_sync', {
+                action: 'delete',
+                commitDate: nowInISO(),
+                folderId,
+            });
+        }
 
         return Promise.resolve();
     }

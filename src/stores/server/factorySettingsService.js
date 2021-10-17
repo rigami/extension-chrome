@@ -8,9 +8,9 @@ import { first } from 'lodash';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
 import { eventToApp } from '@/stores/universal/serviceBus';
-import { v4 as UUIDv4 } from 'uuid';
 import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/AuthStorage';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 class FactorySettingsService {
     core;
@@ -28,11 +28,7 @@ class FactorySettingsService {
         progressCallback(10, PREPARE_PROGRESS.CREATE_DEFAULT_STRUCTURE);
 
         try {
-            await db().add('folders', {
-                id: 1,
-                name: 'Sundry',
-                parentId: 0,
-            });
+            await FoldersUniversalService.save({ name: 'Sundry' });
         } catch (e) {
             console.warn(e);
         }
