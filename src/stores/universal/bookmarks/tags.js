@@ -5,6 +5,8 @@ import { last } from 'lodash';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import Tag from '@/stores/universal/bookmarks/entities/tag';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import nowInISO from '@/utils/nowInISO';
+import { v4 as UUIDv4 } from 'uuid';
 
 class TagsUniversalService {
     @action
@@ -40,26 +42,43 @@ class TagsUniversalService {
             return similarTag?.id;
         }
 
-        let newTagId = id;
+        let saveTagId = id;
+        let actionWithBookmark;
 
         if (id) {
             await db().put('tags', {
                 id,
                 name: name.trim(),
                 color: newColor,
+                createTimestamp: oldTag.createTimestamp || Date.now(),
+                modifiedTimestamp: Date.now(),
             });
+            actionWithBookmark = 'update';
         } else {
-            newTagId = await db().add('tags', {
+            saveTagId = await db().add('tags', {
+                id: UUIDv4(),
                 name: name.trim(),
                 color: newColor,
+                createTimestamp: Date.now(),
+                modifiedTimestamp: Date.now(),
+            });
+            actionWithBookmark = 'create';
+        }
+
+        if (sync) {
+            // TODO: If only user register
+            await db().add('tags_wait_sync', {
+                action: actionWithBookmark,
+                commitDate: nowInISO(),
+                tagId: saveTagId,
             });
         }
 
-        return newTagId;
+        return saveTagId;
     }
 
     @action('remove tag')
-    static async remove(tagId) {
+    static async remove(tagId, sync = true) {
         const favoriteItem = FavoritesUniversalService.findFavorite({
             itemType: 'tag',
             itemId: tagId,
@@ -77,6 +96,15 @@ class TagsUniversalService {
             ...bookmark,
             tags: tags.filter((id) => id !== tagId),
         })));
+
+        if (sync) {
+            // TODO: If only enabling sync
+            await db().add('tags_wait_sync', {
+                action: 'delete',
+                commitDate: nowInISO(),
+                tagId,
+            });
+        }
 
         return Promise.resolve();
     }
