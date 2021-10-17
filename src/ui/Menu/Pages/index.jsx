@@ -119,7 +119,7 @@ const general = [
     {
         icon: <WidgetsIcon />,
         page: widgetsPage,
-        color: '#596dff',
+        color: '#e72575',
     },
     {
         icon: <SettingsIcon />,
