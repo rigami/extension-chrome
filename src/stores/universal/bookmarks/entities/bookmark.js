@@ -15,6 +15,8 @@ class Bookmark {
     tags;
     folderId;
     clickCounts = 0;
+    createTimestamp;
+    modifiedTimestamp;
 
     constructor(bookmark = {}) {
         makeAutoObservable(this);
