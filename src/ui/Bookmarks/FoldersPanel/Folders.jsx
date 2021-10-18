@@ -26,6 +26,7 @@ import { captureException } from '@sentry/react';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import clsx from 'clsx';
 import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
+import { NULL_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
     expandIcon: {
@@ -271,10 +272,10 @@ function Folders(props) {
                     <ListItem
                         className={classes.addRootButton}
                         onClick={async () => {
-                            onClickFolder({ id: 0 });
+                            onClickFolder({ id: NULL_UUID });
                         }}
                         button
-                        selected={selectFolder === 0}
+                        selected={selectFolder === NULL_UUID}
                     >
                         <HomeIcon />
                         {t('folder:root')}
@@ -305,10 +306,10 @@ function Folders(props) {
                     className={classes.addRootButton}
                     onClick={(event) => {
                         store.anchorEl = event.currentTarget;
-                        store.parentFolder = 0;
+                        store.parentFolder = NULL_UUID;
                     }}
                     button
-                    selected={store.parentFolder === 0 && store.anchorEl}
+                    selected={store.parentFolder === NULL_UUID && store.anchorEl}
                 >
                     <AddIcon />
                     {t('button.create')}

@@ -1,6 +1,8 @@
 import { action } from 'mobx';
 import db from '@/utils/db';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import nowInISO from '@/utils/nowInISO';
+import { uuid } from '@/utils/generate/uuid';
 
 let cacheFavorites = [];
 
@@ -15,12 +17,23 @@ class FavoritesUniversalService {
     }
 
     @action('add to favorites')
-    static async addToFavorites(favorite) {
-        delete favorite.id;
-
-        const addedFavorite = await db().add('favorites', favorite);
+    static async addToFavorites(favorite, sync = true) {
+        const addedFavorite = await db().add('favorites', {
+            ...favorite,
+            id: uuid(),
+        });
 
         await this.getAll();
+
+        if (sync) {
+            // TODO: If only user register
+            await db().add('favorites_wait_sync', {
+                action: 'create',
+                commitDate: nowInISO(),
+                itemType: favorite.itemType,
+                itemId: favorite.itemId,
+            });
+        }
 
         return addedFavorite;
     }
@@ -31,7 +44,7 @@ class FavoritesUniversalService {
     }
 
     @action('remove favorite')
-    static async removeFromFavorites(favoriteId) {
+    static async removeFromFavorites(favoriteId, sync = true) {
         const favorite = await db().get('favorites', favoriteId);
 
         if (!favorite) return null;
@@ -39,6 +52,16 @@ class FavoritesUniversalService {
         await db().delete('favorites', favoriteId);
 
         await this.getAll();
+
+        if (sync) {
+            // TODO: If only enabling sync
+            await db().add('favorites_wait_sync', {
+                action: 'delete',
+                commitDate: nowInISO(),
+                itemType: favorite.itemType,
+                itemId: favorite.itemId,
+            });
+        }
 
         return favorite;
     }

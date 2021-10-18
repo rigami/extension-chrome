@@ -1,4 +1,4 @@
-import { v4 as UUIDv4 } from 'uuid';
+import { uuid } from '@/utils/generate/uuid';
 
 export default async function upgradeOrCreateFolders(db, transaction, oldVersion, newVersion) {
     let store;
@@ -29,7 +29,7 @@ export default async function upgradeOrCreateFolders(db, transaction, oldVersion
         const newIds = {};
 
         folders.forEach((folder) => {
-            newIds[folder.id] = UUIDv4();
+            newIds[folder.id] = uuid();
         });
 
         for await (const folder of folders) {

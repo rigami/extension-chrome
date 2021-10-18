@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import { v4 as UUIDv4 } from 'uuid';
+import { uuid } from '@/utils/generate/uuid';
 
 export default async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion) {
     let store;
@@ -86,7 +86,7 @@ export default async function upgradeOrCreateBookmarks(db, transaction, oldVersi
         for await (const bookmark of bookmarks) {
             transaction.objectStore('bookmarks').put({
                 ...bookmark,
-                id: UUIDv4(),
+                id: uuid(),
             });
         }
     }

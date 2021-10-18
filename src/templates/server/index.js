@@ -1,6 +1,6 @@
 import BackgroundApp from '@/stores/server';
 import asyncAction from '@/utils/helpers/asyncAction';
-import { v4 as UUIDv4 } from 'uuid';
+import { uuid } from '@/utils/generate/uuid';
 import {
     setUser,
     captureException,
@@ -13,7 +13,7 @@ initSentry();
 asyncAction(async () => {
     const { auth: { deviceToken: defaultDeviceToken } = {} } = await StorageConnector.get('auth', null);
 
-    const deviceToken = defaultDeviceToken || UUIDv4();
+    const deviceToken = defaultDeviceToken || uuid();
 
     if (!defaultDeviceToken) await StorageConnector.set({ auth: { deviceToken } });
 

@@ -1,4 +1,4 @@
-import { v4 as UUIDv4 } from 'uuid';
+import { uuid } from '@/utils/generate/uuid';
 
 export default async function upgradeOrCreateTags(db, transaction, oldVersion, newVersion) {
     let store;
@@ -39,13 +39,13 @@ export default async function upgradeOrCreateTags(db, transaction, oldVersion, n
         const newIds = {};
 
         tags.forEach((folder) => {
-            newIds[folder.id] = UUIDv4();
+            newIds[folder.id] = uuid();
         });
 
         for await (const tag of tags) {
             transaction.objectStore('tags').put({
                 ...tag,
-                id: UUIDv4(),
+                id: uuid(),
             });
         }
 

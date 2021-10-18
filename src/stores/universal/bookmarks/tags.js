@@ -6,7 +6,7 @@ import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import Tag from '@/stores/universal/bookmarks/entities/tag';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import nowInISO from '@/utils/nowInISO';
-import { v4 as UUIDv4 } from 'uuid';
+import { uuid } from '@/utils/generate/uuid';
 
 class TagsUniversalService {
     @action
@@ -56,7 +56,7 @@ class TagsUniversalService {
             actionWithBookmark = 'update';
         } else {
             saveTagId = await db().add('tags', {
-                id: UUIDv4(),
+                id: uuid(),
                 name: name.trim(),
                 color: newColor,
                 createTimestamp: Date.now(),

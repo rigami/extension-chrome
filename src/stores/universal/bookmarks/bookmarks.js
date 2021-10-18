@@ -8,7 +8,7 @@ import { captureException } from '@sentry/browser';
 import appVariables from '@/config/appVariables';
 import getPreview from '@/utils/createPreview';
 import { BG_TYPE } from '@/enum';
-import { v4 as UUIDv4 } from 'uuid';
+import { uuid } from '@/utils/generate/uuid';
 import nowInISO from '@/utils/nowInISO';
 import { SearchQuery } from './searchQuery';
 
@@ -68,12 +68,12 @@ class BookmarksUniversalService {
         }
 
         if (id) {
-            const oldBookmark = await this.get(id);
+            const oldBookmark = id ? await this.get(id) : null;
             const newBookmark = cloneDeep({
                 id,
                 ...saveData,
                 icoUrl: saveIcoUrl,
-                createTimestamp: oldBookmark.createTimestamp || Date.now(),
+                createTimestamp: oldBookmark?.createTimestamp || Date.now(),
                 modifiedTimestamp: Date.now(),
             });
 
@@ -83,7 +83,7 @@ class BookmarksUniversalService {
             try {
                 saveBookmarkId = await db().add('bookmarks', cloneDeep({
                     ...saveData,
-                    id: UUIDv4(),
+                    id: uuid(),
                     icoUrl: saveIcoUrl,
                     createTimestamp: Date.now(),
                     modifiedTimestamp: Date.now(),

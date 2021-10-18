@@ -4,18 +4,21 @@ import Folder from '@/stores/universal/bookmarks/entities/folder';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import nowInISO from '@/utils/nowInISO';
-import { v4 as UUIDv4 } from 'uuid';
+import { NULL_UUID, uuid } from '@/utils/generate/uuid';
 
 class FoldersUniversalService {
     @action('get folders root')
-    static async getFoldersByParent(parentId = 0) {
+    static async getFoldersByParent(parentId = NULL_UUID) {
+        console.log('[folders] [getFoldersByParent] parentId:', parentId);
         const folders = await db().getAllFromIndex('folders', 'parent_id', parentId);
+        console.log('[folders] [getFoldersByParent] folders:', folders);
 
         return folders.map((folder) => new Folder(folder));
     }
 
     @action('get folders tree')
-    static async getTree(parentId = 0) {
+    static async getTree(parentId = NULL_UUID) {
+        console.log('[folders] [getTree] parentId:', parentId);
         const root = await this.getFoldersByParent(parentId);
 
         return Promise.all(root.map(async (folder) => {
@@ -29,12 +32,14 @@ class FoldersUniversalService {
     }
 
     @action('get folders path')
-    static async _getPath(folderId = 0, path) {
+    static async _getPath(folderId = null, path) {
+        if (!folderId) return path;
+
         const folder = await this.get(folderId);
 
         if (!folder) return path;
 
-        if (folder.parentId === 0) {
+        if (folder.parentId === NULL_UUID) {
             return [folder, ...path];
         }
 
@@ -42,8 +47,8 @@ class FoldersUniversalService {
     }
 
     @action('get folders path')
-    static async getPath(folderId = 0) {
-        return this._getPath(folderId || 0, []);
+    static async getPath(folderId = null) {
+        return this._getPath(folderId || null, []);
     }
 
     @action('get folder by id')
@@ -56,7 +61,7 @@ class FoldersUniversalService {
 
     @action('save folder')
     static async save({ name, id, parentId }, sync = true) {
-        const oldFolder = id ? await this.get(id) : {};
+        const oldFolder = id ? await this.get(id) : null;
         let saveFolderId = id;
         let actionWithBookmark;
 
@@ -64,16 +69,16 @@ class FoldersUniversalService {
             await db().put('folders', {
                 id,
                 name: name.trim(),
-                parentId,
-                createTimestamp: oldFolder.createTimestamp || Date.now(),
+                parentId: parentId || null,
+                createTimestamp: oldFolder?.createTimestamp || Date.now(),
                 modifiedTimestamp: Date.now(),
             });
             actionWithBookmark = 'update';
         } else {
             saveFolderId = await db().add('folders', {
-                id: UUIDv4(),
+                id: uuid(),
                 name: name.trim(),
-                parentId,
+                parentId: parentId || null,
                 createTimestamp: Date.now(),
                 modifiedTimestamp: Date.now(),
             });

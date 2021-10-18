@@ -11,6 +11,7 @@ import { eventToApp } from '@/stores/universal/serviceBus';
 import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/AuthStorage';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import { NULL_UUID } from '@/utils/generate/uuid';
 
 class FactorySettingsService {
     core;
@@ -28,7 +29,10 @@ class FactorySettingsService {
         progressCallback(10, PREPARE_PROGRESS.CREATE_DEFAULT_STRUCTURE);
 
         try {
-            await FoldersUniversalService.save({ name: 'Sundry' });
+            await FoldersUniversalService.save({
+                name: 'Sundry',
+                parentId: NULL_UUID,
+            });
         } catch (e) {
             console.warn(e);
         }

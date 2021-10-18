@@ -1,8 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-    InputBase,
-    Button,
-} from '@material-ui/core';
+import { InputBase, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +7,7 @@ import { useLocalObservable, observer } from 'mobx-react-lite';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { captureException } from '@sentry/react';
 import { useSnackbar } from 'notistack';
+import { NULL_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -27,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Editor({ onSave, editId, parentId = 0 }) {
+function Editor({ onSave, editId, parentId = NULL_UUID }) {
     const classes = useStyles();
     const { t } = useTranslation(['folder']);
     const bookmarksService = useBookmarksService();

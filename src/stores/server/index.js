@@ -1,13 +1,12 @@
 import EventBus from '@/utils/eventBus';
 import BusService, { eventToApp, eventToPopup, initBus } from '@/stores/universal/serviceBus';
-import Storage, { PersistentStorage, StorageConnector } from '@/stores/universal/storage';
+import Storage, { StorageConnector } from '@/stores/universal/storage';
 import { DESTINATION } from '@/enum';
 import appVariables from '@/config/appVariables';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import FactorySettingsService from '@/stores/server/factorySettingsService';
 import SyncChromeBookmarksService from '@/stores/server/localSync/syncChromeBookmarksService';
 import CloudSyncService from '@/stores/server/cloudSync';
-import { v4 as UUIDv4 } from 'uuid';
 import authStorage from '@/stores/universal/AuthStorage';
 import SettingsService from './settingsService';
 import LocalBackupService from './localBackup';
