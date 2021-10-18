@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import db from '@/utils/db';
 import commitsToChanged from '@/stores/server/cloudSync/utils/commitsToChanged';
+import { DESTINATION } from '@/enum';
 
 class CloudSyncBookmarksService {
     core;
@@ -58,6 +59,10 @@ class CloudSyncBookmarksService {
 
             await BookmarksUniversalService.remove(id, false);
         }));
+
+        if (changes.create.length + changes.update.length + changes.delete.length !== 0) {
+            this.core.globalEventBus.call('bookmark/new', DESTINATION.APP);
+        }
     }
 
     async grubNotSyncedChanges() {
@@ -70,7 +75,7 @@ class CloudSyncBookmarksService {
             return null;
         }
 
-        let changesItems = commitsToChanged('bookmarkId', commits);
+        const changesItems = commitsToChanged('bookmarkId', commits);
 
         if ('create' in changesItems) {
             changesItems.create = await Promise.all(
