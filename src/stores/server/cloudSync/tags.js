@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import db from '@/utils/db';
 import commitsToChanged from '@/stores/server/cloudSync/utils/commitsToChanged';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import { DESTINATION } from '@/enum';
 
 class CloudSyncTagsService {
     core;
@@ -19,8 +20,8 @@ class CloudSyncTagsService {
             .save({
                 ...serverTag,
                 id: serverTag.id,
-                name: serverTag.title,
-                color: serverTag.color,
+                name: serverTag.name,
+                colorKey: serverTag.colorKey,
                 createTimestamp: new Date(serverTag.createDate).valueOf(),
                 modifiedTimestamp: new Date(serverTag.updateDate).valueOf(),
             }, false)));
@@ -34,8 +35,8 @@ class CloudSyncTagsService {
                 .save({
                     ...serverTag,
                     id: serverTag.id,
-                    name: serverTag.title,
-                    color: serverTag.color,
+                    name: serverTag.name,
+                    colorKey: serverTag.colorKey,
                     createTimestamp: new Date(serverTag.createDate).valueOf(),
                     modifiedTimestamp: new Date(serverTag.updateDate).valueOf(),
                 }, false);
@@ -48,6 +49,10 @@ class CloudSyncTagsService {
 
             await TagsUniversalService.remove(id, false);
         }));
+
+        if (changes.create.length + changes.update.length + changes.delete.length !== 0) {
+            this.core.globalEventBus.call('tag/new', DESTINATION.APP);
+        }
     }
 
     async grubNotSyncedChanges() {
@@ -60,7 +65,7 @@ class CloudSyncTagsService {
             return null;
         }
 
-        let changesItems = commitsToChanged('tagId', commits);
+        const changesItems = commitsToChanged('tagId', commits);
 
         if ('create' in changesItems) {
             changesItems.create = await Promise.all(
@@ -72,7 +77,7 @@ class CloudSyncTagsService {
                     return {
                         id: tag.id,
                         name: tag.name,
-                        color: tag.color,
+                        colorKey: tag.colorKey,
                         lastAction: 'create',
                         createDate: new Date(tag.createTimestamp).toISOString(),
                         updateDate: commitDate,
@@ -93,7 +98,7 @@ class CloudSyncTagsService {
                     return {
                         id: tag.id,
                         name: tag.name,
-                        color: tag.color,
+                        colorKey: tag.colorKey,
                         lastAction: 'update',
                         createDate: new Date(tag.createTimestamp).toISOString(),
                         updateDate: commitDate,

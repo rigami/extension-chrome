@@ -11,7 +11,8 @@ export default async function upgradeOrCreateTags(db, transaction, oldVersion, n
             unique: true,
         });
         store.createIndex('name', 'name', { unique: false });
-        store.createIndex('color', 'color', { unique: true });
+        // store.createIndex('color', 'color', { unique: true });
+        store.createIndex('color_key', 'colorKey', { unique: true });
     }
 
     if (!store.indexNames.contains('modified_timestamp')) {

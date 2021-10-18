@@ -85,12 +85,12 @@ function Tags(props) {
     if (expandAlways) {
         return (
             <Box className={clsx(classes.root, externalClassName)}>
-                {tags.map(({ id, name, color }) => (
+                {tags.map(({ id, name, colorKey }) => (
                     <Tag
                         key={id}
                         id={id}
                         name={name}
-                        color={color}
+                        colorKey={colorKey}
                         className={classes.tag}
                         isSelect={selectedTags.includes(id)}
                         onClick={() => {
@@ -111,11 +111,11 @@ function Tags(props) {
         <Box className={clsx(classes.root, externalClassName)}>
             <CollapseWrapper
                 list={tags}
-                renderComponent={({ id, name, color, className }) => (
+                renderComponent={({ id, name, colorKey, className }) => (
                     <Tag
                         id={id}
                         name={name}
-                        color={color}
+                        colorKey={colorKey}
                         className={className}
                         isSelect={selectedTags.includes(id)}
                         onClick={() => {

@@ -1,6 +1,5 @@
 import { action } from 'mobx';
 import db from '@/utils/db';
-import getUniqueColor from '@/utils/generate/uniqueColor';
 import { last } from 'lodash';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import Tag from '@/stores/universal/bookmarks/entities/tag';
@@ -24,16 +23,19 @@ class TagsUniversalService {
     }
 
     @action('save tag')
-    static async save({ name, id, color }) {
-        const oldTag = id ? await this.get(id) : {};
-        let newColor;
+    static async save({ name, id, colorKey }, sync = true) {
+        const oldTag = id ? await this.get(id) : null;
+        let newColorKey;
 
-        if (!id) {
-            const allIds = await db().getAllKeys('tags');
-            newColor = color || getUniqueColor(last(allIds));
-            newColor = color || getUniqueColor((last(allIds) || 0) + 1);
+        if (!id || !oldTag) {
+            const allColorsIds = (await db().getAll('tags')).map((tag) => tag.colorKey).sort((a, b) => a - b);
+
+            let nextColorKey = 0;
+            while (allColorsIds[nextColorKey] === nextColorKey && nextColorKey < allColorsIds.length) nextColorKey += 1;
+
+            newColorKey = colorKey || nextColorKey;
         } else {
-            newColor = color || oldTag.color;
+            newColorKey = colorKey || oldTag.colorKey;
         }
 
         const similarTag = await db().getFromIndex('tags', 'name', name.trim());
@@ -49,8 +51,8 @@ class TagsUniversalService {
             await db().put('tags', {
                 id,
                 name: name.trim(),
-                color: newColor,
-                createTimestamp: oldTag.createTimestamp || Date.now(),
+                colorKey: newColorKey,
+                createTimestamp: oldTag?.createTimestamp || Date.now(),
                 modifiedTimestamp: Date.now(),
             });
             actionWithBookmark = 'update';
@@ -58,7 +60,7 @@ class TagsUniversalService {
             saveTagId = await db().add('tags', {
                 id: uuid(),
                 name: name.trim(),
-                color: newColor,
+                colorKey: newColorKey,
                 createTimestamp: Date.now(),
                 modifiedTimestamp: Date.now(),
             });

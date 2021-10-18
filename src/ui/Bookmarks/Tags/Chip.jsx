@@ -6,6 +6,7 @@ import { alpha, makeStyles } from '@material-ui/core/styles';
 import { StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
+import getUniqueColor from '@/utils/generate/uniqueColor';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -54,7 +55,7 @@ function Tag(props) {
     const {
         id,
         name,
-        color,
+        colorKey,
         onClick,
         isSelect,
         className: externalClassName,
@@ -70,7 +71,7 @@ function Tag(props) {
         itemType: 'tag',
     }));
 
-    const repairColor = color || '#000';
+    const repairColor = getUniqueColor(colorKey) || '#000';
 
     useEffect(() => {
         setIsPin(bookmarksService.findFavorite({

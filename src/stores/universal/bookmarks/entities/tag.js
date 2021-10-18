@@ -1,14 +1,14 @@
 class Tag {
     id;
     name;
-    color;
+    colorKey;
     createTimestamp;
     modifiedTimestamp;
 
     constructor(tag = {}) {
         this.id = tag.id;
         this.name = tag.name;
-        this.color = tag.color;
+        this.colorKey = tag.colorKey;
         this.createTimestamp = tag.createTimestamp;
         this.modifiedTimestamp = tag.modifiedTimestamp;
     }
