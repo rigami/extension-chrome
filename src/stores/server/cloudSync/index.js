@@ -3,8 +3,7 @@ import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/AuthStorage';
 import { PersistentStorage } from '@/stores/universal/storage';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
-import { DESTINATION } from '@/enum';
-import setAwaitInterval from '@/utils/helpers/setAwaitInterval';
+import setAwaitInterval, { stopAwaitInterval } from '@/utils/helpers/setAwaitInterval';
 import CloudSyncBookmarksService from './bookmarks';
 import CloudSyncFoldersService from './folders';
 import CloudSyncTagsService from './tags';
@@ -15,6 +14,7 @@ class CloudSyncService {
     bookmarks;
     folders;
     tags;
+    _syncCycle;
 
     constructor(core) {
         makeAutoObservable(this);
@@ -77,10 +77,6 @@ class CloudSyncService {
         await this.bookmarks.applyChanges(response.bookmarks);
 
         this.storage.update({ commit: serverCommit });
-
-        if (response.create.length + response.update.length + response.delete.length !== 0) {
-            this.core.globalEventBus.call('bookmark/new', DESTINATION.APP);
-        }
     }
 
     async pushChanges() {
@@ -123,6 +119,22 @@ class CloudSyncService {
         }
     }
 
+    runSyncCycle() {
+        this._syncCycle = setAwaitInterval(async () => {
+            try {
+                const updates = await this.checkUpdates();
+                if (updates) await this.pullChanges(this.storage.data?.commit, updates);
+                await this.pushChanges();
+            } catch (e) {
+                console.error('Failed sync:', e);
+            }
+        }, 10000);
+    }
+
+    stopSyncCycle() {
+        stopAwaitInterval(this._syncCycle);
+    }
+
     async subscribe() {
         this.storage = new PersistentStorage('cloudSync', (currState) => ({ ...(currState || {}) }));
 
@@ -132,15 +144,23 @@ class CloudSyncService {
         this.folders = new CloudSyncFoldersService(this.core);
         this.tags = new CloudSyncTagsService(this.core);
 
-        setAwaitInterval(async () => {
-            try {
-                const updates = await this.checkUpdates();
-                if (updates) await this.pullChanges(this.storage.data?.commit, updates);
-                await this.pushChanges();
-            } catch (e) {
-                console.error('Failed sync:', e);
+        this.runSyncCycle();
+
+        this.core.globalEventBus.on('sync/forceSync', async ({ data: newUsername }) => {
+            this.stopSyncCycle();
+            this.storage.update({ commit: null });
+
+            if (authStorage.data.username === newUsername) {
+                this.runSyncCycle();
+            } else {
+                when(
+                    () => authStorage.data.username === newUsername,
+                    () => {
+                        this.runSyncCycle();
+                    },
+                );
             }
-        }, 10000);
+        });
     }
 }
 

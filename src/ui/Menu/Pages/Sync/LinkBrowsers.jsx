@@ -19,12 +19,10 @@ import SectionHeader from '@/ui/Menu/SectionHeader';
 import { IMaskInput } from 'react-imask';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import clsx from 'clsx';
-import fetchData from '@/utils/helpers/fetchData';
-import appVariables from '@/config/appVariables';
 import { FETCH } from '@/enum';
 import api from '@/utils/helpers/api';
-import { StorageConnector } from '@/stores/universal/storage';
 import authStorage from '@/stores/universal/AuthStorage';
+import { eventToBackground } from '@/stores/universal/serviceBus';
 
 const useStyles = makeStyles((theme) => ({
     fullWidth: { width: '100%' },
@@ -119,6 +117,8 @@ function CreateRequest() {
                     accessToken: registrationResponse.accessToken,
                     refreshToken: registrationResponse.refreshToken,
                 });
+
+                eventToBackground('sync/forceSync', { newUsername: event.data.newUsername });
 
                 setIsOpen(false);
             });
