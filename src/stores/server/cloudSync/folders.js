@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import db from '@/utils/db';
 import commitsToChanged from '@/stores/server/cloudSync/utils/commitsToChanged';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import { DESTINATION } from '@/enum';
 
 class CloudSyncFoldersService {
     core;
@@ -14,6 +15,8 @@ class CloudSyncFoldersService {
 
     async applyChanges(changes) {
         console.log('[CloudSync] Apply folders updates...');
+
+        console.log('changes:', changes);
 
         await Promise.all(changes.create.map((serverFolder) => FoldersUniversalService
             .save({
@@ -48,6 +51,10 @@ class CloudSyncFoldersService {
 
             await FoldersUniversalService.remove(id, false);
         }));
+
+        if (changes.create.length + changes.update.length + changes.delete.length !== 0) {
+            this.core.globalEventBus.call('folder/new', DESTINATION.APP);
+        }
     }
 
     async grubNotSyncedChanges() {
@@ -60,9 +67,9 @@ class CloudSyncFoldersService {
             return null;
         }
 
-        let changesItems = commitsToChanged('folderId', commits);
+        const changesItems = commitsToChanged('folderId', commits);
 
-        console.log('folders:', commits, changesItems)
+        console.log('folders:', commits, changesItems);
 
         if ('create' in changesItems) {
             changesItems.create = await Promise.all(
