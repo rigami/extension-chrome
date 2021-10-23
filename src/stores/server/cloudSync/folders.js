@@ -60,12 +60,14 @@ class CloudSyncFoldersService {
     async grubNotSyncedChanges() {
         console.log('[CloudSync] Grub folders changes...');
 
-        const commits = await db().getAll('folders_wait_sync');
+        const isExistUpdates = await db().count('folders_wait_sync');
 
-        if (commits.length === 0) {
+        if (isExistUpdates === 0) {
             console.log('[CloudSync] Nothing folders changes');
             return null;
         }
+
+        const commits = await db().getAll('folders_wait_sync');
 
         const changesItems = commitsToChanged('folderId', commits);
 

@@ -58,12 +58,14 @@ class CloudSyncTagsService {
     async grubNotSyncedChanges() {
         console.log('[CloudSync] Grub tags changes...');
 
-        const commits = await db().getAll('tags_wait_sync');
+        const isExistUpdates = await db().count('tags_wait_sync');
 
-        if (commits.length === 0) {
+        if (isExistUpdates === 0) {
             console.log('[CloudSync] Nothing tags changes');
             return null;
         }
+
+        const commits = await db().getAll('tags_wait_sync');
 
         const changesItems = commitsToChanged('tagId', commits);
 
