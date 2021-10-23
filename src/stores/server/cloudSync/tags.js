@@ -122,7 +122,7 @@ class CloudSyncTagsService {
     }
 
     async clearNotSyncedChanges() {
-        console.log('[CloudSync] Clear await synced folders changes...');
+        console.log('[CloudSync] Clear await synced tags changes...');
 
         await db().clear('tags_wait_sync');
     }

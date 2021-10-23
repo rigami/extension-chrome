@@ -142,7 +142,7 @@ class CloudSyncBookmarksService {
     }
 
     async clearNotSyncedChanges() {
-        console.log('[CloudSync] Clear await synced folders changes...');
+        console.log('[CloudSync] Clear await synced bookmarks changes...');
 
         await db().clear('bookmarks_wait_sync');
     }
