@@ -40,7 +40,7 @@ class CloudSyncService {
 
         const { response } = await api.get(
             'sync/check-update',
-            { query: { commit: this.storage.data?.commit } },
+            { query: { fromCommit: this.storage.data?.localCommit } },
         );
 
         console.log('response:', response);
@@ -53,13 +53,18 @@ class CloudSyncService {
 
         console.log('Check updates:', response);
 
-        return response.serverCommit;
+        return response.headCommit;
     }
 
-    async pullChanges(localCommit, serverCommit) {
+    async pullChanges(fromCommit, toCommit) {
         console.log('[CloudSync] Pull changes...');
 
-        const { response, ok, statusCode } = await api.get('sync/pull', { query: { commit: localCommit } });
+        const { response, ok, statusCode } = await api.get('sync/pull', {
+            query: {
+                fromCommit,
+                toCommit,
+            },
+        });
 
         console.log('response:', statusCode, response);
 
@@ -76,7 +81,7 @@ class CloudSyncService {
         await this.folders.applyChanges(response.folders);
         await this.bookmarks.applyChanges(response.bookmarks);
 
-        this.storage.update({ commit: serverCommit });
+        this.storage.update({ localCommit: response.headCommit });
     }
 
     async pushChanges() {
@@ -92,7 +97,7 @@ class CloudSyncService {
         }
 
         console.log('[CloudSync] Push changes...', {
-            commit: this.storage.data?.commit,
+            localCommit: this.storage.data?.localCommit,
             bookmarks: bookmarksChanges || {},
             folders: foldersChanges || {},
             tags: tagsChanges || {},
@@ -101,7 +106,7 @@ class CloudSyncService {
         const { response, ok } = await api.put(
             'sync/push', {
                 body: {
-                    commit: this.storage.data?.commit,
+                    localCommit: this.storage.data?.localCommit,
                     bookmarks: bookmarksChanges || {},
                     folders: foldersChanges || {},
                     tags: tagsChanges || {},
@@ -115,16 +120,47 @@ class CloudSyncService {
             await this.tags.clearNotSyncedChanges();
             await this.folders.clearNotSyncedChanges();
             await this.bookmarks.clearNotSyncedChanges();
-            if (response.serverCommit) this.storage.update({ commit: response.serverCommit });
+            this.storage.update({
+                localCommit: response.headCommit,
+                requirePullParts: [
+                    ...(this.storage.data?.requirePullParts || []),
+                    {
+                        fromCommit: response.fromCommit,
+                        toCommit: response.toCommit,
+                    },
+                ],
+            });
+
+            if (response.existUpdate) await this.pullChanges(response.fromCommit, response.toCommit);
+
+            this.storage.update({
+                requirePullParts: this.storage.data?.requirePullParts.filter((part) => (
+                    part.fromCommit !== response.fromCommit
+                    && part.toCommit !== response.toCommit
+                )),
+            });
         }
     }
 
     runSyncCycle() {
         this._syncCycle = setAwaitInterval(async () => {
             try {
-                const updates = await this.checkUpdates();
-                if (updates) await this.pullChanges(this.storage.data?.commit, updates);
                 await this.pushChanges();
+
+                if (this.storage.data?.requirePullParts && this.storage.data?.requirePullParts.length !== 0) {
+                    for await (const pullPart of [...this.storage.data?.requirePullParts]) {
+                        await this.pullChanges(pullPart.fromCommit, pullPart.toCommit);
+                        this.storage.update({
+                            requirePullParts: this.storage.data?.requirePullParts.filter((part) => (
+                                part.fromCommit !== pullPart.fromCommit
+                                && part.toCommit !== pullPart.toCommit
+                            )),
+                        });
+                    }
+                }
+
+                const updates = await this.checkUpdates();
+                if (updates) await this.pullChanges(this.storage.data?.localCommit, updates);
             } catch (e) {
                 console.error('Failed sync:', e);
             }
@@ -148,7 +184,7 @@ class CloudSyncService {
 
         this.core.globalEventBus.on('sync/forceSync', async ({ data: newUsername }) => {
             this.stopSyncCycle();
-            this.storage.update({ commit: null });
+            this.storage.update({ localCommit: null });
 
             if (authStorage.data.username === newUsername) {
                 this.runSyncCycle();
