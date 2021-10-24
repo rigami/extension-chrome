@@ -30,8 +30,10 @@ class TagsUniversalService {
         if (!id || !oldTag) {
             const allColorsIds = (await db().getAll('tags')).map((tag) => tag.colorKey).sort((a, b) => a - b);
 
-            let nextColorKey = 0;
-            while (allColorsIds[nextColorKey] === nextColorKey && nextColorKey < allColorsIds.length) nextColorKey += 1;
+            let nextColorKey = 1;
+            while (allColorsIds[nextColorKey - 1] === nextColorKey && nextColorKey <= allColorsIds.length) {
+                nextColorKey += 1;
+            }
 
             newColorKey = colorKey || nextColorKey;
         } else {
