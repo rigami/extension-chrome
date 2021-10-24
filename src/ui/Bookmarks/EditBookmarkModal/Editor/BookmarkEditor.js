@@ -2,6 +2,7 @@ import { BKMS_VARIANT } from '@/enum';
 import { makeAutoObservable, toJS } from 'mobx';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import { captureException } from '@sentry/react';
+import { FIRST_UUID } from '@/utils/generate/uuid';
 import { getImageRecalc, getSiteInfo } from './utils/siteSearch';
 import { getNextImage, getDefaultImage } from './utils/checkIcons';
 
@@ -80,7 +81,7 @@ class BookmarkEditor {
         } else {
             this.state = STATE_EDITOR.WAIT_REQUEST;
             this.tags = defaultData.tagsIds || [];
-            this.folderId = defaultData.folderId || 1;
+            this.folderId = defaultData.folderId || FIRST_UUID;
 
             if (defaultData.url) {
                 this.url = defaultData.url || '';

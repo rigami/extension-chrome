@@ -11,7 +11,7 @@ import { eventToApp } from '@/stores/universal/serviceBus';
 import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/AuthStorage';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import { NULL_UUID } from '@/utils/generate/uuid';
+import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 
 class FactorySettingsService {
     core;
@@ -31,6 +31,7 @@ class FactorySettingsService {
         try {
             await FoldersUniversalService.save({
                 name: 'Sundry',
+                id: FIRST_UUID,
                 parentId: NULL_UUID,
             });
         } catch (e) {

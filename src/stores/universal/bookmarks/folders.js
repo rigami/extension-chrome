@@ -4,7 +4,7 @@ import Folder from '@/stores/universal/bookmarks/entities/folder';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import nowInISO from '@/utils/nowInISO';
-import { NULL_UUID, uuid } from '@/utils/generate/uuid';
+import { FIRST_UUID, NULL_UUID, uuid } from '@/utils/generate/uuid';
 
 class FoldersUniversalService {
     @action('get folders root')
@@ -99,7 +99,7 @@ class FoldersUniversalService {
 
     @action('remove folder')
     static async remove(folderId, sync = true) {
-        if (folderId === 1) return Promise.reject(new Error('Cannon remove first folder'));
+        if (folderId === FIRST_UUID) return Promise.reject(new Error('Cannon remove this folder'));
 
         const favoriteItem = FavoritesUniversalService.findFavorite({
             itemType: 'folder',

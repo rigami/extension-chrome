@@ -26,7 +26,7 @@ import { captureException } from '@sentry/react';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import clsx from 'clsx';
 import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
-import { NULL_UUID } from '@/utils/generate/uuid';
+import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
     expandIcon: {
@@ -86,8 +86,8 @@ function FolderItem(props) {
     const contextMenu = useContextMenu({
         itemId: id,
         itemType: 'folder',
-        disableRemove: id === 1,
-        disableMove: id === 1,
+        disableRemove: id === FIRST_UUID,
+        disableMove: id === FIRST_UUID,
     });
     const [isPin, setIsPin] = useState(bookmarksService.findFavorite({
         itemId: id,
