@@ -8,8 +8,8 @@
         "release": "git tag -a v$npm_package_version && git push --tags",
         "build": "yarn build:clear && NODE_ENV=production webpack",
         "dev": "yarn build:clear && NODE_ENV=development webpack-cli",
-        "build:clear": "yarn rimraf ./build/* && mkdirp ./build",
-        "release:clear": "yarn rimraf ./release/* && mkdirp ./release",
+        "build:clear": "yarn rimraf ./build && mkdirp ./build",
+        "release:clear": "yarn rimraf ./release && mkdirp ./release",
         "build:zip": "zip -r release/rigami-$BUILD-$npm_package_version.zip build",
         "prepare": "husky install",
         "react-devtools": "react-devtools",
@@ -95,14 +95,17 @@
         "html-webpack-plugin": "^5.3.2",
         "husky": "^7.0.2",
         "json-loader": "^0.5.7",
+        "mkdirp": "^1.0.4",
         "null-loader": "^4.0.1",
         "pnp-webpack-plugin": "^1.7.0",
         "react-devtools": "^4.18.0",
         "react-svg-loader": "^3.0.3",
+        "rimraf": "^3.0.2",
         "style-loader": "^3.1.0",
         "webpack": "^5.52.0",
         "webpack-bundle-analyzer": "^4.4.2",
         "webpack-cli": "^4.8.0"
     },
-    "sideEffects": false
+    "sideEffects": false,
+    "packageManager": "yarn@3.1.0"
 }
