@@ -4,6 +4,13 @@ release
 .idea
 build
 build-2
-.yarn
-.pnp.*
 *.log
+
+# Yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
