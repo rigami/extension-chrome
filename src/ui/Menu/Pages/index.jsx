@@ -17,18 +17,18 @@ import {
     DeveloperBoardRounded as DevToolsIcon,
     ArrowBackRounded as BackIcon,
 } from '@material-ui/icons';
+import { useTranslation } from 'react-i18next';
+import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+import { alpha } from '@material-ui/core/styles/colorManipulator';
 import {
     SelfImprovementRounded as QuietModeIcon,
     VolunteerActivismRounded as ShareIcon,
 } from '@/icons';
 
-import { useTranslation } from 'react-i18next';
-import { makeStyles } from '@material-ui/core/styles';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import appVariables from '@/config/appVariables';
 import Header from '@/ui/Menu/PageHeader';
-import clsx from 'clsx';
-import { alpha } from '@material-ui/core/styles/colorManipulator';
 import quietModePage from './QuietMode';
 import aboutPage from './About';
 import commonSettingsPage from './CommonSettings';
@@ -50,8 +50,9 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
     },
     bannerLinks: {
-        marginTop: theme.spacing(1),
+        marginTop: theme.spacing(0.8),
         display: 'grid',
+        '& a': { marginTop: theme.spacing(0.8) },
     },
     root: { },
     toolbar: {

@@ -38,12 +38,12 @@ class FactorySettingsService {
             console.warn(e);
         }
 
-        progressCallback(15, PREPARE_PROGRESS.REGISTRATION_IN_CLOUD);
+        /* progressCallback(15, PREPARE_PROGRESS.REGISTRATION_IN_CLOUD);
 
         const { response: registrationResponse } = await api.post(
             'auth/virtual/registration',
             { useToken: false },
-        );
+        ).catch(console.error);
 
         authStorage.update({
             username: registrationResponse.username,
@@ -51,7 +51,7 @@ class FactorySettingsService {
             refreshToken: registrationResponse.refreshToken,
         });
 
-        console.log('registration in cloud:', registrationResponse);
+        console.log('registration in cloud:', registrationResponse); */
 
         console.log('Fetch BG');
         progressCallback(35, PREPARE_PROGRESS.FETCH_BG);

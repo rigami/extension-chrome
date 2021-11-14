@@ -1,8 +1,7 @@
-import { useTranslation } from 'react-i18next';
+import { getI18n, useTranslation } from 'react-i18next';
 import React, {
     Fragment, useState, forwardRef, useEffect,
 } from 'react';
-import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import {
     Button,
     Dialog,
@@ -13,16 +12,18 @@ import {
     TextField,
     Typography,
 } from '@material-ui/core';
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import SectionHeader from '@/ui/Menu/SectionHeader';
 import { IMaskInput } from 'react-imask';
-import MenuInfo from '@/ui/Menu/MenuInfo';
 import clsx from 'clsx';
+import SectionHeader from '@/ui/Menu/SectionHeader';
+import MenuInfo from '@/ui/Menu/MenuInfo';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { FETCH } from '@/enum';
 import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/AuthStorage';
 import { eventToBackground } from '@/stores/universal/serviceBus';
+import useAppStateService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     fullWidth: { width: '100%' },
@@ -44,6 +45,15 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: theme.typography.h2.fontWeight,
         height: 90,
         letterSpacing: '0.7rem',
+    },
+    sycnedDot: {
+        backgroundColor: '#57c901',
+        borderRadius: '50%',
+        width: theme.spacing(1),
+        height: theme.spacing(1),
+        display: 'inline-block',
+        marginLeft: theme.spacing(1),
+        verticalAlign: 'middle',
     },
 }));
 
@@ -74,23 +84,28 @@ const NumberFormatCustom = forwardRef(function NumberFormatCustom(props, ref) {
 function CreateRequest() {
     const classes = useStyles();
     const { t } = useTranslation(['settingsSync']);
-    const [isOpen, setIsOpen] = useState(false);
-    const [code, setCode] = useState('');
-    const [status, setStatus] = useState(FETCH.WAIT);
+    const store = useLocalObservable(() => ({
+        requestId: null,
+        status: FETCH.WAIT,
+        code: '',
+        isOpen: false,
+    }));
 
     const createRequest = async () => {
-        setStatus(FETCH.PENDING);
+        store.status = FETCH.PENDING;
 
         try {
-            const eventTarget = api.sse('users/merge/create-request');
+            const eventTarget = api.sse('users/merge/request/with-exist-user/create', { useToken: false });
 
             eventTarget.addEventListener('start', (event) => {
                 console.log('start:', event);
             });
 
             eventTarget.addEventListener('code', (event) => {
-                setCode(event.data);
-                setStatus(FETCH.DONE);
+                console.log('event:', event);
+                store.code = event.data.code;
+                store.requestId = event.data.requestId;
+                store.status = FETCH.DONE;
             });
 
             eventTarget.addEventListener('cancel-merge', (event) => {
@@ -100,13 +115,13 @@ function CreateRequest() {
             eventTarget.addEventListener('done-merge', async (event) => {
                 console.log('done-merge:', event.data);
 
-                const { response: registrationResponse } = await api.post(
+                const { response: loginResponse } = await api.post(
                     'auth/login',
                     {
                         useToken: false,
                         responseType: 'json',
                         body: {
-                            email: event.data.newUsername,
+                            username: event.data.newUsername,
                             password: event.data.newUsername,
                         },
                     },
@@ -114,43 +129,44 @@ function CreateRequest() {
 
                 authStorage.update({
                     username: event.data.newUsername,
-                    accessToken: registrationResponse.accessToken,
-                    refreshToken: registrationResponse.refreshToken,
+                    accessToken: loginResponse.accessToken,
+                    refreshToken: loginResponse.refreshToken,
                 });
 
                 eventToBackground('sync/forceSync', { newUsername: event.data.newUsername });
 
-                setIsOpen(false);
+                store.isOpen = false;
             });
 
             eventTarget.addEventListener('close', (event) => {
                 console.log('close:', event);
-                setStatus(FETCH.FAILED);
+                store.status = FETCH.FAILED;
             });
 
             eventTarget.addEventListener('abort', (event) => {
                 console.log('abort:', event);
-                setStatus(FETCH.FAILED);
+                store.status = FETCH.FAILED;
             });
-
-            // setCode(response.code);
-            // setStatus(FETCH.DONE);
         } catch (e) {
-            setStatus(FETCH.FAILED);
+            store.status = FETCH.FAILED;
         }
     };
 
     const deleteRequest = async () => {
-        await api.delete('users/merge/delete-request', { responseType: null });
+        console.log('requestId:', store.requestId);
+        await api.delete('users/merge/request/with-exist-user', {
+            query: { requestId: store.requestId },
+            responseType: null,
+        });
     };
 
     useEffect(() => {
-        if (!isOpen) return () => {};
+        if (!store.isOpen) return () => {};
 
         createRequest();
 
         return () => deleteRequest();
-    }, [isOpen]);
+    }, [store.isOpen]);
 
     return (
         <Fragment>
@@ -167,14 +183,14 @@ function CreateRequest() {
                             color="primary"
                             className={classes.reRunSyncButton}
                             fullWidth
-                            onClick={() => setIsOpen(true)}
+                            onClick={() => { store.isOpen = true; }}
                         >
                             {t('mergeUsers.createRequest.button.generateCode')}
                         </Button>
                     ),
                 }}
             />
-            <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+            <Dialog open={store.isOpen} onClose={() => { store.isOpen = false; }}>
                 <DialogTitle>{t('mergeUsers.createRequest.dialog.title')}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -187,21 +203,21 @@ function CreateRequest() {
                         classes={{ root: classes.banner }}
                         description={t('mergeUsers.createRequest.dialog.warn.description')}
                     />
-                    {status === FETCH.FAILED && (
+                    {store.status === FETCH.FAILED && (
                         <Typography variant="body1" className={classes.code}>
                             {t('common:error.tryLater')}
                         </Typography>
                     )}
-                    {status === FETCH.PENDING && (
+                    {store.status === FETCH.PENDING && (
                         <Typography variant="h5" className={classes.code}>
                             {t('common:loading')}
                         </Typography>
                     )}
-                    {status === FETCH.DONE && (
+                    {store.status === FETCH.DONE && (
                         <Typography variant="h2" className={classes.code}>
-                            {code.substring(0, 3)}
+                            {store.code.substring(0, 3)}
                             -
-                            {code.substring(3)}
+                            {store.code.substring(3)}
                         </Typography>
                     )}
                 </DialogContent>
@@ -209,7 +225,7 @@ function CreateRequest() {
                     <Button
                         data-ui-path="mergeUsers.createRequest.cancel"
                         color="primary"
-                        onClick={() => { setIsOpen(false); }}
+                        onClick={() => { store.isOpen = false; }}
                     >
                         {t('common:button.cancel')}
                     </Button>
@@ -218,6 +234,8 @@ function CreateRequest() {
         </Fragment>
     );
 }
+
+const ObserverCreateRequest = observer(CreateRequest);
 
 function ApplyRequest() {
     const classes = useStyles();
@@ -231,7 +249,10 @@ function ApplyRequest() {
         setStatus(FETCH.PENDING);
 
         try {
-            const { response, ok } = await api.get('users/merge/apply-request', { query: { code } });
+            const { response, ok } = await api.get('users/merge/request/create-virtual-user/apply', {
+                query: { code },
+                useToken: false,
+            });
 
             console.log('response:', response);
 
@@ -241,6 +262,14 @@ function ApplyRequest() {
 
                 return;
             }
+
+            authStorage.update({
+                username: response.regInfo.username,
+                accessToken: response.regInfo.accessToken,
+                refreshToken: response.regInfo.refreshToken,
+            });
+
+            eventToBackground('sync/forceSync', { newUsername: response.regInfo.username });
 
             setStatus(FETCH.DONE);
             setIsOpen(false);
@@ -262,7 +291,6 @@ function ApplyRequest() {
     return (
         <Fragment>
             <MenuRow
-                title={t('mergeUsers.applyRequest.title')}
                 description={t('mergeUsers.applyRequest.description')}
                 action={{
                     type: ROWS_TYPE.CUSTOM,
@@ -335,15 +363,133 @@ function ApplyRequest() {
     );
 }
 
+const { format: format12 } = new Intl.DateTimeFormat(getI18n()?.language, {
+    weekday: 'long',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h11',
+});
+
+const { format: format24 } = new Intl.DateTimeFormat(getI18n()?.language, {
+    weekday: 'long',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+});
+
+function Device({ type, lastActivityDate, current = false }) {
+    const classes = useStyles();
+    const { t } = useTranslation(['settingsSync']);
+    const { widgets } = useAppStateService();
+
+    return (
+        <MenuRow
+            title={t(`syncDevices.type.${type}`)}
+            action={{
+                type: ROWS_TYPE.CUSTOM,
+                onClick: () => {},
+                component: (
+                    <Fragment>
+                        {!current && (
+                            <Typography variant="body2">
+                                {
+                                    lastActivityDate
+                                        ? (widgets.settings.dtwTimeFormat12 ? format12 : format24)(new Date(lastActivityDate))
+                                        : t('syncDevices.notSynced')
+                                }
+                            </Typography>
+                        )}
+                        {current && (
+                            <Typography variant="body2">
+                                {t('syncDevices.synced')}
+                                <span className={classes.sycnedDot} />
+                            </Typography>
+                        )}
+                    </Fragment>
+                ),
+            }}
+        />
+    );
+}
+
+function SyncedDevices() {
+    const classes = useStyles();
+    const { t } = useTranslation(['settingsSync']);
+    const [status, setStatus] = useState(FETCH.WAIT);
+    const [currentDevices, setCurrentDevices] = useState(null);
+    const [otherDevices, setOtherDevices] = useState([]);
+
+    const fetchDevices = async () => {
+        setStatus(FETCH.PENDING);
+
+        try {
+            const { response, ok } = await api.get('devices');
+
+            console.log('response:', response);
+
+            if (!ok) {
+                setStatus(FETCH.FAILED);
+
+                return;
+            }
+
+            setCurrentDevices(response.currentDevice);
+            setOtherDevices(response.otherDevices);
+            setStatus(FETCH.DONE);
+        } catch (e) {
+            console.error(e);
+            setStatus(FETCH.FAILED);
+        }
+    };
+
+    useEffect(() => {
+        fetchDevices();
+    }, [authStorage.data.username]);
+
+    if (status === FETCH.PENDING) {
+        return (
+            <MenuRow
+                title={t('syncDevices.loading')}
+            />
+        );
+    }
+
+    return (
+        <Fragment>
+            <SectionHeader h={2} title={t('syncDevices.currentTitle')} />
+            {currentDevices && (
+                <Device
+                    type={currentDevices.type}
+                    lastActivityDate={currentDevices.lastActivityDate}
+                    current
+                />
+            )}
+            <SectionHeader h={2} title={t('syncDevices.otherTitle')} />
+            {otherDevices.map((device) => (
+                <Device
+                    key={device.id}
+                    type={device.type}
+                    lastActivityDate={device.lastActivityDate}
+                />
+            ))}
+        </Fragment>
+    );
+}
+
 function LinkBrowsers() {
     const classes = useStyles();
     const { t } = useTranslation(['settingsSync']);
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('mergeUsers.title')} />
-            <CreateRequest />
+            <SectionHeader title={t('syncDevices.title')} />
+            <ObserverCreateRequest />
             <ApplyRequest />
+            {authStorage.data.username && (<SyncedDevices />)}
         </React.Fragment>
     );
 }
