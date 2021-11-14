@@ -51,7 +51,7 @@ export default {
     app: {
         backdropTheme: THEME.DARK,
         theme: THEME.LIGHT,
-        tabName: 'Rigami',
+        tabName: 'rigami',
         defaultActivity: ACTIVITY.DESKTOP,
     },
 };
