@@ -12,11 +12,11 @@ const useStyles = makeStyles((theme) => ({
     preview: { padding: theme.spacing(2) },
 }));
 
-const headerProps = { title: 'settingsApp:greeting.title' };
+const headerProps = { title: 'settingsCommon:greeting.title' };
 
 function Greeting() {
     const coreService = useCoreService();
-    const { t } = useTranslation(['settingsApp']);
+    const { t } = useTranslation(['settingsCommon']);
     const classes = useStyles();
 
     return (

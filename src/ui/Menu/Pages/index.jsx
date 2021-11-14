@@ -31,7 +31,7 @@ import clsx from 'clsx';
 import { alpha } from '@material-ui/core/styles/colorManipulator';
 import quietModePage from './QuietMode';
 import aboutPage from './About';
-import appSettingsPage from './AppSettings';
+import commonSettingsPage from './CommonSettings';
 import syncPage from './Sync';
 import widgetsPage from './Widgets';
 import devTools from './DevTools';
@@ -123,7 +123,7 @@ const general = [
     },
     {
         icon: <SettingsIcon />,
-        page: appSettingsPage,
+        page: commonSettingsPage,
         color: '#F88317',
     },
     {

@@ -6,9 +6,9 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
+import { observer } from 'mobx-react-lite';
 import TabNameExampleImage from '@/images/tabName.svg';
 import useAppService from '@/stores/app/AppStateProvider';
-import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     row: { padding: `${theme.spacing(1)}px ${theme.spacing(2)}px` },
@@ -26,11 +26,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const headerProps = { title: 'settingsApp:tabName.title' };
+const headerProps = { title: 'settingsCommon:tabName.title' };
 
 function TabName() {
     const appService = useAppService();
-    const { t } = useTranslation(['settingsApp']);
+    const { t } = useTranslation(['settingsCommon']);
     const classes = useStyles();
 
     return (

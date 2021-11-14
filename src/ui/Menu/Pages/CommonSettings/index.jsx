@@ -2,10 +2,10 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
+import { observer } from 'mobx-react-lite';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { ACTIVITY, THEME } from '@/enum';
 import useAppService from '@/stores/app/AppStateProvider';
-import { observer } from 'mobx-react-lite';
 import tabNamePage from './TabName';
 import greetingPage from './Greeting';
 
@@ -16,11 +16,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const headerProps = { title: 'settings:app' };
+const headerProps = { title: 'settings:common' };
 
 function AppSettings({ onSelect }) {
     const classes = useStyles();
-    const { t } = useTranslation(['settingsApp']);
+    const { t } = useTranslation(['settingsCommon']);
     const appService = useAppService();
 
     return (
@@ -64,7 +64,7 @@ function AppSettings({ onSelect }) {
                     onClick: () => onSelect(tabNamePage),
                     component: (
                         <Typography className={(!appService.settings.tabName && classes.defaultTabValue) || ''}>
-                            {appService.settings.tabName || 'Rigami'}
+                            {appService.settings.tabName || 'rigami'}
                         </Typography>
                     ),
                 }}
@@ -87,7 +87,7 @@ const ObserverAppSettings = observer(AppSettings);
 export { headerProps as header, ObserverAppSettings as content };
 
 export default {
-    id: 'app',
+    id: 'common',
     header: headerProps,
     content: ObserverAppSettings,
 };
