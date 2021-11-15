@@ -2,10 +2,10 @@ import React from 'react';
 import { AppBar, Toolbar, Box } from '@material-ui/core';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
+import { useTranslation } from 'react-i18next';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { SelfImprovementRounded as DesktopIcon } from '@/icons';
 import { ACTIVITY } from '@/enum';
-import { useTranslation } from 'react-i18next';
 import useAppService from '@/stores/app/AppStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import FolderBreadcrumbs from './FolderBreadcrumbs';
@@ -21,7 +21,10 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'flex-start',
         boxSizing: 'content-box',
     },
-    wrapperBreadcrumbs: { overflow: 'auto' },
+    wrapperBreadcrumbs: {
+        overflow: 'auto',
+        marginRight: 'auto',
+    },
     wrapperSearch: {
         padding: theme.spacing(0, 2),
         display: 'flex',
@@ -30,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         maxWidth: (theme.shape.dataCard.width + theme.spacing(2)) * 3 + theme.spacing(2),
         width: '100%',
-        marginLeft: 'auto',
         marginTop: 0,
         boxSizing: 'content-box',
     },
@@ -55,6 +57,7 @@ function ToolsPanel({ searchService: service }) {
     const classes = useStyles();
     const { t } = useTranslation(['desktop']);
     const appService = useAppService();
+    const { cloudSync } = appService;
     const bookmarksService = useBookmarksService();
 
     return (
@@ -71,6 +74,9 @@ function ToolsPanel({ searchService: service }) {
                         folderId={service.activeFolderId}
                         onSelectFolder={(folderId) => service.setActiveFolder(folderId)}
                     />
+                </Box>
+                <Box className={classes.cloudSyncState}>
+                    {cloudSync.data.stage}
                 </Box>
                 <Box className={classes.wrapperSearch}>
                     {service.activeFolderId && (

@@ -95,6 +95,7 @@ function CreateRequest() {
         store.status = FETCH.PENDING;
 
         try {
+            // TODO make choose endpoint if user already exist
             const eventTarget = api.sse('users/merge/request/with-exist-user/create', { useToken: false });
 
             eventTarget.addEventListener('start', (event) => {
@@ -154,6 +155,7 @@ function CreateRequest() {
 
     const deleteRequest = async () => {
         console.log('requestId:', store.requestId);
+        // TODO make choose endpoint if user already exist
         await api.delete('users/merge/request/with-exist-user', {
             query: { requestId: store.requestId },
             responseType: null,
@@ -249,6 +251,7 @@ function ApplyRequest() {
         setStatus(FETCH.PENDING);
 
         try {
+            // TODO make choose endpoint if user already exist
             const { response, ok } = await api.get('users/merge/request/create-virtual-user/apply', {
                 query: { code },
                 useToken: false,
