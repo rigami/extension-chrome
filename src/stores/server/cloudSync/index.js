@@ -3,10 +3,21 @@ import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/AuthStorage';
 import { PersistentStorage } from '@/stores/universal/storage';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
-import setAwaitInterval, { stopAwaitInterval } from '@/utils/helpers/setAwaitInterval';
+import { setAwaitInterval, stopAwaitInterval } from '@/utils/helpers/setAwaitInterval';
 import CloudSyncBookmarksService from './bookmarks';
 import CloudSyncFoldersService from './folders';
 import CloudSyncTagsService from './tags';
+import db from '@/utils/db';
+import { DESTINATION } from '@/enum';
+import { PREPARE_PROGRESS } from '@/stores/app/core';
+
+const SYNC_STAGE = {
+    WAIT: 'WAIT',
+    SYNCING_PUSH: 'SYNCING_PUSH',
+    SYNCING_PULL: 'SYNCING_PULL',
+    SYNCED: 'SYNCED',
+    FAILED_SYNC: 'FAILED_SYNC',
+};
 
 class CloudSyncService {
     core;
@@ -66,7 +77,7 @@ class CloudSyncService {
             },
         });
 
-        console.log('response:', statusCode, response);
+        console.log('pull response:', statusCode, response);
 
         if (statusCode === 304) {
             console.log('[CloudSync] Nothing for pull');
@@ -77,9 +88,16 @@ class CloudSyncService {
             throw new Error(`Failed pull '${response.message}'`);
         }
 
-        await this.tags.applyChanges(response.tags);
+        this.storage.update({ stage: SYNC_STAGE.SYNCING_PULL });
+
+        await this.folders.bulkCreate(response.create.filter(({ entityType }) => entityType === 'folder'));
+        await this.folders.bulkUpdate(response.update.filter(({ entityType }) => entityType === 'folder'));
+        await this.folders.bulkDelete(response.delete.filter(({ entityType }) => entityType === 'folder'));
+        this.core.globalEventBus.call('folder/new', DESTINATION.APP);
+
+        /* await this.tags.applyChanges(response.tags);
         await this.folders.applyChanges(response.folders);
-        await this.bookmarks.applyChanges(response.bookmarks);
+        await this.bookmarks.applyChanges(response.bookmarks); */
 
         this.storage.update({ localCommit: response.headCommit });
     }
@@ -87,29 +105,28 @@ class CloudSyncService {
     async pushChanges() {
         console.log('[CloudSync] Grab changes...');
 
-        const tagsChanges = await this.tags.grubNotSyncedChanges();
-        const foldersChanges = await this.folders.grubNotSyncedChanges();
-        const bookmarksChanges = await this.bookmarks.grubNotSyncedChanges();
+        const commits = await db().getAllFromIndex('pair_with_cloud', 'is_sync', +false);
 
-        if (!tagsChanges && !foldersChanges && !bookmarksChanges) {
-            console.log('[CloudSync] Nothing changes for push...');
+        console.log('commits:', commits);
+
+        if (commits.length === 0) {
+            console.log('[CloudSync] Nothing changes for push');
             return;
         }
 
-        console.log('[CloudSync] Push changes...', {
-            localCommit: this.storage.data?.localCommit,
-            bookmarks: bookmarksChanges || {},
-            folders: foldersChanges || {},
-            tags: tagsChanges || {},
-        });
+        this.storage.update({ stage: SYNC_STAGE.SYNCING_PUSH });
+
+        const foldersChanges = await this.folders.grubChanges(commits.filter(({ entityType }) => entityType === 'folder'));
+        const tagsChanges = await this.tags.grubChanges(commits.filter(({ entityType }) => entityType === 'tag'));
+        const bookmarksChanges = await this.bookmarks.grubChanges(commits.filter(({ entityType }) => entityType === 'bookmark'));
 
         const { response, ok } = await api.put(
             'sync/push', {
                 body: {
                     localCommit: this.storage.data?.localCommit,
-                    bookmarks: bookmarksChanges || {},
-                    folders: foldersChanges || {},
-                    tags: tagsChanges || {},
+                    create: [...foldersChanges.create, ...tagsChanges.create, ...bookmarksChanges.create],
+                    update: [...foldersChanges.update, ...tagsChanges.update, ...bookmarksChanges.update],
+                    delete: [...foldersChanges.delete, ...tagsChanges.delete, ...bookmarksChanges.delete],
                 },
             },
         );
@@ -117,9 +134,24 @@ class CloudSyncService {
         console.log('response:', ok, response);
 
         if (ok) {
-            await this.tags.clearNotSyncedChanges();
-            await this.folders.clearNotSyncedChanges();
-            await this.bookmarks.clearNotSyncedChanges();
+            console.log('Pairing entities...');
+            for await (const pair of response.pair) {
+                const oldPair = await db().get('pair_with_cloud', `${pair.entityType}_${pair.localId}`);
+
+                await db().put('pair_with_cloud', {
+                    ...oldPair,
+                    cloudId: pair.cloudId,
+                    isPair: +true,
+                    isSync: +true,
+                    isDeleted: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
+
+            await this.folders.applyChanges(response);
+            await this.tags.applyChanges(response);
+            await this.bookmarks.applyChanges(response);
+
             this.storage.update({
                 localCommit: response.headCommit,
                 requirePullParts: [
@@ -130,6 +162,17 @@ class CloudSyncService {
                     },
                 ],
             });
+
+            const notModifiedCommits = await db().getAllFromIndex('pair_with_cloud', 'is_sync', +false);
+
+            for await (const notModifiedCommit of notModifiedCommits) {
+                if (commits.find(({ entityType_localId }) => entityType_localId === notModifiedCommit.entityType_localId)) {
+                    await db().put('pair_with_cloud', {
+                        ...notModifiedCommit,
+                        isSync: true,
+                    });
+                }
+            }
 
             if (response.existUpdate) await this.pullChanges(response.fromCommit, response.toCommit);
 
@@ -143,6 +186,7 @@ class CloudSyncService {
     }
 
     runSyncCycle() {
+        console.log('[CloudSync] Run sync cycle...');
         this._syncCycle = setAwaitInterval(async () => {
             try {
                 await this.pushChanges();
@@ -161,8 +205,11 @@ class CloudSyncService {
 
                 const updates = await this.checkUpdates();
                 if (updates) await this.pullChanges(this.storage.data?.localCommit, updates);
+
+                this.storage.update({ stage: SYNC_STAGE.SYNCED });
             } catch (e) {
                 console.error('Failed sync:', e);
+                this.storage.update({ stage: SYNC_STAGE.FAILED_SYNC });
             }
         }, 10000);
     }
@@ -183,12 +230,30 @@ class CloudSyncService {
         this.runSyncCycle();
 
         this.core.globalEventBus.on('sync/forceSync', async ({ data: newUsername }) => {
+            console.log('[CloudSync] Force re sync...');
             this.stopSyncCycle();
             this.storage.update({ localCommit: null });
+
+            console.log('[CloudSync] Reset pairs with cloud...');
+            const pairs = await db().getAll('pair_with_cloud');
+
+            for await (const pair of pairs) {
+                if (pair.isDeleted) {
+                    await db().delete('pair_with_cloud', pair.entityType_localId);
+                } else {
+                    await db().put('pair_with_cloud', {
+                        ...pair,
+                        cloudId: null,
+                        isSync: +false,
+                        isPair: +false,
+                    });
+                }
+            }
 
             if (authStorage.data.username === newUsername) {
                 this.runSyncCycle();
             } else {
+                console.log('[CloudSync] Wait login...');
                 when(
                     () => authStorage.data.username === newUsername,
                     () => {

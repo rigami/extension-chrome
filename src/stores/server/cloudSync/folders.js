@@ -1,7 +1,8 @@
 import { makeAutoObservable } from 'mobx';
+import { map } from 'lodash';
 import db from '@/utils/db';
-import commitsToChanged from '@/stores/server/cloudSync/utils/commitsToChanged';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import { NULL_UUID } from '@/utils/generate/uuid';
 import { DESTINATION } from '@/enum';
 
 class CloudSyncFoldersService {
@@ -13,122 +14,224 @@ class CloudSyncFoldersService {
         this.core = core;
     }
 
-    async applyChanges(changes) {
-        console.log('[CloudSync] Apply folders updates...');
-
-        console.log('changes:', changes);
-
-        await Promise.all(changes.create.map((serverFolder) => FoldersUniversalService
-            .save({
-                ...serverFolder,
-                id: serverFolder.id,
-                parentId: serverFolder.parentId,
-                name: serverFolder.name,
-                createTimestamp: new Date(serverFolder.createDate).valueOf(),
-                modifiedTimestamp: new Date(serverFolder.updateDate).valueOf(),
-            }, false)));
-
-        await Promise.all(changes.update.map(async (serverFolder) => {
-            const localFolder = await FoldersUniversalService.get(serverFolder.id);
-
-            if (localFolder.modifiedTimestamp >= new Date(serverFolder.updateDate).valueOf()) return;
-
-            await FoldersUniversalService
-                .save({
-                    ...serverFolder,
-                    id: serverFolder.id,
-                    parentId: serverFolder.parentId,
-                    name: serverFolder.name,
-                    createTimestamp: new Date(serverFolder.createDate).valueOf(),
-                    modifiedTimestamp: new Date(serverFolder.updateDate).valueOf(),
-                }, false);
-        }));
-
-        await Promise.all(changes.delete.map(async ({ id, updateDate }) => {
-            const localFolder = await FoldersUniversalService.get(id);
-
-            if (!localFolder || localFolder.modifiedTimestamp >= new Date(updateDate).valueOf()) return;
-
-            await FoldersUniversalService.remove(id, false);
-        }));
-
-        if (changes.create.length + changes.update.length + changes.delete.length !== 0) {
-            this.core.globalEventBus.call('folder/new', DESTINATION.APP);
-        }
-    }
-
-    async grubNotSyncedChanges() {
+    async grubChanges(pairs) {
         console.log('[CloudSync] Grub folders changes...');
 
-        const isExistUpdates = await db().count('folders_wait_sync');
+        const changes = {
+            create: [],
+            update: [],
+            delete: [],
+        };
 
-        if (isExistUpdates === 0) {
+        if (pairs.length === 0) {
             console.log('[CloudSync] Nothing folders changes');
-            return null;
+            return changes;
         }
 
-        const commits = await db().getAll('folders_wait_sync');
+        for await (const pair of pairs) {
+            if (pair.isDeleted && pair.isPair) {
+                changes.delete.push({
+                    id: pair.cloudId,
+                    entityType: 'folder',
+                    deleteDate: new Date(pair.modifiedTimestamp).toISOString(),
+                });
 
-        const changesItems = commitsToChanged('folderId', commits);
+                continue;
+            }
 
-        console.log('folders:', commits, changesItems);
+            const folder = await db().get('folders', pair.localId);
 
-        if ('create' in changesItems) {
-            changesItems.create = await Promise.all(
-                changesItems.create.map(async ({ folderId, commitDate }) => {
-                    const folder = await db().get('folders', folderId);
+            if (!folder) continue;
 
-                    if (!folder) return null;
+            const parentFolder = await db().get('pair_with_cloud', `folder_${folder.parentId}`);
 
-                    return {
-                        id: folder.id,
-                        parentId: folder.parentId,
-                        name: folder.name,
-                        lastAction: 'create',
-                        createDate: new Date(folder.createTimestamp).toISOString(),
-                        updateDate: commitDate,
-                    };
-                }),
-            );
+            let payload = { name: folder.name };
 
-            changesItems.create = changesItems.create.filter((isExist) => isExist);
+            if (folder.parentId === NULL_UUID || parentFolder?.isPair) {
+                payload = {
+                    ...payload,
+                    parentId: parentFolder?.cloudId || NULL_UUID,
+                };
+            } else {
+                payload = {
+                    ...payload,
+                    parentTempId: folder.parentId,
+                };
+            }
+
+            if (!pair.isPair) {
+                changes.create.push({
+                    tempId: pair.localId,
+                    entityType: 'folder',
+                    createDate: new Date(folder.createTimestamp).toISOString(),
+                    updateDate: new Date(folder.modifiedTimestamp).toISOString(),
+                    payload,
+                });
+
+                continue;
+            }
+
+            changes.update.push({
+                id: pair.cloudId,
+                entityType: 'folder',
+                createDate: new Date(folder.createTimestamp).toISOString(),
+                updateDate: new Date(folder.modifiedTimestamp).toISOString(),
+                payload,
+            });
         }
 
-        if ('update' in changesItems) {
-            changesItems.update = await Promise.all(
-                changesItems.update.map(async ({ folderId, commitDate }) => {
-                    const folder = await db().get('folders', folderId);
-
-                    if (!folder) return null;
-
-                    return {
-                        id: folder.id,
-                        parentId: folder.parentId,
-                        name: folder.name,
-                        lastAction: 'update',
-                        createDate: new Date(folder.createTimestamp).toISOString(),
-                        updateDate: commitDate,
-                    };
-                }),
-            );
-
-            changesItems.update = changesItems.update.filter((isExist) => isExist);
-        }
-
-        if ('delete' in changesItems) {
-            changesItems.delete = changesItems.delete.map(({ folderId, commitDate }) => ({
-                id: folderId,
-                updateDate: commitDate,
-            }));
-        }
-
-        return changesItems;
+        return changes;
     }
 
-    async clearNotSyncedChanges() {
-        console.log('[CloudSync] Clear await synced folders changes...');
+    async _asTree(folders, processFolder) {
+        console.log('[CloudSync] As tree processing start...');
+        let foldersByParentId = {};
 
-        await db().clear('folders_wait_sync');
+        folders.forEach((snapshot) => {
+            foldersByParentId = {
+                ...(foldersByParentId || {}),
+                [snapshot.payload.parentId]: [...(foldersByParentId[snapshot.payload.parentId] || []), snapshot],
+            };
+        });
+
+        foldersByParentId = map(foldersByParentId, (levelFolders, parentId) => ({
+            snapshots: levelFolders,
+            parentId,
+        }));
+
+        console.log('[CloudSync] Levels:', foldersByParentId);
+
+        const syncedLevels = [];
+
+        while (foldersByParentId.length !== syncedLevels.length) {
+            for await (const level of foldersByParentId) {
+                if (syncedLevels.indexOf(level.parentId) !== -1) continue;
+
+                const rootFolder = await db().getFromIndex('pair_with_cloud', 'cloud_id', level.parentId);
+
+                if (!rootFolder && level.parentId !== NULL_UUID) continue;
+
+                for await (const snapshot of level.snapshots) {
+                    await processFolder(snapshot);
+                }
+                syncedLevels.push(level.parentId);
+            }
+        }
+    }
+
+    async bulkCreate(snapshots) {
+        console.log('[CloudSync] Bulk creating folders...');
+
+        const create = async (snapshot) => {
+            console.log('[CloudSync] Creating folder from snapshot:', snapshot);
+            const pair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.id);
+            const pairParent = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.payload.parentId); // TODO Maybe many results
+
+            if (pair) {
+                console.warn(`Snapshot of folder with cloudId:${pair?.cloudId} already exist. Update...`);
+
+                await FoldersUniversalService.save({
+                    id: pair.localId,
+                    parentId: pairParent?.localId || NULL_UUID,
+                    name: snapshot.payload.name,
+                    createTimestamp: new Date(snapshot.createDate).valueOf(),
+                    modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
+                }, false);
+
+                await db().put('pair_with_cloud', {
+                    entityType_localId: `folder_${pair.localId}`,
+                    entityType: 'folder',
+                    localId: pair.localId,
+                    cloudId: snapshot.id,
+                    isPair: +true,
+                    isSync: +true,
+                    isDeleted: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            } else {
+                const localFolderId = await FoldersUniversalService.save({
+                    id: pair?.id,
+                    parentId: pairParent?.localId || NULL_UUID,
+                    name: snapshot.payload.name,
+                    createTimestamp: new Date(snapshot.createDate).valueOf(),
+                    modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
+                }, false);
+
+                await db().add('pair_with_cloud', {
+                    entityType_localId: `folder_${localFolderId}`,
+                    entityType: 'folder',
+                    localId: localFolderId,
+                    cloudId: snapshot.id,
+                    isPair: +true,
+                    isSync: +true,
+                    isDeleted: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
+        };
+
+        await this._asTree(
+            snapshots,
+            create,
+        );
+        console.log('[CloudSync] Bulk folders created!');
+    }
+
+    async bulkUpdate(snapshots) {
+        console.log('[CloudSync] Bulk update folders...');
+
+        await Promise.all(snapshots.map(async (snapshot) => {
+            const pair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.id); // TODO Maybe many results
+            const pairParent = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.payload.parentId); // TODO Maybe many results
+
+            await FoldersUniversalService.save({
+                id: pair.localId,
+                parentId: pairParent?.localId || NULL_UUID,
+                name: snapshot.payload.name,
+                createTimestamp: new Date(snapshot.createDate).valueOf(),
+                modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
+            }, false);
+
+            await db().put('pair_with_cloud', {
+                entityType_localId: `folder_${pair.localId}`,
+                entityType: 'folder',
+                localId: pair.localId,
+                cloudId: snapshot.id,
+                isPair: +true,
+                isSync: +true,
+                isDeleted: +false,
+                modifiedTimestamp: Date.now(),
+            });
+        }));
+
+        console.log('[CloudSync] Bulk folders udpated!');
+    }
+
+    async bulkDelete(snapshots) {
+        console.log('[CloudSync] Bulk delete folders...');
+
+        await Promise.all(snapshots.map(async (snapshot) => {
+            const pair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.id); // TODO Maybe many results
+
+            await FoldersUniversalService.remove(pair.localId, false);
+            await db().delete('pair_with_cloud', `folder_${pair.localId}`);
+        }));
+
+        console.log('[CloudSync] Bulk folders udpated!');
+    }
+
+    async applyChanges({ create, update, delete: deleteEntities }) {
+        const createFiltered = create.filter(({ entityType }) => entityType === 'folder');
+        const updateFiltered = update.filter(({ entityType }) => entityType === 'folder');
+        const deleteFiltered = deleteEntities.filter(({ entityType }) => entityType === 'folder');
+
+        await this.bulkCreate(createFiltered);
+        await this.bulkUpdate(updateFiltered);
+        await this.bulkDelete(deleteFiltered);
+
+        if (createFiltered.length !== 0 || updateFiltered.length !== 0 || deleteFiltered !== 0) {
+            this.core.globalEventBus.call('folder/new', DESTINATION.APP);
+        }
     }
 }
 

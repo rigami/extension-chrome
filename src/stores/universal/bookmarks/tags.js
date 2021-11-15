@@ -1,6 +1,6 @@
 import { action } from 'mobx';
-import db from '@/utils/db';
 import { last } from 'lodash';
+import db from '@/utils/db';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import Tag from '@/stores/universal/bookmarks/entities/tag';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
@@ -47,7 +47,6 @@ class TagsUniversalService {
         }
 
         let saveTagId = id;
-        let actionWithBookmark;
 
         if (id) {
             await db().put('tags', {
@@ -57,7 +56,16 @@ class TagsUniversalService {
                 createTimestamp: oldTag?.createTimestamp || Date.now(),
                 modifiedTimestamp: Date.now(),
             });
-            actionWithBookmark = 'update';
+
+            const pairRow = await db().get('pair_with_cloud', `tag_${saveTagId}`);
+
+            if (sync && pairRow) {
+                await db().put('pair_with_cloud', {
+                    ...pairRow,
+                    isSync: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
         } else {
             saveTagId = await db().add('tags', {
                 id: uuid(),
@@ -66,16 +74,19 @@ class TagsUniversalService {
                 createTimestamp: Date.now(),
                 modifiedTimestamp: Date.now(),
             });
-            actionWithBookmark = 'create';
-        }
 
-        if (sync) {
-            // TODO: If only user register
-            await db().add('tags_wait_sync', {
-                action: actionWithBookmark,
-                commitDate: nowInISO(),
-                tagId: saveTagId,
-            });
+            if (sync) {
+                await db().add('pair_with_cloud', {
+                    entityType_localId: `tag_${saveTagId}`,
+                    entityType: 'tag',
+                    localId: saveTagId,
+                    cloudId: null,
+                    isPair: +false,
+                    isSync: +false,
+                    isDeleted: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
         }
 
         return saveTagId;
@@ -101,13 +112,28 @@ class TagsUniversalService {
             tags: tags.filter((id) => id !== tagId),
         })));
 
-        if (sync) {
-            // TODO: If only enabling sync
-            await db().add('tags_wait_sync', {
-                action: 'delete',
-                commitDate: nowInISO(),
-                tagId,
-            });
+        const pairRow = await db().get('pair_with_cloud', `tag_${tagId}`);
+
+        if (sync && pairRow) {
+            if (!pairRow.isPair) {
+                await db().delete('pair_with_cloud', `tag_${tagId}`);
+            } else {
+                await db().put('pair_with_cloud', {
+                    ...pairRow,
+                    isSync: +false,
+                    isDeleted: +true,
+                    modifiedTimestamp: Date.now(),
+                });
+
+                await Promise.all(bookmarks.map(async ({ id }) => {
+                    const pairBookmarkRow = await db().get('pair_with_cloud', `bookmark_${id}`);
+                    await db().put('pair_with_cloud', {
+                        ...pairBookmarkRow,
+                        isSync: +false,
+                        modifiedTimestamp: Date.now(),
+                    });
+                }));
+            }
         }
 
         return Promise.resolve();

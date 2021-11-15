@@ -1,10 +1,10 @@
 import { action } from 'mobx';
+import { cloneDeep } from 'lodash';
+import { captureException } from '@sentry/browser';
 import db from '@/utils/db';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import { search as searchLight } from '@/stores/universal/bookmarks/search';
-import { cloneDeep } from 'lodash';
-import { captureException } from '@sentry/browser';
 import appVariables from '@/config/appVariables';
 import getPreview from '@/utils/createPreview';
 import { BG_TYPE } from '@/enum';
@@ -59,7 +59,6 @@ class BookmarksUniversalService {
 
         let saveBookmarkId;
         let saveIcoUrl;
-        let actionWithBookmark;
 
         if (sourceIcoUrl) {
             saveIcoUrl = `${appVariables.rest.url}/background/get-site-icon?ico-url=${encodeURIComponent(sourceIcoUrl)}`;
@@ -78,7 +77,16 @@ class BookmarksUniversalService {
             });
 
             saveBookmarkId = await db().put('bookmarks', newBookmark);
-            actionWithBookmark = 'update';
+
+            const pairRow = await db().get('pair_with_cloud', `bookmark_${saveBookmarkId}`);
+
+            if (sync && pairRow) {
+                await db().put('pair_with_cloud', {
+                    ...pairRow,
+                    isSync: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
         } else {
             try {
                 saveBookmarkId = await db().add('bookmarks', cloneDeep({
@@ -88,12 +96,24 @@ class BookmarksUniversalService {
                     createTimestamp: Date.now(),
                     modifiedTimestamp: Date.now(),
                 }));
+
+                if (sync) {
+                    await db().add('pair_with_cloud', {
+                        entityType_localId: `bookmark_${saveBookmarkId}`,
+                        entityType: 'bookmark',
+                        localId: saveBookmarkId,
+                        cloudId: null,
+                        isPair: +false,
+                        isSync: +false,
+                        isDeleted: +false,
+                        modifiedTimestamp: Date.now(),
+                    });
+                }
             } catch (e) {
                 console.error(e);
                 captureException(e);
                 throw new Error('Similar bookmark already exist');
             }
-            actionWithBookmark = 'create';
         }
         if (imageBase64 || sourceIcoUrl) {
             let blob;
@@ -108,15 +128,6 @@ class BookmarksUniversalService {
             const iconResponse = new Response(blob);
 
             await cache.put(saveIcoUrl, iconResponse);
-        }
-
-        if (sync) {
-            // TODO: If only user register
-            await db().add('bookmarks_wait_sync', {
-                action: actionWithBookmark,
-                commitDate: nowInISO(),
-                bookmarkId: saveBookmarkId,
-            });
         }
 
         return saveBookmarkId;
@@ -143,13 +154,19 @@ class BookmarksUniversalService {
             captureException(e);
         }
 
-        if (sync) {
-            // TODO: If only enabling sync
-            await db().add('bookmarks_wait_sync', {
-                action: 'delete',
-                commitDate: nowInISO(),
-                bookmarkId,
-            });
+        const pairRow = await db().get('pair_with_cloud', `bookmark_${bookmarkId}`);
+
+        if (sync && pairRow) {
+            if (!pairRow.isPair) {
+                await db().delete('pair_with_cloud', `bookmark_${bookmarkId}`);
+            } else {
+                await db().put('pair_with_cloud', {
+                    ...pairRow,
+                    isSync: +false,
+                    isDeleted: +true,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
         }
     }
 

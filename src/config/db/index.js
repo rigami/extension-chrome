@@ -1,13 +1,10 @@
 import upgradeOrCreateBackgrounds from './backgrounds';
 import upgradeOrCreateBookmarks from './bookmarks';
-import upgradeOrCreateBookmarksWaitSync from './bookmarksWaitSync';
 import upgradeOrCreateTags from './tags';
 import upgradeOrCreateFolders from './folders';
 import upgradeOrCreateFavorites from './favorites';
 import upgradeOrCreateSystemBookmarks from './systemBookmarks';
-import upgradeOrCreateFoldersWaitSync from './foldersWaitSync';
-import upgradeOrCreateTagsWaitSync from './tagsWaitSync';
-import upgradeOrCreateFavoritesWaitSync from './favoritesWaitSync';
+import upgradeOrCreatePairWithCloud from './pairWithCloud';
 
 export default ({ upgrade }) => ({
     async upgrade(db, oldVersion, newVersion, transaction) {
@@ -15,13 +12,10 @@ export default ({ upgrade }) => ({
 
         const tables = [
             upgradeOrCreateBookmarks,
-            upgradeOrCreateBookmarksWaitSync,
             upgradeOrCreateFolders,
-            upgradeOrCreateFoldersWaitSync,
             upgradeOrCreateTags,
-            upgradeOrCreateTagsWaitSync,
             upgradeOrCreateFavorites,
-            upgradeOrCreateFavoritesWaitSync,
+            upgradeOrCreatePairWithCloud,
             upgradeOrCreateBackgrounds,
             upgradeOrCreateSystemBookmarks,
         ];

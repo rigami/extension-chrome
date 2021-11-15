@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx';
 import db from '@/utils/db';
-import commitsToChanged from '@/stores/server/cloudSync/utils/commitsToChanged';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import { DESTINATION } from '@/enum';
+import { NULL_UUID } from '@/utils/generate/uuid';
 
 class CloudSyncTagsService {
     core;
@@ -13,118 +13,171 @@ class CloudSyncTagsService {
         this.core = core;
     }
 
-    async applyChanges(changes) {
-        console.log('[CloudSync] Apply tags updates...');
-
-        await Promise.all(changes.create.map((serverTag) => TagsUniversalService
-            .save({
-                ...serverTag,
-                id: serverTag.id,
-                name: serverTag.name,
-                colorKey: serverTag.colorKey,
-                createTimestamp: new Date(serverTag.createDate).valueOf(),
-                modifiedTimestamp: new Date(serverTag.updateDate).valueOf(),
-            }, false)));
-
-        await Promise.all(changes.update.map(async (serverTag) => {
-            const localTag = await TagsUniversalService.get(serverTag.id);
-
-            if (localTag.modifiedTimestamp >= new Date(serverTag.updateDate).valueOf()) return;
-
-            await TagsUniversalService
-                .save({
-                    ...serverTag,
-                    id: serverTag.id,
-                    name: serverTag.name,
-                    colorKey: serverTag.colorKey,
-                    createTimestamp: new Date(serverTag.createDate).valueOf(),
-                    modifiedTimestamp: new Date(serverTag.updateDate).valueOf(),
-                }, false);
-        }));
-
-        await Promise.all(changes.delete.map(async ({ id, updateDate }) => {
-            const localTag = await TagsUniversalService.get(id);
-
-            if (!localTag || localTag.modifiedTimestamp >= new Date(updateDate).valueOf()) return;
-
-            await TagsUniversalService.remove(id, false);
-        }));
-
-        if (changes.create.length + changes.update.length + changes.delete.length !== 0) {
-            this.core.globalEventBus.call('tag/new', DESTINATION.APP);
-        }
-    }
-
-    async grubNotSyncedChanges() {
+    async grubChanges(pairs) {
         console.log('[CloudSync] Grub tags changes...');
 
-        const isExistUpdates = await db().count('tags_wait_sync');
+        const changes = {
+            create: [],
+            update: [],
+            delete: [],
+        };
 
-        if (isExistUpdates === 0) {
+        if (pairs.length === 0) {
             console.log('[CloudSync] Nothing tags changes');
-            return null;
+            return changes;
         }
 
-        const commits = await db().getAll('tags_wait_sync');
+        for await (const pair of pairs) {
+            if (pair.isDeleted && pair.isPair) {
+                changes.delete.push({
+                    id: pair.cloudId,
+                    entityType: 'tag',
+                    deleteDate: new Date(pair.modifiedTimestamp).toISOString(),
+                });
 
-        const changesItems = commitsToChanged('tagId', commits);
+                continue;
+            }
 
-        if ('create' in changesItems) {
-            changesItems.create = await Promise.all(
-                changesItems.create.map(async ({ tagId, commitDate }) => {
-                    const tag = await db().get('tags', tagId);
+            const tag = await db().get('tags', pair.localId);
 
-                    if (!tag) return null;
+            if (!tag) continue;
 
-                    return {
-                        id: tag.id,
-                        name: tag.name,
-                        colorKey: tag.colorKey,
-                        lastAction: 'create',
-                        createDate: new Date(tag.createTimestamp).toISOString(),
-                        updateDate: commitDate,
-                    };
-                }),
-            );
+            const payload = {
+                name: tag.name,
+                colorKey: tag.colorKey,
+            };
 
-            changesItems.create = changesItems.create.filter((isExist) => isExist);
+            if (!pair.isPair) {
+                changes.create.push({
+                    tempId: pair.localId,
+                    entityType: 'tag',
+                    createDate: new Date(tag.createTimestamp).toISOString(),
+                    updateDate: new Date(tag.modifiedTimestamp).toISOString(),
+                    payload,
+                });
+
+                continue;
+            }
+
+            changes.update.push({
+                id: pair.cloudId,
+                entityType: 'tag',
+                createDate: new Date(tag.createTimestamp).toISOString(),
+                updateDate: new Date(tag.modifiedTimestamp).toISOString(),
+                payload,
+            });
         }
 
-        if ('update' in changesItems) {
-            changesItems.update = await Promise.all(
-                changesItems.update.map(async ({ tagId, commitDate }) => {
-                    const tag = await db().get('tags', tagId);
-
-                    if (!tag) return null;
-
-                    return {
-                        id: tag.id,
-                        name: tag.name,
-                        colorKey: tag.colorKey,
-                        lastAction: 'update',
-                        createDate: new Date(tag.createTimestamp).toISOString(),
-                        updateDate: commitDate,
-                    };
-                }),
-            );
-
-            changesItems.update = changesItems.update.filter((isExist) => isExist);
-        }
-
-        if ('delete' in changesItems) {
-            changesItems.delete = changesItems.delete.map(({ tagId, commitDate }) => ({
-                id: tagId,
-                updateDate: commitDate,
-            }));
-        }
-
-        return changesItems;
+        return changes;
     }
 
-    async clearNotSyncedChanges() {
-        console.log('[CloudSync] Clear await synced tags changes...');
+    async bulkCreate(snapshots) {
+        console.log('[CloudSync] Bulk creating tags...');
 
-        await db().clear('tags_wait_sync');
+        await Promise.all(snapshots.map(async (snapshot) => {
+            console.log('[CloudSync] Creating tag from snapshot:', snapshot);
+            const pair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.id);
+
+            if (pair) {
+                console.warn(`Snapshot of tag with cloudId:${pair?.cloudId} already exist. Update...`);
+
+                await TagsUniversalService.save({
+                    id: pair.localId,
+                    name: snapshot.payload.name,
+                    colorKey: snapshot.payload.colorKey,
+                    createTimestamp: new Date(snapshot.createDate).valueOf(),
+                    modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
+                }, false);
+
+                await db().put('pair_with_cloud', {
+                    entityType_localId: `tag_${pair.localId}`,
+                    entityType: 'tag',
+                    localId: pair.localId,
+                    cloudId: snapshot.id,
+                    isPair: +true,
+                    isSync: +true,
+                    isDeleted: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            } else {
+                const localTagId = await TagsUniversalService.save({
+                    id: pair?.id,
+                    name: snapshot.payload.name,
+                    colorKey: snapshot.payload.colorKey,
+                    createTimestamp: new Date(snapshot.createDate).valueOf(),
+                    modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
+                }, false);
+
+                await db().add('pair_with_cloud', {
+                    entityType_localId: `tag_${localTagId}`,
+                    entityType: 'tag',
+                    localId: localTagId,
+                    cloudId: snapshot.id,
+                    isPair: +true,
+                    isSync: +true,
+                    isDeleted: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
+        }));
+
+        console.log('[CloudSync] Bulk tags created!');
+    }
+
+    async bulkUpdate(snapshots) {
+        console.log('[CloudSync] Bulk update tags...');
+
+        await Promise.all(snapshots.map(async (snapshot) => {
+            const pair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.id); // TODO Maybe many results
+
+            await TagsUniversalService.save({
+                id: pair.localId,
+                name: snapshot.payload.name,
+                colorKey: snapshot.payload.colorKey,
+                createTimestamp: new Date(snapshot.createDate).valueOf(),
+                modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
+            }, false);
+
+            await db().put('pair_with_cloud', {
+                entityType_localId: `tag_${pair.localId}`,
+                entityType: 'tag',
+                localId: pair.localId,
+                cloudId: snapshot.id,
+                isPair: +true,
+                isSync: +true,
+                isDeleted: +false,
+                modifiedTimestamp: Date.now(),
+            });
+        }));
+
+        console.log('[CloudSync] Bulk tags updated!');
+    }
+
+    async bulkDelete(snapshots) {
+        console.log('[CloudSync] Bulk delete tags...');
+
+        await Promise.all(snapshots.map(async (snapshot) => {
+            const pair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.id); // TODO Maybe many results
+
+            await TagsUniversalService.remove(pair.localId, false);
+            await db().delete('pair_with_cloud', `tag_${pair.localId}`);
+        }));
+
+        console.log('[CloudSync] Bulk tags deleted!');
+    }
+
+    async applyChanges({ create, update, delete: deleteEntities }) {
+        const createFiltered = create.filter(({ entityType }) => entityType === 'tag');
+        const updateFiltered = update.filter(({ entityType }) => entityType === 'tag');
+        const deleteFiltered = deleteEntities.filter(({ entityType }) => entityType === 'tag');
+
+        await this.bulkCreate(createFiltered);
+        await this.bulkUpdate(updateFiltered);
+        await this.bulkDelete(deleteFiltered);
+
+        if (createFiltered.length !== 0 || updateFiltered.length !== 0 || deleteFiltered !== 0) {
+            this.core.globalEventBus.call('tag/new', DESTINATION.APP);
+        }
     }
 }
 

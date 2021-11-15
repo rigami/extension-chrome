@@ -25,7 +25,7 @@ class FavoritesUniversalService {
 
         await this.getAll();
 
-        if (sync) {
+        /* if (sync) {
             // TODO: If only user register
             await db().add('favorites_wait_sync', {
                 action: 'create',
@@ -33,7 +33,7 @@ class FavoritesUniversalService {
                 itemType: favorite.itemType,
                 itemId: favorite.itemId,
             });
-        }
+        } */
 
         return addedFavorite;
     }
@@ -53,7 +53,7 @@ class FavoritesUniversalService {
 
         await this.getAll();
 
-        if (sync) {
+        /* if (sync) {
             // TODO: If only enabling sync
             await db().add('favorites_wait_sync', {
                 action: 'delete',
@@ -61,7 +61,7 @@ class FavoritesUniversalService {
                 itemType: favorite.itemType,
                 itemId: favorite.itemId,
             });
-        }
+        } */
 
         return favorite;
     }

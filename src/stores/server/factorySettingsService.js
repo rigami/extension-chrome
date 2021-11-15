@@ -1,10 +1,10 @@
 import { makeAutoObservable } from 'mobx';
+import { first } from 'lodash';
 import db from '@/utils/db';
 import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from '@/stores/universal/backgrounds/entities/background';
-import { first } from 'lodash';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
 import { eventToApp } from '@/stores/universal/serviceBus';
@@ -12,6 +12,7 @@ import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/AuthStorage';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
+import timeout from '@/utils/helpers/timeout';
 
 class FactorySettingsService {
     core;
@@ -31,7 +32,7 @@ class FactorySettingsService {
         try {
             await FoldersUniversalService.save({
                 name: 'Sundry',
-                id: FIRST_UUID,
+                defaultId: FIRST_UUID,
                 parentId: NULL_UUID,
             });
         } catch (e) {

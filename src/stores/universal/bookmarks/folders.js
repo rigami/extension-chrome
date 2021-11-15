@@ -60,10 +60,9 @@ class FoldersUniversalService {
     }
 
     @action('save folder')
-    static async save({ name, id, parentId }, sync = true) {
+    static async save({ name, id, defaultId, parentId }, sync = true) {
         const oldFolder = id ? await this.get(id) : null;
         let saveFolderId = id;
-        let actionWithBookmark;
 
         if (id) {
             await db().put('folders', {
@@ -73,25 +72,36 @@ class FoldersUniversalService {
                 createTimestamp: oldFolder?.createTimestamp || Date.now(),
                 modifiedTimestamp: Date.now(),
             });
-            actionWithBookmark = 'update';
+
+            const pairRow = await db().get('pair_with_cloud', `folder_${saveFolderId}`);
+
+            if (sync && pairRow) {
+                await db().put('pair_with_cloud', {
+                    ...pairRow,
+                    isSync: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
         } else {
             saveFolderId = await db().add('folders', {
-                id: uuid(),
+                id: defaultId || uuid(),
                 name: name.trim(),
                 parentId: parentId || null,
                 createTimestamp: Date.now(),
                 modifiedTimestamp: Date.now(),
             });
-            actionWithBookmark = 'create';
-        }
-
-        if (sync) {
-            // TODO: If only user register
-            await db().add('folders_wait_sync', {
-                action: actionWithBookmark,
-                commitDate: nowInISO(),
-                folderId: saveFolderId,
-            });
+            if (sync) {
+                await db().add('pair_with_cloud', {
+                    entityType_localId: `folder_${saveFolderId}`,
+                    entityType: 'folder',
+                    localId: saveFolderId,
+                    cloudId: null,
+                    isPair: +false,
+                    isSync: +false,
+                    isDeleted: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
         }
 
         return saveFolderId;
@@ -124,13 +134,19 @@ class FoldersUniversalService {
 
         await db().delete('folders', folderId);
 
-        if (sync) {
-            // TODO: If only enabling sync
-            await db().add('folders_wait_sync', {
-                action: 'delete',
-                commitDate: nowInISO(),
-                folderId,
-            });
+        const pairRow = await db().get('pair_with_cloud', `folder_${folderId}`);
+
+        if (sync && pairRow) {
+            if (!pairRow.isPair) {
+                await db().delete('pair_with_cloud', `folder_${folderId}`);
+            } else {
+                await db().put('pair_with_cloud', {
+                    ...pairRow,
+                    isSync: +false,
+                    isDeleted: +true,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
         }
 
         return Promise.resolve();
