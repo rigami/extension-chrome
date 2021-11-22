@@ -90,14 +90,9 @@ class CloudSyncService {
 
         this.storage.update({ stage: SYNC_STAGE.SYNCING_PULL });
 
-        await this.folders.bulkCreate(response.create.filter(({ entityType }) => entityType === 'folder'));
-        await this.folders.bulkUpdate(response.update.filter(({ entityType }) => entityType === 'folder'));
-        await this.folders.bulkDelete(response.delete.filter(({ entityType }) => entityType === 'folder'));
-        this.core.globalEventBus.call('folder/new', DESTINATION.APP);
-
-        /* await this.tags.applyChanges(response.tags);
-        await this.folders.applyChanges(response.folders);
-        await this.bookmarks.applyChanges(response.bookmarks); */
+        await this.folders.applyChanges(response);
+        await this.tags.applyChanges(response);
+        await this.bookmarks.applyChanges(response);
 
         this.storage.update({ localCommit: response.headCommit });
     }
