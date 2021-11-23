@@ -177,6 +177,8 @@ class CloudSyncService {
                     && part.toCommit !== response.toCommit
                 )),
             });
+        } else {
+            throw Error(`Failed pull '${response.message}'`);
         }
     }
 

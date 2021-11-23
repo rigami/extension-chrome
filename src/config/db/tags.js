@@ -12,7 +12,7 @@ export default async function upgradeOrCreateTags(db, transaction, oldVersion, n
         });
         store.createIndex('name', 'name', { unique: false });
         // store.createIndex('color', 'color', { unique: true });
-        store.createIndex('color_key', 'colorKey', { unique: true });
+        store.createIndex('color_key', 'colorKey', { unique: false });
     }
 
     if (!store.indexNames.contains('modified_timestamp')) {

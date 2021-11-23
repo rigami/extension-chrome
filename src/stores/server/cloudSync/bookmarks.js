@@ -105,7 +105,7 @@ class CloudSyncBookmarksService {
             console.log('[CloudSync] Creating bookmark from snapshot:', snapshot);
             const pair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.id);
             const folderPair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.payload.folderId);
-            const tagPairs = await Promise.all(snapshot.payload.tagsIds.map((id) => db().get('pair_with_cloud', `tag_${id}`)));
+            const tagPairs = await Promise.all(snapshot.payload.tagsIds.map((id) => db().getFromIndex('pair_with_cloud', 'cloud_id', id)));
 
             if (pair) {
                 console.warn(`Snapshot of bookmark with cloudId:${pair?.cloudId} already exist. Update...`);
@@ -169,7 +169,7 @@ class CloudSyncBookmarksService {
         await Promise.all(snapshots.map(async (snapshot) => {
             const pair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.id); // TODO Maybe many results
             const folderPair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.payload.folderId);
-            const tagPairs = await Promise.all(snapshot.payload.tagsIds.map((id) => db().get('pair_with_cloud', `tag_${id}`)));
+            const tagPairs = await Promise.all(snapshot.payload.tagsIds.map((id) => db().getFromIndex('pair_with_cloud', 'cloud_id', id)));
 
             await BookmarksUniversalService.save({
                 id: pair.localId,
