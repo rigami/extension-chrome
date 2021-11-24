@@ -43,9 +43,6 @@ function GreetingView({ searchService: service }) {
             <Box className={classes.main}>
                 <Greeting />
                 <Widgets className={classes.widgetContainer} />
-                <Box className={classes.searchContainer}>
-                    <SearchBlock alignLeft searchService={service} />
-                </Box>
                 <Favorites className={classes.favoritesContainer} />
             </Box>
         </Box>

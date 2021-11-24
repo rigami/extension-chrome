@@ -79,9 +79,7 @@ function ToolsPanel({ searchService: service }) {
                     {cloudSync.data.stage}
                 </Box>
                 <Box className={classes.wrapperSearch}>
-                    {service.activeFolderId && (
-                        <SearchBlock searchService={service} />
-                    )}
+                    <SearchBlock searchService={service} />
                 </Box>
                 <Box className={classes.wrapperTools}>
                     {bookmarksService.favorites.length > 0 && (
