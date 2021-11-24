@@ -1,6 +1,6 @@
 import { getI18n, useTranslation } from 'react-i18next';
 import React, {
-    Fragment, useState, forwardRef, useEffect,
+    Fragment, useState, forwardRef, useEffect, useCallback,
 } from 'react';
 import {
     Button,
@@ -95,8 +95,13 @@ function CreateRequest() {
         store.status = FETCH.PENDING;
 
         try {
-            // TODO make choose endpoint if user already exist
-            const eventTarget = api.sse('users/merge/request/with-exist-user/create', { useToken: false });
+            let eventTarget;
+
+            if (authStorage.data.username) {
+                eventTarget = api.sse('users/merge/request/create');
+            } else {
+                eventTarget = api.sse('users/merge/request/no-user/create', { useToken: false });
+            }
 
             eventTarget.addEventListener('start', (event) => {
                 console.log('start:', event);
@@ -116,25 +121,31 @@ function CreateRequest() {
             eventTarget.addEventListener('done-merge', async (event) => {
                 console.log('done-merge:', event.data);
 
-                const { response: loginResponse } = await api.post(
-                    'auth/login',
-                    {
-                        useToken: false,
-                        responseType: 'json',
-                        body: {
-                            username: event.data.newUsername,
-                            password: event.data.newUsername,
+                if (event.data.action === 'login') {
+                    const { response: loginResponse } = await api.post(
+                        'auth/login',
+                        {
+                            useToken: false,
+                            responseType: 'json',
+                            body: {
+                                username: event.data.newUsername,
+                                password: event.data.newPassword,
+                            },
                         },
-                    },
-                );
+                    );
 
-                authStorage.update({
-                    username: event.data.newUsername,
-                    accessToken: loginResponse.accessToken,
-                    refreshToken: loginResponse.refreshToken,
-                });
+                    authStorage.update({
+                        username: event.data.newUsername,
+                        accessToken: loginResponse.accessToken,
+                        refreshToken: loginResponse.refreshToken,
+                    });
 
-                eventToBackground('sync/forceSync', { newUsername: event.data.newUsername });
+                    eventToBackground('sync/forceSync', { newUsername: event.data.newUsername });
+                } else if (event.data.action === 'confirm') {
+
+                } else {
+
+                }
 
                 store.isOpen = false;
             });
@@ -155,11 +166,15 @@ function CreateRequest() {
 
     const deleteRequest = async () => {
         console.log('requestId:', store.requestId);
-        // TODO make choose endpoint if user already exist
-        await api.delete('users/merge/request/with-exist-user', {
-            query: { requestId: store.requestId },
-            responseType: null,
-        });
+        if (authStorage.data.username) {
+            await api.delete('users/merge/request', { responseType: null });
+        } else {
+            await api.delete('users/merge/request/no-user', {
+                query: { requestId: store.requestId },
+                responseType: null,
+                useToken: false,
+            });
+        }
     };
 
     useEffect(() => {
@@ -251,10 +266,9 @@ function ApplyRequest() {
         setStatus(FETCH.PENDING);
 
         try {
-            // TODO make choose endpoint if user already exist
-            const { response, ok } = await api.get('users/merge/request/create-virtual-user/apply', {
+            const { response, ok } = await api.get(`users/merge/request/${authStorage.data.username ? '' : 'no-user/'}apply`, {
                 query: { code },
-                useToken: false,
+                useToken: !!authStorage.data.username,
             });
 
             console.log('response:', response);
@@ -266,13 +280,31 @@ function ApplyRequest() {
                 return;
             }
 
-            authStorage.update({
-                username: response.regInfo.username,
-                accessToken: response.regInfo.accessToken,
-                refreshToken: response.regInfo.refreshToken,
-            });
+            if (response.action === 'login') {
+                const { response: loginResponse } = await api.post(
+                    'auth/login',
+                    {
+                        useToken: false,
+                        responseType: 'json',
+                        body: {
+                            username: response.newUsername,
+                            password: response.newPassword,
+                        },
+                    },
+                );
 
-            eventToBackground('sync/forceSync', { newUsername: response.regInfo.username });
+                authStorage.update({
+                    username: response.newUsername,
+                    accessToken: loginResponse.accessToken,
+                    refreshToken: loginResponse.refreshToken,
+                });
+
+                eventToBackground('sync/forceSync', { newUsername: response.newUsername });
+            } else if (response.action === 'confirm') {
+
+            } else {
+
+            }
 
             setStatus(FETCH.DONE);
             setIsOpen(false);
@@ -420,14 +452,16 @@ function Device({ type, lastActivityDate, current = false }) {
 }
 
 function SyncedDevices() {
-    const classes = useStyles();
     const { t } = useTranslation(['settingsSync']);
-    const [status, setStatus] = useState(FETCH.WAIT);
-    const [currentDevices, setCurrentDevices] = useState(null);
-    const [otherDevices, setOtherDevices] = useState([]);
+    const store = useLocalObservable(() => ({
+        status: FETCH.WAIT,
+        currentDevice: null,
+        otherDevices: [],
+    }));
 
     const fetchDevices = async () => {
-        setStatus(FETCH.PENDING);
+        console.log('status:', store.status);
+        if (store.status === FETCH.WAIT) store.status = FETCH.PENDING;
 
         try {
             const { response, ok } = await api.get('devices');
@@ -435,25 +469,37 @@ function SyncedDevices() {
             console.log('response:', response);
 
             if (!ok) {
-                setStatus(FETCH.FAILED);
+                store.status = FETCH.FAILED;
 
                 return;
             }
 
-            setCurrentDevices(response.currentDevice);
-            setOtherDevices(response.otherDevices);
-            setStatus(FETCH.DONE);
+            store.currentDevice = response.currentDevice;
+            store.otherDevices = response.otherDevices;
+            store.status = FETCH.DONE;
         } catch (e) {
             console.error(e);
-            setStatus(FETCH.FAILED);
+            store.status = FETCH.FAILED;
         }
     };
 
     useEffect(() => {
+        if (!authStorage.data.username) {
+            store.currentDevice = null;
+            store.otherDevices = [];
+            return () => {};
+        }
+
         fetchDevices();
+
+        const interval = setInterval(() => {
+            fetchDevices();
+        }, 3000);
+
+        return () => clearInterval(interval);
     }, [authStorage.data.username]);
 
-    if (status === FETCH.PENDING) {
+    if (store.status === FETCH.PENDING) {
         return (
             <MenuRow
                 title={t('syncDevices.loading')}
@@ -464,15 +510,15 @@ function SyncedDevices() {
     return (
         <Fragment>
             <SectionHeader h={2} title={t('syncDevices.currentTitle')} />
-            {currentDevices && (
+            {store.currentDevice && (
                 <Device
-                    type={currentDevices.type}
-                    lastActivityDate={currentDevices.lastActivityDate}
+                    type={store.currentDevice.type}
+                    lastActivityDate={store.currentDevice.lastActivityDate}
                     current
                 />
             )}
             <SectionHeader h={2} title={t('syncDevices.otherTitle')} />
-            {otherDevices.map((device) => (
+            {store.otherDevices.map((device) => (
                 <Device
                     key={device.id}
                     type={device.type}
@@ -483,6 +529,8 @@ function SyncedDevices() {
     );
 }
 
+const ObserverSyncedDevices = observer(SyncedDevices);
+
 function LinkBrowsers() {
     const classes = useStyles();
     const { t } = useTranslation(['settingsSync']);
@@ -492,7 +540,7 @@ function LinkBrowsers() {
             <SectionHeader title={t('syncDevices.title')} />
             <ObserverCreateRequest />
             <ApplyRequest />
-            {authStorage.data.username && (<SyncedDevices />)}
+            {authStorage.data.username && (<ObserverSyncedDevices />)}
         </React.Fragment>
     );
 }
