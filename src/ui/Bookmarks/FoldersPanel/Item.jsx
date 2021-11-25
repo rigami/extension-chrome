@@ -16,6 +16,8 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: theme.spacing(1),
         position: 'relative',
         fontWeight: 550,
+        borderRadius: theme.shape.borderRadius,
+        width: 'calc(100% - 4px)',
     },
     itemContainer: {
         '& $addSubFolder': { opacity: 0 },
@@ -105,7 +107,10 @@ function Item(props, ref) {
                 container: classes.itemContainer,
             }}
             button={!disableButton}
-            style={{ paddingLeft: Number.isFinite(level) ? (30 + level * 8) : null }}
+            style={{
+                paddingLeft: Number.isFinite(level) ? (26 + level * 8) : null,
+                marginLeft: 4,
+            }}
             onClick={(event) => {
                 if (
                     event.nativeEvent.path.includes(startActionRef.current)

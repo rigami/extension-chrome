@@ -1,0 +1,7 @@
+export default {
+    WAIT: 'WAIT',
+    SYNCING_PUSH: 'SYNCING_PUSH',
+    SYNCING_PULL: 'SYNCING_PULL',
+    SYNCED: 'SYNCED',
+    FAILED_SYNC: 'FAILED_SYNC',
+};

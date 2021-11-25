@@ -1,5 +1,4 @@
 import { makeAutoObservable, toJS } from 'mobx';
-import { SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
 import {
     pick,
     assign,
@@ -7,6 +6,7 @@ import {
     size,
     isEqual,
 } from 'lodash';
+import { SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
 
 export const SEARCH_STATE = {
     WAIT: 'WAIT',
@@ -18,6 +18,7 @@ export const SEARCH_STATE = {
 
 class BookmarksSearchService {
     activeFolderId = null;
+    selectFolderId = null;
     searchRequest = new SearchQuery({});
     tempSearchRequest = new SearchQuery({});
     state = SEARCH_STATE.WAIT;
@@ -44,12 +45,12 @@ class BookmarksSearchService {
         this.searchRequest = new SearchQuery({
             query: this._temp.query,
             tags: this._temp.tags,
-            folderId: this.activeFolderId,
+            folderId: this.selectFolderId,
         });
     }
 
     setActiveFolder(folderId) {
-        this.activeFolderId = folderId;
+        this.selectFolderId = folderId;
 
         this.applyChanges();
     }
@@ -71,7 +72,7 @@ class BookmarksSearchService {
         const searchRequest = new SearchQuery({
             query: this._temp.query,
             tags: this._temp.tags,
-            folderId: this.activeFolderId,
+            folderId: this.selectFolderId,
         });
 
         if (!isEqual(searchRequest, this.searchRequest)) {

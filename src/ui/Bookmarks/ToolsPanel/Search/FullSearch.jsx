@@ -6,19 +6,20 @@ import {
     Paper,
 } from '@material-ui/core';
 import clsx from 'clsx';
+import { makeStyles, alpha } from '@material-ui/core/styles';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import SearchField from '@/ui/Bookmarks/ToolsPanel/Search/SearchField';
 import Tags from '@/ui/Bookmarks/Tags';
 import CustomScroll from '@/ui-components/CustomScroll';
 import FastResults from '@/ui/Bookmarks/ToolsPanel/Search/FastResults';
-import { makeStyles, alpha } from '@material-ui/core/styles';
-import { observer, useLocalObservable } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     fullSearch: {
-        minHeight: 40,
+        minHeight: 36,
         border: `1px solid ${alpha(theme.palette.background.backdrop, 0.52)}`,
         overflow: 'hidden',
         boxSizing: 'border-box',
+        borderRadius: theme.shape.borderRadiusButton,
     },
     openFullSearch: { border: `1px solid ${theme.palette.divider}` },
     tags: {
@@ -27,8 +28,8 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
     },
     search: {
-        paddingRight: 40,
-        '-webkit-mask': 'linear-gradient(to left, transparent 40px, black 60px)',
+        paddingRight: 36,
+        '-webkit-mask': 'linear-gradient(to left, transparent 36px, black 60px)',
         display: 'flex',
         flexShrink: 0,
     },

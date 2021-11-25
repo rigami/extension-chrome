@@ -3,14 +3,14 @@ import {
     Box, CardActionArea, CardHeader, Tooltip,
 } from '@material-ui/core';
 import { alpha, makeStyles } from '@material-ui/core/styles';
-import LogoIcon from '@/images/logo-icon.svg';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
+import { UnfoldLess as LessIcon, UnfoldMore as MoreIcon } from '@material-ui/icons';
+import { useTranslation } from 'react-i18next';
+import LogoIcon from '@/images/logo-icon.svg';
 import LogoText from '@/images/logo-text.svg';
 import Subheader from '@/ui/Bookmarks/FoldersPanel/Subheader';
 import { ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
-import { UnfoldLess as LessIcon, UnfoldMore as MoreIcon } from '@material-ui/icons';
-import { useTranslation } from 'react-i18next';
 import LastClosed from './RecentlyClosed';
 import Folders from './Folders';
 
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
         height: '100vh',
         position: 'sticky',
         top: 0,
-        backgroundColor: alpha(theme.palette.background.backdrop, 0.3),
+        // backgroundColor: alpha(theme.palette.background.backdrop, 0.3),
         paddingTop: theme.spacing(2),
     },
     avatar: {
@@ -64,7 +64,7 @@ function FoldersPanel({ searchService: service }) {
                     classes={{
                         root: clsx(
                             classes.header,
-                            service.activeFolderId === null && classes.activeGreetingView,
+                            // service.selectFolderId === null && classes.activeGreetingView,
                         ),
                         avatar: classes.avatar,
                         content: classes.appLogoTextWrapper,
@@ -77,7 +77,7 @@ function FoldersPanel({ searchService: service }) {
                     disableButton
                 />
                 <Folders
-                    selectFolder={service.activeFolderId}
+                    selectFolder={service.selectFolderId}
                     onClickFolder={({ id }) => service.setActiveFolder(id)}
                 />
             </Box>

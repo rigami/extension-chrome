@@ -11,6 +11,7 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import FolderBreadcrumbs from './FolderBreadcrumbs';
 import SearchBlock from './Search';
 import ShowFavorites from './ShowFavorites';
+import CloudSync from '@/ui/Bookmarks/ToolsPanel/CloudSync';
 
 const useStyles = makeStyles((theme) => ({
     root: { backgroundColor: alpha(theme.palette.background.paper, 0.91) },
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 'auto',
     },
     wrapperSearch: {
-        padding: theme.spacing(0, 2),
+        padding: theme.spacing(0, 1),
         display: 'flex',
         flexGrow: 1,
         flexShrink: 0,
@@ -40,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
         display: 'grid',
         gridAutoFlow: 'column',
-        gridGap: theme.spacing(2),
+        gridGap: theme.spacing(1),
     },
     widthHelper: {
         flexShrink: 1,
@@ -49,15 +50,15 @@ const useStyles = makeStyles((theme) => ({
     },
     toolStub: {
         visibility: 'hidden',
-        width: 40,
+        width: 36,
     },
+    fixVisualMargin: { marginRight: theme.spacing(1) },
 }));
 
 function ToolsPanel({ searchService: service }) {
     const classes = useStyles();
     const { t } = useTranslation(['desktop']);
     const appService = useAppService();
-    const { cloudSync } = appService;
     const bookmarksService = useBookmarksService();
 
     return (
@@ -70,20 +71,20 @@ function ToolsPanel({ searchService: service }) {
             <Toolbar disableGutters className={classes.toolbar}>
                 <Box className={classes.wrapperBreadcrumbs}>
                     <FolderBreadcrumbs
-                        key={service.activeFolderId}
-                        folderId={service.activeFolderId}
+                        key={service.selectFolderId}
+                        folderId={service.selectFolderId}
                         onSelectFolder={(folderId) => service.setActiveFolder(folderId)}
                     />
                 </Box>
                 <Box className={classes.cloudSyncState}>
-                    {cloudSync.data.stage}
+                    <CloudSync />
                 </Box>
                 <Box className={classes.wrapperSearch}>
                     <SearchBlock searchService={service} />
                 </Box>
                 <Box className={classes.wrapperTools}>
                     {bookmarksService.favorites.length > 0 && (
-                        <ShowFavorites />
+                        <ShowFavorites className={classes.fixVisualMargin} />
                     )}
                     <ExtendButtonGroup>
                         <ExtendButton

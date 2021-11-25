@@ -12,7 +12,11 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         marginRight: 'auto',
     },
-    icon: { margin: theme.spacing(1 - 0.125) },
+    icon: {
+        width: 22,
+        height: 22,
+        margin: theme.spacing(1 - 0.25),
+    },
     input: {
         fontFamily: theme.typography.primaryFontFamily,
         fontSize: '1rem',

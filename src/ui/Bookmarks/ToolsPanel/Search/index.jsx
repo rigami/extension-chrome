@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         maxWidth: (theme.shape.dataCard.width + theme.spacing(2)) * 3 + theme.spacing(2),
         minWidth: 240,
-        minHeight: 40,
+        minHeight: 36,
         flexGrow: 1,
         flexShrink: 0,
         position: 'relative',
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 1,
     },
     fullSearch: {
-        minHeight: 40,
+        minHeight: 36,
         border: `1px solid ${theme.palette.divider}`,
     },
     disabledFullSearch: {},
@@ -54,8 +54,8 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'flex-start',
-        borderTopRightRadius: theme.shape.borderRadius,
-        borderBottomRightRadius: theme.shape.borderRadius,
+        borderTopRightRadius: theme.shape.borderRadiusButton,
+        borderBottomRightRadius: theme.shape.borderRadiusButton,
         pointerEvents: 'none',
     },
     resetIcon: {
@@ -66,19 +66,19 @@ const useStyles = makeStyles((theme) => ({
     },
     extend: {
         '& $resetIconWrapper': {
-            height: 40,
-            borderBottomRightRadius: theme.shape.borderRadius,
+            height: 36,
+            borderBottomRightRadius: theme.shape.borderRadiusButton,
         },
     },
     open: {
         '& $resetIconWrapper': {
-            height: 40,
+            height: 36,
             borderBottomRightRadius: 0,
         },
     },
     search: {
-        paddingRight: 40,
-        '-webkit-mask': 'linear-gradient(to left, transparent 40px, black 60px)',
+        paddingRight: 36,
+        '-webkit-mask': 'linear-gradient(to left, transparent 36px, black 60px)',
         display: 'flex',
     },
 }));

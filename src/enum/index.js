@@ -18,6 +18,7 @@ import WIDGET_DTW_SIZE from './WIDGET/DTW_SIZE';
 import WIDGET_DTW_UNITS from './WIDGET/DTW_UNITS';
 import TYPE from './TYPE';
 import SERVICE_STATE from './SERVICE_STATE';
+import CLOUD_SYNC from './CLOUD_SYNC';
 
 export {
     BG_CHANGE_INTERVAL,
@@ -40,4 +41,5 @@ export {
     WIDGET_DTW_UNITS,
     TYPE,
     SERVICE_STATE,
+    CLOUD_SYNC,
 };

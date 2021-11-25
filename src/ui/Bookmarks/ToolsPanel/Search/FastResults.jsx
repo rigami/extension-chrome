@@ -5,15 +5,15 @@ import {
     Divider,
     Typography,
 } from '@material-ui/core';
-import { FETCH } from '@/enum';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { useLocalObservable, observer } from 'mobx-react-lite';
-import stateRender from '@/utils/helpers/stateRender';
-import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import { ArrowForward as GoToIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { map, size, omit } from 'lodash';
+import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
+import stateRender from '@/utils/helpers/stateRender';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import { FETCH } from '@/enum';
 import FolderBreadcrumbs from '@/ui/Bookmarks/ToolsPanel/FolderBreadcrumbs';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 
@@ -72,9 +72,9 @@ function FastResults({ searchService: service, onGoToFolder }) {
                     byFolders[bookmark.folderId] = [...(byFolders[bookmark.folderId] || []), bookmark];
                 });
 
-                store.currentFolder = byFolders[service.activeFolderId] || [];
+                store.currentFolder = byFolders[service.selectFolderId] || [];
                 store.otherFolders = map(
-                    omit(byFolders, [service.activeFolderId]),
+                    omit(byFolders, [service.selectFolderId]),
                     (bookmarks, folderId) => ({
                         bookmarks,
                         folderId,
@@ -96,7 +96,7 @@ function FastResults({ searchService: service, onGoToFolder }) {
                                     endIcon={(<GoToIcon />)}
                                     className={classes.goToButton}
                                     onClick={() => {
-                                        onGoToFolder(service.activeFolderId, true);
+                                        onGoToFolder(service.selectFolderId, true);
                                     }}
                                 >
                                     {t('search.currentFolderMatches')}

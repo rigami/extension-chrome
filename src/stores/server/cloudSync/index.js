@@ -8,16 +8,7 @@ import CloudSyncBookmarksService from './bookmarks';
 import CloudSyncFoldersService from './folders';
 import CloudSyncTagsService from './tags';
 import db from '@/utils/db';
-import { DESTINATION } from '@/enum';
-import { PREPARE_PROGRESS } from '@/stores/app/core';
-
-const SYNC_STAGE = {
-    WAIT: 'WAIT',
-    SYNCING_PUSH: 'SYNCING_PUSH',
-    SYNCING_PULL: 'SYNCING_PULL',
-    SYNCED: 'SYNCED',
-    FAILED_SYNC: 'FAILED_SYNC',
-};
+import { CLOUD_SYNC } from '@/enum';
 
 class CloudSyncService {
     core;
@@ -88,7 +79,7 @@ class CloudSyncService {
             throw new Error(`Failed pull '${response.message}'`);
         }
 
-        this.storage.update({ stage: SYNC_STAGE.SYNCING_PULL });
+        this.storage.update({ stage: CLOUD_SYNC.SYNCING_PULL });
 
         await this.folders.applyChanges(response);
         await this.tags.applyChanges(response);
@@ -109,7 +100,7 @@ class CloudSyncService {
             return;
         }
 
-        this.storage.update({ stage: SYNC_STAGE.SYNCING_PUSH });
+        this.storage.update({ stage: CLOUD_SYNC.SYNCING_PUSH });
 
         const foldersChanges = await this.folders.grubChanges(commits.filter(({ entityType }) => entityType === 'folder'));
         const tagsChanges = await this.tags.grubChanges(commits.filter(({ entityType }) => entityType === 'tag'));
@@ -203,10 +194,10 @@ class CloudSyncService {
                 const updates = await this.checkUpdates();
                 if (updates) await this.pullChanges(this.storage.data?.localCommit, updates);
 
-                this.storage.update({ stage: SYNC_STAGE.SYNCED });
+                this.storage.update({ stage: CLOUD_SYNC.SYNCED });
             } catch (e) {
                 console.error('Failed sync:', e);
-                this.storage.update({ stage: SYNC_STAGE.FAILED_SYNC });
+                this.storage.update({ stage: CLOUD_SYNC.FAILED_SYNC });
             }
         }, 10000);
     }

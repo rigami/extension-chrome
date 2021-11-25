@@ -27,6 +27,7 @@ const theme = {
     },
     shape: {
         borderRadius: 4,
+        borderRadiusButton: 6,
         borderRadiusBold: 8,
         dataCard: {
             width: 210,

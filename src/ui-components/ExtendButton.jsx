@@ -9,15 +9,13 @@ import { makeStyles, alpha } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     card: {
-        borderRadius: theme.shape.borderRadius,
-        backdropFilter: 'blur(10px) brightness(200%)',
-        backgroundColor: alpha(theme.palette.background.backdrop, 0.52),
+        borderRadius: theme.shape.borderRadiusButton,
         display: 'flex',
         flexDirection: 'column',
-        // marginTop: theme.spacing(2),
     },
     button: {
-        padding: theme.spacing(1),
+        borderRadius: theme.shape.borderRadiusButton,
+        padding: theme.spacing(1 - 0.125),
         '& svg + $label': {
             marginLeft: theme.spacing(1),
             fontSize: '0.9rem',
@@ -25,17 +23,28 @@ const useStyles = makeStyles((theme) => ({
             fontWeight: 600,
             marginRight: theme.spacing(0.5),
         },
+        '& svg': {
+            width: 22,
+            height: 22,
+        },
+        '&:hover': { backgroundColor: theme.palette.action.hover },
     },
     label: {},
+    blurBackdrop: {
+        backdropFilter: 'blur(10px) brightness(200%)',
+        backgroundColor: alpha(theme.palette.background.backdrop, 0.52),
+    },
+    default: {},
+    outline: { boxShadow: `inset 0px 0px 0px 1px ${theme.palette.divider}` },
 }));
 
-function ExtendButtonGroup({ children, className: externalClassName, ...other }, ref) {
+function ExtendButtonGroup({ children, variant = 'default', className: externalClassName, ...other }, ref) {
     const classes = useStyles();
 
     return (
         <Card
             ref={ref}
-            className={clsx(classes.card, externalClassName)}
+            className={clsx(classes.card, classes[variant], externalClassName)}
             elevation={0}
             {...other}
         >

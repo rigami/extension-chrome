@@ -4,30 +4,29 @@ import {
     Button,
     CircularProgress,
 } from '@material-ui/core';
-import Stub from '@/ui-components/Stub';
 import { alpha, makeStyles, useTheme } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
+import { useResizeDetector } from 'react-resize-detector';
+import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
+import { sample } from 'lodash';
+import Stub from '@/ui-components/Stub';
 import { FETCH } from '@/enum';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import stateRender from '@/utils/helpers/stateRender';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
-import { useResizeDetector } from 'react-resize-detector';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import clsx from 'clsx';
 import Header from '@/ui/Bookmarks/BookmarksViewer/Header';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import { useTranslation } from 'react-i18next';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { sample } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         flexGrow: 1,
         flexDirection: 'column',
-        paddingLeft: theme.spacing(3),
-        paddingRight: theme.spacing(3),
-        marginRight: 58,
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
     },
     stub: { maxHeight: 750 },
     emoticon: {
@@ -61,7 +60,7 @@ const emoticons = [
     '(⊙_⊙)',
 ];
 
-function BookmarksViewer({ searchService: service }) {
+function BookmarksViewer({ searchService: service, columns }) {
     const classes = useStyles();
     const theme = useTheme();
     const bookmarksService = useBookmarksService();
@@ -73,18 +72,9 @@ function BookmarksViewer({ searchService: service }) {
         existMatches: false,
         requestId: 0,
         loadState: FETCH.WAIT,
-        columnsCount: 0,
         usedFields: {},
         emoticon: sample(emoticons),
     }));
-    const onResize = useCallback((width) => {
-        store.columnsCount = Math.min(
-            Math.floor((width + 16 - 58) / theme.shape.dataCard.width),
-            7,
-        );
-    }, []);
-
-    const { ref } = useResizeDetector({ onResize });
 
     const sortByFavorites = (list) => list.sort((bookmarkA, bookmarkB) => {
         const isFavoriteA = bookmarksService.findFavorite({
@@ -132,7 +122,7 @@ function BookmarksViewer({ searchService: service }) {
     }, [service.searchRequestId, bookmarksService.lastTruthSearchTimestamp]);
 
     return (
-        <Box className={classes.root} ref={ref}>
+        <Box className={classes.root}>
             {stateRender(
                 store.loadState,
                 [
@@ -145,7 +135,7 @@ function BookmarksViewer({ searchService: service }) {
                                         <Box display="flex" className={classes.bookmarks}>
                                             <BookmarksGrid
                                                 bookmarks={store.bestBookmarks}
-                                                columns={store.columnsCount}
+                                                columns={columns}
                                             />
                                         </Box>
                                     ) : (
@@ -157,7 +147,7 @@ function BookmarksViewer({ searchService: service }) {
                             <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
                                 <BookmarksGrid
                                     bookmarks={store.allBookmarks}
-                                    columns={store.columnsCount}
+                                    columns={columns}
                                 />
                             </Box>
                         </Fragment>
@@ -195,7 +185,7 @@ function BookmarksViewer({ searchService: service }) {
                             <Button
                                 onClick={() => coreService.localEventBus.call(
                                     'bookmark/create',
-                                    { defaultFolderId: service.activeFolderId },
+                                    { defaultFolderId: service.selectFolderId },
                                 )}
                                 startIcon={<AddBookmarkIcon />}
                                 variant="outlined"

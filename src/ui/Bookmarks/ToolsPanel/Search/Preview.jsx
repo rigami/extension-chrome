@@ -1,21 +1,23 @@
 import { Box, CardActionArea, Typography } from '@material-ui/core';
 import { SearchRounded as SearchIcon } from '@material-ui/icons';
 import clsx from 'clsx';
-import { ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import React, { useEffect, useState } from 'react';
 import { makeStyles, alpha } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
+import { ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
         zIndex: 2,
-        border: '1px solid transparent',
+        // border: '1px solid transparent',
         backdropFilter: 'none',
-        backgroundColor: alpha(theme.palette.background.backdrop, 0.52),
+        // backgroundColor: alpha(theme.palette.background.backdrop, 0.52),
     },
     icon: {
+        width: 22,
+        height: 22,
         margin: theme.spacing(1 - 0.125),
         color: theme.palette.text.secondary,
     },
@@ -26,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 600,
         color: theme.palette.text.secondary,
-        height: 38,
+        height: 36,
         display: 'flex',
         alignItems: 'center',
         position: 'relative',
@@ -58,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        height: 38,
+        height: 36,
         overflow: 'hidden',
         marginTop: theme.spacing(-1),
         '&:first-child': { marginTop: 0 },
@@ -106,7 +108,7 @@ function Preview(props) {
     }, [tagsIds]);
 
     return (
-        <ExtendButtonGroup className={classes.root} {...other}>
+        <ExtendButtonGroup className={classes.root} variant="outline" {...other}>
             <CardActionArea
                 className={classes.alignFix}
                 onClick={onClick}
