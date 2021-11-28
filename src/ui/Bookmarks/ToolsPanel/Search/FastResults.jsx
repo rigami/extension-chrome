@@ -16,6 +16,7 @@ import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookm
 import { FETCH } from '@/enum';
 import FolderBreadcrumbs from '@/ui/Bookmarks/ToolsPanel/FolderBreadcrumbs';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: { width: (theme.shape.dataCard.width + theme.spacing(2)) * 3 + theme.spacing(2) },
@@ -43,10 +44,11 @@ const useStyles = makeStyles((theme) => ({
     folderBreadcrumbs: { overflow: 'auto' },
 }));
 
-function FastResults({ searchService: service, onGoToFolder }) {
+function FastResults({ onGoToFolder }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const bookmarksService = useBookmarksService();
+    const searchService = useSearchService();
     const store = useLocalObservable(() => ({
         bookmarks: null,
         currentFolder: [],
@@ -61,8 +63,8 @@ function FastResults({ searchService: service, onGoToFolder }) {
         const currentRequestId = store.requestId;
 
         BookmarksUniversalService.query(new SearchQuery({
-            query: service.tempSearchRequest.query,
-            tags: service.tempSearchRequest.tags,
+            query: searchService.tempSearchRequest.query,
+            tags: searchService.tempSearchRequest.tags,
         }))
             .then((result) => {
                 if (currentRequestId !== store.requestId) return;
@@ -72,9 +74,9 @@ function FastResults({ searchService: service, onGoToFolder }) {
                     byFolders[bookmark.folderId] = [...(byFolders[bookmark.folderId] || []), bookmark];
                 });
 
-                store.currentFolder = byFolders[service.selectFolderId] || [];
+                store.currentFolder = byFolders[searchService.selectFolderId] || [];
                 store.otherFolders = map(
-                    omit(byFolders, [service.selectFolderId]),
+                    omit(byFolders, [searchService.selectFolderId]),
                     (bookmarks, folderId) => ({
                         bookmarks,
                         folderId,
@@ -82,7 +84,7 @@ function FastResults({ searchService: service, onGoToFolder }) {
                 );
                 store.loadState = FETCH.DONE;
             });
-    }, [bookmarksService.lastTruthSearchTimestamp, service.tempSearchRequest]);
+    }, [bookmarksService.lastTruthSearchTimestamp, searchService.tempSearchRequest]);
 
     return (
         <Box className={classes.root}>
@@ -96,7 +98,7 @@ function FastResults({ searchService: service, onGoToFolder }) {
                                     endIcon={(<GoToIcon />)}
                                     className={classes.goToButton}
                                     onClick={() => {
-                                        onGoToFolder(service.selectFolderId, true);
+                                        onGoToFolder(searchService.selectFolderId, true);
                                     }}
                                 >
                                     {t('search.currentFolderMatches')}
@@ -121,14 +123,14 @@ function FastResults({ searchService: service, onGoToFolder }) {
                             {(index !== 0 || (index === 0 && store.currentFolder.length !== 0)) && (<Divider />)}
                             <Box className={classes.header}>
                                 <FolderBreadcrumbs
-                                    folderId={+folderId}
+                                    folderId={folderId}
                                     lastClickable
                                     classes={{
                                         root: classes.folderBreadcrumbs,
                                         last: classes.goToButton,
                                     }}
                                     onSelectFolder={(selectFolderId) => {
-                                        onGoToFolder(selectFolderId, selectFolderId === +folderId);
+                                        onGoToFolder(selectFolderId, selectFolderId === folderId);
                                     }}
                                 />
                                 <Typography

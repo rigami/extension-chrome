@@ -30,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': { backgroundColor: theme.palette.action.hover },
     },
     label: {},
+    unwrapLabel: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
     blurBackdrop: {
         backdropFilter: 'blur(10px) brightness(200%)',
         backgroundColor: alpha(theme.palette.background.backdrop, 0.52),
@@ -59,6 +64,7 @@ function ExtendButton(props) {
         icon,
         label,
         className: externalClassName,
+        unwrap = false,
         ...other
     } = props;
     const classes = useStyles();
@@ -66,7 +72,7 @@ function ExtendButton(props) {
     const Icon = icon;
 
     return (
-        <Tooltip title={tooltip} placement="bottom">
+        <Tooltip title={tooltip} open={tooltip ? undefined : false} placement="bottom">
             <ButtonBase
                 size="small"
                 className={clsx(classes.button, externalClassName)}
@@ -75,7 +81,7 @@ function ExtendButton(props) {
             >
                 <Icon />
                 {label && (
-                    <span className={classes.label}>{label}</span>
+                    <span className={clsx(classes.label, unwrap && classes.unwrapLabel)}>{label}</span>
                 )}
             </ButtonBase>
         </Tooltip>

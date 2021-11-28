@@ -80,6 +80,7 @@ const theme = {
                 fontWeight: 'inherit',
                 fontFamily: primaryFontFamily,
                 wordBreak: 'break-word',
+                textTransform: 'none',
             },
         },
         MuiTypography: {

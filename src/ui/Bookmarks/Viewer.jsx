@@ -3,20 +3,19 @@ import { Box, Fab, Tooltip } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import { sample } from 'lodash';
 import { useResizeDetector } from 'react-resize-detector';
 import FoldersPanel from '@/ui/Bookmarks/FoldersPanel';
-import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
 import ToolsPanel from '@/ui/Bookmarks/ToolsPanel';
 import Scrollbar from '@/ui-components/CustomScroll';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import BookmarksSearchService from '@/ui/Bookmarks/BookmarksSearchService';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
-import GreetingView from '@/ui/Bookmarks/GreetingView';
-import { FETCH } from '@/enum';
+import PrimaryContent from '@/ui/Bookmarks/PrimaryContent';
+import SecondaryContent from '@/ui/Bookmarks/SecondaryContent';
+import { NULL_UUID } from '@/utils/generate/uuid';
+import { SearchServiceProvider, useSearchService } from '@/ui/Bookmarks/searchProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -34,7 +33,10 @@ const useStyles = makeStyles((theme) => ({
         backgroundImage: `linear-gradient(to top, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
         '&:hover': { backgroundImage: `linear-gradient(to top, ${theme.palette.primary.dark}, ${theme.palette.primary.main})` },
     },
-    content: { margin: 'auto' },
+    content: {
+        padding: theme.spacing(0, 3),
+        paddingBottom: theme.spacing(12),
+    },
     offsetContainer: { width: '100%' },
 }));
 
@@ -43,7 +45,7 @@ function Bookmarks() {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const coreService = useCoreService();
-    const service = useLocalObservable(() => new BookmarksSearchService());
+    const searchService = useSearchService();
     const store = useLocalObservable(() => ({ columnsCount: 0 }));
     const contextMenu = useContextMenu(() => [
         new ContextMenuItem({
@@ -53,8 +55,8 @@ function Bookmarks() {
                 coreService.localEventBus.call(
                     'bookmark/create',
                     {
-                        defaultFolderId: service.selectFolderId,
-                        defaultTagsIds: service.tags,
+                        defaultFolderId: searchService.selectFolderId,
+                        defaultTagsIds: searchService.tags,
                     },
                 );
             },
@@ -62,7 +64,7 @@ function Bookmarks() {
     ]);
     const onResize = useCallback((width) => {
         store.columnsCount = Math.min(
-            Math.floor((width + 16 - 32) / (theme.shape.dataCard.width + 16)),
+            Math.floor((width + 16 - 48) / (theme.shape.dataCard.width + 16)),
             4,
         );
     }, []);
@@ -71,9 +73,9 @@ function Bookmarks() {
 
     useEffect(() => {
         const listenId = coreService.globalEventBus.on('folder/removed', async () => {
-            const folder = await FoldersUniversalService.get(service.selectFolderId);
+            const folder = await FoldersUniversalService.get(searchService.selectFolderId);
 
-            if (!folder) service.setActiveFolder(1);
+            if (!folder) searchService.setSelectFolder(NULL_UUID);
         });
 
         return () => coreService.globalEventBus.removeListener(listenId);
@@ -86,27 +88,20 @@ function Bookmarks() {
             flexGrow={1}
             onContextMenu={contextMenu}
         >
-            <FoldersPanel searchService={service} />
+            <FoldersPanel />
             <Box flexGrow={1} overflow="auto">
                 <Scrollbar>
                     <Box
                         minHeight="100vh" display="flex" flexDirection="column"
                         ref={ref}
                     >
-                        <ToolsPanel searchService={service} />
+                        <ToolsPanel />
                         <Box
-                            className={classes.offsetContainer}
-                            style={{ maxWidth: (store.columnsCount + 0.5) * (theme.shape.dataCard.width + 16) + 16 }}
+                            className={classes.content}
+                            style={{ width: store.columnsCount * (theme.shape.dataCard.width + 16) + 24 + 8 }}
                         >
-                            <Box
-                                className={classes.content}
-                                style={{ width: store.columnsCount * (theme.shape.dataCard.width + 16) + 16 }}
-                            >
-                                {!service.selectFolderId && (
-                                    <GreetingView searchService={service} />
-                                )}
-                                <BookmarksViewer searchService={service} columns={store.columnsCount} />
-                            </Box>
+                            <PrimaryContent columns={store.columnsCount} />
+                            <SecondaryContent columns={store.columnsCount} />
                         </Box>
                     </Box>
                 </Scrollbar>
@@ -117,7 +112,7 @@ function Bookmarks() {
                     color="primary"
                     onClick={() => coreService.localEventBus.call(
                         'bookmark/create',
-                        { defaultFolderId: service.selectFolderId },
+                        { defaultFolderId: searchService.selectFolderId },
                     )}
                 >
                     <AddBookmarkIcon />
@@ -127,4 +122,14 @@ function Bookmarks() {
     );
 }
 
-export default observer(Bookmarks);
+const ObserverBookmarks = observer(Bookmarks);
+
+function RootBookmark() {
+    return (
+        <SearchServiceProvider>
+            <ObserverBookmarks />
+        </SearchServiceProvider>
+    );
+}
+
+export default RootBookmark;

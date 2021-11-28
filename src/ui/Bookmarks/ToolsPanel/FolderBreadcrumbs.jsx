@@ -6,16 +6,16 @@ import {
     Typography,
 } from '@material-ui/core';
 import { useLocalObservable, observer } from 'mobx-react-lite';
-import { FETCH } from '@/enum';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { makeStyles } from '@material-ui/core/styles';
 import { ArrowForward as GoToIcon } from '@material-ui/icons';
 import clsx from 'clsx';
+import { FETCH } from '@/enum';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        minHeight: 40,
+        minHeight: 36,
         display: 'flex',
         alignItems: 'center',
     },

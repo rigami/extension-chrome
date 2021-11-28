@@ -13,8 +13,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexGrow: 1,
         flexDirection: 'column',
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
     },
     sidebar: {},
     widgetContainer: { margin: theme.spacing(1.5, 0) },
@@ -33,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function GreetingView({ searchService: service }) {
+function GreetingView() {
     const classes = useStyles();
     const { t } = useTranslation();
 

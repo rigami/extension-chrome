@@ -7,6 +7,7 @@ import {
     isEqual,
 } from 'lodash';
 import { SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
+import { NULL_UUID } from '@/utils/generate/uuid';
 
 export const SEARCH_STATE = {
     WAIT: 'WAIT',
@@ -16,9 +17,9 @@ export const SEARCH_STATE = {
     PENDING: 'PENDING',
 };
 
-class BookmarksSearchService {
+class SearchService {
     activeFolderId = null;
-    selectFolderId = null;
+    selectFolderId = NULL_UUID; // Used
     searchRequest = new SearchQuery({});
     tempSearchRequest = new SearchQuery({});
     state = SEARCH_STATE.WAIT;
@@ -49,7 +50,8 @@ class BookmarksSearchService {
         });
     }
 
-    setActiveFolder(folderId) {
+    // Used
+    setSelectFolder(folderId) {
         this.selectFolderId = folderId;
 
         this.applyChanges();
@@ -104,4 +106,4 @@ class BookmarksSearchService {
     }
 }
 
-export default BookmarksSearchService;
+export default SearchService;

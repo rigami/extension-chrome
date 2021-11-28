@@ -12,11 +12,12 @@ import FolderBreadcrumbs from './FolderBreadcrumbs';
 import SearchBlock from './Search';
 import ShowFavorites from './ShowFavorites';
 import CloudSync from '@/ui/Bookmarks/ToolsPanel/CloudSync';
+import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: { backgroundColor: alpha(theme.palette.background.paper, 0.91) },
     toolbar: {
-        minHeight: 40,
+        minHeight: 36,
         display: 'flex',
         padding: theme.spacing(2),
         alignItems: 'flex-start',
@@ -55,11 +56,12 @@ const useStyles = makeStyles((theme) => ({
     fixVisualMargin: { marginRight: theme.spacing(1) },
 }));
 
-function ToolsPanel({ searchService: service }) {
+function ToolsPanel() {
     const classes = useStyles();
     const { t } = useTranslation(['desktop']);
     const appService = useAppService();
     const bookmarksService = useBookmarksService();
+    const searchService = useSearchService();
 
     return (
         <AppBar
@@ -71,16 +73,14 @@ function ToolsPanel({ searchService: service }) {
             <Toolbar disableGutters className={classes.toolbar}>
                 <Box className={classes.wrapperBreadcrumbs}>
                     <FolderBreadcrumbs
-                        key={service.selectFolderId}
-                        folderId={service.selectFolderId}
-                        onSelectFolder={(folderId) => service.setActiveFolder(folderId)}
+                        key={searchService.selectFolderId}
+                        folderId={searchService.selectFolderId}
+                        onSelectFolder={(folderId) => searchService.setSelectFolder(folderId)}
                     />
                 </Box>
-                <Box className={classes.cloudSyncState}>
-                    <CloudSync />
-                </Box>
+                <CloudSync />
                 <Box className={classes.wrapperSearch}>
-                    <SearchBlock searchService={service} />
+                    <SearchBlock />
                 </Box>
                 <Box className={classes.wrapperTools}>
                     {bookmarksService.favorites.length > 0 && (

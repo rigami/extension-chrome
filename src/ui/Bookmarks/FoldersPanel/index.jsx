@@ -13,6 +13,8 @@ import Subheader from '@/ui/Bookmarks/FoldersPanel/Subheader';
 import { ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
 import LastClosed from './RecentlyClosed';
 import Folders from './Folders';
+import { NULL_UUID } from '@/utils/generate/uuid';
+import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -50,13 +52,14 @@ const useStyles = makeStyles((theme) => ({
     offsetTop: { marginTop: 'auto' },
 }));
 
-function FoldersPanel({ searchService: service }) {
+function FoldersPanel() {
     const { t } = useTranslation(['folder']);
+    const searchService = useSearchService();
     const classes = useStyles();
 
     return (
         <Box className={classes.root}>
-            <CardActionArea onClick={() => service.setActiveFolder(null)}>
+            <CardActionArea onClick={() => searchService.setSelectFolder(NULL_UUID)}>
                 <CardHeader
                     avatar={(<LogoIcon className={classes.appLogoIcon} />)}
                     title={(<LogoText className={classes.appLogoText} />)}
@@ -77,8 +80,8 @@ function FoldersPanel({ searchService: service }) {
                     disableButton
                 />
                 <Folders
-                    selectFolder={service.selectFolderId}
-                    onClickFolder={({ id }) => service.setActiveFolder(id)}
+                    selectFolder={searchService.selectFolderId}
+                    onClickFolder={({ id }) => searchService.setSelectFolder(id)}
                 />
             </Box>
             <LastClosed className={classes.offsetTop} />

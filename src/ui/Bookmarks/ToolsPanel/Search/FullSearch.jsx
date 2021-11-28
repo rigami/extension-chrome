@@ -12,6 +12,7 @@ import SearchField from '@/ui/Bookmarks/ToolsPanel/Search/SearchField';
 import Tags from '@/ui/Bookmarks/Tags';
 import CustomScroll from '@/ui-components/CustomScroll';
 import FastResults from '@/ui/Bookmarks/ToolsPanel/Search/FastResults';
+import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 
 const useStyles = makeStyles((theme) => ({
     fullSearch: {
@@ -41,9 +42,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function FullSearch({ searchService: globalService, open, onClose }) {
+function FullSearch({ open, onClose }) {
     const classes = useStyles();
     const inputRef = useRef();
+    const searchService = useSearchService();
     const store = useLocalObservable(() => ({
         showFastResults: false,
         localSearchRequestId: 0,
@@ -62,7 +64,7 @@ function FullSearch({ searchService: globalService, open, onClose }) {
         if (open) {
             window.addEventListener('keydown', handleKeyDown, true);
             if (inputRef.current) inputRef.current.focus();
-            store.localSearchRequestId = globalService.searchRequestId;
+            store.localSearchRequestId = searchService.searchRequestId;
         }
 
         return () => {
@@ -87,38 +89,37 @@ function FullSearch({ searchService: globalService, open, onClose }) {
                     <SearchField
                         className={classes.search}
                         inputRef={inputRef}
-                        query={globalService.tempSearchRequest.query}
+                        query={searchService.tempSearchRequest.query}
                         onChange={(newQuery) => {
                             store.localSearchRequestId += 1;
-                            globalService.updateRequest({ query: newQuery });
+                            searchService.updateRequest({ query: newQuery });
                         }}
                     />
                     <Divider />
                     <Tags
                         className={classes.tags}
-                        value={globalService.tempSearchRequest.tags}
+                        value={searchService.tempSearchRequest.tags}
                         expandAlways
                         onChange={(changedTags) => {
                             store.localSearchRequestId += 1;
-                            globalService.updateRequest({ tags: changedTags });
+                            searchService.updateRequest({ tags: changedTags });
                         }}
                     />
                     {
                         store.showFastResults
-                        && store.localSearchRequestId !== globalService.searchRequestId
+                        && store.localSearchRequestId !== searchService.searchRequestId
                         && (
-                            globalService.tempSearchRequest.usedFields?.query
-                            || globalService.tempSearchRequest.usedFields?.tags
+                            searchService.tempSearchRequest.usedFields?.query
+                            || searchService.tempSearchRequest.usedFields?.tags
                         )
                         && (
                             <React.Fragment>
                                 <Divider />
                                 <CustomScroll translateContentSizeYToHolder>
                                     <FastResults
-                                        searchService={globalService}
                                         onGoToFolder={(folderId, apply) => {
-                                            if (!apply) globalService.resetChanges();
-                                            globalService.setActiveFolder(folderId);
+                                            if (!apply) searchService.resetChanges();
+                                            searchService.setSelectFolder(folderId);
                                             onClose(null, apply);
                                         }}
                                     />

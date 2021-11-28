@@ -1,5 +1,5 @@
-import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import { values, intersectionWith, isEqual } from 'lodash';
+import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import db from '@/utils/db';
 import { COMPARE, SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
@@ -111,6 +111,8 @@ export const search = async (searchRequest = new SearchQuery()) => {
     const bestMatches = {};
     const allMatches = {};
 
+    console.log('[search] searchRequest', searchRequest);
+
     console.time('query');
     // Save memory method, but slowly 10x
     /* const transaction = db().transaction('bookmarks', 'readonly');
@@ -139,6 +141,8 @@ export const search = async (searchRequest = new SearchQuery()) => {
 
     allBookmarks.forEach((bookmark) => {
         const compareResult = compare(searchRequest, bookmark);
+
+        console.log(`[search] folderId:${searchRequest.folderId} compare:${compareResult.folder}`);
 
         if (searchRequest.folderId && compareResult.folder === COMPARE.NONE) return;
 

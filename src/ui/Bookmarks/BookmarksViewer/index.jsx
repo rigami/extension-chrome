@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, Fragment } from 'react';
 import {
     Box,
     Button,
-    CircularProgress,
+    CircularProgress, Typography,
 } from '@material-ui/core';
 import { alpha, makeStyles, useTheme } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
@@ -12,21 +12,20 @@ import { useTranslation } from 'react-i18next';
 import { sample } from 'lodash';
 import Stub from '@/ui-components/Stub';
 import { FETCH } from '@/enum';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import stateRender from '@/utils/helpers/stateRender';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import Header from '@/ui/Bookmarks/BookmarksViewer/Header';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         flexGrow: 1,
         flexDirection: 'column',
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
     },
     stub: { maxHeight: 750 },
     emoticon: {
@@ -40,8 +39,8 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(4),
         color: theme.palette.text.primary,
     },
-    bookmarks: { paddingTop: theme.spacing(6) },
-    bottomOffset: { paddingBottom: theme.spacing(38) },
+    // bookmarks: { paddingTop: theme.spacing(6) },
+    // bottomOffset: { paddingBottom: theme.spacing(38) },
 }));
 
 const emoticons = [
@@ -60,11 +59,12 @@ const emoticons = [
     '(⊙_⊙)',
 ];
 
-function BookmarksViewer({ searchService: service, columns }) {
+function BookmarksViewer({ folderId, columns, dense = false, className: externalClassName }) {
     const classes = useStyles();
     const theme = useTheme();
     const bookmarksService = useBookmarksService();
     const coreService = useCoreService();
+    const searchService = useSearchService();
     const { t } = useTranslation(['bookmark']);
     const store = useLocalObservable(() => ({
         bestBookmarks: null,
@@ -105,24 +105,33 @@ function BookmarksViewer({ searchService: service, columns }) {
             store.loadState = FETCH.PENDING;
         }, 100); */
 
-        BookmarksUniversalService.query(service.searchRequest)
+        BookmarksUniversalService.query(new SearchQuery(({
+            query: searchService.searchRequest.query,
+            tags: searchService.searchRequest.tags,
+            folderId,
+        })))
             .then((result) => {
                 if (currentRequestId !== store.requestId) return;
 
                 // isDoneRequest = true;
-                console.log('query:', result, service.searchRequest);
+                console.log('query:', result, {
+                    ...searchService.searchRequest,
+                    folderId,
+                });
 
                 store.bestBookmarks = result.best && sortByFavorites(result.best);
                 store.allBookmarks = result.all && sortByFavorites(result.all);
                 store.existMatches = ((result.best?.length || 0) + result.all.length) !== 0;
-                store.usedFields = { ...service.searchRequest.usedFields };
+                store.usedFields = { ...searchService.searchRequest.usedFields };
                 store.loadState = FETCH.DONE;
                 store.emoticon = sample(emoticons);
+
+                console.log('store.usedFields', store.usedFields);
             });
-    }, [service.searchRequestId, bookmarksService.lastTruthSearchTimestamp]);
+    }, [searchService.searchRequestId, folderId, bookmarksService.lastTruthSearchTimestamp]);
 
     return (
-        <Box className={classes.root}>
+        <Box className={clsx(classes.root, externalClassName)}>
             {stateRender(
                 store.loadState,
                 [
@@ -170,7 +179,7 @@ function BookmarksViewer({ searchService: service, columns }) {
                     !store.usedFields.query
                     && !store.usedFields.tags
                     && !store.existMatches
-                    && (
+                    && !dense && (
                         <Stub
                             key="empty"
                             maxWidth={false}
@@ -185,7 +194,7 @@ function BookmarksViewer({ searchService: service, columns }) {
                             <Button
                                 onClick={() => coreService.localEventBus.call(
                                     'bookmark/create',
-                                    { defaultFolderId: service.selectFolderId },
+                                    { defaultFolderId: searchService.selectFolderId },
                                 )}
                                 startIcon={<AddBookmarkIcon />}
                                 variant="outlined"
@@ -194,6 +203,14 @@ function BookmarksViewer({ searchService: service, columns }) {
                                 {t('button.add', { context: 'first' })}
                             </Button>
                         </Stub>
+                    ),
+                    !store.usedFields.query
+                    && !store.usedFields.tags
+                    && !store.existMatches
+                    && dense && (
+                        <Box key="empty" mb={2}>
+                            <Typography color="textSecondary">{t('empty')}</Typography>
+                        </Box>
                     ),
                 ],
                 <Stub>

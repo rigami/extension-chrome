@@ -12,6 +12,7 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import FullSearch from '@/ui/Bookmarks/ToolsPanel/Search/FullSearch';
 import Preview from './Preview';
+import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 
 const useStyles = makeStyles((theme) => ({
     wrapper: {
@@ -83,13 +84,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Search({ searchService: globalService }) {
+function Search() {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
+    const searchService = useSearchService();
     const [isOpen, setIsOpen] = useState(false);
     const rootRef = useRef();
 
-    const { usedFields } = globalService.searchRequest;
+    console.log('searchService:', searchService, searchService.searchRequest);
+
+    const { usedFields } = searchService.searchRequest;
 
     const oneRow = (!usedFields.tags && usedFields.query)
         || (usedFields.tags && !usedFields.query);
@@ -103,12 +107,12 @@ function Search({ searchService: globalService }) {
                             className={classes.resetIcon}
                             size="medium"
                             onClick={() => {
-                                globalService.updateRequest({
+                                searchService.updateRequest({
                                     query: '',
                                     tags: [],
                                 }, { force: true });
 
-                                globalService.applyChanges();
+                                searchService.applyChanges();
                             }}
                         >
                             <ResetIcon />
@@ -118,14 +122,13 @@ function Search({ searchService: globalService }) {
             )}
             <Fade in={!isOpen}>
                 <Preview
-                    query={usedFields.query && globalService.searchRequest.query}
-                    tags={usedFields.tags && globalService.searchRequest.tags}
+                    query={usedFields.query && searchService.searchRequest.query}
+                    tags={usedFields.tags && searchService.searchRequest.tags}
                     onClick={() => setIsOpen(true)}
                 />
             </Fade>
             <Box className={clsx(classes.fullSearchWrapper, !isOpen && classes.disabledFullSearch)}>
                 <FullSearch
-                    searchService={globalService}
                     open={isOpen}
                     onClose={(event, apply) => {
                         if (event && event.path.find((elem) => (
@@ -135,8 +138,8 @@ function Search({ searchService: globalService }) {
 
                         if (!event || !event.path.includes(rootRef.current)) {
                             setIsOpen(false);
-                            if (apply) globalService.applyChanges();
-                            else globalService.resetChanges();
+                            if (apply) searchService.applyChanges();
+                            else searchService.resetChanges();
                         }
                     }}
                 />
