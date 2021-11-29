@@ -1,5 +1,5 @@
 import { BKMS_VARIANT } from '@/enum';
-import fetchData from '@/utils/helpers/fetchData';
+import { getImage } from '@/ui/Bookmarks/EditBookmarkModal/Editor/utils/siteSearch';
 
 export const checkValidImage = async (url) => new Promise(((resolve, reject) => {
     const imgCache = document.createElement('img');
@@ -8,60 +8,23 @@ export const checkValidImage = async (url) => new Promise(((resolve, reject) => 
     imgCache.src = url;
 }));
 
-export const getNextBestImage = (list, onChangeList) => {
-    if (list.length === 0) {
-        return null;
-    }
-
-    let maxScoreId = 0;
-
-    list.forEach(({ score }, id) => {
-        if (list[maxScoreId].score < score) maxScoreId = id;
-    });
-
-    const bestImage = list[maxScoreId];
-
-    onChangeList(list.filter(({ url }) => url !== bestImage.url));
-
-    return {
-        url: bestImage.url,
-        processedStage: bestImage.processedStage,
-        score: bestImage.score,
-        icoVariant: bestImage.type,
-    };
-};
-
 export const getNextImage = async (list, onChangeList) => {
-    let currList = list;
+    let nextImage;
+    let currList = list.slice();
 
-    let nextImage = getNextBestImage(currList, (newList) => {
-        currList = newList;
-        onChangeList(newList);
-    });
-
-    let isValid;
-
-    if (nextImage && nextImage.processedStage === 'IS_PROCESSED') {
-        isValid = await checkValidImage(nextImage.url).catch(() => null);
-    } else if (nextImage && nextImage.processedStage === 'WAIT') {
+    while (!nextImage && currList.length > 0) {
         try {
-            const { response: updateData } = await fetchData(nextImage.url);
-
-            nextImage = updateData;
-
-            isValid = await checkValidImage(updateData.url).catch(() => null);
+            nextImage = await getImage(currList[0].url.substring(1));
         } catch (e) {
-            console.warn('Failed recalc image', e);
-            isValid = false;
+            console.error(e);
         }
-    } else {
-        isValid = false;
+
+        currList = currList.slice(1);
+
+        onChangeList(currList);
     }
 
-    return !nextImage || isValid ? nextImage : getNextImage(currList, (newList) => {
-        currList = newList;
-        onChangeList(newList);
-    });
+    return nextImage;
 };
 
 export const getDefaultImage = async (images) => {
@@ -78,7 +41,7 @@ export const getDefaultImage = async (images) => {
     if (!img) {
         img = {
             url: '',
-            icoVariant: BKMS_VARIANT.SYMBOL,
+            type: BKMS_VARIANT.SYMBOL,
         };
     }
 

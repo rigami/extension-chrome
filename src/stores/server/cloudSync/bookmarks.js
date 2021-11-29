@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import db from '@/utils/db';
 import { DESTINATION } from '@/enum';
-import { NULL_UUID } from '@/utils/generate/uuid';
+import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 
 class CloudSyncBookmarksService {
@@ -118,7 +118,7 @@ class CloudSyncBookmarksService {
                     name: snapshot.payload.title,
                     description: snapshot.payload.description,
                     tags: tagPairs.map(({ localId }) => localId),
-                    folderId: folderPair.localId,
+                    folderId: snapshot.payload.folderId === NULL_UUID ? FIRST_UUID : folderPair.localId,
                     createTimestamp: new Date(snapshot.createDate).valueOf(),
                     modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
                 }, false);
@@ -142,7 +142,7 @@ class CloudSyncBookmarksService {
                     name: snapshot.payload.title,
                     description: snapshot.payload.description,
                     tags: tagPairs.map(({ localId }) => localId),
-                    folderId: folderPair.localId,
+                    folderId: snapshot.payload.folderId === NULL_UUID ? FIRST_UUID : folderPair.localId,
                     createTimestamp: new Date(snapshot.createDate).valueOf(),
                     modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
                 }, false);

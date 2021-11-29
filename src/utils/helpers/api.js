@@ -1,7 +1,7 @@
+import { map, startsWith } from 'lodash';
 import mergeObjects from '@/utils/mergeObjects';
 import appVariables from '@/config/appVariables';
 import fetchData from '@/utils/helpers/fetchData';
-import { map, startsWith } from 'lodash';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import { SERVICE_STATE } from '@/enum';
 import authStorage from '@/stores/universal/AuthStorage';
@@ -245,5 +245,7 @@ api.sse = function sse(path, options = {}) {
 
     return eventTarget;
 };
+
+api.computeUrl = (path, { version = 1 } = {}) => `${appVariables.rest.url}/v${version}/${path}`;
 
 export default api;

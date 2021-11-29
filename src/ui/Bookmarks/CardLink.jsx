@@ -14,11 +14,11 @@ import {
 import { StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
-import { observer } from 'mobx-react-lite';
 import { getDomain } from '@/utils/localSiteParse';
 
 const useStyles = makeStyles((theme) => ({
@@ -85,15 +85,17 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
     },
     extendBanner: {
-        width: '100%',
+        width: `calc(100% - ${theme.spacing(1)}px)`,
         height: 109,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
+        borderRadius: theme.shape.borderRadius / 2,
+        margin: theme.spacing(0.5),
+        filter: 'brightness(0.96)',
     },
     extendBannerTitle: {
-        margin: theme.spacing(0.5, 1.5),
+        margin: theme.spacing(1, 1.5),
         marginBottom: 0,
         '-webkit-line-clamp': 2,
     },
@@ -219,7 +221,6 @@ function CardLink(props) {
                     {icoVariant === BKMS_VARIANT.POSTER && (
                         <Box className={classes.banner}>
                             <Image variant={BKMS_VARIANT.POSTER} src={icoUrl} className={classes.extendBanner} />
-                            <Divider />
                             <Typography
                                 className={clsx(classes.title, classes.extendBannerTitle)}
                             >

@@ -130,7 +130,7 @@ const getPreview = async (fileOrSrc, type, { size = 'preview', antiAliasing = tr
 
     if (size === 'full') {
         return canvas.convertToBlob({
-            type: 'image/jpeg',
+            type: 'image/png',
             quality: 1,
         });
     } else {

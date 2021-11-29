@@ -1,10 +1,10 @@
-import { BKMS_VARIANT } from '@/enum';
 import { makeAutoObservable, toJS } from 'mobx';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import { captureException } from '@sentry/react';
+import { BKMS_VARIANT } from '@/enum';
+import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import { FIRST_UUID } from '@/utils/generate/uuid';
-import { getImageRecalc, getSiteInfo } from './utils/siteSearch';
-import { getNextImage, getDefaultImage } from './utils/checkIcons';
+import { getImage, getSiteInfo } from './utils/siteSearch';
+import { getDefaultImage, getNextImage } from './utils/checkIcons';
 
 export const STATE_EDITOR = {
     LOADING_EDITOR: 'LOADING_EDITOR',
@@ -157,18 +157,8 @@ class BookmarkEditor {
                 this.description = this.description || siteData.description;
             }
 
-            if (siteData.bestIcon?.score === 0) {
-                try {
-                    console.log('siteData.bestIcon.url', siteData.bestIcon.url);
-                    siteData.bestIcon = await getImageRecalc(siteData.bestIcon.url);
-                } catch (e) {
-                    console.error(e);
-                    captureException(e);
-                    siteData.bestIcon = null;
-                }
-            }
             if (this.url !== currentFetchUrl) return;
-            this.allImages = [siteData.bestIcon, ...siteData.icons].filter((isExist) => isExist);
+            this.allImages = siteData.images.sort((a, b) => a.score - b.score);
         } catch (e) {
             captureException(e);
             if (this.url !== currentFetchUrl) return;

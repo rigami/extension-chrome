@@ -20,8 +20,8 @@ const useStyles = makeStyles((theme) => ({
     header: {
         display: 'flex',
         flexDirection: 'row',
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
     },
     icon: {
         color: theme.palette.favorite.main,

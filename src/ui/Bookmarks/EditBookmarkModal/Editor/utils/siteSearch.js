@@ -1,7 +1,8 @@
+import { captureException } from '@sentry/react';
 import appVariables from '@/config/appVariables';
 import fetchData from '@/utils/helpers/fetchData';
 import parseSite, { getDomain } from '@/utils/localSiteParse';
-import { captureException } from '@sentry/react';
+import api from '@/utils/helpers/api';
 
 const search = async (query, signal) => {
     const response = await fetchData(
@@ -22,7 +23,20 @@ const search = async (query, signal) => {
     }));
 };
 
-const getImageRecalc = (icoUrl) => fetchData(icoUrl).then(({ response }) => response);
+const getImageRecalc = (icoUrl) => api.get(icoUrl.substring(1)).then(({ response, raw }) => response);
+
+const getImage = async (icoUrl) => {
+    const { raw, response } = await api.get(icoUrl, { responseType: 'arrayBuffer' });
+
+    return {
+        buffer: response,
+        url: api.computeUrl(icoUrl),
+        score: +raw.headers.get('image-score'),
+        type: raw.headers.get('image-type'),
+        icoVariant: raw.headers.get('image-type').toUpperCase(),
+        baseUrl: raw.headers.get('image-base-url'),
+    };
+};
 
 const getSiteInfoLocal = async (url) => {
     let localSearchUrl = url;
@@ -82,17 +96,12 @@ const getSiteInfo = async (url, onMeta) => {
     }
 
     try {
-        const { response: result } = await fetchData(
-            `${appVariables.rest.url}/site-parse/add-data`,
-            {
-                body: JSON.stringify(localParseData),
-                method: 'POST',
-                headers: { 'Content-type': 'application/json' },
-                responseType: 'json',
-            },
+        const { response: result } = await api.get(
+            'site-parse/get-meta',
+            { query: { url } },
         );
 
-        if (!result?.icons) throw new Error('Broken result');
+        if (!result?.images) throw new Error('Broken result');
 
         return result;
     } catch (e) {
@@ -107,4 +116,5 @@ export {
     getSiteInfo,
     getImageRecalc,
     getSiteInfoLocal,
+    getImage,
 };
