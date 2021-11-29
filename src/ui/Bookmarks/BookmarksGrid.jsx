@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
 import { Box } from '@material-ui/core';
-import CardLink from '@/ui/Bookmarks/CardLink';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { BKMS_VARIANT } from '@/enum';
 import hash from 'object-hash';
 import clsx from 'clsx';
+import { BKMS_VARIANT } from '@/enum';
+import CardLink from '@/ui/Bookmarks/CardLink';
 
 const useStyles = makeStyles(() => ({
     root: { width: '100%' },
@@ -67,6 +67,7 @@ function BookmarksGrid(props) {
                                     name={card.name}
                                     url={card.url}
                                     tags={card.tags}
+                                    tagsFull={card.tagsFull}
                                     icoVariant={card.icoVariant}
                                     description={card.description}
                                     icoUrl={card.icoUrl}

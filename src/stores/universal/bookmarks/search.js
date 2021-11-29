@@ -138,6 +138,11 @@ export const search = async (searchRequest = new SearchQuery()) => {
     await transaction.done; */
 
     const allBookmarks = await db().getAll('bookmarks');
+    const allTags = {};
+
+    (await db().getAll('tags')).forEach((tag) => {
+        allTags[tag.id] = tag;
+    });
 
     allBookmarks.forEach((bookmark) => {
         const compareResult = compare(searchRequest, bookmark);
@@ -147,12 +152,18 @@ export const search = async (searchRequest = new SearchQuery()) => {
         if (searchRequest.folderId && compareResult.folder === COMPARE.NONE) return;
 
         if (compareResult.summary === COMPARE.FULL) {
-            const entity = new Bookmark(bookmark);
+            const entity = new Bookmark({
+                ...bookmark,
+                tagsFull: bookmark.tags.map((tagId) => allTags[tagId]),
+            });
 
             bestMatches[bookmark.id] = entity;
             allMatches[bookmark.id] = entity;
         } else if (compareResult.summary === COMPARE.PART) {
-            allMatches[bookmark.id] = new Bookmark(bookmark);
+            allMatches[bookmark.id] = new Bookmark({
+                ...bookmark,
+                tagsFull: bookmark.tags.map((tagId) => allTags[tagId]),
+            });
         }
     });
     console.timeEnd('query');

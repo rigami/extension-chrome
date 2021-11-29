@@ -1,4 +1,5 @@
 import { hslToRgb, recomposeColor } from '@material-ui/core/styles/colorManipulator';
+import { alpha } from '@material-ui/core/styles';
 
 export default (key) => {
     const computeKey = key % 98;

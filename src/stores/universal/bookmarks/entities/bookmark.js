@@ -8,11 +8,12 @@ class Bookmark {
     name;
     description;
     icoVariant;
-    sourceIcoUrl
+    sourceIcoUrl;
     icoUrl;
     imageBase64;
     icoFileName;
     tags;
+    tagsFull;
     folderId;
     clickCounts = 0;
     createTimestamp;
@@ -30,6 +31,7 @@ class Bookmark {
         this.icoUrl = bookmark.icoUrl;
         this.imageBase64 = bookmark.imageBase64;
         this.tags = bookmark.tags || [];
+        this.tagsFull = bookmark.tagsFull || null;
         this.folderId = bookmark.folderId || null;
         this.icoFileName = bookmark.icoFileName;
         this.createTimestamp = bookmark.createTimestamp;

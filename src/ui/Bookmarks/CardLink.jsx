@@ -12,7 +12,7 @@ import {
     Divider,
 } from '@material-ui/core';
 import { StarRounded as FavoriteIcon } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import Image from '@/ui-components/Image';
@@ -20,6 +20,8 @@ import { BKMS_VARIANT } from '@/enum';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import { getDomain } from '@/utils/localSiteParse';
+import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import getUniqueColor from '@/utils/generate/uniqueColor';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -130,7 +132,30 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
+    tagsContainer: {
+        display: 'flex',
+        padding: theme.spacing(0.75),
+    },
+    tag: {
+        color: theme.palette.text.secondary,
+        padding: theme.spacing(0.25, 0.5),
+        marginRight: theme.spacing(0.5),
+        borderRadius: theme.shape.borderRadiusButton,
+        fontSize: 12,
+        fontWeight: '500',
+        fontFamily: theme.typography.primaryFontFamily,
+    },
 }));
+
+function Tag({ id, name, colorKey }) {
+    const classes = useStyles();
+
+    const repairColor = alpha(getUniqueColor(colorKey) || '#000', 0.2);
+
+    return (
+        <Box className={classes.tag} style={{ backgroundColor: repairColor }}>{name}</Box>
+    );
+}
 
 function CardLink(props) {
     const {
@@ -141,6 +166,8 @@ function CardLink(props) {
         description,
         icoUrl,
         preview = false,
+        tags,
+        tagsFull,
         onClick,
         className: externalClassName,
         ...other
@@ -226,6 +253,16 @@ function CardLink(props) {
                             >
                                 {name}
                             </Typography>
+                        </Box>
+                    )}
+                    {tagsFull && (
+                        <Box className={classes.tagsContainer}>
+                            {tagsFull.map((tag) => (
+                                <Tag
+                                    key={tag.id} id={tag.id} name={tag.name}
+                                    colorKey={tag.colorKey}
+                                />
+                            ))}
                         </Box>
                     )}
                     {description && (

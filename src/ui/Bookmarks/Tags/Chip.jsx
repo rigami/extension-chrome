@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { Box, ButtonBase, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import { StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import getUniqueColor from '@/utils/generate/uniqueColor';
 
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
         height: 'fit-content',
         minHeight: theme.spacing(4),
         alignItems: 'center',
-        borderRadius: theme.spacing(2),
+        borderRadius: theme.shape.borderRadiusButton,
         borderColor: theme.palette.divider,
         boxSizing: 'border-box',
     },
@@ -29,26 +29,24 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(1),
         flexShrink: 0,
         marginRight: theme.spacing(1),
-        opacity: 0.6,
     },
     text: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         fontSize: '0.9rem',
+        marginRight: theme.spacing(2),
     },
     active: {},
     favorite: {
         color: theme.palette.favorite.main,
         width: 18,
         height: 18,
-    },
-    favoriteWrapper: {
-        width: theme.spacing(2.5),
         display: 'flex',
         justifyContent: 'center',
-        marginLeft: theme.spacing(0.25),
+        marginLeft: theme.spacing(-1.25),
         marginRight: theme.spacing(0.75),
     },
+    favoriteWrapper: { width: theme.spacing(2.5) },
 }));
 
 function Tag(props) {
@@ -94,11 +92,9 @@ function Tag(props) {
             <Typography component="span" className={classes.text}>
                 {name}
             </Typography>
-            <Box className={classes.favoriteWrapper}>
-                {isPin && (
-                    <FavoriteIcon className={classes.favorite} />
-                )}
-            </Box>
+            {isPin && (
+                <FavoriteIcon className={classes.favorite} />
+            )}
         </ButtonBase>
     );
 }
