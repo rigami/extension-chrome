@@ -1,7 +1,7 @@
 import { createTheme, alpha } from '@material-ui/core/styles';
 
 const primaryFontFamily = '"Manrope", "Open Sans", sans-serif';
-const secondaryFontFamily = primaryFontFamily; // 'Roboto, "Open Sans", sans-serif';
+const secondaryFontFamily = 'Inter, sans-serif'; // 'Roboto, "Open Sans", sans-serif';
 
 const theme = {
     palette: {
@@ -20,7 +20,8 @@ const theme = {
             main: '#f46600',
             contrastText: '#fff',
         },
-        divider: alpha('#000', 0.09),
+        divider: alpha('#000', 0.13),
+        dividerLight: alpha('#000', 0.09),
         favorite: { main: '#F4C620' },
         snackbar: { default: alpha('#fff', 0.95) },
         background: { backdrop: '#ececec' },
@@ -31,7 +32,7 @@ const theme = {
         borderRadiusBold: 8,
         dataCard: {
             width: 210,
-            height: 80,
+            height: 86,
         },
     },
     typography: {

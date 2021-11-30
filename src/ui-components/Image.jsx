@@ -15,9 +15,9 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusBold,
         color: theme.palette.getContrastText(theme.palette.background.backdrop),
         fontWeight: 800,
-        backgroundColor: theme.palette.background.backdrop,
         fontFamily: theme.typography.primaryFontFamily,
     },
+    roundedIconDefault: { backgroundColor: theme.palette.background.backdrop },
     skeleton: { backgroundColor: theme.palette.background.backdrop },
 }));
 
@@ -74,6 +74,7 @@ function Image(props) {
                 {!isLoading && (
                     <Avatar
                         className={clsx(classes.roundedIcon, externalClassName)}
+                        classes={{ colorDefault: classes.roundedIconDefault }}
                         src={(variant !== BKMS_VARIANT.SYMBOL && src) || undefined}
                         variant="rounded"
                     >

@@ -98,29 +98,33 @@ const useStyles = makeStyles((theme) => ({
     },
     extendBannerTitle: {
         margin: theme.spacing(1, 1.5),
-        marginBottom: 0,
+        marginBottom: theme.spacing(0.75),
+        height: 32,
         '-webkit-line-clamp': 2,
     },
     description: {
         color: theme.palette.text.secondary,
-        overflow: 'hidden',
         marginTop: theme.spacing(0.75),
         margin: theme.spacing(0, 1.5),
+        fontFamily: theme.typography.secondaryFontFamily,
+        fontWeight: 400,
         lineHeight: 1.2,
         wordBreak: 'break-word',
-        height: '100%',
-        marginBottom: theme.spacing(-1.5),
-        '-webkit-mask': 'linear-gradient(to top, #0000 10px, #000 34px)',
+        display: '-webkit-box',
+        '-webkit-box-orient': 'vertical',
+        '-webkit-line-clamp': 5,
+        overflow: 'hidden',
     },
     infoWrapper: {
         display: 'flex',
         width: '100%',
         height: 24,
         alignItems: 'center',
-        padding: theme.spacing(0, 1.5),
         flexShrink: 0,
-        marginTop: 'auto',
+        padding: theme.spacing(0, 0.75),
+        marginBottom: theme.spacing(0.5),
     },
+    alignToBottom: { marginTop: 'auto' },
     favorite: {
         color: theme.palette.favorite.main,
         width: 16,
@@ -134,23 +138,25 @@ const useStyles = makeStyles((theme) => ({
     },
     tagsContainer: {
         display: 'flex',
-        padding: theme.spacing(0.75),
+        overflow: 'hidden',
     },
     tag: {
-        color: theme.palette.text.secondary,
-        padding: theme.spacing(0.25, 0.5),
+        color: theme.palette.text.primary,
+        padding: theme.spacing(0.25, 0.75),
         marginRight: theme.spacing(0.5),
         borderRadius: theme.shape.borderRadiusButton,
         fontSize: 12,
-        fontWeight: '500',
-        fontFamily: theme.typography.primaryFontFamily,
+        fontWeight: '400',
+        fontFamily: theme.typography.secondaryFontFamily,
+        whiteSpace: 'nowrap',
+        lineHeight: '14px',
     },
 }));
 
 function Tag({ id, name, colorKey }) {
     const classes = useStyles();
 
-    const repairColor = alpha(getUniqueColor(colorKey) || '#000', 0.2);
+    const repairColor = alpha(getUniqueColor(colorKey) || '#000', 0.14);
 
     return (
         <Box className={classes.tag} style={{ backgroundColor: repairColor }}>{name}</Box>
@@ -255,29 +261,22 @@ function CardLink(props) {
                             </Typography>
                         </Box>
                     )}
-                    {tagsFull && (
-                        <Box className={classes.tagsContainer}>
-                            {tagsFull.map((tag) => (
-                                <Tag
-                                    key={tag.id} id={tag.id} name={tag.name}
-                                    colorKey={tag.colorKey}
-                                />
-                            ))}
-                        </Box>
-                    )}
+                    <Box className={clsx(classes.infoWrapper, !description && classes.alignToBottom)}>
+                        {tagsFull && (
+                            <Box className={classes.tagsContainer}>
+                                {tagsFull.map((tag) => (
+                                    <Tag
+                                        key={tag.id} id={tag.id} name={tag.name}
+                                        colorKey={tag.colorKey}
+                                    />
+                                ))}
+                            </Box>
+                        )}
+                        {isPin && (<FavoriteIcon className={classes.favorite} />)}
+                    </Box>
                     {description && (
                         <Typography variant="body2" className={classes.description}>{description}</Typography>
                     )}
-                    <Box className={classes.infoWrapper}>
-                        <Typography
-                            className={classes.url}
-                            variant="caption"
-                            color="textSecondary"
-                        >
-                            {getDomain(url)}
-                        </Typography>
-                        {isPin && (<FavoriteIcon className={classes.favorite} />)}
-                    </Box>
                 </CardActionArea>
             </Card>
         </Tooltip>
