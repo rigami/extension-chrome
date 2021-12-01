@@ -17,7 +17,8 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         fontWeight: 550,
         borderRadius: theme.shape.borderRadius,
-        width: 'calc(100% - 4px)',
+        width: '100%',
+        height: 30,
     },
     itemContainer: {
         '& $addSubFolder': { opacity: 0 },
@@ -60,11 +61,14 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
     },
     startAction: {
-        marginLeft: -(theme.spacing(0.5) + 22),
-        marginRight: theme.spacing(0.5),
+        marginLeft: -(theme.spacing(0.5) + 20),
+        marginRight: theme.spacing(0.25),
         display: 'flex',
     },
-    textContainer: { flexGrow: 0 },
+    textContainer: {
+        flexGrow: 0,
+        margin: 0,
+    },
 }));
 
 function ItemAction({ className: externalClassName, children, ...props }, ref) {
@@ -107,10 +111,7 @@ function Item(props, ref) {
                 container: classes.itemContainer,
             }}
             button={!disableButton}
-            style={{
-                paddingLeft: Number.isFinite(level) ? (26 + level * 8) : null,
-                marginLeft: 4,
-            }}
+            style={{ paddingLeft: Number.isFinite(level) ? (28 + level * 8) : null }}
             onClick={(event) => {
                 if (
                     event.nativeEvent.path.includes(startActionRef.current)

@@ -50,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
     appLogoTextWrapper: { display: 'flex' },
     activeGreetingView: { backgroundColor: theme.palette.action.selected },
     offsetTop: { marginTop: 'auto' },
+    folders: { marginLeft: theme.spacing(1) },
 }));
 
 function FoldersPanel() {
@@ -80,6 +81,7 @@ function FoldersPanel() {
                     disableButton
                 />
                 <Folders
+                    className={classes.folders}
                     selectFolder={searchService.selectFolderId}
                     onClickFolder={({ id }) => searchService.setSelectFolder(id)}
                 />

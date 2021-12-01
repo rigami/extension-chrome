@@ -15,16 +15,16 @@ import {
     HomeRounded as HomeIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useLocalObservable, observer } from 'mobx-react-lite';
+import { makeStyles } from '@material-ui/core/styles';
+import { captureException } from '@sentry/react';
+import clsx from 'clsx';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { FETCH } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import { makeStyles } from '@material-ui/core/styles';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import asyncAction from '@/utils/helpers/asyncAction';
-import { captureException } from '@sentry/react';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
-import clsx from 'clsx';
 import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 
@@ -40,10 +40,11 @@ const useStyles = makeStyles((theme) => ({
     },
     disabledExpand: { color: theme.palette.action.disabled },
     addRootButton: {
-        height: theme.spacing(4),
+        height: 30,
         color: theme.palette.text.secondary,
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(0.75),
+        paddingRight: theme.spacing(0.75),
+        borderRadius: theme.shape.borderRadius,
         fontSize: '0.9rem',
         fontWeight: 550,
         justifyContent: 'flex-start',
@@ -234,6 +235,7 @@ function Folders(props) {
         disabled: defaultDisabled = [],
         showRoot = false,
         onClickFolder,
+        className: externalClassName,
     } = props;
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
@@ -266,7 +268,7 @@ function Folders(props) {
     console.log('selectFolder:', selectFolder);
 
     return (
-        <Box>
+        <Box className={externalClassName}>
             <List disablePadding>
                 {showRoot && (
                     <ListItem
