@@ -1,20 +1,20 @@
 import React, { useEffect } from 'react';
+import { Box } from '@material-ui/core';
+import { useLocalObservable, observer } from 'mobx-react-lite';
+import { captureException } from '@sentry/react';
+import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import Link from '@/ui/Desktop/FAP/Link';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
 import Folder from '@/ui/Desktop/FAP/Folder';
 import TagEntity from '@/stores/universal/bookmarks/entities/tag';
 import Tag from '@/ui/Desktop/FAP/Tag';
-import { Box } from '@material-ui/core';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { useLocalObservable, observer } from 'mobx-react-lite';
 import asyncAction from '@/utils/helpers/asyncAction';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import { captureException } from '@sentry/react';
-import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
             marginBottom: theme.spacing(1.5),
         },
     },
-    item: { border: `1px solid ${theme.palette.divider}` },
+    item: { boxShadow: `inset 0px 0px 0px 1px ${theme.palette.divider}` },
 }));
 
 function Favorites({ className: externalClassName }) {

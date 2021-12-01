@@ -1,11 +1,11 @@
 import React from 'react';
 import { alpha, makeStyles, useTheme } from '@material-ui/core/styles';
-import { Card, Typography } from '@material-ui/core';
-import Image from '@/ui-components/Image';
+import { Box, Typography } from '@material-ui/core';
 import { first } from 'lodash';
-import { BKMS_VARIANT } from '@/enum';
 import { FolderRounded as FolderIcon, LabelRounded as TagIcon } from '@material-ui/icons';
 import clsx from 'clsx';
+import { BKMS_VARIANT } from '@/enum';
+import Image from '@/ui-components/Image';
 
 const useStyles = makeStyles((theme) => ({
     favoriteItem: {
@@ -49,7 +49,7 @@ function FavoriteItem(props) {
     const theme = useTheme();
 
     return (
-        <Card className={clsx(classes.favoriteItem, externalClassName)} variant="outlined">
+        <Box className={clsx(classes.favoriteItem, externalClassName)}>
             {type === 'bookmark' && (
                 <Image
                     src={icoUrl}
@@ -68,7 +68,7 @@ function FavoriteItem(props) {
             <Typography className={classes.title}>
                 {name}
             </Typography>
-        </Card>
+        </Box>
     );
 }
 
