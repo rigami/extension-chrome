@@ -33,6 +33,8 @@ const useStyles = makeStyles((theme) => ({
     childFolder: {
         width: 'fit-content',
         maxWidth: '100%',
+        marginLeft: theme.spacing(-1),
+        padding: theme.spacing(1),
     },
     middle: {
         textTransform: 'none',
@@ -60,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0.5, 1),
         fontSize: theme.typography.body1.fontSize,
         letterSpacing: 'unset',
+        marginLeft: theme.spacing(-1),
     },
     icon: {
         opacity: 0,
@@ -125,15 +128,14 @@ function SecondaryContent({ columns }) {
                     <BookmarksViewer folderId={folder.id} columns={columns} dense />
                     <Box className={classes.childFolders}>
                         {folder.children.map((childFolder) => (
-                            <Box key={childFolder.id} className={classes.childFolderContainer}>
-                                <ExtendButton
-                                    className={classes.childFolder}
-                                    label={childFolder.name}
-                                    onClick={() => searchService.setSelectFolder(childFolder.id)}
-                                    icon={() => <FolderIcon />}
-                                    unwrap
-                                />
-                            </Box>
+                            <ExtendButton
+                                key={childFolder.id}
+                                className={classes.childFolder}
+                                label={childFolder.name}
+                                onClick={() => searchService.setSelectFolder(childFolder.id)}
+                                icon={() => <FolderIcon />}
+                                unwrap
+                            />
                         ))}
                     </Box>
                 </Box>
