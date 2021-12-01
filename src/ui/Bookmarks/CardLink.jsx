@@ -1,7 +1,9 @@
 import React, {
     memo,
+    useCallback,
     useEffect,
     useState,
+    useRef,
 } from 'react';
 import {
     Card,
@@ -15,6 +17,7 @@ import { StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import { useResizeDetector } from 'react-resize-detector';
 import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
@@ -33,6 +36,8 @@ const useStyles = makeStyles((theme) => ({
         height: theme.shape.dataCard.height,
         overflow: 'hidden',
         boxSizing: 'border-box',
+        border: 'none',
+        boxShadow: `inset 0px 0px 0px 1px ${theme.palette.divider}`,
         '&:hover $menuIconButton': {
             opacity: 1,
             pointerEvents: 'auto',
@@ -65,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     title: {
         display: '-webkit-box',
         '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 3,
+        '-webkit-line-clamp': 2,
         overflow: 'hidden',
         lineHeight: 1.1,
         wordBreak: 'break-word',
@@ -88,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
     },
     extendBanner: {
         width: `calc(100% - ${theme.spacing(1)}px)`,
-        height: 109,
+        height: 108,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -96,15 +101,17 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(0.5),
         filter: 'brightness(0.96)',
     },
-    extendBannerTitle: {
+    extendBannerTitleContainer: {
         margin: theme.spacing(1, 1.5),
-        marginBottom: theme.spacing(0.75),
+        marginBottom: theme.spacing(0.5),
         height: 32,
-        '-webkit-line-clamp': 2,
+        display: 'flex',
+        alignItems: 'center',
     },
+    extendBannerTitle: { '-webkit-line-clamp': 2 },
     description: {
         color: theme.palette.text.secondary,
-        marginTop: theme.spacing(0.75),
+        marginTop: 0,
         margin: theme.spacing(0, 1.5),
         fontFamily: theme.typography.secondaryFontFamily,
         fontWeight: 400,
@@ -112,7 +119,7 @@ const useStyles = makeStyles((theme) => ({
         wordBreak: 'break-word',
         display: '-webkit-box',
         '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 5,
+        '-webkit-line-clamp': 6,
         overflow: 'hidden',
     },
     infoWrapper: {
@@ -121,15 +128,15 @@ const useStyles = makeStyles((theme) => ({
         height: 24,
         alignItems: 'center',
         flexShrink: 0,
-        padding: theme.spacing(0, 0.75),
-        marginBottom: theme.spacing(0.5),
+        padding: theme.spacing(0.5, 0.75),
+        marginTop: theme.spacing(0.5),
+        marginBottom: theme.spacing(0.25),
     },
-    alignToBottom: { marginTop: 'auto' },
     favorite: {
         color: theme.palette.favorite.main,
         width: 16,
         height: 16,
-        marginLeft: 'auto',
+        marginLeft: theme.spacing(0.5),
     },
     url: {
         whiteSpace: 'nowrap',
@@ -139,6 +146,12 @@ const useStyles = makeStyles((theme) => ({
     tagsContainer: {
         display: 'flex',
         overflow: 'hidden',
+    },
+    tagsWrapper: {
+        flexGrow: 1,
+        overflow: 'auto',
+        position: 'relative',
+        paddingRight: theme.shape.borderRadiusButton,
     },
     tag: {
         color: theme.palette.text.primary,
@@ -151,6 +164,14 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'nowrap',
         lineHeight: '14px',
     },
+    overloadTagsChip: {
+        backgroundColor: theme.palette.background.backdrop,
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        marginRight: 0,
+        boxShadow: '0px 1px 6px 6px #fff',
+    },
 }));
 
 function Tag({ id, name, colorKey }) {
@@ -160,6 +181,55 @@ function Tag({ id, name, colorKey }) {
 
     return (
         <Box className={classes.tag} style={{ backgroundColor: repairColor }}>{name}</Box>
+    );
+}
+
+function Tags({ tags }) {
+    const classes = useStyles();
+    const ref = useRef();
+    const [isOverload, setIsOverload] = useState(false);
+    const [notVisible, setNotVisible] = useState(0);
+
+    const onResize = useCallback((width, height) => {
+        let i = 0;
+        let sumWidth = 0;
+
+        while (
+            i < ref.current.children.length
+            && sumWidth + ref.current.children[i].clientWidth + 4 <= ref.current.clientWidth
+        ) {
+            sumWidth += ref.current.children[i].clientWidth + 4;
+            i += 1;
+        }
+
+        setIsOverload(ref.current.scrollWidth > ref.current.clientWidth);
+        setNotVisible(ref.current.children.length - i);
+    }, []);
+
+    useResizeDetector({
+        onResize,
+        targetRef: ref,
+    });
+
+    return (
+        <Box className={classes.tagsWrapper}>
+            <Box ref={ref} className={classes.tagsContainer}>
+                {tags.map((tag) => (
+                    <Tag
+                        key={tag.id}
+                        id={tag.id}
+                        name={tag.name}
+                        colorKey={tag.colorKey}
+                    />
+                ))}
+            </Box>
+            {isOverload && (
+                <Box className={clsx(classes.tag, classes.overloadTagsChip)}>
+                    +
+                    {notVisible}
+                </Box>
+            )}
+        </Box>
     );
 }
 
@@ -254,24 +324,15 @@ function CardLink(props) {
                     {icoVariant === BKMS_VARIANT.POSTER && (
                         <Box className={classes.banner}>
                             <Image variant={BKMS_VARIANT.POSTER} src={icoUrl} className={classes.extendBanner} />
-                            <Typography
-                                className={clsx(classes.title, classes.extendBannerTitle)}
-                            >
-                                {name}
-                            </Typography>
+                            <Box className={classes.extendBannerTitleContainer}>
+                                <Typography className={clsx(classes.title, classes.extendBannerTitle)}>
+                                    {name}
+                                </Typography>
+                            </Box>
                         </Box>
                     )}
                     <Box className={clsx(classes.infoWrapper, !description && classes.alignToBottom)}>
-                        {tagsFull && (
-                            <Box className={classes.tagsContainer}>
-                                {tagsFull.map((tag) => (
-                                    <Tag
-                                        key={tag.id} id={tag.id} name={tag.name}
-                                        colorKey={tag.colorKey}
-                                    />
-                                ))}
-                            </Box>
-                        )}
+                        {tagsFull && (<Tags tags={tagsFull} />)}
                         {isPin && (<FavoriteIcon className={classes.favorite} />)}
                     </Box>
                     {description && (
