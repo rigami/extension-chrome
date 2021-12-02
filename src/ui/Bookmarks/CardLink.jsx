@@ -190,7 +190,7 @@ function Tags({ tags }) {
     const [isOverload, setIsOverload] = useState(false);
     const [notVisible, setNotVisible] = useState(0);
 
-    const onResize = useCallback((width, height) => {
+    const onResize = useCallback(() => {
         let i = 0;
         let sumWidth = 0;
 
@@ -210,6 +210,8 @@ function Tags({ tags }) {
         onResize,
         targetRef: ref,
     });
+
+    useEffect(() => { onResize(); }, [tags.length]);
 
     return (
         <Box className={classes.tagsWrapper}>

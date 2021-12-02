@@ -1,10 +1,11 @@
-import { makeAutoObservable, toJS } from 'mobx';
+import { makeAutoObservable, reaction, toJS } from 'mobx';
 import { captureException } from '@sentry/react';
 import { BKMS_VARIANT } from '@/enum';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 import { getImage, getSiteInfo } from './utils/siteSearch';
 import { getDefaultImage, getNextImage } from './utils/checkIcons';
+import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 
 export const STATE_EDITOR = {
     LOADING_EDITOR: 'LOADING_EDITOR',
@@ -26,6 +27,7 @@ class BookmarkEditor {
     description = '';
     useDescription;
     tags;
+    tagsFull;
     folderId;
     url = '';
 
@@ -94,6 +96,18 @@ class BookmarkEditor {
                 });
             }
         }
+
+        reaction(
+            () => this.tags.length,
+            () => {
+                console.log('Cahnge this.tags');
+                Promise.all(this.tags.map((tagId) => TagsUniversalService.get(tagId)))
+                    .then((tags) => {
+                        console.log('Full tags:', tags);
+                        this.tagsFull = tags;
+                    });
+            },
+        );
     }
 
     async save() {

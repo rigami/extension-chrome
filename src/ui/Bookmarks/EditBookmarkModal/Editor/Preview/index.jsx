@@ -10,16 +10,16 @@ import {
 } from '@material-ui/core';
 import { LinkRounded as URLIcon, DoneRounded as SelectIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import CardLink from '@/ui/Bookmarks/CardLink';
-import Stub from '@/ui-components/Stub';
 import { useTranslation } from 'react-i18next';
-import { FETCH } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import Scrollbar from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
 import ResizeDetector, { useResizeDetector } from 'react-resize-detector';
-import { STATE_EDITOR } from '@/ui/Bookmarks/EditBookmarkModal/Editor/BookmarkEditor';
 import { captureException } from '@sentry/react';
+import CardLink from '@/ui/Bookmarks/CardLink';
+import Stub from '@/ui-components/Stub';
+import { FETCH } from '@/enum';
+import Scrollbar from '@/ui-components/CustomScroll';
+import { STATE_EDITOR } from '@/ui/Bookmarks/EditBookmarkModal/Editor/BookmarkEditor';
 
 const useStyles = makeStyles((theme) => ({
     cover: {
@@ -99,6 +99,7 @@ function PreviewCard(props) {
         onClick,
         name,
         description,
+        tagsFull,
         className: externalClassName,
     } = props;
     const classes = useStyles();
@@ -125,6 +126,7 @@ function PreviewCard(props) {
                 url={url}
                 icoUrl={icoUrl}
                 preview
+                tagsFull={tagsFull}
                 onClick={() => onClick({
                     url: icoUrl,
                     icoVariant,
@@ -257,6 +259,7 @@ function Preview({ editorService: service }) {
                                         name={service.name}
                                         description={service.useDescription && service.description}
                                         url={service.url}
+                                        tagsFull={service.tagsFull}
                                         icoVariant={service.defaultImage.icoVariant}
                                         icoUrl={service.defaultImage.url}
                                         onClick={() => service.setPreview(service.defaultImage)}
@@ -288,6 +291,7 @@ function Preview({ editorService: service }) {
                                         description={service.useDescription && service.description}
                                         icoVariant={icoVariant}
                                         url={service.url}
+                                        tagsFull={service.tagsFull}
                                         icoUrl={url}
                                         onClick={() => service.setPreview({
                                             url,
@@ -303,6 +307,7 @@ function Preview({ editorService: service }) {
                                         description={service.useDescription && service.description}
                                         icoVariant={icoVariant}
                                         url={service.url}
+                                        tagsFull={service.tagsFull}
                                         icoUrl={url}
                                         onClick={() => service.setPreview({
                                             url,
