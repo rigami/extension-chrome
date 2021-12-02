@@ -96,10 +96,7 @@ function Bookmarks() {
                         ref={ref}
                     >
                         <ToolsPanel />
-                        <Box
-                            className={classes.content}
-                            style={{ width: store.columnsCount * (theme.shape.dataCard.width + 16) + 24 + 8 }}
-                        >
+                        <Box className={classes.content}>
                             <PrimaryContent columns={store.columnsCount} />
                             <SecondaryContent columns={store.columnsCount} />
                         </Box>

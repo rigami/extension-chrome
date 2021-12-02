@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexGrow: 1,
         flexDirection: 'column',
+        maxWidth: 4 * (theme.shape.dataCard.width + 16) + 24 + 8,
     },
     sidebar: {},
     widgetContainer: { margin: theme.spacing(1.5, 0) },

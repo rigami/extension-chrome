@@ -2,9 +2,10 @@ import React, { Fragment, useEffect } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { captureException } from '@sentry/react';
 import { FolderRounded as FolderIcon, ArrowForward as GoToIcon } from '@material-ui/icons';
-import { Box, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Button, Typography } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 import { FETCH } from '@/enum';
 import asyncAction from '@/utils/helpers/asyncAction';
@@ -72,7 +73,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SecondaryContent({ columns }) {
+    const theme = useTheme();
     const classes = useStyles();
+    const { t } = useTranslation(['bookmark']);
     const searchService = useSearchService();
     const store = useLocalObservable(() => ({
         tree: [],
@@ -111,7 +114,11 @@ function SecondaryContent({ columns }) {
         <Fragment>
             {/* ---SECONDARY--- */}
             {store.tree.map((folder) => (
-                <Box className={classes.folderContainer} key={folder.id}>
+                <Box
+                    className={classes.folderContainer}
+                    key={folder.id}
+                    style={{ width: columns * (theme.shape.dataCard.width + 16) + 24 + 8 }}
+                >
                     <Box className={classes.header}>
                         <Button
                             classes={{
@@ -125,7 +132,16 @@ function SecondaryContent({ columns }) {
                             {folder.name}
                         </Button>
                     </Box>
-                    <BookmarksViewer folderId={folder.id} columns={columns} dense />
+                    <BookmarksViewer
+                        folderId={folder.id}
+                        columns={columns}
+                        dense
+                        emptyRender={() => (
+                            <Box key="empty" mb={2}>
+                                <Typography color="textSecondary">{t('empty')}</Typography>
+                            </Box>
+                        )}
+                    />
                     <Box className={classes.childFolders}>
                         {folder.children.map((childFolder) => (
                             <ExtendButton

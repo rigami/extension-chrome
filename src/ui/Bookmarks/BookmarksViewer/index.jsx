@@ -1,69 +1,37 @@
-import React, { useCallback, useEffect, Fragment } from 'react';
-import {
-    Box,
-    Button,
-    CircularProgress, Typography,
-} from '@material-ui/core';
-import { alpha, makeStyles, useTheme } from '@material-ui/core/styles';
+import React, { useEffect, Fragment } from 'react';
+import { Box, CircularProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
-import { useResizeDetector } from 'react-resize-detector';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { sample } from 'lodash';
 import Stub from '@/ui-components/Stub';
 import { FETCH } from '@/enum';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import stateRender from '@/utils/helpers/stateRender';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import Header from '@/ui/Bookmarks/BookmarksViewer/Header';
-import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
         flexGrow: 1,
         flexDirection: 'column',
     },
-    stub: { maxHeight: 750 },
-    emoticon: {
-        fontSize: '10rem',
-        color: alpha(theme.palette.text.secondary, 0.06),
-        fontWeight: 700,
-    },
-    message: {
-        fontSize: '1.4rem',
-        fontWeight: 600,
-        marginTop: theme.spacing(4),
-        color: theme.palette.text.primary,
-    },
-    // bookmarks: { paddingTop: theme.spacing(6) },
-    // bottomOffset: { paddingBottom: theme.spacing(38) },
 }));
 
-const emoticons = [
-    '(^_^)b',
-    '(；⌣̀_⌣́)',
-    '(⇀‸↼‶)',
-    '(눈_눈)',
-    '(ᗒᗣᗕ)՞',
-    '(￢_￢;)',
-    'ヾ( ￣O￣)ツ',
-    '(╥_╥)',
-    '( ╥ω╥ )',
-    '¯\\_(ツ)_/¯',
-    '┐( ˘ ､ ˘ )┌',
-    '╮( ˘_˘ )╭',
-    '(⊙_⊙)',
-];
-
-function BookmarksViewer({ folderId, columns, dense = false, className: externalClassName }) {
+function BookmarksViewer(props) {
+    const {
+        folderId,
+        columns,
+        emptyRender,
+        nothingFoundRender,
+        className: externalClassName,
+        style: externalStyle,
+    } = props;
     const classes = useStyles();
-    const theme = useTheme();
     const bookmarksService = useBookmarksService();
-    const coreService = useCoreService();
     const searchService = useSearchService();
     const { t } = useTranslation(['bookmark']);
     const store = useLocalObservable(() => ({
@@ -73,7 +41,6 @@ function BookmarksViewer({ folderId, columns, dense = false, className: external
         requestId: 0,
         loadState: FETCH.WAIT,
         usedFields: {},
-        emoticon: sample(emoticons),
     }));
 
     const sortByFavorites = (list) => list.sort((bookmarkA, bookmarkB) => {
@@ -124,100 +91,53 @@ function BookmarksViewer({ folderId, columns, dense = false, className: external
                 store.existMatches = ((result.best?.length || 0) + result.all.length) !== 0;
                 store.usedFields = { ...searchService.searchRequest.usedFields };
                 store.loadState = FETCH.DONE;
-                store.emoticon = sample(emoticons);
 
                 console.log('store.usedFields', store.usedFields);
             });
     }, [searchService.searchRequestId, folderId, bookmarksService.lastTruthSearchTimestamp]);
 
-    return (
-        <Box className={clsx(classes.root, externalClassName)}>
-            {stateRender(
-                store.loadState,
-                [
-                    store.existMatches && (
-                        <Fragment key="exist-matches">
-                            {(store.usedFields.query || store.usedFields.tags) && (
-                                <Fragment>
-                                    <Header title={t('search.bestMatches')} />
-                                    {store.bestBookmarks && store.bestBookmarks.length !== 0 ? (
-                                        <Box display="flex" className={classes.bookmarks}>
-                                            <BookmarksGrid
-                                                bookmarks={store.bestBookmarks}
-                                                columns={columns}
-                                            />
-                                        </Box>
-                                    ) : (
-                                        <Header subtitle={t('search.nothingFound')} />
-                                    )}
-                                    <Header title={t('search.allMatches')} />
-                                </Fragment>
+    return stateRender(
+        store.loadState,
+        [
+            store.existMatches && (
+                <Box key="exist-matches" className={clsx(classes.root, externalClassName)} style={externalStyle}>
+                    {(store.usedFields.query || store.usedFields.tags) && (
+                        <Fragment>
+                            <Header title={t('search.bestMatches')} />
+                            {store.bestBookmarks && store.bestBookmarks.length !== 0 ? (
+                                <Box display="flex" className={classes.bookmarks}>
+                                    <BookmarksGrid
+                                        bookmarks={store.bestBookmarks}
+                                        columns={columns}
+                                    />
+                                </Box>
+                            ) : (
+                                <Header subtitle={t('search.nothingFound')} />
                             )}
-                            <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
-                                <BookmarksGrid
-                                    bookmarks={store.allBookmarks}
-                                    columns={columns}
-                                />
-                            </Box>
+                            <Header title={t('search.allMatches')} />
                         </Fragment>
-                    ),
-                    (store.usedFields.query || store.usedFields.tags)
-                    && !store.existMatches
-                    && (
-                        <Stub
-                            key="nothing-found"
-                            maxWidth={false}
-                            message={store.emoticon}
-                            description={t('search.nothingFound')}
-                            classes={{
-                                root: classes.stub,
-                                title: classes.emoticon,
-                                description: classes.message,
-                            }}
+                    )}
+                    <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
+                        <BookmarksGrid
+                            bookmarks={store.allBookmarks}
+                            columns={columns}
                         />
-                    ),
-                    !store.usedFields.query
-                    && !store.usedFields.tags
-                    && !store.existMatches
-                    && !dense && (
-                        <Stub
-                            key="empty"
-                            maxWidth={false}
-                            message={store.emoticon}
-                            description={t('empty')}
-                            classes={{
-                                root: classes.stub,
-                                title: classes.emoticon,
-                                description: classes.message,
-                            }}
-                        >
-                            <Button
-                                onClick={() => coreService.localEventBus.call(
-                                    'bookmark/create',
-                                    { defaultFolderId: searchService.selectFolderId },
-                                )}
-                                startIcon={<AddBookmarkIcon />}
-                                variant="outlined"
-                                color="primary"
-                            >
-                                {t('button.add', { context: 'first' })}
-                            </Button>
-                        </Stub>
-                    ),
-                    !store.usedFields.query
-                    && !store.usedFields.tags
-                    && !store.existMatches
-                    && dense && (
-                        <Box key="empty" mb={2}>
-                            <Typography color="textSecondary">{t('empty')}</Typography>
-                        </Box>
-                    ),
-                ],
-                <Stub>
-                    <CircularProgress />
-                </Stub>,
-            )}
-        </Box>
+                    </Box>
+                </Box>
+            ),
+            (store.usedFields.query || store.usedFields.tags)
+            && !store.existMatches
+            && nothingFoundRender
+            && nothingFoundRender(),
+            !store.usedFields.query
+            && !store.usedFields.tags
+            && !store.existMatches
+            && emptyRender
+            && emptyRender(),
+        ],
+        <Stub>
+            <CircularProgress />
+        </Stub>,
     );
 }
 

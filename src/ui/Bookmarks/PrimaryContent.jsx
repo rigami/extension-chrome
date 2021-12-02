@@ -1,21 +1,62 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles, useTheme } from '@material-ui/core/styles';
+import { Button } from '@material-ui/core';
+import { sample } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
 import GreetingView from '@/ui/Bookmarks/GreetingView';
 import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 import { NULL_UUID } from '@/utils/generate/uuid';
+import Stub from '@/ui-components/Stub';
+import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     bookmarks: {
         marginTop: theme.spacing(4),
         marginBottom: theme.spacing(2),
     },
+    stub: {
+        height: '50vh',
+        marginTop: '10vh',
+    },
+    emoticon: {
+        fontSize: '10rem',
+        color: alpha(theme.palette.text.secondary, 0.06),
+        fontWeight: 700,
+    },
+    message: {
+        fontSize: '1.4rem',
+        fontWeight: 600,
+        marginTop: theme.spacing(4),
+        color: theme.palette.text.primary,
+    },
 }));
 
+const emoticons = [
+    '(^_^)b',
+    '(；⌣̀_⌣́)',
+    '(⇀‸↼‶)',
+    '(눈_눈)',
+    '(ᗒᗣᗕ)՞',
+    '(￢_￢;)',
+    'ヾ( ￣O￣)ツ',
+    '(╥_╥)',
+    '( ╥ω╥ )',
+    '¯\\_(ツ)_/¯',
+    '┐( ˘ ､ ˘ )┌',
+    '╮( ˘_˘ )╭',
+    '(⊙_⊙)',
+];
+
 function PrimaryContent({ columns }) {
+    const theme = useTheme();
     const classes = useStyles();
+    const { t } = useTranslation(['bookmark']);
     const searchService = useSearchService();
+    const coreService = useCoreService();
+    const [emoticon] = useState(() => sample(emoticons));
 
     return (
         <Fragment>
@@ -25,9 +66,48 @@ function PrimaryContent({ columns }) {
             )}
             {searchService.selectFolderId !== NULL_UUID && (
                 <BookmarksViewer
+                    style={{ width: columns * (theme.shape.dataCard.width + 16) + 24 + 8 }}
                     className={classes.bookmarks}
                     folderId={searchService.selectFolderId}
                     columns={columns}
+                    emptyRender={() => (
+                        <Stub
+                            key="empty"
+                            maxWidth={false}
+                            message={emoticon}
+                            description={t('empty')}
+                            classes={{
+                                root: classes.stub,
+                                title: classes.emoticon,
+                                description: classes.message,
+                            }}
+                        >
+                            <Button
+                                onClick={() => coreService.localEventBus.call(
+                                    'bookmark/create',
+                                    { defaultFolderId: searchService.selectFolderId },
+                                )}
+                                startIcon={<AddBookmarkIcon />}
+                                variant="outlined"
+                                color="primary"
+                            >
+                                {t('button.add', { context: 'first' })}
+                            </Button>
+                        </Stub>
+                    )}
+                    nothingFoundRender={() => (
+                        <Stub
+                            key="nothing-found"
+                            maxWidth={false}
+                            message={emoticon}
+                            description={t('search.nothingFound')}
+                            classes={{
+                                root: classes.stub,
+                                title: classes.emoticon,
+                                description: classes.message,
+                            }}
+                        />
+                    )}
                 />
             )}
         </Fragment>
