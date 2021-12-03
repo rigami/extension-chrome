@@ -36,7 +36,8 @@ const useStyles = makeStyles((theme) => ({
         letterSpacing: 'inherit',
     },
     actions: {
-        marginLeft: 'auto',
+        // marginLeft: 'auto',
+        flexGrow: 1,
         right: 'unset',
         top: 'unset',
         display: 'flex',
@@ -45,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
         pointerEvents: 'none',
         flexDirection: 'row',
         transform: 'none',
-        justifyContent: 'flex-end',
+        // justifyContent: 'flex-end',
         '& > *': { pointerEvents: 'all' },
     },
     button: {

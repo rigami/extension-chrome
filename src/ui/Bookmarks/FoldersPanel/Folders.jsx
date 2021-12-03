@@ -59,12 +59,15 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.favorite.main,
         width: 18,
         height: 18,
-        marginLeft: theme.spacing(0.5),
+        marginLeft: theme.spacing(1),
         padding: theme.spacing(0.25),
         boxSizing: 'content-box',
     },
     folderItem: { '&:hover $addSubFolder': { display: 'flex' } },
-    addSubFolder: { display: 'none' },
+    addSubFolder: {
+        display: 'none',
+        marginLeft: 'auto',
+    },
 }));
 
 function FolderItem(props) {
@@ -128,6 +131,9 @@ function FolderItem(props) {
             )}
             actions={(
                 <React.Fragment>
+                    {isPin && (
+                        <FavoriteIcon className={classes.favorite} />
+                    )}
                     {!isDisabled && (
                         <Tooltip title={t('button.create', { context: 'sub' })}>
                             <ItemAction
@@ -140,9 +146,6 @@ function FolderItem(props) {
                                 <AddIcon />
                             </ItemAction>
                         </Tooltip>
-                    )}
-                    {isPin && (
-                        <FavoriteIcon className={classes.favorite} />
                     )}
                 </React.Fragment>
             )}
