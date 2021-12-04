@@ -1,8 +1,8 @@
 import React from 'react';
-import LogoIcon from '@/images/logo-icon.svg';
-import LogoText from '@/images/logo-text.svg';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
+import LogoIcon from '@/images/logo-icon.svg';
+import LogoText from '@/images/logo-text.svg';
 
 const useStyles = makeStyles((theme) => ({
     root: {
