@@ -6,8 +6,8 @@ import {
 } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
 import clsx from 'clsx';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import BookmarkEditor, { STATE_EDITOR } from './BookmarkEditor';
 import FieldsEditor from './Fields';
 import Preview from './Preview';
@@ -20,7 +20,10 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         justifyContent: 'flex-end',
     },
-    editor: { display: 'flex' },
+    editor: {
+        display: 'flex',
+        overflow: 'unset',
+    },
 }));
 
 function Editor(props) {

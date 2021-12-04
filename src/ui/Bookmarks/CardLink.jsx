@@ -11,10 +11,9 @@ import {
     CardActionArea,
     Tooltip,
     Box,
-    Divider,
 } from '@material-ui/core';
 import { StarRounded as FavoriteIcon } from '@material-ui/icons';
-import { alpha, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useResizeDetector } from 'react-resize-detector';
@@ -22,9 +21,7 @@ import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
-import { getDomain } from '@/utils/localSiteParse';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import getUniqueColor from '@/utils/generate/uniqueColor';
+import Tag from './Tag';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -164,6 +161,10 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'nowrap',
         lineHeight: '14px',
     },
+    tagOffset: {
+        marginRight: theme.spacing(0.5),
+        flexShrink: 0,
+    },
     overloadTagsChip: {
         backgroundColor: theme.palette.background.backdrop,
         position: 'absolute',
@@ -173,16 +174,6 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: '0px 1px 6px 6px #fff',
     },
 }));
-
-function Tag({ id, name, colorKey }) {
-    const classes = useStyles();
-
-    const repairColor = alpha(getUniqueColor(colorKey) || '#000', 0.14);
-
-    return (
-        <Box className={classes.tag} style={{ backgroundColor: repairColor }}>{name}</Box>
-    );
-}
 
 function Tags({ tags }) {
     const classes = useStyles();
@@ -222,6 +213,8 @@ function Tags({ tags }) {
                         id={tag.id}
                         name={tag.name}
                         colorKey={tag.colorKey}
+                        dense
+                        className={classes.tagOffset}
                     />
                 ))}
             </Box>

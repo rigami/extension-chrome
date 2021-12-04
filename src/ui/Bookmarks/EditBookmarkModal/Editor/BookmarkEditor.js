@@ -62,6 +62,7 @@ class BookmarkEditor {
                     if (this.useDescription) this.description = bookmark.description;
                     this.folderId = bookmark.folderId;
                     this.tags = bookmark.tags || [];
+                    this.tagsFull = [];
                     this.defaultImage = {
                         url: bookmark.sourceIcoUrl,
                         icoVariant: bookmark.icoVariant,
@@ -83,6 +84,7 @@ class BookmarkEditor {
         } else {
             this.state = STATE_EDITOR.WAIT_REQUEST;
             this.tags = defaultData.tagsIds || [];
+            this.tagsFull = [];
             this.folderId = defaultData.folderId === NULL_UUID ? FIRST_UUID : defaultData.folderId || FIRST_UUID;
 
             if (defaultData.url) {

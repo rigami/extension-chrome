@@ -6,22 +6,22 @@ import {
     Typography,
     TextField,
     CircularProgress,
+    InputAdornment, Paper,
 } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
     DoneRounded as DoneIcon,
-    LabelRounded as LabelIcon,
-    FolderRounded as FolderIcon,
 } from '@material-ui/icons';
-import Tags from '@/ui/Bookmarks/Tags';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import { FETCH } from '@/enum';
-import clsx from 'clsx';
-import FolderSelector from '@/ui/Bookmarks/Folders/Selector';
 import { captureException } from '@sentry/react';
+import { FETCH } from '@/enum';
+import FolderSelector from '@/ui/Bookmarks/Folders/Selector';
 import SearchSiteField from './SearchSiteField';
+import Tag from '../../Tag';
+import Tags from '@/ui/Bookmarks/ToolsPanel/Search/Tags';
+import TagsFiled from '@/ui/Bookmarks/EditBookmarkModal/Editor/TagsFiled';
 
 const useStyles = makeStyles((theme) => ({
     content: { flex: '1 0 auto' },
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
-        overflow: 'auto',
+        // overflow: 'auto',
     },
     input: { marginTop: theme.spacing(2) },
     inputDescription: { marginTop: theme.spacing(2) },
@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         marginTop: theme.spacing(2),
     },
+    folderPicker: { marginRight: 'auto' },
     identBlockIcon: { marginRight: theme.spacing(1) },
     identBlockIconTopAlign: {
         height: theme.spacing(4),
@@ -97,14 +98,12 @@ function Fields(props) {
                     className={classes.input}
                     onChange={(event) => service.updateValues({ name: event.target.value })}
                 />
-                <Box className={classes.identBlock}>
-                    <FolderIcon className={classes.identBlockIcon} color="primary" />
-                    <FolderSelector
-                        value={service.folderId}
-                        onChange={(newFolder) => service.updateValues({ folderId: newFolder })}
-                    />
-                </Box>
-                <Box className={classes.identBlock}>
+                <TagsFiled
+                    selectedTags={service.tags}
+                    onChange={(newTags) => service.updateValues({ tags: newTags })}
+                    className={classes.input}
+                />
+                {/* <Box className={classes.identBlock}>
                     <LabelIcon
                         className={clsx(classes.identBlockIcon, classes.identBlockIconTopAlign)}
                         color="primary"
@@ -116,7 +115,7 @@ function Fields(props) {
                         autoSelect
                         oneRow
                     />
-                </Box>
+                </Box> */}
                 {service.useDescription && (
                     <TextField
                         label={t('editor.bookmarkDescription')}
@@ -144,6 +143,11 @@ function Fields(props) {
                 )}
             </CardContent>
             <div className={classes.controls}>
+                <FolderSelector
+                    className={classes.folderPicker}
+                    value={service.folderId}
+                    onChange={(newFolder) => service.updateValues({ folderId: newFolder })}
+                />
                 {onCancel && (
                     <Button
                         data-ui-path="cancel"
@@ -171,7 +175,7 @@ function Fields(props) {
                                     });
                             }}
                         >
-                            {t('common:button.save')}
+                            {t('editor.button.saveBookmark')}
                         </Button>
                     )}
                     {store.saveState === FETCH.PENDING && (

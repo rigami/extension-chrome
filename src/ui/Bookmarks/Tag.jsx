@@ -10,17 +10,9 @@ import getUniqueColor from '@/utils/generate/uniqueColor';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        maxWidth: 290,
-        boxShadow: 'none !important',
-        display: 'inline-flex',
-        border: '1px solid #000',
-        flexDirection: 'row',
-        height: 'fit-content',
-        minHeight: theme.spacing(4),
-        alignItems: 'center',
-        borderRadius: theme.shape.borderRadiusButton,
-        borderColor: theme.palette.divider,
-        boxSizing: 'border-box',
+        maxWidth: 180,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
     colorIcon: {
         width: theme.spacing(1.5),
@@ -47,10 +39,22 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(0.75),
     },
     favoriteWrapper: { width: theme.spacing(2.5) },
-    tagDense: {
+    normal: {
+        boxShadow: 'none !important',
+        display: 'inline-flex',
+        border: '1px solid #000',
+        flexDirection: 'row',
+        height: 'fit-content',
+        minHeight: theme.spacing(4),
+        alignItems: 'center',
+        borderRadius: theme.shape.borderRadiusButton,
+        borderColor: theme.palette.divider,
+        boxSizing: 'border-box',
+    },
+    dense: {
         color: theme.palette.text.primary,
         padding: theme.spacing(0.25, 0.75),
-        marginRight: theme.spacing(0.5),
+        // marginRight: theme.spacing(0.5),
         borderRadius: theme.shape.borderRadiusButton,
         fontSize: 12,
         fontWeight: '400',
@@ -81,7 +85,7 @@ function Tag(props) {
         itemType: 'tag',
     }));
 
-    let repairColor = getUniqueColor(colorKey) || '#000';
+    let repairColor = colorKey ? getUniqueColor(colorKey) || '#686868' : '#686868';
 
     useEffect(() => {
         setIsPin(bookmarksService.findFavorite({
@@ -94,13 +98,15 @@ function Tag(props) {
         repairColor = alpha(repairColor, 0.14);
 
         return (
-            <Box className={classes.tagDense} style={{ backgroundColor: repairColor }}>{name}</Box>
+            <Box className={clsx(classes.root, classes.dense, externalClassName)} style={{ backgroundColor: repairColor }}>
+                {name}
+            </Box>
         );
     }
 
     return (
         <ButtonBase
-            className={clsx(classes.root, isSelect && classes.active, externalClassName)}
+            className={clsx(classes.root, classes.normal, isSelect && classes.active, externalClassName)}
             style={{
                 backgroundColor: isSelect && alpha(repairColor, 0.14),
                 borderColor: isSelect && repairColor,

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { EditRounded as EditIcon } from '@material-ui/icons';
+import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import {
     Breadcrumbs,
     Button,
@@ -9,18 +9,19 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
+import clsx from 'clsx';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import EditFolderModal from './EditModal';
 
 const useStyles = makeStyles((theme) => ({
-    folderSelectButton: { textTransform: 'unset' },
     notSelect: {
         fontStyle: 'italic',
         color: theme.palette.text.secondary,
     },
+    icon: { color: theme.palette.text.secondary },
 }));
 
-function FolderSelector({ value, onChange }) {
+function FolderSelector({ value, onChange, className: externalClassName }) {
     const classes = useStyles();
     const { t } = useTranslation(['folder']);
     const store = useLocalObservable(() => ({
@@ -63,8 +64,8 @@ function FolderSelector({ value, onChange }) {
             <Tooltip title={t('change', { context: 'helper' })}>
                 <Button
                     data-ui-path="folder.editor.change"
-                    endIcon={<EditIcon />}
-                    className={classes.folderSelectButton}
+                    startIcon={<FolderIcon className={classes.icon} />}
+                    className={externalClassName}
                     onClick={(event) => {
                         store.anchorEl = event.currentTarget;
                         if (store.isBlockEvent) store.isOpen = true;

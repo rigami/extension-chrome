@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import { makeStyles, alpha } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import SearchField from '@/ui/Bookmarks/ToolsPanel/Search/SearchField';
-import Tags from '@/ui/Bookmarks/Tags';
+import Tags from './Tags';
 import CustomScroll from '@/ui-components/CustomScroll';
 import FastResults from '@/ui/Bookmarks/ToolsPanel/Search/FastResults';
 import { useSearchService } from '@/ui/Bookmarks/searchProvider';
@@ -99,8 +99,6 @@ function FullSearch({ open, onClose }) {
                     <Tags
                         className={classes.tags}
                         value={searchService.tempSearchRequest.tags}
-                        expandAlways
-                        disableAdd
                         onChange={(changedTags) => {
                             store.localSearchRequestId += 1;
                             searchService.updateRequest({ tags: changedTags });
