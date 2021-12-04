@@ -100,6 +100,7 @@ function FullSearch({ open, onClose }) {
                         className={classes.tags}
                         value={searchService.tempSearchRequest.tags}
                         expandAlways
+                        disableAdd
                         onChange={(changedTags) => {
                             store.localSearchRequestId += 1;
                             searchService.updateRequest({ tags: changedTags });

@@ -2,9 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import CollapseWrapper from '@/ui/Bookmarks/Tags/CollapseWrapper';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import AddButton from './AddButton';
@@ -39,6 +39,7 @@ function Tags(props) {
         onlyFavorites = false,
         autoSelect = false,
         expandAlways = false,
+        disableAdd = false,
         className: externalClassName,
         onCreate,
         onChange,
@@ -102,7 +103,7 @@ function Tags(props) {
                         }}
                     />
                 ))}
-                <AddTag />
+                {!disableAdd && (<AddTag />)}
             </Box>
         );
     }
@@ -129,7 +130,7 @@ function Tags(props) {
                 )}
                 expandButtonLabel={t('button.showAll')}
                 collapseButtonLabel={t('button.showLess')}
-                actions={(<AddTag />)}
+                actions={!disableAdd && (<AddTag />)}
             />
         </Box>
     );
