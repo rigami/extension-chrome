@@ -1,16 +1,17 @@
 import React, { Fragment, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { alpha, makeStyles, useTheme } from '@material-ui/core/styles';
-import { Button } from '@material-ui/core';
+import { Button, Box } from '@material-ui/core';
 import { sample } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
-import GreetingView from '@/ui/Bookmarks/GreetingView';
 import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import Stub from '@/ui-components/Stub';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import useCoreService from '@/stores/app/BaseStateProvider';
+import Favorites from '@/ui/Bookmarks/Favorites';
+import GreetingView from '@/ui/Bookmarks/GreetingView';
 
 const useStyles = makeStyles((theme) => ({
     bookmarks: {
@@ -60,9 +61,8 @@ function PrimaryContent({ columns }) {
 
     return (
         <Fragment>
-            {/* ---PRIMARY--- */}
             {searchService.selectFolderId === NULL_UUID && (
-                <GreetingView />
+                <Favorites />
             )}
             {searchService.selectFolderId !== NULL_UUID && (
                 <BookmarksViewer

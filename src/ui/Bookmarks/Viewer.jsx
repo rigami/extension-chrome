@@ -16,6 +16,7 @@ import PrimaryContent from '@/ui/Bookmarks/PrimaryContent';
 import SecondaryContent from '@/ui/Bookmarks/SecondaryContent';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import { SearchServiceProvider, useSearchService } from '@/ui/Bookmarks/searchProvider';
+import GreetingView from '@/ui/Bookmarks/GreetingView';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -33,11 +34,22 @@ const useStyles = makeStyles((theme) => ({
         backgroundImage: `linear-gradient(to top, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
         '&:hover': { backgroundImage: `linear-gradient(to top, ${theme.palette.primary.dark}, ${theme.palette.primary.main})` },
     },
+    container: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+    },
     content: {
         padding: theme.spacing(0, 3),
         paddingBottom: theme.spacing(12),
     },
-    offsetContainer: { width: '100%' },
+    sideBar: {
+        position: 'sticky',
+        top: 68,
+        flexGrow: 1,
+        maxWidth: 450,
+        marginLeft: 'auto',
+    },
 }));
 
 function Bookmarks() {
@@ -89,16 +101,18 @@ function Bookmarks() {
             onContextMenu={contextMenu}
         >
             <FoldersPanel />
-            <Box flexGrow={1} overflow="auto">
+            <Box flexGrow={1} overflow="auto" ref={ref}>
                 <Scrollbar>
-                    <Box
-                        minHeight="100vh" display="flex" flexDirection="column"
-                        ref={ref}
-                    >
-                        <ToolsPanel />
+                    <ToolsPanel />
+                    <Box className={classes.container}>
                         <Box className={classes.content}>
                             <PrimaryContent columns={store.columnsCount} />
                             <SecondaryContent columns={store.columnsCount} />
+                        </Box>
+                        <Box className={classes.sideBar}>
+                            {searchService.selectFolderId === NULL_UUID && (
+                                <GreetingView />
+                            )}
                         </Box>
                     </Box>
                 </Scrollbar>

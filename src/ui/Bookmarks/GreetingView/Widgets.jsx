@@ -1,12 +1,12 @@
 import { Box, Typography } from '@material-ui/core';
 import clsx from 'clsx';
+import React from 'react';
+import { observer } from 'mobx-react-lite';
+import { makeStyles } from '@material-ui/core/styles';
 import Time from '@/ui/Desktop/Widgets/Time';
 import Date from '@/ui/Desktop/Widgets/Date';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
-import React from 'react';
 import useAppService from '@/stores/app/AppStateProvider';
-import { observer } from 'mobx-react-lite';
-import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     row: { alignItems: 'center' },
@@ -16,12 +16,17 @@ const useStyles = makeStyles((theme) => ({
         pointerEvents: 'all',
     },
     time: {
-        fontSize: '2.2rem',
+        fontSize: '2.25rem',
         lineHeight: '130%',
     },
     date: {
         fontSize: '1.5rem',
         lineHeight: '100%',
+    },
+    weather: {
+        fontSize: '0.875rem',
+        lineHeight: '100%',
+        marginTop: theme.spacing(2),
     },
 }));
 
@@ -42,7 +47,7 @@ function Widgets({ className: externalClassName }) {
                     <Time />
                 </Typography>
             )}
-            {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) && (
+            {widgets.settings.dtwUseDate && (
                 <Typography
                     className={clsx(
                         classes.row,
@@ -50,12 +55,18 @@ function Widgets({ className: externalClassName }) {
                         classes.date,
                     )}
                 >
-                    {widgets.settings.dtwUseDate && (
-                        <Date dot={widgets.showWeather} />
+                    <Date dot={widgets.showWeather} />
+                </Typography>
+            )}
+            {widgets.settings.dtwUseWeather && (
+                <Typography
+                    className={clsx(
+                        classes.row,
+                        classes.text,
+                        classes.weather,
                     )}
-                    {widgets.settings.dtwUseWeather && (
-                        <WeatherWidget />
-                    )}
+                >
+                    <WeatherWidget />
                 </Typography>
             )}
         </Box>

@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { captureException } from '@sentry/react';
 import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
+import { StarRounded as CheckIcon } from '@material-ui/icons';
+import { useTranslation } from 'react-i18next';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import Link from '@/ui/Desktop/FAP/Link';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
@@ -19,17 +20,37 @@ import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
+        flexGrow: 1,
+        flexDirection: 'column',
+        maxWidth: 4 * (theme.shape.dataCard.width + 16) + 24 + 8,
+    },
+    item: { boxShadow: `inset 0px 0px 0px 1px ${theme.palette.divider}` },
+    favoritesContainer: {
+        maxWidth: 1000,
+        display: 'flex',
         flexWrap: 'wrap',
         '& > *': {
             marginRight: theme.spacing(1.5),
             marginBottom: theme.spacing(1.5),
         },
     },
-    item: { boxShadow: `inset 0px 0px 0px 1px ${theme.palette.divider}` },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+    },
+    icon: {
+        color: theme.palette.favorite.main,
+        width: 22,
+        height: 22,
+        marginRight: theme.spacing(1),
+    },
 }));
 
-function Favorites({ className: externalClassName }) {
+function Favorites() {
     const classes = useStyles();
+    const { t } = useTranslation();
     const bookmarksService = useBookmarksService();
     const store = useLocalObservable(() => ({
         favorites: [],
@@ -78,29 +99,35 @@ function Favorites({ className: externalClassName }) {
     }, [bookmarksService.favorites.length, bookmarksService.lastTruthSearchTimestamp]);
 
     return (
-        <Box className={clsx(classes.root, externalClassName)}>
-            {store.favorites.map((fav) => {
-                const a11props = {
-                    ...fav,
-                    key: `${fav.constructor.name}-${fav.id}`,
-                };
+        <Box>
+            <Box className={classes.header}>
+                <CheckIcon className={classes.icon} />
+                <Typography>{t('bookmark:button.favorites')}</Typography>
+            </Box>
+            <Box className={classes.favoritesContainer}>
+                {store.favorites.map((fav) => {
+                    const a11props = {
+                        ...fav,
+                        key: `${fav.constructor.name}-${fav.id}`,
+                    };
 
-                if (fav instanceof BookmarkEntity) {
-                    return (
-                        <Link {...a11props} className={classes.item} dense />
-                    );
-                } else if (fav instanceof FolderEntity) {
-                    return (
-                        <Folder {...a11props} className={classes.item} dense />
-                    );
-                } else if (fav instanceof TagEntity) {
-                    return (
-                        <Tag {...a11props} className={classes.item} dense />
-                    );
-                }
+                    if (fav instanceof BookmarkEntity) {
+                        return (
+                            <Link {...a11props} className={classes.item} dense />
+                        );
+                    } else if (fav instanceof FolderEntity) {
+                        return (
+                            <Folder {...a11props} className={classes.item} dense />
+                        );
+                    } else if (fav instanceof TagEntity) {
+                        return (
+                            <Tag {...a11props} className={classes.item} dense />
+                        );
+                    }
 
-                return null;
-            })}
+                    return null;
+                })}
+            </Box>
         </Box>
     );
 }

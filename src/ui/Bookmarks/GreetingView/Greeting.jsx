@@ -10,21 +10,20 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { sample, first, last } from 'lodash';
 import clsx from 'clsx';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import { useLocalObservable, observer } from 'mobx-react-lite';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import { SERVICE_STATE } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
     greetingContainer: {
-        minHeight: '20vh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
         justifyContent: 'flex-end',
     },
     greeting: {
-        fontSize: '3rem',
+        fontSize: '1.5rem',
         lineHeight: 1.4,
         wordBreak: 'break-word',
     },
