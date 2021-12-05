@@ -1,22 +1,23 @@
 import React, { createContext, useContext } from 'react';
 import { observer } from 'mobx-react-lite';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import ContextMenu from '@/ui/ContextMenu';
 import { useTranslation } from 'react-i18next';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { ContextMenuDivider, ContextMenuItem } from '@/stores/app/entities/contextMenu';
 import {
     DeleteRounded as RemoveIcon,
     EditRounded as EditIcon,
     StarBorderRounded as AddFavoriteIcon,
     StarRounded as RemoveFavoriteIcon,
 } from '@material-ui/icons';
+import copyToClipboard from 'copy-to-clipboard';
+import useCoreService from '@/stores/app/BaseStateProvider';
+import ContextMenu from '@/ui/ContextMenu';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { ContextMenuDivider, ContextMenuItem } from '@/stores/app/entities/contextMenu';
 import {
+    BookmarkAddRounded as AddBookmarkIcon,
     ContentCopyFilled as CopyToClipboardIcon,
     DriveFileMoveFilled as MoveIcon,
 } from '@/icons';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
-import copyToClipboard from 'copy-to-clipboard';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
@@ -85,6 +86,19 @@ function ContextMenuProvider({ children }) {
                 }),
             ] : []),
             new ContextMenuDivider(),
+            ...(itemType === 'folder' ? [
+                new ContextMenuItem({
+                    title: t('bookmark:button.add'),
+                    icon: AddBookmarkIcon,
+                    onClick: () => {
+                        coreService.localEventBus.call(
+                            'bookmark/create',
+                            { defaultFolderId: itemId },
+                        );
+                    },
+                }),
+                new ContextMenuDivider(),
+            ] : []),
             !disableEdit && new ContextMenuItem({
                 title: t(`common:button.${itemType === 'bookmark' ? 'edit' : 'rename'}`),
                 icon: EditIcon,
