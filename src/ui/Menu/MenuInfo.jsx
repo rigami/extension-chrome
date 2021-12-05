@@ -5,6 +5,7 @@ import {
     ListItemText,
     Collapse,
     Box,
+    CardActions,
 } from '@material-ui/core';
 import {
     InfoRounded as InfoIcon,
@@ -15,12 +16,18 @@ import { makeStyles, alpha } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+    },
     info: {
         backgroundColor: theme.palette.info.main,
         '& $icon': { color: theme.palette.info.contrastText },
         '& $messageText': { color: theme.palette.info.contrastText },
         '& $descriptionText': { color: alpha(theme.palette.info.contrastText, 0.8) },
         '& $actions': { color: theme.palette.info.contrastText },
+        '& $toolbarActions': { color: theme.palette.info.contrastText },
     },
     warn: {
         backgroundColor: theme.palette.warning.main,
@@ -28,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
         '& $messageText': { color: theme.palette.warning.contrastText },
         '& $descriptionText': { color: alpha(theme.palette.warning.contrastText, 0.8) },
         '& $actions': { color: theme.palette.warning.contrastText },
+        '& $toolbarActions': { color: theme.palette.warning.contrastText },
     },
     error: {
         backgroundColor: theme.palette.error.main,
@@ -35,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
         '& $messageText': { color: theme.palette.error.contrastText },
         '& $descriptionText': { color: alpha(theme.palette.error.contrastText, 0.8) },
         '& $actions': { color: theme.palette.error.contrastText },
+        '& $toolbarActions': { color: theme.palette.error.contrastText },
     },
     icon: {},
     messageText: {},
@@ -50,6 +59,10 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(0.75),
         marginBottom: theme.spacing(0.75),
     },
+    toolbarActions: {
+        justifyContent: 'flex-end',
+        '& > *': { color: 'inherit' },
+    },
 }));
 
 function MenuInfo(props) {
@@ -63,6 +76,7 @@ function MenuInfo(props) {
         icon,
         classes: externalClasses = {},
         actions,
+        toolbarActions,
     } = props;
     const classes = useStyles();
 
@@ -85,6 +99,7 @@ function MenuInfo(props) {
             <ListItem
                 ContainerComponent={component}
                 className={clsx(
+                    classes.root,
                     variant === 'info' && classes.info,
                     variant === 'warn' && classes.warn,
                     variant === 'error' && classes.error,
@@ -92,23 +107,30 @@ function MenuInfo(props) {
                 )}
                 style={{ width }}
             >
-                {Icon && (
-                    <ListItemIcon className={classes.iconWrapper}>
-                        <Icon className={classes.icon} />
-                    </ListItemIcon>
-                )}
-                <ListItemText
-                    classes={{
-                        primary: classes.messageText,
-                        secondary: classes.descriptionText,
-                    }}
-                    primary={message}
-                    secondary={description}
-                />
-                {actions && (
-                    <Box className={classes.actions}>
-                        {actions}
-                    </Box>
+                <Box display="flex" flexDirection="row">
+                    {Icon && (
+                        <ListItemIcon className={classes.iconWrapper}>
+                            <Icon className={classes.icon} />
+                        </ListItemIcon>
+                    )}
+                    <ListItemText
+                        classes={{
+                            primary: classes.messageText,
+                            secondary: classes.descriptionText,
+                        }}
+                        primary={message}
+                        secondary={description}
+                    />
+                    {actions && (
+                        <Box className={classes.actions}>
+                            {actions}
+                        </Box>
+                    )}
+                </Box>
+                {toolbarActions && (
+                    <CardActions className={classes.toolbarActions}>
+                        {toolbarActions}
+                    </CardActions>
                 )}
             </ListItem>
         </Collapse>
