@@ -6,10 +6,10 @@ import {
     Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import { captureException } from '@sentry/react';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
+import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 
 const useStyles = makeStyles((theme) => ({
     popper: {

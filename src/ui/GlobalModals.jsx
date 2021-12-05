@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import EditTagModal from '@/ui/Bookmarks/Tags/EditModal';
+import EditTagModal from '@/ui/Bookmarks/Tag/EditModal';
 import { useTranslation } from 'react-i18next';
 import { default as EditBookmarkModal } from '@/ui/Bookmarks/EditBookmarkModal';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
