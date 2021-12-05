@@ -32,7 +32,10 @@ const useStyles = makeStyles((theme) => ({
         height: theme.spacing(2),
     },
     subheader: { '&:hover $action': { display: 'flex' } },
-    action: { display: 'none' },
+    action: {
+        display: 'none',
+        marginLeft: theme.spacing(0.5),
+    },
     dialog: {
         minWidth: 320,
         maxWidth: 400,
