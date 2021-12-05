@@ -45,11 +45,15 @@ function ContextMenu() {
         position: null,
         actions: [],
         reactions: [],
+        onOpen: null,
+        onClose: null,
     }));
     const [, setForceRender] = useState(0);
 
     useEffect(() => {
         const listenId = coreService.localEventBus.on('system/contextMenu', (props) => {
+            store.onOpen = props.onOpen;
+            store.onClose = props.onClose;
             store.position = props.position;
             store.actions = props.actions;
             store.reactions = props.reactions || [];
@@ -66,6 +70,10 @@ function ContextMenu() {
         });
     }, [store.reactions.length]);
 
+    useEffect(() => {
+        if (store.position) store.onOpen?.();
+    }, [store.position]);
+
     const calcActions = typeof store.actions === 'function' ? store.actions() : store.actions;
 
     return (
@@ -74,6 +82,7 @@ function ContextMenu() {
             open={store.position !== null}
             onClose={() => {
                 store.position = null;
+                store.onClose?.();
             }}
             anchorReference="anchorPosition"
             anchorPosition={store.position}
@@ -81,6 +90,7 @@ function ContextMenu() {
             onContextMenu={(event) => {
                 event.preventDefault();
                 store.position = null;
+                store.onClose?.();
             }}
             elevation={18}
         >
@@ -111,6 +121,7 @@ function ContextMenu() {
                             onClick={() => {
                                 element.onClick();
                                 store.position = null;
+                                store.onClose?.();
                             }}
                         >
                             <ListItemIcon className={classes.icon}>

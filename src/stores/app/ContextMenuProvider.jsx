@@ -138,7 +138,12 @@ function ContextMenuProvider({ children }) {
         ];
     };
 
-    const handleContextMenu = (itemOrCreator, { useAnchorEl = false, reactions } = {}) => (event) => {
+    const handleContextMenu = (itemOrCreator, options = {}) => (event) => {
+        const {
+            useAnchorEl = false, reactions,
+            onOpen,
+            onClose,
+        } = options;
         event.stopPropagation();
         event.preventDefault();
 
@@ -163,6 +168,8 @@ function ContextMenuProvider({ children }) {
             ).filter((isExist) => isExist),
             position,
             reactions,
+            onOpen,
+            onClose,
         });
     };
 

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { captureException } from '@sentry/react';
 import { FolderRounded as FolderIcon, ArrowForward as GoToIcon } from '@material-ui/icons';
@@ -13,11 +13,20 @@ import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
 import { ExtendButton } from '@/ui-components/ExtendButton';
+import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { FIRST_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
     folderContainer: {
         marginTop: theme.spacing(12),
+        paddingLeft: theme.spacing(2),
+        borderRadius: theme.shape.borderRadius,
+        display: 'flex',
+        flexDirection: 'column',
         '&:hover $icon': { opacity: 1 },
+    },
+    containerActive: {
+        backgroundColor: theme.palette.action.selected
     },
     header: {
         display: 'flex',
@@ -28,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
         gridTemplateColumns: `repeat(auto-fit, ${theme.shape.dataCard.width}px)`,
         display: 'grid',
         gridGap: theme.spacing(0.5, 2),
+        paddingBottom: theme.spacing(1),
     },
     childFolderContainer: { width: theme.shape.dataCard.width },
     childFolderBtnLabel: { fontWeight: 600 },
@@ -72,10 +82,69 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function SecondaryContent({ columns }) {
+function Folder({ data, columns }) {
     const theme = useTheme();
     const classes = useStyles();
+    const searchService = useSearchService();
     const { t } = useTranslation(['bookmark']);
+    const [isActive, setIsActive] = useState(false);
+    const contextMenu = useContextMenu({
+        itemId: data.id,
+        itemType: 'folder',
+        disableRemove: data.id === FIRST_UUID,
+        disableMove: data.id === FIRST_UUID,
+    }, {
+        onOpen: () => { setIsActive(true); },
+        onClose: () => { setIsActive(false); },
+    });
+
+    return (
+        <Box
+            className={clsx(classes.folderContainer, isActive && classes.containerActive)}
+            key={data.id}
+            style={{ width: columns * (theme.shape.dataCard.width + 16) + 16 }}
+            onContextMenu={contextMenu}
+        >
+            <Box className={classes.header}>
+                <Button
+                    classes={{
+                        root: clsx(classes.overflow, classes.last),
+                        label: classes.label,
+                        endIcon: classes.icon,
+                    }}
+                    endIcon={(<GoToIcon />)}
+                    onClick={() => searchService.setSelectFolder(data.id)}
+                >
+                    {data.name}
+                </Button>
+            </Box>
+            <BookmarksViewer
+                folderId={data.id}
+                columns={columns}
+                dense
+                emptyRender={() => (
+                    <Box key="empty" mb={2}>
+                        <Typography color="textSecondary">{t('empty')}</Typography>
+                    </Box>
+                )}
+            />
+            <Box className={classes.childFolders}>
+                {data.children.map((childFolder) => (
+                    <ExtendButton
+                        key={childFolder.id}
+                        className={classes.childFolder}
+                        label={childFolder.name}
+                        onClick={() => searchService.setSelectFolder(childFolder.id)}
+                        icon={() => <FolderIcon />}
+                        unwrap
+                    />
+                ))}
+            </Box>
+        </Box>
+    );
+}
+
+function SecondaryContent({ columns }) {
     const searchService = useSearchService();
     const store = useLocalObservable(() => ({
         tree: [],
@@ -112,49 +181,12 @@ function SecondaryContent({ columns }) {
 
     return (
         <Fragment>
-            {/* ---SECONDARY--- */}
             {store.tree.map((folder) => (
-                <Box
-                    className={classes.folderContainer}
+                <Folder
                     key={folder.id}
-                    style={{ width: columns * (theme.shape.dataCard.width + 16) + 24 + 8 }}
-                >
-                    <Box className={classes.header}>
-                        <Button
-                            classes={{
-                                root: clsx(classes.overflow, classes.last),
-                                label: classes.label,
-                                endIcon: classes.icon,
-                            }}
-                            endIcon={(<GoToIcon />)}
-                            onClick={() => searchService.setSelectFolder(folder.id)}
-                        >
-                            {folder.name}
-                        </Button>
-                    </Box>
-                    <BookmarksViewer
-                        folderId={folder.id}
-                        columns={columns}
-                        dense
-                        emptyRender={() => (
-                            <Box key="empty" mb={2}>
-                                <Typography color="textSecondary">{t('empty')}</Typography>
-                            </Box>
-                        )}
-                    />
-                    <Box className={classes.childFolders}>
-                        {folder.children.map((childFolder) => (
-                            <ExtendButton
-                                key={childFolder.id}
-                                className={classes.childFolder}
-                                label={childFolder.name}
-                                onClick={() => searchService.setSelectFolder(childFolder.id)}
-                                icon={() => <FolderIcon />}
-                                unwrap
-                            />
-                        ))}
-                    </Box>
-                </Box>
+                    data={folder}
+                    columns={columns}
+                />
             ))}
         </Fragment>
     );
