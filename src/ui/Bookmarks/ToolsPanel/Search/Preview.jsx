@@ -6,6 +6,8 @@ import { makeStyles, alpha } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import Tag from '@/ui/Bookmarks/Tag';
+import Collapser from '@/ui/Bookmarks/Tag/Collapser';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -44,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '1rem',
         fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 600,
-        color: theme.palette.text.secondary,
+        color: theme.palette.text.primary,
         letterSpacing: 'normal',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -54,7 +56,6 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         overflow: 'auto',
         flexGrow: 1,
-        '-webkit-mask': 'linear-gradient(to left, transparent 42px, black 60px)',
     },
     row: {
         display: 'flex',
@@ -63,10 +64,16 @@ const useStyles = makeStyles((theme) => ({
         height: 36,
         overflow: 'hidden',
         marginTop: theme.spacing(-1),
-        '&:first-child': { marginTop: 0 },
+        paddingRight: theme.spacing(1),
+        '&:first-child': {
+            marginTop: 0,
+            paddingRight: theme.spacing(5),
+        },
     },
     tag: {
-        '& div': {
+        marginRight: theme.spacing(1),
+        flexShrink: 0,
+        /* '& div': {
             opacity: '60%',
             width: 8,
             height: 8,
@@ -74,16 +81,16 @@ const useStyles = makeStyles((theme) => ({
             marginRight: 8,
             flexShrink: 0,
         },
-        marginRight: 8,
         display: 'inline-flex',
         alignItems: 'center',
-        flexShrink: 0,
+        flexShrink: 0, */
     },
     tagSmall: {
         '& div': { marginRight: 0 },
         fontSize: 0,
         marginRight: 4,
     },
+    tagsWrapper: { flexGrow: 1 },
 }));
 
 function Preview(props) {
@@ -124,15 +131,17 @@ function Preview(props) {
                     )}
                     {tagsIds && (
                         <Box className={classes.row}>
-                            {tags.map((tag, index) => (
-                                <span
-                                    key={tag.id}
-                                    className={clsx(classes.tag, classes.query, index > 2 && classes.tagSmall)}
-                                >
-                                    <div style={{ backgroundColor: tag.color }} />
-                                    {tag.name}
-                                </span>
-                            ))}
+                            <Collapser className={classes.tagsWrapper}>
+                                {tags.map((tag) => (
+                                    <Tag
+                                        key={tag.id}
+                                        className={classes.tag}
+                                        dense
+                                        name={tag.name}
+                                        colorKey={tag.colorKey}
+                                    />
+                                ))}
+                            </Collapser>
                         </Box>
                     )}
                 </Box>

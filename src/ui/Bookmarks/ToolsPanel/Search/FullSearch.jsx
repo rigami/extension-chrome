@@ -29,8 +29,7 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
     },
     search: {
-        paddingRight: 36,
-        '-webkit-mask': 'linear-gradient(to left, transparent 36px, black 60px)',
+        paddingRight: theme.spacing(5),
         display: 'flex',
         flexShrink: 0,
     },

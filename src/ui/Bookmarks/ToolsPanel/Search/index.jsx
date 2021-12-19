@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         right: 0,
         top: 0,
-        height: Math.sqrt(882) + 21,
+        height: Math.sqrt(882) + 18,
         zIndex: 3,
         overflow: 'hidden',
         display: 'flex',
@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
     },
     resetIcon: {
         padding: Math.sqrt(882) - 12,
-        margin: -(Math.sqrt(882) - 21),
+        margin: -(Math.sqrt(882) - 18),
         marginLeft: 0,
         pointerEvents: 'all',
     },

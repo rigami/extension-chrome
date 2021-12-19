@@ -1,9 +1,7 @@
 import React, {
     memo,
-    useCallback,
     useEffect,
     useState,
-    useRef,
 } from 'react';
 import {
     Card,
@@ -16,12 +14,12 @@ import { StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useResizeDetector } from 'react-resize-detector';
 import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import Tag from './Tag';
+import Collapser from '@/ui/Bookmarks/Tag/Collapser';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -97,6 +95,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadius / 2,
         margin: theme.spacing(0.5),
         filter: 'brightness(0.96)',
+        backgroundColor: theme.palette.background.default,
     },
     extendBannerTitleContainer: {
         margin: theme.spacing(1, 1.5),
@@ -140,16 +139,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-    tagsContainer: {
-        display: 'flex',
-        overflow: 'hidden',
-    },
-    tagsWrapper: {
-        flexGrow: 1,
-        overflow: 'auto',
-        position: 'relative',
-        paddingRight: theme.shape.borderRadiusButton,
-    },
+    tagsWrapper: { flexGrow: 1 },
     tag: {
         color: theme.palette.text.primary,
         padding: theme.spacing(0.25, 0.75),
@@ -165,66 +155,24 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(0.5),
         flexShrink: 0,
     },
-    overloadTagsChip: {
-        backgroundColor: theme.palette.background.backdrop,
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        marginRight: 0,
-        boxShadow: '0px 1px 6px 6px #fff',
-    },
 }));
 
 function Tags({ tags }) {
     const classes = useStyles();
-    const ref = useRef();
-    const [isOverload, setIsOverload] = useState(false);
-    const [notVisible, setNotVisible] = useState(0);
-
-    const onResize = useCallback(() => {
-        let i = 0;
-        let sumWidth = 0;
-
-        while (
-            i < ref.current.children.length
-            && sumWidth + ref.current.children[i].clientWidth + 4 <= ref.current.clientWidth
-        ) {
-            sumWidth += ref.current.children[i].clientWidth + 4;
-            i += 1;
-        }
-
-        setIsOverload(ref.current.scrollWidth > ref.current.clientWidth);
-        setNotVisible(ref.current.children.length - i);
-    }, []);
-
-    useResizeDetector({
-        onResize,
-        targetRef: ref,
-    });
-
-    useEffect(() => { onResize(); }, [tags.length]);
 
     return (
-        <Box className={classes.tagsWrapper}>
-            <Box ref={ref} className={classes.tagsContainer}>
-                {tags.map((tag) => (
-                    <Tag
-                        key={tag.id}
-                        id={tag.id}
-                        name={tag.name}
-                        colorKey={tag.colorKey}
-                        dense
-                        className={classes.tagOffset}
-                    />
-                ))}
-            </Box>
-            {isOverload && (
-                <Box className={clsx(classes.tag, classes.overloadTagsChip)}>
-                    +
-                    {notVisible}
-                </Box>
-            )}
-        </Box>
+        <Collapser className={classes.tagsWrapper}>
+            {tags.map((tag) => (
+                <Tag
+                    key={tag.id}
+                    id={tag.id}
+                    name={tag.name}
+                    colorKey={tag.colorKey}
+                    dense
+                    className={classes.tagOffset}
+                />
+            ))}
+        </Collapser>
     );
 }
 
