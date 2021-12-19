@@ -65,7 +65,7 @@ function Editor(props) {
                     variant="contained"
                     disabled={store.error}
                 >
-                    {t('common:button.save')}
+                    {t('button.select')}
                 </Button>
             </DialogActions>
         </React.Fragment>
