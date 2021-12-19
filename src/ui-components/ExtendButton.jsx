@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusButton,
         display: 'flex',
         flexDirection: 'column',
+        background: 'none',
     },
     button: {
         borderRadius: theme.shape.borderRadiusButton,
