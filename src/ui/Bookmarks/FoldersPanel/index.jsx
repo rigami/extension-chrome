@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'sticky',
         top: 0,
         // backgroundColor: alpha(theme.palette.background.backdrop, 0.3),
-        paddingTop: theme.spacing(2),
+        paddingTop: theme.spacing(1.75),
     },
     avatar: {
         display: 'flex',
@@ -35,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
     header: {
         height: 40,
         padding: 0,
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
     },
     appLogoIcon: {
         width: 20,
@@ -49,8 +49,16 @@ const useStyles = makeStyles((theme) => ({
     },
     appLogoTextWrapper: { display: 'flex' },
     activeGreetingView: { backgroundColor: theme.palette.action.selected },
-    offsetTop: { marginTop: 'auto' },
+    offsetTop: {
+        marginTop: 'auto',
+        paddingLeft: theme.spacing(1),
+    },
     folders: { marginLeft: theme.spacing(1) },
+    greetingViewBtn: {
+        marginLeft: theme.spacing(1),
+        width: `calc(100% - ${theme.spacing(1)}px)`,
+        borderRadius: theme.shape.borderRadius,
+    },
 }));
 
 function FoldersPanel() {
@@ -60,7 +68,7 @@ function FoldersPanel() {
 
     return (
         <Box className={classes.root}>
-            <CardActionArea onClick={() => searchService.setSelectFolder(NULL_UUID)}>
+            <CardActionArea className={classes.greetingViewBtn} onClick={() => searchService.setSelectFolder(NULL_UUID)}>
                 <CardHeader
                     avatar={(<LogoIcon className={classes.appLogoIcon} />)}
                     title={(<LogoText className={classes.appLogoText} />)}
