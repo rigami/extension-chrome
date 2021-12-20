@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
     wrapperBreadcrumbs: {
         overflow: 'auto',
         marginRight: 'auto',
+        paddingLeft: theme.spacing(2),
     },
     wrapperSearch: {
         padding: theme.spacing(0, 1),

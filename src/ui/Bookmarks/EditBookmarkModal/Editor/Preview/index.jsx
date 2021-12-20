@@ -31,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
         backgroundColor: theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[200],
         width: theme.shape.dataCard.width + theme.spacing(4),
+        borderRadius: 'inherit',
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
     },
     typeSwitcher: { marginBottom: theme.spacing(2) },
     warnMessage: {

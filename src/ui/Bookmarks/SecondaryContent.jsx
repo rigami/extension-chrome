@@ -25,9 +25,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         '&:hover $icon': { opacity: 1 },
     },
-    containerActive: {
-        backgroundColor: theme.palette.action.selected
-    },
+    containerActive: { backgroundColor: theme.palette.action.selected },
     header: {
         display: 'flex',
         flexDirection: 'row',
@@ -101,7 +99,6 @@ function Folder({ data, columns }) {
     return (
         <Box
             className={clsx(classes.folderContainer, isActive && classes.containerActive)}
-            key={data.id}
             style={{ width: columns * (theme.shape.dataCard.width + 16) + 16 }}
             onContextMenu={contextMenu}
         >
@@ -184,17 +181,13 @@ function SecondaryContent({ columns }) {
         return 'Что то пошло не так';
     }
 
-    return (
-        <Fragment>
-            {store.tree.map((folder) => (
-                <Folder
-                    key={folder.id}
-                    data={folder}
-                    columns={columns}
-                />
-            ))}
-        </Fragment>
-    );
+    return store.tree.map((folder) => (
+        <Folder
+            key={folder.id}
+            data={folder}
+            columns={columns}
+        />
+    ));
 }
 
 export default observer(SecondaryContent);

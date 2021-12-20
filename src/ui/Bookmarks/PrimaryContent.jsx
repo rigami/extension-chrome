@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
     bookmarks: {
         marginTop: theme.spacing(4),
         marginBottom: theme.spacing(2),
+        paddingLeft: theme.spacing(2),
     },
     stub: {
         height: '50vh',
@@ -66,7 +67,7 @@ function PrimaryContent({ columns }) {
             )}
             {searchService.selectFolderId !== NULL_UUID && (
                 <BookmarksViewer
-                    style={{ width: columns * (theme.shape.dataCard.width + 16) + 24 + 8 }}
+                    style={{ width: columns * (theme.shape.dataCard.width + 16) + 16 }}
                     className={classes.bookmarks}
                     folderId={searchService.selectFolderId}
                     columns={columns}

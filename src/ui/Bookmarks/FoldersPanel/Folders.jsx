@@ -233,12 +233,15 @@ function TreeLevel(props) {
 
 function Folders(props) {
     const {
+        rootFolder,
         selectFolder,
         defaultExpanded = [],
         disabled: defaultDisabled = [],
         showRoot = false,
+        disableAdd = false,
         onClickFolder,
         className: externalClassName,
+        emptyRender,
     } = props;
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
@@ -256,7 +259,7 @@ function Folders(props) {
 
         asyncAction(async () => {
             const path = selectFolder ? await FoldersUniversalService.getPath(selectFolder) : [];
-            const tree = await FoldersUniversalService.getTree();
+            const tree = await FoldersUniversalService.getTree(rootFolder);
 
             store.expanded = [...store.expanded, ...path.map(({ id }) => id).slice(0, -1)];
             store.tree = tree;
@@ -269,6 +272,10 @@ function Folders(props) {
     }, [bookmarksService.lastTruthSearchTimestamp]);
 
     console.log('selectFolder:', selectFolder);
+
+    if (store.state !== FETCH.PENDING && store.state !== FETCH.WAIT && store.tree.length === 0 && emptyRender) {
+        return emptyRender();
+    }
 
     return (
         <Box className={externalClassName}>
@@ -307,38 +314,42 @@ function Folders(props) {
                         }}
                     />
                 )}
-                <ListItem
-                    className={classes.addRootButton}
-                    onClick={(event) => {
-                        store.anchorEl = event.currentTarget;
-                        store.parentFolder = NULL_UUID;
-                    }}
-                    button
-                    selected={store.parentFolder === NULL_UUID && store.anchorEl}
-                >
-                    <AddIcon />
-                    {t('button.create')}
-                </ListItem>
+                {!disableAdd && (
+                    <ListItem
+                        className={classes.addRootButton}
+                        onClick={(event) => {
+                            store.anchorEl = event.currentTarget;
+                            store.parentFolder = NULL_UUID;
+                        }}
+                        button
+                        selected={store.parentFolder === NULL_UUID && store.anchorEl}
+                    >
+                        <AddIcon />
+                        {t('button.create')}
+                    </ListItem>
+                )}
             </List>
-            <EditFolderModal
-                simple
-                isOpen={Boolean(store.anchorEl)}
-                anchorEl={store.anchorEl}
-                onClose={() => {
-                    store.anchorEl = null;
-                    store.parentFolder = null;
-                }}
-                onSave={(folderId) => {
-                    store.expanded = [...store.expanded, store.parentFolder];
-                    store.anchorEl = null;
-                    store.parentFolder = null;
+            {!disableAdd && (
+                <EditFolderModal
+                    simple
+                    isOpen={Boolean(store.anchorEl)}
+                    anchorEl={store.anchorEl}
+                    onClose={() => {
+                        store.anchorEl = null;
+                        store.parentFolder = null;
+                    }}
+                    onSave={(folderId) => {
+                        store.expanded = [...store.expanded, store.parentFolder];
+                        store.anchorEl = null;
+                        store.parentFolder = null;
 
-                    FoldersUniversalService.get(folderId)
-                        .then(onClickFolder);
-                }}
-                parentId={store.parentFolder}
-                placement="left"
-            />
+                        FoldersUniversalService.get(folderId)
+                            .then(onClickFolder);
+                    }}
+                    parentId={store.parentFolder}
+                    placement="left"
+                />
+            )}
         </Box>
     );
 }
