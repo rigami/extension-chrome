@@ -70,7 +70,7 @@ function FastResults({ onGoToFolder }) {
                 if (currentRequestId !== store.requestId) return;
                 const byFolders = {};
 
-                (result.all || []).forEach((bookmark) => {
+                [...(result.best || []), ...(result.part || [])].forEach((bookmark) => {
                     byFolders[bookmark.folderId] = [...(byFolders[bookmark.folderId] || []), bookmark];
                 });
 

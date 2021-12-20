@@ -3,6 +3,7 @@ import { computed } from 'mobx';
 export const COMPARE = {
     FULL: 'FULL',
     PART: 'PART',
+    INDIRECTLY: 'INDIRECTLY',
     NONE: 'NONE',
     IGNORE: 'IGNORE',
 };

@@ -21,11 +21,11 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         boxSizing: 'border-box',
         borderRadius: theme.shape.borderRadiusButton,
-        backgroundColor: alpha(theme.palette.background.default, 0),
+        backgroundColor: alpha(theme.palette.background.paper, 0),
     },
     openFullSearch: {
         border: `1px solid ${theme.palette.divider}`,
-        backgroundColor: alpha(theme.palette.background.default, 1),
+        backgroundColor: alpha(theme.palette.background.paper, 1),
     },
     tags: {
         padding: theme.spacing(1.5),

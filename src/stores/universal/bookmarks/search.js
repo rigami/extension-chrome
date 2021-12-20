@@ -48,6 +48,8 @@ export const compare = (q, bookmark) => {
         const sameTagsCount = intersectionWith(q.tags, bookmark.tags, isEqual).length;
         if (sameTagsCount === bookmark.tags.length && sameTagsCount === q.tags.length && bookmark.tags.length !== 0) {
             tags = COMPARE.FULL;
+        } else if (sameTagsCount !== 0 && sameTagsCount !== q.tags.length) {
+            tags = COMPARE.INDIRECTLY;
         } else if (sameTagsCount !== 0 && bookmark.tags.length !== 0) {
             tags = COMPARE.PART;
         } else {
@@ -89,11 +91,17 @@ export const compare = (q, bookmark) => {
     ) {
         summary = COMPARE.FULL;
     } else if (
-        (tags !== COMPARE.IGNORE && tags !== COMPARE.NONE)
-        || (query !== COMPARE.IGNORE && query !== COMPARE.NONE)
-        || (query === COMPARE.IGNORE && tags === COMPARE.IGNORE)
+        ((tags === COMPARE.PART || tags === COMPARE.FULL) && (query === COMPARE.PART || query === COMPARE.FULL))
+        || ((tags === COMPARE.PART || tags === COMPARE.FULL) && (query === COMPARE.IGNORE))
+        || ((query === COMPARE.PART || query === COMPARE.FULL) && (tags === COMPARE.IGNORE))
     ) {
         summary = COMPARE.PART;
+    } else if (
+        (tags === COMPARE.IGNORE || tags === COMPARE.PART || tags === COMPARE.INDIRECTLY || tags === COMPARE.FULL)
+        && (query === COMPARE.IGNORE || query === COMPARE.PART || query !== COMPARE.FULL)
+        && (tags !== COMPARE.IGNORE || query !== COMPARE.IGNORE)
+    ) {
+        summary = COMPARE.INDIRECTLY;
     } else {
         summary = COMPARE.NONE;
     }
@@ -109,6 +117,8 @@ export const compare = (q, bookmark) => {
 
 export const search = async (searchRequest = new SearchQuery()) => {
     const bestMatches = {};
+    const partMatches = {};
+    const indirectlyMatches = {};
     const allMatches = {};
 
     console.log('[search] searchRequest', searchRequest);
@@ -164,12 +174,23 @@ export const search = async (searchRequest = new SearchQuery()) => {
                 ...bookmark,
                 tagsFull: bookmark.tags.map((tagId) => allTags[tagId]),
             });
+
+            partMatches[bookmark.id] = allMatches[bookmark.id];
+        } else if (compareResult.summary === COMPARE.INDIRECTLY) {
+            allMatches[bookmark.id] = new Bookmark({
+                ...bookmark,
+                tagsFull: bookmark.tags.map((tagId) => allTags[tagId]),
+            });
+
+            indirectlyMatches[bookmark.id] = allMatches[bookmark.id];
         }
     });
     console.timeEnd('query');
 
     return {
         best: values(bestMatches),
+        part: values(partMatches),
+        indirectly: values(indirectlyMatches),
         all: values(allMatches),
     };
 };
