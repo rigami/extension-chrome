@@ -14,14 +14,14 @@ const useStyles = makeStyles((theme) => ({
     secondary: { fontSize: '1rem' },
 }));
 
-function Header({ title, subtitle, classes: externalClasses = {} }) {
+function Header({ title, subtitle, classes: externalClasses = {}, className: externalClassName }) {
     const classes = useStyles();
 
     return (
         <ListItem
             disableGutters
             component="div"
-            classes={{ root: clsx(classes.root, externalClasses.root) }}
+            classes={{ root: clsx(classes.root, externalClasses.root, externalClassName) }}
         >
             <ListItemText
                 classes={{

@@ -13,12 +13,13 @@ import Header from '@/ui/Bookmarks/BookmarksViewer/Header';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         flexGrow: 1,
         flexDirection: 'column',
     },
+    topOffset: { marginTop: theme.spacing(6) },
 }));
 
 function BookmarksViewer(props) {
@@ -36,6 +37,8 @@ function BookmarksViewer(props) {
     const { t } = useTranslation(['bookmark']);
     const store = useLocalObservable(() => ({
         bestBookmarks: null,
+        partBookmarks: null,
+        indirectlyBookmarks: null,
         allBookmarks: null,
         existMatches: false,
         requestId: 0,
@@ -60,7 +63,7 @@ function BookmarksViewer(props) {
     });
 
     useEffect(() => {
-        console.log(`[BookmarksViewer] existMatches: ${store.existMatches}`)
+        console.log(`[BookmarksViewer] existMatches: ${store.existMatches}`);
         if (!store.existMatches) store.loadState = FETCH.PENDING;
         store.requestId += 1;
         const currentRequestId = store.requestId;
@@ -88,6 +91,8 @@ function BookmarksViewer(props) {
                 });
 
                 store.bestBookmarks = result.best && sortByFavorites(result.best);
+                store.partBookmarks = result.part && sortByFavorites(result.part);
+                store.indirectlyBookmarks = result.indirectly && sortByFavorites(result.indirectly);
                 store.allBookmarks = result.all && sortByFavorites(result.all);
                 store.existMatches = ((result.best?.length || 0) + result.all.length) !== 0;
                 store.usedFields = { ...searchService.searchRequest.usedFields };
@@ -106,7 +111,7 @@ function BookmarksViewer(props) {
                         <Fragment>
                             <Header title={t('search.bestMatches')} />
                             {store.bestBookmarks && store.bestBookmarks.length !== 0 ? (
-                                <Box display="flex" className={classes.bookmarks}>
+                                <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
                                     <BookmarksGrid
                                         bookmarks={store.bestBookmarks}
                                         columns={columns}
@@ -115,15 +120,39 @@ function BookmarksViewer(props) {
                             ) : (
                                 <Header subtitle={t('search.nothingFound')} />
                             )}
-                            <Header title={t('search.allMatches')} />
+                            <Header className={classes.topOffset} title={t('search.allMatches')} />
+                            <Header subtitle={t('search.partMatches')} />
+                            {store.partBookmarks && store.partBookmarks.length !== 0 ? (
+                                <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
+                                    <BookmarksGrid
+                                        bookmarks={store.partBookmarks}
+                                        columns={columns}
+                                    />
+                                </Box>
+                            ) : (
+                                <Header subtitle={t('search.nothingFound')} />
+                            )}
+                            <Header subtitle={t('search.indirectlyMatches')} />
+                            {store.indirectlyBookmarks && store.indirectlyBookmarks.length !== 0 ? (
+                                <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
+                                    <BookmarksGrid
+                                        bookmarks={store.indirectlyBookmarks}
+                                        columns={columns}
+                                    />
+                                </Box>
+                            ) : (
+                                <Header subtitle={t('search.nothingFound')} />
+                            )}
                         </Fragment>
                     )}
-                    <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
-                        <BookmarksGrid
-                            bookmarks={store.allBookmarks}
-                            columns={columns}
-                        />
-                    </Box>
+                    {(!store.usedFields.query && !store.usedFields.tags) && (
+                        <Box display="flex" className={clsx(classes.bookmarks)}>
+                            <BookmarksGrid
+                                bookmarks={store.allBookmarks}
+                                columns={columns}
+                            />
+                        </Box>
+                    )}
                 </Box>
             ),
             (store.usedFields.query || store.usedFields.tags)
