@@ -98,8 +98,10 @@ function Favorites() {
             });
     }, [bookmarksService.favorites.length, bookmarksService.lastTruthSearchTimestamp]);
 
+    if (bookmarksService.favorites.length === 0) return null;
+
     return (
-        <Box>
+        <Box pl={2}>
             <Box className={classes.header}>
                 <CheckIcon className={classes.icon} />
                 <Typography>{t('bookmark:button.favorites')}</Typography>
