@@ -121,7 +121,7 @@ function FullSearch({ open, onClose }) {
                                     <FastResults
                                         onGoToFolder={(folderId, apply) => {
                                             if (!apply) searchService.resetChanges();
-                                            searchService.setSelectFolder(folderId);
+                                            searchService.setSelectFolder(folderId, false);
                                             onClose(null, apply);
                                         }}
                                     />

@@ -107,7 +107,13 @@ function Bookmarks() {
                     <Box className={classes.container}>
                         <Box className={classes.content}>
                             <PrimaryContent columns={store.columnsCount} />
-                            <SecondaryContent columns={store.columnsCount} />
+                            {
+                                !searchService.searchRequest.usedFields.query
+                                && !searchService.searchRequest.usedFields.tags
+                                && (
+                                    <SecondaryContent columns={store.columnsCount} />
+                                )
+                            }
                         </Box>
                         <Box className={classes.sideBar}>
                             {searchService.selectFolderId === NULL_UUID && (

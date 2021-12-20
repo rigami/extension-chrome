@@ -91,6 +91,10 @@ export const compare = (q, bookmark) => {
     ) {
         summary = COMPARE.FULL;
     } else if (
+        tags === COMPARE.IGNORE && query === COMPARE.IGNORE
+    ) {
+        summary = COMPARE.FULL;
+    } else if (
         ((tags === COMPARE.PART || tags === COMPARE.FULL) && (query === COMPARE.PART || query === COMPARE.FULL))
         || ((tags === COMPARE.PART || tags === COMPARE.FULL) && (query === COMPARE.IGNORE))
         || ((query === COMPARE.PART || query === COMPARE.FULL) && (tags === COMPARE.IGNORE))

@@ -50,6 +50,7 @@
   },
   "search": {
     "nothingFound": "Ничего не найдено. Попробуйте изменить свой запрос",
+    "nothingFoundInFolder": "В этой папке ничего не найдено",
     "everywhere": "Искать везде",
     "everywhere_description": "Поиск закладок по всей системе",
     "bookmarks_placeholder": "Поиск закладок",

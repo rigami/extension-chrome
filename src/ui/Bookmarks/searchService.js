@@ -51,8 +51,15 @@ class SearchService {
     }
 
     // Used
-    setSelectFolder(folderId) {
+    setSelectFolder(folderId, user = true) {
         this.selectFolderId = folderId;
+
+        if (user) {
+            this.updateRequest({
+                query: '',
+                tags: [],
+            }, { force: true });
+        }
 
         this.applyChanges();
     }

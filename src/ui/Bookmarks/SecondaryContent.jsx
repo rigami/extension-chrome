@@ -127,6 +127,11 @@ function Folder({ data, columns }) {
                         <Typography color="textSecondary">{t('empty')}</Typography>
                     </Box>
                 )}
+                nothingFoundRender={() => (
+                    <Box key="empty" mb={2}>
+                        <Typography color="textSecondary">{t('search.nothingFoundInFolder')}</Typography>
+                    </Box>
+                )}
             />
             <Box className={classes.childFolders}>
                 {data.children.map((childFolder) => (

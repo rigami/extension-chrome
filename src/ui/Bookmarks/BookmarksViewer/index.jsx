@@ -60,7 +60,8 @@ function BookmarksViewer(props) {
     });
 
     useEffect(() => {
-        store.loadState = FETCH.PENDING;
+        console.log(`[BookmarksViewer] existMatches: ${store.existMatches}`)
+        if (!store.existMatches) store.loadState = FETCH.PENDING;
         store.requestId += 1;
         const currentRequestId = store.requestId;
         // let isDoneRequest = false;
