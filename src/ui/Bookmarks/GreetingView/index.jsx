@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
     Box, Card, Divider, Typography,
 } from '@material-ui/core';
@@ -31,14 +31,24 @@ const useStyles = makeStyles((theme) => ({
 
 function GreetingView() {
     const classes = useStyles();
-    const { t } = useTranslation();
+
+    console.log('[GreetingView]', [
+        (<Greeting />),
+        (<Widgets />),
+    ].filter((isExist) => isExist))
 
     return (
         <Box className={classes.root}>
             <Card elevation={0} className={classes.card}>
-                <Greeting />
-                <Divider className={classes.divider} />
-                <Widgets />
+                {[
+                    (<Greeting />),
+                    (<Widgets />),
+                ].filter((isExist) => isExist).map((child, index) => (
+                    <Fragment>
+                        {index !== 0 && (<Divider className={classes.divider} />)}
+                        {child}
+                    </Fragment>
+                ))}
             </Card>
         </Box>
     );

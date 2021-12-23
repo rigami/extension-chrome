@@ -191,7 +191,7 @@ function Greeting(props) {
     }, [ready]);
 
     if (!ready || (coreService.storage.persistent.data.userName === null && !store.enabled) || !store.greeting) {
-        return (<Box className={clsx(classes.greetingContainer, externalClassName)} />);
+        return null;
     }
 
     const { userName } = coreService.storage.persistent.data;
@@ -220,7 +220,7 @@ function Greeting(props) {
                         show={!store.userName?.trim()}
                         message={t('cancelInfo')}
                         description={t('cancelInfo', { context: 'description' })}
-                        actions={[
+                        toolbarActions={[
                             <Button
                                 key="cancel"
                                 onClick={() => {
@@ -274,7 +274,6 @@ function Greeting(props) {
 const ObserverGreeting = observer(Greeting);
 
 function GreetingContainer({ className: externalClassName, ...props }) {
-    const classes = useStyles();
     const coreService = useCoreService();
     const [state, setState] = useState(coreService.storage.persistent.state);
 
@@ -282,9 +281,7 @@ function GreetingContainer({ className: externalClassName, ...props }) {
         setState(coreService.storage.persistent.state);
     }, [coreService.storage.persistent.state]);
 
-    if (state !== SERVICE_STATE.DONE) {
-        return (<Box className={clsx(classes.greetingContainer, externalClassName)} />);
-    }
+    if (state !== SERVICE_STATE.DONE) return null;
 
     return (<ObserverGreeting {...props} className={externalClassName} />);
 }
