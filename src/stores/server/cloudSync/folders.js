@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { map } from 'lodash';
 import db from '@/utils/db';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import { NULL_UUID } from '@/utils/generate/uuid';
+import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 import { DESTINATION } from '@/enum';
 
 class CloudSyncFoldersService {
@@ -185,7 +185,7 @@ class CloudSyncFoldersService {
             const pairParent = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.payload.parentId); // TODO Maybe many results
 
             await FoldersUniversalService.save({
-                id: pair.localId,
+                id: pair?.localId || FIRST_UUID,
                 parentId: pairParent?.localId || NULL_UUID,
                 name: snapshot.payload.name,
                 createTimestamp: new Date(snapshot.createDate).valueOf(),
@@ -193,9 +193,9 @@ class CloudSyncFoldersService {
             }, false);
 
             await db().put('pair_with_cloud', {
-                entityType_localId: `folder_${pair.localId}`,
+                entityType_localId: `folder_${pair?.localId || FIRST_UUID}`,
                 entityType: 'folder',
-                localId: pair.localId,
+                localId: pair?.localId || FIRST_UUID,
                 cloudId: snapshot.id,
                 isPair: +true,
                 isSync: +true,
