@@ -5,7 +5,7 @@ module.exports = () => {
         'manifest_version': 3,
         'name': '__MSG_appNameFull__',
         'description': '__MSG_appDescFull__',
-        'short_name': 'Rigami',
+        'short_name': 'Rigami (beta)',
         'default_locale': 'en',
         'version': `1.9.9.${packageJson.version}`,
         'version_name': `2.0.0-beta.${packageJson.version}`,
