@@ -1,6 +1,6 @@
 {
     "name": "rigami",
-    "version": "1.0.72",
+    "version": "2.0.0-beta.1",
     "description": "rigami",
     "main": "index.js",
     "scripts": {
@@ -14,9 +14,10 @@
         "prepare": "husky install",
         "react-devtools": "react-devtools",
         "bump": "yarn bump:patch",
-        "bump:patch": "yarn version --patch --no-commit --no-git-tag-version && git add ./package.json",
-        "bump:minor": "yarn version --minor --no-commit --no-git-tag-version && git add ./package.json",
-        "bump:major": "yarn version --major --no-commit --no-git-tag-version && git add ./package.json",
+        "bump:patch": "yarn version patch && git add ./package.json",
+        "bump:minor": "yarn version minor && git add ./package.json",
+        "bump:major": "yarn version major && git add ./package.json",
+        "bump:premajor": "yarn version prerelease && git add ./package.json",
         "dev-full": "yarn dev",
         "dev-full-inst2": "BUILD_PATH=build-2 yarn dev",
         "dev-full:prod-env": "PRODUCTION_ENV=true yarn dev",
