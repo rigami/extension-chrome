@@ -1,6 +1,6 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, Fragment, useState } from 'react';
 import { Box, CircularProgress } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,60 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
     },
     topOffset: { marginTop: theme.spacing(6) },
+    fakeColumn: { marginLeft: theme.spacing(2) },
+    fakeCard: {
+        backgroundColor: theme.palette.background.default,
+        borderRadius: theme.shape.borderRadius,
+        marginBottom: theme.spacing(2),
+    },
+    skeleton: {
+        transition: theme.transitions.create(['opacity'], {
+            duration: theme.transitions.duration.enteringScreen,
+            easing: theme.transitions.easing.easeInOut,
+        }),
+        opacity: 1,
+    },
+    hideSkeleton: { opacity: 0 },
 }));
+
+function Skeleton() {
+    const theme = useTheme();
+    const classes = useStyles();
+    const [hide, setHide] = useState(true);
+
+    useEffect(() => {
+        setTimeout(() => setHide(false), 10);
+    }, []);
+
+    return (
+        <Box display="flex" className={clsx(classes.skeleton, hide && classes.hideSkeleton)}>
+            <Box
+                width={theme.shape.dataCard.width}
+                height={theme.shape.dataCard.height * 3 + theme.spacing(2) * 2}
+                className={classes.fakeCard}
+            />
+            <Box className={classes.fakeColumn}>
+                <Box
+                    width={theme.shape.dataCard.width}
+                    height={theme.shape.dataCard.height}
+                    className={classes.fakeCard}
+                />
+                <Box
+                    width={theme.shape.dataCard.width}
+                    height={theme.shape.dataCard.height * 2 + theme.spacing(2)}
+                    className={classes.fakeCard}
+                />
+            </Box>
+            <Box className={classes.fakeColumn}>
+                <Box
+                    width={theme.shape.dataCard.width}
+                    height={theme.shape.dataCard.height * 2 + theme.spacing(2)}
+                    className={classes.fakeCard}
+                />
+            </Box>
+        </Box>
+    );
+}
 
 function BookmarksViewer(props) {
     const {
@@ -90,11 +143,11 @@ function BookmarksViewer(props) {
                     folderId,
                 });
 
-                store.bestBookmarks = result.best && sortByFavorites(result.best);
-                store.partBookmarks = result.part && sortByFavorites(result.part);
-                store.indirectlyBookmarks = result.indirectly && sortByFavorites(result.indirectly);
-                store.allBookmarks = result.all && sortByFavorites(result.all);
-                store.existMatches = ((result.best?.length || 0) + result.all.length) !== 0;
+                store.bestBookmarks = (result.best && sortByFavorites(result.best)) || [];
+                store.partBookmarks = (result.part && sortByFavorites(result.part)) || [];
+                store.indirectlyBookmarks = (result.indirectly && sortByFavorites(result.indirectly)) || [];
+                store.allBookmarks = (result.all && sortByFavorites(result.all)) || [];
+                store.existMatches = (result.best.length + result.all.length) !== 0;
                 store.usedFields = { ...searchService.searchRequest.usedFields };
                 store.loadState = FETCH.DONE;
 
@@ -103,50 +156,68 @@ function BookmarksViewer(props) {
     }, [searchService.searchRequestId, folderId, bookmarksService.lastTruthSearchTimestamp]);
 
     return stateRender(
-        store.loadState,
+        /* FETCH.PENDING, */ store.loadState,
         [
             store.existMatches && (
                 <Box key="exist-matches" className={clsx(classes.root, externalClassName)} style={externalStyle}>
                     {(store.usedFields.query || store.usedFields.tags) && (
                         <Fragment>
-                            <Header title={t('search.bestMatches')} />
-                            {store.bestBookmarks && store.bestBookmarks.length !== 0 ? (
-                                <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
-                                    <BookmarksGrid
-                                        bookmarks={store.bestBookmarks}
-                                        columns={columns}
-                                    />
-                                </Box>
+                            {store.bestBookmarks.length !== 0 ? (
+                                <Fragment>
+                                    <Header title={t('search.bestMatches')} />
+                                    <Box display="flex">
+                                        <BookmarksGrid
+                                            bookmarks={store.bestBookmarks}
+                                            columns={columns}
+                                        />
+                                    </Box>
+                                </Fragment>
                             ) : (
-                                <Header subtitle={t('search.nothingFound')} />
+                                <Header title={t('search.nothingFoundBestMatches')} />
                             )}
-                            <Header className={classes.topOffset} title={t('search.allMatches')} />
-                            <Header subtitle={t('search.partMatches')} />
-                            {store.partBookmarks && store.partBookmarks.length !== 0 ? (
-                                <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
-                                    <BookmarksGrid
-                                        bookmarks={store.partBookmarks}
-                                        columns={columns}
-                                    />
-                                </Box>
-                            ) : (
-                                <Header subtitle={t('search.nothingFound')} />
+                            {(store.partBookmarks.length !== 0 || store.indirectlyBookmarks !== 0) && (
+                                <Fragment>
+                                    {store.bestBookmarks.length !== 0 && (
+                                        <Header className={classes.topOffset} title={t('search.otherMatches')} />
+                                    )}
+                                    {store.bestBookmarks.length === 0 && (
+                                        <Header className={classes.topOffset} title={t('search.otherMatchesOnly')} />
+                                    )}
+                                    {store.partBookmarks.length !== 0 ? (
+                                        <Fragment>
+                                            <Header subtitle={t('search.partMatches')} />
+                                            <Box display="flex">
+                                                <BookmarksGrid
+                                                    bookmarks={store.partBookmarks}
+                                                    columns={columns}
+                                                />
+                                            </Box>
+                                        </Fragment>
+                                    ) : (
+                                        <Header subtitle={t('search.nothingFoundPartMatches')} />
+                                    )}
+                                    {store.indirectlyBookmarks.length !== 0 ? (
+                                        <Fragment>
+                                            <Header subtitle={t('search.indirectlyMatches')} />
+                                            <Box display="flex">
+                                                <BookmarksGrid
+                                                    bookmarks={store.indirectlyBookmarks}
+                                                    columns={columns}
+                                                />
+                                            </Box>
+                                        </Fragment>
+                                    ) : (
+                                        <Header subtitle={t('search.nothingFoundIndirectlyMatches')} />
+                                    )}
+                                </Fragment>
                             )}
-                            <Header subtitle={t('search.indirectlyMatches')} />
-                            {store.indirectlyBookmarks && store.indirectlyBookmarks.length !== 0 ? (
-                                <Box display="flex" className={clsx(classes.bookmarks, classes.bottomOffset)}>
-                                    <BookmarksGrid
-                                        bookmarks={store.indirectlyBookmarks}
-                                        columns={columns}
-                                    />
-                                </Box>
-                            ) : (
-                                <Header subtitle={t('search.nothingFound')} />
+                            {(store.partBookmarks.length === 0 && store.indirectlyBookmarks === 0) && (
+                                <Header className={classes.topOffset} title={t('search.nothingFoundOtherMatches')} />
                             )}
                         </Fragment>
                     )}
                     {(!store.usedFields.query && !store.usedFields.tags) && (
-                        <Box display="flex" className={clsx(classes.bookmarks)}>
+                        <Box display="flex">
                             <BookmarksGrid
                                 bookmarks={store.allBookmarks}
                                 columns={columns}
@@ -165,9 +236,7 @@ function BookmarksViewer(props) {
             && emptyRender
             && emptyRender(),
         ],
-        <Stub>
-            <CircularProgress />
-        </Stub>,
+        (<Skeleton />),
     );
 }
 
