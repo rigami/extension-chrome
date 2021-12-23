@@ -97,12 +97,12 @@ function ButtonWithPopper(props) {
                 }}
                 anchorEl={anchorEl.current}
                 anchorOrigin={{
-                    vertical: 'top',
+                    vertical: 'bottom',
                     horizontal: 'center',
                 }}
                 transformOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
+                    vertical: 'top',
+                    horizontal: 'left',
                 }}
             >
                 {children}
@@ -118,8 +118,8 @@ function ButtonWithPopper(props) {
                             externalClassName,
                             externalClasses.backdrop,
                             classes.transition,
-                            store.isOpen && offsetToTop && classes.offsetButtonTop,
-                            store.isOpen && !offsetToTop && classes.offsetButtonBottom,
+                            // store.isOpen && offsetToTop && classes.offsetButtonTop,
+                            // store.isOpen && !offsetToTop && classes.offsetButtonBottom,
                             store.isOpen && classes.activeIconButton,
                         )}
                         id={id}

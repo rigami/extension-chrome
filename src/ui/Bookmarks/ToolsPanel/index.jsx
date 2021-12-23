@@ -16,7 +16,7 @@ import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        backgroundColor: alpha(theme.palette.background.paper, 0.91),
+        backgroundColor: alpha(theme.palette.background.paper, 0.8),
         backdropFilter: `blur(${theme.spacing(2)}px)`,
     },
     toolbar: {

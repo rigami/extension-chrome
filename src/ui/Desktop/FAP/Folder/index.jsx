@@ -8,8 +8,8 @@ import Explorer from './Explorer';
 
 const useStyles = makeStyles(() => ({
     root: {
-        display: 'flex',
-        height: 620,
+        // display: 'flex',
+        // height: 620,
         maxHeight: 'inherit',
     },
     dense: {
