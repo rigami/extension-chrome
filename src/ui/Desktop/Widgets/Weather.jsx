@@ -4,11 +4,13 @@ import {
     Tooltip,
     Fade,
     CircularProgress,
+    Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import useAppStateService from '@/stores/app/AppStateProvider';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
+import { capitalize } from 'lodash';
+import useAppStateService from '@/stores/app/AppStateProvider';
 import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 
@@ -25,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
         right: -20,
         color: theme.palette.common.white,
     },
+    description: { marginLeft: theme.spacing(1) },
 }));
 
 function WeatherWidget() {
@@ -40,13 +43,13 @@ function WeatherWidget() {
     let temp;
 
     if (widgets.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.FAHRENHEIT) {
-        units = '°F';
+        units = '°';
         temp = ((widgets.weather?.currTemp || 0) - 273.15) * (9 / 5) + 32;
     } else if (widgets.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.KELVIN) {
         units = 'К';
         temp = widgets.weather?.currTemp || 0;
     } else {
-        units = '°C';
+        units = '°';
         temp = (widgets.weather?.currTemp || 0) - 273.15;
     }
 
@@ -69,6 +72,9 @@ function WeatherWidget() {
                                 ? `${Math.round(temp)} ${units}`
                                 : t('widget.weather.error.unavailable')
                         }
+                        {widgets.weather?.currTempDescription && (
+                            <span className={classes.description}>{capitalize(widgets.weather?.currTempDescription)}</span>
+                        )}
                     </Link>
                 </span>
             </Tooltip>

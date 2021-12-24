@@ -2,15 +2,15 @@ import React, { useCallback } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
+import clsx from 'clsx';
+import { useResizeDetector } from 'react-resize-detector';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import {
     ACTIVITY,
     BKMS_FAP_POSITION,
 } from '@/enum';
-import clsx from 'clsx';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
-import { useResizeDetector } from 'react-resize-detector';
 import useAppService from '@/stores/app/AppStateProvider';
 import useBaseStateService from '@/stores/app/BaseStateProvider';
 import Time from './Time';
@@ -65,15 +65,16 @@ const useStyles = makeStyles((theme) => ({
     text: {
         textShadow: '0 2px 17px #00000029',
         fontFamily: theme.typography.primaryFontFamily,
-        fontWeight: 800,
+        fontWeight: 700,
         pointerEvents: 'all',
     },
+    weather: { marginTop: '4%' },
     'time-smaller': {
         fontSize: '2rem',
         lineHeight: '90%',
     },
     'time-small': {
-        fontSize: '3.9rem',
+        fontSize: '4rem',
         lineHeight: '90%',
     },
     'time-middle': {
@@ -93,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
         lineHeight: '100%',
     },
     'date-small': {
-        fontSize: '2.7rem',
+        fontSize: '3rem',
         lineHeight: '100%',
     },
     'date-middle': {
@@ -106,6 +107,26 @@ const useStyles = makeStyles((theme) => ({
     },
     'date-bigger': {
         fontSize: '7rem',
+        lineHeight: '100%',
+    },
+    'weather-smaller': {
+        fontSize: '1.2rem',
+        lineHeight: '100%',
+    },
+    'weather-small': {
+        fontSize: '1.5rem',
+        lineHeight: '100%',
+    },
+    'weather-middle': {
+        fontSize: '2rem',
+        lineHeight: '100%',
+    },
+    'weather-big': {
+        fontSize: '3rem',
+        lineHeight: '100%',
+    },
+    'weather-bigger': {
+        fontSize: '4rem',
         lineHeight: '100%',
     },
 }));
@@ -174,7 +195,7 @@ function Widgets({ stickToBottom }) {
                         <Time />
                     </Typography>
                 )}
-                {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) && (
+                {widgets.settings.dtwUseDate && (
                     <Typography
                         className={clsx(
                             classes.row,
@@ -182,12 +203,19 @@ function Widgets({ stickToBottom }) {
                             classes[`date-${widgets.settings.dtwSize.toLowerCase()}`],
                         )}
                     >
-                        {widgets.settings.dtwUseDate && (
-                            <Date dot={widgets.showWeather} />
+                        <Date dot={widgets.showWeather} />
+                    </Typography>
+                )}
+                {widgets.settings.dtwUseWeather && (
+                    <Typography
+                        className={clsx(
+                            classes.row,
+                            classes.text,
+                            classes.weather,
+                            classes[`weather-${widgets.settings.dtwSize.toLowerCase()}`],
                         )}
-                        {widgets.settings.dtwUseWeather && (
-                            <WeatherWidget />
-                        )}
+                    >
+                        <WeatherWidget />
                     </Typography>
                 )}
             </Box>
