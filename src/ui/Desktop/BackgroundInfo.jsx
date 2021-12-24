@@ -4,14 +4,15 @@ import {
     CardHeader,
     Avatar,
     Link,
+    Box,
 } from '@material-ui/core';
 import { OpenInNewRounded as OpenSourceIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
 import { BG_SOURCE, BKMS_FAP_POSITION } from '@/enum';
-import clsx from 'clsx';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
         bottom: theme.spacing(2),
         right: theme.spacing(2),
     },
-    avatar: { alignSelf: 'flex-start' },
+    avatar: { alignSelf: 'flex-end' },
     title: { fontWeight: 500 },
     subheader: {
         wordBreak: 'break-word',
@@ -59,18 +60,28 @@ const useStyles = makeStyles((theme) => ({
     },
     header: { padding: 0 },
     openSource: {
-        display: 'flex',
+        display: 'inline-block',
         alignItems: 'center',
-        marginBottom: theme.spacing(1),
+        // marginBottom: theme.spacing(1),
         fontWeight: 700,
         color: theme.palette.common.white,
         '& svg': {
             width: theme.spacing(2),
             height: theme.spacing(2),
             marginLeft: theme.spacing(1),
+            verticalAlign: 'middle',
         },
     },
     link: { fontWeight: 700 },
+    dot: {
+        width: theme.spacing(0.5),
+        height: theme.spacing(0.5),
+        borderRadius: '50%',
+        backgroundColor: theme.palette.common.white,
+        display: 'inline-block',
+        verticalAlign: 'middle',
+        margin: theme.spacing(0, 0.75),
+    },
 }));
 
 function BackgroundInfo(props) {
@@ -128,7 +139,11 @@ function BackgroundInfo(props) {
                     )}
                     title={(
                         <Fragment>
-                            {`${t(`type.${type}`)} `}
+                            <span>{description}</span>
+                        </Fragment>
+                    )}
+                    subheader={(
+                        <Fragment>
                             <Link
                                 color="inherit"
                                 underline="hover"
@@ -138,7 +153,7 @@ function BackgroundInfo(props) {
                             >
                                 {authorName}
                             </Link>
-                            {` ${t('common:from')} `}
+                            <Box className={classes.dot} />
                             <Link
                                 color="inherit"
                                 underline="hover"
@@ -148,10 +163,7 @@ function BackgroundInfo(props) {
                             >
                                 {serviceName}
                             </Link>
-                        </Fragment>
-                    )}
-                    subheader={(
-                        <Fragment>
+                            <Box className={classes.dot} />
                             <Link
                                 color="inherit"
                                 underline="hover"
@@ -162,7 +174,6 @@ function BackgroundInfo(props) {
                                 {t('button.openSource')}
                                 <OpenSourceIcon />
                             </Link>
-                            <span>{description}</span>
                         </Fragment>
                     )}
                 />
