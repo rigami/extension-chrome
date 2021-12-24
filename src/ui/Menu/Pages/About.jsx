@@ -83,8 +83,8 @@ function About() {
                 <LogoIcon className={classes.appLogoIcon} />
                 <LogoText className={classes.appLogoText} />
                 <Typography className={classes.appVersion} variant="body2">
-                    {BUILD === 'full' && `v${appVariables.version || '-'} (BETA)`}
-                    {BUILD === 'wallpapers' && `v${appVariables.version || '-'} (${t('onlyWallpapers')}) (BETA)`}
+                    {BUILD === 'full' && `v${chrome?.runtime.getManifest().version_name || '-'}`}
+                    {BUILD === 'wallpapers' && `v${chrome?.runtime.getManifest().version_name || '-'} (${t('onlyWallpapers')})`}
                 </Typography>
             </Box>
             <Divider />
