@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         maxWidth: '100%',
+        minWidth: 'unset',
     },
     breadcrumbsRoot: { width: '100%' },
     ol: {
@@ -47,11 +48,16 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'row',
         width: 'inherit',
+        flexWrap: 'nowrap',
     },
     li: {
         overflow: 'auto',
         width: 'auto',
         flexShrink: 1,
+    },
+    separator: {
+        marginLeft: theme.spacing(0.25),
+        marginRight: theme.spacing(0.25),
     },
     label: {
         textOverflow: 'ellipsis',
@@ -103,6 +109,7 @@ function FolderBreadcrumbs(props) {
                     root: classes.breadcrumbsRoot,
                     ol: classes.ol,
                     li: classes.li,
+                    separator: classes.separator,
                 }}
             >
                 {store.path && store.path.map((folder, index) => (index === store.path.length - 1 ? (
