@@ -17,7 +17,6 @@ import {
     ThumbUpOutlined as LikeIcon,
     ThumbDownOutlined as DislikeIcon,
 } from '@material-ui/icons';
-import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import {
     Box,
     CircularProgress,
@@ -25,8 +24,10 @@ import {
     Grow,
     Divider,
 } from '@material-ui/core';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
+import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import {
     ACTIVITY,
@@ -39,7 +40,6 @@ import {
 import useAppService from '@/stores/app/AppStateProvider';
 import { ContextMenuItem, ContextMenuDivider } from '@/stores/app/entities/contextMenu';
 import FAP from '@/ui/Desktop/FAP';
-import clsx from 'clsx';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         zIndex: 100,
         top: theme.spacing(2),
-        right: theme.spacing(2) * 2 + 40,
+        right: theme.spacing(2) * 2 + 36,
     },
     desktopBackdrop: {
         backgroundColor: theme.palette.common.black,
@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
         display: 'grid',
         gridAutoFlow: 'column',
-        gridGap: theme.spacing(2),
+        gridGap: theme.spacing(1),
         position: 'absolute',
         top: theme.spacing(2),
         right: theme.spacing(2),
@@ -119,7 +119,7 @@ const useStyles = makeStyles((theme) => ({
     },
     toolStub: {
         visibility: 'hidden',
-        width: 40,
+        width: 36,
     },
     group: { flexDirection: 'row' },
     button: { pointerEvents: 'auto' },
@@ -272,7 +272,7 @@ function Desktop() {
                         </ExtendButtonGroup>
                     </Grow>
                     {appService.activity === ACTIVITY.FAVORITES && (
-                        <ExtendButtonGroup className={classes.button}>
+                        <ExtendButtonGroup variant="blurBackdrop" className={classes.button}>
                             <ExtendButton
                                 tooltip={t('common:button.close')}
                                 data-ui-path="button.favorites-close"
@@ -300,7 +300,8 @@ function Desktop() {
                                 && (bgShowMode || saveBgLocal || nextBg)
                                 && classes.button,
                                 )}
-                                style={{ minHeight: 40 }}
+                                variant="blurBackdrop"
+                                style={{ minHeight: 36 }}
                             >
                                 {bgShowMode && (
                                     <React.Fragment>
@@ -415,7 +416,7 @@ function Desktop() {
                                 distanceMax={750}
                                 distanceMin={300}
                             >
-                                <ExtendButtonGroup className={classes.button}>
+                                <ExtendButtonGroup variant="blurBackdrop" className={classes.button}>
                                     <ExtendButton
                                         tooltip={t('bookmark:button.open')}
                                         data-ui-path="bookmark.open"

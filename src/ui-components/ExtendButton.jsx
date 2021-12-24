@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     },
     blurBackdrop: {
         backdropFilter: 'blur(10px) brightness(200%)',
-        backgroundColor: alpha(theme.palette.background.backdrop, 0.52),
+        backgroundColor: alpha(theme.palette.background.paper, 0.52),
     },
     default: {},
     outline: { boxShadow: `inset 0px 0px 0px 1px ${theme.palette.divider}` },

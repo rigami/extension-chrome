@@ -40,7 +40,7 @@ function FabMenu() {
                 distanceMax={750}
                 distanceMin={300}
             >
-                <ExtendButtonGroup className={clsx(classes.group, classes.button)}>
+                <ExtendButtonGroup variant="blurBackdrop" className={clsx(classes.group, classes.button)}>
                     <ExtendButton
                         tooltip={t('settings:title')}
                         data-ui-path="settings.open"
