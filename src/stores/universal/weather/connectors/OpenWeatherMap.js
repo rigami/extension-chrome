@@ -26,6 +26,7 @@ class OpenWeatherMap extends BaseWeatherConnector {
         return new Weather({
             location,
             currTemp: weather.main.temp,
+            currTempDescription: weather.weather[0].description,
             lastUpdateStatus: FETCH.DONE,
             lastUpdateTimestamp: Date.now(),
             status: FETCH.ONLINE,

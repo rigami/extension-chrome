@@ -1,20 +1,20 @@
 class Weather {
     location;
     currTemp;
+    currTempDescription;
     dashboardUrl;
     lastUpdateStatus;
     lastUpdateTimestamp;
     status;
 
-    constructor({
-        location, currTemp, lastUpdateStatus, lastUpdateTimestamp, status, dashboardUrl,
-    }) {
-        this.location = location;
-        this.currTemp = currTemp;
-        this.dashboardUrl = dashboardUrl;
-        this.lastUpdateStatus = lastUpdateStatus;
-        this.lastUpdateTimestamp = lastUpdateTimestamp;
-        this.status = status;
+    constructor(props = {}) {
+        this.location = props.location;
+        this.currTemp = props.currTemp;
+        this.currTempDescription = props.currTempDescription;
+        this.dashboardUrl = props.dashboardUrl;
+        this.lastUpdateStatus = props.lastUpdateStatus;
+        this.lastUpdateTimestamp = props.lastUpdateTimestamp;
+        this.status = props.status;
     }
 }
 
