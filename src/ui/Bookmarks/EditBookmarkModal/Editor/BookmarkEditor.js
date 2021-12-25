@@ -64,7 +64,8 @@ class BookmarkEditor {
                     this.tags = bookmark.tags || [];
                     this.tagsFull = [];
                     this.defaultImage = {
-                        url: bookmark.sourceIcoUrl,
+                        url: bookmark.icoUrl,
+                        sourceUrl: bookmark.sourceIcoUrl,
                         icoVariant: bookmark.icoVariant,
                     };
                     this.fetchSiteInfo({
@@ -118,6 +119,7 @@ class BookmarkEditor {
             url: this.url,
             name: this.name.trim(),
             description: (this.useDescription && this.description?.trim()) || '',
+            icoUrl: this.icoUrl,
             sourceIcoUrl: this.sourceIcoUrl,
             tags: this.tags,
             folderId: this.folderId,
@@ -144,6 +146,7 @@ class BookmarkEditor {
 
         if (!onlyAdditionalIcons) {
             this.url = currentFetchUrl;
+            this.icoUrl = null;
             this.sourceIcoUrl = null;
             this.defaultImage = null;
         }
@@ -180,6 +183,7 @@ class BookmarkEditor {
             if (this.url !== currentFetchUrl) return;
             console.error('Failed getSiteInfo', e);
             if (!onlyAdditionalIcons) {
+                this.icoUrl = '';
                 this.sourceIcoUrl = '';
                 this.icoVariant = BKMS_VARIANT.SYMBOL;
             }
@@ -204,12 +208,14 @@ class BookmarkEditor {
         }
     }
 
-    setPreview({ url, icoVariant }) {
+    setPreview({ url, sourceUrl, icoVariant }) {
         console.log('setPreview:', {
             url,
+            sourceUrl,
             icoVariant,
         });
-        this.sourceIcoUrl = url;
+        this.icoUrl = url;
+        this.sourceIcoUrl = sourceUrl;
         this.icoVariant = icoVariant;
     }
 

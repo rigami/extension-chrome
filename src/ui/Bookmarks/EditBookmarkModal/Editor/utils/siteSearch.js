@@ -34,7 +34,7 @@ const getImage = async (icoUrl) => {
         score: +raw.headers.get('image-score'),
         type: raw.headers.get('image-type'),
         icoVariant: raw.headers.get('image-type').toUpperCase(),
-        baseUrl: raw.headers.get('image-base-url'),
+        sourceUrl: raw.headers.get('image-base-url'),
     };
 };
 

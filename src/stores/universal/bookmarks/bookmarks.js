@@ -11,6 +11,7 @@ import { BG_TYPE } from '@/enum';
 import { uuid } from '@/utils/generate/uuid';
 import nowInISO from '@/utils/nowInISO';
 import { SearchQuery } from './searchQuery';
+import api from '@/utils/helpers/api';
 
 class BookmarksUniversalService {
     @action('get bookmark')
@@ -61,9 +62,7 @@ class BookmarksUniversalService {
         let saveIcoUrl;
 
         if (sourceIcoUrl) {
-            saveIcoUrl = `${appVariables.rest.url}/background/get-site-icon?ico-url=${encodeURIComponent(sourceIcoUrl)}`;
-        } else if (imageBase64) {
-            saveIcoUrl = `${appVariables.rest.url}/background/get-site-icon?site-url=${url}`;
+            saveIcoUrl = api.computeUrl(`site-parse/processing-image?url=${encodeURIComponent(sourceIcoUrl)}`);
         }
 
         if (id) {
@@ -72,6 +71,7 @@ class BookmarksUniversalService {
                 id,
                 ...saveData,
                 icoUrl: saveIcoUrl,
+                sourceIcoUrl,
                 createTimestamp: oldBookmark?.createTimestamp || Date.now(),
                 modifiedTimestamp: Date.now(),
             });
@@ -93,6 +93,7 @@ class BookmarksUniversalService {
                     ...saveData,
                     id: uuid(),
                     icoUrl: saveIcoUrl,
+                    sourceIcoUrl,
                     createTimestamp: Date.now(),
                     modifiedTimestamp: Date.now(),
                 }));

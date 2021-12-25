@@ -50,7 +50,7 @@ class CloudSyncBookmarksService {
                 description: bookmark.description,
                 variant: bookmark.icoVariant?.toLowerCase() || 'symbol',
                 url: bookmark.url,
-                imageUrl: bookmark.icoUrl || '',
+                imageUrl: bookmark.sourceIcoUrl || '',
             };
 
             if (bookmark.folderId === NULL_UUID || folder?.isPair) {
@@ -114,7 +114,7 @@ class CloudSyncBookmarksService {
                     id: pair.localId,
                     icoVariant: snapshot.payload.variant.toUpperCase(),
                     url: snapshot.payload.url,
-                    icoUrl: snapshot.payload.imageUrl || '',
+                    sourceIcoUrl: snapshot.payload.imageUrl || '',
                     name: snapshot.payload.title,
                     description: snapshot.payload.description,
                     tags: tagPairs.map(({ localId }) => localId),
@@ -138,7 +138,7 @@ class CloudSyncBookmarksService {
                     id: pair?.id,
                     icoVariant: snapshot.payload.variant.toUpperCase(),
                     url: snapshot.payload.url,
-                    icoUrl: snapshot.payload.imageUrl || '',
+                    sourceIcoUrl: snapshot.payload.imageUrl || '',
                     name: snapshot.payload.title,
                     description: snapshot.payload.description,
                     tags: tagPairs.map(({ localId }) => localId),
@@ -175,7 +175,7 @@ class CloudSyncBookmarksService {
                 id: pair.localId,
                 icoVariant: snapshot.payload.variant.toUpperCase(),
                 url: snapshot.payload.url,
-                icoUrl: snapshot.payload.imageUrl || '',
+                sourceIcoUrl: snapshot.payload.imageUrl || '',
                 name: snapshot.payload.title,
                 description: snapshot.payload.description,
                 tags: tagPairs.map(({ localId }) => localId),
