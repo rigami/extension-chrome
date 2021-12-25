@@ -205,6 +205,8 @@ class CloudSyncBookmarksService {
         await Promise.all(snapshots.map(async (snapshot) => {
             const pair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.id); // TODO Maybe many results
 
+            if (!pair) return;
+
             await BookmarksUniversalService.remove(pair.localId, false);
             await db().delete('pair_with_cloud', `bookmark_${pair.localId}`);
         }));
