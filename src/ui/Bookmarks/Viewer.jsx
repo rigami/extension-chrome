@@ -61,6 +61,7 @@ function Bookmarks() {
     const coreService = useCoreService();
     const searchService = useSearchService();
     const store = useLocalObservable(() => ({
+        width: 0,
         columnsCount: 0,
         maxColumnsCount: 0,
     }));
@@ -80,11 +81,14 @@ function Bookmarks() {
         }),
     ]);
     const onResize = useCallback((width) => {
+        store.width = width;
         store.maxColumnsCount = Math.floor((width - 48 - 32 + 16) / (theme.shape.dataCard.width + 16));
         console.log('width:', width - 32 - 48 + 16, (width - 48 - 32 + 16) / (theme.shape.dataCard.width + 16));
         store.columnsCount = Math.max(
             Math.min(
-                store.maxColumnsCount >= 4 ? store.maxColumnsCount - 2 : store.maxColumnsCount,
+                store.maxColumnsCount >= 4 && searchService.selectFolderId === NULL_UUID
+                    ? store.maxColumnsCount - 2
+                    : store.maxColumnsCount,
                 4,
             ),
             1,
@@ -103,6 +107,10 @@ function Bookmarks() {
         return () => coreService.globalEventBus.removeListener(listenId);
     }, []);
 
+    useEffect(() => {
+        if (store.width) onResize(store.width);
+    }, [searchService.selectFolderId]);
+
     return (
         <Box
             className={classes.root}
@@ -117,11 +125,9 @@ function Bookmarks() {
                     <Box className={classes.container}>
                         <Box className={classes.content}>
                             <PrimaryContent columns={store.columnsCount} />
-                            {store.maxColumnsCount < 4 && (
+                            {store.maxColumnsCount < 4 && searchService.selectFolderId === NULL_UUID && (
                                 <Box className={classes.inlineWidgets}>
-                                    {searchService.selectFolderId === NULL_UUID && (
-                                        <GreetingView />
-                                    )}
+                                    <GreetingView />
                                 </Box>
                             )}
                             {
@@ -132,11 +138,9 @@ function Bookmarks() {
                                 )
                             }
                         </Box>
-                        {store.maxColumnsCount >= 4 && (
+                        {store.maxColumnsCount >= 4 && searchService.selectFolderId === NULL_UUID && (
                             <Box className={classes.sideBar}>
-                                {searchService.selectFolderId === NULL_UUID && (
-                                    <GreetingView />
-                                )}
+                                <GreetingView />
                             </Box>
                         )}
                     </Box>
