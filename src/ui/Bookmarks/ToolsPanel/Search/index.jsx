@@ -125,7 +125,7 @@ function Search() {
             <Box
                 ref={rootRef}
                 className={classes.root}
-                style={{ width: columnsCount * (theme.shape.dataCard.width + theme.spacing(2)) + theme.spacing(2) }}
+                style={{ width: columnsCount * (theme.shape.dataCard.width + theme.spacing(2)) + theme.spacing(2) + 2 }}
             >
                 {(usedFields.query || usedFields.tags) && (
                     <Box className={classes.resetIconWrapper}>
