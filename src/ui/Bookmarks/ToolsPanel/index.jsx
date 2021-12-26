@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
         justifyContent: 'center',
         maxWidth: (theme.shape.dataCard.width + theme.spacing(2)) * 3 + theme.spacing(2),
-        width: '100%',
+        // width: '100%',
         marginTop: 0,
         boxSizing: 'content-box',
     },

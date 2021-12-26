@@ -8,7 +8,7 @@ import {
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { ArrowForward as GoToIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { map, size, omit } from 'lodash';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import stateRender from '@/utils/helpers/stateRender';
@@ -19,14 +19,14 @@ import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 
 const useStyles = makeStyles((theme) => ({
-    root: { width: (theme.shape.dataCard.width + theme.spacing(2)) * 3 + theme.spacing(2) },
     goToButton: {
         textTransform: 'none',
         color: theme.palette.secondary.main,
         fontWeight: 800,
     },
     bookmarksGrid: {
-        padding: theme.spacing(0, 2),
+        margin: theme.spacing(0, 2),
+        marginBottom: theme.spacing(2),
         maxHeight: (theme.shape.dataCard.height + theme.spacing(2)) * 3,
         overflow: 'hidden',
     },
@@ -44,7 +44,8 @@ const useStyles = makeStyles((theme) => ({
     folderBreadcrumbs: { overflow: 'auto' },
 }));
 
-function FastResults({ onGoToFolder }) {
+function FastResults({ columns, onGoToFolder }) {
+    const theme = useTheme();
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const bookmarksService = useBookmarksService();
@@ -87,7 +88,7 @@ function FastResults({ onGoToFolder }) {
     }, [bookmarksService.lastTruthSearchTimestamp, searchService.tempSearchRequest]);
 
     return (
-        <Box className={classes.root}>
+        <Box style={{ width: (theme.shape.dataCard.width + theme.spacing(2)) * columns + theme.spacing(2) }}>
             {stateRender(
                 store.loadState,
                 <Fragment>
@@ -112,7 +113,7 @@ function FastResults({ onGoToFolder }) {
                             </Box>
                             <BookmarksGrid
                                 bookmarks={store.currentFolder}
-                                columns={3}
+                                columns={columns}
                                 maxRows={3}
                                 classes={{ bookmarks: classes.bookmarksGrid }}
                             />
@@ -142,7 +143,7 @@ function FastResults({ onGoToFolder }) {
                             </Box>
                             <BookmarksGrid
                                 bookmarks={bookmarks}
-                                columns={3}
+                                columns={columns}
                                 maxRows={3}
                                 classes={{ bookmarks: classes.bookmarksGrid }}
                             />

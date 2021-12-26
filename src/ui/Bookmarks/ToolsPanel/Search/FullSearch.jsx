@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function FullSearch({ open, onClose }) {
+function FullSearch({ columns, open, onClose }) {
     const classes = useStyles();
     const inputRef = useRef();
     const searchService = useSearchService();
@@ -119,6 +119,7 @@ function FullSearch({ open, onClose }) {
                                 <Divider />
                                 <CustomScroll translateContentSizeYToHolder>
                                     <FastResults
+                                        columns={columns}
                                         onGoToFolder={(folderId, apply) => {
                                             if (!apply) searchService.resetChanges();
                                             searchService.setSelectFolder(folderId, false);
