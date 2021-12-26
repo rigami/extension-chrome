@@ -173,10 +173,6 @@ function SecondaryContent({ columns }) {
         });
     }, [searchService.selectFolderId, bookmarksService.lastTruthSearchTimestamp]);
 
-    if (store.state === FETCH.PENDING) {
-        return 'Загрузка...';
-    }
-
     if (store.state === FETCH.FAILED) {
         return 'Что то пошло не так';
     }
