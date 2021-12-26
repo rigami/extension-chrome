@@ -78,8 +78,8 @@ function BookmarksGrid(props) {
                         key={bookmark.id}
                         className={classes.bookmark}
                         style={{
-                            left: bookmarksGrid[bookmark.id].left,
-                            top: bookmarksGrid[bookmark.id].top,
+                            left: bookmarksGrid[bookmark.id]?.left,
+                            top: bookmarksGrid[bookmark.id]?.top,
                         }}
                     >
                         <CardLink

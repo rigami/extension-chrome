@@ -49,7 +49,9 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         maxWidth: 450,
         marginLeft: 'auto',
+        flexBasis: '100%',
     },
+    inlineWidgets: {},
 }));
 
 function Bookmarks() {
@@ -58,7 +60,10 @@ function Bookmarks() {
     const { t } = useTranslation(['bookmark']);
     const coreService = useCoreService();
     const searchService = useSearchService();
-    const store = useLocalObservable(() => ({ columnsCount: 0 }));
+    const store = useLocalObservable(() => ({
+        columnsCount: 0,
+        maxColumnsCount: 0,
+    }));
     const contextMenu = useContextMenu(() => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
@@ -75,9 +80,14 @@ function Bookmarks() {
         }),
     ]);
     const onResize = useCallback((width) => {
-        store.columnsCount = Math.min(
-            Math.floor((width + 16 - 48) / (theme.shape.dataCard.width + 16)),
-            4,
+        store.maxColumnsCount = Math.floor((width - 48 - 32 + 16) / (theme.shape.dataCard.width + 16));
+        console.log('width:', width - 32 - 48 + 16, (width - 48 - 32 + 16) / (theme.shape.dataCard.width + 16));
+        store.columnsCount = Math.max(
+            Math.min(
+                store.maxColumnsCount >= 4 ? store.maxColumnsCount - 2 : store.maxColumnsCount,
+                4,
+            ),
+            1,
         );
     }, []);
 
@@ -107,6 +117,13 @@ function Bookmarks() {
                     <Box className={classes.container}>
                         <Box className={classes.content}>
                             <PrimaryContent columns={store.columnsCount} />
+                            {store.maxColumnsCount < 4 && (
+                                <Box className={classes.inlineWidgets}>
+                                    {searchService.selectFolderId === NULL_UUID && (
+                                        <GreetingView />
+                                    )}
+                                </Box>
+                            )}
                             {
                                 !searchService.searchRequest.usedFields.query
                                 && !searchService.searchRequest.usedFields.tags
@@ -115,11 +132,13 @@ function Bookmarks() {
                                 )
                             }
                         </Box>
-                        <Box className={classes.sideBar}>
-                            {searchService.selectFolderId === NULL_UUID && (
-                                <GreetingView />
-                            )}
-                        </Box>
+                        {store.maxColumnsCount >= 4 && (
+                            <Box className={classes.sideBar}>
+                                {searchService.selectFolderId === NULL_UUID && (
+                                    <GreetingView />
+                                )}
+                            </Box>
+                        )}
                     </Box>
                 </Scrollbar>
             </Box>

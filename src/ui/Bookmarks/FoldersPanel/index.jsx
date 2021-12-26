@@ -19,7 +19,6 @@ import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 const useStyles = makeStyles((theme) => ({
     root: {
         width: 260,
-        minWidth: 230,
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
@@ -28,6 +27,8 @@ const useStyles = makeStyles((theme) => ({
         // backgroundColor: alpha(theme.palette.background.backdrop, 0.3),
         paddingTop: theme.spacing(1.75),
     },
+    '@media (max-width: 1700px)': { root: { width: 220 } },
+    '@media (max-width: 1024px)': { root: { width: 160 } },
     avatar: {
         display: 'flex',
         marginRight: theme.spacing(1),
