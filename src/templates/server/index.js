@@ -1,10 +1,10 @@
-import BackgroundApp from '@/stores/server';
-import asyncAction from '@/utils/helpers/asyncAction';
-import { uuid } from '@/utils/generate/uuid';
 import {
     setUser,
     captureException,
 } from '@sentry/browser';
+import BackgroundApp from '@/stores/server';
+import asyncAction from '@/utils/helpers/asyncAction';
+import { uuid } from '@/utils/generate/uuid';
 import { StorageConnector } from '@/stores/universal/storage';
 import initSentry from '@/config/sentry/server';
 
@@ -27,7 +27,11 @@ asyncAction(async () => {
     });
 
 self.addEventListener('fetch', (event) => {
-    console.log('fetch:', event?.request?.url, event);
+    const headers = event?.request?.headers;
 
-    event.respondWith(caches.match(event.request).then((response) => response || fetch(event.request)));
+    if (headers && headers.get('pragma') === 'no-cache' && headers.get('cache-control') === 'no-cache') {
+        event.respondWith(fetch(event.request));
+    } else {
+        event.respondWith(caches.match(event.request).then((response) => response || fetch(event.request)));
+    }
 });

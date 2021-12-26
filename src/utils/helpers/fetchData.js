@@ -3,7 +3,13 @@ import mergeObjects from '@/utils/mergeObjects';
 const fetchData = async (url, options = {}) => {
     const { responseType = 'json', ...userOptions } = options;
 
-    const defaultOptions = { headers: { 'Access-Control-Allow-Origin': '*' } };
+    const defaultOptions = {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'pragma': 'no-cache',
+            'cache-control': 'no-cache',
+        },
+    };
 
     const response = await fetch(url, mergeObjects(defaultOptions, userOptions));
 
