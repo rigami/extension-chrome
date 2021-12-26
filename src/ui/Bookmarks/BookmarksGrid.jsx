@@ -10,6 +10,10 @@ const useStyles = makeStyles((theme) => ({
     bookmarks: {
         display: 'flex',
         position: 'relative',
+        transition: theme.transitions.create(['height'], {
+            duration: theme.transitions.duration.standard,
+            easing: theme.transitions.easing.easeInOut,
+        }),
     },
     bookmark: {
         position: 'absolute',
