@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
     },
     wrapperSearch: {
         padding: theme.spacing(0, 1),
+        paddingLeft: theme.spacing(2),
         display: 'flex',
         flexGrow: 1,
         flexShrink: 0,
