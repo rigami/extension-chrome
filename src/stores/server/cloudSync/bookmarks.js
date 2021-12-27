@@ -171,29 +171,56 @@ class CloudSyncBookmarksService {
             const folderPair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.payload.folderId);
             const tagPairs = await Promise.all(snapshot.payload.tagsIds.map((id) => db().getFromIndex('pair_with_cloud', 'cloud_id', id)));
 
-            await BookmarksUniversalService.save({
-                id: pair.localId,
-                icoVariant: snapshot.payload.variant.toUpperCase(),
-                url: snapshot.payload.url,
-                sourceIcoUrl: snapshot.payload.imageUrl || '',
-                name: snapshot.payload.title,
-                description: snapshot.payload.description,
-                tags: tagPairs.map(({ localId }) => localId),
-                folderId: folderPair.localId,
-                createTimestamp: new Date(snapshot.createDate).valueOf(),
-                modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
-            }, false);
+            if (!pair) {
+                console.warn(`Snapshot of bookmark with cloudId:${pair?.cloudId} not exist. Creating...`);
 
-            await db().put('pair_with_cloud', {
-                entityType_localId: `bookmark_${pair.localId}`,
-                entityType: 'bookmark',
-                localId: pair.localId,
-                cloudId: snapshot.id,
-                isPair: +true,
-                isSync: +true,
-                isDeleted: +false,
-                modifiedTimestamp: Date.now(),
-            });
+                const localTagId = await BookmarksUniversalService.save({
+                    icoVariant: snapshot.payload.variant.toUpperCase(),
+                    url: snapshot.payload.url,
+                    sourceIcoUrl: snapshot.payload.imageUrl || '',
+                    name: snapshot.payload.title,
+                    description: snapshot.payload.description,
+                    tags: tagPairs.map(({ localId }) => localId),
+                    folderId: snapshot.payload.folderId === NULL_UUID ? FIRST_UUID : folderPair.localId,
+                    createTimestamp: new Date(snapshot.createDate).valueOf(),
+                    modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
+                }, false);
+
+                await db().add('pair_with_cloud', {
+                    entityType_localId: `bookmark_${localTagId}`,
+                    entityType: 'bookmark',
+                    localId: localTagId,
+                    cloudId: snapshot.id,
+                    isPair: +true,
+                    isSync: +true,
+                    isDeleted: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            } else {
+                await BookmarksUniversalService.save({
+                    id: pair.localId,
+                    icoVariant: snapshot.payload.variant.toUpperCase(),
+                    url: snapshot.payload.url,
+                    sourceIcoUrl: snapshot.payload.imageUrl || '',
+                    name: snapshot.payload.title,
+                    description: snapshot.payload.description,
+                    tags: tagPairs.map(({ localId }) => localId),
+                    folderId: folderPair.localId,
+                    createTimestamp: new Date(snapshot.createDate).valueOf(),
+                    modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
+                }, false);
+
+                await db().put('pair_with_cloud', {
+                    entityType_localId: `bookmark_${pair.localId}`,
+                    entityType: 'bookmark',
+                    localId: pair.localId,
+                    cloudId: snapshot.id,
+                    isPair: +true,
+                    isSync: +true,
+                    isDeleted: +false,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
         }));
 
         console.log('[CloudSync] Bulk bookmarks updated!');
