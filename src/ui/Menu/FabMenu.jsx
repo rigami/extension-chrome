@@ -36,7 +36,7 @@ function FabMenu() {
         <Box className={classes.root}>
             <MouseDistanceFade
                 unionKey="desktop-fab"
-                show={appService.activity === ACTIVITY.BOOKMARKS ? true : undefined}
+                show={appService.activity === ACTIVITY.DESKTOP ? undefined : true}
                 distanceMax={750}
                 distanceMin={300}
             >

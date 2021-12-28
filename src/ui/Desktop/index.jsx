@@ -123,6 +123,7 @@ const useStyles = makeStyles((theme) => ({
     },
     group: { flexDirection: 'row' },
     button: { pointerEvents: 'auto' },
+    buttonOffset: { marginRight: theme.spacing(1) },
 }));
 
 function Desktop() {
@@ -261,7 +262,7 @@ function Desktop() {
             {BUILD === 'full' && (
                 <Box className={classes.wrapperTools}>
                     <Grow in={appService.activity === ACTIVITY.FAVORITES}>
-                        <ExtendButtonGroup className={classes.button}>
+                        <ExtendButtonGroup variant="blurBackdrop" className={classes.button}>
                             <ExtendButton
                                 tooltip={t('desktop:button.open')}
                                 data-ui-path="button.desktop-expand"
@@ -271,16 +272,20 @@ function Desktop() {
                             />
                         </ExtendButtonGroup>
                     </Grow>
-                    {appService.activity === ACTIVITY.FAVORITES && (
-                        <ExtendButtonGroup variant="blurBackdrop" className={classes.button}>
+                    <Grow in={appService.activity === ACTIVITY.FAVORITES}>
+                        <ExtendButtonGroup
+                            variant="blurBackdrop"
+                            className={clsx(classes.button, classes.buttonOffset)}
+                        >
                             <ExtendButton
                                 tooltip={t('common:button.close')}
                                 data-ui-path="button.favorites-close"
                                 onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
                                 icon={CloseIcon}
+                                label={t('common:button.close')}
                             />
                         </ExtendButtonGroup>
-                    )}
+                    </Grow>
                     <ExtendButtonGroup className={classes.toolStub} />
                     <ExtendButtonGroup className={classes.toolStub} />
                 </Box>
