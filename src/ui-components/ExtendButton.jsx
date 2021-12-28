@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
         background: 'none',
     },
     button: {
-        borderRadius: theme.shape.borderRadiusButton,
+        // borderRadius: theme.shape.borderRadiusButton,
         padding: theme.spacing(1 - 0.125),
         '& svg + $label': {
             marginLeft: theme.spacing(1),
