@@ -1,12 +1,11 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import {
-    Box, Card, Divider, Typography,
+    Box,
+    Card,
+    Divider,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import { useTranslation } from 'react-i18next';
-import { StarRounded as CheckIcon } from '@material-ui/icons';
-import Favorites from '../Favorites';
 import Widgets from './Widgets';
 import Greeting from './Greeting';
 import useAppService from '@/stores/app/AppStateProvider';
