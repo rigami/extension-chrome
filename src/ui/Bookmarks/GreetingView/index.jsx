@@ -9,6 +9,8 @@ import { StarRounded as CheckIcon } from '@material-ui/icons';
 import Favorites from '../Favorites';
 import Widgets from './Widgets';
 import Greeting from './Greeting';
+import useAppService from '@/stores/app/AppStateProvider';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -31,24 +33,20 @@ const useStyles = makeStyles((theme) => ({
 
 function GreetingView() {
     const classes = useStyles();
+    const coreService = useCoreService();
+    const { widgets } = useAppService();
 
-    console.log('[GreetingView]', [
-        (<Greeting />),
-        (<Widgets />),
-    ].filter((isExist) => isExist))
+    const greeting = coreService.storage.persistent.data.userName;
+    const date = widgets.settings.dtwUseTime || widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather;
+
+    if (!greeting && !date) return null;
 
     return (
         <Box className={classes.root}>
             <Card elevation={0} className={classes.card}>
-                {[
-                    (<Greeting />),
-                    (<Widgets />),
-                ].filter((isExist) => isExist).map((child, index) => (
-                    <Fragment>
-                        {index !== 0 && (<Divider className={classes.divider} />)}
-                        {child}
-                    </Fragment>
-                ))}
+                <Greeting />
+                {greeting && date && (<Divider className={classes.divider} />)}
+                <Widgets />
             </Card>
         </Box>
     );
