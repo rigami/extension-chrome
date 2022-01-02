@@ -15,7 +15,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import clsx from 'clsx';
 import ResizeDetector, { useResizeDetector } from 'react-resize-detector';
 import { captureException } from '@sentry/react';
-import CardLink from '@/ui/Bookmarks/CardLink';
+import CardLink from '@/ui/Bookmarks/Bookmark/Card';
 import Stub from '@/ui-components/Stub';
 import { FETCH } from '@/enum';
 import Scrollbar from '@/ui-components/CustomScroll';

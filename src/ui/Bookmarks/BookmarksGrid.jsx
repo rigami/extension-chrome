@@ -3,7 +3,7 @@ import { Box } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { BKMS_VARIANT } from '@/enum';
-import CardLink from '@/ui/Bookmarks/CardLink';
+import CardLink from '@/ui/Bookmarks/Bookmark/Card';
 
 const useStyles = makeStyles((theme) => ({
     root: { width: '100%' },

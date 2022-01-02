@@ -18,21 +18,18 @@ import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
-import Tag from './Tag';
+import Tag from '../Tag';
 import Collapser from '@/ui/Bookmarks/Tag/Collapser';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: theme.shape.dataCard.width,
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'center',
         position: 'relative',
-        height: theme.shape.dataCard.height,
         overflow: 'hidden',
         boxSizing: 'border-box',
         border: 'none',
-        boxShadow: `inset 0px 0px 0px 1px ${theme.palette.divider}`,
         '&:hover $menuIconButton': {
             opacity: 1,
             pointerEvents: 'auto',
@@ -44,13 +41,14 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         height: '100%',
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'stretch',
         justifyContent: 'flex-start',
+        padding: theme.spacing(1),
+        margin: theme.spacing(0, 1),
+        borderRadius: theme.shape.borderRadius,
     },
     icon: {
-        marginRight: theme.spacing(1.25),
-        marginTop: theme.spacing(0.75),
         width: 32,
         height: 32,
         flexShrink: 0,
@@ -63,37 +61,23 @@ const useStyles = makeStyles((theme) => ({
         boxSizing: 'border-box',
     },
     title: {
-        display: '-webkit-box',
-        '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 2,
         overflow: 'hidden',
         lineHeight: 1.1,
-        wordBreak: 'break-word',
         fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 600,
         fontSize: '0.94rem',
-        marginTop: theme.spacing(-0.5),
-        marginBottom: theme.spacing(-0.5),
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
     },
     banner: {},
-    imageWrapper: {
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        padding: theme.spacing(1, 1.5),
-        paddingBottom: theme.spacing(0),
-        minHeight: 54,
-        boxSizing: 'border-box',
-        flexShrink: 0,
-    },
+    imageWrapper: { marginRight: theme.spacing(2) },
     extendBanner: {
-        width: `calc(100% - ${theme.spacing(1)}px)`,
-        height: 108,
+        width: 110,
+        height: 58,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: theme.shape.borderRadius / 2,
-        margin: theme.spacing(0.5),
         filter: 'brightness(0.96)',
         backgroundColor: theme.palette.background.default,
     },
@@ -108,25 +92,20 @@ const useStyles = makeStyles((theme) => ({
     description: {
         color: theme.palette.text.secondary,
         marginTop: 0,
-        margin: theme.spacing(0, 1.5),
         fontFamily: theme.typography.secondaryFontFamily,
         fontWeight: 400,
         lineHeight: 1.2,
-        wordBreak: 'break-word',
-        display: '-webkit-box',
-        '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 6,
         overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
     },
     infoWrapper: {
         display: 'flex',
         width: '100%',
-        height: 24,
         alignItems: 'center',
         flexShrink: 0,
-        padding: theme.spacing(0.5, 0.75),
-        marginTop: theme.spacing(0.5),
-        marginBottom: theme.spacing(0.25),
+        marginTop: 'auto',
+        paddingTop: theme.spacing(0.75),
     },
     favorite: {
         color: theme.palette.favorite.main,
@@ -155,6 +134,13 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(0.5),
         flexShrink: 0,
     },
+    contentWrapper: {
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        // minHeight: 58,
+        overflow: 'auto',
+    },
 }));
 
 function Tags({ tags }) {
@@ -176,7 +162,7 @@ function Tags({ tags }) {
     );
 }
 
-function CardLink(props) {
+function RowItem(props) {
     const {
         id,
         name = '',
@@ -234,23 +220,20 @@ function CardLink(props) {
             enterNextDelay={400}
             open={preview ? false : undefined}
         >
-            <Card
+            <li
                 className={clsx(
                     classes.root,
-                    icoVariant !== BKMS_VARIANT.POSTER && description && classes.middle,
-                    icoVariant === BKMS_VARIANT.POSTER && !description && classes.middle,
-                    icoVariant === BKMS_VARIANT.POSTER && description && classes.large,
                     externalClassName,
                 )}
-                variant="outlined" {...other}
+                {...other}
             >
                 <CardActionArea
                     className={classes.rootActionWrapper}
                     onMouseUp={handleClick}
                     onContextMenu={!preview ? contextMenu : undefined}
                 >
-                    {icoVariant !== BKMS_VARIANT.POSTER && (
-                        <Box className={classes.imageWrapper}>
+                    <Box className={classes.imageWrapper}>
+                        {icoVariant !== BKMS_VARIANT.POSTER && (
                             <Image
                                 variant={icoVariant}
                                 src={icoUrl}
@@ -261,30 +244,25 @@ function CardLink(props) {
                                 }
                                 className={classes.icon}
                             />
-                            <Typography className={classes.title}>{name}</Typography>
-                        </Box>
-                    )}
-                    {icoVariant === BKMS_VARIANT.POSTER && (
-                        <Box className={classes.banner}>
+                        )}
+                        {icoVariant === BKMS_VARIANT.POSTER && (
                             <Image variant={BKMS_VARIANT.POSTER} src={icoUrl} className={classes.extendBanner} />
-                            <Box className={classes.extendBannerTitleContainer}>
-                                <Typography className={clsx(classes.title, classes.extendBannerTitle)}>
-                                    {name}
-                                </Typography>
-                            </Box>
-                        </Box>
-                    )}
-                    <Box className={clsx(classes.infoWrapper, !description && classes.alignToBottom)}>
-                        {tagsFull && (<Tags tags={tagsFull} />)}
-                        {isPin && (<FavoriteIcon className={classes.favorite} />)}
+                        )}
                     </Box>
-                    {description && (
-                        <Typography variant="body2" className={classes.description}>{description}</Typography>
-                    )}
+                    <Box className={classes.contentWrapper}>
+                        <Typography className={classes.title}>{name}</Typography>
+                        {description && (
+                            <Typography variant="body2" className={classes.description}>{description}</Typography>
+                        )}
+                        <Box className={clsx(classes.infoWrapper, !description && classes.alignToBottom)}>
+                            {tagsFull && (<Tags tags={tagsFull} />)}
+                            {isPin && (<FavoriteIcon className={classes.favorite} />)}
+                        </Box>
+                    </Box>
                 </CardActionArea>
-            </Card>
+            </li>
         </Tooltip>
     );
 }
 
-export default memo(observer(CardLink));
+export default memo(observer(RowItem));

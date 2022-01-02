@@ -17,8 +17,10 @@ import { FETCH } from '@/enum';
 import FolderBreadcrumbs from '@/ui/Bookmarks/ToolsPanel/FolderBreadcrumbs';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useSearchService } from '@/ui/Bookmarks/searchProvider';
+import BookmarksList from '@/ui/Bookmarks/BookmarksList';
 
 const useStyles = makeStyles((theme) => ({
+    root: { marginBottom: theme.spacing(1) },
     goToButton: {
         textTransform: 'none',
         color: theme.palette.secondary.main,
@@ -34,6 +36,8 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(1, 2),
+        paddingBottom: 0,
+        paddingLeft: theme.spacing(1),
     },
     countResults: {
         color: theme.palette.text.secondary,
@@ -42,6 +46,11 @@ const useStyles = makeStyles((theme) => ({
     },
     stub: { padding: theme.spacing(2) },
     folderBreadcrumbs: { overflow: 'auto' },
+    countOtherResults: {
+        padding: theme.spacing(1, 2),
+        display: 'block',
+        color: theme.palette.text.secondary,
+    },
 }));
 
 function FastResults({ columns, onGoToFolder }) {
@@ -88,7 +97,10 @@ function FastResults({ columns, onGoToFolder }) {
     }, [bookmarksService.lastTruthSearchTimestamp, searchService.tempSearchRequest]);
 
     return (
-        <Box style={{ width: (theme.shape.dataCard.width + theme.spacing(2)) * columns + theme.spacing(2) }}>
+        <Box
+            className={classes.root}
+            style={{ width: (theme.shape.dataCard.width + theme.spacing(2)) * columns + theme.spacing(2) }}
+        >
             {stateRender(
                 store.loadState,
                 <Fragment>
@@ -111,11 +123,18 @@ function FastResults({ columns, onGoToFolder }) {
                                     {t('search.results', { count: store.currentFolder.length })}
                                 </Typography>
                             </Box>
-                            <BookmarksGrid
+                            <BookmarksList
                                 bookmarks={store.currentFolder}
-                                columns={columns}
-                                maxRows={3}
+                                max={3}
                                 classes={{ bookmarks: classes.bookmarksGrid }}
+                                overloadContent={(renderCount) => (
+                                    <Typography
+                                        variant="caption"
+                                        className={classes.countOtherResults}
+                                    >
+                                        {t('search.otherResults', { count: bookmarks.length - renderCount })}
+                                    </Typography>
+                                )}
                             />
                         </Fragment>
                     )}
@@ -141,11 +160,18 @@ function FastResults({ columns, onGoToFolder }) {
                                     {t('search.results', { count: bookmarks.length })}
                                 </Typography>
                             </Box>
-                            <BookmarksGrid
+                            <BookmarksList
                                 bookmarks={bookmarks}
-                                columns={columns}
-                                maxRows={3}
+                                max={3}
                                 classes={{ bookmarks: classes.bookmarksGrid }}
+                                overloadContent={(renderCount) => (
+                                    <Typography
+                                        variant="caption"
+                                        className={classes.countOtherResults}
+                                    >
+                                        {t('search.otherResults', { count: bookmarks.length - renderCount })}
+                                    </Typography>
+                                )}
                             />
                         </Fragment>
                     ))}

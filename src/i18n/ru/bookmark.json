@@ -64,10 +64,12 @@
     "indirectlyMatches": "Косвеные",
     "nothingFoundIndirectlyMatches": "Косвеных совпадений не найдено",
     "currentFolderMatches": "В текущей папке",
-    "results": "{{count}} результат",
-    "results_0": "{{count}} результат",
-    "results_1": "{{count}} результа",
-    "results_2": "{{count}} результатов"
+    "results_one": "{{count}} результат",
+    "results_few": "{{count}} результа",
+    "results_many": "{{count}} результатов",
+    "otherResults_one": "...и ещё {{count}} результат",
+    "otherResults_few": "...и ещё {{count}} результа",
+    "otherResults_many": "...и ещё {{count}} результатов"
   },
   "empty": "Здесь пока нет закладок"
 }
