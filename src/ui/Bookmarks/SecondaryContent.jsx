@@ -12,7 +12,7 @@ import asyncAction from '@/utils/helpers/asyncAction';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
-import { ExtendButton } from '@/ui-components/ExtendButton';
+import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import { FIRST_UUID } from '@/utils/generate/uuid';
 
@@ -42,8 +42,8 @@ const useStyles = makeStyles((theme) => ({
     childFolder: {
         width: 'fit-content',
         maxWidth: '100%',
+        margin: theme.spacing(1),
         marginLeft: theme.spacing(-1),
-        padding: theme.spacing(1),
     },
     middle: {
         textTransform: 'none',
@@ -132,14 +132,14 @@ function Folder({ data, columns }) {
             />
             <Box className={classes.childFolders}>
                 {data.children.map((childFolder) => (
-                    <ExtendButton
-                        key={childFolder.id}
-                        className={classes.childFolder}
-                        label={childFolder.name}
-                        onClick={() => searchService.setSelectFolder(childFolder.id)}
-                        icon={() => <FolderIcon />}
-                        unwrap
-                    />
+                    <ExtendButtonGroup key={childFolder.id} className={classes.childFolder}>
+                        <ExtendButton
+                            label={childFolder.name}
+                            onClick={() => searchService.setSelectFolder(childFolder.id)}
+                            icon={() => <FolderIcon />}
+                            unwrap
+                        />
+                    </ExtendButtonGroup>
                 ))}
             </Box>
         </Box>
