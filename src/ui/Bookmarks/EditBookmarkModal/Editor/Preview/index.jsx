@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'none',
     },
     thumbY: { backgroundColor: theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[400] },
-    activeCard: { borderColor: theme.palette.primary.main },
+    activeCard: { boxShadow: `inset 0px 0px 0px 1px ${theme.palette.primary.main}` },
     badge: { '& svg': { fontSize: '1rem' } },
     badgePlace: { transform: 'scale(1) translate(30%, -40%)' },
     badgeInvisiblePlace: { transform: 'scale(0) translate(30%, -40%) !important' },
@@ -210,6 +210,9 @@ function Preview({ editorService: service }) {
             store.showPrimaryList = false;
         }
     }, [store.primaryImagesState, service.primaryImages.length]);
+
+    // Hack for update tags
+    useEffect(() => {}, [service.tagsFull]);
 
     return (
         <CardMedia className={classes.cover} ref={ref}>

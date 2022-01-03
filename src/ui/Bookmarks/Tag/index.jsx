@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, ButtonBase, Typography } from '@material-ui/core';
+import {
+    Box, ButtonBase, Typography, IconButton, Tooltip,
+} from '@material-ui/core';
 import clsx from 'clsx';
-import { alpha, makeStyles } from '@material-ui/core/styles';
-import { StarRounded as FavoriteIcon } from '@material-ui/icons';
+import { alpha, makeStyles, lighten } from '@material-ui/core/styles';
+import { CloseRounded as CloseIcon, StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
+import { useTranslation } from 'react-i18next';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import getUniqueColor from '@/utils/generate/uniqueColor';
@@ -50,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusButton,
         borderColor: theme.palette.divider,
         boxSizing: 'border-box',
+        textAlign: 'right',
     },
     dense: {
         color: theme.palette.text.primary,
@@ -61,6 +65,26 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: theme.typography.secondaryFontFamily,
         whiteSpace: 'nowrap',
         lineHeight: '14px',
+        '&:hover $deleteDense': { opacity: 1 },
+    },
+    denseWithDelete: {
+        height: 26,
+        minWidth: 26,
+        lineHeight: '22px',
+        position: 'relative',
+        textAlign: 'center',
+    },
+    deleteDenseWrapper: { marginLeft: 'auto' },
+    deleteDense: {
+        margin: '-10px -14px',
+        marginLeft: -28,
+        opacity: 0,
+        position: 'absolute',
+        right: 6,
+    },
+    deleteIconDense: {
+        width: 18,
+        height: 18,
     },
 }));
 
@@ -69,12 +93,14 @@ function Tag(props) {
         id,
         name,
         colorKey,
-        onClick,
         isSelect,
         dense = false,
+        onClick,
+        onDelete,
         className: externalClassName,
     } = props;
     const classes = useStyles();
+    const { t } = useTranslation(['tag']);
     const bookmarksService = useBookmarksService();
     const contextMenu = useContextMenu({
         itemId: id,
@@ -85,7 +111,7 @@ function Tag(props) {
         itemType: 'tag',
     }));
 
-    let repairColor = colorKey ? getUniqueColor(colorKey) || '#686868' : '#686868';
+    const repairColor = colorKey ? getUniqueColor(colorKey) || '#686868' : '#686868';
 
     useEffect(() => {
         setIsPin(bookmarksService.findFavorite({
@@ -95,11 +121,27 @@ function Tag(props) {
     }, [bookmarksService.favorites.length]);
 
     if (dense) {
-        repairColor = alpha(repairColor, 0.14);
+        const repairColorTransparent = alpha(repairColor, 0.14);
+        const repairColorDeleteBtn = alpha(lighten(repairColor, 0.86), 0.84);
 
         return (
-            <Box className={clsx(classes.root, classes.dense, externalClassName)} style={{ backgroundColor: repairColor }}>
+            <Box
+                className={clsx(classes.root, classes.dense, onDelete && classes.denseWithDelete, externalClassName)}
+                style={{ backgroundColor: repairColorTransparent }}
+                onClick={onClick}
+            >
                 {name}
+                {onDelete && (
+                    <Tooltip title={t('editor.button.remove_description')}>
+                        <IconButton
+                            className={classes.deleteDense}
+                            style={{ backgroundColor: repairColorDeleteBtn }}
+                            onClick={onDelete}
+                        >
+                            <CloseIcon className={classes.deleteIconDense} />
+                        </IconButton>
+                    </Tooltip>
+                )}
             </Box>
         );
     }

@@ -6,9 +6,18 @@
   },
   "editor": {
     "name_placeholder": "Название тега",
+    "create": "Создать тег",
     "error": {
       "alreadyExist": "Тег уже существует",
       "unknown": "Неизвестная ошибка"
+    },
+    "caption": {
+      "backspace": "Удалить последний тег",
+      "arrows": "Выбрать тег",
+      "enter": "Добавить тег"
+    },
+    "button": {
+      "remove_description": "Удалить тег"
     }
   },
   "remove": {
