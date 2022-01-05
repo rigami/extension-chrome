@@ -49,6 +49,11 @@ const theme = {
             fontWeight: 900,
             letterSpacing: 'unset',
         },
+        h6: {
+            fontFamily: primaryFontFamily,
+            fontSize: '1.125rem',
+            letterSpacing: 'unset',
+        },
         body1: {
             fontFamily: primaryFontFamily,
             fontWeight: 600,

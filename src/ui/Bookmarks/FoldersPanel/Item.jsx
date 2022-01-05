@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
         pointerEvents: 'none',
         flexDirection: 'row',
         transform: 'none',
-        // justifyContent: 'flex-end',
+        justifyContent: 'flex-end',
         '& > *': { pointerEvents: 'all' },
     },
     button: {

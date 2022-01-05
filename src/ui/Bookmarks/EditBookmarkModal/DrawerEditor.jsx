@@ -1,26 +1,53 @@
 import React from 'react';
-import { Drawer } from '@material-ui/core';
+import { Button, Drawer } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { makeStyles } from '@material-ui/core/styles';
 import Editor from './Editor';
+import PopperDialog, { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
+import { DriveFileMoveFilled as MoveIcon } from '@/icons';
+import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
-function EditBookmarkModal({ open, onClose, ...other }) {
+const useStyles = makeStyles((theme) => ({
+    dialog: {
+        width: 690,
+        minHeight: 400,
+        margin: 0,
+    },
+}));
+
+function EditBookmarkModal(props) {
+    const {
+        open,
+        onClose,
+        editBookmarkId,
+        position = {},
+        ...other
+    } = props;
+    const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['bookmark']);
 
     return (
-        <Drawer
-            anchor="bottom"
+        <PopperDialog
             open={open}
-            PaperProps={{
-                elevation: 0,
-                style: {
-                    background: 'none',
-                    height: '100%',
-                },
+            onClose={onClose}
+            anchorReference="anchorPosition"
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
             }}
-            disableEnforceFocus
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            anchorPosition={position}
+            PaperProps={{ className: classes.dialog }}
         >
+            <PopoverDialogHeader
+                title={t('editor', { context: editBookmarkId ? 'edit' : 'add' })}
+            />
             <Editor
                 onSave={onClose}
                 onCancel={onClose}
@@ -31,9 +58,10 @@ function EditBookmarkModal({ open, onClose, ...other }) {
                     });
                     onClose();
                 }}
+                editBookmarkId={editBookmarkId}
                 {...other}
             />
-        </Drawer>
+        </PopperDialog>
     );
 }
 

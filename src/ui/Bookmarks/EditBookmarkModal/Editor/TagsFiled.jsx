@@ -3,7 +3,9 @@ import {
     Box, ClickAwayListener, Divider,
     InputAdornment, ListItem, ListItemText,
     Paper,
-    TextField, Typography,
+    TextField,
+    Typography,
+    InputBase,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,6 +19,11 @@ import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+    },
     content: { flex: '1 0 auto' },
     header: { marginBottom: theme.spacing(1) },
     controls: {
@@ -36,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         overflow: 'auto',
     },
-    input: { marginTop: theme.spacing(2) },
     inputDescription: { marginTop: theme.spacing(2) },
     addDescriptionButton: { marginTop: theme.spacing(2) },
     saveIcon: { marginRight: theme.spacing(1) },
@@ -73,12 +79,19 @@ const useStyles = makeStyles((theme) => ({
         width: 'fit-content',
     },
     item: { padding: theme.spacing(0.5, 1.5) },
-    tag: { marginRight: theme.spacing(0.5) },
+    tag: {
+        margin: theme.spacing(0.375, 0),
+        marginRight: theme.spacing(0.5),
+    },
     caption: {
         padding: theme.spacing(1, 2),
         color: theme.palette.text.secondary,
         wordBreak: 'break-word',
         whiteSpace: 'normal',
+    },
+    input: {
+        flexGrow: 1,
+        // paddingLeft: theme.spacing(0.5),
     },
 }));
 
@@ -170,120 +183,112 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
     }, [filteredTags.length]);
 
     return (
-        <TextField
-            label={t('bookmark:editor.bookmarkTags')}
-            variant="outlined"
-            size="small"
-            className={clsx(externalClassName)}
-            InputLabelProps={{ shrink: Boolean(selectedTags.length || store.inputValue || store.focus) }}
-            fullWidth
-            value={store.inputValue}
-            inputRef={inputRef}
-            InputProps={{
-                startAdornment: (
-                    <InputAdornment position="start">
-                        {store.tags.map((tagId) => store.allTags[tagId] && (
-                            <Tag
-                                key={tagId}
-                                id={tagId}
-                                name={store.allTags[tagId].name}
-                                colorKey={store.allTags[tagId].colorKey}
-                                className={classes.tag}
-                                dense
-                                onDelete={() => {
-                                    store.tags = store.tags.filter((cId) => cId !== tagId);
-                                }}
-                            />
-                        ))}
-                        {(store.focus) && (
-                            <Box className={classes.tagsListContainer}>
-                                <Paper
-                                    className={classes.tagsListWrapper}
-                                    elevation={22}
-                                    onMouseDown={() => {
-                                        store.isBlock = true;
-                                    }}
-                                    onMouseUp={() => {
-                                        store.isBlock = false;
+        <Box className={clsx(classes.root, externalClassName)}>
+            {store.tags.map((tagId) => store.allTags[tagId] && (
+                <Tag
+                    key={tagId}
+                    id={tagId}
+                    name={store.allTags[tagId].name}
+                    colorKey={store.allTags[tagId].colorKey}
+                    className={classes.tag}
+                    dense
+                    onDelete={() => {
+                        store.tags = store.tags.filter((cId) => cId !== tagId);
+                    }}
+                />
+            ))}
+            {(store.focus) && (
+                <Box className={classes.tagsListContainer}>
+                    <Paper
+                        className={classes.tagsListWrapper}
+                        elevation={22}
+                        onMouseDown={() => {
+                            store.isBlock = true;
+                        }}
+                        onMouseUp={() => {
+                            store.isBlock = false;
+                        }}
+                    >
+                        <Box className={classes.tagsList}>
+                            {store.inputValue && (
+                                <ListItem
+                                    // autoFocus
+                                    selected={store.selectTag === -1}
+                                    ref={createTagRef}
+                                    dense
+                                    button
+                                    className={classes.item}
+                                    onClick={() => { createTag(createdTagName); }}
+                                >
+                                    <ListItemText
+                                        primary={(
+                                            <Fragment>
+                                                {t('editor.create')}
+                                                <Tag
+                                                    id={null}
+                                                    name={store.inputValue}
+                                                    colorKey={null}
+                                                    className={classes.tagSearch}
+                                                    dense
+                                                />
+                                            </Fragment>
+                                        )}
+                                    />
+                                </ListItem>
+                            )}
+                            {createdTagName !== '' && filteredTags.length !== 0 && (<Divider />)}
+                            {filteredTags.map((tag, index) => (
+                                <ListItem
+                                    key={tag.id}
+                                    selected={store.selectTag === index}
+                                    ref={store.selectTag === index ? selectedTagRef : undefined}
+                                    dense
+                                    button
+                                    className={classes.item}
+                                    onClick={() => {
+                                        if (!store.tags.includes(tag.id)) {
+                                            store.tags = [...store.tags, tag.id];
+                                        }
                                     }}
                                 >
-                                    <Box className={classes.tagsList}>
-                                        {store.inputValue && (
-                                            <ListItem
-                                                // autoFocus
-                                                selected={store.selectTag === -1}
-                                                ref={createTagRef}
-                                                dense
-                                                button
-                                                className={classes.item}
-                                                onClick={() => { createTag(createdTagName); }}
-                                            >
-                                                <ListItemText
-                                                    primary={(
-                                                        <Fragment>
-                                                            {t('editor.create')}
-                                                            <Tag
-                                                                id={null}
-                                                                name={store.inputValue}
-                                                                colorKey={null}
-                                                                className={classes.tagSearch}
-                                                                dense
-                                                            />
-                                                        </Fragment>
-                                                    )}
-                                                />
-                                            </ListItem>
-                                        )}
-                                        {createdTagName !== '' && filteredTags.length !== 0 && (<Divider />)}
-                                        {filteredTags.map((tag, index) => (
-                                            <ListItem
+                                    <ListItemText
+                                        primary={(
+                                            <Tag
                                                 key={tag.id}
-                                                selected={store.selectTag === index}
-                                                ref={store.selectTag === index ? selectedTagRef : undefined}
+                                                id={tag.id}
+                                                name={tag.name}
+                                                colorKey={tag.colorKey}
+                                                className={classes.tagSearch}
                                                 dense
-                                                button
-                                                className={classes.item}
-                                                onClick={() => {
-                                                    if (!store.tags.includes(tag.id)) {
-                                                        store.tags = [...store.tags, tag.id];
-                                                    }
-                                                }}
-                                            >
-                                                <ListItemText
-                                                    primary={(
-                                                        <Tag
-                                                            key={tag.id}
-                                                            id={tag.id}
-                                                            name={tag.name}
-                                                            colorKey={tag.colorKey}
-                                                            className={classes.tagSearch}
-                                                            dense
-                                                        />
-                                                    )}
-                                                />
-                                            </ListItem>
-                                        ))}
-                                    </Box>
-                                    <Divider />
-                                    <Typography variant="caption" className={classes.caption}>
-                                        Backspace -
-                                        {' '}
-                                        {t('editor.caption.backspace')}
-                                        <br />
-                                        Up/Down -
-                                        {' '}
-                                        {t('editor.caption.arrows')}
-                                        <br />
-                                        Enter -
-                                        {' '}
-                                        {t('editor.caption.enter')}
-                                    </Typography>
-                                </Paper>
-                            </Box>
-                        )}
-                    </InputAdornment>
-                ),
-                onBlur: () => {
+                                            />
+                                        )}
+                                    />
+                                </ListItem>
+                            ))}
+                        </Box>
+                        <Divider />
+                        <Typography variant="caption" className={classes.caption}>
+                            Backspace -
+                            {' '}
+                            {t('editor.caption.backspace')}
+                            <br />
+                            Up/Down -
+                            {' '}
+                            {t('editor.caption.arrows')}
+                            <br />
+                            Enter -
+                            {' '}
+                            {t('editor.caption.enter')}
+                        </Typography>
+                    </Paper>
+                </Box>
+            )}
+            <InputBase
+                className={classes.input}
+                placeholder={t('bookmark:editor.bookmarkTags', { context: 'placeholder' })}
+                value={store.inputValue}
+                inputRef={inputRef}
+                onBlur={() => {
                     if (!store.isBlock) {
                         store.focus = false;
                     } else {
@@ -291,10 +296,10 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
                             inputRef.current.focus();
                         });
                     }
-                },
-                onChange: (event) => { store.inputValue = event.currentTarget.value; },
-                onFocus: () => { store.focus = true; },
-                onKeyDown: (event) => {
+                }}
+                onChange={(event) => { store.inputValue = event.currentTarget.value; }}
+                onFocus={() => { store.focus = true; }}
+                onKeyDown={(event) => {
                     const top = store.inputValue ? -1 : 0;
 
                     switch (event.code) {
@@ -330,9 +335,9 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
                         default:
                             break;
                     }
-                },
-            }}
-        />
+                }}
+            />
+        </Box>
     );
 }
 

@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         flexGrow: 0,
         flexShrink: 0,
-        backgroundColor: theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[200],
+        // backgroundColor: theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[200],
         width: theme.shape.dataCard.width + theme.spacing(4),
         borderRadius: 'inherit',
         borderTopRightRadius: 0,
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     },
     helper: {
         position: 'absolute',
-        width: '100%',
+        width: 'calc(100% - 20px)',
         textAlign: 'center',
         bottom: theme.spacing(2),
         zIndex: 1,

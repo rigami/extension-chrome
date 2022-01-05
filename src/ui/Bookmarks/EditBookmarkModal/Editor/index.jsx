@@ -14,8 +14,8 @@ import Preview from './Preview';
 
 const useStyles = makeStyles(() => ({
     container: {
-        maxWidth: 1062,
-        minHeight: '100vh',
+        maxWidth: 800,
+        // minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-end',
@@ -61,21 +61,15 @@ function Editor(props) {
     }
 
     return (
-        <Container
-            maxWidth={false}
-            className={clsx(classes.container, externalClassName)}
-            style={{ padding: marginThreshold }}
-        >
-            <Card className={clsx(classes.editor, externalClasses.editor)}>
-                <Preview editorService={service} />
-                <FieldsEditor
-                    editorService={service}
-                    marginThreshold={marginThreshold}
-                    onSave={onSave}
-                    onCancel={onCancel}
-                />
-            </Card>
-        </Container>
+        <Card className={clsx(classes.editor, externalClasses.editor)}>
+            <Preview editorService={service} />
+            <FieldsEditor
+                editorService={service}
+                marginThreshold={marginThreshold}
+                onSave={onSave}
+                onCancel={onCancel}
+            />
+        </Card>
     );
 }
 

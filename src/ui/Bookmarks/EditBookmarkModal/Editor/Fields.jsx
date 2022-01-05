@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import {
     Button,
     Box,
@@ -7,6 +7,7 @@ import {
     TextField,
     CircularProgress,
     InputAdornment, Paper,
+    InputBase, Divider,
 } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
@@ -16,15 +17,21 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { captureException } from '@sentry/react';
+import clsx from 'clsx';
 import { FETCH } from '@/enum';
 import FolderSelector from '@/ui/Bookmarks/Folders/Selector';
 import SearchSiteField from './SearchSiteField';
 import Tag from '../../Tag';
 import Tags from '@/ui/Bookmarks/ToolsPanel/Search/Tags';
 import TagsFiled from '@/ui/Bookmarks/EditBookmarkModal/Editor/TagsFiled';
+import Folders from '@/ui/Bookmarks/FoldersPanel/Folders';
+import Search from '@/ui/Bookmarks/EditBookmarkModal/Editor/SearchSiteField/Search';
 
 const useStyles = makeStyles((theme) => ({
-    content: { flex: '1 0 auto' },
+    content: {
+        flex: '1 0 auto',
+        minHeight: 450,
+    },
     header: { marginBottom: theme.spacing(1) },
     controls: {
         display: 'flex',
@@ -43,21 +50,43 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         // overflow: 'auto',
     },
-    input: { marginTop: theme.spacing(2) },
-    inputDescription: { marginTop: theme.spacing(2) },
-    addDescriptionButton: { marginTop: theme.spacing(2) },
-    saveIcon: { marginRight: theme.spacing(1) },
+    input: {
+        // marginTop: theme.spacing(1)
+    },
+    inputDescription: { marginBottom: theme.spacing(1) },
+    addDescriptionButton: {
+        marginBottom: theme.spacing(1),
+        marginLeft: theme.spacing(-1),
+        fontWeight: theme.typography.body1.fontWeight,
+        fontSize: theme.typography.body1.fontSize,
+        color: theme.palette.text.secondary,
+    },
+    saveIcon: {
+        height: theme.spacing(2),
+        width: theme.spacing(2),
+        marginRight: theme.spacing(1),
+        verticalAlign: 'text-bottom',
+    },
     identBlock: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: theme.spacing(2),
     },
-    folderPicker: { marginRight: 'auto' },
+    folderPicker: { marginTop: theme.spacing(1) },
     identBlockIcon: { marginRight: theme.spacing(1) },
     identBlockIconTopAlign: {
         height: theme.spacing(4),
         alignSelf: 'flex-start',
+    },
+    inputName: { fontSize: theme.typography.h6.fontSize },
+    stateCaption: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(1.5),
+        justifyContent: 'flex-end',
+        height: theme.spacing(2),
+        boxSizing: 'content-box',
     },
 }));
 
@@ -70,79 +99,124 @@ function Fields(props) {
     } = props;
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
-    const store = useLocalObservable(() => ({ saveState: FETCH.WAIT }));
+    const store = useLocalObservable(() => ({
+        saveState: FETCH.WAIT,
+        query: '',
+    }));
+
+    const save = async () => {
+        store.saveState = FETCH.PENDING;
+
+        try {
+            await service.save();
+            store.saveState = FETCH.DONE;
+        } catch (e) {
+            captureException(e);
+            store.saveState = FETCH.FAILED;
+        }
+
+        if (service.unsavedChange) await save();
+    };
 
     useEffect(() => {
         if (service.isChange) store.saveState = FETCH.WAIT;
     }, [service.isChange]);
 
+    useEffect(() => {
+        if (!service.unsavedChange || store.saveState === FETCH.PENDING) return;
+
+        save();
+    }, [service.unsavedChange]);
+
     return (
         <Box className={classes.details}>
             <CardContent className={classes.content}>
-                <Typography variant="h6" className={classes.header}>
+                {/* <Typography variant="h6" className={classes.header}>
                     {t('editor', { context: service.editBookmarkId ? 'edit' : 'add' })}
-                </Typography>
-                <SearchSiteField
+                </Typography> */}
+                {/* <SearchSiteField
                     url={service.url}
                     marginThreshold={marginThreshold}
                     onSelect={(selectProps) => service.updateValues(selectProps)}
-                />
-                <TextField
-                    label={t('editor.bookmarkName')}
-                    variant="outlined"
-                    size="small"
-                    disabled={service.url === ''}
-                    InputLabelProps={{ shrink: Boolean(service.url) }}
+                /> */}
+                <InputBase
+                    placeholder={t('editor.bookmarkUrl', { context: 'placeholder' })}
                     fullWidth
-                    value={service.name}
+                    value={store.query || service.url}
                     className={classes.input}
-                    onChange={(event) => service.updateValues({ name: event.target.value })}
+                    onChange={(event) => {
+                        if (!service.url) store.query = event.target.value;
+                    }}
                 />
-                <TagsFiled
-                    selectedTags={service.tags}
-                    onChange={(newTags) => service.updateValues({ tags: newTags })}
-                    className={classes.input}
-                />
-                {/* <Box className={classes.identBlock}>
-                    <LabelIcon
-                        className={clsx(classes.identBlockIcon, classes.identBlockIconTopAlign)}
-                        color="primary"
-                    />
-                    <Tags
-                        sortByPopular
-                        value={service.tags}
-                        onChange={(newTags) => service.updateValues({ tags: newTags })}
-                        autoSelect
-                        oneRow
-                    />
-                </Box> */}
-                {service.useDescription && (
-                    <TextField
-                        label={t('editor.bookmarkDescription')}
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        value={service.description}
-                        className={classes.inputDescription}
-                        disabled={service.url === ''}
-                        multiline
-                        rows={3}
-                        rowsMax={6}
-                        onChange={(event) => service.updateValues({ description: event.target.value })}
+                {(store.query || !service.url) && (
+                    <Divider />
+                )}
+                {store.query && (
+                    <Search
+                        query={store.query}
+                        onSelect={(result) => {
+                            store.query = '';
+                            service.updateValues(result);
+                        }}
                     />
                 )}
-                {!service.useDescription && (
-                    <Button
-                        data-ui-path="editor.description.add"
-                        startIcon={<AddIcon />}
-                        className={classes.addDescriptionButton}
-                        onClick={() => service.updateValues({ useDescription: true })}
-                    >
-                        {t('editor.button.addDescription')}
-                    </Button>
+                {service.url && (
+                    <Fragment>
+                        <InputBase
+                            placeholder={t('editor.bookmarkName', { context: 'placeholder' })}
+                            fullWidth
+                            value={service.name}
+                            className={clsx(classes.inputName, classes.input)}
+                            onChange={(event) => service.updateValues({ name: event.target.value })}
+                        />
+                        <TagsFiled
+                            selectedTags={service.tags}
+                            onChange={(newTags) => service.updateValues({ tags: newTags })}
+                            className={classes.input}
+                        />
+                        {service.useDescription && (
+                            <InputBase
+                                autoFocus
+                                placeholder={t('editor.bookmarkDescription', { context: 'placeholder' })}
+                                fullWidth
+                                value={service.description}
+                                className={clsx(classes.inputDescription, classes.input)}
+                                multiline
+                                rows={3}
+                                rowsMax={6}
+                                onChange={(event) => service.updateValues({ description: event.target.value })}
+                            />
+                        )}
+                        {!service.useDescription && (
+                            <Button
+                                data-ui-path="editor.description.add"
+                                className={clsx(classes.addDescriptionButton, classes.input)}
+                                onClick={() => service.updateValues({ useDescription: true })}
+                            >
+                                {t('editor.button.addDescription')}
+                            </Button>
+                        )}
+                        <Divider />
+                        <Folders
+                            className={classes.folderPicker}
+                            selectFolder={service.folderId}
+                            onClickFolder={({ id }) => { }}
+                            actions={({ id, name, permanent }) => service.folderId !== id && !permanent && (
+                                <Fragment>
+                                    <Button
+                                        onClick={() => {
+                                            service.updateValues({ folderId: id });
+                                        }}
+                                    >
+                                        {service.editBookmarkId ? 'Переместить' : 'Сохранить'}
+                                    </Button>
+                                </Fragment>
+                            )}
+                        />
+                    </Fragment>
                 )}
             </CardContent>
-            <div className={classes.controls}>
+            {/* <div className={classes.controls}>
                 <FolderSelector
                     className={classes.folderPicker}
                     value={service.folderId}
@@ -192,6 +266,24 @@ function Fields(props) {
                         </Box>
                     )}
                 </div>
+            </div> */}
+            <div className={classes.stateCaption}>
+                {store.saveState === FETCH.PENDING && (
+                    <Fragment>
+                        <CircularProgress size={14} color="primary" className={classes.saveIcon} />
+                        <Typography variant="caption">
+                            {t('editor.save.saving')}
+                        </Typography>
+                    </Fragment>
+                )}
+                {store.saveState === FETCH.DONE && (
+                    <Fragment>
+                        <DoneIcon color="primary" className={classes.saveIcon} />
+                        <Typography variant="caption">
+                            {t('editor.save.success')}
+                        </Typography>
+                    </Fragment>
+                )}
             </div>
         </Box>
     );

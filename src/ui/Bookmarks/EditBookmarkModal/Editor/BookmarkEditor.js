@@ -34,6 +34,7 @@ class BookmarkEditor {
     // Editor data
     state = STATE_EDITOR.LOADING_EDITOR;
     isChange = false;
+    unsavedChange = false;
     allImages = [];
     defaultImage = null;
     primaryImages = [];
@@ -114,6 +115,7 @@ class BookmarkEditor {
     }
 
     async save() {
+        this.unsavedChange = false;
         this.editBookmarkId = await this._bookmarksService.bookmarks.save({
             id: this.editBookmarkId,
             url: this.url,
@@ -217,6 +219,7 @@ class BookmarkEditor {
         this.icoUrl = url;
         this.sourceIcoUrl = sourceUrl;
         this.icoVariant = icoVariant;
+        this.unsavedChange = true;
     }
 
     updateValues(values) {
@@ -225,19 +228,24 @@ class BookmarkEditor {
         this.isChange = true;
 
         if ('name' in values || 'title' in values) {
-            this.name = values.name || values.title || this.name;
+            this.name = values.name || values.title; //  || this.name;
+            this.unsavedChange = true;
         }
         if ('description' in values) {
             this.description = values.description;
+            this.unsavedChange = true;
         }
         if ('useDescription' in values) {
             this.useDescription = values.useDescription;
+            this.unsavedChange = true;
         }
         if ('tags' in values) {
             this.tags = values.tags;
+            this.unsavedChange = true;
         }
         if ('folderId' in values) {
             this.folderId = values.folderId;
+            this.unsavedChange = true;
         }
 
         if ('url' in values) {

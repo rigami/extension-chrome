@@ -60,14 +60,16 @@ const useStyles = makeStyles((theme) => ({
         width: 18,
         height: 18,
         marginLeft: theme.spacing(1),
+        marginRight: 'auto',
         padding: theme.spacing(0.25),
         boxSizing: 'content-box',
     },
-    folderItem: { '&:hover $addSubFolder': { display: 'flex' } },
-    addSubFolder: {
-        display: 'none',
-        marginLeft: 'auto',
+    folderItem: {
+        '&:hover $addSubFolder': { display: 'flex' },
+        '&:hover $userActions': { display: 'flex' },
     },
+    addSubFolder: { display: 'none' },
+    userActions: { display: 'none' },
 }));
 
 function FolderItem(props) {
@@ -79,6 +81,7 @@ function FolderItem(props) {
         isExpand,
         isSelected,
         level,
+        actions,
         onClick,
         onExpandChange,
         onCreateSubFolder,
@@ -147,6 +150,20 @@ function FolderItem(props) {
                             </ItemAction>
                         </Tooltip>
                     )}
+                    <Box className={classes.userActions}>
+                        {actions && actions({
+                            id,
+                            name,
+                            permanent: false,
+                        })}
+                    </Box>
+                    <Box>
+                        {actions && actions({
+                            id,
+                            name,
+                            permanent: true,
+                        })}
+                    </Box>
                 </React.Fragment>
             )}
         />
@@ -161,6 +178,7 @@ function TreeItem(props) {
         expanded = [],
         disabled = [],
         level,
+        actions,
         isDisabled,
         isExpanded,
         selectedId,
@@ -180,6 +198,7 @@ function TreeItem(props) {
                 isExpand={isExpanded}
                 isSelected={selectedId === folder.id}
                 level={level}
+                actions={actions}
                 onClick={() => onClick(folder)}
                 onExpandChange={() => onChangeExpanded(folder.id)}
                 onCreateSubFolder={onCreateSubFolder}
@@ -191,6 +210,7 @@ function TreeItem(props) {
                         expanded={expanded}
                         disabled={disabled}
                         level={level + 1}
+                        actions={actions}
                         selectedId={selectedId}
                         onClickFolder={onClick}
                         onCreateSubFolder={onCreateSubFolder}
@@ -207,6 +227,7 @@ function TreeLevel(props) {
         data,
         expanded = [],
         disabled = [],
+        actions,
         level,
         selectedId,
         onClickFolder,
@@ -224,6 +245,7 @@ function TreeLevel(props) {
             isDisabled={disabled.includes(folder.id)}
             isExpanded={expanded.includes(folder.id)}
             selectedId={selectedId}
+            actions={actions}
             onClick={(selectFolder) => onClickFolder(selectFolder)}
             onChangeExpanded={onChangeExpanded}
             onCreateSubFolder={onCreateSubFolder}
@@ -239,6 +261,7 @@ function Folders(props) {
         disabled: defaultDisabled = [],
         showRoot = false,
         disableAdd = false,
+        actions,
         onClickFolder,
         className: externalClassName,
         emptyRender,
@@ -312,6 +335,7 @@ function Folders(props) {
                                 store.expanded = [...store.expanded, folderId];
                             }
                         }}
+                        actions={actions}
                     />
                 )}
                 {!disableAdd && (

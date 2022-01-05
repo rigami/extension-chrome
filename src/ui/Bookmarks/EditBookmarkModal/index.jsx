@@ -27,8 +27,11 @@ function EditBookmarkModal() {
 
     useEffect(() => {
         const listeners = [
-            coreService.localEventBus.on('bookmark/edit', ({ id }) => {
-                setOptions({ editBookmarkId: id });
+            coreService.localEventBus.on('bookmark/edit', ({ id, position }) => {
+                setOptions({
+                    editBookmarkId: id,
+                    position,
+                });
                 handleOpen();
             }),
             coreService.localEventBus.on('bookmark/create', (editOptions = {}) => {

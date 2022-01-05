@@ -74,21 +74,16 @@ function SearchSiteField({ url = '', marginThreshold = 24, onSelect }) {
     }, [url]);
 
     return (
-        <React.Fragment>
-            <ReactResizeDetector
-                handleHeight
-                onResize={(width) => {
-                    store.filedWidth = width;
-                }}
-            >
+        <Paper elevation={8} style={{ width: store.filedWidth + 32 }} className={classes.paper}>
+            <Box className={classes.inputWrapper}>
                 <TextField
                     label={t('editor.bookmarkUrl')}
                     variant="outlined"
                     size="small"
-                    ref={inputRef}
                     fullWidth
                     autoFocus
-                    value={store.url}
+                    ref={secondInput}
+                    value={store.url || ' '}
                     className={classes.input}
                     onChange={handleChange}
                     onMouseDown={() => setIsBlockEvent(true)}
@@ -96,87 +91,21 @@ function SearchSiteField({ url = '', marginThreshold = 24, onSelect }) {
                         if (store.url) setIsOpen(true);
                         setIsBlockEvent(false);
                     }}
+                    onKeyDown={(event) => {
+                        if (event.nativeEvent.code === 'Enter') {
+                            handleSelect({
+                                url: store.url,
+                                allowChangeUrl: true,
+                            });
+                        }
+                    }}
                 />
-            </ReactResizeDetector>
-            <Popover
-                open={isOpen}
-                anchorReference="anchorPosition"
-                anchorPosition={{
-                    top: 0,
-                    left: 0,
-                }}
-                marginThreshold={0}
-                elevation={0}
-                classes={{ paper: classes.popoverContent }}
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                }}
-                TransitionComponent={Fade}
-                disableEnforceFocus
-            >
-                <Scrollbar>
-                    <Box
-                        style={{
-                            paddingTop: Math.max(
-                                inputRef.current?.getBoundingClientRect?.()?.top - 16,
-                                marginThreshold,
-                            ),
-                            paddingLeft: inputRef.current?.getBoundingClientRect?.()?.left - 16,
-                            paddingBottom: marginThreshold,
-                        }}
-                    >
-                        <ClickAwayListener
-                            onClickAway={() => {
-                                if (isBlockEvent) return;
-                                handleSelect({
-                                    url: store.url,
-                                    allowChangeUrl: true,
-                                });
-                            }}
-                            mouseEvent="onMouseDown"
-                        >
-                            <Paper elevation={8} style={{ width: store.filedWidth + 32 }} className={classes.paper}>
-                                <Box className={classes.inputWrapper}>
-                                    <TextField
-                                        label={t('editor.bookmarkUrl')}
-                                        variant="outlined"
-                                        size="small"
-                                        fullWidth
-                                        autoFocus
-                                        ref={secondInput}
-                                        value={store.url || ' '}
-                                        className={classes.input}
-                                        onChange={handleChange}
-                                        onMouseDown={() => setIsBlockEvent(true)}
-                                        onClick={() => {
-                                            if (store.url) setIsOpen(true);
-                                            setIsBlockEvent(false);
-                                        }}
-                                        onKeyDown={(event) => {
-                                            if (event.nativeEvent.code === 'Enter') {
-                                                handleSelect({
-                                                    url: store.url,
-                                                    allowChangeUrl: true,
-                                                });
-                                            }
-                                        }}
-                                    />
-                                </Box>
-                                <Search
-                                    query={store.url}
-                                    onSelect={(result) => handleSelect(result)}
-                                />
-                            </Paper>
-                        </ClickAwayListener>
-                    </Box>
-                </Scrollbar>
-            </Popover>
-        </React.Fragment>
+            </Box>
+            <Search
+                query={store.url}
+                onSelect={(result) => handleSelect(result)}
+            />
+        </Paper>
     );
 }
 

@@ -3,11 +3,15 @@
   "editor_edit": "Редактирование закладки",
   "editor": {
     "bookmarkUrl": "URL или запрос",
+    "bookmarkUrl_placeholder": "Введите url или запрос...",
     "bookmarkName": "Имя закладки",
+    "bookmarkName_placeholder": "Добавить имя...",
     "bookmarkDescription": "Описание",
+    "bookmarkDescription_placeholder": "Добавить описание...",
     "bookmarkTags": "Теги",
+    "bookmarkTags_placeholder": "Добавить тег...",
     "button": {
-      "addDescription": "Описание",
+      "addDescription": "Добавить описание...",
       "forceAdd": "Все равно добавить",
       "moreIcons": "Еще значки",
       "scrollToMore": "Прокрутите до других",
