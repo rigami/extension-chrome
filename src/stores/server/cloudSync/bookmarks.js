@@ -169,7 +169,11 @@ class CloudSyncBookmarksService {
         await Promise.all(snapshots.map(async (snapshot) => {
             const pair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.id); // TODO Maybe many results
             const folderPair = await db().getFromIndex('pair_with_cloud', 'cloud_id', snapshot.payload.folderId);
-            const tagPairs = await Promise.all(snapshot.payload.tagsIds.map((id) => db().getFromIndex('pair_with_cloud', 'cloud_id', id)));
+            const tagPairs = await Promise.all(
+                snapshot.payload.tagsIds
+                    .filter((isExist) => isExist)
+                    .map((id) => db().getFromIndex('pair_with_cloud', 'cloud_id', id)),
+            );
 
             if (!pair) {
                 console.warn(`Snapshot of bookmark with cloudId:${pair?.cloudId} not exist. Creating...`);
