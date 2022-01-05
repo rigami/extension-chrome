@@ -101,7 +101,7 @@ function Fields(props) {
     const { t } = useTranslation(['bookmark']);
     const store = useLocalObservable(() => ({
         saveState: FETCH.WAIT,
-        query: '',
+        query: service.url,
     }));
 
     const save = async () => {
@@ -128,6 +128,10 @@ function Fields(props) {
         save();
     }, [service.unsavedChange]);
 
+    useEffect(() => {
+        store.query = service.url;
+    }, [service.url]);
+
     return (
         <Box className={classes.details}>
             <CardContent className={classes.content}>
@@ -142,25 +146,30 @@ function Fields(props) {
                 <InputBase
                     placeholder={t('editor.bookmarkUrl', { context: 'placeholder' })}
                     fullWidth
-                    value={store.query || service.url}
+                    value={store.query}
                     className={classes.input}
                     onChange={(event) => {
-                        if (!service.url) store.query = event.target.value;
+                        store.query = event.target.value;
+                    }}
+                    onKeyDown={(event) => {
+                        if (event.code === 'Enter') {
+                            service.updateValues({ url: store.query });
+                        }
                     }}
                 />
-                {(store.query || !service.url) && (
-                    <Divider />
+                {(store.query !== service.url || !service.url) && (
+                    <Fragment>
+                        <Divider />
+                        <Search
+                            query={store.query}
+                            onSelect={(result) => {
+                                store.query = '';
+                                service.updateValues(result);
+                            }}
+                        />
+                    </Fragment>
                 )}
-                {store.query && (
-                    <Search
-                        query={store.query}
-                        onSelect={(result) => {
-                            store.query = '';
-                            service.updateValues(result);
-                        }}
-                    />
-                )}
-                {service.url && (
+                {store.query === service.url && service.url && (
                     <Fragment>
                         <InputBase
                             placeholder={t('editor.bookmarkName', { context: 'placeholder' })}
