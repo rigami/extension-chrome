@@ -31,6 +31,11 @@ const useStyles = makeStyles((theme) => ({
     content: {
         flex: '1 0 auto',
         minHeight: 450,
+        backgroundColor: theme.palette.background.backdropLight,
+        borderRadius: theme.shape.borderRadius,
+        margin: theme.spacing(2),
+        marginLeft: 0,
+        marginBottom: 0,
     },
     header: { marginBottom: theme.spacing(1) },
     controls: {
@@ -53,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
     input: {
         // marginTop: theme.spacing(1)
     },
+    inputUrl: { textOverflow: 'ellipsis' },
     inputDescription: { marginBottom: theme.spacing(1) },
     addDescriptionButton: {
         marginBottom: theme.spacing(1),
@@ -83,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
     stateCaption: {
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(1.5),
+        padding: theme.spacing(1, 2),
         justifyContent: 'flex-end',
         height: theme.spacing(2),
         boxSizing: 'content-box',
@@ -148,6 +154,7 @@ function Fields(props) {
                     fullWidth
                     value={store.query}
                     className={classes.input}
+                    classes={{ input: classes.inputUrl }}
                     onChange={(event) => {
                         store.query = event.target.value;
                     }}
@@ -174,9 +181,16 @@ function Fields(props) {
                         <InputBase
                             placeholder={t('editor.bookmarkName', { context: 'placeholder' })}
                             fullWidth
+                            multiline
                             value={service.name}
                             className={clsx(classes.inputName, classes.input)}
                             onChange={(event) => service.updateValues({ name: event.target.value })}
+                            onKeyDown={(event) => {
+                                if (event.code === 'Enter') {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                }
+                            }}
                         />
                         <TagsFiled
                             selectedTags={service.tags}

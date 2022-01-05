@@ -1,33 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
+import { observer } from 'mobx-react-lite';
+import { withProfiler } from '@sentry/react';
 import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import useCoreService, { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
 import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
 import { APP_STATE } from '@/stores/app/core';
-import { observer } from 'mobx-react-lite';
 import initSentry from '@/config/sentry/app';
-import Stub from '@/ui-components/Stub';
 import Nest from '@/utils/helpers/Nest';
-import EditorBookmark from '@/ui/Bookmarks/EditBookmarkModal/Editor';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import asyncAction from '@/utils/helpers/asyncAction';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
-import { first } from 'lodash';
-import { captureException, withProfiler } from '@sentry/react';
+import Editor from './Editor';
 
 initSentry(DESTINATION.POPUP);
-
-const useStyles = makeStyles(() => ({
-    editor: { padding: 0 },
-    editorContent: {
-        flexGrow: 1,
-        borderRadius: 0,
-    },
-}));
 
 function LoadStoreWait({ children }) {
     const coreService = useCoreService();
@@ -41,67 +27,6 @@ function LoadStoreWait({ children }) {
 
 const ObserverLoadStoreWait = observer(LoadStoreWait);
 
-function Popup() {
-    const classes = useStyles();
-    const [bookmark, setBookmark] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        if (!chrome?.tabs) {
-            setIsLoading(false);
-            return;
-        }
-
-        asyncAction(async () => {
-            const data = {};
-
-            await new Promise((resolve, reject) => chrome.tabs.query({ active: true }, ([tab]) => {
-                if (!tab) {
-                    reject(new Error('Tab not found'));
-                    return;
-                }
-
-                data.url = tab.url;
-                data.name = tab.title;
-                resolve();
-            }));
-
-            const res = await BookmarksUniversalService.query(new SearchQuery({ query: data.url }));
-
-            if (res.best && res.best.length !== 0) {
-                data.id = first(res.best)?.id;
-            }
-
-            setBookmark(data);
-            setIsLoading(false);
-        }).catch((e) => {
-            captureException(e);
-            console.error(e);
-            setIsLoading(false);
-        });
-    }, []);
-
-    return (
-        <React.Fragment>
-            {!isLoading && (
-                <EditorBookmark
-                    className={clsx(classes.editor)}
-                    classes={{ editor: classes.editorContent }}
-                    bringToEditorHeight
-                    editBookmarkId={bookmark.id}
-                    defaultName={bookmark.name}
-                    defaultUrl={bookmark.url}
-                    marginThreshold={0}
-                    onSave={() => {}}
-                />
-            )}
-            {isLoading && (
-                <Stub message="Loading..." />
-            )}
-        </React.Fragment>
-    );
-}
-
 function PopupRoot() {
     const [theme] = useState(localStorage.getItem('theme') === THEME.LIGHT ? lightTheme : darkTheme);
 
@@ -111,6 +36,7 @@ function PopupRoot() {
             minWidth={300}
             minHeight={400}
             display="flex"
+            flexDirection="column"
         >
             <Nest
                 components={[
@@ -121,7 +47,7 @@ function PopupRoot() {
                 ]}
             >
                 <CssBaseline />
-                <Popup />
+                <Editor />
             </Nest>
         </Box>
     );

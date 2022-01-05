@@ -24,7 +24,10 @@ const theme = {
         dividerLight: alpha('#000', 0.09),
         favorite: { main: '#F4C620' },
         snackbar: { default: alpha('#fff', 0.95) },
-        background: { backdrop: '#ececec' },
+        background: {
+            backdrop: '#ececec',
+            backdropLight: '#F9F9F9',
+        },
     },
     shape: {
         borderRadius: 4,
@@ -87,6 +90,13 @@ const theme = {
                 fontFamily: primaryFontFamily,
                 wordBreak: 'break-word',
                 textTransform: 'none',
+            },
+        },
+        MuiTab: {
+            root: {
+                textTransform: 'none',
+                fontWeight: 800,
+                fontFamily: primaryFontFamily,
             },
         },
         MuiTypography: {
