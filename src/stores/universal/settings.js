@@ -1,6 +1,6 @@
 import { computed, makeObservable, override } from 'mobx';
-import defaultSettings from '@/config/settings';
 import { pick } from 'lodash';
+import defaultSettings from '@/config/settings';
 import { PersistentStorage } from '@/stores/universal/storage';
 
 class BackgroundsSettings extends PersistentStorage {
@@ -116,6 +116,7 @@ class BookmarksSettings extends PersistentStorage {
             fapAlign: defaultSettings.bookmarks.fapAlign,
             favorites: defaultSettings.bookmarks.favorites,
             syncWithSystem: defaultSettings.bookmarks.syncWithSystem,
+            displayVariant: defaultSettings.bookmarks.displayVariant,
             ...(currState || {}),
         })));
         makeObservable(this);
@@ -136,6 +137,9 @@ class BookmarksSettings extends PersistentStorage {
     @computed
     get syncWithSystem() { return this.data.syncWithSystem; }
 
+    @computed
+    get displayVariant() { return this.data.displayVariant; }
+
     @override
     update(props = {}) {
         const updProps = pick(props, [
@@ -144,6 +148,7 @@ class BookmarksSettings extends PersistentStorage {
             'fapAlign',
             'favorites',
             'syncWithSystem',
+            'displayVariant',
         ]);
 
         super.update(updProps);

@@ -154,9 +154,11 @@ function ContextMenuProvider({ children }) {
 
     const handleContextMenu = (itemOrCreator, options = {}) => (event) => {
         const {
-            useAnchorEl = false, reactions,
+            useAnchorEl = false,
+            reactions,
             onOpen,
             onClose,
+            className,
         } = options;
         event.stopPropagation();
         event.preventDefault();
@@ -184,6 +186,7 @@ function ContextMenuProvider({ children }) {
             reactions,
             onOpen,
             onClose,
+            className,
         });
     };
 

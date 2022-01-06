@@ -48,12 +48,13 @@ function BookmarksList(props) {
         bookmarks,
         max = Infinity,
         classes: externalClasses = {},
+        className: externalClassName,
         overloadContent,
     } = props;
     const [hoverIndex, setHoverIndex] = useState(null);
 
     return (
-        <ul className={classes.root}>
+        <ul className={clsx(classes.root, externalClasses.root, externalClassName)}>
             {bookmarks.slice(0, max).map((bookmark, index) => (
                 <Fragment key={bookmark.id}>
                     {index !== 0 && (

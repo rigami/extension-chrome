@@ -5,11 +5,14 @@ import {
     ListItemIcon,
     ListItemText,
     Divider,
+    ListItemSecondaryAction,
+    Box,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { reaction } from 'mobx';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
@@ -30,10 +33,31 @@ const useStyles = makeStyles((theme) => ({
     item: { padding: theme.spacing(0.5, 1.5) },
     icon: {
         minWidth: 22 + 12,
+        display: 'flex',
+        alignItems: 'center',
         '& svg': {
             width: 22,
             height: 22,
         },
+    },
+    secondaryAction: {
+        justifyContent: 'flex-end',
+        display: 'flex',
+        alignItems: 'center',
+        justifySelf: 'center',
+        position: 'relative',
+        right: 'unset',
+        top: 'unset',
+        transform: 'unset',
+        flexShrink: 0,
+        flexGrow: 1,
+        paddingLeft: theme.spacing(1),
+        // paddingRight: theme.spacing(2),
+    },
+    itemContainer: { display: 'flex' },
+    itemHelper: {
+        display: 'flex',
+        width: '100%',
     },
 }));
 
@@ -47,6 +71,7 @@ function ContextMenu() {
         reactions: [],
         onOpen: null,
         onClose: null,
+        userClassName: null,
     }));
     const [, setForceRender] = useState(0);
 
@@ -57,6 +82,7 @@ function ContextMenu() {
             store.position = props.position;
             store.actions = props.actions;
             store.reactions = props.reactions || [];
+            store.userClassName = props.className;
         });
 
         return () => coreService.localEventBus.removeListener(listenId);
@@ -86,7 +112,7 @@ function ContextMenu() {
             }}
             anchorReference="anchorPosition"
             anchorPosition={store.position}
-            classes={{ list: classes.menu }}
+            classes={{ list: clsx(classes.menu, store.userClassName) }}
             onContextMenu={(event) => {
                 event.preventDefault();
                 store.position = null;
@@ -108,26 +134,42 @@ function ContextMenu() {
                     return (
                         <Divider key="divider" className={classes.divider} />
                     );
+                } else if (element.type === 'customItem') {
+                    return element.render();
                 } else {
                     const Icon = element.icon;
 
                     return (
                         <ListItem
+                            classes={{ container: classes.itemContainer }}
                             className={classes.item}
                             key={element.title}
-                            button
+                            button={element.onClick}
                             dense
                             disabled={element.disabled}
-                            onClick={() => {
-                                element.onClick();
-                                store.position = null;
-                                store.onClose?.();
+                            onClick={async () => {
+                                const result = await element.onClick(() => {
+                                    store.position = null;
+                                    store.onClose?.();
+                                });
+
+                                if (!result) {
+                                    store.position = null;
+                                    store.onClose?.();
+                                }
                             }}
                         >
-                            <ListItemIcon className={classes.icon}>
-                                <Icon {...element.iconProps} />
-                            </ListItemIcon>
-                            <ListItemText primary={element.title} secondary={element.description} />
+                            <Box className={classes.itemHelper}>
+                                <ListItemIcon className={classes.icon}>
+                                    {Icon && (<Icon {...element.iconProps} />)}
+                                </ListItemIcon>
+                                <ListItemText primary={element.title} secondary={element.description} />
+                                {element.action && (
+                                    <ListItemSecondaryAction className={classes.secondaryAction}>
+                                        {element.action}
+                                    </ListItemSecondaryAction>
+                                )}
+                            </Box>
                         </ListItem>
                     );
                 }

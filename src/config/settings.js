@@ -9,7 +9,7 @@ import {
     WIDGET_DTW_POSITION,
     WIDGET_DTW_SIZE,
     WIDGET_DTW_UNITS,
-    BKMS_FAP_ALIGN,
+    BKMS_FAP_ALIGN, BKMS_DISPLAY_VARIANT,
 } from '@/enum';
 
 export default {
@@ -27,6 +27,7 @@ export default {
         favorites: [],
         syncWithSystem: false,
         syncDefaultFolderName: 'google chrome',
+        displayVariant: BKMS_DISPLAY_VARIANT.CARDS,
     },
     widgets: {
         useWidgets: true,

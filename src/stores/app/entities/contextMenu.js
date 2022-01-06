@@ -7,6 +7,7 @@ class ContextMenuItem {
     disabled;
     iconProps;
     onClick;
+    action;
 
     constructor(item) {
         assign(this, pick(item, [
@@ -15,6 +16,7 @@ class ContextMenuItem {
             'icon',
             'iconProps',
             'onClick',
+            'action',
         ]));
     }
 }
@@ -23,7 +25,17 @@ class ContextMenuDivider {
     type = 'divider';
 }
 
+class ContextMenuCustomItem {
+    type = 'customItem';
+    render;
+
+    constructor(item) {
+        assign(this, pick(item, ['render']));
+    }
+}
+
 export {
     ContextMenuItem,
+    ContextMenuCustomItem,
     ContextMenuDivider,
 };
