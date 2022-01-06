@@ -28,6 +28,7 @@ const theme = {
             backdrop: '#ececec',
             backdropLight: '#F9F9F9',
         },
+        text: { primary: alpha('#000', 0.76) },
     },
     shape: {
         borderRadius: 4,

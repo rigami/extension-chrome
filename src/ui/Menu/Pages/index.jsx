@@ -94,10 +94,8 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 3,
     },
     icon: {
-        width: 30,
-        height: 30,
         marginLeft: 5,
-        '& svg': { fontSize: '1.2rem' },
+        display: 'block',
     },
     text: {
         marginTop: 0,
@@ -165,12 +163,7 @@ function Row(props) {
             selected={selected}
         >
             <ListItemAvatar className={classes.iconContainer}>
-                <Avatar
-                    className={classes.icon}
-                    style={{ backgroundColor: color }}
-                >
-                    {Icon}
-                </Avatar>
+                {React.cloneElement(Icon, { className: classes.icon })}
             </ListItemAvatar>
             <ListItemText className={classes.text} primary={t(page.id)} secondary={t(page.id, { context: 'description' })} />
         </ListItem>
@@ -293,7 +286,7 @@ function MenuList({ selected, onClose, onSelect }) {
         <List
             disablePadding
             className={classes.menuList}
-            style={{ width: 300 }}
+            style={{ width: 280 }}
         >
             <PageHeader onBack={onClose} />
             <GeneralMenu
