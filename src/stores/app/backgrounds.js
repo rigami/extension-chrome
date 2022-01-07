@@ -4,6 +4,7 @@ import {
     makeAutoObservable,
     computed,
 } from 'mobx';
+import { captureException } from '@sentry/react';
 import appVariables from '@/config/appVariables';
 import {
     BG_TYPE,
@@ -19,7 +20,6 @@ import { BackgroundsSettings } from '@/stores/universal/settings';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrounds/service';
-import { captureException } from '@sentry/react';
 
 class BackgroundsAppService {
     currentBGId;
@@ -327,7 +327,7 @@ class BackgroundsAppService {
         let currIndex = 0;
         const bgs = [];
 
-        while (cursor && currIndex + 1 < limit) {
+        while (cursor && currIndex + 1 <= limit) {
             bgs.push(new Background(cursor.value));
 
             currIndex += 1;

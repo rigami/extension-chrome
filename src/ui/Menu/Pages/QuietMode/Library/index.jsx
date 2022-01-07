@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { FETCH } from '@/enum';
 import {
     Box,
     CircularProgress,
@@ -10,14 +9,15 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import Stub from '@/ui-components/Stub';
 import { last } from 'lodash';
+import { captureException } from '@sentry/react';
+import { PhotoLibraryRounded as EmptyLibraryIcon } from '@material-ui/icons';
+import Stub from '@/ui-components/Stub';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import BackgroundCard from '@/ui/Menu/Pages/QuietMode/BackgroundCard';
-import { captureException } from '@sentry/react';
-import { PhotoLibraryRounded as EmptyLibraryIcon } from '@material-ui/icons';
+import { FETCH } from '@/enum';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 
 const useStyles = makeStyles(() => ({

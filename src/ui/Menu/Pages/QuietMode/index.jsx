@@ -26,7 +26,9 @@ const pageProps = { width: 750 };
 function BGCard({ src }) {
     return (
         <Avatar
-            src={src} variant="rounded" style={{
+            src={src}
+            variant="rounded"
+            style={{
                 width: 48,
                 height: 48,
                 marginRight: 8,
@@ -56,7 +58,8 @@ function LibraryRow({ bgs, onSelect }) {
             ))}
             {bgs && bgs.length > 8 && (
                 <Avatar
-                    variant="rounded" style={{
+                    variant="rounded"
+                    style={{
                         width: 48,
                         height: 48,
                         marginRight: 8,

@@ -32,5 +32,8 @@
       "cards": "Карточки",
       "rows": "Список"
     }
+  },
+  "changeBackground": {
+    "title": "Изменить фон"
   }
 }
