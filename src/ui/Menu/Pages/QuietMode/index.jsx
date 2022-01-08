@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Avatar, Collapse } from '@material-ui/core';
+import { Avatar, Collapse, Divider } from '@material-ui/core';
 import {
     WallpaperRounded as WallpaperIcon,
     MoreHorizRounded as MoreIcon,
@@ -273,7 +273,9 @@ function BackgroundsMenu({ onSelect }) {
     return (
         <React.Fragment>
             <ObserverWidgetsSettings />
+            <Divider variant="middle" />
             <ObserverFAPSettings />
+            <Divider variant="middle" />
             <MemoBackgroundsSection onSelect={onSelect} />
             <SchedulerSection onSelect={onSelect} />
         </React.Fragment>

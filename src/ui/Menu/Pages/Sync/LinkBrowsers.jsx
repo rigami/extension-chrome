@@ -1,9 +1,11 @@
-import { getI18n, useTranslation } from 'react-i18next';
 import React, {
-    Fragment, useState, forwardRef, useEffect, useCallback,
+    Fragment,
+    useState,
+    forwardRef,
+    useEffect,
 } from 'react';
 import {
-    Button,
+    Button, Collapse,
     Dialog,
     DialogActions,
     DialogContent,
@@ -12,6 +14,7 @@ import {
     TextField,
     Typography,
 } from '@material-ui/core';
+import { getI18n, useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { IMaskInput } from 'react-imask';
@@ -416,7 +419,7 @@ const { format: format24 } = new Intl.DateTimeFormat(getI18n()?.language, {
     hourCycle: 'h23',
 });
 
-function Device({ type, lastActivityDate, current = false }) {
+function Device({ type, lastActivityDate, current = false, onClick }) {
     const classes = useStyles();
     const { t } = useTranslation(['settingsSync']);
     const { widgets } = useAppStateService();
@@ -447,16 +450,22 @@ function Device({ type, lastActivityDate, current = false }) {
                     </Fragment>
                 ),
             }}
+            onClick={onClick}
         />
     );
 }
 
 function SyncedDevices() {
+    const classes = useStyles();
     const { t } = useTranslation(['settingsSync']);
+    const { widgets } = useAppStateService();
     const store = useLocalObservable(() => ({
         status: FETCH.WAIT,
         currentDevice: null,
         otherDevices: [],
+        expandDevice: null,
+        disconnectStatus: FETCH.WAIT,
+        disconnectedDevice: null,
     }));
 
     const fetchDevices = async () => {
@@ -480,6 +489,33 @@ function SyncedDevices() {
         } catch (e) {
             console.error(e);
             store.status = FETCH.FAILED;
+        }
+    };
+
+    const disconnectDevice = async () => {
+        store.disconnectStatus = FETCH.PENDING;
+
+        try {
+            const { response, ok } = await api.get('users/merge', {
+                query: { },
+                useToken: !!authStorage.data.username,
+            });
+
+            console.log('response:', response);
+
+            if (!ok) {
+                store.disconnectStatus = FETCH.FAILED;
+
+                return;
+            }
+
+            await fetchDevices();
+
+            store.disconnectStatus = FETCH.DONE;
+            store.disconnectedDevice = null;
+        } catch (e) {
+            console.error(e);
+            store.disconnectStatus = FETCH.FAILED;
         }
     };
 
@@ -507,24 +543,134 @@ function SyncedDevices() {
         );
     }
 
+    if (store.status === FETCH.FAILED) {
+        return (
+            <MenuRow
+                title={t('syncDevices.failed')}
+            />
+        );
+    }
+
     return (
         <Fragment>
             <SectionHeader h={2} title={t('syncDevices.currentTitle')} />
             {store.currentDevice && (
-                <Device
-                    type={store.currentDevice.type}
-                    lastActivityDate={store.currentDevice.lastActivityDate}
-                    current
-                />
+                <Fragment>
+                    <Device
+                        type={store.currentDevice.type}
+                        lastActivityDate={store.currentDevice.lastActivityDate}
+                        current
+                    />
+                    {/* <MenuRow
+                        action={{
+                            type: ROWS_TYPE.CUSTOM,
+                            onClick: () => {},
+                            component: (
+                                <Button
+                                    variant="contained"
+                                    component="span"
+                                    color="error"
+                                    className={classes.reRunSyncButton}
+                                    fullWidth
+                                    onClick={() => {
+                                        store.disconnectedDevice = store.currentDevice;
+                                    }}
+                                >
+                                    {t('syncDevices.button.disconnectThisDevice')}
+                                </Button>
+                            ),
+                        }}
+                    /> */}
+                </Fragment>
             )}
             <SectionHeader h={2} title={t('syncDevices.otherTitle')} />
             {store.otherDevices.map((device) => (
-                <Device
-                    key={device.id}
-                    type={device.type}
-                    lastActivityDate={device.lastActivityDate}
-                />
+                <Fragment key={device.id}>
+                    <Device
+                        type={device.type}
+                        lastActivityDate={device.lastActivityDate}
+                        onClick={() => {
+                            if (store.expandDevice === device.id) {
+                                store.expandDevice = null;
+                            } else {
+                                store.expandDevice = device.id;
+                            }
+                        }}
+                    />
+                    <Collapse in={store.expandDevice === device.id}>
+                        <MenuRow
+                            description={(
+                                <Fragment>
+                                    {device.lastActivityIp}
+                                    <br />
+                                    <Typography variant="caption">{t('syncDevices.lastActivityIp')}</Typography>
+                                    <br />
+                                    <br />
+                                    {
+                                        device.createDate
+                                            ? (widgets.settings.dtwTimeFormat12 ? format12 : format24)(new Date(device.createDate))
+                                            : '-'
+                                    }
+                                    <br />
+                                    <Typography variant="caption">{t('syncDevices.createDate')}</Typography>
+                                    <br />
+                                    <br />
+                                    {device.userAgent}
+                                    <br />
+                                    <Typography variant="caption">{t('syncDevices.userAgent')}</Typography>
+                                </Fragment>
+                            )}
+                            /* action={{
+                                type: ROWS_TYPE.CUSTOM,
+                                onClick: () => {},
+                                component: (
+                                    <Button
+                                        variant="contained"
+                                        component="span"
+                                        color="error"
+                                        className={classes.reRunSyncButton}
+                                        fullWidth
+                                        onClick={() => {
+                                            store.disconnectedDevice = device;
+                                        }}
+                                    >
+                                        {t('syncDevices.button.disconnectOtherDevice')}
+                                    </Button>
+                                ),
+                            }} */
+                        />
+                    </Collapse>
+                </Fragment>
             ))}
+            <Dialog
+                open={store.disconnectedDevice}
+                onClose={() => { if (store.disconnectStatus !== FETCH.PENDING) store.disconnectedDevice = null; }}
+            >
+                <DialogTitle>{t('syncDevices.disconnectDevice.title')}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {t('syncDevices.disconnectDevice.description')}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        data-ui-path="mergeUsers.applyRequest.cancel"
+                        color="primary"
+                        disabled={store.disconnectStatus === FETCH.PENDING}
+                        onClick={() => { store.disconnectedDevice = null; }}
+                    >
+                        {t('common:button.cancel')}
+                    </Button>
+                    <Button
+                        data-ui-path="mergeUsers.applyRequest.apply"
+                        color="primary"
+                        disabled={store.disconnectStatus === FETCH.PENDING}
+                        onClick={disconnectDevice}
+                    >
+                        {t('syncDevices.disconnectDevice.button.apply')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Fragment>
     );
 }

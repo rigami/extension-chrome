@@ -85,6 +85,7 @@ function MenuRow(props) {
         } = {},
         width,
         children,
+        onClick: rootOnClick,
     } = props;
     const classes = useStyles();
     const { t } = useTranslation();
@@ -107,8 +108,13 @@ function MenuRow(props) {
         <ListItem
             classes={{ root: clsx(classes.root, externalClassName) }}
             style={{ width }}
-            button={actionType === TYPE.LINK || actionType === TYPE.CHECKBOX}
+            button={
+                actionType === TYPE.LINK
+                || actionType === TYPE.CHECKBOX
+                || (actionType === TYPE.CUSTOM && rootOnClick)
+            }
             onClick={(event) => {
+                if (actionType === TYPE.CUSTOM && rootOnClick) rootOnClick(event);
                 if (actionType === TYPE.LINK && actionProps.onClick) actionProps.onClick(event);
                 if (actionType === TYPE.CHECKBOX) {
                     setValue(!value);

@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import { Divider } from '@material-ui/core';
 import LinkBrowsers from './LinkBrowsers';
 import LocalBackup from './LocalBackup';
 // import ImportBookmarksFromBrowser from './ImportBookmarksFromBrowser';
@@ -12,6 +13,7 @@ function SyncSettings() {
         <React.Fragment>
             {/* BUILD === 'full' && (<ImportBookmarksFromBrowser />) */}
             <LinkBrowsers />
+            <Divider variant="middle" />
             <LocalBackup />
         </React.Fragment>
     );
