@@ -107,15 +107,15 @@ const useStyles = makeStyles((theme) => ({
     extendBannerTitle: { '-webkit-line-clamp': 2 },
     description: {
         color: theme.palette.text.secondary,
-        marginTop: 0,
+        marginTop: theme.spacing(0.5),
         margin: theme.spacing(0, 1.5),
         fontFamily: theme.typography.secondaryFontFamily,
         fontWeight: 400,
-        lineHeight: 1.2,
+        lineHeight: 1.3,
         wordBreak: 'break-word',
         display: '-webkit-box',
         '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 6,
+        '-webkit-line-clamp': 5,
         overflow: 'hidden',
     },
     infoWrapper: {
