@@ -87,7 +87,7 @@ class BookmarkEditor {
             this.state = STATE_EDITOR.WAIT_REQUEST;
             this.tags = defaultData.tagsIds || [];
             this.tagsFull = [];
-            this.folderId = defaultData.folderId === NULL_UUID ? FIRST_UUID : defaultData.folderId || FIRST_UUID;
+            this.folderId = defaultData.folderId === NULL_UUID ? FIRST_UUID : defaultData.folderId || null;
 
             if (defaultData.url) {
                 this.url = defaultData.url || '';
@@ -219,7 +219,7 @@ class BookmarkEditor {
         this.icoUrl = url;
         this.sourceIcoUrl = sourceUrl;
         this.icoVariant = icoVariant;
-        this.unsavedChange = true;
+        if (this.folderId) this.unsavedChange = true;
     }
 
     updateValues(values) {
@@ -229,19 +229,19 @@ class BookmarkEditor {
 
         if ('name' in values || 'title' in values) {
             this.name = values.name || values.title; //  || this.name;
-            this.unsavedChange = true;
+            if (this.folderId) this.unsavedChange = true;
         }
         if ('description' in values) {
             this.description = values.description;
-            this.unsavedChange = true;
+            if (this.folderId) this.unsavedChange = true;
         }
         if ('useDescription' in values) {
             this.useDescription = values.useDescription;
-            this.unsavedChange = true;
+            if (this.folderId) this.unsavedChange = true;
         }
         if ('tags' in values) {
             this.tags = values.tags;
-            this.unsavedChange = true;
+            if (this.folderId) this.unsavedChange = true;
         }
         if ('folderId' in values) {
             this.folderId = values.folderId;
