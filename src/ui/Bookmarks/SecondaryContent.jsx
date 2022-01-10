@@ -18,7 +18,7 @@ import { FIRST_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
     folderContainer: {
-        marginTop: theme.spacing(12),
+        marginBottom: theme.spacing(12),
         paddingLeft: theme.spacing(2),
         borderRadius: theme.shape.borderRadius,
         display: 'flex',

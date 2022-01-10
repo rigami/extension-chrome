@@ -17,8 +17,8 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         flexDirection: 'column',
         maxWidth: 4 * (theme.shape.dataCard.width + 16) + 24 + 8,
-        paddingTop: theme.spacing(7),
-        paddingRight: theme.spacing(3),
+        // marginBottom: theme.spacing(7),
+        // paddingRight: theme.spacing(3),
     },
     card: {
         backgroundColor: theme.palette.background.backdropLight,

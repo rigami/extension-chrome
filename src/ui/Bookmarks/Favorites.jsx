@@ -101,7 +101,7 @@ function Favorites() {
     if (bookmarksService.favorites.length === 0) return null;
 
     return (
-        <Box pl={2}>
+        <Box pl={2} mb={4}>
             <Box className={classes.header}>
                 <CheckIcon className={classes.icon} />
                 <Typography>{t('bookmark:button.favorites')}</Typography>

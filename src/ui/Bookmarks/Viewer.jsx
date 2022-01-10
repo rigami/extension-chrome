@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'flex-start',
     },
     content: {
-        padding: theme.spacing(0, 3),
+        padding: theme.spacing(4, 3),
         paddingBottom: theme.spacing(12),
     },
     sideBar: {
@@ -50,8 +50,13 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 450,
         marginLeft: 'auto',
         flexBasis: '100%',
+        paddingTop: theme.spacing(7),
+        paddingRight: theme.spacing(3),
     },
-    inlineWidgets: {},
+    inlineWidgets: {
+        marginBottom: theme.spacing(4),
+        padding: theme.spacing(0, 2),
+    },
 }));
 
 function Bookmarks() {
