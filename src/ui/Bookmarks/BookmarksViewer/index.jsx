@@ -106,20 +106,31 @@ function BookmarksViewer(props) {
         requestId: 0,
         loadState: FETCH.WAIT,
         usedFields: {},
+        favoriteCheckCache: {},
     }));
 
-    const sortByFavorites = (list) => list.sort((bookmarkA, bookmarkB) => {
-        const isFavoriteA = bookmarksService.findFavorite({
-            itemId: bookmarkA.id,
+    const checkIsFavorite = (bookmark) => {
+        if (bookmark.id in store.favoriteCheckCache) return store.favoriteCheckCache[bookmark.id];
+
+        const isFavorite = bookmarksService.findFavorite({
+            itemId: bookmark.id,
             itemType: 'bookmark',
         });
-        const isFavoriteB = bookmarksService.findFavorite({
-            itemId: bookmarkB.id,
-            itemType: 'bookmark',
-        });
+
+        store.favoriteCheckCache[bookmark.id] = isFavorite;
+
+        return isFavorite;
+    };
+
+    const sortByRelative = (list) => list.sort((bookmarkA, bookmarkB) => {
+        const isFavoriteA = checkIsFavorite(bookmarkA);
+        const isFavoriteB = checkIsFavorite(bookmarkB);
 
         if (isFavoriteA && !isFavoriteB) return -1;
         else if (!isFavoriteA && isFavoriteB) return 1;
+
+        if (bookmarkA.name < bookmarkB.name) return -1;
+        else if (bookmarkA.name > bookmarkB.name) return 1;
 
         return 0;
     });
@@ -152,10 +163,11 @@ function BookmarksViewer(props) {
                     folderId,
                 });
 
-                store.bestBookmarks = (result.best && sortByFavorites(result.best)) || [];
-                store.partBookmarks = (result.part && sortByFavorites(result.part)) || [];
-                store.indirectlyBookmarks = (result.indirectly && sortByFavorites(result.indirectly)) || [];
-                store.allBookmarks = (result.all && sortByFavorites(result.all)) || [];
+                store.favoriteCheckCache = {};
+                store.bestBookmarks = (result.best && sortByRelative(result.best)) || [];
+                store.partBookmarks = (result.part && sortByRelative(result.part)) || [];
+                store.indirectlyBookmarks = (result.indirectly && sortByRelative(result.indirectly)) || [];
+                store.allBookmarks = (result.all && sortByRelative(result.all)) || [];
                 store.existMatches = (result.best.length + result.all.length) !== 0;
                 store.usedFields = { ...searchService.searchRequest.usedFields };
                 store.loadState = FETCH.DONE;
