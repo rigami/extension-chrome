@@ -82,7 +82,7 @@ function FullSearch({ columns, open, onClose }) {
                 elevation={open ? 18 : 0}
             >
                 <Collapse
-                    collapsedSize={40}
+                    collapsedSize={36}
                     in={open}
                     unmountOnExit
                     onEntered={() => { store.showFastResults = true; }}
