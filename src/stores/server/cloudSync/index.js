@@ -7,6 +7,7 @@ import { setAwaitInterval, stopAwaitInterval } from '@/utils/helpers/setAwaitInt
 import CloudSyncBookmarksService from './bookmarks';
 import CloudSyncFoldersService from './folders';
 import CloudSyncTagsService from './tags';
+import CloudSyncFavoritesService from './favorites';
 import db from '@/utils/db';
 import { CLOUD_SYNC } from '@/enum';
 
@@ -16,6 +17,7 @@ class CloudSyncService {
     bookmarks;
     folders;
     tags;
+    favorites;
     _syncCycle;
 
     constructor(core) {
@@ -84,6 +86,7 @@ class CloudSyncService {
         await this.folders.applyChanges(response);
         await this.tags.applyChanges(response);
         await this.bookmarks.applyChanges(response);
+        await this.favorites.applyChanges(response);
 
         this.storage.update({ localCommit: response.headCommit });
     }
@@ -105,14 +108,30 @@ class CloudSyncService {
         const foldersChanges = await this.folders.grubChanges(commits.filter(({ entityType }) => entityType === 'folder'));
         const tagsChanges = await this.tags.grubChanges(commits.filter(({ entityType }) => entityType === 'tag'));
         const bookmarksChanges = await this.bookmarks.grubChanges(commits.filter(({ entityType }) => entityType === 'bookmark'));
+        const favoritesChanges = await this.favorites.grubChanges(commits.filter(({ entityType }) => entityType === 'favorite'));
 
         const { response, ok } = await api.put(
             'sync/push', {
                 body: {
                     localCommit: this.storage.data?.localCommit,
-                    create: [...foldersChanges.create, ...tagsChanges.create, ...bookmarksChanges.create],
-                    update: [...foldersChanges.update, ...tagsChanges.update, ...bookmarksChanges.update],
-                    delete: [...foldersChanges.delete, ...tagsChanges.delete, ...bookmarksChanges.delete],
+                    create: [
+                        ...foldersChanges.create,
+                        ...tagsChanges.create,
+                        ...bookmarksChanges.create,
+                        ...favoritesChanges.create,
+                    ],
+                    update: [
+                        ...foldersChanges.update,
+                        ...tagsChanges.update,
+                        ...bookmarksChanges.update,
+                        ...favoritesChanges.update,
+                    ],
+                    delete: [
+                        ...foldersChanges.delete,
+                        ...tagsChanges.delete,
+                        ...bookmarksChanges.delete,
+                        ...favoritesChanges.delete,
+                    ],
                 },
             },
         );
@@ -137,6 +156,7 @@ class CloudSyncService {
             await this.folders.applyChanges(response);
             await this.tags.applyChanges(response);
             await this.bookmarks.applyChanges(response);
+            await this.favorites.applyChanges(response);
 
             this.storage.update({
                 localCommit: response.headCommit,
@@ -214,6 +234,7 @@ class CloudSyncService {
         this.bookmarks = new CloudSyncBookmarksService(this.core);
         this.folders = new CloudSyncFoldersService(this.core);
         this.tags = new CloudSyncTagsService(this.core);
+        this.favorites = new CloudSyncFavoritesService(this.core);
 
         this.runSyncCycle();
 

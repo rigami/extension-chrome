@@ -1,7 +1,6 @@
 import { action } from 'mobx';
 import db from '@/utils/db';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
-import nowInISO from '@/utils/nowInISO';
 import { uuid } from '@/utils/generate/uuid';
 
 let cacheFavorites = [];
@@ -18,24 +17,29 @@ class FavoritesUniversalService {
 
     @action('add to favorites')
     static async addToFavorites(favorite, sync = true) {
-        const addedFavorite = await db().add('favorites', {
+        const addedFavoriteId = await db().add('favorites', {
             ...favorite,
             id: uuid(),
+            createTimestamp: Date.now(),
+            modifiedTimestamp: Date.now(),
         });
 
         await this.getAll();
 
-        /* if (sync) {
-            // TODO: If only user register
-            await db().add('favorites_wait_sync', {
-                action: 'create',
-                commitDate: nowInISO(),
-                itemType: favorite.itemType,
-                itemId: favorite.itemId,
+        if (sync) {
+            await db().add('pair_with_cloud', {
+                entityType_localId: `favorite_${addedFavoriteId}`,
+                entityType: 'favorite',
+                localId: addedFavoriteId,
+                cloudId: null,
+                isPair: +false,
+                isSync: +false,
+                isDeleted: +false,
+                modifiedTimestamp: Date.now(),
             });
-        } */
+        }
 
-        return addedFavorite;
+        return addedFavoriteId;
     }
 
     @action('find favorite')
@@ -53,16 +57,20 @@ class FavoritesUniversalService {
 
         await this.getAll();
 
-        /* if (sync) {
-            // TODO: If only enabling sync
-            await db().add('favorites_wait_sync', {
-                action: 'delete',
-                commitDate: nowInISO(),
-                itemType: favorite.itemType,
-                itemId: favorite.itemId,
-            });
-        } */
+        const pairRow = await db().get('pair_with_cloud', `favorite_${favoriteId}`);
 
+        if (sync && pairRow) {
+            if (!pairRow.isPair) {
+                await db().delete('pair_with_cloud', `favorite_${favoriteId}`);
+            } else {
+                await db().put('pair_with_cloud', {
+                    ...pairRow,
+                    isSync: +false,
+                    isDeleted: +true,
+                    modifiedTimestamp: Date.now(),
+                });
+            }
+        }
         return favorite;
     }
 }

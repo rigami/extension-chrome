@@ -4,6 +4,7 @@ release
 .idea
 build
 build-2
+build-instance-2
 *.log
 
 # Yarn

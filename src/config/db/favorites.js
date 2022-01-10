@@ -20,6 +20,10 @@ export default async function upgradeOrCreateFavorites(db, transaction, oldVersi
         store.deleteIndex('favorite_id');
     }
 
+    if (!store.indexNames.contains('modified_timestamp')) {
+        store.createIndex('modified_timestamp', 'modifiedTimestamp', { unique: false });
+    }
+
     if (!store.indexNames.contains('create_timestamp')) {
         store.createIndex('create_timestamp', 'createTimestamp', { unique: false });
     }
