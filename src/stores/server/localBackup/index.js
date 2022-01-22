@@ -1,9 +1,9 @@
-import { eventToApp } from '@/stores/universal/serviceBus';
 import { makeAutoObservable } from 'mobx';
-import appVariables from '@/config/appVariables';
 import { map } from 'lodash';
 import JSZip from 'jszip';
 import { captureException } from '@sentry/browser';
+import appVariables from '@/config/appVariables';
+import { eventToApp } from '@/stores/universal/serviceBus';
 import { StorageConnector } from '@/stores/universal/storage';
 import { BG_TYPE } from '@/enum';
 import SyncBookmarks from '@/stores/server/localBackup/syncBookmarks';
@@ -129,7 +129,7 @@ class LocalBackupService {
                     const id = splitIndex === -1 ? fileName : fileName.substring(0, splitIndex);
                     const ext = splitIndex === -1 ? '' : fileName.substring(splitIndex + 1);
                     const bgType = backup.backgrounds.all
-                        .find(({ originId, source }) => `${source.toLowerCase()}-${originId}` === id)
+                        .find(({ idInSource, source }) => `${source.toLowerCase()}-${idInSource}` === id)
                         .type;
                     const blob = await file.async('blob');
 

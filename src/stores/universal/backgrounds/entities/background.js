@@ -3,7 +3,7 @@ import { BG_SOURCE } from '@/enum';
 
 class Background {
     @observable id;
-    @observable originId;
+    @observable idInSource;
     @observable isSaved;
     @observable isLoad;
     @observable fileName;
@@ -23,7 +23,7 @@ class Background {
     @observable pauseTimestamp;
 
     constructor(background = {}) {
-        this.originId = background.originId || background.id;
+        this.idInSource = background.idInSource || background.id;
         this.isSaved = background.isSaved || false;
         this.isLoad = background.isLoad || false;
         this.fileName = background.fileName;
@@ -33,7 +33,7 @@ class Background {
         this.description = background.description;
         this.antiAliasing = background.antiAliasing === false ? false : (background.antiAliasing || true);
         this.source = background.source || BG_SOURCE.USER;
-        this.id = `${this.source.toLowerCase()}-${this.originId}`;
+        this.id = `${this.source.toLowerCase()}-${this.idInSource}`;
         this.sourceLink = background.sourceLink;
         this.downloadLink = background.downloadLink;
         this.previewLink = background.previewLink;

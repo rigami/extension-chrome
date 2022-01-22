@@ -24,8 +24,9 @@ const refreshAccessToken = async () => {
                 cache: 'no-store',
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'Device-Token': deviceToken,
+                    'Device-Sign': deviceToken,
                     'Device-Type': 'extension-chrome',
+                    'Device-Platform': navigator.userAgentData.platform,
                     'Authorization': `Bearer ${accessToken}`,
                 },
             },
@@ -44,8 +45,9 @@ const refreshAccessToken = async () => {
                 cache: 'no-store',
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'Device-Token': deviceToken,
+                    'Device-Sign': deviceToken,
                     'Device-Type': 'extension-chrome',
+                    'Device-Platform': navigator.userAgentData.platform,
                     'Authorization': `Bearer ${refreshToken}`,
                 },
             },
@@ -117,8 +119,9 @@ async function api(path, options = {}) {
         cache: 'no-store',
         headers: {
             'Access-Control-Allow-Origin': '*',
-            'Device-Token': deviceToken,
+            'Device-Sign': deviceToken,
             'Device-Type': 'extension-chrome',
+            'Device-Platform': navigator.userAgentData.platform,
         },
     };
 

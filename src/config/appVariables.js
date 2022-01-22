@@ -36,7 +36,7 @@ export default {
             author: 'danilkinkin',
             authorAvatarSrc: 'https://images.unsplash.com/profile-1607373378133-7e664e90d70cimage?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=64&w=64',
             authorName: 'Danil Zakhvatkin',
-            originId: 'nL1pAWmRFYU',
+            idInSource: 'nL1pAWmRFYU',
             color: '#0c590c',
             description: '',
             id: 'unsplash-nL1pAWmRFYU',
@@ -53,10 +53,10 @@ export default {
             preloadMetaCount: 10,
             collections: ['EDITORS_CHOICE'],
             queryPresets: [
-                {
+                /* {
                     id: 'CLOUDS',
                     value: 'Clouds',
-                },
+                }, */
                 // { id: 'SPACE', value: 'Space' },
                 {
                     id: 'NATURE',
@@ -70,7 +70,7 @@ export default {
                     id: 'ABSTRACT',
                     value: 'Abstract',
                 },
-                {
+                /* {
                     id: 'NIGHT_SKY',
                     value: 'Night sky',
                 },
@@ -93,7 +93,7 @@ export default {
                 {
                     id: 'MINIMALISM_NATURE',
                     value: 'Minimalism nature',
-                },
+                }, */
                 {
                     id: 'ARCHITECTURE',
                     value: 'Architecture',

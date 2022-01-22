@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Collapse, Typography } from '@material-ui/core';
+import {
+    Box, Chip, Collapse, Typography,
+} from '@material-ui/core';
+import { observer } from 'mobx-react-lite';
+import { alpha, makeStyles } from '@material-ui/core/styles';
+import { ArrowForwardRounded as CreateCustomQueryIcon } from '@material-ui/icons';
+import clsx from 'clsx';
 import {
     BG_CHANGE_INTERVAL,
     BG_SELECT_MODE,
     BG_TYPE,
 } from '@/enum';
+import { AutoAwesomeRounded as EditorsChoiceIcon } from '@/icons';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import { observer } from 'mobx-react-lite';
-import { makeStyles } from '@material-ui/core/styles';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import appVariables from '@/config/appVariables';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import MenuInfo from '@/ui/Menu/MenuInfo';
-import changeLocationPage from './ChangeQuery';
+import changeQueryPage from './ChangeQuery';
 
 const useStyles = makeStyles((theme) => ({
     row: {
@@ -38,34 +43,61 @@ const useStyles = makeStyles((theme) => ({
         marginTop: -12,
         marginLeft: -12,
     },
-}));
-
-const stations = [
-    ...appVariables.backgrounds.stream.collections.map((collection) => ({
-        type: 'collection',
-        id: collection,
-    })),
-    ...appVariables.backgrounds.stream.queryPresets.map((query) => ({
-        type: 'query',
-        ...query,
-    })),
-    {
-        type: 'custom-query',
-        id: 'CUSTOM_QUERY',
+    chipsWrapper: { paddingRight: theme.spacing(1) },
+    chip: {
+        marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+        borderRadius: theme.shape.borderRadius,
     },
-];
+    selected: {
+        borderColor: theme.palette.primary.main,
+        backgroundColor: `${alpha(theme.palette.primary.main, 0.21)} !important`,
+    },
+    recommendedChip: {
+        height: 48,
+        padding: theme.spacing(1.5),
+        fontWeight: theme.typography.body1.fontWeight,
+        fontSize: theme.typography.body2.fontSize,
+        '& $chipIcon': { marginRight: 0 },
+    },
+    chipIcon: { },
+    editorChoiceChip: {
+        '& $chipIcon': { color: theme.palette.favorite.main },
+        '&$selected': {
+            borderColor: theme.palette.favorite.main,
+            backgroundColor: `${alpha(theme.palette.favorite.main, 0.14)} !important`,
+        },
+    },
+    customQueryChip: {
+        display: 'inline-flex',
+        flexDirection: 'row-reverse',
+        '& $chipIcon': {
+            marginLeft: 0,
+            marginRight: theme.spacing(0.5),
+        },
+    },
+    bodyWrapper: {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+    },
+}));
 
 function Stream({ onSelect }) {
     const classes = useStyles();
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const { t } = useTranslation(['settingsQuietMode']);
-    const [isCustomQuery, setIsCustomQuery] = useState(
+    /* const [isCustomQuery, setIsCustomQuery] = useState(
         coreService.storage.persistent.data.backgroundStreamQuery?.type === 'custom-query',
-    );
+    ); */
+
+    // const isCustomQuery = coreService.storage.persistent.data.backgroundStreamQuery?.type === 'custom-query';
+    const selected = coreService.storage.persistent.data.backgroundStreamQuery?.type === 'custom-query'
+        ? 'CUSTOM_QUERY'
+        : coreService.storage.persistent.data.backgroundStreamQuery?.id;
 
     return (
-        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM}>
+        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM} unmountOnExit>
             <MenuInfo
                 show={coreService.isOffline}
                 variant="warn"
@@ -109,7 +141,8 @@ function Stream({ onSelect }) {
             <MenuRow
                 title={t('query.title')}
                 description={t('query.description')}
-                action={{
+                classes={{ bodyWrapper: classes.bodyWrapper }}
+                /* action={{
                     type: ROWS_TYPE.SELECT,
                     format: (value) => t(`query.value.${value}`),
                     value: isCustomQuery ? 'CUSTOM_QUERY' : coreService.storage.persistent.data.backgroundStreamQuery?.id,
@@ -131,9 +164,73 @@ function Stream({ onSelect }) {
                         }
                     },
                     values: stations.map(({ id }) => id),
-                }}
-            />
-            <Collapse in={isCustomQuery}>
+                }} */
+            >
+                <Box className={classes.chipsWrapper}>
+                    <Chip
+                        className={clsx(
+                            classes.chip,
+                            classes.recommendedChip,
+                            classes.editorChoiceChip,
+                            selected === 'EDITORS_CHOICE' && classes.selected,
+                        )}
+                        classes={{ icon: classes.chipIcon }}
+                        variant="outlined"
+                        label={t('query.value.EDITORS_CHOICE')}
+                        icon={<EditorsChoiceIcon />}
+                        onClick={() => {
+                            coreService.storage.persistent.update({
+                                backgroundStreamQuery: {
+                                    type: 'collection',
+                                    id: 'EDITORS_CHOICE',
+                                },
+                                bgsStream: [],
+                                prepareBGStream: null,
+                            });
+                        }}
+                    />
+                    <Chip
+                        className={clsx(
+                            classes.chip,
+                            classes.recommendedChip,
+                            classes.customQueryChip,
+                            selected === 'CUSTOM_QUERY' && classes.selected,
+                        )}
+                        classes={{ icon: classes.chipIcon }}
+                        variant="outlined"
+                        label={
+                            selected === 'CUSTOM_QUERY'
+                                ? t('query.custom.button.change', { query: coreService.storage.persistent.data.backgroundStreamQuery?.value || t('unknown') })
+                                : t('query.value.CUSTOM_QUERY')
+                        }
+                        icon={<CreateCustomQueryIcon />}
+                        onClick={() => {
+                            onSelect(changeQueryPage);
+                        }}
+                    />
+                </Box>
+                <Box className={classes.chipsWrapper}>
+                    {(appVariables.backgrounds.stream.queryPresets.map((query) => (
+                        <Chip
+                            className={clsx(classes.chip, selected === query.id && classes.selected)}
+                            variant="outlined"
+                            key={query.id}
+                            label={t(`query.value.${query.id}`)}
+                            onClick={() => {
+                                coreService.storage.persistent.update({
+                                    backgroundStreamQuery: {
+                                        type: 'query',
+                                        ...query,
+                                    },
+                                    bgsStream: [],
+                                    prepareBGStream: null,
+                                });
+                            }}
+                        />
+                    )))}
+                </Box>
+            </MenuRow>
+            {/* <Collapse in={isCustomQuery}>
                 <MenuRow
                     title={t('query.custom.title')}
                     description={t('query.custom.description')}
@@ -151,7 +248,7 @@ function Stream({ onSelect }) {
                             ),
                     }}
                 />
-            </Collapse>
+            </Collapse> */}
         </Collapse>
     );
 }

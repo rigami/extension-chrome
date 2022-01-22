@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Collapse } from '@material-ui/core';
-import { BG_SELECT_MODE } from '@/enum';
-import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { BrokenImageRounded as BrokenIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
+import { BG_SELECT_MODE } from '@/enum';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import libraryPage from '../Library';
 
@@ -13,7 +13,7 @@ function Specific({ onSelect }) {
     const { t } = useTranslation(['settingsQuietMode', 'background']);
 
     return (
-        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC}>
+        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC} unmountOnExit>
             <MenuRow
                 title={t('specificBg')}
                 description={t('background:button.change')}

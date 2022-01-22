@@ -1,10 +1,10 @@
+import { captureException } from '@sentry/browser';
+import { cloneDeep } from 'lodash';
 import db from '@/utils/db';
 import { eventToApp } from '@/stores/universal/serviceBus';
 import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import { BG_SOURCE } from '@/enum';
-import { captureException } from '@sentry/browser';
-import { cloneDeep } from 'lodash';
 import Background from './entities/background';
 
 export const ERRORS = {
@@ -40,7 +40,7 @@ class BackgroundsUniversalService {
 
         if (savedBG.source !== BG_SOURCE.USER) {
             fetchData(
-                `${appVariables.rest.url}/backgrounds/mark-download/${savedBG.source}/${savedBG.originId}`,
+                `${appVariables.rest.url}/backgrounds/mark-download/${savedBG.source}/${savedBG.idInSource}`,
                 { responseType: 'raw' },
             )
                 .catch((e) => {

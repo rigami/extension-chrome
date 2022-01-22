@@ -9,6 +9,7 @@ import {
     Switch,
     Box,
     Checkbox, ListItemIcon,
+    TextField,
 } from '@material-ui/core';
 import {
     NavigateNextRounded as ArrowRightIcon,
@@ -77,6 +78,7 @@ function MenuRow(props) {
         icon,
         disableIconInsert = false,
         className: externalClassName,
+        classes: externalClasses = {},
         action: {
             type: actionType = TYPE.NONE,
             width: actionWidth = 252,
@@ -152,40 +154,48 @@ function MenuRow(props) {
                             <Slider valueLabelDisplay="auto" {...actionProps} />
                         )}
                         {actionType === TYPE.SELECT && (
-                            <Select
+                            <TextField
                                 {...actionProps}
                                 variant="outlined"
+                                size="small"
+                                select
+                                SelectProps={{ IconComponent: ArrowBottomIcon }}
                                 style={{ width: '100%' }}
-                                IconComponent={ArrowBottomIcon}
                             >
                                 {actionProps.values.map((actionValue) => (
                                     <MenuItem key={actionValue} value={actionValue}>
                                         {actionFormat?.(actionValue) || actionValue}
                                     </MenuItem>
                                 ))}
-                            </Select>
+                            </TextField>
                         )}
                         {actionType === TYPE.MULTISELECT && (
-                            <Select
+                            <TextField
                                 {...actionProps}
                                 variant="outlined"
+                                size="small"
                                 style={{ width: '100%' }}
-                                multiple
-                                IconComponent={ArrowBottomIcon}
-                                displayEmpty
-                                renderValue={(selected) => {
-                                    if (actionProps.value && (actionProps.value.length === 0)) {
-                                        return actionFormat?.('nothingSelected') || t('nothingSelected');
-                                    } else if (
-                                        actionProps.values && actionProps.value
-                                        && (actionProps.values.length === actionProps.value.length)
-                                    ) {
-                                        return actionFormat?.('all') || t('all');
-                                    } else {
-                                        return selected && selected
-                                            .map((actionValue) => (actionFormat?.(actionValue) || actionValue))
-                                            .join(', ');
-                                    }
+                                select
+                                SelectProps={{
+                                    multiple: true,
+                                    IconComponent: ArrowBottomIcon,
+                                    displayEmpty: true,
+                                    renderValue: (selected) => {
+                                        console.log('selected:', selected);
+
+                                        if (actionProps.value && (actionProps.value.length === 0)) {
+                                            return actionFormat?.('nothingSelected') || t('nothingSelected');
+                                        } else if (
+                                            actionProps.values && actionProps.value
+                                            && (actionProps.values.length === actionProps.value.length)
+                                        ) {
+                                            return actionFormat?.('all') || t('all');
+                                        } else {
+                                            return selected && selected
+                                                .map((actionValue) => (actionFormat?.(actionValue) || actionValue))
+                                                .join(', ');
+                                        }
+                                    },
                                 }}
                             >
                                 {actionProps.values.map((actionValue) => (
@@ -199,7 +209,7 @@ function MenuRow(props) {
                                         />
                                     </MenuItem>
                                 ))}
-                            </Select>
+                            </TextField>
                         )}
                         {actionType === TYPE.CHECKBOX && (
                             <Switch
@@ -216,7 +226,7 @@ function MenuRow(props) {
                 )}
             </div>
             {children && (
-                <Box className={classes.bodyWrapper}>{children}</Box>
+                <Box className={clsx(classes.bodyWrapper, externalClasses.bodyWrapper)}>{children}</Box>
             )}
         </ListItem>
     );

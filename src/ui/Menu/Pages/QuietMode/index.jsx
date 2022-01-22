@@ -1,12 +1,7 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { memo } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Avatar, Collapse, Divider } from '@material-ui/core';
-import {
-    WallpaperRounded as WallpaperIcon,
-    MoreHorizRounded as MoreIcon,
-} from '@material-ui/icons';
+import { Collapse, Divider } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { captureException } from '@sentry/react';
 import { map } from 'lodash';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
@@ -14,84 +9,25 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useAppService from '@/stores/app/AppStateProvider';
 import {
-    BKMS_FAP_ALIGN, BKMS_FAP_POSITION, BKMS_FAP_STYLE, WIDGET_DTW_POSITION, WIDGET_DTW_SIZE,
+    BKMS_FAP_ALIGN,
+    BKMS_FAP_POSITION,
+    BKMS_FAP_STYLE,
+    WIDGET_DTW_POSITION,
+    WIDGET_DTW_SIZE,
 } from '@/enum';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import SchedulerSection from './Scheduler';
-import libraryPage from './Library';
 
 const headerProps = { title: 'settings:quietMode' };
 const pageProps = { width: 750 };
 
-function BGCard({ src }) {
-    return (
-        <Avatar
-            src={src}
-            variant="rounded"
-            style={{
-                width: 48,
-                height: 48,
-                marginRight: 8,
-            }}
-        >
-            <WallpaperIcon />
-        </Avatar>
-    );
-}
-
-const MemoBGCard = memo(BGCard);
-
-function LibraryRow({ bgs, onSelect }) {
-    const { t } = useTranslation(['settingsQuietMode']);
-
-    return (
-        <MenuRow
-            title={t('library.title')}
-            description={t('library.description')}
-            action={{
-                type: ROWS_TYPE.LINK,
-                onClick: () => onSelect(libraryPage),
-            }}
-        >
-            {bgs && bgs.map(({ previewSrc, id }) => (
-                <MemoBGCard src={previewSrc} key={id} />
-            ))}
-            {bgs && bgs.length > 8 && (
-                <Avatar
-                    variant="rounded"
-                    style={{
-                        width: 48,
-                        height: 48,
-                        marginRight: 8,
-                    }}
-                >
-                    <MoreIcon />
-                </Avatar>
-            )}
-        </MenuRow>
-    );
-}
-
-const MemoLibraryRow = memo(LibraryRow);
-
 function BackgroundsSection({ onSelect }) {
-    const { backgrounds } = useAppStateService();
     const { t } = useTranslation(['settingsQuietMode']);
-    const [bgs, setBgs] = useState(null);
-
-    useEffect(() => {
-        backgrounds.getLastUsage(8)
-            .then((lastBgs) => setBgs(lastBgs))
-            .catch((e) => {
-                captureException(e);
-                console.error('Failed load bg`s from db:', e);
-            });
-    }, [backgrounds.count]);
+    const { backgrounds } = useAppStateService();
 
     return (
         <React.Fragment>
             <SectionHeader title={t('backgrounds')} />
-            <MemoLibraryRow bgs={bgs} onSelect={onSelect} />
             <MenuRow
                 title={t('dimmingPower.title')}
                 description={t('dimmingPower.description')}

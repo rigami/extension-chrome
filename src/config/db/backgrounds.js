@@ -1,5 +1,5 @@
-import { BG_SOURCE, BG_TYPE } from '@/enum';
 import { captureException } from '@sentry/browser';
+import { BG_SOURCE, BG_TYPE } from '@/enum';
 
 export default async function upgradeOrCreateBackgrounds(db, transaction, oldVersion, newVersion) {
     let store;
@@ -36,8 +36,24 @@ export default async function upgradeOrCreateBackgrounds(db, transaction, oldVer
         }
     }
 
-    if (!store.indexNames.contains('origin_id')) {
-        store.createIndex('origin_id', 'originId', { unique: false });
+    if (store.indexNames.contains('origin_id')) {
+        store.createIndex('id_in_source', 'idInSource', { unique: false });
+
+        try {
+            (await store.getAll()).forEach((background) => store.put({
+                ...background,
+                idInSource: background.originId,
+            }));
+        } catch (e) {
+            console.log(e);
+            captureException(e);
+        }
+
+        store.deleteIndex('origin_id');
+    }
+
+    if (!store.indexNames.contains('id_in_source')) {
+        store.createIndex('id_in_source', 'idInSource', { unique: false });
     }
 
     if (!store.indexNames.contains('author')) {

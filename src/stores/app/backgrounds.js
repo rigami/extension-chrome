@@ -44,7 +44,7 @@ class BackgroundsAppService {
             console.log('setCurrentBg:', setBG);
             const bg = new Background({
                 ...setBG,
-                id: setBG.originId,
+                id: setBG.idInSource,
             });
 
             if (this._currentBG) console.log('[backgrounds] Change current background:', bg);

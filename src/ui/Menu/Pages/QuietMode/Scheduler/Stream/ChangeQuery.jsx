@@ -10,7 +10,6 @@ import {
     Chip,
     Button,
 } from '@material-ui/core';
-import { BG_SOURCE, BG_TYPE, FETCH } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     ErrorRounded as ErrorIcon,
@@ -18,16 +17,18 @@ import {
     WifiTetheringRounded as StreamIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
+import { runInAction } from 'mobx';
+import { captureException } from '@sentry/react';
+import { BG_SOURCE, BG_TYPE, FETCH } from '@/enum';
 import Stub from '@/ui-components/Stub';
 import useCoreService from '@/stores/app/BaseStateProvider';
-import { runInAction } from 'mobx';
 import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundCard from '@/ui/Menu/Pages/QuietMode/BackgroundCard';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from '@/stores/universal/backgrounds/entities/background';
-import { captureException } from '@sentry/react';
+import api from '@/utils/helpers/api';
 
 const useStyles = makeStyles((theme) => ({
     root: { marginTop: 4 },
@@ -122,20 +123,21 @@ function ChangeQuery({ onClose }) {
         store.status = FETCH.PENDING;
 
         try {
-            let { response: list } = await fetchData(`${
-                appVariables.rest.url
-            }/backgrounds/search?count=30&type=${
-                backgrounds.settings.type.join(',').toLowerCase()
-            }&query=${
-                store.searchRequest
-            }`);
+            let { response: list } = await api.get('wallpapers/search', {
+                query: {
+                    count: 30,
+                    type: backgrounds.settings.type.join(',')
+                        .toLowerCase(),
+                    query: store.searchRequest,
+                },
+            });
 
             const allAdded = await backgrounds.getAll();
 
             list = list.map((bg) => new Background({
                 ...bg,
-                originId: bg.bgId,
-                source: BG_SOURCE[bg.service],
+                idInSource: bg.idInSource,
+                source: BG_SOURCE[bg.source.toUpperCase()],
                 type: BG_TYPE[bg.type],
                 downloadLink: bg.fullSrc,
                 previewLink: bg.previewSrc,
@@ -216,20 +218,6 @@ function ChangeQuery({ onClose }) {
                 )}
             </form>
             <Divider />
-            <Box className={classes.chipsWrapper}>
-                {(appVariables.backgrounds.stream.queryPresets.map((query) => (
-                    <Chip
-                        className={classes.chip}
-                        variant="outlined"
-                        key={query.id}
-                        label={query.value}
-                        onClick={() => {
-                            store.searchRequest = query.value;
-                            handleSearch();
-                        }}
-                    />
-                )))}
-            </Box>
             {store.status === FETCH.PENDING && (<LinearProgress />)}
             {store.status === FETCH.DONE && (
                 <React.Fragment>

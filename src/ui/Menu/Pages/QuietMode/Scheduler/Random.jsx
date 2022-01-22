@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Collapse } from '@material-ui/core';
+import { observer } from 'mobx-react-lite';
 import { BG_CHANGE_INTERVAL, BG_SELECT_MODE, BG_TYPE } from '@/enum';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import { observer } from 'mobx-react-lite';
 import useAppStateService from '@/stores/app/AppStateProvider';
 
 function Random() {
@@ -11,7 +11,7 @@ function Random() {
     const { t } = useTranslation(['settingsQuietMode']);
 
     return (
-        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM}>
+        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM} unmountOnExit>
             <MenuRow
                 title={t('changeInterval.title')}
                 description={t('changeInterval.description')}
@@ -44,10 +44,8 @@ function Random() {
                         backgrounds.settings.update({ type: event.target.value });
                     },
                     values: [
-                        BG_TYPE.IMAGE,
-                        BG_TYPE.ANIMATION,
-                        BG_TYPE.VIDEO,
-                        BG_TYPE.FILL_COLOR,
+                        BG_TYPE.IMAGE, BG_TYPE.ANIMATION, BG_TYPE.VIDEO,
+                        // BG_TYPE.FILL_COLOR,
                     ],
                 }}
             />

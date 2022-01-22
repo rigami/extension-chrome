@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
+import { omit } from 'lodash';
 import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
 import Background from '@/stores/universal/backgrounds/entities/background';
-import { omit } from 'lodash';
 
 class SyncBackgrounds {
     core;
@@ -53,7 +53,7 @@ class SyncBackgrounds {
 
         for await (const background of backgrounds) {
             console.log('Check background:', background);
-            const computeId = `${background.source.toLowerCase()}-${background.originId}`;
+            const computeId = `${background.source.toLowerCase()}-${background.idInSource}`;
             const findBackground = localBackgrounds.find(({ id }) => computeId === id);
 
             if (findBackground) {

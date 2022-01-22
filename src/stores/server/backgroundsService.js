@@ -1,4 +1,6 @@
 import { reaction, toJS } from 'mobx';
+import { first } from 'lodash';
+import { captureException } from '@sentry/browser';
 import {
     BG_CHANGE_INTERVAL,
     BG_CHANGE_INTERVAL_MILLISECONDS,
@@ -11,12 +13,10 @@ import {
 } from '@/enum';
 import Background from '@/stores/universal/backgrounds/entities/background';
 import db from '@/utils/db';
-import { first } from 'lodash';
 import appVariables from '@/config/appVariables';
 import fetchData from '@/utils/helpers/fetchData';
 import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrounds/service';
 import { eventToApp } from '@/stores/universal/serviceBus';
-import { captureException } from '@sentry/browser';
 
 class BackgroundsServerService {
     core;
@@ -287,7 +287,7 @@ class BackgroundsServerService {
                     ...(this.storage.data.bgsStream || []),
                     ...response.map((bg) => new Background({
                         ...bg,
-                        originId: bg.bgId,
+                        idInSource: bg.bgId,
                         source: BG_SOURCE[bg.service],
                         type: BG_TYPE[bg.type],
                         downloadLink: bg.fullSrc,

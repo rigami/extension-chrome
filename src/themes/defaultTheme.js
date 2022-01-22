@@ -3,7 +3,7 @@ import { createTheme, alpha } from '@material-ui/core/styles';
 const primaryFontFamily = '"Manrope", "Open Sans", sans-serif';
 const secondaryFontFamily = 'Inter, sans-serif'; // 'Roboto, "Open Sans", sans-serif';
 
-const theme = {
+const baseThemeValues = {
     palette: {
         type: 'light',
         primary: {
@@ -83,52 +83,6 @@ const theme = {
             long: 550,
         },
     },
-    overrides: {
-        MuiButton: {
-            root: { fontWeight: 800 },
-            label: {
-                fontWeight: 'inherit',
-                fontFamily: primaryFontFamily,
-                wordBreak: 'break-word',
-                textTransform: 'none',
-            },
-        },
-        MuiTab: {
-            root: {
-                textTransform: 'none',
-                fontWeight: 800,
-                fontFamily: primaryFontFamily,
-            },
-        },
-        MuiTypography: {
-            gutterBottom: { marginBottom: '0.8em' },
-            h6: {
-                fontWeight: 800,
-                fontFamily: primaryFontFamily,
-            },
-        },
-        MuiTooltip: {
-            tooltip: {
-                backgroundColor: alpha('#000', 0.82),
-                fontSize: '0.85rem',
-                padding: '6px 12px',
-            },
-        },
-        MuiSwitch: {
-            thumb: { boxShadow: 'none' },
-            switchBase: { color: '#5e5e5e' },
-        },
-        MuiCardHeader: {
-            title: {
-                fontFamily: primaryFontFamily,
-                fontWeight: 600,
-            },
-        },
-    },
-    props: {
-        MuiButton: { disableElevation: true },
-        // MuiCardHeader: { titleTypographyProps: { variant: 'h6' } },
-    },
     zIndex: { dropFiles: 1350 },
     shadows: [
         'none',
@@ -157,6 +111,76 @@ const theme = {
         '0px 11px 14px -7px rgba(0,0,0,0.08),0px 23px 36px 3px rgba(0,0,0,0.04),0px 9px 44px 8px rgba(0,0,0,0.02)',
         '0px 11px 15px -7px rgba(0,0,0,0.08),0px 24px 38px 3px rgba(0,0,0,0.04),0px 9px 46px 8px rgba(0,0,0,0.02)',
     ],
+};
+
+const baseTheme = createTheme(baseThemeValues);
+
+const theme = {
+    ...baseThemeValues,
+    overrides: {
+        MuiButton: {
+            root: { fontWeight: 800 },
+            label: {
+                fontWeight: 'inherit',
+                fontFamily: primaryFontFamily,
+                wordBreak: 'break-word',
+                textTransform: 'none',
+            },
+        },
+        MuiTab: {
+            root: {
+                textTransform: 'none',
+                fontWeight: 800,
+                fontFamily: primaryFontFamily,
+                zIndex: 1,
+                borderRadius: baseTheme.shape.borderRadius,
+                transition: baseTheme.transitions.create(['color'], {
+                    duration: baseTheme.transitions.duration.standard,
+                    easing: baseTheme.transitions.easing.easeInOut,
+                }),
+                '&.Mui-selected': { color: baseTheme.palette.common.white },
+            },
+        },
+        MuiTypography: {
+            gutterBottom: { marginBottom: '0.8em' },
+            h6: {
+                fontWeight: 800,
+                fontFamily: primaryFontFamily,
+            },
+        },
+        MuiTooltip: {
+            tooltip: {
+                backgroundColor: alpha('#000', 0.82),
+                fontSize: '0.85rem',
+                padding: '6px 12px',
+            },
+        },
+        MuiSwitch: {
+            thumb: { boxShadow: 'none' },
+            switchBase: { color: '#5e5e5e' },
+        },
+        MuiCardHeader: {
+            title: {
+                fontFamily: primaryFontFamily,
+                fontWeight: 600,
+            },
+        },
+        MuiTabs: {
+            root: {
+                padding: baseTheme.spacing(0.5),
+                borderRadius: baseTheme.shape.borderRadius,
+                backgroundColor: baseTheme.palette.background.backdrop,
+            },
+            indicator: {
+                height: '100%',
+                borderRadius: baseTheme.shape.borderRadius,
+            },
+        },
+    },
+    props: {
+        MuiButton: { disableElevation: true },
+        // MuiCardHeader: { titleTypographyProps: { variant: 'h6' } },
+    },
 };
 
 export { theme };

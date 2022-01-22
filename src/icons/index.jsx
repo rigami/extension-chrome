@@ -5,6 +5,7 @@ import VolunteerActivismRounded from './VolunteerActivismRounded';
 import ContentCopyFilled from './ContentCopyFilled';
 import DriveFileMoveFilled from './DriveFileMoveFilled';
 import SelfImprovementRounded from './SelfImprovementRounded';
+import AutoAwesomeRounded from '@/icons/AutoAwesomeRounded';
 
 export {
     NearMeDisabledRounded,
@@ -14,4 +15,5 @@ export {
     ContentCopyFilled,
     DriveFileMoveFilled,
     SelfImprovementRounded,
+    AutoAwesomeRounded,
 };
