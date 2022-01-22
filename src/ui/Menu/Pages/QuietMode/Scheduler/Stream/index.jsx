@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    Box, Chip, Collapse, Typography,
-} from '@material-ui/core';
+import { Box, Chip, Collapse } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import { ArrowForwardRounded as CreateCustomQueryIcon } from '@material-ui/icons';
@@ -17,32 +15,10 @@ import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import appVariables from '@/config/appVariables';
-import { eventToBackground } from '@/stores/universal/serviceBus';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import changeQueryPage from './ChangeQuery';
 
 const useStyles = makeStyles((theme) => ({
-    row: {
-        padding: theme.spacing(0, 2),
-        display: 'flex',
-        alignItems: 'center',
-    },
-    notSetValue: {
-        fontStyle: 'italic',
-        color: theme.palette.text.secondary,
-    },
-    input: { padding: theme.spacing(2) },
-    submit: { flexShrink: 0 },
-    locationRow: { paddingLeft: theme.spacing(4) },
-    geoButtonWrapper: { position: 'relative' },
-    geoButton: {},
-    geoButtonProgress: {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        marginTop: -12,
-        marginLeft: -12,
-    },
     chipsWrapper: { paddingRight: theme.spacing(1) },
     chip: {
         marginRight: theme.spacing(1),
@@ -87,11 +63,7 @@ function Stream({ onSelect }) {
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const { t } = useTranslation(['settingsQuietMode']);
-    /* const [isCustomQuery, setIsCustomQuery] = useState(
-        coreService.storage.persistent.data.backgroundStreamQuery?.type === 'custom-query',
-    ); */
 
-    // const isCustomQuery = coreService.storage.persistent.data.backgroundStreamQuery?.type === 'custom-query';
     const selected = coreService.storage.persistent.data.backgroundStreamQuery?.type === 'custom-query'
         ? 'CUSTOM_QUERY'
         : coreService.storage.persistent.data.backgroundStreamQuery?.id;
@@ -142,29 +114,6 @@ function Stream({ onSelect }) {
                 title={t('query.title')}
                 description={t('query.description')}
                 classes={{ bodyWrapper: classes.bodyWrapper }}
-                /* action={{
-                    type: ROWS_TYPE.SELECT,
-                    format: (value) => t(`query.value.${value}`),
-                    value: isCustomQuery ? 'CUSTOM_QUERY' : coreService.storage.persistent.data.backgroundStreamQuery?.id,
-                    onChange: (event) => {
-                        if (event.target.value === 'CUSTOM_QUERY') {
-                            onSelect(changeLocationPage);
-                        } else {
-                            const value = stations.find((station) => station.id === event.target.value);
-
-                            setIsCustomQuery(false);
-
-                            coreService.storage.persistent.update({
-                                backgroundStreamQuery: value,
-                                bgsStream: [],
-                                prepareBGStream: null,
-                            });
-
-                            // eventToBackground('backgrounds/nextBg');
-                        }
-                    },
-                    values: stations.map(({ id }) => id),
-                }} */
             >
                 <Box className={classes.chipsWrapper}>
                     <Chip
@@ -230,25 +179,6 @@ function Stream({ onSelect }) {
                     )))}
                 </Box>
             </MenuRow>
-            {/* <Collapse in={isCustomQuery}>
-                <MenuRow
-                    title={t('query.custom.title')}
-                    description={t('query.custom.description')}
-                    action={{
-                        type: ROWS_TYPE.LINK,
-                        onClick: () => onSelect(changeLocationPage),
-                        component: coreService.storage.persistent.data.backgroundStreamQuery?.value
-                            ? (`${
-                                coreService.storage.persistent.data.backgroundStreamQuery?.value || t('unknown')
-                            }`)
-                            : (
-                                <Typography className={classes.notSetValue}>
-                                    {t('query.notSet')}
-                                </Typography>
-                            ),
-                    }}
-                />
-            </Collapse> */}
         </Collapse>
     );
 }
