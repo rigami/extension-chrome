@@ -1,9 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Chip, Collapse } from '@material-ui/core';
+import {
+    Avatar, Box, Chip, Collapse,
+} from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { alpha, makeStyles } from '@material-ui/core/styles';
-import { ArrowForwardRounded as CreateCustomQueryIcon } from '@material-ui/icons';
+import { ArrowForwardRounded as CreateCustomQueryIcon, MoreHorizRounded as MoreIcon } from '@material-ui/icons';
 import clsx from 'clsx';
 import {
     BG_CHANGE_INTERVAL,
@@ -17,6 +19,7 @@ import useAppStateService from '@/stores/app/AppStateProvider';
 import appVariables from '@/config/appVariables';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import changeQueryPage from './ChangeQuery';
+import libraryPage from '@/ui/Menu/Pages/QuietMode/Library';
 
 const useStyles = makeStyles((theme) => ({
     chipsWrapper: { paddingRight: theme.spacing(1) },
@@ -70,6 +73,9 @@ function Stream({ onSelect }) {
 
     return (
         <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM} unmountOnExit>
+            <MenuRow
+                description={t(`selectionMethod.value.${BG_SELECT_MODE.STREAM}`, { context: 'description' })}
+            />
             <MenuInfo
                 show={coreService.isOffline}
                 variant="warn"

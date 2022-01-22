@@ -208,12 +208,12 @@ const ObserverFAPSettings = observer(FAPSettings);
 function BackgroundsMenu({ onSelect }) {
     return (
         <React.Fragment>
+            <MemoBackgroundsSection onSelect={onSelect} />
+            <SchedulerSection onSelect={onSelect} />
+            <Divider variant="middle" />
             <ObserverWidgetsSettings />
             <Divider variant="middle" />
             <ObserverFAPSettings />
-            <Divider variant="middle" />
-            <MemoBackgroundsSection onSelect={onSelect} />
-            <SchedulerSection onSelect={onSelect} />
         </React.Fragment>
     );
 }

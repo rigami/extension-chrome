@@ -140,6 +140,18 @@ const theme = {
                 }),
                 '&.Mui-selected': { color: baseTheme.palette.common.white },
             },
+            labelIcon: {
+                minHeight: baseTheme.spacing(6),
+                paddingTop: baseTheme.spacing(0.75),
+                '& .MuiTab-wrapper > *:first-child': { marginBottom: 0 },
+            },
+            wrapper: {
+                flexDirection: 'initial',
+                '& .MuiSvgIcon-root': {
+                    marginRight: baseTheme.spacing(0.75),
+                    marginBottom: 0,
+                },
+            },
         },
         MuiTypography: {
             gutterBottom: { marginBottom: '0.8em' },

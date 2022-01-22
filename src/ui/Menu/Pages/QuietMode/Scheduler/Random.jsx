@@ -1,17 +1,86 @@
-import React from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Collapse } from '@material-ui/core';
+import { Avatar, Collapse } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
+import { MoreHorizRounded as MoreIcon, WallpaperRounded as WallpaperIcon } from '@material-ui/icons';
+import { captureException } from '@sentry/react';
 import { BG_CHANGE_INTERVAL, BG_SELECT_MODE, BG_TYPE } from '@/enum';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import useAppStateService from '@/stores/app/AppStateProvider';
+import libraryPage from '@/ui/Menu/Pages/QuietMode/Library';
 
-function Random() {
+function BGCard({ src }) {
+    return (
+        <Avatar
+            src={src}
+            variant="rounded"
+            style={{
+                width: 48,
+                height: 48,
+                marginRight: 8,
+            }}
+        >
+            <WallpaperIcon />
+        </Avatar>
+    );
+}
+
+const MemoBGCard = memo(BGCard);
+
+function LibraryRow({ onSelect }) {
+    const { t } = useTranslation(['settingsQuietMode']);
+    const { backgrounds } = useAppStateService();
+    const [bgs, setBgs] = useState(null);
+
+    useEffect(() => {
+        backgrounds.getLastUsage(8)
+            .then((lastBgs) => setBgs(lastBgs))
+            .catch((e) => {
+                captureException(e);
+                console.error('Failed load bg`s from db:', e);
+            });
+    }, [backgrounds.count]);
+
+    return (
+        <MenuRow
+            title={t('library.title')}
+            description={t('library.description')}
+            action={{
+                type: ROWS_TYPE.LINK,
+                onClick: () => onSelect(libraryPage),
+            }}
+        >
+            {bgs && bgs.map(({ previewSrc, id }) => (
+                <MemoBGCard src={previewSrc} key={id} />
+            ))}
+            {bgs && bgs.length > 8 && (
+                <Avatar
+                    variant="rounded"
+                    style={{
+                        width: 48,
+                        height: 48,
+                        marginRight: 8,
+                    }}
+                >
+                    <MoreIcon />
+                </Avatar>
+            )}
+        </MenuRow>
+    );
+}
+
+const MemoLibraryRow = memo(LibraryRow);
+
+function Random({ onSelect }) {
     const { backgrounds } = useAppStateService();
     const { t } = useTranslation(['settingsQuietMode']);
 
     return (
         <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM} unmountOnExit>
+            <MenuRow
+                description={t(`selectionMethod.value.${BG_SELECT_MODE.RANDOM}`, { context: 'description' })}
+            />
+            <MemoLibraryRow onSelect={onSelect} />
             <MenuRow
                 title={t('changeInterval.title')}
                 description={t('changeInterval.description')}
