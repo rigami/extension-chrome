@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     Box,
@@ -9,15 +8,16 @@ import {
     LinearProgress,
     Typography,
 } from '@material-ui/core';
+import { cloneDeep } from 'lodash';
+import useCoreService from '@/stores/app/BaseStateProvider';
 import Logo from '@/ui-components/Logo';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
-import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
+import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import appVariables from '@/config/appVariables';
 import { BG_SOURCE, BKMS_VARIANT } from '@/enum';
 import db from '@/utils/db';
-import { cloneDeep } from 'lodash';
-import Background from '@/stores/universal/backgrounds/entities/background';
+import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 
@@ -52,7 +52,7 @@ function MigrateScreen({ onStart }) {
 
             coreService.storage.persistent.update({
                 ...storage,
-                bgCurrent: storage.bgCurrent ? new Background({
+                bgCurrent: storage.bgCurrent ? new Wallpaper({
                     ...storage.bgCurrent,
                     isSaved: true,
                     fullSrc: storage.bgCurrent.source === BG_SOURCE.USER
@@ -60,7 +60,7 @@ function MigrateScreen({ onStart }) {
                         : storage.bgCurrent.downloadLink,
                     previewSrc: `${appVariables.rest.url}/background/user/get-preview?id=${storage.bgCurrent.id}`,
                 }) : null,
-                bgsStream: (storage.bgsStream || []).map((bg) => new Background({
+                bgsStream: (storage.bgsStream || []).map((bg) => new Wallpaper({
                     ...storage.bgCurrent,
                     isSaved: true,
                     fullSrc: bg.source === BG_SOURCE.USER
@@ -109,7 +109,7 @@ function MigrateScreen({ onStart }) {
         }
 
         if (existFolders) {
-            const allBackgrounds = await BackgroundsUniversalService.getAll();
+            const allBackgrounds = await WallpapersUniversalService.getAll();
             const cacheBackgrounds = await caches.open('backgrounds');
             let index = 0;
 
@@ -135,7 +135,7 @@ function MigrateScreen({ onStart }) {
                     const previewResponse = new Response(previewBlob);
                     await cacheBackgrounds.put(previewSrc, previewResponse);
 
-                    await db().put('backgrounds', cloneDeep(new Background({
+                    await db().put('backgrounds', cloneDeep(new Wallpaper({
                         ...background,
                         isSaved: true,
                         fullSrc,

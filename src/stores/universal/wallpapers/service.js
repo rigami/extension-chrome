@@ -5,7 +5,9 @@ import { eventToApp } from '@/stores/universal/serviceBus';
 import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import { BG_SOURCE } from '@/enum';
-import Background from './entities/background';
+import Wallpaper from './entities/wallpaper';
+import consoleBinder from '@/utils/console/bind';
+import api from '@/utils/helpers/api';
 
 export const ERRORS = {
     TOO_MANY_FILES: 'TOO_MANY_FILES',
@@ -13,19 +15,21 @@ export const ERRORS = {
     ID_BG_IS_CHANGED: 'ID_BG_IS_CHANGED',
 };
 
-class BackgroundsUniversalService {
-    static FULL_PATH = '/backgrounds/full';
-    static PREVIEW_PATH = '/backgrounds/preview';
+const bindConsole = consoleBinder('wallpapers-universal');
+
+class WallpapersUniversalService {
+    static FULL_PATH = '/wallpapers/full';
+    static PREVIEW_PATH = '/wallpapers/preview';
 
     static async addToLibrary(saveBG, blobs = {}) {
-        console.log('[backgrounds] Add bg to library', saveBG, blobs);
+        console.log('[wallpapers] Add bg to library', saveBG, blobs);
 
-        const urls = await this.fetchBG(saveBG, blobs);
+        const urls = await this.fetch(saveBG, blobs);
 
         console.log('urls:', urls);
 
         const { url, previewUrl } = urls;
-        const savedBG = new Background({
+        const savedBG = new Wallpaper({
             ...saveBG,
             isSaved: true,
             fullSrc: url,
@@ -36,7 +40,7 @@ class BackgroundsUniversalService {
 
         await db().add('backgrounds', cloneDeep(savedBG));
 
-        eventToApp('backgrounds/new', savedBG);
+        eventToApp('wallpapers/new', savedBG);
 
         if (savedBG.source !== BG_SOURCE.USER) {
             fetchData(
@@ -53,10 +57,10 @@ class BackgroundsUniversalService {
     }
 
     static async removeFromLibrary(removeBG, notRemoveCache = false) {
-        console.log('[backgrounds] Remove from store', removeBG);
+        console.log('[wallpapers] Remove from store', removeBG);
 
         try {
-            console.log('[backgrounds] Remove from db...');
+            console.log('[wallpapers] Remove from db...');
             await db().delete('backgrounds', removeBG.id);
         } catch (e) {
             console.log(`bg ${removeBG.id} not find in db`);
@@ -66,17 +70,17 @@ class BackgroundsUniversalService {
         if (!notRemoveCache) {
             try {
                 // TODO: Added remove bg from cache
-                console.log('[backgrounds] Remove from file system...');
+                console.log('[wallpapers] Remove from file system...');
             } catch (e) {
                 console.log(`[backgrounds] BG with id=${removeBG.id} not find in file system`);
                 captureException(e);
             }
 
-            eventToApp('backgrounds/removed', removeBG);
+            eventToApp('wallpapers/removed', removeBG);
         }
     }
 
-    static async fetchBG(bg, options = {}) {
+    static async fetch(wallpaper, options = {}) {
         const {
             full = true,
             preview = true,
@@ -84,8 +88,8 @@ class BackgroundsUniversalService {
             previewBlob,
         } = options;
         const fileName = Date.now().toString();
-        console.log('[backgrounds] Fetch background', {
-            bg,
+        bindConsole.log('Fetch wallpaper', {
+            wallpaper,
             fileName,
             full,
             preview,
@@ -101,41 +105,43 @@ class BackgroundsUniversalService {
         const cache = await caches.open('backgrounds');
 
         try {
-            fullBG = fullBlob || (await fetchData(bg.downloadLink, { responseType: 'blob' })).response;
+            fullBG = fullBlob || (await fetchData(wallpaper.fullSrc, { responseType: 'blob' })).response;
         } catch (e) {
-            console.error('[backgrounds] Failed fetch bg', e);
+            bindConsole.error('Failed fetch wallpaper', e);
             captureException(e);
+
             return Promise.reject(e);
         }
 
         if (preview) {
             try {
-                console.log('[backgrounds] Create preview...');
+                bindConsole.log('Create preview...');
 
-                if (bg.source === BG_SOURCE.USER) {
-                    previewUrl = `${appVariables.rest.url}/background/user/get-preview?id=${bg.id}`;
-                    previewBG = previewBlob || (await fetchData(bg.previewLink, { responseType: 'blob' })).response;
+                if (wallpaper.source === BG_SOURCE.USER) {
+                    previewUrl = api.computeUrl(`wallpapers/${wallpaper.id}/preview`);
+                    previewBG = previewBlob || (await fetchData(wallpaper.previewSrc, { responseType: 'blob' })).response;
                     const previewResponse = new Response(previewBG);
+
                     await cache.put(previewUrl, previewResponse);
                 } else {
-                    previewUrl = bg.previewLink || `${appVariables.rest.url}/background/get-preview?src=${encodeURIComponent(bg.downloadLink)}`;
+                    previewUrl = wallpaper.previewSrc || api.computeUrl(`wallpapers/${wallpaper.id}/preview`);
                     await cache.add(previewUrl);
                 }
             } catch (e) {
-                console.warn('Failed create preview:', e);
+                bindConsole.warn('Failed create preview:', e);
                 captureException(e);
             }
         }
 
         if (full) {
-            console.log('[backgrounds] Save BG in file system...');
+            bindConsole.log('Save wallpaper in cache...');
 
-            if (bg.source === BG_SOURCE.USER) {
-                url = `${appVariables.rest.url}/background/user?src=${bg.id}`;
+            if (wallpaper.source === BG_SOURCE.USER) {
+                url = api.computeUrl(`wallpapers/${wallpaper.id}`);
                 const fullResponse = new Response(fullBG);
                 await cache.put(url, fullResponse);
             } else {
-                url = bg.downloadLink;
+                url = wallpaper.fullSrc;
                 await cache.add(url);
             }
         }
@@ -149,8 +155,8 @@ class BackgroundsUniversalService {
     static async getAll() {
         const bgs = await db().getAll('backgrounds');
 
-        return bgs.map((bg) => new Background(bg));
+        return bgs.map((wallpaper) => new Wallpaper(wallpaper));
     }
 }
 
-export default BackgroundsUniversalService;
+export default WallpapersUniversalService;

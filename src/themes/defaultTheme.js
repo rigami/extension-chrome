@@ -7,9 +7,9 @@ const baseThemeValues = {
     palette: {
         type: 'light',
         primary: {
-            light: '#28DEC8',
-            main: '#49C5B6',
-            dark: '#299286',
+            light: '#5263fa',
+            main: '#4557f6',
+            dark: '#3a4bde',
             contrastText: '#fff',
         },
         secondary: {
@@ -34,6 +34,7 @@ const baseThemeValues = {
         borderRadius: 4,
         borderRadiusButton: 6,
         borderRadiusBold: 8,
+        borderRadiusBolder: 12,
         dataCard: {
             width: 210,
             height: 86,
@@ -119,12 +120,27 @@ const theme = {
     ...baseThemeValues,
     overrides: {
         MuiButton: {
-            root: { fontWeight: 800 },
+            root: {
+                fontWeight: 800,
+                borderRadius: baseTheme.shape.borderRadiusBolder,
+                padding: baseTheme.spacing(1, 2),
+                boxShadow: 'none',
+            },
             label: {
                 fontWeight: 'inherit',
                 fontFamily: primaryFontFamily,
                 wordBreak: 'break-word',
                 textTransform: 'none',
+            },
+            contained: { boxShadow: 'none' },
+            containedPrimary: {
+                color: baseTheme.palette.primary.main,
+                backgroundColor: alpha(baseTheme.palette.primary.main, 0.12),
+                '&:hover': {
+                    color: baseTheme.palette.common.white,
+                    backgroundColor: baseTheme.palette.primary.main,
+                    boxShadow: `${alpha(baseTheme.palette.primary.main, 0.4)} 0px 0px 0px 3px`,
+                },
             },
         },
         MuiTab: {
@@ -133,12 +149,12 @@ const theme = {
                 fontWeight: 800,
                 fontFamily: primaryFontFamily,
                 zIndex: 1,
-                borderRadius: baseTheme.shape.borderRadius,
+                borderRadius: baseTheme.shape.borderRadiusBold,
                 transition: baseTheme.transitions.create(['color'], {
                     duration: baseTheme.transitions.duration.standard,
                     easing: baseTheme.transitions.easing.easeInOut,
                 }),
-                '&.Mui-selected': { color: baseTheme.palette.common.white },
+                '&.Mui-selected': { color: baseTheme.palette.primary.main },
             },
             labelIcon: {
                 minHeight: baseTheme.spacing(6),
@@ -169,7 +185,18 @@ const theme = {
         },
         MuiSwitch: {
             thumb: { boxShadow: 'none' },
-            switchBase: { color: '#5e5e5e' },
+            switchBase: { color: baseTheme.palette.background.paper },
+            track: { borderRadius: 13 },
+            root: { padding: 6 },
+            colorPrimary: {
+                '&.Mui-checked': {
+                    color: baseTheme.palette.background.paper,
+                    '& + .MuiSwitch-track': {
+                        backgroundColor: baseTheme.palette.primary.main,
+                        opacity: 1,
+                    },
+                },
+            },
         },
         MuiCardHeader: {
             title: {
@@ -180,17 +207,18 @@ const theme = {
         MuiTabs: {
             root: {
                 padding: baseTheme.spacing(0.5),
-                borderRadius: baseTheme.shape.borderRadius,
+                borderRadius: baseTheme.shape.borderRadiusBolder,
                 backgroundColor: baseTheme.palette.background.backdrop,
             },
             indicator: {
                 height: '100%',
-                borderRadius: baseTheme.shape.borderRadius,
+                borderRadius: baseTheme.shape.borderRadiusBold,
+                backgroundColor: baseTheme.palette.background.paper,
             },
         },
     },
     props: {
-        MuiButton: { disableElevation: true },
+        // MuiButton: { disableElevation: true },
         // MuiCardHeader: { titleTypographyProps: { variant: 'h6' } },
     },
 };

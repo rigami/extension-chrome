@@ -55,9 +55,7 @@
     "title":"Background selection method",
     "description":"Select a method for changing the background",
     "value":{
-      "RANDOM":"Random selection",
       "SPECIFIC":"Specific background",
-      "SEQUENCE": "Sequence of backgrounds",
       "STREAM": "Stream"
     }
   },

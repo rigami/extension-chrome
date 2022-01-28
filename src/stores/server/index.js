@@ -4,15 +4,15 @@ import Storage, { StorageConnector } from '@/stores/universal/storage';
 import { DESTINATION } from '@/enum';
 import appVariables from '@/config/appVariables';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
-import FactorySettingsService from '@/stores/server/factorySettingsService';
-import SyncChromeBookmarksService from '@/stores/server/localSync/syncChromeBookmarksService';
-import CloudSyncService from '@/stores/server/cloudSync';
+import FactorySettingsService from './factorySettingsService';
+import SyncChromeBookmarksService from './localSync/syncChromeBookmarksService';
+import CloudSyncService from './cloudSync';
 import authStorage from '@/stores/universal/AuthStorage';
 import SettingsService from './settingsService';
 import LocalBackupService from './localBackup';
 import BookmarksService from './bookmarksService';
 import WeatherService from './weatherService';
-import BackgroundsService from './backgroundsService';
+import WallpapersService from './wallpapers';
 
 class ServerApp {
     localBus;
@@ -24,7 +24,7 @@ class ServerApp {
     systemBookmarksService;
     bookmarksService;
     weatherService;
-    backgroundsService;
+    wallpapersService;
     factorySettingsService;
     isOffline = !self.navigator.onLine;
 
@@ -69,7 +69,7 @@ class ServerApp {
         ].map((storage) => awaitInstallStorage(storage)));
 
         console.log(
-            'backgrounds storage state',
+            'wallpapers storage state',
             JSON.stringify(this.settingsService.backgrounds.type),
             JSON.stringify(this.settingsService.backgrounds._data.type),
         );
@@ -90,7 +90,7 @@ class ServerApp {
         this.weatherService = new WeatherService(this);
 
         // Backgrounds
-        this.backgroundsService = new BackgroundsService(this);
+        this.wallpapersService = new WallpapersService(this);
 
         // Local backup
         this.localBackupService = new LocalBackupService(this);

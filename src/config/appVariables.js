@@ -30,7 +30,7 @@ export default {
         },
     },
     backup: { version: 5 },
-    backgrounds: {
+    wallpapers: {
         maxUploadFiles: 15,
         fallback: {
             author: 'danilkinkin',
@@ -40,64 +40,30 @@ export default {
             color: '#0c590c',
             description: '',
             id: 'unsplash-nL1pAWmRFYU',
-            previewSrc: 'https://images.unsplash.com/photo-1607374904945-feef89bffa1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1&q=80&w=400',
             rawSrc: 'https://images.unsplash.com/photo-1607374904945-feef89bffa1f?ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1',
             sourceLink: 'https://unsplash.com/photos/nL1pAWmRFYU',
             source: BG_SOURCE.UNSPLASH,
-            downloadLink: 'https://images.unsplash.com/photo-1607374904945-feef89bffa1f?crop=entropy&cs=srgb&fm=jpg&ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1&q=85',
-            previewLink: 'https://images.unsplash.com/photo-1607374904945-feef89bffa1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1&q=80&w=400',
+            fullSrc: 'https://images.unsplash.com/photo-1607374904945-feef89bffa1f?crop=entropy&cs=srgb&fm=jpg&ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1&q=85',
+            previewSrc: 'https://images.unsplash.com/photo-1607374904945-feef89bffa1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1&q=80&w=400',
             type: BG_TYPE.IMAGE,
         },
         stream: {
             prefetchCount: 5,
             preloadMetaCount: 10,
-            collections: ['EDITORS_CHOICE'],
+            collections: ['editor-choice'],
             queryPresets: [
-                /* {
-                    id: 'CLOUDS',
-                    value: 'Clouds',
-                }, */
-                // { id: 'SPACE', value: 'Space' },
-                {
-                    id: 'NATURE',
-                    value: 'Nature',
-                },
-                {
-                    id: 'MINIMALISM',
-                    value: 'Minimalism',
-                },
-                {
-                    id: 'ABSTRACT',
-                    value: 'Abstract',
-                },
-                /* {
-                    id: 'NIGHT_SKY',
-                    value: 'Night sky',
-                },
-                {
-                    id: 'WINTER',
-                    value: 'Winter',
-                },
-                {
-                    id: 'WALLPAPER',
-                    value: 'Wallpaper',
-                },
-                {
-                    id: 'DARK',
-                    value: 'Dark',
-                },
-                {
-                    id: 'AESTHETIC',
-                    value: 'Aesthetic',
-                },
-                {
-                    id: 'MINIMALISM_NATURE',
-                    value: 'Minimalism nature',
-                }, */
-                {
-                    id: 'ARCHITECTURE',
-                    value: 'Architecture',
-                },
+                // 'Clouds',
+                // 'Space,'
+                'Nature',
+                'Minimalism',
+                'Abstract',
+                'Architecture',
+                // 'Night sky,'
+                // 'Winter,'
+                // 'Wallpaper,'
+                // 'Dark,'
+                // 'Aesthetic,'
+                // 'Minimalism nature,'
             ],
         },
     },

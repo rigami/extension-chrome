@@ -1,7 +1,7 @@
 import { observable } from 'mobx';
 import { BG_SOURCE } from '@/enum';
 
-class Background {
+class Wallpaper {
     @observable id;
     @observable idInSource;
     @observable isSaved;
@@ -14,8 +14,6 @@ class Background {
     @observable antiAliasing;
     @observable source;
     @observable sourceLink;
-    @observable downloadLink;
-    @observable previewLink;
     @observable type;
     @observable previewSrc;
     @observable pauseStubSrc;
@@ -23,7 +21,7 @@ class Background {
     @observable pauseTimestamp;
 
     constructor(background = {}) {
-        this.idInSource = background.idInSource || background.id;
+        this.idInSource = background.idInSource;
         this.isSaved = background.isSaved || false;
         this.isLoad = background.isLoad || false;
         this.fileName = background.fileName;
@@ -33,10 +31,8 @@ class Background {
         this.description = background.description;
         this.antiAliasing = background.antiAliasing === false ? false : (background.antiAliasing || true);
         this.source = background.source || BG_SOURCE.USER;
-        this.id = `${this.source.toLowerCase()}-${this.idInSource}`;
+        this.id = background.id;
         this.sourceLink = background.sourceLink;
-        this.downloadLink = background.downloadLink;
-        this.previewLink = background.previewLink;
         this.type = background.type;
         this.previewSrc = background.previewSrc;
         this.pauseStubSrc = background.pauseStubSrc;
@@ -45,4 +41,4 @@ class Background {
     }
 }
 
-export default Background;
+export default Wallpaper;

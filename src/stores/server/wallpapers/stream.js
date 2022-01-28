@@ -1,0 +1,268 @@
+import { makeAutoObservable, toJS } from 'mobx';
+import { captureException } from '@sentry/browser';
+import { first } from 'lodash';
+import consoleBinder from '@/utils/console/bind';
+import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
+import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
+import api from '@/utils/helpers/api';
+import appVariables from '@/config/appVariables';
+import { BG_SOURCE, BG_TYPE } from '@/enum';
+
+const bindConsole = consoleBinder('wallpapers-stream');
+
+class StreamWallpapersService {
+    core;
+    storage;
+    settings;
+    _fetchCount = 0;
+    _isSearching = false;
+    _isPreparing = false;
+
+    constructor(core) {
+        makeAutoObservable(this);
+        this.core = core;
+        this.storage = this.core.storage.persistent;
+        this.settings = this.core.settingsService.backgrounds;
+    }
+
+    async _setFromQueue() {
+        bindConsole.log('Set wallpaper from queue...');
+
+        if (this.core.isOffline && !first(this.storage.data.wallpapersStreamQueue)?.isLoad) {
+            bindConsole.log('App is offline and next wallpaper not prefetch. Get background from local store...');
+            this._fetchCount = 0;
+
+            return this.core.wallpapersService.local.next();
+        }
+
+        if (!first(this.storage.data.wallpapersStreamQueue).isLoad) {
+            try {
+                await WallpapersUniversalService.fetch(
+                    first(this.storage.data.wallpapersStreamQueue),
+                    { preview: false },
+                );
+            } catch (e) {
+                bindConsole.error('Failed prefetch wallpaper. Get next...', e);
+                captureException(e);
+
+                this.storage.update({ wallpapersStreamQueue: this.storage.data.wallpapersStreamQueue.splice(1) });
+
+                return this.next();
+            }
+        }
+
+        const nextWallpaper = new Wallpaper({
+            ...first(this.storage.data.wallpapersStreamQueue),
+            isLoad: true,
+        });
+
+        this.storage.update({ wallpapersStreamQueue: this.storage.data.wallpapersStreamQueue.splice(1) });
+
+        this._fetchCount = 0;
+
+        console.log('this.core.wallpapersService:', toJS(this.core.wallpapersService), toJS(this.core));
+
+        console.log('1:', Object.keys(this.core));
+        console.log('2:', Object.keys(this.core.weatherService));
+        console.log('2:', Object.keys(this.core.wallpapersService));
+
+        await this.core.wallpapersService.set(nextWallpaper);
+
+        return this._prepareNextInQueue();
+    }
+
+    async _prepareNextInQueue() {
+        if (this._isPreparing) {
+            bindConsole.log('Already preparing queue. Skip...');
+            return;
+        }
+
+        bindConsole.log('Prepare queue...');
+
+        this._isPreparing = true;
+
+        if (this.storage.data.wallpapersStreamQueue.length === 0) {
+            bindConsole.log('Backgrounds is over, preload new...');
+
+            await this._preloadQueue();
+        }
+
+        const nextPrepareIndex = this.storage.data.wallpapersStreamQueue.findIndex(({ isLoad }) => !isLoad);
+
+        bindConsole.log(`Prefetch wallpapers. ${
+            nextPrepareIndex + 1
+        } of ${
+            this.storage.data.wallpapersStreamQueue.length
+        }...`);
+
+        if (this.core.isOffline) {
+            bindConsole.warn('App is offline. Impossible prefetch bg. Abort...');
+
+            return Promise.resolve();
+        }
+
+        if (
+            nextPrepareIndex + 1 > appVariables.wallpapers.stream.prefetchCount
+            || nextPrepareIndex > this.storage.data.wallpapersStreamQueue.length - 1
+        ) {
+            bindConsole.log('Prefetch enough wallpapers. Stopping');
+
+            if (this.storage.data.wallpapersStreamQueue.length < appVariables.wallpapers.stream.prefetchCount) {
+                bindConsole.log('Backgrounds are almost over, preload new ones...');
+
+                return this._preloadQueue();
+            } else {
+                return Promise.resolve();
+            }
+        }
+
+        const nextPrepare = this.storage.data.wallpapersStreamQueue[nextPrepareIndex];
+
+        try {
+            await WallpapersUniversalService.fetch(nextPrepare, { preview: false });
+        } catch (e) {
+            bindConsole.error('Failed prefetch wallpaper. Remove from queue and fetch next...', e);
+            captureException(e);
+
+            this.storage.update({ wallpapersStreamQueue: this.storage.data.wallpapersStreamQueue.splice(nextPrepareIndex, 1) });
+
+            this._isPreparing = false;
+            return this._prepareNextInQueue();
+        }
+
+        this.storage.update({
+            wallpapersStreamQueue: this.storage.data.wallpapersStreamQueue.map((bg) => {
+                if (bg.id !== nextPrepare.id) return bg;
+
+                return {
+                    ...bg,
+                    isLoad: true,
+                };
+            }),
+        });
+
+        if (
+            nextPrepareIndex < appVariables.wallpapers.stream.prefetchCount
+            && nextPrepareIndex < this.storage.data.wallpapersStreamQueue.length - 1
+        ) {
+            this._isPreparing = false;
+            return this._prepareNextInQueue();
+        } else {
+            bindConsole.log('Prefetch enough wallpapers. Stopping');
+            if (this.storage.data.wallpapersStreamQueue.length < appVariables.wallpapers.stream.prefetchCount) {
+                bindConsole.log('Backgrounds are almost over, preload new ones...');
+                return this._preloadQueue();
+            } else {
+                return Promise.resolve();
+            }
+        }
+    }
+
+    async _preloadQueue() {
+        bindConsole.log('Preload queue...');
+
+        const place = this.storage.data.wallpapersStreamQuery?.type === 'collection'
+            ? 'collection'
+            : 'random';
+
+        const type = this.settings.type.join(',').toLowerCase();
+
+        try {
+            const { response, statusCode } = await api.get(`wallpapers/${place}`, {
+                query: {
+                    type,
+                    query: this.storage.data.wallpapersStreamQuery?.value || '',
+                    count: appVariables.wallpapers.stream.preloadMetaCount,
+                },
+            });
+
+            if (statusCode !== 200) {
+                bindConsole.error('Failed preload queue', response);
+
+                return Promise.reject(new Error('Failed request'));
+            }
+
+            if (response.length === 0) {
+                bindConsole.error('Failed preload queue. Response empty');
+
+                return Promise.reject(new Error('No results'));
+            }
+
+            this._fetchCount = 0;
+            this.storage.update({
+                wallpapersStreamQueue: [
+                    ...(this.storage.data.wallpapersStreamQueue || []),
+                    ...response.map((bg) => new Wallpaper({
+                        ...bg,
+                        idInSource: bg.idInSource,
+                        source: BG_SOURCE[bg.source.toUpperCase()],
+                        type: BG_TYPE[bg.type.toUpperCase()],
+                        fullSrc: bg.fullSrc,
+                        previewSrc: bg.previewSrc,
+                    })),
+                ],
+            });
+
+            return Promise.resolve();
+        } catch (e) {
+            captureException(e);
+
+            return Promise.reject(e);
+        }
+    }
+
+    async next() {
+        bindConsole.log('Search next wallpaper from stream station...');
+
+        if (!this.storage.data.wallpapersStreamQuery) {
+            bindConsole.log('Not set stream query. Set default...');
+
+            this.storage.update({
+                wallpapersStreamQuery: {
+                    type: 'collection',
+                    value: 'editors-choice',
+                },
+            });
+        }
+
+        this._fetchCount += 1;
+
+        if (this._fetchCount > 6) {
+            bindConsole.log('Many failed requests. Abort...');
+
+            return Promise.reject();
+        }
+
+        if (this._fetchCount > 2) {
+            const timeout = Math.min(this._fetchCount * 1000, 30000);
+            bindConsole.log(`Many failed requests. Wait ${timeout}ms`);
+
+            await new Promise((resolve) => setTimeout(resolve, timeout));
+        }
+
+        if (this.storage.data.wallpapersStreamQueue?.length > 0) {
+            return this._setFromQueue();
+        }
+
+        if (this.core.isOffline) {
+            bindConsole.log('App is offline. Get background from local store...');
+            this._fetchCount = 0;
+
+            return this.core.wallpapersService.local.next();
+        }
+
+        try {
+            bindConsole.log('Empty query. Load...');
+            await this._preloadQueue();
+
+            return this._setFromQueue();
+        } catch (e) {
+            bindConsole.error('Failed get wallpapers from stream. Get from local', e);
+            captureException(e);
+
+            return this.core.wallpapersService.local.next();
+        }
+    }
+}
+
+export default StreamWallpapersService;

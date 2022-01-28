@@ -28,11 +28,14 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
     },
     fab: {
+        borderRadius: 18,
         position: 'absolute',
         bottom: theme.spacing(3),
         right: theme.spacing(3),
-        backgroundImage: `linear-gradient(to top, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
-        '&:hover': { backgroundImage: `linear-gradient(to top, ${theme.palette.primary.dark}, ${theme.palette.primary.main})` },
+        backgroundColor: '#242424',
+        textTransform: 'none',
+        '&:hover': { backgroundColor: '#000000' },
+        '& svg': { marginRight: theme.spacing(1) },
     },
     container: {
         display: 'flex',
@@ -151,24 +154,24 @@ function Bookmarks() {
                     </Box>
                 </Scrollbar>
             </Box>
-            <Tooltip title={t('bookmark:button.add', { context: 'short' })} placement="left">
-                <Fab
-                    className={classes.fab}
-                    color="primary"
-                    onClick={(event) => coreService.localEventBus.call(
-                        'bookmark/create',
-                        {
-                            defaultFolderId: searchService.selectFolderId,
-                            position: {
-                                left: event.clientX,
-                                top: event.clientY,
-                            },
+            <Fab
+                variant="extended"
+                className={classes.fab}
+                color="primary"
+                onClick={(event) => coreService.localEventBus.call(
+                    'bookmark/create',
+                    {
+                        defaultFolderId: searchService.selectFolderId,
+                        position: {
+                            left: event.clientX,
+                            top: event.clientY,
                         },
-                    )}
-                >
-                    <AddBookmarkIcon />
-                </Fab>
-            </Tooltip>
+                    },
+                )}
+            >
+                <AddBookmarkIcon />
+                {t('bookmark:button.add', { context: 'short' })}
+            </Fab>
         </Box>
     );
 }

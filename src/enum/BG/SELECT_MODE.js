@@ -1,6 +1,5 @@
 export default {
-    RANDOM: 'RANDOM',
-    SPECIFIC: 'SPECIFIC',
-    SEQUENCE: 'SEQUENCE',
     STREAM: 'STREAM',
+    GRADIENT: 'GRADIENT',
+    SOLID: 'SOLID',
 };

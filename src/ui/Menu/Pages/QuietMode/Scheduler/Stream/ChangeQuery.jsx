@@ -26,8 +26,8 @@ import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import BackgroundCard from '@/ui/Menu/Pages/QuietMode/BackgroundCard';
-import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import Background from '@/stores/universal/backgrounds/entities/background';
+import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
+import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import api from '@/utils/helpers/api';
 
 const useStyles = makeStyles((theme) => ({
@@ -94,7 +94,7 @@ function BackgroundPreview({ bg, isAdded = false }) {
             onSet={() => backgrounds.setBG(bg)}
             onAdd={!isLoaded && (() => {
                 setIsLoaded(true);
-                BackgroundsUniversalService.addToLibrary(bg);
+                WallpapersUniversalService.addToLibrary(bg);
             })}
         />
     );
@@ -106,7 +106,9 @@ function ChangeQuery({ onClose }) {
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const store = useLocalObservable(() => ({
-        searchRequest: coreService.storage.persistent.data.backgroundStreamQuery?.value,
+        searchRequest: coreService.storage.persistent.data.wallpapersStreamQuery?.type !== 'collection'
+            ? coreService.storage.persistent.data.wallpapersStreamQuery?.value
+            : '',
         foundRequest: '',
         list: [],
         addedList: [],
@@ -134,11 +136,11 @@ function ChangeQuery({ onClose }) {
 
             const allAdded = await backgrounds.getAll();
 
-            list = list.map((bg) => new Background({
+            list = list.map((bg) => new Wallpaper({
                 ...bg,
                 idInSource: bg.idInSource,
                 source: BG_SOURCE[bg.source.toUpperCase()],
-                type: BG_TYPE[bg.type],
+                type: BG_TYPE[bg.type.toUpperCase()],
                 downloadLink: bg.fullSrc,
                 previewLink: bg.previewSrc,
             }));
@@ -157,8 +159,7 @@ function ChangeQuery({ onClose }) {
 
     const handleSelect = () => {
         coreService.storage.persistent.update({
-            backgroundStreamQuery: {
-                id: 'CUSTOM_QUERY',
+            wallpapersStreamQuery: {
                 type: 'custom-query',
                 value: store.searchRequest,
             },

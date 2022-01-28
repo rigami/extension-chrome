@@ -66,7 +66,7 @@ class LocalBackupService {
             if (settings) zip.file('settings.json', JSON.stringify(backup.settings));
             if (BUILD === 'full' && bookmarks) zip.file('bookmarks.json', JSON.stringify(backup.bookmarks));
             if (backgrounds) {
-                zip.file('backgrounds.json', JSON.stringify(backup.backgrounds.meta));
+                zip.file('wallpapers.json', JSON.stringify(backup.backgrounds.meta));
                 zip.folder('backgrounds');
                 zip.folder('previews');
 
@@ -116,14 +116,14 @@ class LocalBackupService {
                         'meta.json',
                         'settings.json',
                         'bookmarks.json',
-                        'backgrounds.json',
+                        'wallpapers.json',
                     ].includes(file.name)
                 ) {
                     const value = await file.async('text');
                     backup[file.name.slice(0, -5)] = JSON.parse(value);
                 }
 
-                if (file.name.indexOf('backgrounds/') !== -1 && !file.dir) {
+                if (file.name.indexOf('wallpapers/') !== -1 && !file.dir) {
                     const fileName = file.name.substring(12);
                     const splitIndex = fileName.indexOf('.');
                     const id = splitIndex === -1 ? fileName : fileName.substring(0, splitIndex);

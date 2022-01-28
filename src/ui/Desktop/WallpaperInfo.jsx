@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function BackgroundInfo(props) {
+function WallpaperInfo(props) {
     const {
         author,
         authorName,
@@ -182,4 +182,4 @@ function BackgroundInfo(props) {
     );
 }
 
-export default memo(observer(BackgroundInfo));
+export default memo(observer(WallpaperInfo));

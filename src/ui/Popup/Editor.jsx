@@ -26,24 +26,6 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         borderRadius: 0,
     },
-    tabIndicator: {
-        height: '100%',
-        borderRadius: theme.shape.borderRadius,
-    },
-    selectedTab: { color: theme.palette.common.white },
-    tab: {
-        zIndex: 1,
-        borderRadius: theme.shape.borderRadius,
-        transition: theme.transitions.create(['color'], {
-            duration: theme.transitions.duration.standard,
-            easing: theme.transitions.easing.easeInOut,
-        }),
-    },
-    tabs: {
-        padding: theme.spacing(0.5),
-        borderRadius: theme.shape.borderRadius,
-        backgroundColor: theme.palette.background.backdrop,
-    },
     bar: {
         padding: theme.spacing(2),
         paddingBottom: 0,
@@ -72,26 +54,14 @@ function PopupEditor() {
                     indicatorColor="primary"
                     value={editor}
                     onChange={(event, newValue) => { setEditor(newValue); }}
-                    classes={{
-                        root: classes.tabs,
-                        indicator: classes.tabIndicator,
-                    }}
                 >
                     <Tab
                         label="Сохранить текущую вкладку"
                         value={EDITOR_TYPE.SAVE_CURRENT_TAB}
-                        classes={{
-                            root: classes.tab,
-                            selected: classes.selectedTab,
-                        }}
                     />
                     <Tab
                         label="Создать новую закладку"
                         value={EDITOR_TYPE.CREATE_NEW_BOOKMARK}
-                        classes={{
-                            root: classes.tab,
-                            selected: classes.selectedTab,
-                        }}
                     />
                 </Tabs>
             </AppBar>

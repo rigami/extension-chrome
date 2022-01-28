@@ -3,8 +3,8 @@ import { first } from 'lodash';
 import db from '@/utils/db';
 import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/appVariables';
-import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import Background from '@/stores/universal/backgrounds/entities/background';
+import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
+import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 import { PREPARE_PROGRESS } from '@/stores/app/core';
 import { eventToApp } from '@/stores/universal/serviceBus';
@@ -57,17 +57,17 @@ class FactorySettingsService {
         console.log('Fetch BG');
         progressCallback(35, PREPARE_PROGRESS.FETCH_BG);
 
-        const { response: bgListResponse } = await fetchData(
+        /* const { response: bgListResponse } = await fetchData(
             `${appVariables.rest.url}/backgrounds/get-from-collection?count=1&type=image&collection=best`,
-        ).catch(() => ({ response: [] }));
+        ).catch(() => ({ response: [] })); */
 
         progressCallback(70, PREPARE_PROGRESS.SAVE_BG);
 
         let bg;
 
-        try {
+        /* try {
             if (bgListResponse.length !== 0) {
-                bg = await BackgroundsUniversalService.addToLibrary(new Background({
+                bg = await WallpapersUniversalService.addToLibrary(new Wallpaper({
                     ...first(bgListResponse),
                     source: BG_SOURCE[first(bgListResponse).service],
                     downloadLink: first(bgListResponse).fullSrc,
@@ -75,11 +75,11 @@ class FactorySettingsService {
                     type: BG_TYPE[first(bgListResponse).type],
                 }));
             } else {
-                bg = await BackgroundsUniversalService.addToLibrary(new Background(appVariables.backgrounds.fallback));
+                bg = await WallpapersUniversalService.addToLibrary(new Wallpaper(appVariables.wallpapers.fallback));
             }
-        } catch (e) {
-            bg = await BackgroundsUniversalService.addToLibrary(new Background(appVariables.backgrounds.fallback));
-        }
+        } catch (e) { */
+        bg = await WallpapersUniversalService.addToLibrary(new Wallpaper(appVariables.wallpapers.fallback));
+        // }
 
         this.storage.update({ bgCurrent: bg });
 

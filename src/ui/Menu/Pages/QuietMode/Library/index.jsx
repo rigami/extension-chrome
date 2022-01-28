@@ -15,7 +15,7 @@ import { PhotoLibraryRounded as EmptyLibraryIcon } from '@material-ui/icons';
 import Stub from '@/ui-components/Stub';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import useAppStateService from '@/stores/app/AppStateProvider';
-import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
+import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import BackgroundCard from '@/ui/Menu/Pages/QuietMode/BackgroundCard';
 import { FETCH } from '@/enum';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
@@ -99,11 +99,11 @@ function LibraryMenu() {
 
         const listeners = [];
 
-        listeners.push(coreService.globalEventBus.on('backgrounds/new', () => {
+        listeners.push(coreService.globalEventBus.on('wallpapers/new', () => {
             fetchBackgrounds();
         }));
 
-        listeners.push(coreService.globalEventBus.on('backgrounds/removed', () => {
+        listeners.push(coreService.globalEventBus.on('wallpapers/removed', () => {
             fetchBackgrounds();
         }));
 
@@ -138,7 +138,7 @@ function LibraryMenu() {
                                             {...bg}
                                             select={coreService.storage.persistent.data.bgCurrent?.id === bg.id}
                                             onSet={() => backgrounds.setBG(bg)}
-                                            onRemove={() => BackgroundsUniversalService.removeFromLibrary(bg)}
+                                            onRemove={() => WallpapersUniversalService.removeFromLibrary(bg)}
                                         />
                                     </ImageListItem>
                                 )),

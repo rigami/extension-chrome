@@ -30,7 +30,7 @@ import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import {
-    ACTIVITY,
+    ACTIVITY, BG_RATE,
     BG_SELECT_MODE, BG_SHOW_MODE,
     BG_SHOW_STATE,
     BG_SOURCE, BG_TYPE,
@@ -44,8 +44,9 @@ import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import useContextMenu from '@/stores/app/ContextMenuProvider';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
 import useBaseStateService from '@/stores/app/BaseStateProvider';
-import Background from './Background';
+import Wallpaper from './Wallpaper';
 import Widgets from './Widgets';
+import WallpaperService from '@/ui/Desktop/wallpaperService';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -139,6 +140,10 @@ function Desktop() {
         isRender: appService.activity !== ACTIVITY.BOOKMARKS,
         stickWidgetsToBottom: appService.activity !== ACTIVITY.DESKTOP,
     }));
+    const wallpaperService = useLocalObservable(() => new WallpaperService({
+        coreService,
+        wallpapersSettings: backgrounds,
+    }));
 
     const contextMenu = useContextMenu(() => [
         ...(BUILD === 'full' ? [
@@ -162,7 +167,7 @@ function Desktop() {
                     size: 20,
                     className: classes.loadBGIcon,
                 } : {},
-                onClick: () => eventToBackground('backgrounds/nextBg'),
+                onClick: () => eventToBackground('wallpapers/next'),
             }),
         ] : []),
         ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
@@ -252,10 +257,7 @@ function Desktop() {
         backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
         && backgrounds.currentBG?.source !== BG_SOURCE.USER
     );
-    const nextBg = (
-        backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM
-        || backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
-    );
+    const nextBg = backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM;
 
     return (
         <Fragment>
@@ -337,28 +339,23 @@ function Desktop() {
                                         {bgShowMode && (<Divider orientation="vertical" flexItem />)}
                                         <ExtendButton
                                             tooltip={
-                                                !backgrounds.currentBG.isSaved
+                                                !wallpaperService.current?.isLiked
                                                     ? t('background:button.like')
                                                     : t('background:liked')
                                             }
                                             data-ui-path={
-                                                backgrounds.currentBG.isSaved
+                                                wallpaperService.current?.isLiked
                                                     ? 'bg.liked'
                                                     : 'bg.like'
                                             }
-                                            disableRipple={backgrounds.currentBG.isSaved}
                                             onClick={() => {
-                                                if (!backgrounds.currentBG.isSaved) {
-                                                    backgrounds.like(backgrounds.currentBG);
-                                                } else {
-                                                    backgrounds.unlike(backgrounds.currentBG);
-                                                }
+                                                eventToBackground('wallpapers/rate', {
+                                                    wallpaperId: wallpaperService.current?.id,
+                                                    rate: wallpaperService.current?.isLiked ? null : BG_RATE.LIKE,
+                                                });
                                             }}
                                             icon={
-                                                (
-                                                    backgrounds.currentBG.isSaved
-                                                    || coreService.storage.temp.data.addingBgToLibrary === FETCH.PENDING
-                                                )
+                                                wallpaperService.current?.isLiked
                                                     ? LikedIcon
                                                     : LikeIcon
                                             }
@@ -367,9 +364,11 @@ function Desktop() {
                                         <ExtendButton
                                             tooltip={t('background:button.dislike')}
                                             data-ui-path="bg.dislike"
-                                            disableRipple={backgrounds.currentBG.isSaved}
                                             onClick={() => {
-                                                backgrounds.dislike(backgrounds.currentBG);
+                                                eventToBackground('wallpapers/rate', {
+                                                    wallpaperId: wallpaperService.current?.id,
+                                                    rate: BG_RATE.DISLIKE,
+                                                });
                                             }}
                                             icon={DislikeIcon}
                                         />
@@ -391,7 +390,7 @@ function Desktop() {
                                             disableRipple={backgrounds.bgState === BG_SHOW_STATE.SEARCH}
                                             onClick={() => (
                                                 backgrounds.bgState !== BG_SHOW_STATE.SEARCH
-                                            && eventToBackground('backgrounds/nextBg')
+                                            && eventToBackground('wallpapers/next')
                                             )}
                                             icon={() => (
                                                 <React.Fragment>
@@ -447,14 +446,14 @@ function Desktop() {
                         ? `translateY(calc(-100vh + ${
                             Math.max(service.storage.temp.data.desktopWidgetsHeight, 72)
                         + service.storage.temp.data.desktopFapHeight
-                    }px))`
+                        }px))`
                         : '',
                 }}
                 onContextMenu={contextMenu}
             >
                 {store.isRender && (
                     <React.Fragment>
-                        <Background />
+                        <Wallpaper service={wallpaperService} />
                         {widgets.settings.useWidgets && (
                             <Widgets stickToBottom={store.stickWidgetsToBottom} />
                         )}

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { omit } from 'lodash';
-import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import Background from '@/stores/universal/backgrounds/entities/background';
+import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
+import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 
 class SyncBackgrounds {
     core;
@@ -12,7 +12,7 @@ class SyncBackgrounds {
     }
 
     async collect() {
-        const allBackgrounds = await BackgroundsUniversalService.getAll();
+        const allBackgrounds = await WallpapersUniversalService.getAll();
 
         const meta = [];
         const fullBlobs = new Map();
@@ -45,11 +45,11 @@ class SyncBackgrounds {
     }
 
     async restore(backgrounds, files, previewFiles) {
-        console.log('restore backgrounds', backgrounds, files, previewFiles, this.core);
+        console.log('restore wallpapers', backgrounds, files, previewFiles, this.core);
 
-        const localBackgrounds = await BackgroundsUniversalService.getAll();
+        const localBackgrounds = await WallpapersUniversalService.getAll();
 
-        console.log('Restore backgrounds...');
+        console.log('Restore wallpapers...');
 
         for await (const background of backgrounds) {
             console.log('Check background:', background);
@@ -61,9 +61,9 @@ class SyncBackgrounds {
             } else {
                 console.log(`Background '${computeId}' not find in local store. Save as new`);
 
-                console.log('[backgrounds] Added to library...');
+                console.log('[wallpapers] Added to library...');
                 try {
-                    await BackgroundsUniversalService.addToLibrary(new Background({
+                    await WallpapersUniversalService.addToLibrary(new Wallpaper({
                         ...background,
                         id: null,
                     }), {

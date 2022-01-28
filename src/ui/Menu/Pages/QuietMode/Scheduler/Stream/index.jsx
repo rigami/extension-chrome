@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Avatar, Box, Chip, Collapse,
 } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { alpha, makeStyles } from '@material-ui/core/styles';
-import { ArrowForwardRounded as CreateCustomQueryIcon, MoreHorizRounded as MoreIcon } from '@material-ui/icons';
+import {
+    ArrowForwardRounded as CreateCustomQueryIcon,
+    MoreHorizRounded as MoreIcon,
+    WallpaperRounded as WallpaperIcon,
+} from '@material-ui/icons';
 import clsx from 'clsx';
+import { captureException } from '@sentry/react';
 import {
     BG_CHANGE_INTERVAL,
     BG_SELECT_MODE,
@@ -26,7 +31,9 @@ const useStyles = makeStyles((theme) => ({
     chip: {
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
-        borderRadius: theme.shape.borderRadius,
+        borderRadius: theme.shape.borderRadiusBolder,
+        border: 'none',
+        backgroundColor: theme.palette.background.backdrop,
     },
     selected: {
         borderColor: theme.palette.primary.main,
@@ -61,15 +68,75 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function BGCard({ src }) {
+    return (
+        <Avatar
+            src={src}
+            variant="rounded"
+            style={{
+                width: 48,
+                height: 48,
+                marginRight: 8,
+            }}
+        >
+            <WallpaperIcon />
+        </Avatar>
+    );
+}
+
+const MemoBGCard = memo(BGCard);
+
+function LibraryRow({ onSelect }) {
+    const { t } = useTranslation(['settingsQuietMode']);
+    const { backgrounds } = useAppStateService();
+    const [bgs, setBgs] = useState(null);
+
+    useEffect(() => {
+        backgrounds.getLastUsage(8)
+            .then((lastBgs) => setBgs(lastBgs))
+            .catch((e) => {
+                captureException(e);
+                console.error('Failed load bg`s from db:', e);
+            });
+    }, [backgrounds.count]);
+
+    return (
+        <MenuRow
+            title={t('savedLibrary.title')}
+            description={t('savedLibrary.description')}
+            action={{
+                type: ROWS_TYPE.LINK,
+                onClick: () => onSelect(libraryPage),
+            }}
+        >
+            {bgs && bgs.map(({ previewSrc, id }) => (
+                <MemoBGCard src={previewSrc} key={id} />
+            ))}
+            {bgs && bgs.length > 8 && (
+                <Avatar
+                    variant="rounded"
+                    style={{
+                        width: 48,
+                        height: 48,
+                        marginRight: 8,
+                    }}
+                >
+                    <MoreIcon />
+                </Avatar>
+            )}
+        </MenuRow>
+    );
+}
+
+const MemoLibraryRow = memo(LibraryRow);
+
 function Stream({ onSelect }) {
     const classes = useStyles();
     const coreService = useCoreService();
     const { backgrounds } = useAppStateService();
     const { t } = useTranslation(['settingsQuietMode']);
 
-    const selected = coreService.storage.persistent.data.backgroundStreamQuery?.type === 'custom-query'
-        ? 'CUSTOM_QUERY'
-        : coreService.storage.persistent.data.backgroundStreamQuery?.id;
+    const selected = coreService.storage.persistent.data.wallpapersStreamQuery;
 
     return (
         <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM} unmountOnExit>
@@ -116,6 +183,7 @@ function Stream({ onSelect }) {
                     values: [BG_TYPE.IMAGE, BG_TYPE.VIDEO],
                 }}
             />
+            <MemoLibraryRow onSelect={onSelect} />
             <MenuRow
                 title={t('query.title')}
                 description={t('query.description')}
@@ -127,7 +195,7 @@ function Stream({ onSelect }) {
                             classes.chip,
                             classes.recommendedChip,
                             classes.editorChoiceChip,
-                            selected === 'EDITORS_CHOICE' && classes.selected,
+                            selected?.type === 'collection' && selected?.value === 'editor-choice' && classes.selected,
                         )}
                         classes={{ icon: classes.chipIcon }}
                         variant="outlined"
@@ -135,9 +203,9 @@ function Stream({ onSelect }) {
                         icon={<EditorsChoiceIcon />}
                         onClick={() => {
                             coreService.storage.persistent.update({
-                                backgroundStreamQuery: {
+                                wallpapersStreamQuery: {
                                     type: 'collection',
-                                    id: 'EDITORS_CHOICE',
+                                    value: 'editor-choice',
                                 },
                                 bgsStream: [],
                                 prepareBGStream: null,
@@ -149,13 +217,13 @@ function Stream({ onSelect }) {
                             classes.chip,
                             classes.recommendedChip,
                             classes.customQueryChip,
-                            selected === 'CUSTOM_QUERY' && classes.selected,
+                            selected?.type === 'custom-query' && classes.selected,
                         )}
                         classes={{ icon: classes.chipIcon }}
                         variant="outlined"
                         label={
-                            selected === 'CUSTOM_QUERY'
-                                ? t('query.custom.button.change', { query: coreService.storage.persistent.data.backgroundStreamQuery?.value || t('unknown') })
+                            selected?.type === 'custom-query'
+                                ? t('query.custom.button.change', { query: coreService.storage.persistent.data.wallpapersStreamQuery?.value || t('unknown') })
                                 : t('query.value.CUSTOM_QUERY')
                         }
                         icon={<CreateCustomQueryIcon />}
@@ -165,17 +233,20 @@ function Stream({ onSelect }) {
                     />
                 </Box>
                 <Box className={classes.chipsWrapper}>
-                    {(appVariables.backgrounds.stream.queryPresets.map((query) => (
+                    {(appVariables.wallpapers.stream.queryPresets.map((query) => (
                         <Chip
-                            className={clsx(classes.chip, selected === query.id && classes.selected)}
+                            className={clsx(
+                                classes.chip,
+                                selected?.type === 'query' && selected?.value === query && classes.selected,
+                            )}
                             variant="outlined"
-                            key={query.id}
-                            label={t(`query.value.${query.id}`)}
+                            key={query}
+                            label={t(`query.value.${query.toUpperCase()}`)}
                             onClick={() => {
                                 coreService.storage.persistent.update({
-                                    backgroundStreamQuery: {
+                                    wallpapersStreamQuery: {
                                         type: 'query',
-                                        ...query,
+                                        value: query,
                                     },
                                     bgsStream: [],
                                     prepareBGStream: null,

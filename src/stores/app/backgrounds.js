@@ -17,15 +17,15 @@ import {
 import db from '@/utils/db';
 import getPreview from '@/utils/createPreview';
 import { BackgroundsSettings } from '@/stores/universal/settings';
-import Background from '@/stores/universal/backgrounds/entities/background';
+import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import { eventToBackground } from '@/stores/universal/serviceBus';
-import BackgroundsUniversalService, { ERRORS } from '@/stores/universal/backgrounds/service';
+import WallpapersUniversalService, { ERRORS } from '@/stores/universal/wallpapers/service';
 
 class BackgroundsAppService {
     currentBGId;
     uploadQueue = [];
     bgShowMode = BG_SHOW_MODE.LIVE;
-    bgState = BG_SHOW_STATE.DONE;
+    bgState;
     settings;
     _currentBG;
     _coreService;
@@ -35,26 +35,29 @@ class BackgroundsAppService {
         this._coreService = coreService;
         this.settings = new BackgroundsSettings();
 
-        this._coreService.globalEventBus.on('backgrounds/state', ({ data: state }) => {
-            console.log('[backgrounds] Change background state:', state);
-            this.bgState = state;
-        });
-
-        const setCurrentBg = (setBG) => {
+        /* const setCurrentBg = (setBG) => {
             console.log('setCurrentBg:', setBG);
-            const bg = new Background({
+            const bg = new Wallpaper({
                 ...setBG,
                 id: setBG.idInSource,
             });
 
-            if (this._currentBG) console.log('[backgrounds] Change current background:', bg);
-            else console.log('[backgrounds] Set current background:', bg);
+            if (this._currentBG) console.log('[wallpapers] Change current background:', bg);
+            else console.log('[wallpapers] Set current background:', bg);
 
             this._currentBG = bg;
             this.currentBGId = this._currentBG?.id;
 
             // this._coreService.storage.persistent.update({ bgCurrent: { ...bg } });
         };
+
+        reaction(
+            () => this._coreService.storage.persistent.data.wallpaperState,
+            () => {
+                console.log('[wallpapers] Change background state:', this._coreService.storage.persistent.data.wallpaperState);
+                this.bgState = this._coreService.storage.persistent.data.wallpaperState;
+            },
+        );
 
         reaction(
             () => this._coreService.storage.persistent.data.bgCurrent?.id,
@@ -93,9 +96,10 @@ class BackgroundsAppService {
             setCurrentBg(this._coreService.storage.persistent.data.bgCurrent);
         }
         this.bgShowMode = this._coreService.storage.persistent.data.bgShowMode || BG_SHOW_MODE.LIVE;
+        this.bgState = this._coreService.storage.persistent.data.wallpaperState || BG_SHOW_STATE.WAIT;
 
-        this._coreService.globalEventBus.on('backgrounds/removed', ({ data: bg }) => {
-            if (bg.id === this.currentBGId) eventToBackground('backgrounds/nextBg');
+        this._coreService.globalEventBus.on('wallpapers/removed', ({ data: bg }) => {
+            if (bg.id === this.currentBGId) eventToBackground('wallpapers/next');
         });
 
         if (
@@ -109,13 +113,13 @@ class BackgroundsAppService {
                 || this.settings.selectionMethod === BG_SELECT_MODE.RANDOM
             )
         ) {
-            eventToBackground('backgrounds/nextBg');
-        }
+            eventToBackground('wallpapers/next');
+        } */
     }
 
     @action('')
     setBG(bg) {
-        return new Promise(((resolve) => eventToBackground('backgrounds/setBg', bg, resolve)));
+        return new Promise(((resolve) => eventToBackground('wallpapers/set', bg, resolve)));
     }
 
     @computed
@@ -137,7 +141,7 @@ class BackgroundsAppService {
         });
 
         try {
-            await BackgroundsUniversalService.addToLibrary(bg);
+            await WallpapersUniversalService.addToLibrary(bg);
         } catch (e) {
             console.error(e);
             captureException(e);
@@ -166,7 +170,7 @@ class BackgroundsAppService {
         });
 
         try {
-            await BackgroundsUniversalService.removeFromLibrary(bg);
+            await WallpapersUniversalService.removeFromLibrary(bg);
         } catch (e) {
             console.error(e);
             captureException(e);
@@ -194,7 +198,7 @@ class BackgroundsAppService {
         });
 
         try {
-            await BackgroundsUniversalService.removeFromLibrary(bg, true);
+            await WallpapersUniversalService.removeFromLibrary(bg, true);
         } catch (e) {
             console.error(e);
             captureException(e);
@@ -206,7 +210,7 @@ class BackgroundsAppService {
         this._coreService.storage.temp.update({ addingBgToLibrary: FETCH.PENDING });
 
         try {
-            await BackgroundsUniversalService.addToLibrary(bg);
+            await WallpapersUniversalService.addToLibrary(bg);
             this._coreService.storage.temp.update({ addingBgToLibrary: FETCH.DONE });
             this._coreService.storage.persistent.update({
                 bgCurrent: {
@@ -225,7 +229,7 @@ class BackgroundsAppService {
     addToUploadQueue(fileList) {
         if (!fileList || fileList.length === 0) return Promise.reject(new Error(ERRORS.NO_FILES));
 
-        if (fileList.length > appVariables.backgrounds.maxUploadFiles) {
+        if (fileList.length > appVariables.wallpapers.maxUploadFiles) {
             return Promise.reject(new Error(ERRORS.TOO_MANY_FILES));
         }
 
@@ -304,7 +308,7 @@ class BackgroundsAppService {
     saveFromUploadQueue(saveBGId, options) {
         const bg = this.uploadQueue.find(({ id }) => saveBGId === id);
 
-        const saveBG = new Background({
+        const saveBG = new Wallpaper({
             ...bg,
             ...{
                 antiAliasing: true,
@@ -314,13 +318,13 @@ class BackgroundsAppService {
             previewLink: URL.createObjectURL(bg.preview),
         });
 
-        return BackgroundsUniversalService.addToLibrary(saveBG)
+        return WallpapersUniversalService.addToLibrary(saveBG)
             .finally(() => {
                 this.uploadQueue = this.uploadQueue.filter(({ id }) => saveBGId !== id);
             });
     }
 
-    @action('get last usage backgrounds')
+    @action('get last usage wallpapers')
     async getLastUsage(limit = 10) {
         const tx = await db().transaction('backgrounds', 'readonly');
         let cursor = await tx.objectStore('backgrounds').openCursor();
@@ -328,7 +332,7 @@ class BackgroundsAppService {
         const bgs = [];
 
         while (cursor && currIndex + 1 <= limit) {
-            bgs.push(new Background(cursor.value));
+            bgs.push(new Wallpaper(cursor.value));
 
             currIndex += 1;
             cursor = await cursor.continue();
@@ -337,9 +341,9 @@ class BackgroundsAppService {
         return bgs;
     }
 
-    @action('get all backgrounds')
+    @action('get all wallpapers')
     getAll() {
-        return BackgroundsUniversalService.getAll();
+        return WallpapersUniversalService.getAll();
     }
 }
 

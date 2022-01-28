@@ -52,9 +52,9 @@
   "general": "Общие",
   "scheduler": "Режим",
   "specificBg": "Особый фон",
-  "library":{
-    "title": "Библиотека",
-    "description": "Ваши локальные фоны",
+  "savedLibrary":{
+    "title": "Сохранёные",
+    "description": "Ваши сохранёные, понравившиеся и загруженные вами фоны",
     "button": {
       "uploadFromComputer":"Загрузить с компьютера"
     },
@@ -71,13 +71,11 @@
     "title":"Метод выбора фона",
     "description":"Выберите способ изменения фона",
     "value": {
-      "RANDOM":"Случайный",
       "SPECIFIC":"Постоянный",
-      "SEQUENCE": "Последовательность фонов",
       "STREAM": "Поток",
-      "RANDOM_description":"Случайный фон из вышей локальной библитеки",
+      "GRADIENT": "Градиент",
+      "SOLID": "Сплошной цвет",
       "SPECIFIC_description":"Постоянный конкретный фон",
-      "SEQUENCE_description": "Последовательность фонов",
       "STREAM_description": "Бесконечный поток фонов"
     }
   },

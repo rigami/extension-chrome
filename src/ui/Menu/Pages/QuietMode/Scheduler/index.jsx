@@ -7,18 +7,12 @@ import {
     Tab,
     Tabs,
 } from '@material-ui/core';
-
-import {
-    ErrorRounded as ErrorIcon,
-    ToysRounded as StationIcon,
-    WifiTetheringRounded as StreamIcon,
-} from '@material-ui/icons';
+import { WifiTetheringRounded as StreamIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { BG_SELECT_MODE, BG_SHOW_STATE, BG_TYPE } from '@/enum';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import Stream from './Stream';
-import Random from './Random';
 import Specific from './Specific';
 
 const useStyles = makeStyles((theme) => ({
@@ -63,13 +57,18 @@ function SchedulerSection({ onSelect }) {
                     value={BG_SELECT_MODE.STREAM}
                     label={t(`selectionMethod.value.${BG_SELECT_MODE.STREAM}`)}
                 />
-                <Tab value={BG_SELECT_MODE.RANDOM} label={t(`selectionMethod.value.${BG_SELECT_MODE.RANDOM}`)} />
-                <Tab value={BG_SELECT_MODE.SPECIFIC} label={t(`selectionMethod.value.${BG_SELECT_MODE.SPECIFIC}`)} />
+                <Tab
+                    value={BG_SELECT_MODE.GRADIENT}
+                    label={t(`selectionMethod.value.${BG_SELECT_MODE.GRADIENT}`)}
+                />
+                <Tab
+                    value={BG_SELECT_MODE.SOLID}
+                    label={t(`selectionMethod.value.${BG_SELECT_MODE.SOLID}`)}
+                />
             </Tabs>
             <Fade in={backgrounds.bgState === BG_SHOW_STATE.SEARCH} unmountOnExit>
                 <LinearProgress className={classes.linearProgress} />
             </Fade>
-            <Random onSelect={onSelect} />
             <Specific onSelect={onSelect} />
             <Stream onSelect={onSelect} />
         </React.Fragment>

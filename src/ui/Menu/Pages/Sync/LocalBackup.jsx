@@ -1,6 +1,4 @@
 import React, { Fragment, useRef, useState } from 'react';
-import SectionHeader from '@/ui/Menu/SectionHeader';
-import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import {
     Button,
     Checkbox,
@@ -13,12 +11,14 @@ import {
     Popper,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { eventToApp, eventToBackground } from '@/stores/universal/serviceBus';
-import appVariables from '@/config/appVariables';
 import { captureException } from '@sentry/react';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
+import appVariables from '@/config/appVariables';
+import { eventToApp, eventToBackground } from '@/stores/universal/serviceBus';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
+import SectionHeader from '@/ui/Menu/SectionHeader';
 
 const useStyles = makeStyles((theme) => ({
     backupButton: { flexShrink: 0 },
@@ -152,9 +152,9 @@ function BackupCreate() {
                                                 primary: classes.optionLabel,
                                                 secondary: classes.fixOverflow,
                                             }}
-                                            primary={t('localBackup.syncItem.backgrounds')}
+                                            primary={t('localBackup.syncItem.wallpapers')}
                                             secondary={t(
-                                                'localBackup.syncItem.backgrounds',
+                                                'localBackup.syncItem.wallpapers',
                                                 { context: 'description' },
                                             )}
                                         />

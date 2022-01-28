@@ -5,6 +5,7 @@ import BG_TYPE from './BG/TYPE';
 import BG_SOURCE from './BG/SOURCE';
 import BG_SHOW_MODE from './BG/SHOW_MODE';
 import BG_SHOW_STATE from './BG/SHOW_STATE';
+import BG_RATE from './BG/RATE';
 import BKMS_FAP_POSITION from './BKMS/FAP_POSITION';
 import BKMS_FAP_STYLE from './BKMS/FAP_STYLE';
 import BKMS_FAP_ALIGN from './BKMS/FAP_ALIGN';
@@ -29,6 +30,7 @@ export {
     BG_SOURCE,
     BG_SHOW_MODE,
     BG_SHOW_STATE,
+    BG_RATE,
     BKMS_FAP_POSITION,
     BKMS_FAP_STYLE,
     BKMS_FAP_ALIGN,
