@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/react';
 import {
-    makeAutoObservable, reaction, toJS, computed,
+    makeAutoObservable, reaction, toJS, computed, action,
 } from 'mobx';
 import { BG_SHOW_MODE, BG_TYPE, FETCH } from '@/enum';
 import { eventToBackground } from '@/stores/universal/serviceBus';
@@ -21,6 +21,7 @@ class WallpaperService {
     _nextWallpaper;
     _stateNextWallpaper = FETCH.WAIT;
     _currentWallpaper;
+    _contrastColor;
 
     constructor({ coreService, wallpapersSettings }) {
         makeAutoObservable(this);
@@ -59,6 +60,16 @@ class WallpaperService {
         return this._currentWallpaper;
     }
 
+    @computed
+    get contrastColor() {
+        return this._contrastColor;
+    }
+
+    @action
+    setContrastColor(color) {
+        this._contrastColor = color;
+    }
+
     _switchTo(wallpaper) {
         bindConsole.log('Switch current wallpaper to next wallpaper...');
 
@@ -70,6 +81,12 @@ class WallpaperService {
 
         if (this._nextWallpaper) {
             bindConsole.log('Cancel previous next wallpaper');
+        }
+
+        if (wallpaper.kind === 'color') {
+            this._switchTo(wallpaper);
+
+            return;
         }
 
         this._nextWallpaper = wallpaper;
@@ -90,7 +107,7 @@ class WallpaperService {
             bindConsole.error('Failed load next wallpaper', e);
             this._stateNextWallpaper = FETCH.FAILED;
 
-            this._switchTo(wallpaper);
+            this._switchTo(null);
         };
 
         if (wallpaper.type === BG_TYPE.VIDEO) {

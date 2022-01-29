@@ -13,9 +13,9 @@ function Specific({ onSelect }) {
     const { t } = useTranslation(['settingsQuietMode', 'background']);
 
     return (
-        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC} unmountOnExit>
+        <Collapse in={backgrounds.settings.kind === BG_SELECT_MODE.SPECIFIC} unmountOnExit>
             <MenuRow
-                description={t(`selectionMethod.value.${BG_SELECT_MODE.SPECIFIC}`, { context: 'description' })}
+                description={t(`kind.value.${BG_SELECT_MODE.SPECIFIC}`, { context: 'description' })}
             />
             <MenuRow
                 title={t('specificBg')}

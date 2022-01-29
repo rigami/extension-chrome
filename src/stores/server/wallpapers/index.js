@@ -1,5 +1,8 @@
-import { makeAutoObservable, reaction, toJS } from 'mobx';
+import {
+    action, makeAutoObservable, reaction, runInAction, toJS,
+} from 'mobx';
 import { captureException } from '@sentry/browser';
+import { assign } from 'lodash';
 import StreamWallpapersService from '@/stores/server/wallpapers/stream';
 import consoleBinder from '@/utils/console/bind';
 import {
@@ -12,14 +15,15 @@ import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import db from '@/utils/db';
 import LocalWallpapersService from '@/stores/server/wallpapers/local';
+import ColorWallpapersService from '@/stores/server/wallpapers/color';
 import api from '@/utils/helpers/api';
-import appVariables from '@/config/appVariables';
 
 const bindConsole = consoleBinder('wallpapers');
 
 class WallpapersService {
     stream;
     local;
+    color;
     storage;
     settings;
     _schedulerTimer;
@@ -33,19 +37,29 @@ class WallpapersService {
         this.subscribe();
     }
 
-    _changeMood() {
+    @action
+    async _changeMood() {
         bindConsole.log(
             'Change mood',
             {
                 type: this.settings.type,
-                selectionMethod: this.settings.selectionMethod,
+                kind: this.settings.kind,
                 streamQuery: this.storage.data.wallpapersStreamQuery,
             },
         );
+
+        runInAction(() => {
+            this.storage.update({ wallpapersStreamQueue: [] });
+        });
+
+        await this.next();
     }
 
     async _reCalcScheduler() {
-        if (this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB) return;
+        if (
+            this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB
+            || this.settings.changeInterval === BG_CHANGE_INTERVAL.NEVER
+        ) return;
 
         try {
             const bgNextSwitchTimestamp = Date.now() + BG_CHANGE_INTERVAL_MILLISECONDS[this.settings.changeInterval];
@@ -60,7 +74,10 @@ class WallpapersService {
     }
 
     async _startScheduler() {
-        if (this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB) return Promise.resolve();
+        if (
+            this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB
+            || this.settings.changeInterval === BG_CHANGE_INTERVAL.NEVER
+        ) return Promise.resolve();
 
         if (!this.storage.data?.bgNextSwitchTimestamp || this.storage.data.bgNextSwitchTimestamp <= Date.now()) {
             bindConsole.log('Run next by scheduler...');
@@ -78,21 +95,27 @@ class WallpapersService {
     }
 
     async next() {
-        bindConsole.log(`Next wallpaper request. Selection method: ${this.settings.selectionMethod}`);
+        bindConsole.log(`Next wallpaper request. Selection method: ${this.settings.kind}`);
 
         if (this.storage.wallpaperState === BG_SHOW_STATE.SEARCH) {
             bindConsole.log('Already searching. Skip next request...');
             return Promise.resolve();
         }
 
-        if (this.settings.selectionMethod === BG_SELECT_MODE.STREAM) {
+        if (this.settings.kind === BG_SELECT_MODE.STREAM) {
             this.storage.update({ wallpaperState: BG_SHOW_STATE.SEARCH });
 
             return this.stream.next();
         }
 
+        if (this.settings.kind === BG_SELECT_MODE.COLOR) {
+            this.storage.update({ wallpaperState: BG_SHOW_STATE.SEARCH });
+
+            return this.color.next();
+        }
+
         bindConsole.log(
-            `Request next wallpaper not support for ${this.settings.selectionMethod} selection method. Abort...`,
+            `Request next wallpaper not support for ${this.settings.kind} selection method. Abort...`,
         );
 
         return Promise.resolve();
@@ -114,6 +137,18 @@ class WallpapersService {
     async set(wallpaper) {
         bindConsole.log('Set wallpaper:', wallpaper);
 
+        if (wallpaper && wallpaper.kind === 'color') {
+            this.storage.update({
+                bgCurrent: {
+                    ...wallpaper,
+                    isSaved: true,
+                },
+                wallpaperState: BG_SHOW_STATE.DONE,
+            });
+
+            return Promise.resolve();
+        }
+
         if (wallpaper && !wallpaper.fullSrc) {
             bindConsole.log('Wallpaper not loaded. Fetch...');
             let urls;
@@ -130,6 +165,7 @@ class WallpapersService {
             return this.set(new Wallpaper({
                 ...wallpaper,
                 ...urls,
+                kind: 'media',
                 isLoad: true,
             }));
         }
@@ -157,6 +193,7 @@ class WallpapersService {
         this.storage.update({
             bgCurrent: {
                 ...wallpaper,
+                kind: 'media',
                 isSaved,
             },
             wallpaperState: BG_SHOW_STATE.DONE,
@@ -168,13 +205,14 @@ class WallpapersService {
     subscribe() {
         this.stream = new StreamWallpapersService(this.core);
         this.local = new LocalWallpapersService(this.core);
+        this.color = new ColorWallpapersService(this.core);
 
         reaction(
-            () => JSON.stringify(this.settings.selectionMethod),
+            () => JSON.stringify(this.settings.kind),
             () => {
                 bindConsole.log(
-                    'Change \'selectionMethod\'. New selection method:',
-                    toJS(this.settings.selectionMethod),
+                    'Change \'kind\'. New selection method:',
+                    toJS(this.settings.kind),
                 );
 
                 this._changeMood();

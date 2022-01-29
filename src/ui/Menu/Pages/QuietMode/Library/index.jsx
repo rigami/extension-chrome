@@ -19,6 +19,7 @@ import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import BackgroundCard from '@/ui/Menu/Pages/QuietMode/BackgroundCard';
 import { FETCH } from '@/enum';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
+import { eventToBackground } from '@/stores/universal/serviceBus';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -137,7 +138,12 @@ function LibraryMenu() {
                                         <BackgroundCard
                                             {...bg}
                                             select={coreService.storage.persistent.data.bgCurrent?.id === bg.id}
-                                            onSet={() => backgrounds.setBG(bg)}
+                                            onSet={() => {
+                                                eventToBackground('wallpapers/set', {
+                                                    kind: 'media',
+                                                    ...bg,
+                                                });
+                                            }}
                                             onRemove={() => WallpapersUniversalService.removeFromLibrary(bg)}
                                         />
                                     </ImageListItem>

@@ -1,5 +1,6 @@
 export default {
-    OPEN_TAB: 0,
+    NEVER: -1,
+    OPEN_TAB: -1,
     MINUTES_5: 5 * 60 * 1000,
     MINUTES_30: 30 * 60 * 1000,
     HOURS_1: 60 * 60 * 1000,

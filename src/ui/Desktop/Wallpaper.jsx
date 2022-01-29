@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
         left: 0,
         transition: [
             theme.transitions.create(['opacity', 'top'], {
-                duration: 800,
+                duration: 900,
                 easing: theme.transitions.easing.shiftEaseInOut,
             }),
             theme.transitions.create(['filter'], {
@@ -92,6 +92,9 @@ function ItemStack(props) {
     const {
         type,
         fullSrc,
+        kind,
+        angle,
+        colors,
         fileName,
         antiAliasing,
         hold = false,
@@ -102,10 +105,17 @@ function ItemStack(props) {
     } = props;
     const classes = useStyles();
     const bgRef = useRef(null);
-    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (kind !== 'media') {
+            setTimeout(() => {
+                onLoad();
+            }, 100);
+        }
+    }, [kind]);
 
     return (
-        <Box className={clsx(classes.itemStack, /* loading && classes.itemStackLoading, */ hold && classes.itemStackHold, hide && classes.itemStackHide)}>
+        <Box className={clsx(classes.itemStack, hold && classes.itemStackHold, hide && classes.itemStackHide)}>
             {/* (store.stateLoadBg === FETCH.FAILED || !store.currentBg) && (
                 <Stub
                     className={classes.errorStub}
@@ -131,7 +141,13 @@ function ItemStack(props) {
                     ]}
                 />
             ) */}
-            {type === BG_TYPE.IMAGE && (
+            {kind === 'color' && (
+                <Box
+                    className={classes.bg}
+                    style={{ [colors.length > 1 ? 'backgroundImage' : 'backgroundColor']: colors.length > 1 ? `linear-gradient(${angle || 0}deg, ${colors.join(', ')}` : colors[0] }}
+                />
+            )}
+            {kind === 'media' && type === BG_TYPE.IMAGE && (
                 <img
                     alt={fileName}
                     className={clsx(classes.bg, classes.image)}
@@ -139,7 +155,6 @@ function ItemStack(props) {
                     style={{ imageRendering: antiAliasing ? 'auto' : 'pixelated' }}
                     onLoad={() => {
                         setTimeout(() => {
-                            setLoading(false);
                             onLoad();
                         }, disabledDelay ? 0 : 1000);
                     }}
@@ -147,7 +162,7 @@ function ItemStack(props) {
                     ref={bgRef}
                 />
             )}
-            {type === BG_TYPE.VIDEO && (
+            {kind === 'media' && type === BG_TYPE.VIDEO && (
                 <video
                     autoPlay
                     loop
@@ -157,7 +172,6 @@ function ItemStack(props) {
                     style={{ imageRendering: antiAliasing ? 'auto' : 'pixelated' }}
                     onPlay={() => {
                         setTimeout(() => {
-                            setLoading(false);
                             onLoad();
                         }, disabledDelay ? 0 : 1000);
                     }}
@@ -195,7 +209,9 @@ function Wallpaper({ service }) {
         <Box className={classes.root}>
             {
                 appService.activity !== ACTIVITY.FAVORITES
-                && service.current && service.current.source !== BG_SOURCE.USER
+                && service.current
+                && service.current.source !== BG_SOURCE.USER
+                && service.current.kind === 'media'
                 && (
                     <WallpaperInfo
                         author={service.current?.author}
@@ -212,12 +228,14 @@ function Wallpaper({ service }) {
                 <ItemStack
                     key={wallpaper.id}
                     {...wallpaper}
-                    hold={index !== 0 || service.state === BG_SHOW_STATE.SEARCH}
+                    hold={(index !== 0 || service.state === BG_SHOW_STATE.SEARCH) && store.stack[0].kind === 'media'}
                     hide={!store.topLoaded && index === 0}
                     disabledDelay={store.stack.length === 1}
                     onLoad={() => {
                         if (index === 0) {
                             store.topLoaded = true;
+
+                            service.setContrastColor(wallpaper.contrastColor);
                         }
 
                         if (store.stack.length > 1) {
@@ -231,12 +249,12 @@ function Wallpaper({ service }) {
                     }}
                 />
             )).reverse()}
-            {/* store.stateLoadBg !== FETCH.FAILED && (
+            {store.stateLoadBg !== FETCH.FAILED && (
                 <div
                     className={classes.dimmingSurface}
                     style={{ opacity: backgrounds.settings.dimmingPower / 100 || 0 }}
                 />
-            ) */}
+            )}
         </Box>
     );
 }

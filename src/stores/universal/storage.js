@@ -4,11 +4,11 @@ import {
     makeAutoObservable,
     makeObservable,
     observable,
-    runInAction,
+    runInAction, toJS,
 } from 'mobx';
 import { assign, throttle } from 'lodash';
-import BrowserAPI from '@/utils/browserAPI';
 import { captureException } from '@sentry/browser';
+import BrowserAPI from '@/utils/browserAPI';
 import { SERVICE_STATE } from '@/enum';
 
 class StorageConnector {
@@ -35,7 +35,7 @@ class StorageConnector {
 }
 
 class PersistentStorage {
-    @observable _data;
+    @observable _data = {};
     namespace;
     _updateTimestamp = Date.now();
     @observable state = SERVICE_STATE.WAIT;
@@ -48,7 +48,7 @@ class PersistentStorage {
     }
 
     sync = throttle(() => {
-        // console.log(`[storage] Update '${this.namespace}' data from cache`, toJS(this._data));
+        console.log(`[storage] Update '${this.namespace}' data from cache`, toJS(this._data));
         this._updateTimestamp = Date.now();
         StorageConnector.set({
             [this.namespace]: {
@@ -61,8 +61,12 @@ class PersistentStorage {
 
     @action
     update(changeData = {}) {
-        console.log('super update', this.namespace, changeData);
-        assign(this._data, changeData);
+        console.log('super update', this.namespace, changeData, toJS(this._data));
+
+        runInAction(() => {
+            assign(this._data, changeData);
+        });
+        console.log('super after update', this.namespace, changeData, toJS(this._data));
         this.sync();
     }
 
@@ -89,7 +93,6 @@ class PersistentStorage {
 
             runInAction(() => {
                 assign(this._data, data);
-                // console.log(this.namespace, JSON.stringify(this._data), JSON.stringify(data));
                 this.state = SERVICE_STATE.DONE;
             });
 
@@ -110,11 +113,14 @@ class PersistentStorage {
                 && this.namespace in changes
                 && this._updateTimestamp < changes[this.namespace].newValue.updateTimestamp
             ) {
-                /* console.log(
+                console.log(
                     `[storage] Data from '${this.namespace}' namespace has changed. Update cache...`,
                     changes[this.namespace],
-                ); */
-                assign(this._data, changes[this.namespace].newValue);
+                );
+
+                runInAction(() => {
+                    assign(this._data, changes[this.namespace].newValue);
+                });
             }
         });
     }

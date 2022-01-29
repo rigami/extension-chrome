@@ -51,7 +51,7 @@
   },
   "general": "Общие",
   "scheduler": "Режим",
-  "specificBg": "Особый фон",
+  "specificBg": "Фон рабочего стола",
   "savedLibrary":{
     "title": "Сохранёные",
     "description": "Ваши сохранёные, понравившиеся и загруженные вами фоны",
@@ -67,22 +67,23 @@
     "title":"Затемнение фона",
     "description":"Уровень затемнения фона"
   },
-  "selectionMethod":{
+  "kind":{
     "title":"Метод выбора фона",
     "description":"Выберите способ изменения фона",
     "value": {
       "SPECIFIC":"Постоянный",
       "STREAM": "Поток",
-      "GRADIENT": "Градиент",
-      "SOLID": "Сплошной цвет",
+      "COLOR": "Цвет",
       "SPECIFIC_description":"Постоянный конкретный фон",
-      "STREAM_description": "Бесконечный поток фонов"
+      "STREAM_description": "Бесконечный поток фонов",
+      "COLOR_description": "Просто цвет. Сплошной или градиент"
     }
   },
   "changeInterval":{
     "title":"Период изменения",
     "description":"Выберите период изменения фона",
     "value":{
+      "NEVER":"Никогда",
       "OPEN_TAB":"При открытии",
       "MINUTES_5": "5 минут",
       "MINUTES_30":"30 минут",
@@ -117,8 +118,10 @@
     },
     "value": {
       "EDITORS_CHOICE": "Выбор редакции",
+      "SAVED_ONLY": "Только сохраненые",
+      "CUSTOM_QUERY": "Собственный поток",
       "CLOUDS": "Облака",
-      "SPACE": "Космос",
+      "COSMOS": "Космос",
       "NATURE": "Природа",
       "MINIMALISM": "Минимализм",
       "ABSTRACT": "Абстрактные фоны",
@@ -128,8 +131,7 @@
       "DARK": "Темные фоны",
       "AESTHETIC": "Красивые",
       "MINIMALISM_NATURE": "Минималистичная природа",
-      "ARCHITECTURE": "Архитектура",
-      "CUSTOM_QUERY": "Собственный поток"
+      "ARCHITECTURE": "Архитектура"
     }
   },
   "searchQuery": {

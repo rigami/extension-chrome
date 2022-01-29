@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         pointerEvents: 'none',
+        textShadow: '0 2px 17px #00000029',
     },
     widget: {
         display: 'flex',
@@ -63,10 +64,13 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.common.white,
     },
     text: {
-        textShadow: '0 2px 17px #00000029',
         fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 700,
         pointerEvents: 'all',
+        transition: theme.transitions.create(['color', 'textShadow'], {
+            easing: theme.transitions.easing.shiftEaseInOut,
+            duration: theme.transitions.duration.long,
+        }),
     },
     weather: { marginTop: '4%' },
     'time-smaller': {
@@ -131,7 +135,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Widgets({ stickToBottom }) {
+function Widgets({ stickToBottom, color }) {
     const classes = useStyles();
     const service = useBaseStateService();
     const appService = useAppService();
@@ -171,7 +175,11 @@ function Widgets({ stickToBottom }) {
                 widgets.settings.dtwPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddle,
                 widgets.settings.dtwPosition === DTW_POSITION.CENTER_TOP && classes.centerTop,
             )}
-            style={{ [positionOffset]: service.storage.temp.data.desktopFapHeight }}
+            style={{
+                [positionOffset]: service.storage.temp.data.desktopFapHeight,
+                color,
+                textShadow: color ? '0 2px 17px #00000000' : '0 2px 17px #00000029',
+            }}
             ref={refRoot}
         >
             <Box

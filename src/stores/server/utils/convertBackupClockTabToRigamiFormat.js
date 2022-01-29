@@ -55,7 +55,7 @@ function convert(clockTabFile = {}) {
             },
             backgrounds: {
                 dimmingPower: clockTabFile.data.settings.background_dimming_level * (100 / 3),
-                selectionMethod: clockTabFile.data.settings.switching_background_in_special.background_selection === 0
+                kind: clockTabFile.data.settings.switching_background_in_special.background_selection === 0
                     ? BG_SELECT_MODE.STREAM
                     : BG_SELECT_MODE.SPECIFIC,
                 changeInterval,

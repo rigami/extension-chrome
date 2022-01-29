@@ -6,7 +6,7 @@ import { PersistentStorage } from '@/stores/universal/storage';
 class BackgroundsSettings extends PersistentStorage {
     constructor(upgrade) {
         super('backgrounds', upgrade && ((currState) => ({
-            selectionMethod: defaultSettings.backgrounds.selectionMethod,
+            kind: defaultSettings.backgrounds.kind,
             type: defaultSettings.backgrounds.type,
             changeInterval: defaultSettings.backgrounds.changeInterval,
             dimmingPower: defaultSettings.backgrounds.dimmingPower,
@@ -16,7 +16,7 @@ class BackgroundsSettings extends PersistentStorage {
     }
 
     @computed
-    get selectionMethod() { return this.data.selectionMethod; }
+    get kind() { return this.data.kind; }
 
     @computed
     get type() { return this.data.type; }
@@ -30,7 +30,7 @@ class BackgroundsSettings extends PersistentStorage {
     @override
     update(props = {}) {
         const updProps = pick(props, [
-            'selectionMethod',
+            'kind',
             'type',
             'changeInterval',
             'dimmingPower',

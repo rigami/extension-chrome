@@ -14,6 +14,8 @@ import SectionHeader from '@/ui/Menu/SectionHeader';
 import useAppStateService from '@/stores/app/AppStateProvider';
 import Stream from './Stream';
 import Specific from './Specific';
+import Color from './Color';
+import useCoreService from '@/stores/app/BaseStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -29,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SchedulerSection({ onSelect }) {
     const { backgrounds } = useAppStateService();
+    const coreService = useCoreService();
     const { t } = useTranslation(['settingsQuietMode']);
     const classes = useStyles();
 
@@ -39,7 +42,7 @@ function SchedulerSection({ onSelect }) {
                 className={classes.tabs}
                 indicatorColor="primary"
                 variant="fullWidth"
-                value={backgrounds.settings.selectionMethod}
+                value={backgrounds.settings.kind}
                 onChange={(event, newValue) => {
                     if (newValue === BG_SELECT_MODE.STREAM) {
                         backgrounds.settings.update({
@@ -49,28 +52,25 @@ function SchedulerSection({ onSelect }) {
                             )),
                         });
                     }
-                    backgrounds.settings.update({ selectionMethod: newValue });
+                    backgrounds.settings.update({ kind: newValue });
                 }}
             >
                 <Tab
                     icon={<StreamIcon />}
                     value={BG_SELECT_MODE.STREAM}
-                    label={t(`selectionMethod.value.${BG_SELECT_MODE.STREAM}`)}
+                    label={t(`kind.value.${BG_SELECT_MODE.STREAM}`)}
                 />
                 <Tab
-                    value={BG_SELECT_MODE.GRADIENT}
-                    label={t(`selectionMethod.value.${BG_SELECT_MODE.GRADIENT}`)}
-                />
-                <Tab
-                    value={BG_SELECT_MODE.SOLID}
-                    label={t(`selectionMethod.value.${BG_SELECT_MODE.SOLID}`)}
+                    value={BG_SELECT_MODE.COLOR}
+                    label={t(`kind.value.${BG_SELECT_MODE.COLOR}`)}
                 />
             </Tabs>
-            <Fade in={backgrounds.bgState === BG_SHOW_STATE.SEARCH} unmountOnExit>
+            <Fade in={coreService.storage.persistent.data.wallpaperState === BG_SHOW_STATE.SEARCH} unmountOnExit>
                 <LinearProgress className={classes.linearProgress} />
             </Fade>
             <Specific onSelect={onSelect} />
             <Stream onSelect={onSelect} />
+            <Color onSelect={onSelect} />
         </React.Fragment>
     );
 }

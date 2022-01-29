@@ -77,21 +77,21 @@ class BackgroundsServerService {
     }
 
     nextBG() {
-        console.log(`[wallpapers] Next background request. Selection method: ${this.settings.selectionMethod}`);
+        console.log(`[wallpapers] Next background request. Selection method: ${this.settings.kind}`);
         if (this.bgState === BG_SHOW_STATE.SEARCH) {
             console.log('[wallpapers] Wallpaper already searching. Skip...');
             return Promise.resolve();
         }
-        if (this.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC) {
-            console.log(`[wallpapers] Selection method ${this.settings.selectionMethod} not support. Abort...`);
+        if (this.settings.kind === BG_SELECT_MODE.SPECIFIC) {
+            console.log(`[wallpapers] Selection method ${this.settings.kind} not support. Abort...`);
             return Promise.resolve();
         }
 
         eventToApp('wallpapers/state', BG_SHOW_STATE.SEARCH);
 
-        if (this.settings.selectionMethod === BG_SELECT_MODE.RANDOM) {
+        if (this.settings.kind === BG_SELECT_MODE.RANDOM) {
             return this.nextBGLocal();
-        } else if (this.settings.selectionMethod === BG_SELECT_MODE.STREAM) {
+        } else if (this.settings.kind === BG_SELECT_MODE.STREAM) {
             return this.nextBGStream();
         }
 
@@ -483,7 +483,7 @@ class BackgroundsServerService {
             'Change mood',
             {
                 type: this.settings.type,
-                selectionMethod: this.settings.selectionMethod,
+                kind: this.settings.kind,
                 streamQuery: this.storage.data.wallpapersStreamQuery,
             },
         );
@@ -494,7 +494,7 @@ class BackgroundsServerService {
             if (this.storage.data.lastUsageVersion) {
                 if (
                     this.storage.data.bgNextSwitchTimestamp > Date.now()
-                    || this.settings.selectionMethod === BG_SELECT_MODE.SPECIFIC
+                    || this.settings.kind === BG_SELECT_MODE.SPECIFIC
                 ) {
                     console.log('[wallpapers] Restore current background...');
                     this.bgState = BG_SHOW_STATE.DONE;
@@ -593,7 +593,7 @@ class BackgroundsServerService {
 
         if (
             !this.storage.data.lastUsageVersion
-            && this.settings.selectionMethod === BG_SELECT_MODE.STREAM
+            && this.settings.kind === BG_SELECT_MODE.STREAM
             && !this.storage.data.wallpapersStreamQuery
         ) {
             console.log('[wallpapers] Not set stream query. Set default...');
@@ -606,11 +606,11 @@ class BackgroundsServerService {
         } */
 
         reaction(
-            () => JSON.stringify(this.settings.selectionMethod),
+            () => JSON.stringify(this.settings.kind),
             () => {
                 bindConsole.log(
-                    'Change \'selectionMethod\'. New selection method:',
-                    toJS(this.settings.selectionMethod),
+                    'Change \'kind\'. New selection method:',
+                    toJS(this.settings.kind),
                 );
 
                 this._changeMood();

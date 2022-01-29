@@ -51,7 +51,7 @@
     "title":"Darkening backgrounds",
     "description":"Background shade level"
   },
-  "selectionMethod":{
+  "kind":{
     "title":"Background selection method",
     "description":"Select a method for changing the background",
     "value":{

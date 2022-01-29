@@ -39,6 +39,7 @@ export default {
             idInSource: 'nL1pAWmRFYU',
             color: '#0c590c',
             description: '',
+            kind: 'media',
             id: 'unsplash-nL1pAWmRFYU',
             rawSrc: 'https://images.unsplash.com/photo-1607374904945-feef89bffa1f?ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1',
             sourceLink: 'https://unsplash.com/photos/nL1pAWmRFYU',
@@ -52,18 +53,14 @@ export default {
             preloadMetaCount: 10,
             collections: ['editor-choice'],
             queryPresets: [
-                // 'Clouds',
-                // 'Space,'
                 'Nature',
                 'Minimalism',
                 'Abstract',
                 'Architecture',
-                // 'Night sky,'
-                // 'Winter,'
-                // 'Wallpaper,'
-                // 'Dark,'
-                // 'Aesthetic,'
-                // 'Minimalism nature,'
+                'Cosmos',
+                'Winter',
+                'Night sky',
+                'Minimalism nature',
             ],
         },
     },

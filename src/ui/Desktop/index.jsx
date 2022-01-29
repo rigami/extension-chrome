@@ -30,7 +30,7 @@ import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import {
-    ACTIVITY, BG_RATE,
+    ACTIVITY, BG_CHANGE_INTERVAL, BG_RATE,
     BG_SELECT_MODE, BG_SHOW_MODE,
     BG_SHOW_STATE,
     BG_SOURCE, BG_TYPE,
@@ -156,7 +156,7 @@ function Desktop() {
             }),
             new ContextMenuDivider(),
         ] : []),
-        ...(backgrounds.settings.selectionMethod !== BG_SELECT_MODE.SPECIFIC ? [
+        ...(backgrounds.settings.kind !== BG_SELECT_MODE.SPECIFIC ? [
             new ContextMenuItem({
                 title: backgrounds.bgState === BG_SHOW_STATE.SEARCH
                     ? t('background:fetchingNextBG')
@@ -254,10 +254,10 @@ function Desktop() {
 
     const bgShowMode = backgrounds.currentBG?.type === BG_TYPE.VIDEO;
     const saveBgLocal = (
-        backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
+        backgrounds.settings.kind === BG_SELECT_MODE.STREAM
         && backgrounds.currentBG?.source !== BG_SOURCE.USER
     );
-    const nextBg = backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM;
+    const nextBg = backgrounds.settings.changeInterval !== BG_CHANGE_INTERVAL.NEVER;
 
     return (
         <Fragment>
@@ -456,7 +456,10 @@ function Desktop() {
                     <React.Fragment>
                         <Wallpaper service={wallpaperService} />
                         {widgets.settings.useWidgets && (
-                            <Widgets stickToBottom={store.stickWidgetsToBottom} />
+                            <Widgets
+                                color={wallpaperService.contrastColor}
+                                stickToBottom={store.stickWidgetsToBottom}
+                            />
                         )}
                         {BUILD === 'full' && (<FAP />)}
                         {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (

@@ -33,8 +33,8 @@ const refreshAccessToken = async () => {
         );
         console.log('Check token:', checkExpiredResponse);
 
-        expiredTimestamp = Date.now() + checkExpiredResponse.expiredTimeout - 5 * 1000;
-        expired = checkExpiredResponse.expired;
+        expiredTimestamp = Date.now() + (checkExpiredResponse?.expiredTimeout || 0) - 5 * 1000;
+        expired = checkExpiredResponse?.expired || true;
     }
 
     if (expired) {

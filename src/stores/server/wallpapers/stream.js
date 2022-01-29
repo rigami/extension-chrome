@@ -1,4 +1,4 @@
-import { makeAutoObservable, toJS } from 'mobx';
+import { action, makeAutoObservable, toJS } from 'mobx';
 import { captureException } from '@sentry/browser';
 import { first } from 'lodash';
 import consoleBinder from '@/utils/console/bind';
@@ -25,6 +25,7 @@ class StreamWallpapersService {
         this.settings = this.core.settingsService.backgrounds;
     }
 
+    @action
     async _setFromQueue() {
         bindConsole.log('Set wallpaper from queue...');
 
@@ -60,11 +61,11 @@ class StreamWallpapersService {
 
         this._fetchCount = 0;
 
-        console.log('this.core.wallpapersService:', toJS(this.core.wallpapersService), toJS(this.core));
+        if (nextWallpaper.id === this.storage.data.bgCurrent?.id) {
+            bindConsole.warn('Select same wallpaper. Try next...');
 
-        console.log('1:', Object.keys(this.core));
-        console.log('2:', Object.keys(this.core.weatherService));
-        console.log('2:', Object.keys(this.core.wallpapersService));
+            return this.next();
+        }
 
         await this.core.wallpapersService.set(nextWallpaper);
 
@@ -74,7 +75,7 @@ class StreamWallpapersService {
     async _prepareNextInQueue() {
         if (this._isPreparing) {
             bindConsole.log('Already preparing queue. Skip...');
-            return;
+            return Promise.resolve();
         }
 
         bindConsole.log('Prepare queue...');
@@ -158,8 +159,13 @@ class StreamWallpapersService {
         }
     }
 
+    @action
     async _preloadQueue() {
         bindConsole.log('Preload queue...');
+
+        if (this.storage.data.wallpapersStreamQuery?.type === 'saved-only') {
+            return Promise.resolve();
+        }
 
         const place = this.storage.data.wallpapersStreamQuery?.type === 'collection'
             ? 'collection'
@@ -194,6 +200,8 @@ class StreamWallpapersService {
                     ...(this.storage.data.wallpapersStreamQueue || []),
                     ...response.map((bg) => new Wallpaper({
                         ...bg,
+                        kind: 'media',
+                        contrastColor: bg.color,
                         idInSource: bg.idInSource,
                         source: BG_SOURCE[bg.source.toUpperCase()],
                         type: BG_TYPE[bg.type.toUpperCase()],
@@ -211,6 +219,7 @@ class StreamWallpapersService {
         }
     }
 
+    @action
     async next() {
         bindConsole.log('Search next wallpaper from stream station...');
 
@@ -225,12 +234,18 @@ class StreamWallpapersService {
             });
         }
 
+        if (this.storage.data.wallpapersStreamQuery?.type === 'saved-only') {
+            this._fetchCount = 0;
+
+            return this.core.wallpapersService.local.next();
+        }
+
         this._fetchCount += 1;
 
         if (this._fetchCount > 6) {
-            bindConsole.log('Many failed requests. Abort...');
+            bindConsole.log('Many failed requests. Get background from local store...');
 
-            return Promise.reject();
+            return this.core.wallpapersService.local.next();
         }
 
         if (this._fetchCount > 2) {

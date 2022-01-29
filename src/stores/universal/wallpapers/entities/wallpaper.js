@@ -15,6 +15,10 @@ class Wallpaper {
     @observable source;
     @observable sourceLink;
     @observable type;
+    @observable kind;
+    @observable angle;
+    @observable colors;
+    @observable contrastColor;
     @observable previewSrc;
     @observable pauseStubSrc;
     @observable fullSrc;
@@ -34,6 +38,10 @@ class Wallpaper {
         this.id = background.id;
         this.sourceLink = background.sourceLink;
         this.type = background.type;
+        this.kind = background.kind;
+        this.angle = background.angle || 0;
+        this.colors = background.colors || [];
+        this.contrastColor = background.contrastColor;
         this.previewSrc = background.previewSrc;
         this.pauseStubSrc = background.pauseStubSrc;
         this.fullSrc = background.fullSrc;

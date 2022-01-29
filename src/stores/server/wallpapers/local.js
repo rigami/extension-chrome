@@ -31,7 +31,7 @@ class LocalWallpapersService {
 
         let wallpaper = all[selectedIndex];
 
-        if (wallpaper.id === this.storage.bgCurrent?.id) {
+        if (wallpaper.id === this.storage.data.bgCurrent?.id) {
             if (selectedIndex === 0) {
                 wallpaper = all[Math.min(selectedIndex + 1, all.length - 1)];
             } else {

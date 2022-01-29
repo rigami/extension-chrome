@@ -103,14 +103,14 @@ class BackgroundsAppService {
         });
 
         if (
-            this.settings.selectionMethod !== BG_SELECT_MODE.SPECIFIC
+            this.settings.kind !== BG_SELECT_MODE.SPECIFIC
             && this.settings.changeInterval === BG_CHANGE_INTERVAL.OPEN_TAB
             && (
                 (
-                    this.settings.selectionMethod === BG_SELECT_MODE.STREAM
+                    this.settings.kind === BG_SELECT_MODE.STREAM
                     && this._coreService.storage.persistent?.data.prepareBGStream
                 )
-                || this.settings.selectionMethod === BG_SELECT_MODE.RANDOM
+                || this.settings.kind === BG_SELECT_MODE.RANDOM
             )
         ) {
             eventToBackground('wallpapers/next');

@@ -6,9 +6,10 @@ import {
 import { observer } from 'mobx-react-lite';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import {
-    ArrowForwardRounded as CreateCustomQueryIcon,
+    ArrowForwardRounded as CreateCustomQueryIcon, BrokenImageRounded as BrokenIcon,
     MoreHorizRounded as MoreIcon,
     WallpaperRounded as WallpaperIcon,
+    WifiOffRounded as SavedIcon,
 } from '@material-ui/icons';
 import clsx from 'clsx';
 import { captureException } from '@sentry/react';
@@ -139,9 +140,9 @@ function Stream({ onSelect }) {
     const selected = coreService.storage.persistent.data.wallpapersStreamQuery;
 
     return (
-        <Collapse in={backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM} unmountOnExit>
+        <Collapse in={backgrounds.settings.kind === BG_SELECT_MODE.STREAM} unmountOnExit>
             <MenuRow
-                description={t(`selectionMethod.value.${BG_SELECT_MODE.STREAM}`, { context: 'description' })}
+                description={t(`kind.value.${BG_SELECT_MODE.STREAM}`, { context: 'description' })}
             />
             <MenuInfo
                 show={coreService.isOffline}
@@ -158,6 +159,7 @@ function Stream({ onSelect }) {
                     value: backgrounds.settings.changeInterval,
                     onChange: (event) => backgrounds.settings.update({ changeInterval: event.target.value }),
                     values: [
+                        BG_CHANGE_INTERVAL.NEVER,
                         BG_CHANGE_INTERVAL.OPEN_TAB,
                         BG_CHANGE_INTERVAL.MINUTES_5,
                         BG_CHANGE_INTERVAL.MINUTES_30,
@@ -168,94 +170,141 @@ function Stream({ onSelect }) {
                     ],
                 }}
             />
-            <MenuRow
-                title={t('bgType.title')}
-                description={t('bgType.description')}
-                action={{
-                    type: ROWS_TYPE.MULTISELECT,
-                    format: (value) => t(`bgType.value.${value}`),
-                    value: backgrounds.settings.type || [],
-                    onChange: (event) => {
-                        if (event.target.value.length === 0) return;
+            <Collapse in={backgrounds.settings.changeInterval === BG_CHANGE_INTERVAL.NEVER}>
+                <MenuRow
+                    title={t('specificBg')}
+                    description={t('background:button.change')}
+                    action={{
+                        type: ROWS_TYPE.LINK,
+                        onClick: () => onSelect(libraryPage),
+                        component: (
+                            <Avatar
+                                src={backgrounds.currentBG?.previewSrc}
+                                variant="rounded"
+                                style={{
+                                    width: 48,
+                                    height: 48,
+                                    marginRight: 8,
+                                }}
+                            >
+                                <BrokenIcon />
+                            </Avatar>
+                        ),
+                    }}
+                />
+            </Collapse>
+            <Collapse in={backgrounds.settings.changeInterval !== BG_CHANGE_INTERVAL.NEVER}>
+                <MenuRow
+                    title={t('bgType.title')}
+                    description={t('bgType.description')}
+                    action={{
+                        type: ROWS_TYPE.MULTISELECT,
+                        format: (value) => t(`bgType.value.${value}`),
+                        value: backgrounds.settings.type || [],
+                        onChange: (event) => {
+                            if (event.target.value.length === 0) return;
 
-                        backgrounds.settings.update({ type: event.target.value });
-                    },
-                    values: [BG_TYPE.IMAGE, BG_TYPE.VIDEO],
-                }}
-            />
-            <MemoLibraryRow onSelect={onSelect} />
-            <MenuRow
-                title={t('query.title')}
-                description={t('query.description')}
-                classes={{ bodyWrapper: classes.bodyWrapper }}
-            >
-                <Box className={classes.chipsWrapper}>
-                    <Chip
-                        className={clsx(
-                            classes.chip,
-                            classes.recommendedChip,
-                            classes.editorChoiceChip,
-                            selected?.type === 'collection' && selected?.value === 'editor-choice' && classes.selected,
-                        )}
-                        classes={{ icon: classes.chipIcon }}
-                        variant="outlined"
-                        label={t('query.value.EDITORS_CHOICE')}
-                        icon={<EditorsChoiceIcon />}
-                        onClick={() => {
-                            coreService.storage.persistent.update({
-                                wallpapersStreamQuery: {
-                                    type: 'collection',
-                                    value: 'editor-choice',
-                                },
-                                bgsStream: [],
-                                prepareBGStream: null,
-                            });
-                        }}
-                    />
-                    <Chip
-                        className={clsx(
-                            classes.chip,
-                            classes.recommendedChip,
-                            classes.customQueryChip,
-                            selected?.type === 'custom-query' && classes.selected,
-                        )}
-                        classes={{ icon: classes.chipIcon }}
-                        variant="outlined"
-                        label={
-                            selected?.type === 'custom-query'
-                                ? t('query.custom.button.change', { query: coreService.storage.persistent.data.wallpapersStreamQuery?.value || t('unknown') })
-                                : t('query.value.CUSTOM_QUERY')
-                        }
-                        icon={<CreateCustomQueryIcon />}
-                        onClick={() => {
-                            onSelect(changeQueryPage);
-                        }}
-                    />
-                </Box>
-                <Box className={classes.chipsWrapper}>
-                    {(appVariables.wallpapers.stream.queryPresets.map((query) => (
+                            backgrounds.settings.update({ type: event.target.value });
+                        },
+                        values: [BG_TYPE.IMAGE, BG_TYPE.VIDEO],
+                    }}
+                />
+                <MenuRow
+                    title={t('query.title')}
+                    description={t('query.description')}
+                    classes={{ bodyWrapper: classes.bodyWrapper }}
+                >
+                    <Box className={classes.chipsWrapper}>
                         <Chip
                             className={clsx(
                                 classes.chip,
-                                selected?.type === 'query' && selected?.value === query && classes.selected,
+                                classes.recommendedChip,
+                                classes.editorChoiceChip,
+                                selected?.type === 'collection' && selected?.value === 'editor-choice' && classes.selected,
                             )}
+                            classes={{ icon: classes.chipIcon }}
                             variant="outlined"
-                            key={query}
-                            label={t(`query.value.${query.toUpperCase()}`)}
+                            label={t('query.value.EDITORS_CHOICE')}
+                            icon={<EditorsChoiceIcon />}
                             onClick={() => {
                                 coreService.storage.persistent.update({
                                     wallpapersStreamQuery: {
-                                        type: 'query',
-                                        value: query,
+                                        type: 'collection',
+                                        value: 'editor-choice',
                                     },
                                     bgsStream: [],
                                     prepareBGStream: null,
                                 });
                             }}
                         />
-                    )))}
-                </Box>
-            </MenuRow>
+                        <Chip
+                            className={clsx(
+                                classes.chip,
+                                classes.recommendedChip,
+                                classes.savedOnlyChip,
+                                selected?.type === 'saved-only' && classes.selected,
+                            )}
+                            classes={{ icon: classes.chipIcon }}
+                            variant="outlined"
+                            label={t('query.value.SAVED_ONLY')}
+                            icon={<SavedIcon />}
+                            onClick={() => {
+                                coreService.storage.persistent.update({
+                                    wallpapersStreamQuery: {
+                                        type: 'saved-only',
+                                        value: 'saved-only',
+                                    },
+                                    bgsStream: [],
+                                    prepareBGStream: null,
+                                });
+                            }}
+                        />
+                        <Chip
+                            className={clsx(
+                                classes.chip,
+                                classes.recommendedChip,
+                                classes.customQueryChip,
+                                selected?.type === 'custom-query' && classes.selected,
+                            )}
+                            classes={{ icon: classes.chipIcon }}
+                            variant="outlined"
+                            label={
+                                selected?.type === 'custom-query'
+                                    ? t('query.custom.button.change', { query: coreService.storage.persistent.data.wallpapersStreamQuery?.value || t('unknown') })
+                                    : t('query.value.CUSTOM_QUERY')
+                            }
+                            icon={<CreateCustomQueryIcon />}
+                            onClick={() => {
+                                onSelect(changeQueryPage);
+                            }}
+                        />
+                    </Box>
+                    <Box className={classes.chipsWrapper}>
+                        {(appVariables.wallpapers.stream.queryPresets.map((query) => (
+                            <Chip
+                                className={clsx(
+                                    classes.chip,
+                                    selected?.type === 'query' && selected?.value === query && classes.selected,
+                                )}
+                                variant="outlined"
+                                key={query}
+                                label={t(`query.value.${query.toUpperCase().replaceAll(' ', '_')}`)}
+                                onClick={() => {
+                                    coreService.storage.persistent.update({
+                                        wallpapersStreamQuery: {
+                                            type: 'query',
+                                            value: query,
+                                        },
+                                        bgsStream: [],
+                                        prepareBGStream: null,
+                                    });
+                                }}
+                            />
+                        )))}
+                    </Box>
+                </MenuRow>
+                <MemoLibraryRow onSelect={onSelect} />
+            </Collapse>
         </Collapse>
     );
 }

@@ -16,7 +16,7 @@ import {
     ToysRounded as StationIcon,
     WifiTetheringRounded as StreamIcon,
 } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, co } from '@material-ui/core/styles';
 import { runInAction } from 'mobx';
 import { captureException } from '@sentry/react';
 import { BG_SOURCE, BG_TYPE, FETCH } from '@/enum';
@@ -107,6 +107,7 @@ function ChangeQuery({ onClose }) {
     const { backgrounds } = useAppStateService();
     const store = useLocalObservable(() => ({
         searchRequest: coreService.storage.persistent.data.wallpapersStreamQuery?.type !== 'collection'
+            && coreService.storage.persistent.data.wallpapersStreamQuery?.type !== 'saved-only'
             ? coreService.storage.persistent.data.wallpapersStreamQuery?.value
             : '',
         foundRequest: '',
@@ -138,6 +139,8 @@ function ChangeQuery({ onClose }) {
 
             list = list.map((bg) => new Wallpaper({
                 ...bg,
+                kind: 'media',
+                contrastColor: bg.color,
                 idInSource: bg.idInSource,
                 source: BG_SOURCE[bg.source.toUpperCase()],
                 type: BG_TYPE[bg.type.toUpperCase()],
