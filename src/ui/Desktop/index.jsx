@@ -422,10 +422,11 @@ function Desktop() {
                             >
                                 <ExtendButtonGroup variant="blurBackdrop" className={classes.button}>
                                     <ExtendButton
-                                        tooltip={t('bookmark:button.open')}
+                                        tooltip={t('bookmark:button.open', { context: 'tooltip' })}
                                         data-ui-path="bookmark.open"
                                         onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
                                         icon={BookmarksIcon}
+                                        label={t('bookmark:button.open')}
                                     />
                                 </ExtendButtonGroup>
                             </MouseDistanceFade>

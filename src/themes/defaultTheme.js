@@ -135,7 +135,7 @@ const theme = {
             contained: { boxShadow: 'none' },
             containedPrimary: {
                 color: baseTheme.palette.primary.main,
-                backgroundColor: alpha(baseTheme.palette.primary.main, 0.12),
+                backgroundColor: alpha(baseTheme.palette.primary.main, 0.06),
                 '&:hover': {
                     color: baseTheme.palette.common.white,
                     backgroundColor: baseTheme.palette.primary.main,
@@ -198,6 +198,38 @@ const theme = {
                 },
             },
         },
+        MuiSlider: {
+            root: {
+                margin: baseTheme.spacing(0, 1),
+                height: baseTheme.spacing(1.5),
+            },
+            rail: {
+                marginLeft: baseTheme.spacing(-0.75),
+                width: `calc(100% + ${baseTheme.spacing(1.5)}px)`,
+                height: baseTheme.spacing(1.5),
+                borderRadius: baseTheme.spacing(0.75),
+            },
+            track: {
+                paddingRight: baseTheme.spacing(1.5),
+                height: baseTheme.spacing(1.5),
+                borderRadius: baseTheme.spacing(0.75),
+                marginLeft: baseTheme.spacing(-0.75),
+            },
+            thumb: {
+                width: baseTheme.spacing(1),
+                height: baseTheme.spacing(1),
+                marginTop: baseTheme.spacing(0.25),
+                marginLeft: baseTheme.spacing(-0.5),
+                backgroundColor: baseTheme.palette.background.paper,
+            },
+            valueLabel: { left: `calc(-50% - ${baseTheme.spacing(1)}px)` },
+            mark: {
+                transform: 'translateX(-50%)',
+                height: baseTheme.spacing(1.5),
+                opacity: 0.5,
+            },
+            markActive: { opacity: 0.3 },
+        },
         MuiCardHeader: {
             title: {
                 fontFamily: primaryFontFamily,
@@ -216,6 +248,30 @@ const theme = {
                 backgroundColor: baseTheme.palette.background.paper,
             },
         },
+        MuiFilledInput: {
+            root: {
+                borderRadius: baseTheme.shape.borderRadiusBold,
+                borderTopLeftRadius: baseTheme.shape.borderRadiusBold,
+                borderTopRightRadius: baseTheme.shape.borderRadiusBold,
+                '&.Mui-focused': { boxShadow: `${alpha(baseTheme.palette.primary.main, 0.4)} 0px 0px 0px 3px` },
+            },
+            inputMarginDense: {
+                paddingTop: baseTheme.spacing(1.25),
+                paddingBottom: baseTheme.spacing(1.25),
+            },
+            underline: {
+                '&:before': {
+                    borderBottom: 'none',
+                    content: '',
+                },
+                '&:after': {
+                    borderBottom: 'none',
+                    content: '',
+                },
+            },
+        },
+        MuiSelect: { selectMenu: { textAlign: 'center' } },
+        MuiInputBase: { root: { fontSize: '0.85rem' } },
     },
     props: {
         // MuiButton: { disableElevation: true },

@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import {
     NavigateNextRounded as ArrowRightIcon,
-    ExpandMoreRounded as ArrowBottomIcon,
+    UnfoldMoreRounded as ArrowBottomIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -156,7 +156,7 @@ function MenuRow(props) {
                         {actionType === TYPE.SELECT && (
                             <TextField
                                 {...actionProps}
-                                variant="outlined"
+                                variant="filled"
                                 size="small"
                                 select
                                 SelectProps={{ IconComponent: ArrowBottomIcon }}
@@ -172,7 +172,7 @@ function MenuRow(props) {
                         {actionType === TYPE.MULTISELECT && (
                             <TextField
                                 {...actionProps}
-                                variant="outlined"
+                                variant="filled"
                                 size="small"
                                 style={{ width: '100%' }}
                                 select
