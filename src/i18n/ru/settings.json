@@ -13,9 +13,8 @@
   "advancedSettings": "Расширеные настройки",
   "shareBanner": {
     "message": "Помогите проекту",
-    "description": "Узнайте, чем вы можете помочь",
     "button": {
-      "openPage": "Посмотри, как ты можешь помочь",
+      "openProjectSupportPage": "Узнайте, как вы можете помочь",
       "rateExtension": "Оцените расширение"
     }
   },

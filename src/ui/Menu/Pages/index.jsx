@@ -201,14 +201,13 @@ function GeneralMenu({ selected, onSelect }) {
                     message={t('shareBanner.message')}
                     description={(
                         <Fragment>
-                            {t('shareBanner.description')}
                             <span className={classes.bannerLinks}>
                                 <Link
                                     color="inherit"
                                     underline="always"
                                     href="https://rigami.io/help-for-the-project"
                                 >
-                                    {t('shareBanner.button.openPage')}
+                                    {t('shareBanner.button.openProjectSupportPage')}
                                 </Link>
                                 <Link
                                     color="inherit"
