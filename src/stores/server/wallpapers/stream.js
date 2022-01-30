@@ -248,6 +248,16 @@ class StreamWallpapersService {
             return this.core.wallpapersService.local.next();
         }
 
+        if (Math.random() > 0.8) {
+            const localWallpaper = await this.core.wallpapersService.local.getRandom([BG_SOURCE.USER]);
+
+            if (localWallpaper) {
+                bindConsole.log('Set user upload wallpaper...');
+
+                return this.core.wallpapersService.set(localWallpaper);
+            }
+        }
+
         this._fetchCount += 1;
 
         if (this._fetchCount > 6) {

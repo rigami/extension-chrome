@@ -16,16 +16,17 @@ class LocalWallpapersService {
         this.settings = this.core.settingsService.backgrounds;
     }
 
-    async next() {
-        bindConsole.log('Search next from local library...');
-
+    async getRandom(sources = []) {
         const all = (await Promise.all(this.settings.type.map((type) => (
-            db().getAllFromIndex('backgrounds', 'type', type)
-        )))).flat();
+            db()
+                .getAllFromIndex('backgrounds', 'type', type)
+        )))).flat().filter(({ source }) => {
+            if (sources.length === 0) return true;
 
-        if (all.length === 0) {
-            return this.core.wallpapersService.set(null);
-        }
+            return sources.includes(source);
+        });
+
+        if (all.length === 0) return null;
 
         const selectedIndex = Math.floor(Math.random() * all.length);
 
@@ -39,9 +40,15 @@ class LocalWallpapersService {
             }
         }
 
-        if (wallpaper) return this.core.wallpapersService.set(wallpaper);
+        return wallpaper;
+    }
 
-        return Promise.resolve();
+    async next() {
+        bindConsole.log('Search next from local library...');
+
+        const wallpaper = await this.getRandom();
+
+        return this.core.wallpapersService.set(wallpaper);
     }
 }
 
