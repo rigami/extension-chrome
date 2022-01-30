@@ -6,6 +6,8 @@ class Wallpaper {
     @observable idInSource;
     @observable isSaved;
     @observable isLoad;
+    @observable isLiked;
+    @observable isDisliked;
     @observable fileName;
     @observable author;
     @observable authorName;
@@ -28,6 +30,8 @@ class Wallpaper {
         this.idInSource = background.idInSource;
         this.isSaved = background.isSaved || false;
         this.isLoad = background.isLoad || false;
+        this.isLiked = background.isLiked || false;
+        this.isDisliked = background.isDisliked || false;
         this.fileName = background.fileName;
         this.author = background.author;
         this.authorName = background.authorName;

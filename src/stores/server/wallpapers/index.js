@@ -124,14 +124,29 @@ class WallpapersService {
     async rate(wallpaperId, rate) {
         bindConsole.log('Rate wallpaper:', rate, wallpaperId);
 
+        const prevState = {
+            isLiked: this.storage.data.bgCurrent.isLiked,
+            isDisliked: this.storage.data.bgCurrent.isDisliked,
+        };
+
         this.storage.update({
             bgCurrent: {
                 ...this.storage.data.bgCurrent,
                 isLiked: rate === BG_RATE.LIKE,
+                isDisliked: rate === BG_RATE.DISLIKE,
             },
         });
 
-        await api.post(`wallpapers/${wallpaperId}/${rate?.toLowerCase() || 'reset-rate'}`);
+        const { ok } = await api.post(`wallpapers/${wallpaperId}/${rate?.toLowerCase() || 'reset-rate'}`);
+
+        if (!ok) {
+            this.storage.update({
+                bgCurrent: {
+                    ...this.storage.data.bgCurrent,
+                    ...prevState,
+                },
+            });
+        }
     }
 
     async set(wallpaper) {

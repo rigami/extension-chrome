@@ -21,6 +21,7 @@ class WallpaperService {
     _nextWallpaper;
     _stateNextWallpaper = FETCH.WAIT;
     _currentWallpaper;
+    _currentDisplayedWallpaper;
     _contrastColor;
 
     constructor({ coreService, wallpapersSettings }) {
@@ -61,6 +62,11 @@ class WallpaperService {
     }
 
     @computed
+    get currentDisplayed() {
+        return this._currentDisplayedWallpaper;
+    }
+
+    @computed
     get contrastColor() {
         return this._contrastColor;
     }
@@ -68,6 +74,11 @@ class WallpaperService {
     @action
     setContrastColor(color) {
         this._contrastColor = color;
+    }
+
+    @action
+    setCurrentDisplayedWallpaper(wallpaper) {
+        this._currentDisplayedWallpaper = wallpaper;
     }
 
     _switchTo(wallpaper) {
@@ -225,6 +236,10 @@ class WallpaperService {
 
                 if (this.current?.id === this.storage.data.bgCurrent?.id) {
                     this._currentWallpaper = this.storage.data.bgCurrent;
+                }
+
+                if (this.currentDisplayed?.id === this.storage.data.bgCurrent?.id) {
+                    this._currentDisplayedWallpaper = this.storage.data.bgCurrent;
                 }
             },
         );

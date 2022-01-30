@@ -42,6 +42,9 @@
     "PEXELS": "Pexels",
     "PIXABAY": "Pixabay"
   },
+  "dislike": {
+    "noty": "Больше не будем показывать вам этот фон"
+  },
   "error": {
     "notFound": "Подходящего фона не найдено",
     "notFound_description": "",

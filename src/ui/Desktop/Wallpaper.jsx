@@ -236,6 +236,7 @@ function Wallpaper({ service }) {
                             store.topLoaded = true;
 
                             service.setContrastColor(wallpaper.contrastColor);
+                            service.setCurrentDisplayedWallpaper(wallpaper);
                         }
 
                         if (store.stack.length > 1) {

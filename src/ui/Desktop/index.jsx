@@ -26,6 +26,7 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import { useSnackbar } from 'notistack';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { eventToBackground } from '@/stores/universal/serviceBus';
@@ -47,6 +48,7 @@ import useBaseStateService from '@/stores/app/BaseStateProvider';
 import Wallpaper from './Wallpaper';
 import Widgets from './Widgets';
 import WallpaperService from '@/ui/Desktop/wallpaperService';
+import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -130,6 +132,7 @@ const useStyles = makeStyles((theme) => ({
 function Desktop() {
     const { t } = useTranslation(['bookmark', 'background']);
     const classes = useStyles();
+    const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const appService = useAppService();
     const service = useBaseStateService();
@@ -339,23 +342,25 @@ function Desktop() {
                                         {bgShowMode && (<Divider orientation="vertical" flexItem />)}
                                         <ExtendButton
                                             tooltip={
-                                                !wallpaperService.current?.isLiked
+                                                !wallpaperService.currentDisplayed?.isLiked
                                                     ? t('background:button.like')
                                                     : t('background:liked')
                                             }
                                             data-ui-path={
-                                                wallpaperService.current?.isLiked
+                                                wallpaperService.currentDisplayed?.isLiked
                                                     ? 'bg.liked'
                                                     : 'bg.like'
                                             }
                                             onClick={() => {
                                                 eventToBackground('wallpapers/rate', {
-                                                    wallpaperId: wallpaperService.current?.id,
-                                                    rate: wallpaperService.current?.isLiked ? null : BG_RATE.LIKE,
+                                                    wallpaperId: wallpaperService.currentDisplayed?.id,
+                                                    rate: wallpaperService.currentDisplayed?.isLiked ? null : BG_RATE.LIKE,
                                                 });
+
+                                                WallpapersUniversalService.addToLibrary(wallpaperService.currentDisplayed);
                                             }}
                                             icon={
-                                                wallpaperService.current?.isLiked
+                                                wallpaperService.currentDisplayed?.isLiked
                                                     ? LikedIcon
                                                     : LikeIcon
                                             }
@@ -366,11 +371,21 @@ function Desktop() {
                                             data-ui-path="bg.dislike"
                                             onClick={() => {
                                                 eventToBackground('wallpapers/rate', {
-                                                    wallpaperId: wallpaperService.current?.id,
+                                                    wallpaperId: wallpaperService.currentDisplayed?.id,
                                                     rate: BG_RATE.DISLIKE,
                                                 });
+                                                eventToBackground('wallpapers/next');
+
+                                                enqueueSnackbar({
+                                                    message: t('background:dislike.noty'),
+                                                    variant: 'success',
+                                                });
                                             }}
-                                            icon={DislikeIcon}
+                                            icon={
+                                                wallpaperService.currentDisplayed?.isDisliked
+                                                    ? DislikedIcon
+                                                    : DislikeIcon
+                                            }
                                         />
                                     </React.Fragment>
                                 )}

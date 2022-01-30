@@ -3,7 +3,6 @@ import { cloneDeep } from 'lodash';
 import db from '@/utils/db';
 import { eventToApp } from '@/stores/universal/serviceBus';
 import fetchData from '@/utils/helpers/fetchData';
-import appVariables from '@/config/appVariables';
 import { BG_SOURCE } from '@/enum';
 import Wallpaper from './entities/wallpaper';
 import consoleBinder from '@/utils/console/bind';
