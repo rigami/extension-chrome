@@ -167,20 +167,28 @@ class StreamWallpapersService {
             return Promise.resolve();
         }
 
-        const place = this.storage.data.wallpapersStreamQuery?.type === 'collection'
-            ? 'collection'
-            : 'random';
-
         const type = this.settings.type.join(',').toLowerCase();
 
         try {
-            const { response, statusCode } = await api.get(`wallpapers/${place}`, {
-                query: {
+            let path;
+            let query;
+
+            if (this.storage.data.wallpapersStreamQuery?.type === 'collection') {
+                path = `wallpapers/collection/${this.storage.data.wallpapersStreamQuery?.value}`;
+                query = {
+                    type,
+                    count: appVariables.wallpapers.stream.preloadMetaCount,
+                };
+            } else {
+                path = 'wallpapers/random';
+                query = {
                     type,
                     query: this.storage.data.wallpapersStreamQuery?.value || '',
                     count: appVariables.wallpapers.stream.preloadMetaCount,
-                },
-            });
+                };
+            }
+
+            const { response, statusCode } = await api.get(path, { query });
 
             if (statusCode !== 200) {
                 bindConsole.error('Failed preload queue', response);
