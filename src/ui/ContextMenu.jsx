@@ -8,7 +8,7 @@ import {
     ListItemSecondaryAction,
     Box,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { reaction } from 'mobx';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     menu: {
         width: 230,
         padding: theme.spacing(0.75, 0),
-        border: `1px solid ${theme.palette.divider}`,
+        boxShadow: `inset 0px 0px 0px 1px ${theme.palette.divider}`,
         borderRadius: 'inherit',
     },
     emptyMenu: {
@@ -58,6 +58,12 @@ const useStyles = makeStyles((theme) => ({
     itemHelper: {
         display: 'flex',
         width: '100%',
+    },
+    paper: {
+        backgroundColor: alpha(theme.palette.background.paper, 0.8),
+        backdropFilter: 'blur(35px) brightness(110%) contrast(1.2)',
+        backdropFilter: 'blur(35px) brightness(110%) contrast(1.2)',
+        borderRadius: theme.shape.borderRadiusBold,
     },
 }));
 
@@ -119,6 +125,7 @@ function ContextMenu() {
                 store.onClose?.();
             }}
             elevation={18}
+            PaperProps={{ className: classes.paper }}
         >
             {calcActions.length === 0 && (
                 <ListItem

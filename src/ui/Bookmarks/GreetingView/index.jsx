@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
         // paddingRight: theme.spacing(3),
     },
     card: {
-        backgroundColor: theme.palette.background.backdropLight,
+        backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(2, 3),
     },
     divider: {

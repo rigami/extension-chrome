@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         height: '100vh',
         width: '100vw',
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: theme.palette.background.default,
         transform: 'translate3d(0,0,0)',
         display: 'flex',
         flexDirection: 'row',
