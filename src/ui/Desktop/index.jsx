@@ -380,6 +380,8 @@ function Desktop() {
                                                     message: t('background:dislike.noty'),
                                                     variant: 'success',
                                                 });
+
+                                                WallpapersUniversalService.removeFromLibrary(wallpaperService.currentDisplayed);
                                             }}
                                             icon={
                                                 wallpaperService.currentDisplayed?.isDisliked
