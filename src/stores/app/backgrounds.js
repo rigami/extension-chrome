@@ -308,14 +308,16 @@ class BackgroundsAppService {
     saveFromUploadQueue(saveBGId, options) {
         const bg = this.uploadQueue.find(({ id }) => saveBGId === id);
 
+        console.log('saveFromUploadQueue:', bg);
+
         const saveBG = new Wallpaper({
             ...bg,
             ...{
                 antiAliasing: true,
                 ...options,
             },
-            downloadLink: URL.createObjectURL(bg.file),
-            previewLink: URL.createObjectURL(bg.preview),
+            fullSrc: URL.createObjectURL(bg.file),
+            previewSrc: URL.createObjectURL(bg.preview),
         });
 
         return WallpapersUniversalService.addToLibrary(saveBG)

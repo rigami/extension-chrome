@@ -147,7 +147,7 @@ function ItemStack(props) {
                     style={{ [colors.length > 1 ? 'backgroundImage' : 'backgroundColor']: colors.length > 1 ? `linear-gradient(${angle || 0}deg, ${colors.join(', ')}` : colors[0] }}
                 />
             )}
-            {kind === 'media' && type === BG_TYPE.IMAGE && (
+            {kind === 'media' && (type === BG_TYPE.IMAGE || type === BG_TYPE.ANIMATION) && (
                 <img
                     alt={fileName}
                     className={clsx(classes.bg, classes.image)}

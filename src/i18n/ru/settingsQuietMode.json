@@ -99,6 +99,7 @@
     "value":{
       "IMAGE":"Изображение",
       "VIDEO":"Видео",
+      "ANIMATION": "Анимация",
       "all":"Любые",
       "nothingSelected":"Ничего не выбрано"
     }

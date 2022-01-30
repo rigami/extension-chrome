@@ -206,7 +206,7 @@ function Stream({ onSelect }) {
 
                             backgrounds.settings.update({ type: event.target.value });
                         },
-                        values: [BG_TYPE.IMAGE, BG_TYPE.VIDEO],
+                        values: [BG_TYPE.IMAGE, BG_TYPE.VIDEO, BG_TYPE.ANIMATION],
                     }}
                 />
                 <MenuRow

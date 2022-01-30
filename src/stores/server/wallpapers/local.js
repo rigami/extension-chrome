@@ -17,6 +17,7 @@ class LocalWallpapersService {
     }
 
     async getRandom(sources = []) {
+        console.log('this.settings.type:', this.settings.type);
         const all = (await Promise.all(this.settings.type.map((type) => (
             db()
                 .getAllFromIndex('backgrounds', 'type', type)
@@ -25,6 +26,8 @@ class LocalWallpapersService {
 
             return sources.includes(source);
         });
+
+        console.log('all:', all);
 
         if (all.length === 0) return null;
 
