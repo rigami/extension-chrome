@@ -43,10 +43,7 @@ class WallpapersUniversalService {
         eventToApp('wallpapers/new', savedBG);
 
         if (savedBG.source !== BG_SOURCE.USER) {
-            fetchData(
-                `${appVariables.rest.url}/backgrounds/mark-download/${savedBG.source}/${savedBG.idInSource}`,
-                { responseType: 'raw' },
-            )
+            api.post(`wallpapers/${savedBG.id}/mark-download`)
                 .catch((e) => {
                     console.error(e);
                     captureException(e);
