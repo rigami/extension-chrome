@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         fontSize: '3.2rem',
         fontWeight: '900',
-        fontFamily: theme.typography.primaryFontFamily,
     },
     submit: {
         flexShrink: 0,

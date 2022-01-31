@@ -28,14 +28,14 @@ const useStyles = makeStyles((theme) => ({
         wordBreak: 'break-word',
         textAlign: 'center',
         fontWeight: 800,
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.specialFontFamily,
     },
     description: {
         color: theme.palette.text.secondary,
         wordBreak: 'break-word',
         textAlign: 'center',
         fontWeight: 800,
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.fontFamily,
     },
     bottomOffset: { marginBottom: theme.spacing(2) },
 }));

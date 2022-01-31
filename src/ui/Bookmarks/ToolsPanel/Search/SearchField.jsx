@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1 - 0.25),
     },
     input: {
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.specialFontFamily,
         fontSize: '1rem',
         fontWeight: 600,
     },

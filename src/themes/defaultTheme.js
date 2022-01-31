@@ -1,7 +1,7 @@
 import { createTheme, alpha } from '@material-ui/core/styles';
 
-const primaryFontFamily = '"Manrope", "Open Sans", sans-serif';
-const secondaryFontFamily = 'Inter, sans-serif'; // 'Roboto, "Open Sans", sans-serif';
+const specialFontFamily = 'Manrope, "Open Sans", sans-serif';
+const fontFamily = 'Inter, sans-serif';
 
 const baseThemeValues = {
     palette: {
@@ -42,35 +42,40 @@ const baseThemeValues = {
         },
     },
     typography: {
-        fontFamily: primaryFontFamily,
-        primaryFontFamily,
-        secondaryFontFamily,
+        fontFamily,
+        specialFontFamily,
+        secondaryFontFamily: fontFamily,
         h1: {
-            fontFamily: primaryFontFamily,
+            fontFamily: specialFontFamily,
             fontWeight: 900,
             letterSpacing: 'unset',
         },
         h2: {
-            fontFamily: primaryFontFamily,
+            fontFamily: specialFontFamily,
             fontWeight: 900,
             letterSpacing: 'unset',
         },
+        h3: { fontFamily: specialFontFamily },
+        h4: { fontFamily: specialFontFamily },
+        h5: { fontFamily: specialFontFamily },
         h6: {
-            fontFamily: primaryFontFamily,
+            fontFamily: specialFontFamily,
+            fontWeight: 800,
             fontSize: '1.125rem',
             letterSpacing: 'unset',
         },
         body1: {
-            fontFamily: primaryFontFamily,
+            fontFamily: specialFontFamily,
             fontWeight: 600,
             letterSpacing: 'unset',
         },
         body2: {
-            fontFamily: primaryFontFamily,
-            fontWeight: 450,
+            fontFamily,
+            fontWeight: 400,
             fontSize: '0.85rem',
             letterSpacing: 'unset',
         },
+        button: { fontFamily: specialFontFamily },
     },
     transitions: {
         easing: { shiftEaseInOut: 'cubic-bezier(0.1, 0.84, 0.2, 1)' },
@@ -120,6 +125,8 @@ const baseTheme = createTheme(baseThemeValues);
 const theme = {
     ...baseThemeValues,
     overrides: {
+        MuiListSubheader: { root: { fontFamily: baseTheme.typography.specialFontFamily } },
+        MuiButtonBase: { root: { fontFamily: baseTheme.typography.specialFontFamily } },
         MuiButton: {
             root: {
                 fontWeight: 800,
@@ -129,7 +136,6 @@ const theme = {
             },
             label: {
                 fontWeight: 'inherit',
-                fontFamily: primaryFontFamily,
                 wordBreak: 'break-word',
                 textTransform: 'none',
             },
@@ -148,7 +154,6 @@ const theme = {
             root: {
                 textTransform: 'none',
                 fontWeight: 800,
-                fontFamily: primaryFontFamily,
                 zIndex: 1,
                 borderRadius: baseTheme.shape.borderRadiusBold,
                 transition: baseTheme.transitions.create(['color'], {
@@ -170,13 +175,7 @@ const theme = {
                 },
             },
         },
-        MuiTypography: {
-            gutterBottom: { marginBottom: '0.8em' },
-            h6: {
-                fontWeight: 800,
-                fontFamily: primaryFontFamily,
-            },
-        },
+        MuiTypography: { gutterBottom: { marginBottom: '0.8em' } },
         MuiTooltip: {
             tooltip: {
                 backgroundColor: alpha('#000', 0.82),
@@ -231,12 +230,7 @@ const theme = {
             },
             markActive: { opacity: 0.3 },
         },
-        MuiCardHeader: {
-            title: {
-                fontFamily: primaryFontFamily,
-                fontWeight: 600,
-            },
-        },
+        MuiCardHeader: { title: { fontWeight: 600 } },
         MuiTabs: {
             root: {
                 padding: baseTheme.spacing(0.5),

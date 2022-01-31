@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         bottom: theme.spacing(2),
         zIndex: 1,
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.fontFamily,
         fontWeight: 600,
     },
     lockList: {

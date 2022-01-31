@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     title: {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
-        fontFamily: theme.typography.secondaryFontFamily,
+        fontFamily: theme.typography.specialFontFamily,
         fontWeight: 600,
     },
     active: { backgroundColor: theme.palette.action.selected },

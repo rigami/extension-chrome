@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         fontSize: '0.9rem',
         fontWeight: 'inherit',
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.specialFontFamily,
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',

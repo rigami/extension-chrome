@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusButton,
         fontSize: 12,
         fontWeight: '400',
-        fontFamily: theme.typography.secondaryFontFamily,
+        fontFamily: theme.typography.fontFamily,
         whiteSpace: 'nowrap',
         lineHeight: '14px',
         '&:hover $deleteDense': { opacity: 1 },

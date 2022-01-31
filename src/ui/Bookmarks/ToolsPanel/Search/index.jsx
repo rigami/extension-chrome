@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     tags: { padding: theme.spacing(1.5) },
     query: {
         fontSize: '1rem',
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.specialFontFamily,
         fontWeight: 600,
         color: theme.palette.text.secondary,
         letterSpacing: 'normal',

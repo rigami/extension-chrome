@@ -48,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '0.9rem',
         fontWeight: 550,
         justifyContent: 'flex-start',
-        fontFamily: theme.typography.primaryFontFamily,
         '& svg': {
             marginRight: theme.spacing(0.5),
             width: 18,

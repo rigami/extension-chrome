@@ -11,7 +11,7 @@ import useAppService from '@/stores/app/AppStateProvider';
 const useStyles = makeStyles((theme) => ({
     row: { alignItems: 'center' },
     text: {
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.specialFontFamily,
         fontWeight: 800,
         pointerEvents: 'all',
     },

@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.common.white,
     },
     text: {
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.specialFontFamily,
         fontWeight: 700,
         pointerEvents: 'all',
         transition: theme.transitions.create(['color', 'textShadow'], {

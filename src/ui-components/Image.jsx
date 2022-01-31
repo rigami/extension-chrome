@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusBold,
         color: theme.palette.getContrastText(theme.palette.background.backdrop),
         fontWeight: 800,
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.specialFontFamily,
     },
     roundedIconDefault: { backgroundColor: theme.palette.background.backdrop },
     skeleton: { backgroundColor: theme.palette.background.backdrop },

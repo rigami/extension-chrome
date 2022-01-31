@@ -26,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         lineHeight: 1.1,
         wordBreak: 'break-word',
-        fontFamily: theme.typography.primaryFontFamily,
         fontWeight: 600,
         fontSize: '0.94rem',
         marginRight: theme.spacing(1),

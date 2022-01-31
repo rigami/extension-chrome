@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
     recommendedChip: {
         height: 48,
         padding: theme.spacing(1.5),
+        fontFamily: theme.typography.specialFontFamily,
         fontWeight: theme.typography.body1.fontWeight,
         fontSize: theme.typography.body2.fontSize,
         '& $chipIcon': { marginRight: 0 },

@@ -6,7 +6,7 @@ import clsx from 'clsx';
 const useStyles = makeStyles((theme) => ({
     textWrapper: { maxWidth: 700 },
     text: {
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.fontFamily,
         fontWeight: 800,
         fontSize: '1.2rem',
     },

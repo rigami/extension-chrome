@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     title: {
         overflow: 'hidden',
         lineHeight: 1.1,
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.fontFamily,
         fontWeight: 600,
         fontSize: '0.94rem',
         whiteSpace: 'nowrap',
@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
     description: {
         color: theme.palette.text.secondary,
         marginTop: 0,
-        fontFamily: theme.typography.secondaryFontFamily,
+        fontFamily: theme.typography.fontFamily,
         fontWeight: 400,
         lineHeight: 1.2,
         overflow: 'hidden',
@@ -126,7 +126,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusButton,
         fontSize: 12,
         fontWeight: '400',
-        fontFamily: theme.typography.secondaryFontFamily,
+        fontFamily: theme.typography.fontFamily,
         whiteSpace: 'nowrap',
         lineHeight: '14px',
     },

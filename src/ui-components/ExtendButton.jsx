@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
         '& svg + $label': {
             marginLeft: theme.spacing(1),
             fontSize: '0.9rem',
-            fontFamily: theme.typography.primaryFontFamily,
             fontWeight: 600,
             marginRight: theme.spacing(0.5),
         },
