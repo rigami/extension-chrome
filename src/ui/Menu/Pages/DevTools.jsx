@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { observer, useLocalObservable } from 'mobx-react-lite';
+import { Button } from '@material-ui/core';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import { StorageConnector } from '@/stores/universal/storage';
-import { Button } from '@material-ui/core';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 
 const useStyles = makeStyles((theme) => ({
@@ -13,10 +13,7 @@ const useStyles = makeStyles((theme) => ({
     forceCrashButton: { flexShrink: 0 },
 }));
 
-const headerProps = {
-    title: 'DevTools',
-    actions: (<HeaderActions />),
-};
+const headerProps = { title: 'DevTools' };
 
 function HeaderActions() {
     const classes = useStyles();
@@ -98,6 +95,9 @@ function DevTools() {
 
     return (
         <React.Fragment>
+            <MenuRow>
+                <HeaderActions />
+            </MenuRow>
             <MenuRow
                 title={t('Use production environment')}
                 action={{

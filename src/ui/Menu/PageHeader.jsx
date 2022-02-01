@@ -3,7 +3,7 @@ import {
     IconButton,
     AppBar,
     Toolbar,
-    Typography,
+    Typography, Breadcrumbs,
 } from '@material-ui/core';
 import { ArrowBackRounded as BackIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -42,34 +42,36 @@ const useStyles = makeStyles((theme) => ({
     grow: { flexGrow: 1 },
 }));
 
-function PageHeader({
-    title, onBack, actions, className: externalClassName, ...other
-}) {
+function PageHeader(props) {
+    const {
+        title,
+        stack,
+        onBack,
+        className: externalClassName,
+        ...other
+    } = props;
     const classes = useStyles();
     const { t } = useTranslation(['settings']);
 
+    console.log('stack:', stack);
+
     return (
         <AppBar
-            position="sticky"
+            position="static"
             color="transparent"
             elevation={0}
             className={clsx(classes.root, externalClassName)}
             {...other}
         >
             <Toolbar className={classes.toolbar}>
-                {onBack && (
-                    <IconButton
-                        data-ui-path="settings.back"
-                        className={classes.backButton}
-                        onClick={() => onBack()}
-                    >
-                        <BackIcon />
-                    </IconButton>
-                )}
-                <Typography className={clsx(!onBack && classes.title)} variant="h6" noWrap>{t(title)}</Typography>
-                <div className={classes.actions}>
-                    {actions}
-                </div>
+                <IconButton
+                    data-ui-path="settings.back"
+                    className={classes.backButton}
+                    onClick={() => onBack()}
+                >
+                    <BackIcon />
+                </IconButton>
+                <Typography className={clsx(!onBack && classes.title)} variant="h6" noWrap>{t(stack[0].header.title)}</Typography>
                 <div className={classes.grow} />
             </Toolbar>
         </AppBar>

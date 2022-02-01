@@ -20,6 +20,7 @@ import BackgroundCard from '@/ui/Menu/Pages/QuietMode/BackgroundCard';
 import { FETCH } from '@/enum';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 import { eventToBackground } from '@/stores/universal/serviceBus';
+import MenuRow from '@/ui/Menu/MenuRow';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -37,10 +38,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const headerProps = {
-    title: 'settingsQuietMode:library.title',
-    actions: (<HeaderActions />),
-};
+const headerProps = { title: 'settingsQuietMode:library.title' };
 const pageProps = { width: 960 };
 
 function HeaderActions() {
@@ -113,6 +111,9 @@ function LibraryMenu() {
 
     return (
         <React.Fragment>
+            <MenuRow>
+                <HeaderActions />
+            </MenuRow>
             {state === FETCH.PENDING && (
                 <Stub>
                     <CircularProgress />
