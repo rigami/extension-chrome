@@ -34,7 +34,6 @@ const useStyles = makeStyles((theme) => ({
     banner: {
         margin: theme.spacing(1, 0),
         width: 'auto',
-        borderRadius: theme.shape.borderRadius,
     },
     code: {
         fontVariantNumeric: 'tabular-nums',

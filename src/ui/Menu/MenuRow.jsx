@@ -22,6 +22,7 @@ import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        paddingLeft: theme.spacing(4),
         paddingRight: theme.spacing(4),
         flexDirection: 'column',
         alignItems: 'stretch',
@@ -53,7 +54,6 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
-        paddingLeft: 56,
         paddingBottom: theme.spacing(1.5),
     },
     textWrapper: {},
@@ -125,16 +125,16 @@ function MenuRow(props) {
             }}
         >
             <div className={classes.rowWrapper}>
-                {icon && (
+                {/* icon && (
                     <ListItemIcon className={classes.icon}>
                         <Icon />
                     </ListItemIcon>
-                )}
+                ) */}
                 <ListItemText
                     primary={title}
                     secondary={description}
                     className={classes.textWrapper}
-                    inset={!icon && !disableIconInsert}
+                    // inset={!icon && !disableIconInsert}
                 />
                 {actionType !== TYPE.NONE && (
                     <ListItemSecondaryAction

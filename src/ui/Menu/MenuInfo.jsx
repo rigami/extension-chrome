@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'stretch',
+        borderRadius: theme.shape.borderRadiusBolder,
     },
     info: {
         backgroundColor: theme.palette.info.main,
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.warning.main,
         '& $icon': { color: theme.palette.warning.contrastText },
         '& $messageText': { color: theme.palette.warning.contrastText },
-        '& $descriptionText': { color: alpha(theme.palette.warning.contrastText, 0.8) },
+        '& $descriptionText': { color: alpha(theme.palette.warning.contrastText, 0.6) },
         '& $actions': { color: theme.palette.warning.contrastText },
         '& $toolbarActions': { color: theme.palette.warning.contrastText },
     },

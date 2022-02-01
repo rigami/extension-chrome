@@ -16,13 +16,10 @@ import Stream from './Stream';
 import Specific from './Specific';
 import Color from './Color';
 import useCoreService from '@/stores/app/BaseStateProvider';
+import MenuRow from '@/ui/Menu/MenuRow';
 
 const useStyles = makeStyles((theme) => ({
-    tabs: {
-        margin: theme.spacing(0, 4),
-        marginBottom: theme.spacing(1),
-        marginLeft: theme.spacing(9),
-    },
+    tabs: { width: '100%' },
     linearProgress: {
         marginTop: theme.spacing(-0.25),
         marginBottom: theme.spacing(-0.25),
@@ -38,33 +35,35 @@ function SchedulerSection({ onSelect }) {
     return (
         <React.Fragment>
             <SectionHeader h={2} title={t('scheduler')} />
-            <Tabs
-                className={classes.tabs}
-                indicatorColor="primary"
-                variant="fullWidth"
-                value={backgrounds.settings.kind}
-                onChange={(event, newValue) => {
-                    if (newValue === BG_SELECT_MODE.STREAM) {
-                        backgrounds.settings.update({
-                            type: backgrounds.settings.type.filter((type) => (
-                                type !== BG_TYPE.ANIMATION
-                                && type !== BG_TYPE.FILL_COLOR
-                            )),
-                        });
-                    }
-                    backgrounds.settings.update({ kind: newValue });
-                }}
-            >
-                <Tab
-                    icon={<StreamIcon />}
-                    value={BG_SELECT_MODE.STREAM}
-                    label={t(`kind.value.${BG_SELECT_MODE.STREAM}`)}
-                />
-                <Tab
-                    value={BG_SELECT_MODE.COLOR}
-                    label={t(`kind.value.${BG_SELECT_MODE.COLOR}`)}
-                />
-            </Tabs>
+            <MenuRow>
+                <Tabs
+                    className={classes.tabs}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    value={backgrounds.settings.kind}
+                    onChange={(event, newValue) => {
+                        if (newValue === BG_SELECT_MODE.STREAM) {
+                            backgrounds.settings.update({
+                                type: backgrounds.settings.type.filter((type) => (
+                                    type !== BG_TYPE.ANIMATION
+                                    && type !== BG_TYPE.FILL_COLOR
+                                )),
+                            });
+                        }
+                        backgrounds.settings.update({ kind: newValue });
+                    }}
+                >
+                    <Tab
+                        icon={<StreamIcon />}
+                        value={BG_SELECT_MODE.STREAM}
+                        label={t(`kind.value.${BG_SELECT_MODE.STREAM}`)}
+                    />
+                    <Tab
+                        value={BG_SELECT_MODE.COLOR}
+                        label={t(`kind.value.${BG_SELECT_MODE.COLOR}`)}
+                    />
+                </Tabs>
+            </MenuRow>
             <Fade in={coreService.storage.persistent.data.wallpaperState === BG_SHOW_STATE.SEARCH} unmountOnExit>
                 <LinearProgress className={classes.linearProgress} />
             </Fade>

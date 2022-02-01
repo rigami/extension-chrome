@@ -17,8 +17,8 @@ const baseThemeValues = {
             contrastText: '#fff',
         },
         warning: {
-            main: '#f46600',
-            contrastText: '#fff',
+            main: '#ffe4d1',
+            contrastText: alpha('#000', 0.76),
         },
         divider: alpha('#000', 0.13),
         dividerLight: alpha('#000', 0.09),
@@ -55,9 +55,18 @@ const baseThemeValues = {
             fontWeight: 900,
             letterSpacing: 'unset',
         },
-        h3: { fontFamily: specialFontFamily },
-        h4: { fontFamily: specialFontFamily },
-        h5: { fontFamily: specialFontFamily },
+        h3: {
+            fontFamily: specialFontFamily,
+            fontWeight: 800,
+        },
+        h4: {
+            fontFamily: specialFontFamily,
+            fontWeight: 800,
+        },
+        h5: {
+            fontFamily: specialFontFamily,
+            fontWeight: 800,
+        },
         h6: {
             fontFamily: specialFontFamily,
             fontWeight: 800,

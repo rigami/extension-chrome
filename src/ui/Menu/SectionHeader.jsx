@@ -5,6 +5,7 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        paddingLeft: theme.spacing(4),
         paddingTop: theme.spacing(2),
         fontSize: '22px',
         fontWeight: 800,
@@ -20,7 +21,7 @@ function SectionHeader({ title, h = 1 }) {
     const classes = useStyles();
 
     return (
-        <ListSubheader inset className={clsx(classes.root, classes[`h${h}`])} disableSticky>
+        <ListSubheader className={clsx(classes.root, classes[`h${h}`])} disableSticky>
             {title}
         </ListSubheader>
     );
