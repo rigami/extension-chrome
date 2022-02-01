@@ -12,8 +12,6 @@ const useStyles = makeStyles((theme) => ({
     preview: { padding: theme.spacing(2) },
 }));
 
-const headerProps = { title: 'settingsCommon:greeting.title' };
-
 function Greeting() {
     const coreService = useCoreService();
     const { t } = useTranslation(['settingsCommon']);
@@ -55,9 +53,6 @@ function Greeting() {
 
 const ObserverGreeting = observer(Greeting);
 
-export { headerProps as header, ObserverGreeting as content };
+export { ObserverGreeting as content };
 
-export default {
-    header: headerProps,
-    content: ObserverGreeting,
-};
+export default { content: ObserverGreeting };

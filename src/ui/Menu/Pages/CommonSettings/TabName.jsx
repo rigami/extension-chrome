@@ -26,8 +26,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const headerProps = { title: 'settingsCommon:tabName.title' };
-
 function TabName() {
     const appService = useAppService();
     const { t } = useTranslation(['settingsCommon']);
@@ -79,9 +77,6 @@ function TabName() {
 
 const ObserverTabName = observer(TabName);
 
-export { headerProps as header, ObserverTabName as content };
+export { ObserverTabName as content };
 
-export default {
-    header: headerProps,
-    content: ObserverTabName,
-};
+export default { content: ObserverTabName };

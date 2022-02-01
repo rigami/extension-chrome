@@ -48,8 +48,6 @@ const useStyles = makeStyles((theme) => ({
     appVersion: { color: theme.palette.text.secondary },
 }));
 
-const headerProps = { title: 'settings:about' };
-
 function Row({ href, primary, secondary, icon }) {
     const Icon = icon;
 
@@ -137,10 +135,9 @@ function About() {
     );
 }
 
-export { headerProps as header, About as content };
+export { About as content };
 
 export default {
     id: 'about',
-    header: headerProps,
     content: About,
 };

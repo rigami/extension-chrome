@@ -8,12 +8,11 @@ import {
 } from '@material-ui/core';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import Header from '@/ui/Menu/PageHeader';
-import Scrollbar from '@/ui-components/CustomScroll';
 import clsx from 'clsx';
+import { useTheme } from '@material-ui/styles';
+import Scrollbar from '@/ui-components/CustomScroll';
 import useAppService from '@/stores/app/AppStateProvider';
 import { ACTIVITY } from '@/enum';
-import { useTheme } from '@material-ui/styles';
 import backgroundsPage from './Pages/QuietMode';
 import MenuList from './Pages';
 
@@ -75,8 +74,6 @@ function Menu({ open, onClose }) {
     };
 
     const Page = stack[stack.length - 1].content;
-    const headerProps = stack[stack.length - 1] && stack[stack.length - 1].header;
-    const pageProps = (stack[stack.length - 1] && stack[stack.length - 1].props) || {};
 
     return (
         <Portal>
@@ -113,7 +110,6 @@ function Menu({ open, onClose }) {
                                 className={classes.list}
                                 style={{ width: 750 }}
                             >
-                                <Header onBack={stack.length > 1 ? handleBack : null} {...headerProps} />
                                 <Page
                                     onClose={handleBack}
                                     onSelect={(page) => setStack([...stack, page])}
