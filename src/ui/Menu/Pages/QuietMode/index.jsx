@@ -18,6 +18,7 @@ import {
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import SchedulerSection from './Scheduler';
 
+const headerProps = { title: 'settings:quietMode' };
 const pageProps = { width: 750 };
 
 function BackgroundsSection({ onSelect }) {
@@ -220,12 +221,14 @@ function BackgroundsMenu({ onSelect }) {
 const ObserverBackgroundsMenu = observer(BackgroundsMenu);
 
 export {
+    headerProps as header,
     ObserverBackgroundsMenu as content,
     pageProps as props,
 };
 
 export default {
     id: 'quietMode',
+    header: headerProps,
     content: ObserverBackgroundsMenu,
     props: pageProps,
 };

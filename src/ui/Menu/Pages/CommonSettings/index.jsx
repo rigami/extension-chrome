@@ -16,6 +16,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const headerProps = { title: 'settings:common' };
+
 function AppSettings({ onSelect }) {
     const classes = useStyles();
     const { t } = useTranslation(['settingsCommon']);
@@ -82,9 +84,10 @@ function AppSettings({ onSelect }) {
 
 const ObserverAppSettings = observer(AppSettings);
 
-export { ObserverAppSettings as content };
+export { headerProps as header, ObserverAppSettings as content };
 
 export default {
     id: 'common',
+    header: headerProps,
     content: ObserverAppSettings,
 };

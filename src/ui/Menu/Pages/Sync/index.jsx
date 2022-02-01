@@ -5,6 +5,7 @@ import LinkBrowsers from './LinkBrowsers';
 import LocalBackup from './LocalBackup';
 // import ImportBookmarksFromBrowser from './ImportBookmarksFromBrowser';
 
+const headerProps = { title: 'settings:sync' };
 const pageProps = { width: 750 };
 
 function SyncSettings() {
@@ -21,12 +22,14 @@ function SyncSettings() {
 const ObserverSyncSettings = observer(SyncSettings);
 
 export {
+    headerProps as header,
     ObserverSyncSettings as content,
     pageProps as props,
 };
 
 export default {
     id: 'sync',
+    header: headerProps,
     content: ObserverSyncSettings,
     props: pageProps,
 };

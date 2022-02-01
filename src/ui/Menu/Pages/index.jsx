@@ -28,6 +28,7 @@ import {
 
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import appVariables from '@/config/appVariables';
+import Header from '@/ui/Menu/PageHeader';
 import quietModePage from './QuietMode';
 import aboutPage from './About';
 import commonSettingsPage from './CommonSettings';

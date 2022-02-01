@@ -78,6 +78,7 @@ const useStyles = makeStyles((theme) => ({
     footer: { height: 400 },
 }));
 
+const headerProps = { title: 'settingsQuietMode:query.custom.create' };
 const pageProps = { width: 960 };
 
 function BackgroundPreview({ bg, isAdded = false }) {
@@ -280,9 +281,10 @@ function ChangeQuery({ onClose }) {
 
 const ObserverChangeQuery = observer(ChangeQuery);
 
-export { ObserverChangeQuery as content };
+export { headerProps as header, ObserverChangeQuery as content };
 
 export default {
+    header: headerProps,
     content: ObserverChangeQuery,
     props: pageProps,
 };

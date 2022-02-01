@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import useAppStateService from '@/stores/app/AppStateProvider';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import {
     Button,
     Divider,
@@ -8,26 +10,24 @@ import {
     Tooltip,
     CircularProgress,
 } from '@material-ui/core';
+import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     ErrorRounded as ErrorIcon,
     NearMeRounded as MyLocationIcon,
     PlaceRounded as PlaceIcon,
 } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
-import { round } from 'lodash';
-import { runInAction } from 'mobx';
-import { useSnackbar } from 'notistack';
-import { captureException } from '@sentry/react';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import Stub from '@/ui-components/Stub';
 import {
     NearMeDisabledRounded as CustomLocationIcon,
     WrongLocationRounded as WrongLocationIcon,
 } from '@/icons';
-import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
-import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import { makeStyles } from '@material-ui/core/styles';
+import { round } from 'lodash';
+import Stub from '@/ui-components/Stub';
+import useCoreService from '@/stores/app/BaseStateProvider';
+import { runInAction } from 'mobx';
+import { useSnackbar } from 'notistack';
+import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     row: {
@@ -115,6 +115,11 @@ function HeaderActions() {
 
 const ObserverHeaderActions = observer(HeaderActions);
 
+const headerProps = {
+    title: 'settingsWidget:weather.region.title',
+    actions: (<ObserverHeaderActions />),
+};
+
 function Location(props) {
     const {
         locationName,
@@ -196,9 +201,6 @@ function WeatherChangeLocation({ onClose }) {
 
     return (
         <React.Fragment>
-            <MenuRow>
-                <ObserverHeaderActions />
-            </MenuRow>
             <form className={classes.row} onSubmit={handleSearch}>
                 <InputBase
                     fullWidth
@@ -287,6 +289,9 @@ function WeatherChangeLocation({ onClose }) {
 
 const ObserverWeatherChangeLocation = observer(WeatherChangeLocation);
 
-export { ObserverWeatherChangeLocation as content };
+export { headerProps as header, ObserverWeatherChangeLocation as content };
 
-export default { content: ObserverWeatherChangeLocation };
+export default {
+    header: headerProps,
+    content: ObserverWeatherChangeLocation,
+};

@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const headerProps = { title: 'settingsQuietMode:gradient.additional' };
 const pageProps = { width: 960 };
 
 export function ColorPreview(props) {
@@ -141,9 +142,10 @@ function GradientsLibrary({ onClose }) {
 
 const ObserverGradientsLibrary = observer(GradientsLibrary);
 
-export { ObserverGradientsLibrary as content };
+export { headerProps as header, ObserverGradientsLibrary as content };
 
 export default {
+    header: headerProps,
     content: ObserverGradientsLibrary,
     props: pageProps,
 };
