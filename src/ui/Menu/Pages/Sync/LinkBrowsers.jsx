@@ -5,7 +5,10 @@ import React, {
     useEffect,
 } from 'react';
 import {
-    Button, Collapse,
+    Box,
+    Button,
+    CircularProgress,
+    Collapse,
     Dialog,
     DialogActions,
     DialogContent,
@@ -14,6 +17,7 @@ import {
     TextField,
     Typography,
 } from '@material-ui/core';
+import { RefreshRounded as TryAgainIcon } from '@material-ui/icons';
 import { getI18n, useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
@@ -37,8 +41,7 @@ const useStyles = makeStyles((theme) => ({
     },
     code: {
         fontVariantNumeric: 'tabular-nums',
-        height: 80,
-        lineHeight: '80px',
+        marginRight: theme.spacing(1),
     },
     codeInput: {
         fontSize: '2.5rem',
@@ -56,6 +59,10 @@ const useStyles = makeStyles((theme) => ({
         display: 'inline-block',
         marginLeft: theme.spacing(1),
         verticalAlign: 'middle',
+    },
+    codeContainer: {
+        display: 'flex',
+        alignItems: 'center',
     },
 }));
 
@@ -87,41 +94,57 @@ function CreateRequest() {
     const classes = useStyles();
     const { t } = useTranslation(['settingsSync']);
     const store = useLocalObservable(() => ({
-        requestId: null,
+        requestId: 0,
         status: FETCH.WAIT,
         code: '',
         isOpen: false,
+        expiredTimeout: 0,
+        maxExpiredTimeout: 0,
+        lifeInterval: null,
+        lifeTimer: null,
     }));
 
     const createRequest = async () => {
         store.status = FETCH.PENDING;
+        store.requestId += 1;
+
+        const { requestId } = store;
+        clearInterval(store.lifeInterval);
+        clearTimeout(store.lifeTimer);
 
         try {
-            let eventTarget;
-
-            if (authStorage.data.username) {
-                eventTarget = api.sse('users/merge/request/create');
-            } else {
-                eventTarget = api.sse('users/merge/request/no-user/create', { useToken: false });
-            }
+            const eventTarget = api.sse('users/merge/request/create');
 
             eventTarget.addEventListener('start', (event) => {
-                console.log('start:', event);
+                console.log('start:', requestId, event);
+                if (requestId !== store.requestId) return;
             });
 
             eventTarget.addEventListener('code', (event) => {
-                console.log('event:', event);
+                console.log('event:', requestId, event);
+                if (requestId !== store.requestId) return;
                 store.code = event.data.code;
-                store.requestId = event.data.requestId;
+                store.expiredTimeout = event.data.expiredTimeout;
+                store.maxExpiredTimeout = event.data.maxExpiredTimeout;
                 store.status = FETCH.DONE;
+
+                store.lifeInterval = setInterval(() => {
+                    store.expiredTimeout -= 1000;
+                }, 1000);
+
+                store.lifeTimer = setTimeout(() => {
+                    createRequest();
+                }, event.data.expiredTimeout);
             });
 
             eventTarget.addEventListener('cancel-merge', (event) => {
-                console.log('cancel-merge:', event);
+                console.log('cancel-merge:', requestId, event);
+                if (requestId !== store.requestId) return;
             });
 
             eventTarget.addEventListener('done-merge', async (event) => {
-                console.log('done-merge:', event.data);
+                console.log('done-merge:', requestId, event.data);
+                if (requestId !== store.requestId) return;
 
                 if (event.data.action === 'login') {
                     const { response: loginResponse } = await api.post(
@@ -152,14 +175,25 @@ function CreateRequest() {
                 store.isOpen = false;
             });
 
+            eventTarget.addEventListener('error', (event) => {
+                console.log('error:', requestId, event);
+                if (requestId !== store.requestId) return;
+                store.status = FETCH.FAILED;
+            });
+
             eventTarget.addEventListener('close', (event) => {
-                console.log('close:', event);
+                console.log('close:', requestId, event);
+                if (requestId !== store.requestId) return;
                 store.status = FETCH.FAILED;
             });
 
             eventTarget.addEventListener('abort', (event) => {
-                console.log('abort:', event);
+                console.log('abort:', requestId, event);
+                if (requestId !== store.requestId) return;
                 store.status = FETCH.FAILED;
+                store.code = '';
+                clearInterval(store.lifeInterval);
+                clearTimeout(store.lifeTimer);
             });
         } catch (e) {
             store.status = FETCH.FAILED;
@@ -167,89 +201,67 @@ function CreateRequest() {
     };
 
     const deleteRequest = async () => {
-        console.log('requestId:', store.requestId);
-        if (authStorage.data.username) {
-            await api.delete('users/merge/request', { responseType: null });
-        } else {
-            await api.delete('users/merge/request/no-user', {
-                query: { requestId: store.requestId },
-                responseType: null,
-                useToken: false,
-            });
-        }
+        clearInterval(store.lifeInterval);
+        clearTimeout(store.lifeTimer);
+
+        await api.delete('users/merge/request', { responseType: null });
     };
 
     useEffect(() => {
-        if (!store.isOpen) return () => {};
-
         createRequest();
 
         return () => deleteRequest();
-    }, [store.isOpen]);
+    }, []);
 
     return (
         <Fragment>
             <MenuRow
-                title={t('mergeUsers.createRequest.title')}
-                description={t('mergeUsers.createRequest.description')}
+                description={t('mergeUsers.createRequest.dialog.description')}
                 action={{
                     type: ROWS_TYPE.CUSTOM,
                     onClick: () => {},
                     component: (
-                        <Button
-                            variant="contained"
-                            component="span"
-                            color="primary"
-                            className={classes.reRunSyncButton}
-                            fullWidth
-                            onClick={() => { store.isOpen = true; }}
-                        >
-                            {t('mergeUsers.createRequest.button.generateCode')}
-                        </Button>
+                        <Box className={classes.codeContainer}>
+                            {store.status === FETCH.FAILED && (
+                                <Button endIcon={<TryAgainIcon />} onClick={createRequest}>
+                                    {t('common:error.tryAgain')}
+                                </Button>
+                            )}
+                            {store.status !== FETCH.FAILED && (
+                                <Fragment>
+                                    {store.status === FETCH.PENDING && !store.code && (
+                                        <Typography variant="h4" className={classes.code}>
+                                            {t('common:loading')}
+                                        </Typography>
+                                    )}
+                                    {(store.status !== FETCH.PENDING || store.code) && (
+                                        <Typography variant="h4" className={classes.code}>
+                                            {store.code.substring(0, 3)}
+                                            -
+                                            {store.code.substring(3)}
+                                        </Typography>
+                                    )}
+                                    <CircularProgress
+                                        variant={store.status === FETCH.PENDING ? 'indeterminate' : 'determinate'}
+                                        value={(store.expiredTimeout / store.maxExpiredTimeout) * 100}
+                                        size={26}
+                                        thickness={5}
+                                    />
+                                </Fragment>
+                            )}
+                        </Box>
                     ),
                 }}
             />
-            <Dialog open={store.isOpen} onClose={() => { store.isOpen = false; }}>
-                <DialogTitle>{t('mergeUsers.createRequest.dialog.title')}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {t('mergeUsers.createRequest.dialog.description')}
-                    </DialogContentText>
-                    <MenuInfo
-                        show
-                        variant="warn"
-                        message={t('mergeUsers.createRequest.dialog.warn.title')}
-                        classes={{ root: classes.banner }}
-                        description={t('mergeUsers.createRequest.dialog.warn.description')}
-                    />
-                    {store.status === FETCH.FAILED && (
-                        <Typography variant="body1" className={classes.code}>
-                            {t('common:error.tryLater')}
-                        </Typography>
-                    )}
-                    {store.status === FETCH.PENDING && (
-                        <Typography variant="h5" className={classes.code}>
-                            {t('common:loading')}
-                        </Typography>
-                    )}
-                    {store.status === FETCH.DONE && (
-                        <Typography variant="h2" className={classes.code}>
-                            {store.code.substring(0, 3)}
-                            -
-                            {store.code.substring(3)}
-                        </Typography>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        data-ui-path="mergeUsers.createRequest.cancel"
-                        color="primary"
-                        onClick={() => { store.isOpen = false; }}
-                    >
-                        {t('common:button.cancel')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            <MenuRow>
+                <MenuInfo
+                    show
+                    variant="warn"
+                    message={t('mergeUsers.createRequest.dialog.warn.title')}
+                    classes={{ root: classes.banner }}
+                    description={t('mergeUsers.createRequest.dialog.warn.description')}
+                />
+            </MenuRow>
         </Fragment>
     );
 }
@@ -268,10 +280,7 @@ function ApplyRequest() {
         setStatus(FETCH.PENDING);
 
         try {
-            const { response, ok } = await api.get(`users/merge/request/${authStorage.data.username ? '' : 'no-user/'}apply`, {
-                query: { code },
-                useToken: !!authStorage.data.username,
-            });
+            const { response, ok } = await api.get('users/merge/request/apply', { query: { code } });
 
             console.log('response:', response);
 
@@ -683,6 +692,10 @@ function LinkBrowsers() {
     return (
         <React.Fragment>
             <SectionHeader title={t('syncDevices.title')} />
+            <MenuRow
+                title={t('mergeUsers.createRequest.title')}
+                description={t('mergeUsers.createRequest.description')}
+            />
             <ObserverCreateRequest />
             <ApplyRequest />
             {authStorage.data.username && (<ObserverSyncedDevices />)}
