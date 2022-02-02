@@ -11,13 +11,13 @@ import initSentry from '@/config/sentry/server';
 initSentry();
 
 asyncAction(async () => {
-    const { auth: { deviceToken: defaultDeviceToken } = {} } = await StorageConnector.get('auth', null);
+    /* const { auth: { deviceToken: defaultDeviceToken } = {} } = await StorageConnector.get('auth', null);
 
     const deviceToken = defaultDeviceToken || uuid();
 
     if (!defaultDeviceToken) await StorageConnector.set({ auth: { deviceToken } });
 
-    setUser({ id: deviceToken });
+    setUser({ id: deviceToken }); */
 
     await new BackgroundApp().start();
 })

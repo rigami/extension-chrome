@@ -146,23 +146,21 @@ function CreateRequest() {
                 console.log('done-merge:', requestId, event.data);
                 if (requestId !== store.requestId) return;
 
-                if (event.data.action === 'login') {
+                if (event.data.action === 'login/jwt') {
                     const { response: loginResponse } = await api.post(
-                        'auth/login',
+                        'auth/login/jwt',
                         {
-                            useToken: false,
+                            useToken: event.data.authToken,
                             responseType: 'json',
-                            body: {
-                                username: event.data.newUsername,
-                                password: event.data.newPassword,
-                            },
                         },
                     );
 
+                    console.log('loginResponse:', loginResponse);
+
                     authStorage.update({
-                        username: event.data.newUsername,
                         accessToken: loginResponse.accessToken,
                         refreshToken: loginResponse.refreshToken,
+                        authToken: loginResponse.authToken,
                     });
 
                     eventToBackground('sync/forceSync', { newUsername: event.data.newUsername });
@@ -291,23 +289,21 @@ function ApplyRequest() {
                 return;
             }
 
-            if (response.action === 'login') {
+            if (response.action === 'login/jwt') {
                 const { response: loginResponse } = await api.post(
-                    'auth/login',
+                    'auth/login/jwt',
                     {
-                        useToken: false,
+                        useToken: response.authToken,
                         responseType: 'json',
-                        body: {
-                            username: response.newUsername,
-                            password: response.newPassword,
-                        },
                     },
                 );
 
+                console.log('loginResponse:', loginResponse);
+
                 authStorage.update({
-                    username: response.newUsername,
                     accessToken: loginResponse.accessToken,
                     refreshToken: loginResponse.refreshToken,
+                    authToken: loginResponse.authToken,
                 });
 
                 eventToBackground('sync/forceSync', { newUsername: response.newUsername });
@@ -528,7 +524,7 @@ function SyncedDevices() {
     };
 
     useEffect(() => {
-        if (!authStorage.data.username) {
+        if (!authStorage.data.refreshToken) {
             store.currentDevice = null;
             store.otherDevices = [];
             return () => {};
@@ -541,7 +537,7 @@ function SyncedDevices() {
         }, 3000);
 
         return () => clearInterval(interval);
-    }, [authStorage.data.username]);
+    }, [authStorage.data.refreshToken]);
 
     if (store.status === FETCH.PENDING) {
         return (
@@ -698,7 +694,7 @@ function LinkBrowsers() {
             />
             <ObserverCreateRequest />
             <ApplyRequest />
-            {authStorage.data.username && (<ObserverSyncedDevices />)}
+            {authStorage.data.refreshToken && (<ObserverSyncedDevices />)}
         </React.Fragment>
     );
 }

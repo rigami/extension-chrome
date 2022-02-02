@@ -50,6 +50,7 @@ class FactorySettingsService {
             authToken: registrationResponse.authToken,
             accessToken: registrationResponse.accessToken,
             refreshToken: registrationResponse.refreshToken,
+            deviceSign: registrationResponse.deviceSign,
         });
 
         console.log('registration in cloud:', registrationResponse);

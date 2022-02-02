@@ -13,7 +13,7 @@ const refreshAccessToken = async () => {
     console.log('Check token is expired...');
 
     let { accessToken, expiredTimestamp } = authStorage.data;
-    const { deviceToken, refreshToken } = authStorage.data;
+    const { deviceSign, refreshToken } = authStorage.data;
     let expired = true;
 
     if (accessToken) {
@@ -24,7 +24,7 @@ const refreshAccessToken = async () => {
                 cache: 'no-store',
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'Device-Sign': deviceToken,
+                    'Device-Sign': deviceSign,
                     'Device-Type': 'extension-chrome',
                     'Device-Platform': navigator.userAgentData.platform,
                     'Authorization': `Bearer ${accessToken}`,
@@ -45,7 +45,7 @@ const refreshAccessToken = async () => {
                 cache: 'no-store',
                 headers: {
                     'Access-Control-Allow-Origin': '*',
-                    'Device-Sign': deviceToken,
+                    'Device-Sign': deviceSign,
                     'Device-Type': 'extension-chrome',
                     'Device-Platform': navigator.userAgentData.platform,
                     'Authorization': `Bearer ${refreshToken}`,
@@ -96,12 +96,12 @@ async function getAccessToken() {
     return authStorage.data.accessToken;
 }
 
-async function getDeviceToken() {
+async function getDeviceSign() {
     if (authStorage.state !== SERVICE_STATE.DONE) {
         await awaitInstallStorage(authStorage);
     }
 
-    return authStorage.data.deviceToken;
+    return authStorage.data.deviceSign;
 }
 
 async function api(path, options = {}) {
@@ -113,22 +113,26 @@ async function api(path, options = {}) {
         ...userOptions
     } = options;
 
-    const deviceToken = await getDeviceToken();
+    const deviceSign = await getDeviceSign();
 
     const defaultOptions = {
         cache: 'no-store',
         headers: {
             'Access-Control-Allow-Origin': '*',
-            'Device-Sign': deviceToken,
+            'Device-Sign': deviceSign,
             'Device-Type': 'extension-chrome',
             'Device-Platform': navigator.userAgentData.platform,
         },
     };
 
-    if (useToken) {
+    if (useToken === true) {
         const accessToken = await getAccessToken();
 
         defaultOptions.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    if (typeof useToken === 'string') {
+        defaultOptions.headers.Authorization = `Bearer ${useToken}`;
     }
 
     let url = `${appVariables.rest.url}/v${version}/${path}`;
