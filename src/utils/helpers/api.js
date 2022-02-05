@@ -232,9 +232,11 @@ api.sse = function sse(path, options = {}) {
     const eventTarget = new EventTarget();
     const jsonDecoder = makeJsonDecoder();
     const eventStream = makeWriteableEventStream(eventTarget);
+    const controller = new AbortController();
 
     api(path, {
         ...options,
+        signal: controller.signal,
         responseType: 'raw',
         method: 'GET',
     })
@@ -250,7 +252,13 @@ api.sse = function sse(path, options = {}) {
             eventTarget.dispatchEvent(new CustomEvent('error', { detail: error }));
         });
 
-    return eventTarget;
+    const bindedAddListener = eventTarget.addEventListener.bind(eventTarget);
+    const bindedAbort = controller.abort.bind(controller);
+
+    return {
+        addEventListener: bindedAddListener,
+        abort: bindedAbort,
+    };
 };
 
 api.computeUrl = (path, { version = 1 } = {}) => `${appVariables.rest.url}/v${version}/${path}`;
