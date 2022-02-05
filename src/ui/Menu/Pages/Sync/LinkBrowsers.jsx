@@ -102,6 +102,7 @@ function CreateRequest() {
         maxExpiredTimeout: 0,
         lifeInterval: null,
         lifeTimer: null,
+        eventTarget: null,
     }));
 
     const createRequest = async () => {
@@ -113,38 +114,42 @@ function CreateRequest() {
         clearTimeout(store.lifeTimer);
 
         try {
-            const eventTarget = api.sse('users/merge/request/create');
+            if (store.eventTarget) store.eventTarget.abort();
 
-            eventTarget.addEventListener('start', (event) => {
-                console.log('start:', requestId, event);
+            store.eventTarget = api.sse('users/merge/request/create');
+
+            store.eventTarget.addEventListener('code', (event) => {
                 if (requestId !== store.requestId) return;
-            });
 
-            eventTarget.addEventListener('code', (event) => {
                 console.log('event:', requestId, event);
-                if (requestId !== store.requestId) return;
                 store.code = event.data.code;
                 store.expiredTimeout = event.data.expiredTimeout;
                 store.maxExpiredTimeout = event.data.maxExpiredTimeout;
+                store.expiredDate = Date.now() + store.expiredTimeout;
                 store.status = FETCH.DONE;
 
+                clearInterval(store.lifeInterval);
+                clearTimeout(store.lifeTimer);
+
                 store.lifeInterval = setInterval(() => {
-                    store.expiredTimeout -= 1000;
-                }, 1000);
+                    store.expiredTimeout = store.expiredDate - Date.now();
+                }, 100);
 
                 store.lifeTimer = setTimeout(() => {
                     createRequest();
                 }, event.data.expiredTimeout);
             });
 
-            eventTarget.addEventListener('cancel-merge', (event) => {
-                console.log('cancel-merge:', requestId, event);
+            store.eventTarget.addEventListener('cancel-merge', (event) => {
                 if (requestId !== store.requestId) return;
+
+                console.log('cancel-merge:', requestId, event);
             });
 
-            eventTarget.addEventListener('done-merge', async (event) => {
-                console.log('done-merge:', requestId, event.data);
+            store.eventTarget.addEventListener('done-merge', async (event) => {
                 if (requestId !== store.requestId) return;
+
+                console.log('done-merge:', requestId, event.data);
 
                 if (event.data.action === 'login/jwt') {
                     const { response: loginResponse } = await api.post(
@@ -173,27 +178,31 @@ function CreateRequest() {
                 store.isOpen = false;
             });
 
-            eventTarget.addEventListener('error', (event) => {
+            store.eventTarget.addEventListener('error', (event) => {
+                if (requestId !== store.requestId) return;
+
                 console.log('error:', requestId, event);
-                if (requestId !== store.requestId) return;
                 store.status = FETCH.FAILED;
             });
 
-            eventTarget.addEventListener('close', (event) => {
+            store.eventTarget.addEventListener('close', (event) => {
+                if (requestId !== store.requestId) return;
+
                 console.log('close:', requestId, event);
-                if (requestId !== store.requestId) return;
                 store.status = FETCH.FAILED;
             });
 
-            eventTarget.addEventListener('abort', (event) => {
-                console.log('abort:', requestId, event);
+            store.eventTarget.addEventListener('abort', (event) => {
                 if (requestId !== store.requestId) return;
+
+                console.log('abort:', requestId, event);
                 store.status = FETCH.FAILED;
                 store.code = '';
                 clearInterval(store.lifeInterval);
                 clearTimeout(store.lifeTimer);
             });
         } catch (e) {
+            console.error(e);
             store.status = FETCH.FAILED;
         }
     };
@@ -201,8 +210,9 @@ function CreateRequest() {
     const deleteRequest = async () => {
         clearInterval(store.lifeInterval);
         clearTimeout(store.lifeTimer);
+        if (store.eventTarget) store.eventTarget.abort();
 
-        await api.delete('users/merge/request', { responseType: null });
+        // await api.delete('users/merge/request', { responseType: null });
     };
 
     useEffect(() => {
@@ -240,7 +250,7 @@ function CreateRequest() {
                                         </Typography>
                                     )}
                                     <CircularProgress
-                                        variant={store.status === FETCH.PENDING ? 'indeterminate' : 'determinate'}
+                                        variant={store.status === FETCH.PENDING || store.expiredTimeout <= 0 ? 'indeterminate' : 'determinate'}
                                         value={(store.expiredTimeout / store.maxExpiredTimeout) * 100}
                                         size={26}
                                         thickness={5}

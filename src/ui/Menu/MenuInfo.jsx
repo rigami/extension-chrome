@@ -16,6 +16,7 @@ import { makeStyles, alpha } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
+    collapse: { width: '100%' },
     root: {
         display: 'flex',
         flexDirection: 'column',
@@ -96,7 +97,7 @@ function MenuInfo(props) {
     }
 
     return (
-        <Collapse in={show} className={externalClasses.wrapper}>
+        <Collapse in={show} className={clsx(classes.collapse, externalClasses.wrapper)}>
             <ListItem
                 ContainerComponent={component}
                 className={clsx(
