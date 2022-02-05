@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { InputBase, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { useTranslation } from 'react-i18next';
 import { useLocalObservable, observer } from 'mobx-react-lite';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { captureException } from '@sentry/react';
 import { useSnackbar } from 'notistack';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import useBookmarksService from '@/stores/app/BookmarksProvider';
 import { NULL_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +29,7 @@ function Editor({ onSave, editId, parentId = NULL_UUID }) {
     const classes = useStyles();
     const { t } = useTranslation(['folder']);
     const bookmarksService = useBookmarksService();
-    const { enqueueSnackbar } = useSnackbar();
+    // const { enqueueSnackbar } = useSnackbar();
     const foldersService = bookmarksService.folders;
     const store = useLocalObservable(() => ({
         editId,
@@ -48,10 +48,10 @@ function Editor({ onSave, editId, parentId = NULL_UUID }) {
                 .then((tagId) => onSave(tagId))
                 .catch((e) => {
                     captureException(e);
-                    enqueueSnackbar({
+                    /* enqueueSnackbar({
                         message: t('editor.error.unknown'),
                         variant: 'error',
-                    });
+                    }); */
                 });
         }
     };
