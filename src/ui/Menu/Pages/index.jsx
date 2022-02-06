@@ -217,33 +217,23 @@ function GeneralMenu({ selected, onSelect }) {
                                 >
                                     {t('shareBanner.button.rateExtension')}
                                 </Link>
+                                <Link
+                                    color="inherit"
+                                    underline="always"
+                                    href="mailto:danilkinkin@gmail.com"
+                                >
+                                    {t('betaBanner.button.sendEmail')}
+                                </Link>
+                                <Link
+                                    color="inherit"
+                                    underline="always"
+                                    target="_blank"
+                                    href="https://github.com/rigami/readme/issues"
+                                >
+                                    {t('betaBanner.button.openIssue')}
+                                </Link>
                             </span>
                         </Fragment>
-                    )}
-                />
-                <MenuInfo
-                    show
-                    variant="warn"
-                    message={t('betaBanner.message')}
-                    classes={{ root: classes.betaBanner }}
-                    description={(
-                        <span className={classes.bannerLinks}>
-                            <Link
-                                color="inherit"
-                                underline="always"
-                                href="mailto:danilkinkin@gmail.com"
-                            >
-                                {t('betaBanner.button.sendEmail')}
-                            </Link>
-                            <Link
-                                color="inherit"
-                                underline="always"
-                                target="_blank"
-                                href="https://github.com/rigami/readme/issues"
-                            >
-                                {t('betaBanner.button.openIssue')}
-                            </Link>
-                        </span>
                     )}
                 />
             </Box>
