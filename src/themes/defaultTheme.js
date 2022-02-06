@@ -140,6 +140,7 @@ const theme = {
     overrides: {
         MuiListSubheader: { root: { fontFamily: baseTheme.typography.specialFontFamily } },
         MuiButtonBase: { root: { fontFamily: baseTheme.typography.specialFontFamily } },
+        MuiPaper: { rounded: { borderRadius: baseTheme.shape.borderRadiusBolder } },
         MuiButton: {
             root: {
                 fontWeight: 800,

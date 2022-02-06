@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
         border: `1px solid ${theme.palette.divider}`,
         display: 'flex',
         flexDirection: 'column',
+        borderRadius: theme.shape.borderRadiusBold,
     },
 }));
 

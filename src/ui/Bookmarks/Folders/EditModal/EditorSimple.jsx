@@ -16,8 +16,12 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
-    input: { padding: theme.spacing(2) },
-    saveButton: { marginRight: theme.spacing(2) },
+    input: { padding: theme.spacing(1, 2) },
+    saveButton: {
+        margin: theme.spacing(0.5),
+        marginLeft: theme.spacing(0),
+        borderRadius: theme.shape.borderRadiusButton,
+    },
     errorMessage: { padding: theme.spacing(1, 2) },
     form: {
         display: 'flex',

@@ -26,7 +26,7 @@ function AppSettings({ onSelect }) {
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('motion')} />
+            <SectionHeader title={t('behavior')} />
             <MenuRow
                 title={t('openOnStartup.title')}
                 description={t('openOnStartup.description')}

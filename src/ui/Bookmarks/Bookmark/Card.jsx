@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
         boxSizing: 'border-box',
         border: 'none',
         boxShadow: `inset 0px 0px 0px 1px ${theme.palette.divider}`,
+        borderRadius: theme.shape.borderRadiusButton,
         '&:hover $menuIconButton': {
             opacity: 1,
             pointerEvents: 'auto',
@@ -92,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: theme.shape.borderRadius / 2,
+        borderRadius: theme.shape.borderRadiusButton / 2,
         margin: theme.spacing(0.5),
         filter: 'brightness(0.96)',
         backgroundColor: theme.palette.background.default,

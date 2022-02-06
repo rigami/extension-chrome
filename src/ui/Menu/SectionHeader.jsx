@@ -6,7 +6,7 @@ import clsx from 'clsx';
 const useStyles = makeStyles((theme) => ({
     root: {
         paddingLeft: theme.spacing(4),
-        paddingTop: theme.spacing(2),
+        paddingTop: theme.spacing(1),
         fontSize: '22px',
         fontWeight: 800,
     },
