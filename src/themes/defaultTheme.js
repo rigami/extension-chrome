@@ -153,7 +153,11 @@ const theme = {
                 wordBreak: 'break-word',
                 textTransform: 'none',
             },
-            contained: { boxShadow: 'none' },
+            contained: {
+                boxShadow: 'none',
+                '&:hover': { boxShadow: 'none' },
+                '&:active': { boxShadow: 'none' },
+            },
             containedPrimary: {
                 color: baseTheme.palette.primary.main,
                 backgroundColor: alpha(baseTheme.palette.primary.main, 0.06),

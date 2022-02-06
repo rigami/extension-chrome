@@ -510,10 +510,7 @@ function SyncedDevices() {
         store.disconnectStatus = FETCH.PENDING;
 
         try {
-            const { response, ok } = await api.get('users/merge', {
-                query: { },
-                useToken: !!authStorage.data.username,
-            });
+            const { response, ok } = await api.delete(`devices/${store.disconnectedDevice.id}`);
 
             console.log('response:', response);
 
@@ -523,7 +520,21 @@ function SyncedDevices() {
                 return;
             }
 
-            await fetchDevices();
+            if (store.currentDevice.id === store.disconnectedDevice.id) {
+                const { response: registrationResponse } = await api.post(
+                    'auth/virtual/sign-device',
+                    { useToken: false },
+                ).catch(console.error);
+
+                authStorage.update({
+                    authToken: registrationResponse.authToken,
+                    accessToken: registrationResponse.accessToken,
+                    refreshToken: registrationResponse.refreshToken,
+                    deviceSign: registrationResponse.deviceSign,
+                });
+            } else {
+                await fetchDevices();
+            }
 
             store.disconnectStatus = FETCH.DONE;
             store.disconnectedDevice = null;
@@ -565,6 +576,10 @@ function SyncedDevices() {
         );
     }
 
+    if (store.otherDevices.length === 0) {
+        return null;
+    }
+
     return (
         <Fragment>
             <SectionHeader h={2} title={t('syncDevices.currentTitle')} />
@@ -575,7 +590,7 @@ function SyncedDevices() {
                         lastActivityDate={store.currentDevice.lastActivityDate}
                         current
                     />
-                    {/* <MenuRow
+                    <MenuRow
                         action={{
                             type: ROWS_TYPE.CUSTOM,
                             onClick: () => {},
@@ -594,7 +609,7 @@ function SyncedDevices() {
                                 </Button>
                             ),
                         }}
-                    /> */}
+                    />
                 </Fragment>
             )}
             <SectionHeader h={2} title={t('syncDevices.otherTitle')} />
@@ -632,9 +647,14 @@ function SyncedDevices() {
                                     {device.userAgent}
                                     <br />
                                     <Typography variant="caption">{t('syncDevices.userAgent')}</Typography>
+                                    <br />
+                                    <br />
+                                    {device.id}
+                                    <br />
+                                    <Typography variant="caption">{t('syncDevices.id')}</Typography>
                                 </Fragment>
                             )}
-                            /* action={{
+                            action={{
                                 type: ROWS_TYPE.CUSTOM,
                                 onClick: () => {},
                                 component: (
@@ -651,7 +671,7 @@ function SyncedDevices() {
                                         {t('syncDevices.button.disconnectOtherDevice')}
                                     </Button>
                                 ),
-                            }} */
+                            }}
                         />
                     </Collapse>
                 </Fragment>

@@ -15,6 +15,7 @@
     "lastActivityIp": "IP последеней синхронизации",
     "createDate": "Дата привязки",
     "userAgent": "User-Agent",
+    "id": "ID",
     "button": {
       "disconnectThisDevice": "Отключть синхронизацию",
       "disconnectOtherDevice": "Отвязять устройство"
