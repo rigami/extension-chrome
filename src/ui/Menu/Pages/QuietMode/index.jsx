@@ -160,13 +160,15 @@ function FAPSettings() {
                         .update({ fapStyle: value ? BKMS_FAP_STYLE.CONTAINED : BKMS_FAP_STYLE.HIDDEN }),
                 }}
             />
-            <MenuInfo
-                show={(
-                    bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
-                    && bookmarksService.favorites.length === 0
-                )}
-                message={t('fapEmptyWarningMessage')}
-            />
+            <MenuRow>
+                <MenuInfo
+                    show={(
+                        bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+                        && bookmarksService.favorites.length === 0
+                    )}
+                    message={t('fapEmptyWarningMessage')}
+                />
+            </MenuRow>
             <Collapse in={bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN}>
                 <MenuRow
                     title={t('fapStyle.title')}

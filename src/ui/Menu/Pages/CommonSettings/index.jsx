@@ -8,6 +8,7 @@ import { ACTIVITY, THEME } from '@/enum';
 import useAppService from '@/stores/app/AppStateProvider';
 import tabNamePage from './TabName';
 import greetingPage from './Greeting';
+import SectionHeader from '@/ui/Menu/SectionHeader';
 
 const useStyles = makeStyles((theme) => ({
     defaultTabValue: {
@@ -25,6 +26,7 @@ function AppSettings({ onSelect }) {
 
     return (
         <React.Fragment>
+            <SectionHeader title={t('motion')} />
             <MenuRow
                 title={t('openOnStartup.title')}
                 description={t('openOnStartup.description')}
@@ -35,6 +37,7 @@ function AppSettings({ onSelect }) {
                         .update({ defaultActivity: value ? ACTIVITY.BOOKMARKS : ACTIVITY.DESKTOP }),
                 }}
             />
+            <SectionHeader title={t('appearance')} />
             <MenuRow
                 title={t('darkThemeBackdrop')}
                 action={{

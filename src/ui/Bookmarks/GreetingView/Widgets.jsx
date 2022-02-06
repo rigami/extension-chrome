@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     },
     time: {
         fontSize: '2.25rem',
-        lineHeight: '130%',
+        lineHeight: '90%',
     },
     date: {
         fontSize: '1.5rem',

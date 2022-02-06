@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 400,
         width: 400,
         minHeight: 400,
+        borderRadius: theme.shape.borderRadiusBold,
     },
     listContainer: {
         display: 'flex',
@@ -49,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
     },
     itemOffset: { paddingLeft: theme.spacing(2) },
     actions: { padding: theme.spacing(0, 1) },
+    dialogAction: { borderRadius: theme.shape.borderRadiusButton },
 }));
 
 function RecentlyClosedList(props) {
@@ -194,6 +196,7 @@ function RecentlyClosedList(props) {
                                         store.anchorEl = null;
                                         chrome.sessions.restore(store.openWindowSession?.sessionId);
                                     }}
+                                    className={classes.dialogAction}
                                 >
                                     {t('recentlyClosed.restoreWindow')}
                                 </Button>

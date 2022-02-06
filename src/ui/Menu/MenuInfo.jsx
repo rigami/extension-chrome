@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.info.main,
         '& $icon': { color: theme.palette.info.contrastText },
         '& $messageText': { color: theme.palette.info.contrastText },
-        '& $descriptionText': { color: alpha(theme.palette.info.contrastText, 0.8) },
+        '& $descriptionText': { color: alpha(theme.palette.info.contrastText, 0.6) },
         '& $actions': { color: theme.palette.info.contrastText },
         '& $toolbarActions': { color: theme.palette.info.contrastText },
     },

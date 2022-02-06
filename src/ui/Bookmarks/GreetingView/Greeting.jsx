@@ -30,8 +30,7 @@ const useStyles = makeStyles((theme) => ({
     input: { fontWeight: 'inherit' },
     info: {
         marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(1),
-        borderRadius: theme.shape.borderRadius,
+        marginBottom: theme.spacing(2),
     },
     fakeInput: {
         width: 'fit-content',

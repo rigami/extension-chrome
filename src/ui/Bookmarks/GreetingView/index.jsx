@@ -4,7 +4,7 @@ import {
     Card,
     Divider,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { alpha, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import Widgets from './Widgets';
 import Greeting from './Greeting';
@@ -22,7 +22,9 @@ const useStyles = makeStyles((theme) => ({
     },
     card: {
         backgroundColor: theme.palette.background.paper,
-        padding: theme.spacing(2, 3),
+        padding: theme.spacing(3, 4),
+        borderColor: alpha(theme.palette.divider, 0.06),
+        borderRadius: theme.shape.borderRadiusBolder,
     },
     divider: {
         marginTop: theme.spacing(2),
@@ -42,7 +44,7 @@ function GreetingView() {
 
     return (
         <Box className={classes.root}>
-            <Card elevation={0} className={classes.card}>
+            <Card variant="outlined" className={classes.card}>
                 <Greeting />
                 {greeting && date && (<Divider className={classes.divider} />)}
                 <Widgets />

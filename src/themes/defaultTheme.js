@@ -20,6 +20,10 @@ const baseThemeValues = {
             main: '#ffe4d1',
             contrastText: alpha('#000', 0.76),
         },
+        info: {
+            main: '#d5ebfd',
+            contrastText: alpha('#000', 0.7),
+        },
         divider: alpha('#000', 0.13),
         dividerLight: alpha('#000', 0.09),
         favorite: { main: '#F4C620' },
