@@ -14,34 +14,28 @@ const refreshAccessToken = async () => {
 
     let { accessToken, expiredTimestamp } = authStorage.data;
     const { deviceSign, refreshToken } = authStorage.data;
-    let expired = true;
 
-    if (accessToken) {
-        const { response: checkExpiredResponse } = await fetchData(
-            `${appVariables.rest.url}/v1/auth/token/expired-check`,
+    console.log('Token is expired. Refresh...');
+
+    const { response, statusCode } = await fetchData(
+        `${appVariables.rest.url}/v1/auth/token/refresh`,
+        {
+            cache: 'no-store',
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Device-Sign': deviceSign,
+                'Device-Type': 'extension-chrome',
+                'Device-Platform': navigator.userAgentData.platform,
+                'Authorization': `Bearer ${refreshToken}`,
+            },
+        },
+    );
+
+    if (statusCode === 401) {
+        const { response: tokenInfo, ok } = await fetchData(
+            `${appVariables.rest.url}/v1/auth/token/check`,
             {
                 withoutToken: true,
-                cache: 'no-store',
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Device-Sign': deviceSign,
-                    'Device-Type': 'extension-chrome',
-                    'Device-Platform': navigator.userAgentData.platform,
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            },
-        );
-        console.log('Check token:', checkExpiredResponse);
-
-        expiredTimestamp = Date.now() + (checkExpiredResponse?.expiredTimeout || 0) - 5 * 1000;
-        expired = checkExpiredResponse?.expired || true;
-    }
-
-    if (expired) {
-        console.log('Token is expired. Refresh...');
-        const { response } = await fetchData(
-            `${appVariables.rest.url}/v1/auth/token/refresh`,
-            {
                 cache: 'no-store',
                 headers: {
                     'Access-Control-Allow-Origin': '*',
@@ -53,21 +47,72 @@ const refreshAccessToken = async () => {
             },
         );
 
-        console.log('Refresh response:', response);
+        console.log('Token unavailable. Info:', tokenInfo);
 
-        expiredTimestamp = Date.now() + response.expiredTimeout - 5 * 1000;
-        accessToken = response.accessToken;
+        if (tokenInfo.status === 'device-inactive' && tokenInfo.action === 'login/jwt') {
+            authStorage.update({ authToken: tokenInfo.authToken });
 
-        authStorage.update({
-            accessToken,
-            expiredTimestamp,
-        });
-    } else {
-        authStorage.update({ expiredTimestamp });
+            const { response: loginResponse } = await fetchData(
+                `${appVariables.rest.url}/v1/auth/login/jwt`,
+                {
+                    method: 'POST',
+                    cache: 'no-store',
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Device-Sign': deviceSign,
+                        'Device-Type': 'extension-chrome',
+                        'Device-Platform': navigator.userAgentData.platform,
+                        'Authorization': `Bearer ${tokenInfo.authToken}`,
+                    },
+                },
+            );
+
+            console.log('loginResponse:', loginResponse);
+
+            authStorage.update({
+                accessToken: loginResponse.accessToken,
+                refreshToken: loginResponse.refreshToken,
+            });
+        }
+
+        if (tokenInfo.status === 'device-deleted') {
+            const { response: registrationResponse } = await fetchData(
+                `${appVariables.rest.url}/v1/auth/virtual/sign-device`,
+                {
+                    method: 'POST',
+                    cache: 'no-store',
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Device-Sign': '',
+                        'Device-Type': 'extension-chrome',
+                        'Device-Platform': navigator.userAgentData.platform,
+                    },
+                },
+            );
+
+            console.log('registrationResponse:', registrationResponse);
+
+            authStorage.update({
+                authToken: registrationResponse.authToken,
+                accessToken: registrationResponse.accessToken,
+                refreshToken: registrationResponse.refreshToken,
+                deviceSign: registrationResponse.deviceSign,
+            });
+        }
     }
+
+    console.log('Refresh response:', response);
+
+    expiredTimestamp = Date.now() + response.expiredTimeout - 5 * 1000;
+    accessToken = response.accessToken;
+
+    authStorage.update({
+        accessToken,
+        expiredTimestamp,
+    });
 };
 
-async function getAccessToken() {
+async function getAccessToken(force = false) {
     if (refreshingAccessToken) {
         return new Promise((resolve, reject) => {
             queueAwaitRequests.push({
@@ -77,7 +122,7 @@ async function getAccessToken() {
         });
     }
 
-    if (authStorage.data.accessToken && authStorage.data.expiredTimestamp > Date.now()) {
+    if (!force && authStorage.data.accessToken && authStorage.data.expiredTimestamp > Date.now()) {
         return authStorage.data.accessToken;
     }
 
@@ -110,6 +155,7 @@ async function api(path, options = {}) {
         version = 1,
         query,
         body,
+        retryIfFall = true,
         ...userOptions
     } = options;
 
@@ -150,7 +196,18 @@ async function api(path, options = {}) {
         url = `${url}${queries ? `?${queries}` : ''}`;
     }
 
-    return fetchData(url, mergeObjects(defaultOptions, userOptions));
+    const result = await fetchData(url, mergeObjects(defaultOptions, userOptions));
+
+    if (result.statusCode === 401 && retryIfFall) {
+        await getAccessToken(true);
+
+        return api(path, {
+            ...options,
+            retryIfFall: false,
+        });
+    }
+
+    return result;
 }
 
 api.get = async function getMethod(path, options = {}) {

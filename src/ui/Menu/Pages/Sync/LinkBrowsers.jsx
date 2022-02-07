@@ -299,6 +299,8 @@ function ApplyRequest() {
                 return;
             }
 
+            authStorage.update({ authToken: response.authToken });
+
             if (response.action === 'login/jwt') {
                 const { response: loginResponse } = await api.post(
                     'auth/login/jwt',
