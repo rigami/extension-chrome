@@ -8,11 +8,15 @@
     "skipAndApplyDefaultSettings": "Skip and apply default settings",
     "startSettingsWizard": "Set up",
     "next": "Next",
-    "back": "Back"
+    "back": "Back",
+    "finish": "Finish"
   },
   "beta": {
     "title": "The extension is still in beta testing",
     "description": "The extension is still in beta testing, the functionality may be unstable or vary greatly"
+  },
+  "loginQuestion": {
+    "title": "Login for import data"
   },
   "defaultActivityQuestion": {
     "title": "What is more important to you?",

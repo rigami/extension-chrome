@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { Fragment, useCallback, useEffect } from 'react';
 import { Box, Fab, Tooltip } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -17,6 +17,8 @@ import SecondaryContent from '@/ui/Bookmarks/SecondaryContent';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import { SearchServiceProvider, useSearchService } from '@/ui/Bookmarks/searchProvider';
 import GreetingView from '@/ui/Bookmarks/GreetingView';
+import { APP_STATE } from '@/stores/app/core';
+import FirstLookScreen from '@/ui/FirstLookScreen';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -138,9 +140,13 @@ function Bookmarks() {
                                     <GreetingView />
                                 </Box>
                             )}
+                            {coreService.appState === APP_STATE.REQUIRE_SETUP && (
+                                <FirstLookScreen onStart={() => { console.log('done'); }} />
+                            )}
                             {
                                 !searchService.searchRequest.usedFields.query
                                 && !searchService.searchRequest.usedFields.tags
+                                && coreService.appState !== APP_STATE.REQUIRE_SETUP
                                 && (
                                     <SecondaryContent columns={store.columnsCount} />
                                 )

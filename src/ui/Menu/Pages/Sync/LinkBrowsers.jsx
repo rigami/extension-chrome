@@ -23,6 +23,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { IMaskInput } from 'react-imask';
 import clsx from 'clsx';
+import { action, runInAction } from 'mobx';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
@@ -118,7 +119,7 @@ function CreateRequest() {
 
             store.eventTarget = api.sse('users/merge/request/create');
 
-            store.eventTarget.addEventListener('code', (event) => {
+            store.eventTarget.addEventListener('code', action((event) => {
                 if (requestId !== store.requestId) return;
 
                 console.log('event:', requestId, event);
@@ -131,14 +132,14 @@ function CreateRequest() {
                 clearInterval(store.lifeInterval);
                 clearTimeout(store.lifeTimer);
 
-                store.lifeInterval = setInterval(() => {
+                store.lifeInterval = setInterval(action(() => {
                     store.expiredTimeout = store.expiredDate - Date.now();
-                }, 100);
+                }), 100);
 
                 store.lifeTimer = setTimeout(() => {
                     createRequest();
                 }, event.data.expiredTimeout);
-            });
+            }));
 
             store.eventTarget.addEventListener('cancel-merge', (event) => {
                 if (requestId !== store.requestId) return;
@@ -219,7 +220,7 @@ function CreateRequest() {
         createRequest();
 
         return () => deleteRequest();
-    }, []);
+    }, [authStorage.data.authToken]);
 
     return (
         <Fragment>
@@ -494,17 +495,23 @@ function SyncedDevices() {
             console.log('response:', response);
 
             if (!ok) {
-                store.status = FETCH.FAILED;
+                runInAction(() => {
+                    store.status = FETCH.FAILED;
+                });
 
                 return;
             }
 
-            store.currentDevice = response.currentDevice;
-            store.otherDevices = response.otherDevices;
-            store.status = FETCH.DONE;
+            runInAction(() => {
+                store.currentDevice = response.currentDevice;
+                store.otherDevices = response.otherDevices;
+                store.status = FETCH.DONE;
+            });
         } catch (e) {
             console.error(e);
-            store.status = FETCH.FAILED;
+            runInAction(() => {
+                store.status = FETCH.FAILED;
+            });
         }
     };
 

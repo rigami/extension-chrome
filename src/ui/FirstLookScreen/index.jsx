@@ -1,21 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import Stub from '@/ui-components/Stub';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
+import { Box } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Stub from '@/ui-components/Stub';
 import useCoreService from '@/stores/app/BaseStateProvider';
 import SmallProgress from '@/ui/FirstLookScreen/SmallProgress';
 import { ACTIVITY } from '@/enum';
 import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
 import packageJson from '@/../package.json';
-import { PREPARE_PROGRESS } from '@/stores/app/core';
+import { APP_STATE, PREPARE_PROGRESS } from '@/stores/app/core';
 import defaultSettings from '@/config/settings';
 import WaitEndInstall from './WaitEndInstall';
 import Hello from './Hello';
 import WizardInstall from './WizardInstall';
+import Login from './Login';
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+}));
 
 const INSTALL_STAGE = {
     HELLO: 'HELLO',
     WIZARD: 'WIZARD',
+    LOGIN: 'LOGIN',
     WAIT_END_INSTALL: 'WAIT_END_INSTALL',
 };
 
@@ -28,6 +39,7 @@ const defaultWizardSettings = {
 };
 
 function FirstLookScreen({ onStart }) {
+    const classes = useStyles();
     const { t, ready } = useTranslation('firstLook');
     const coreService = useCoreService();
     const [stage, setStage] = useState(
@@ -60,6 +72,8 @@ function FirstLookScreen({ onStart }) {
         coreService.storage.persistent.update({ lastUsageVersion: packageJson.version });
         document.title = defaultSettings.app.tabName;
         onStart();
+
+        coreService.appState = APP_STATE.WORK;
     };
 
     const applySettings = (newSettings) => {
@@ -72,19 +86,16 @@ function FirstLookScreen({ onStart }) {
         }
     };
 
-    const handleStartWizard = () => {
-        setStage(INSTALL_STAGE.WIZARD);
-    };
-
     return (
-        <React.Fragment>
+        <Box className={classes.root}>
             {stage !== INSTALL_STAGE.WAIT_END_INSTALL && coreService.storage.persistent.data?.factoryResetProgress && (
                 <SmallProgress />
             )}
             {stage === INSTALL_STAGE.HELLO && (
                 <Hello
                     onApplyDefaultSetting={() => applySettings(defaultWizardSettings)}
-                    onStartWizard={handleStartWizard}
+                    onStartWizard={() => { setStage(INSTALL_STAGE.WIZARD); }}
+                    onLogin={() => { setStage(INSTALL_STAGE.LOGIN); }}
                 />
             )}
             {stage === INSTALL_STAGE.WAIT_END_INSTALL && (<WaitEndInstall onDone={handleStart} />)}
@@ -95,7 +106,14 @@ function FirstLookScreen({ onStart }) {
                     onEnd={(wizardSettings) => applySettings(wizardSettings)}
                 />
             )}
-        </React.Fragment>
+            {stage === INSTALL_STAGE.LOGIN && (
+                <Login
+                    defaultSettings={defaultWizardSettings}
+                    onCancel={() => setStage(INSTALL_STAGE.HELLO)}
+                    onEnd={(wizardSettings) => applySettings(wizardSettings)}
+                />
+            )}
+        </Box>
     );
 }
 

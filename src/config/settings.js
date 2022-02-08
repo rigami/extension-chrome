@@ -53,6 +53,6 @@ export default {
         backdropTheme: THEME.DARK,
         theme: THEME.LIGHT,
         tabName: 'rigami',
-        defaultActivity: ACTIVITY.DESKTOP,
+        defaultActivity: ACTIVITY.BOOKMARKS,
     },
 };

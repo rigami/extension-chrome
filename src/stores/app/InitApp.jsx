@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
+import { APP_STATE } from '@/stores/app/core';
 import FirstLookScreen from '@/ui/FirstLookScreen';
 import appVariables from '@/config/appVariables';
 import useBookmarksService from '@/stores/app/BookmarksProvider';
@@ -70,10 +70,10 @@ function InitApp({ children }) {
 
     return (
         <React.Fragment>
-            {state === STATE.DONE && children}
-            {state === STATE.FIRST_CONTACT && (
+            {state !== STATE.MIGRATE && children}
+            {/* state === STATE.FIRST_CONTACT && (
                 <FirstLookScreen onStart={() => { setState(STATE.DONE); }} />
-            )}
+            ) */}
             {state === STATE.MIGRATE && (
                 <MigrateScreen
                     onStart={() => {

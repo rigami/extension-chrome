@@ -5,14 +5,19 @@
   "question": "Вопрос {{now}} из {{total}}",
   "button": {
     "continue": "Продолжить",
-    "skipAndApplyDefaultSettings": "Пропустить и применить стандартные настройки",
-    "startSettingsWizard": "Настроить",
+    "skipAndApplyDefaultSettings": "Пропустить",
+    "startSettingsWizard": "Настроить без сихронизации",
+    "login": "Авторизоваться",
     "next": "Дальше",
-    "back": "Назад"
+    "back": "Назад",
+    "finish": "Завершить"
   },
   "beta": {
     "title": "Расширение ещё находится в бета тестировании",
-    "description": "Расширение ещё находится в бета тестировании, функционал может быть нестабильный или сильно изменяться"
+    "description": "Функционал может быть нестабильный или сильно изменяться"
+  },
+  "login": {
+    "title": "Авторизация"
   },
   "defaultActivityQuestion": {
     "title": "Что для вас важнее?",
