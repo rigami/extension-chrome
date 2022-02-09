@@ -148,6 +148,7 @@ const theme = {
                 padding: baseTheme.spacing(1, 2),
                 boxShadow: 'none',
             },
+            text: { padding: baseTheme.spacing(1, 2) },
             label: {
                 fontWeight: 'inherit',
                 wordBreak: 'break-word',
