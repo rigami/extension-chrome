@@ -5,6 +5,7 @@ import { ArrowBack as BackIcon, ArrowForward as NextIcon } from '@material-ui/ic
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
+import CreateLinkRequest from '@/ui/Menu/Pages/Sync/LinkDevices/CreateLinkRequest';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -54,6 +55,7 @@ function Login({ defaultSettings, onCancel, onEnd }) {
         <Box className={classes.root}>
             <Container maxWidth="md" className={classes.container}>
                 <Typography variant="h3">{t('login.title')}</Typography>
+                <CreateLinkRequest onLink={onEnd} />
                 <DialogActions className={classes.actions}>
                     <Button
                         startIcon={(<BackIcon />)}

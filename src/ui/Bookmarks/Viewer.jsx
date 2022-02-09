@@ -141,7 +141,10 @@ function Bookmarks() {
                                 </Box>
                             )}
                             {coreService.appState === APP_STATE.REQUIRE_SETUP && (
-                                <FirstLookScreen onStart={() => { console.log('done'); }} />
+                                <FirstLookScreen
+                                    style={{ maxWidth: store.columnsCount * (theme.shape.dataCard.width + 16) + 16 }}
+                                    onStart={() => { console.log('done'); }}
+                                />
                             )}
                             {
                                 !searchService.searchRequest.usedFields.query

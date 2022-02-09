@@ -38,7 +38,7 @@ const defaultWizardSettings = {
     userName: undefined,
 };
 
-function FirstLookScreen({ onStart }) {
+function FirstLookScreen({ onStart, style: externalStyle = {} }) {
     const classes = useStyles();
     const { t, ready } = useTranslation('firstLook');
     const coreService = useCoreService();
@@ -87,7 +87,7 @@ function FirstLookScreen({ onStart }) {
     };
 
     return (
-        <Box className={classes.root}>
+        <Box className={classes.root} style={externalStyle}>
             {stage !== INSTALL_STAGE.WAIT_END_INSTALL && coreService.storage.persistent.data?.factoryResetProgress && (
                 <SmallProgress />
             )}

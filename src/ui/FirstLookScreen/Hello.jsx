@@ -47,35 +47,32 @@ function Hello({ onApplyDefaultSetting, onStartWizard, onLogin }) {
 
     return (
         <Box className={classes.root}>
-            <Container maxWidth="md" className={classes.container}>
-                {/* <Logo /> */}
-                <Typography variant="h3">{t('greeting')}</Typography>
-                <MenuInfo
-                    show
-                    classes={{ root: classes.banner }}
-                    message={t('beta.title')}
-                    description={t('beta.description')}
-                    variant="warn"
-                />
-                <Typography variant="body1">{t('wizardDescription')}</Typography>
-                <DialogActions className={classes.actions}>
-                    <Button onClick={onApplyDefaultSetting}>{t('button.skipAndApplyDefaultSettings')}</Button>
-                    <Button
-                        endIcon={(<GoToIcon />)}
-                        onClick={onStartWizard}
-                    >
-                        {t('button.startSettingsWizard')}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        endIcon={(<GoToIcon />)}
-                        onClick={onLogin}
-                    >
-                        {t('button.login')}
-                    </Button>
-                </DialogActions>
-            </Container>
+            <Typography variant="h3">{t('greeting')}</Typography>
+            <MenuInfo
+                show
+                classes={{ root: classes.banner }}
+                message={t('beta.title')}
+                description={t('beta.description')}
+                variant="warn"
+            />
+            <Typography variant="body1">{t('wizardDescription')}</Typography>
+            <DialogActions className={classes.actions}>
+                <Button onClick={onApplyDefaultSetting}>{t('button.skipAndApplyDefaultSettings')}</Button>
+                <Button
+                    endIcon={(<GoToIcon />)}
+                    onClick={onStartWizard}
+                >
+                    {t('button.startSettingsWizard')}
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    endIcon={(<GoToIcon />)}
+                    onClick={onLogin}
+                >
+                    {t('button.login')}
+                </Button>
+            </DialogActions>
         </Box>
     );
 }

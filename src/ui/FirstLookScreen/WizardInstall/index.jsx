@@ -12,8 +12,6 @@ import {
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import Logo from '@/ui-components/Logo';
-import Login from '../Login';
 import DesktopEnvironment from './Steps/DesktopEnvironment';
 import DefaultActivity from './Steps/DefaultActivity';
 
@@ -58,10 +56,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const questions = [
-    {
-        id: 'login',
-        ui: Login,
-    },
     BUILD === 'full' && {
         id: 'defaultActivity',
         ui: DefaultActivity,
@@ -100,44 +94,41 @@ function WizardInstall({ defaultSettings, onCancel, onEnd }) {
 
     return (
         <Box className={classes.root}>
-            <Container maxWidth="md" className={classes.container}>
-                {/* <Logo /> */}
-                <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    className={classes.questionProgress}
+            <Typography
+                variant="body2"
+                color="textSecondary"
+                className={classes.questionProgress}
+            >
+                {t('question', {
+                    now: question + 1,
+                    total: questions.length,
+                })}
+            </Typography>
+            <Typography variant="h3">{t(`${questions[question].id}Question.title`)}</Typography>
+            <Question
+                defaultSettings={settings}
+                onMutationSettings={handleMutationSettings}
+                onNext={question === questions.length - 1 ? handleEnd : handleNext}
+                onDisabledNext={(isDisabled) => setDisabledNext(isDisabled)}
+            />
+            <DialogActions className={classes.actions}>
+                <Button
+                    startIcon={(<BackIcon />)}
+                    onClick={question === 0 ? onCancel : handleBack}
+                    disabled={question < 0}
                 >
-                    {t('question', {
-                        now: question + 1,
-                        total: questions.length,
-                    })}
-                </Typography>
-                <Typography variant="h3">{t(`${questions[question].id}Question.title`)}</Typography>
-                <Question
-                    defaultSettings={settings}
-                    onMutationSettings={handleMutationSettings}
-                    onNext={question === questions.length - 1 ? handleEnd : handleNext}
-                    onDisabledNext={(isDisabled) => setDisabledNext(isDisabled)}
-                />
-                <DialogActions className={classes.actions}>
-                    <Button
-                        startIcon={(<BackIcon />)}
-                        onClick={question === 0 ? onCancel : handleBack}
-                        disabled={question < 0}
-                    >
-                        {t('button.back')}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        endIcon={question === questions.length - 1 ? undefined : (<NextIcon />)}
-                        onClick={question === questions.length - 1 ? handleEnd : handleNext}
-                        disabled={question > questions.length - 1 || disabledNext}
-                    >
-                        {question === questions.length - 1 ? t('button.finish') : t('button.next')}
-                    </Button>
-                </DialogActions>
-            </Container>
+                    {t('button.back')}
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    endIcon={question === questions.length - 1 ? undefined : (<NextIcon />)}
+                    onClick={question === questions.length - 1 ? handleEnd : handleNext}
+                    disabled={question > questions.length - 1 || disabledNext}
+                >
+                    {question === questions.length - 1 ? t('button.finish') : t('button.next')}
+                </Button>
+            </DialogActions>
         </Box>
     );
 }
