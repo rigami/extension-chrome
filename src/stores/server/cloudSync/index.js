@@ -24,13 +24,13 @@ class CloudSyncService {
         makeAutoObservable(this);
         this.core = core;
 
-        console.log('authStorage.data.username:', authStorage.data.username);
+        console.log('authStorage.data.authToken:', authStorage.data);
 
-        if (authStorage.data.username) {
+        if (authStorage.data.authToken) {
             this.subscribe();
         } else {
             when(
-                () => authStorage.data.username,
+                () => authStorage.data.authToken,
                 () => {
                     console.log('when authStorage.data.username:', authStorage.data.username);
                     this.subscribe();
@@ -238,7 +238,7 @@ class CloudSyncService {
 
         this.runSyncCycle();
 
-        this.core.globalEventBus.on('sync/forceSync', async ({ data: newUsername }) => {
+        this.core.globalEventBus.on('sync/forceSync', async ({ data: newAuthToken }) => {
             console.log('[CloudSync] Force re sync...');
             this.stopSyncCycle();
             this.storage.update({ localCommit: null });
@@ -259,12 +259,12 @@ class CloudSyncService {
                 }
             }
 
-            if (authStorage.data.username === newUsername) {
+            if (authStorage.data.authToken === newAuthToken) {
                 this.runSyncCycle();
             } else {
                 console.log('[CloudSync] Wait login...');
                 when(
-                    () => authStorage.data.username === newUsername,
+                    () => authStorage.data.authToken === newAuthToken,
                     () => {
                         this.runSyncCycle();
                     },
