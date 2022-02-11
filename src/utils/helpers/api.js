@@ -1,10 +1,10 @@
 import { map, startsWith } from 'lodash';
 import mergeObjects from '@/utils/mergeObjects';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import fetchData from '@/utils/helpers/fetchData';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import { SERVICE_STATE } from '@/enum';
-import authStorage from '@/stores/universal/AuthStorage';
+import authStorage from '@/stores/universal/storage/auth';
 
 const queueAwaitRequests = [];
 let refreshingAccessToken = false;

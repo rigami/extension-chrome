@@ -8,26 +8,26 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import {
+    FavoriteRounded as FavoritesIcon,
+    CloseRounded as CloseIcon,
+} from '@material-ui/icons';
+import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
+import { captureException } from '@sentry/react';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
 import TagEntity from '@/stores/universal/bookmarks/entities/tag';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import {
-    FavoriteRounded as FavoritesIcon,
-    CloseRounded as CloseIcon,
-} from '@material-ui/icons';
 import Stub from '@/ui-components/Stub';
 import Scrollbar from '@/ui-components/CustomScroll';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import { useTranslation } from 'react-i18next';
+import { useCoreService } from '@/stores/app/core';
 import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
-import clsx from 'clsx';
 import TagCard from '@/ui/Desktop/FAP/Tag/Card';
-import { captureException } from '@sentry/react';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -80,19 +80,19 @@ function Explorer(props) {
     } = props;
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const coreService = useCoreService();
     const [favorites, setFavorites] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (bookmarksService.favorites.length === 0) {
+        if (workingSpaceService.favorites.length === 0) {
             setFavorites([]);
             return;
         }
 
         Promise.allSettled(
-            bookmarksService.favorites.map((fav) => {
+            workingSpaceService.favorites.map((fav) => {
                 if (fav.itemType === 'bookmark') {
                     return BookmarksUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'folder') {
@@ -109,7 +109,7 @@ function Explorer(props) {
                     findFavorites
                         .filter(({ status }, index) => {
                             if (status !== 'fulfilled') {
-                                bookmarksService.removeFromFavorites(bookmarksService.favorites[index]?.id);
+                                workingSpaceService.removeFromFavorites(workingSpaceService.favorites[index]?.id);
                                 return false;
                             }
 
@@ -124,7 +124,7 @@ function Explorer(props) {
                 captureException(e);
                 setIsLoading(false);
             });
-    }, [bookmarksService.favorites.length]);
+    }, [workingSpaceService.favorites.length]);
 
     const bookmarks = [];
     const folders = [];
@@ -163,8 +163,8 @@ function Explorer(props) {
                     <Tooltip title={t('common:button.close')}>
                         <IconButton
                             onClick={() => {
-                                if (coreService.storage.temp.data.closeFapPopper) {
-                                    coreService.storage.temp.data.closeFapPopper();
+                                if (coreService.tempStorage.data.closeFapPopper) {
+                                    coreService.tempStorage.data.closeFapPopper();
                                 }
                             }}
                         >

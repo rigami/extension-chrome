@@ -15,7 +15,7 @@ import stateRender from '@/utils/helpers/stateRender';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { FETCH } from '@/enum';
 import FolderBreadcrumbs from '@/ui/Bookmarks/ToolsPanel/FolderBreadcrumbs';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 import BookmarksList from '@/ui/Bookmarks/BookmarksList';
 
@@ -57,7 +57,7 @@ function FastResults({ columns, onGoToFolder }) {
     const theme = useTheme();
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const searchService = useSearchService();
     const store = useLocalObservable(() => ({
         bookmarks: null,
@@ -94,7 +94,7 @@ function FastResults({ columns, onGoToFolder }) {
                 );
                 store.loadState = FETCH.DONE;
             });
-    }, [bookmarksService.lastTruthSearchTimestamp, searchService.tempSearchRequest]);
+    }, [workingSpaceService.lastTruthSearchTimestamp, searchService.tempSearchRequest]);
 
     return (
         <Box

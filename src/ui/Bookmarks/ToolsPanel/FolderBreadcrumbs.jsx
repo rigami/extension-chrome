@@ -11,7 +11,7 @@ import { ArrowForward as GoToIcon } from '@material-ui/icons';
 import clsx from 'clsx';
 import { FETCH } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -79,7 +79,7 @@ function FolderBreadcrumbs(props) {
         onSelectFolder,
     } = props;
     const classes = useStyles();
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const store = useLocalObservable(() => ({
         path: null,
         pathState: FETCH.WAIT,
@@ -99,7 +99,7 @@ function FolderBreadcrumbs(props) {
                 store.path = path;
                 store.pathState = FETCH.DONE;
             });
-    }, [folderId, bookmarksService.lastTruthSearchTimestamp]);
+    }, [folderId, workingSpaceService.lastTruthSearchTimestamp]);
 
     return (
         <Box className={clsx(classes.root, externalClassName, externalClasses.root)}>

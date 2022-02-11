@@ -13,41 +13,29 @@ import {
 } from '@/enum';
 
 export default {
-    backgrounds: {
+    wallpapers: {
         changeInterval: BG_CHANGE_INTERVAL.HOURS_1,
         type: [BG_TYPE.IMAGE, BG_TYPE.VIDEO],
         kind: BG_SELECT_MODE.STREAM,
         dimmingPower: 25,
     },
-    bookmarks: {
+    desktop: {
         fapStyle: BKMS_FAP_STYLE.PRODUCTIVITY,
         fapPosition: BKMS_FAP_POSITION.BOTTOM,
         fapAlign: BKMS_FAP_ALIGN.LEFT,
-        openOnStartup: false,
-        favorites: [],
-        syncWithSystem: false,
-        syncDefaultFolderName: 'google chrome',
-        displayVariant: BKMS_DISPLAY_VARIANT.CARDS,
-    },
-    widgets: {
         useWidgets: true,
-        dtw: {
-            position: WIDGET_DTW_POSITION.LEFT_BOTTOM,
-            size: WIDGET_DTW_SIZE.SMALL,
-            date: {
-                useDate: true,
-                defaultAction: '',
-            },
-            time: {
-                useTime: true,
-                format12: false,
-            },
-            weather: {
-                useWeather: false,
-                metrics: WIDGET_DTW_UNITS.CELSIUS,
-                defaultAction: '',
-            },
-        },
+        widgetsPosition: WIDGET_DTW_POSITION.LEFT_BOTTOM,
+        widgetsSize: WIDGET_DTW_SIZE.SMALL,
+    },
+    workingSpace: { displayVariant: BKMS_DISPLAY_VARIANT.CARDS },
+    widgets: {
+        useDate: true,
+        dateDefaultAction: '',
+        useTime: true,
+        timeFormat12: false,
+        useWeather: false,
+        weatherMetrics: WIDGET_DTW_UNITS.CELSIUS,
+        weatherDefaultAction: '',
     },
     app: {
         backdropTheme: THEME.DARK,

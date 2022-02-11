@@ -5,15 +5,15 @@ import React, {
     useEffect,
 } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import BookmarksService from '@/stores/app/bookmarks';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import WorkingSpaceService from '@/stores/app/workingSpace/service';
+import { useCoreService } from '@/stores/app/core';
 import { SERVICE_STATE } from '@/enum';
 
 const context = createContext({});
 
-function BookmarksStateProvider({ children }) {
+function WorkingSpaceProvider({ children }) {
     const coreService = useCoreService();
-    const store = useLocalObservable(() => new BookmarksService(coreService));
+    const store = useLocalObservable(() => new WorkingSpaceService(coreService));
     const Context = context;
     const [state, setState] = useState(store.settings.state);
 
@@ -28,8 +28,7 @@ function BookmarksStateProvider({ children }) {
     );
 }
 
-const observerProvider = observer(BookmarksStateProvider);
+const observerProvider = observer(WorkingSpaceProvider);
 const useService = () => useContext(context);
 
-export default useService;
-export { observerProvider as Provider };
+export { observerProvider as WorkingSpaceProvider, useService as useWorkingSpaceService };

@@ -4,8 +4,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { Button } from '@material-ui/core';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import { StorageConnector } from '@/stores/universal/storage';
+import { useCoreService } from '@/stores/app/core';
+
+import StorageConnector from '@/stores/universal/storage/connector';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 
 const useStyles = makeStyles((theme) => ({

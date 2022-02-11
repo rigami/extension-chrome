@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useAppStateService from '@/stores/app/AppStateProvider';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import SectionHeader from '@/ui/Menu/SectionHeader';
-import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { action } from 'mobx';
 import {
     Button,
@@ -18,13 +14,17 @@ import {
     Typography,
 } from '@material-ui/core';
 import { map, round } from 'lodash';
-import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
-import MenuInfo from '@/ui/Menu/MenuInfo';
 import { PlaceRounded as PlaceIcon } from '@material-ui/icons';
-import { getDomain } from '@/utils/localSiteParse';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { captureException } from '@sentry/react';
+import { useAppStateService } from '@/stores/app/appState';
+import { useCoreService } from '@/stores/app/core';
+import SectionHeader from '@/ui/Menu/SectionHeader';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
+import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
+import MenuInfo from '@/ui/Menu/MenuInfo';
+import { getDomain } from '@/utils/localSiteParse';
 import changeLocationPage from './WeatherChangeLocation';
 
 const useStyles = makeStyles((theme) => ({
@@ -37,9 +37,9 @@ const useStyles = makeStyles((theme) => ({
 function WeatherWidget({ onSelect }) {
     const classes = useStyles();
     const { t } = useTranslation(['settingsWidget']);
-    const { widgets } = useAppStateService();
+    const { widgetsService } = useAppStateService();
     const coreService = useCoreService();
-    const [dtwUseWeather, setDtwUseWeather] = useState(widgets.settings.dtwUseWeather);
+    const [useWeather, setDtwUseWeather] = useState(widgetsService.settings.useWeather);
     const [actionEditorOpen, setActionEditorOpen] = useState(false);
     const [actionUrl, setActionUrl] = useState('');
 
@@ -50,31 +50,31 @@ function WeatherWidget({ onSelect }) {
                 title={t('weather.useWeather')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
-                    value: dtwUseWeather,
-                    disabled: dtwUseWeather !== widgets.settings.dtwUseWeather,
+                    value: useWeather,
+                    disabled: useWeather !== widgetsService.settings.useWeather,
                     onChange: (event, value) => {
                         setDtwUseWeather(value);
 
                         if (value) {
-                            widgets.autoDetectLocationAndUpdateWeather()
+                            widgetsService.autoDetectLocationAndUpdateWeather()
                                 .catch(action((e) => {
                                     console.error(e);
                                     captureException(e);
                                 }))
                                 .finally(() => {
-                                    widgets.settings.update({ dtwUseWeather: true });
+                                    widgetsService.settings.update({ useWeather: true });
                                 });
                         } else {
-                            widgets.settings.update({ dtwUseWeather: false });
+                            widgetsService.settings.update({ useWeather: false });
                         }
                     },
                 }}
             />
-            <Collapse in={widgets.settings.dtwUseWeather}>
+            <Collapse in={widgetsService.settings.useWeather}>
                 <MenuInfo
                     show={
-                        !coreService.storage.persistent.data.location
-                        && coreService.storage.persistent.data.weather?.status === FETCH.FAILED
+                        !coreService.storage.data.location
+                        && coreService.storage.data.weather?.status === FETCH.FAILED
                     }
                     message={t('weather.region.notDetected.title')}
                     description={t('weather.region.notDetected.description')}
@@ -91,8 +91,8 @@ function WeatherWidget({ onSelect }) {
                 />
                 <MenuInfo
                     show={
-                        coreService.storage.persistent.data.location
-                        && coreService.storage.persistent.data.weather?.status === FETCH.FAILED
+                        coreService.storage.data.location
+                        && coreService.storage.data.weather?.status === FETCH.FAILED
                     }
                     message={t('weather.error.serviceUnavailable')}
                 />
@@ -101,9 +101,9 @@ function WeatherWidget({ onSelect }) {
                     action={{
                         type: ROWS_TYPE.SELECT,
                         format: (value) => t(`weather.units.value.${value}`),
-                        value: widgets.settings.dtwWeatherMetrics,
+                        value: widgetsService.settings.weatherMetrics,
                         onChange: (event) => {
-                            widgets.settings.update({ dtwWeatherMetrics: event.target.value });
+                            widgetsService.settings.update({ weatherMetrics: event.target.value });
                         },
                         values: map(WIDGET_DTW_UNITS, (key) => WIDGET_DTW_UNITS[key]),
                     }}
@@ -123,13 +123,13 @@ function WeatherWidget({ onSelect }) {
                     title={t('weather.region.title')}
                     description={(
                         (
-                            coreService.storage.persistent.data.location
-                            && !coreService.storage.persistent.data.location?.manual
+                            coreService.storage.data.location
+                            && !coreService.storage.data.location?.manual
                             && t('weather.region.select.auto')
                         )
                         || (
-                            coreService.storage.persistent.data.location
-                            && coreService.storage.persistent.data.location?.manual
+                            coreService.storage.data.location
+                            && coreService.storage.data.location?.manual
                             && t('weather.region.select.manual')
                         )
                         || t('weather.region.select.failed')
@@ -137,14 +137,14 @@ function WeatherWidget({ onSelect }) {
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => onSelect(changeLocationPage),
-                        component: coreService.storage.persistent.data.location
+                        component: coreService.storage.data.location
                             ? (`${
-                            coreService.storage.persistent.data.location?.name || t('unknown')
-                        } [${
-                            round(coreService.storage.persistent.data.location?.latitude, 1) || '-'
-                        }, ${
-                            round(coreService.storage.persistent.data.location?.longitude, 1) || '-'
-                        }]`)
+                                coreService.storage.data.location?.name || t('unknown')
+                            } [${
+                                round(coreService.storage.data.location?.latitude, 1) || '-'
+                            }, ${
+                                round(coreService.storage.data.location?.longitude, 1) || '-'
+                            }]`)
                             : (
                                 <Typography className={classes.notSetValue}>
                                     {t('common:notSet')}
@@ -152,15 +152,15 @@ function WeatherWidget({ onSelect }) {
                             ),
                     }}
                 />
-                {coreService.storage.persistent.data.weather?.status === FETCH.PENDING && (<LinearProgress />)}
+                {coreService.storage.data.weather?.status === FETCH.PENDING && (<LinearProgress />)}
                 <MenuRow
                     title={t('weather.clickAction.title')}
                     description={t('weather.clickAction.description')}
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => { setActionEditorOpen(true); },
-                        component: widgets.settings.dtwWeatherAction
-                            ? `open: ${getDomain(widgets.settings.dtwWeatherAction)}`
+                        component: widgetsService.settings.weatherAction
+                            ? `open: ${getDomain(widgetsService.settings.weatherAction)}`
                             : (
                                 <Typography className={classes.notSetValue}>
                                     {t('common:notSet')}
@@ -177,7 +177,7 @@ function WeatherWidget({ onSelect }) {
                         <TextField
                             autoFocus
                             margin="dense"
-                            defaultValue={widgets.settings.dtwWeatherAction}
+                            defaultValue={widgetsService.settings.weatherAction}
                             fullWidth
                             label={t('weather.clickAction.dialog.url')}
                             onChange={(event) => { setActionUrl(event.target.value); }}
@@ -196,7 +196,7 @@ function WeatherWidget({ onSelect }) {
                             color="primary"
                             onClick={() => {
                                 setActionEditorOpen(false);
-                                widgets.settings.update({ dtwWeatherAction: actionUrl });
+                                widgetsService.settings.update({ weatherAction: actionUrl });
                             }}
                         >
                             {t('common:button.save')}

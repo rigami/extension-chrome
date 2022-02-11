@@ -20,9 +20,9 @@ import {
 } from '@/enum';
 import { AutoAwesomeRounded as EditorsChoiceIcon } from '@/icons';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import useAppStateService from '@/stores/app/AppStateProvider';
-import appVariables from '@/config/appVariables';
+import { useCoreService } from '@/stores/app/core';
+import { useAppStateService } from '@/stores/app/appState';
+import appVariables from '@/config/config';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import changeQueryPage from './ChangeQuery';
 import libraryPage from '@/ui/Menu/Pages/QuietMode/Library';
@@ -90,17 +90,17 @@ const MemoBGCard = memo(BGCard);
 
 function LibraryRow({ onSelect }) {
     const { t } = useTranslation(['settingsQuietMode']);
-    const { backgrounds } = useAppStateService();
+    const { wallpapersService } = useAppStateService();
     const [bgs, setBgs] = useState(null);
 
     useEffect(() => {
-        backgrounds.getLastUsage(8)
+        wallpapersService.getLastUsage(8)
             .then((lastBgs) => setBgs(lastBgs))
             .catch((e) => {
                 captureException(e);
                 console.error('Failed load bg`s from db:', e);
             });
-    }, [backgrounds.count]);
+    }, [wallpapersService.count]);
 
     return (
         <MenuRow
@@ -135,13 +135,13 @@ const MemoLibraryRow = memo(LibraryRow);
 function Stream({ onSelect }) {
     const classes = useStyles();
     const coreService = useCoreService();
-    const { backgrounds } = useAppStateService();
+    const { wallpapersService } = useAppStateService();
     const { t } = useTranslation(['settingsQuietMode']);
 
-    const selected = coreService.storage.persistent.data.wallpapersStreamQuery;
+    const selected = coreService.storage.data.wallpapersStreamQuery;
 
     return (
-        <Collapse in={backgrounds.settings.kind === BG_SELECT_MODE.STREAM} unmountOnExit>
+        <Collapse in={wallpapersService.settings.kind === BG_SELECT_MODE.STREAM} unmountOnExit>
             <MenuRow
                 description={t(`kind.value.${BG_SELECT_MODE.STREAM}`, { context: 'description' })}
             />
@@ -157,8 +157,8 @@ function Stream({ onSelect }) {
                 action={{
                     type: ROWS_TYPE.SELECT,
                     format: (value) => t(`changeInterval.value.${value}`),
-                    value: backgrounds.settings.changeInterval,
-                    onChange: (event) => backgrounds.settings.update({ changeInterval: event.target.value }),
+                    value: wallpapersService.settings.changeInterval,
+                    onChange: (event) => wallpapersService.settings.update({ changeInterval: event.target.value }),
                     values: [
                         BG_CHANGE_INTERVAL.NEVER,
                         BG_CHANGE_INTERVAL.OPEN_TAB,
@@ -171,7 +171,7 @@ function Stream({ onSelect }) {
                     ],
                 }}
             />
-            <Collapse in={backgrounds.settings.changeInterval === BG_CHANGE_INTERVAL.NEVER}>
+            <Collapse in={wallpapersService.settings.changeInterval === BG_CHANGE_INTERVAL.NEVER}>
                 <MenuRow
                     title={t('specificBg')}
                     description={t('background:button.change')}
@@ -180,7 +180,7 @@ function Stream({ onSelect }) {
                         onClick: () => onSelect(libraryPage),
                         component: (
                             <Avatar
-                                src={backgrounds.currentBG?.previewSrc}
+                                src={coreService.storage.data.bgCurrent?.previewSrc}
                                 variant="rounded"
                                 style={{
                                     width: 48,
@@ -194,18 +194,18 @@ function Stream({ onSelect }) {
                     }}
                 />
             </Collapse>
-            <Collapse in={backgrounds.settings.changeInterval !== BG_CHANGE_INTERVAL.NEVER}>
+            <Collapse in={wallpapersService.settings.changeInterval !== BG_CHANGE_INTERVAL.NEVER}>
                 <MenuRow
                     title={t('bgType.title')}
                     description={t('bgType.description')}
                     action={{
                         type: ROWS_TYPE.MULTISELECT,
                         format: (value) => t(`bgType.value.${value}`),
-                        value: backgrounds.settings.type || [],
+                        value: wallpapersService.settings.type || [],
                         onChange: (event) => {
                             if (event.target.value.length === 0) return;
 
-                            backgrounds.settings.update({ type: event.target.value });
+                            wallpapersService.settings.update({ type: event.target.value });
                         },
                         values: [BG_TYPE.IMAGE, BG_TYPE.VIDEO, BG_TYPE.ANIMATION],
                     }}
@@ -228,7 +228,7 @@ function Stream({ onSelect }) {
                             label={t('query.value.EDITORS_CHOICE')}
                             icon={<EditorsChoiceIcon />}
                             onClick={() => {
-                                coreService.storage.persistent.update({
+                                coreService.storage.update({
                                     wallpapersStreamQuery: {
                                         type: 'collection',
                                         value: 'editor-choice',
@@ -250,7 +250,7 @@ function Stream({ onSelect }) {
                             label={t('query.value.SAVED_ONLY')}
                             icon={<SavedIcon />}
                             onClick={() => {
-                                coreService.storage.persistent.update({
+                                coreService.storage.update({
                                     wallpapersStreamQuery: {
                                         type: 'saved-only',
                                         value: 'saved-only',
@@ -271,7 +271,7 @@ function Stream({ onSelect }) {
                             variant="outlined"
                             label={
                                 selected?.type === 'custom-query'
-                                    ? t('query.custom.button.change', { query: coreService.storage.persistent.data.wallpapersStreamQuery?.value || t('unknown') })
+                                    ? t('query.custom.button.change', { query: coreService.storage.data.wallpapersStreamQuery?.value || t('unknown') })
                                     : t('query.value.CUSTOM_QUERY')
                             }
                             icon={<CreateCustomQueryIcon />}
@@ -291,7 +291,7 @@ function Stream({ onSelect }) {
                                 key={query}
                                 label={t(`query.value.${query.toUpperCase().replaceAll(' ', '_')}`)}
                                 onClick={() => {
-                                    coreService.storage.persistent.update({
+                                    coreService.storage.update({
                                         wallpapersStreamQuery: {
                                             type: 'query',
                                             value: query,

@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Time from '@/ui/Desktop/Widgets/Time';
 import Date from '@/ui/Desktop/Widgets/Date';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
-import useAppService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 
 const useStyles = makeStyles((theme) => ({
     row: { alignItems: 'center' },
@@ -32,12 +32,12 @@ const useStyles = makeStyles((theme) => ({
 
 function Widgets({ className: externalClassName }) {
     const classes = useStyles();
-    const appService = useAppService();
-    const { widgets } = appService;
+    const appStateService = useAppStateService();
+    const { widgetsService } = appStateService;
 
     return (
         <Box className={externalClassName}>
-            {widgets.settings.dtwUseTime && (
+            {widgetsService.settings.useTime && (
                 <Typography
                     className={clsx(
                         classes.text,
@@ -47,7 +47,7 @@ function Widgets({ className: externalClassName }) {
                     <Time />
                 </Typography>
             )}
-            {widgets.settings.dtwUseDate && (
+            {widgetsService.settings.useDate && (
                 <Typography
                     className={clsx(
                         classes.row,
@@ -55,10 +55,10 @@ function Widgets({ className: externalClassName }) {
                         classes.date,
                     )}
                 >
-                    <Date dot={widgets.showWeather} />
+                    <Date dot={widgetsService.showWeather} />
                 </Typography>
             )}
-            {widgets.settings.dtwUseWeather && (
+            {widgetsService.settings.useWeather && (
                 <Typography
                     className={clsx(
                         classes.row,

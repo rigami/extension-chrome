@@ -1,8 +1,8 @@
 import React from 'react';
-import Stub from '@/ui-components/Stub';
 import { alpha, withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import localEventBus from '@/stores/app/localEventBus';
+import Stub from '@/ui-components/Stub';
+import localEventBus from '@/utils/localEventBus';
 
 const styles = (theme) => ({
     stub: {

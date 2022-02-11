@@ -13,18 +13,18 @@ import {
     LabelRounded as LabelIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useTranslation } from 'react-i18next';
+import { observer } from 'mobx-react-lite';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import Scrollbar from '@/ui-components/CustomScroll';
 import Stub from '@/ui-components/Stub';
-import { useTranslation } from 'react-i18next';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import { observer } from 'mobx-react-lite';
+import { useCoreService } from '@/stores/app/core';
 import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useContextMenu } from '@/stores/app/ContextMenuProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 function Folder({ id }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const coreService = useCoreService();
     const [tag, setTag] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
@@ -73,7 +73,7 @@ function Folder({ id }) {
                 setFindBookmarks(all);
                 setIsSearching(false);
             });
-    }, [bookmarksService.lastTruthSearchTimestamp]);
+    }, [workingSpaceService.lastTruthSearchTimestamp]);
 
     return (
         <Card
@@ -88,8 +88,8 @@ function Folder({ id }) {
                     <Tooltip title={t('common:button.close')}>
                         <IconButton
                             onClick={() => {
-                                if (coreService.storage.temp.data.closeFapPopper) {
-                                    coreService.storage.temp.data.closeFapPopper();
+                                if (coreService.tempStorage.data.closeFapPopper) {
+                                    coreService.tempStorage.data.closeFapPopper();
                                 }
                             }}
                         >

@@ -5,15 +5,17 @@ import { BrokenImageRounded as BrokenIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { BG_SELECT_MODE } from '@/enum';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import libraryPage from '../Library';
+import { useCoreService } from '@/stores/app/core';
 
 function Specific({ onSelect }) {
-    const { backgrounds } = useAppStateService();
+    const coreService = useCoreService();
+    const { wallpapersService } = useAppStateService();
     const { t } = useTranslation(['settingsQuietMode', 'background']);
 
     return (
-        <Collapse in={backgrounds.settings.kind === BG_SELECT_MODE.SPECIFIC} unmountOnExit>
+        <Collapse in={wallpapersService.settings.kind === BG_SELECT_MODE.SPECIFIC} unmountOnExit>
             <MenuRow
                 description={t(`kind.value.${BG_SELECT_MODE.SPECIFIC}`, { context: 'description' })}
             />
@@ -25,7 +27,7 @@ function Specific({ onSelect }) {
                     onClick: () => onSelect(libraryPage),
                     component: (
                         <Avatar
-                            src={backgrounds.currentBG?.previewSrc}
+                            src={coreService.storage.data.bgCurrent?.previewSrc}
                             variant="rounded"
                             style={{
                                 width: 48,

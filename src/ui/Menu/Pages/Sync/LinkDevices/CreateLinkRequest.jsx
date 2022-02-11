@@ -12,7 +12,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { FETCH } from '@/enum';
 import api from '@/utils/helpers/api';
-import authStorage from '@/stores/universal/AuthStorage';
+import authStorage from '@/stores/universal/storage/auth';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import MenuInfo from '@/ui/Menu/MenuInfo';

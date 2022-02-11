@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import useAppService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import { ACTIVITY } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
@@ -24,11 +24,11 @@ export const DIRECTION = {
 
 function GlobalScroll({ children }) {
     const classes = useStyles();
-    const appService = useAppService();
+    const appStateService = useAppStateService();
     const ref = useRef();
     const store = useLocalObservable(() => ({
         direction: 0,
-        activeView: appService.settings.defaultActivity === ACTIVITY.BOOKMARKS ? 1 : 0,
+        activeView: appStateService.settings.defaultActivity === ACTIVITY.BOOKMARKS ? 1 : 0,
         blockViewTop: false,
         blockViewBottom: false,
         viewsCallbacks: {},
@@ -47,7 +47,7 @@ function GlobalScroll({ children }) {
         }
         if (activeView === store.activeView) return;
 
-        appService.setActivity(children[store.activeView].props.value);
+        appStateService.setActivity(children[store.activeView].props.value);
     };
 
     const wheelHandler = (e) => {

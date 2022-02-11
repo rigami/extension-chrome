@@ -24,7 +24,7 @@ import Subheader from '@/ui/Bookmarks/FoldersPanel/Subheader';
 import PopperDialog, { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
 import Stub from '@/ui-components/Stub';
 import { getFaviconUrl } from '@/utils/localSiteParse';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 
 const useStyles = makeStyles((theme) => ({
     favicon: {
@@ -236,9 +236,9 @@ function RecentlyClosed({ className: externalClassName }) {
     const coreService = useCoreService();
     const subheaderRef = useRef();
     const store = useLocalObservable(() => ({
-        expand: typeof coreService.storage.persistent.data.expandRecentlyClosed === 'undefined'
+        expand: typeof coreService.storage.data.expandRecentlyClosed === 'undefined'
             ? false
-            : coreService.storage.persistent.data.expandRecentlyClosed,
+            : coreService.storage.data.expandRecentlyClosed,
         openPopover: false,
         anchorEl: null,
     }));
@@ -265,7 +265,7 @@ function RecentlyClosed({ className: externalClassName }) {
                                     className={classes.action}
                                     onClick={() => {
                                         store.expand = !store.expand;
-                                        coreService.storage.persistent.update({ expandRecentlyClosed: store.expand });
+                                        coreService.storage.update({ expandRecentlyClosed: store.expand });
                                     }}
                                 >
                                     {open ? <LessIcon /> : <MoreIcon />}

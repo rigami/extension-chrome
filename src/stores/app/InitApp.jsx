@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { APP_STATE } from '@/stores/app/core';
-import FirstLookScreen from '@/ui/FirstLookScreen';
-import appVariables from '@/config/appVariables';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import useAppService from '@/stores/app/AppStateProvider';
+import { APP_STATE } from '@/stores/app/core/service';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
+import { useAppStateService } from '@/stores/app/appState';
 import MigrateScreen from '@/ui/MigrateScreen';
 import packageJson from '@/../package.json';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 
 const STATE = {
     PREPARE: 'PREPARE',
@@ -18,27 +16,27 @@ const STATE = {
 
 function ApplyWizardSettingsProvider({ children }) {
     const coreService = useCoreService();
-    const bookmarksService = useBookmarksService();
-    const appService = useAppService();
-    const { widgets } = appService;
+    const workingSpaceService = useWorkingSpaceService();
+    const appStateService = useAppStateService();
+    const { widgetsService } = appStateService;
 
-    const { wizardSettings } = coreService.storage.persistent.data;
+    const { wizardSettings } = coreService.storage.data;
 
     if (!wizardSettings) return children;
 
-    coreService.storage.persistent.update({
+    coreService.storage.update({
         wizardSettings: null,
         userName: wizardSettings.userName,
     });
     if (BUILD === 'full') {
-        bookmarksService.settings.update({ fapStyle: wizardSettings.fapStyle });
+        workingSpaceService.settings.update({ fapStyle: wizardSettings.fapStyle });
     }
-    widgets.settings.update({
-        dtwUseDate: wizardSettings.useDate,
-        dtwUseTime: wizardSettings.useTime,
+    widgetsService.settings.update({
+        useDate: wizardSettings.useDate,
+        useTime: wizardSettings.useTime,
     });
-    appService.settings.update({ defaultActivity: wizardSettings.activity });
-    appService.setActivity(wizardSettings.activity);
+    appStateService.settings.update({ defaultActivity: wizardSettings.activity });
+    appStateService.setActivity(wizardSettings.activity);
 
     return children;
 }
@@ -48,9 +46,9 @@ function InitApp({ children }) {
     const [state, setState] = useState(STATE.PREPARE);
 
     const checkVersion = () => {
-        if (coreService.storage.persistent.data?.lastUsageVersion !== packageJson.version) {
-            if (appVariables.notifyNewVersion) coreService.storage.temp.update({ newVersion: true });
-            coreService.storage.persistent.update({ lastUsageVersion: packageJson.version });
+        if (coreService.storage.data?.lastUsageVersion !== packageJson.version) {
+            // if (appVariables.notifyNewVersion) coreService.tempStorage.update({ newVersion: true });
+            coreService.storage.update({ lastUsageVersion: packageJson.version });
         }
     };
 
@@ -71,9 +69,6 @@ function InitApp({ children }) {
     return (
         <React.Fragment>
             {state !== STATE.MIGRATE && children}
-            {/* state === STATE.FIRST_CONTACT && (
-                <FirstLookScreen onStart={() => { setState(STATE.DONE); }} />
-            ) */}
             {state === STATE.MIGRATE && (
                 <MigrateScreen
                     onStart={() => {

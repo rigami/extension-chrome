@@ -11,17 +11,17 @@ import {
     ListItemIcon,
     Button,
 } from '@material-ui/core';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import Stub from '@/ui-components/Stub';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     KeyboardArrowRight as ItemIcon,
     CloseRounded as CloseIcon,
 } from '@material-ui/icons';
+import Stub from '@/ui-components/Stub';
+import { useCoreService } from '@/stores/app/core';
 import updateImageSrc from '@/images/update.png';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import CustomScroll from '@/ui-components/CustomScroll';
 
 const useStyles = makeStyles((theme) => ({
@@ -127,7 +127,7 @@ function Changelog() {
     const coreService = useCoreService();
 
     useEffect(() => {
-        if (!coreService.storage.temp.data.newVersion) {
+        if (!coreService.tempStorage.data.newVersion) {
             return;
         }
 
@@ -136,7 +136,7 @@ function Changelog() {
                 <ChangelogScreen
                     onClose={() => {
                         closeSnackbar(changelogSnackbar);
-                        coreService.storage.temp.update({ newVersion: false });
+                        coreService.tempStorage.update({ newVersion: false });
                     }}
                 />
             ),

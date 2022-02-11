@@ -43,10 +43,10 @@ class BookmarkEditor {
     // Services
     _bookmarksService;
 
-    constructor({ defaultData = {}, bookmarksService }) {
+    constructor({ defaultData = {}, workingSpaceService }) {
         makeAutoObservable(this);
 
-        this._bookmarksService = bookmarksService;
+        this._bookmarksService = workingSpaceService;
 
         if (defaultData.id) {
             this.state = STATE_EDITOR.LOADING_EDITOR;

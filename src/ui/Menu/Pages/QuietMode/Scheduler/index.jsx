@@ -11,11 +11,11 @@ import { WifiTetheringRounded as StreamIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { BG_SELECT_MODE, BG_SHOW_STATE, BG_TYPE } from '@/enum';
 import SectionHeader from '@/ui/Menu/SectionHeader';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import Stream from './Stream';
 import Specific from './Specific';
 import Color from './Color';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import MenuRow from '@/ui/Menu/MenuRow';
 
 const useStyles = makeStyles((theme) => ({
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SchedulerSection({ onSelect }) {
-    const { backgrounds } = useAppStateService();
+    const { wallpapersService } = useAppStateService();
     const coreService = useCoreService();
     const { t } = useTranslation(['settingsQuietMode']);
     const classes = useStyles();
@@ -40,17 +40,17 @@ function SchedulerSection({ onSelect }) {
                     className={classes.tabs}
                     indicatorColor="primary"
                     variant="fullWidth"
-                    value={backgrounds.settings.kind}
+                    value={wallpapersService.settings.kind}
                     onChange={(event, newValue) => {
                         if (newValue === BG_SELECT_MODE.STREAM) {
-                            backgrounds.settings.update({
-                                type: backgrounds.settings.type.filter((type) => (
+                            wallpapersService.settings.update({
+                                type: wallpapersService.settings.type.filter((type) => (
                                     type !== BG_TYPE.ANIMATION
                                     && type !== BG_TYPE.FILL_COLOR
                                 )),
                             });
                         }
-                        backgrounds.settings.update({ kind: newValue });
+                        wallpapersService.settings.update({ kind: newValue });
                     }}
                 >
                     <Tab
@@ -64,7 +64,7 @@ function SchedulerSection({ onSelect }) {
                     />
                 </Tabs>
             </MenuRow>
-            <Fade in={coreService.storage.persistent.data.wallpaperState === BG_SHOW_STATE.SEARCH} unmountOnExit>
+            <Fade in={coreService.storage.data.wallpaperState === BG_SHOW_STATE.SEARCH} unmountOnExit>
                 <LinearProgress className={classes.linearProgress} />
             </Fade>
             <Specific onSelect={onSelect} />

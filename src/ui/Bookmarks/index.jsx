@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ACTIVITY } from '@/enum';
-import useAppService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import Viewer from './Viewer';
 
 const useStyles = makeStyles((theme) => ({
@@ -19,13 +19,13 @@ const useStyles = makeStyles((theme) => ({
 
 function BookmarksViewer() {
     const classes = useStyles();
-    const appService = useAppService();
-    const [show, setShow] = useState(appService.activity === ACTIVITY.BOOKMARKS);
+    const appStateService = useAppStateService();
+    const [show, setShow] = useState(appStateService.activity === ACTIVITY.BOOKMARKS);
 
     useEffect(() => {
-        console.log('appService.activity:', appService.activity);
-        if (appService.activity === ACTIVITY.BOOKMARKS) setShow(true);
-    }, [appService.activity]);
+        console.log('appStateService.activity:', appStateService.activity);
+        if (appStateService.activity === ACTIVITY.BOOKMARKS) setShow(true);
+    }, [appStateService.activity]);
 
     if (!show) {
         return (<Box className={classes.root} />);

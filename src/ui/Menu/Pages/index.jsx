@@ -27,7 +27,7 @@ import {
 } from '@/icons';
 
 import MenuInfo from '@/ui/Menu/MenuInfo';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import Header from '@/ui/Menu/PageHeader';
 import quietModePage from './QuietMode';
 import aboutPage from './About';

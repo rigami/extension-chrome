@@ -8,9 +8,9 @@ import {
     StarRounded as RemoveFavoriteIcon,
 } from '@material-ui/icons';
 import copyToClipboard from 'copy-to-clipboard';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import ContextMenu from '@/ui/ContextMenu';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { ContextMenuDivider, ContextMenuItem } from '@/stores/app/entities/contextMenu';
 import {
     BookmarkAddRounded as AddBookmarkIcon,
@@ -25,7 +25,7 @@ const context = createContext(() => () => null);
 
 function ContextMenuProvider({ children }) {
     const coreService = useCoreService();
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const { t } = useTranslation(['bookmark']);
     const Context = context;
 
@@ -37,7 +37,7 @@ function ContextMenuProvider({ children }) {
             disableRemove = false,
             disableMove = false,
         } = props;
-        const isFavorite = bookmarksService.findFavorite({
+        const isFavorite = workingSpaceService.findFavorite({
             itemId,
             itemType,
         });
@@ -50,12 +50,12 @@ function ContextMenuProvider({ children }) {
                 icon: isFavorite ? RemoveFavoriteIcon : AddFavoriteIcon,
                 onClick: () => {
                     if (isFavorite) {
-                        bookmarksService.removeFromFavorites(bookmarksService.findFavorite({
+                        workingSpaceService.removeFromFavorites(workingSpaceService.findFavorite({
                             itemType,
                             itemId,
                         })?.id);
                     } else {
-                        bookmarksService.addToFavorites(new Favorite({
+                        workingSpaceService.addToFavorites(new Favorite({
                             itemType,
                             itemId,
                         }));
@@ -201,5 +201,4 @@ function ContextMenuProvider({ children }) {
 const observerProvider = observer(ContextMenuProvider);
 const useContextMenu = (...props) => useContext(context)(...props);
 
-export default useContextMenu;
-export { observerProvider as Provider };
+export { observerProvider as ContextMenuProvider, useContextMenu };

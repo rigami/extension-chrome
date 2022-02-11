@@ -12,8 +12,8 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
-import { BG_SOURCE, BKMS_FAP_POSITION } from '@/enum';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { BG_SOURCE, BKMS_FAP_POSITION, BKMS_FAP_STYLE } from '@/enum';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -95,7 +95,7 @@ function WallpaperInfo(props) {
         type,
     } = props;
     const classes = useStyles();
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const { t } = useTranslation(['background']);
 
     let serviceName = 'Unknown';
@@ -121,8 +121,9 @@ function WallpaperInfo(props) {
             <Card
                 className={clsx(
                     classes.root,
-                    bookmarksService.fapIsDisplay
-                    && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
+                    workingSpaceService.favorites.length !== 0
+                    && workingSpaceService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+                    && workingSpaceService.settings.fapPosition === BKMS_FAP_POSITION.TOP
                     && classes.topOffset,
                 )}
                 elevation={0}

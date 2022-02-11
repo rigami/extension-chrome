@@ -2,19 +2,19 @@ import React, { memo, useState } from 'react';
 import { CssBaseline } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
+import { withProfiler } from '@sentry/react';
 import Snackbar from '@/ui-components/Snackbar';
 import UploadBGForm from '@/ui/UploadBackground';
 import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
 import Nest from '@/utils/helpers/Nest';
-import { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
-import { Provider as AppStateProvider } from '@/stores/app/AppStateProvider';
-import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
-import { Provider as ContextMenuProvider } from '@/stores/app/ContextMenuProvider';
+import { CoreProvider } from '@/stores/app/core';
+import { AppStateProvider } from '@/stores/app/appState';
+import { WorkingSpaceProvider } from '@/stores/app/workingSpace';
+import { ContextMenuProvider } from '@/stores/app/ContextMenuProvider';
 import InitApp, { ApplyWizardSettingsProvider } from '@/stores/app/InitApp';
 import initSentry from '@/config/sentry/app';
-import { withProfiler } from '@sentry/react';
 import FabMenu from '@/ui/Menu/FabMenu';
 import Menu from '@/ui/Menu';
 import CrashCatch from '@/ui/CrashCatch';
@@ -30,9 +30,9 @@ function RootApp({ onChangeTheme }) {
             components={[
                 CrashCatch,
                 ({ children }) => (
-                    <BaseStateProvider side={DESTINATION.APP}>
+                    <CoreProvider side={DESTINATION.APP}>
                         {children}
-                    </BaseStateProvider>
+                    </CoreProvider>
                 ),
                 ({ children }) => (
                     <SnackbarProvider
@@ -42,7 +42,7 @@ function RootApp({ onChangeTheme }) {
                         {children}
                     </SnackbarProvider>
                 ),
-                BUILD === 'full' ? BookmarksProvider : ({ children }) => children,
+                BUILD === 'full' ? WorkingSpaceProvider : ({ children }) => children,
                 ({ children }) => (
                     <AppStateProvider onChangeTheme={onChangeTheme}>
                         {children}

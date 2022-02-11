@@ -10,19 +10,19 @@ import {
 } from '@material-ui/core';
 import { CloseRounded as CloseIcon, FolderRounded as FolderIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 import Scrollbar from '@/ui-components/CustomScroll';
 import Stub from '@/ui-components/Stub';
-import { useTranslation } from 'react-i18next';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import clsx from 'clsx';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useCoreService } from '@/stores/app/core';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useContextMenu } from '@/stores/app/ContextMenuProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -97,7 +97,7 @@ function Folder(props) {
     } = props;
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const coreService = useCoreService();
     const [folder, setFolder] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
@@ -131,7 +131,7 @@ function Folder(props) {
                 setIsSearching(load);
                 load = false;
             });
-    }, [bookmarksService.lastTruthSearchTimestamp]);
+    }, [workingSpaceService.lastTruthSearchTimestamp]);
 
     return (
         <Card
@@ -169,8 +169,8 @@ function Folder(props) {
                     <Tooltip title={t('common:button.close')}>
                         <IconButton
                             onClick={() => {
-                                if (coreService.storage.temp.data.closeFapPopper) {
-                                    coreService.storage.temp.data.closeFapPopper();
+                                if (coreService.tempStorage.data.closeFapPopper) {
+                                    coreService.tempStorage.data.closeFapPopper();
                                 }
                             }}
                         >

@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { sample, first, last } from 'lodash';
 import clsx from 'clsx';
 import { useLocalObservable, observer } from 'mobx-react-lite';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import MenuInfo from '@/ui/Menu/MenuInfo';
 import { SERVICE_STATE } from '@/enum';
 
@@ -141,10 +141,10 @@ function Greeting(props) {
             focus: false,
             firstRender: true,
             greeting: null,
-            enabled: coreService.storage.persistent.data.userName !== null || force,
-            edit: coreService.storage.persistent.data.userName === undefined
-                || coreService.storage.persistent.data.userName === '',
-            userName: coreService.storage.persistent.data.userName || '',
+            enabled: coreService.storage.data.userName !== null || force,
+            edit: coreService.storage.data.userName === undefined
+                || coreService.storage.data.userName === '',
+            userName: coreService.storage.data.userName || '',
         };
     });
 
@@ -153,16 +153,16 @@ function Greeting(props) {
             store.firstRender = false;
             return;
         }
-        store.userName = coreService.storage.persistent.data.userName;
+        store.userName = coreService.storage.data.userName;
         store.enabled = store.userName !== null || force;
         store.edit = store.edit || store.enabled;
-    }, [coreService.storage.persistent.data.userName]);
+    }, [coreService.storage.data.userName]);
 
     useEffect(() => {
         console.log('store.focus:', store.focus);
         if (onChange) onChange(store.userName);
         if (store.focus) {
-            coreService.storage.persistent.update({ userName: store.userName || '' });
+            coreService.storage.update({ userName: store.userName || '' });
         }
     }, [store.userName]);
 
@@ -171,7 +171,7 @@ function Greeting(props) {
 
         let greeting;
 
-        if (typeof coreService.storage.temp.data.greeting === 'undefined') {
+        if (typeof coreService.tempStorage.data.greeting === 'undefined') {
             const greetings = t([`greeting.${store.timesOfDay}`, 'greeting.default'], {
                 returnObjects: true,
                 name: '[name]',
@@ -181,7 +181,7 @@ function Greeting(props) {
 
             greeting = sample(Array.isArray(greetings) ? greetings : []);
         } else {
-            greeting = coreService.storage.temp.data.greeting;
+            greeting = coreService.tempStorage.data.greeting;
         }
 
         console.log('greeting:', greeting);
@@ -189,11 +189,11 @@ function Greeting(props) {
         store.greeting = greeting;
     }, [ready]);
 
-    if (!ready || (coreService.storage.persistent.data.userName === null && !store.enabled) || !store.greeting) {
+    if (!ready || (coreService.storage.data.userName === null && !store.enabled) || !store.greeting) {
         return null;
     }
 
-    const { userName } = coreService.storage.persistent.data;
+    const { userName } = coreService.storage.data;
 
     if ((!userName?.trim() || store.edit) && !readOnly) {
         return (
@@ -224,7 +224,7 @@ function Greeting(props) {
                                 key="cancel"
                                 onClick={() => {
                                     if (!force) store.enabled = false;
-                                    coreService.storage.persistent.update({ userName: null });
+                                    coreService.storage.update({ userName: null });
 
                                     if (onHide) onHide();
                                 }}
@@ -257,7 +257,7 @@ function Greeting(props) {
                                 onInput={(event) => {
                                     store.userName = event.target.innerText;
                                     if (!event.target.innerText.trim()) {
-                                        coreService.storage.persistent.update({ userName: store.userName });
+                                        coreService.storage.update({ userName: store.userName });
                                     }
                                 }}
                             />
@@ -274,11 +274,11 @@ const ObserverGreeting = observer(Greeting);
 
 function GreetingContainer({ className: externalClassName, ...props }) {
     const coreService = useCoreService();
-    const [state, setState] = useState(coreService.storage.persistent.state);
+    const [state, setState] = useState(coreService.storage.state);
 
     useEffect(() => {
-        setState(coreService.storage.persistent.state);
-    }, [coreService.storage.persistent.state]);
+        setState(coreService.storage.state);
+    }, [coreService.storage.state]);
 
     if (state !== SERVICE_STATE.DONE) return null;
 

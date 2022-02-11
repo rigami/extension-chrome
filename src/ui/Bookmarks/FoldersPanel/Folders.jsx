@@ -19,12 +19,12 @@ import { useLocalObservable, observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { captureException } from '@sentry/react';
 import clsx from 'clsx';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { FETCH } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import asyncAction from '@/utils/helpers/asyncAction';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useContextMenu } from '@/stores/app/ContextMenuProvider';
 import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 
@@ -88,24 +88,24 @@ function FolderItem(props) {
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
     const rootRef = useRef();
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const contextMenu = useContextMenu({
         itemId: id,
         itemType: 'folder',
         disableRemove: id === FIRST_UUID,
         disableMove: id === FIRST_UUID,
     });
-    const [isPin, setIsPin] = useState(bookmarksService.findFavorite({
+    const [isPin, setIsPin] = useState(workingSpaceService.findFavorite({
         itemId: id,
         itemType: 'folder',
     }));
 
     useEffect(() => {
-        setIsPin(bookmarksService.findFavorite({
+        setIsPin(workingSpaceService.findFavorite({
             itemId: id,
             itemType: 'folder',
         }));
-    }, [bookmarksService.favorites.length]);
+    }, [workingSpaceService.favorites.length]);
 
     return (
         <Item
@@ -267,7 +267,7 @@ function Folders(props) {
     } = props;
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const store = useLocalObservable(() => ({
         tree: [],
         anchorEl: null,
@@ -291,7 +291,7 @@ function Folders(props) {
             captureException(error);
             store.state = FETCH.FAILED;
         });
-    }, [bookmarksService.lastTruthSearchTimestamp]);
+    }, [workingSpaceService.lastTruthSearchTimestamp]);
 
     console.log('selectFolder:', selectFolder);
 

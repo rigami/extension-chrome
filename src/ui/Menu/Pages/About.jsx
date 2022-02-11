@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import LogoIcon from '@/images/logo-icon.svg';
 import LogoText from '@/images/logo-text.svg';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 
 const useStyles = makeStyles((theme) => ({
     splash: {

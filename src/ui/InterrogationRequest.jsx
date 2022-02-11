@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { IconButton, CardMedia, Collapse } from '@material-ui/core';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import Stub from '@/ui-components/Stub';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     CloseRounded as CloseIcon,
     FavoriteRounded as FavoriteIcon,
 } from '@material-ui/icons';
+import Stub from '@/ui-components/Stub';
+import { useCoreService } from '@/stores/app/core';
 import requestSrc from '@/images/request.png';
 
 const useStyles = makeStyles((theme) => ({
@@ -79,8 +79,8 @@ function InterrogationRequest() {
 
     useEffect(() => {
         if (
-            coreService.storage.temp.data.newVersion
-            || coreService.storage.persistent.data.completedPoll === 'how-do-you-rigami'
+            coreService.tempStorage.data.newVersion
+            || coreService.storage.data.completedPoll === 'how-do-you-rigami'
         ) return;
 
         const rateSnackbar = enqueueSnackbar({
@@ -88,10 +88,10 @@ function InterrogationRequest() {
                 <RequestScreen
                     onClose={() => {
                         closeSnackbar(rateSnackbar);
-                        coreService.storage.persistent.update({ completedPoll: 'how-do-you-rigami' });
+                        coreService.storage.update({ completedPoll: 'how-do-you-rigami' });
                     }}
                     onEnd={() => {
-                        coreService.storage.persistent.update({ completedPoll: 'how-do-you-rigami' });
+                        coreService.storage.update({ completedPoll: 'how-do-you-rigami' });
                     }}
                 />
             ),

@@ -8,20 +8,20 @@ import {
     DialogActions,
     Button,
 } from '@material-ui/core';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import EditTagModal from '@/ui/Bookmarks/Tag/EditModal';
 import { useTranslation } from 'react-i18next';
+import { useSnackbar } from 'notistack';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
+import { useCoreService } from '@/stores/app/core';
+import EditTagModal from '@/ui/Bookmarks/Tag/EditModal';
 import { default as EditBookmarkModal } from '@/ui/Bookmarks/EditBookmarkModal';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
-import { useSnackbar } from 'notistack';
 import MoveDialog from '@/ui/Bookmarks/MoveDialog';
 import fetchData from '@/utils/helpers/fetchData';
 import Changelog from './Changelog';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation(['folder']);
-    const bookmarksStore = useBookmarksService();
+    const bookmarksStore = useWorkingSpaceService();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const coreService = useCoreService();
     const [edit, setEdit] = useState(null);
@@ -82,15 +82,15 @@ function GlobalModals({ children }) {
                 message: t('settingsSync:localBackup.create.state.success'),
                 variant: 'success',
             });
-            coreService.storage.persistent.update({ localBackup: null });
+            coreService.storage.update({ localBackup: null });
         };
 
         const globalListeners = [
             coreService.globalEventBus.on('system/backup/local/create/progress', ({ data }) => {
-                console.log('coreService.storage.temp.data:', coreService.storage.temp.data);
-                if (coreService.storage.temp.data.progressCreateSnackbar) {
-                    closeSnackbar(coreService.storage.temp.data.progressCreateSnackbar);
-                    coreService.storage.temp.update({ progressCreateSnackbar: null });
+                console.log('coreService.tempStorage.data:', coreService.tempStorage.data);
+                if (coreService.tempStorage.data.progressCreateSnackbar) {
+                    closeSnackbar(coreService.tempStorage.data.progressCreateSnackbar);
+                    coreService.tempStorage.update({ progressCreateSnackbar: null });
                 }
 
                 if (data.stage === 'start') {
@@ -99,8 +99,8 @@ function GlobalModals({ children }) {
                         variant: 'progress',
                     }, { persist: true });
 
-                    coreService.storage.temp.update({ progressCreateSnackbar: snackId });
-                    console.log('coreService.storage.temp.data:', snackId, coreService.storage.temp.data.progressCreateSnackbar);
+                    coreService.tempStorage.update({ progressCreateSnackbar: snackId });
+                    console.log('coreService.tempStorage.data:', snackId, coreService.tempStorage.data.progressCreateSnackbar);
                 } else if (data.stage === 'error') {
                     enqueueSnackbar({
                         message: t('settingsSync:localBackup.create.error.unknown'),
@@ -111,8 +111,8 @@ function GlobalModals({ children }) {
                 }
             }),
             coreService.globalEventBus.on('system/backup/local/restore/progress', ({ data }) => {
-                if (coreService.storage.temp.data.progressRestoreSnackbar) {
-                    closeSnackbar(coreService.storage.temp.data.progressRestoreSnackbar);
+                if (coreService.tempStorage.data.progressRestoreSnackbar) {
+                    closeSnackbar(coreService.tempStorage.data.progressRestoreSnackbar);
                 }
 
                 if (data.result === 'start') {
@@ -121,7 +121,7 @@ function GlobalModals({ children }) {
                         variant: 'progress',
                     }, { persist: true });
 
-                    coreService.storage.temp.update({ progressRestoreSnackbar: snackId });
+                    coreService.tempStorage.update({ progressRestoreSnackbar: snackId });
                 } else if (data.result === 'done') {
                     location.reload();
                 } else if (data.result === 'error') {
@@ -130,7 +130,7 @@ function GlobalModals({ children }) {
                         variant: data.result,
                     });
 
-                    coreService.storage.persistent.update({
+                    coreService.storage.update({
                         restoreBackup: null,
                         restoreBackupError: null,
                     });
@@ -138,46 +138,46 @@ function GlobalModals({ children }) {
             }),
         ];
 
-        if (coreService.storage.persistent.data.localBackup) {
-            if (coreService.storage.persistent.data.localBackup === 'creating') {
+        if (coreService.storage.data.localBackup) {
+            if (coreService.storage.data.localBackup === 'creating') {
                 const snackId = enqueueSnackbar({
                     message: t('settingsSync:localBackup.create.state.creating'),
                     variant: 'progress',
                 }, { persist: true });
 
-                coreService.storage.temp.update({ progressCreateSnackbar: snackId });
-            } else if (coreService.storage.persistent.data.localBackup === 'error') {
+                coreService.tempStorage.update({ progressCreateSnackbar: snackId });
+            } else if (coreService.storage.data.localBackup === 'error') {
                 enqueueSnackbar({
                     message: t('settingsSync:localBackup.create.error.unknown'),
                     variant: 'error',
                 });
-                coreService.storage.persistent.update({ localBackup: null });
-            } else if (coreService.storage.persistent.data.localBackup === 'done') {
+                coreService.storage.update({ localBackup: null });
+            } else if (coreService.storage.data.localBackup === 'done') {
                 saveLocalBackup();
             }
         }
 
-        if (coreService.storage.persistent.data.restoreBackup) {
-            if (coreService.storage.persistent.data.restoreBackup === 'restoring') {
+        if (coreService.storage.data.restoreBackup) {
+            if (coreService.storage.data.restoreBackup === 'restoring') {
                 const snackId = enqueueSnackbar({
                     message: t('settingsSync:localBackup.restore.state.restoring'),
                     variant: 'progress',
                 }, { persist: true });
 
-                coreService.storage.temp.update({ progressRestoreSnackbar: snackId });
-            } else if (coreService.storage.persistent.data.restoreBackup === 'error') {
+                coreService.tempStorage.update({ progressRestoreSnackbar: snackId });
+            } else if (coreService.storage.data.restoreBackup === 'error') {
                 enqueueSnackbar({
                     message: t(`settingsSync:localBackup.restore.error.${
-                        coreService.storage.persistent.data.restoreBackupError
+                        coreService.storage.data.restoreBackupError
                     }`),
                     variant: 'error',
                 });
-                coreService.storage.persistent.update({
+                coreService.storage.update({
                     restoreBackup: null,
                     restoreBackupError: null,
                 });
-            } else if (coreService.storage.persistent.data.restoreBackup === 'done') {
-                coreService.storage.persistent.update({ restoreBackup: null });
+            } else if (coreService.storage.data.restoreBackup === 'done') {
+                coreService.storage.update({ restoreBackup: null });
                 enqueueSnackbar({
                     message: t('settingsSync:localBackup.restore.state.success'),
                     variant: 'success',

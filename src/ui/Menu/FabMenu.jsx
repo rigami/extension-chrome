@@ -15,17 +15,16 @@ import clsx from 'clsx';
 import { captureException } from '@sentry/react';
 import { ACTIVITY, BKMS_DISPLAY_VARIANT, BKMS_FAP_STYLE } from '@/enum';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import useAppService from '@/stores/app/AppStateProvider';
+import { useCoreService } from '@/stores/app/core';
+import { useAppStateService } from '@/stores/app/appState';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useContextMenu } from '@/stores/app/ContextMenuProvider';
 import { ContextMenuDivider, ContextMenuItem, ContextMenuCustomItem } from '@/stores/app/entities/contextMenu';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 import DisplayCardsImage from '@/images/display_cards.svg';
 import DisplayRowsImage from '@/images/display_rows.svg';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import useAppStateService from '@/stores/app/AppStateProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -101,28 +100,28 @@ function BGCard({ src, onClick }) {
 const MemoBGCard = memo(BGCard);
 
 function BackgroundSelector() {
-    const { backgrounds } = useAppStateService();
+    const { wallpapersService } = useAppStateService();
     const [bgs, setBgs] = useState(null);
 
     useEffect(() => {
-        backgrounds.getLastUsage(15)
+        wallpapersService.getLastUsage(15)
             .then((lastBgs) => setBgs(lastBgs))
             .catch((e) => {
                 captureException(e);
                 console.error('Failed load bg`s from db:', e);
             });
-    }, [backgrounds.count]);
+    }, [wallpapersService.count]);
 
     return (
         <Box
             display="flex" flexWrap="wrap" pl={1}
             pt={1}
         >
-            {bgs && bgs.map((bg) => (
+            {bgs && bgs.map((wallpaper) => (
                 <MemoBGCard
-                    src={bg.previewSrc}
-                    key={bg.id}
-                    onClick={() => backgrounds.setBG(bg)}
+                    src={wallpaper.previewSrc}
+                    key={wallpaper.id}
+                    onClick={() => wallpapersService.setWallpaper(wallpaper)}
                 />
             ))}
         </Box>
@@ -132,11 +131,11 @@ function BackgroundSelector() {
 function FabMenu() {
     const classes = useStyles();
     const coreService = useCoreService();
-    const appService = useAppService();
-    const bookmarksService = useBookmarksService();
+    const appStateService = useAppStateService();
+    const workingSpaceService = useWorkingSpaceService();
     const { t } = useTranslation(['bookmark', 'settings', 'background']);
     const contextMenu = useContextMenu(() => [
-        ...(appService.activity !== ACTIVITY.DESKTOP ? [
+        ...(appStateService.activity !== ACTIVITY.DESKTOP ? [
             new ContextMenuItem({ title: t('settings:display.title') }),
             new ContextMenuCustomItem({
                 render: () => (
@@ -144,14 +143,14 @@ function FabMenu() {
                         <DisplayVariant
                             image={DisplayCardsImage}
                             label={t('settings:display.variant.cards')}
-                            selected={bookmarksService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS}
-                            onClick={() => bookmarksService.settings.update({ displayVariant: BKMS_DISPLAY_VARIANT.CARDS })}
+                            selected={workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS}
+                            onClick={() => workingSpaceService.settings.update({ displayVariant: BKMS_DISPLAY_VARIANT.CARDS })}
                         />
                         <DisplayVariant
                             image={DisplayRowsImage}
                             label={t('settings:display.variant.rows')}
-                            selected={bookmarksService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS}
-                            onClick={() => bookmarksService.settings.update({ displayVariant: BKMS_DISPLAY_VARIANT.ROWS })}
+                            selected={workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS}
+                            onClick={() => workingSpaceService.settings.update({ displayVariant: BKMS_DISPLAY_VARIANT.ROWS })}
                         />
                     </Box>
                 ),
@@ -175,7 +174,7 @@ function FabMenu() {
                         const form = event.target;
                         if (form.files.length === 0) return;
 
-                        appService.backgrounds.addToUploadQueue(form.files)
+                        appStateService.wallpapersService.addToUploadQueue(form.files)
                             .finally(() => {
                                 form.value = '';
                             });
@@ -211,7 +210,7 @@ function FabMenu() {
         <Box className={classes.root}>
             <MouseDistanceFade
                 unionKey="desktop-fab"
-                show={appService.activity === ACTIVITY.DESKTOP ? undefined : true}
+                show={appStateService.activity === ACTIVITY.DESKTOP ? undefined : true}
                 distanceMax={750}
                 distanceMin={300}
             >

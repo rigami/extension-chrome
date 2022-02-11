@@ -3,7 +3,7 @@ import { Box } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import Tag from '../../Tag';
 
@@ -28,7 +28,7 @@ function Tags(props) {
         onChange,
     } = props;
     const classes = useStyles();
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const [selectedTags, setSelectedTags] = useState(value || []);
     const [tags, setTags] = useState(() => []);
     const isFirstRun = useRef(true);
@@ -53,7 +53,7 @@ function Tags(props) {
             .then((allTags) => {
                 setTags(allTags);
             });
-    }, [bookmarksService.lastTruthSearchTimestamp, onlyFavorites]);
+    }, [workingSpaceService.lastTruthSearchTimestamp, onlyFavorites]);
 
     return (
         <Box className={clsx(classes.root, externalClassName)}>

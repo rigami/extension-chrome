@@ -5,7 +5,7 @@ import consoleBinder from '@/utils/console/bind';
 import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import api from '@/utils/helpers/api';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
 
 const bindConsole = consoleBinder('wallpapers-stream');
@@ -21,8 +21,8 @@ class StreamWallpapersService {
     constructor(core) {
         makeAutoObservable(this);
         this.core = core;
-        this.storage = this.core.storage.persistent;
-        this.settings = this.core.settingsService.backgrounds;
+        this.storage = this.core.storage;
+        this.settings = this.core.settingsService.wallpapers;
     }
 
     @action

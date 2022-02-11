@@ -4,15 +4,15 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import { useResizeDetector } from 'react-resize-detector';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import {
     ACTIVITY,
-    BKMS_FAP_POSITION,
+    BKMS_FAP_POSITION, BKMS_FAP_STYLE,
 } from '@/enum';
 import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
-import useAppService from '@/stores/app/AppStateProvider';
-import useBaseStateService from '@/stores/app/BaseStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
+import { useCoreService } from '@/stores/app/core';
 import Time from './Time';
 import Date from './Date';
 
@@ -137,14 +137,14 @@ const useStyles = makeStyles((theme) => ({
 
 function Widgets({ stickToBottom, color }) {
     const classes = useStyles();
-    const service = useBaseStateService();
-    const appService = useAppService();
-    const { widgets } = appService;
-    const bookmarksService = useBookmarksService();
+    const service = useCoreService();
+    const appStateService = useAppStateService();
+    const { widgetsService, desktopService } = appStateService;
+    const workingSpaceService = useWorkingSpaceService();
     const { height: heightRoot, ref: refRoot } = useResizeDetector();
 
     const onResize = useCallback((width, height) => {
-        service.storage.temp.update({ desktopWidgetsHeight: height });
+        service.tempStorage.update({ desktopWidgetsHeight: height });
     }, []);
 
     const { height: heightWidget, ref: refWidget } = useResizeDetector({ onResize });
@@ -154,14 +154,16 @@ function Widgets({ stickToBottom, color }) {
     if (BUILD === 'full') {
         if (
             (
-                bookmarksService.fapIsDisplay
-                && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
-            ) || appService.activity === ACTIVITY.FAVORITES
+                workingSpaceService.favorites.length !== 0
+                && desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+                && desktopService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
+            ) || appStateService.activity === ACTIVITY.FAVORITES
         ) {
             positionOffset = 'bottom';
         } else if (
-            bookmarksService.fapIsDisplay
-            && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
+            workingSpaceService.favorites.length !== 0
+            && desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+            && desktopService.settings.fapPosition === BKMS_FAP_POSITION.TOP
         ) {
             positionOffset = 'top';
         }
@@ -171,12 +173,12 @@ function Widgets({ stickToBottom, color }) {
         <Box
             className={clsx(
                 classes.root,
-                widgets.settings.dtwPosition === DTW_POSITION.LEFT_BOTTOM && classes.leftBottom,
-                widgets.settings.dtwPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddle,
-                widgets.settings.dtwPosition === DTW_POSITION.CENTER_TOP && classes.centerTop,
+                desktopService.settings.widgetsPosition === DTW_POSITION.LEFT_BOTTOM && classes.leftBottom,
+                desktopService.settings.widgetsPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddle,
+                desktopService.settings.widgetsPosition === DTW_POSITION.CENTER_TOP && classes.centerTop,
             )}
             style={{
-                [positionOffset]: service.storage.temp.data.desktopFapHeight,
+                [positionOffset]: service.tempStorage.data.desktopFapHeight,
                 color,
                 textShadow: color ? '0 2px 17px #00000000' : '0 2px 17px #00000029',
             }}
@@ -187,40 +189,40 @@ function Widgets({ stickToBottom, color }) {
                 ref={refWidget}
                 style={{
                     transform: stickToBottom && `${
-                        widgets.settings.dtwPosition !== DTW_POSITION.LEFT_BOTTOM
+                        desktopService.settings.widgetsPosition !== DTW_POSITION.LEFT_BOTTOM
                             ? `translateY(calc(${heightRoot / 2}px - ${heightWidget / 2}px))`
                             : ''
                     } scale(${64 / heightWidget})`,
                 }}
             >
-                {widgets.settings.dtwUseTime && (
+                {widgetsService.settings.useTime && (
                     <Typography
                         className={clsx(
                             classes.text,
-                            classes[`time-${widgets.settings.dtwSize.toLowerCase()}`],
+                            classes[`time-${desktopService.settings.widgetsSize.toLowerCase()}`],
                         )}
                     >
                         <Time />
                     </Typography>
                 )}
-                {widgets.settings.dtwUseDate && (
+                {widgetsService.settings.useDate && (
                     <Typography
                         className={clsx(
                             classes.row,
                             classes.text,
-                            classes[`date-${widgets.settings.dtwSize.toLowerCase()}`],
+                            classes[`date-${desktopService.settings.widgetsSize.toLowerCase()}`],
                         )}
                     >
-                        <Date dot={widgets.showWeather} />
+                        <Date dot={widgetsService.showWeather} />
                     </Typography>
                 )}
-                {widgets.settings.dtwUseWeather && (
+                {widgetsService.settings.useWeather && (
                     <Typography
                         className={clsx(
                             classes.row,
                             classes.text,
                             classes.weather,
-                            classes[`weather-${widgets.settings.dtwSize.toLowerCase()}`],
+                            classes[`weather-${desktopService.settings.widgetsSize.toLowerCase()}`],
                         )}
                     >
                         <WeatherWidget />

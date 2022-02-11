@@ -4,12 +4,12 @@ import { Button } from '@material-ui/core';
 import { Add as UploadFromComputerIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 
 const useStyles = makeStyles(() => ({ input: { display: 'none' } }));
 
 function LoadBGFromLocalButton() {
-    const { backgrounds } = useAppStateService();
+    const { wallpapersService } = useAppStateService();
     const classes = useStyles();
     const { t } = useTranslation(['settingsQuietMode']);
 
@@ -25,7 +25,7 @@ function LoadBGFromLocalButton() {
                     const form = event.target;
                     if (form.files.length === 0) return;
 
-                    backgrounds.addToUploadQueue(form.files)
+                    wallpapersService.addToUploadQueue(form.files)
                         .finally(() => {
                             form.value = '';
                         });

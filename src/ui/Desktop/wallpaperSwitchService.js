@@ -9,7 +9,7 @@ import consoleBinder from '@/utils/console/bind';
 
 const bindConsole = consoleBinder('wallpapers');
 
-class WallpaperService {
+class WallpaperSwitchService {
     currentBg = null;
     requestedBg = null;
     stateLoadBg = FETCH.PENDING;
@@ -28,7 +28,7 @@ class WallpaperService {
         makeAutoObservable(this);
         this._coreService = coreService;
         this.settings = wallpapersSettings;
-        this.storage = coreService.storage.persistent;
+        this.storage = coreService.storage;
 
         this.subscribe();
     }
@@ -139,87 +139,6 @@ class WallpaperService {
     }
 
     subscribe() {
-        /* this._listeners = [
-            this._coreService.localEventBus.on('background/pause', () => {
-                bgRef.current.onpause = async (event) => {
-                    const video = event.target;
-                    const pauseTimestamp = bgRef.current.currentTime;
-                    const captureBGId = store.currentBg.id;
-
-                    try {
-                        const frameURL = await service.generatePreview(video);
-
-                        await new Promise((resolve, reject) => eventToBackground('wallpapers/pause', {
-                            bgId: captureBGId,
-                            frameURL,
-                            timestamp: pauseTimestamp,
-                        }, (data) => {
-                            console.log('wallpapers/pause', data);
-                            if (data.success) {
-                                resolve();
-                            } else {
-                                reject(new Error(`Failed pause (${JSON.stringify(data)})`));
-                            }
-                        }));
-                    } catch (e) {
-                        captureException(e);
-                        console.log('Failed pause', e);
-                        return;
-                    }
-
-                    store.captureFrameTimer = setTimeout(() => {
-                        console.log(store.currentBg.id, wallpapers.currentBGId, wallpapers.bgShowMode);
-                        if (
-                            !store.currentBg
-                            || store.currentBg.id !== wallpapers.currentBGId
-                            || wallpapers.bgShowMode !== BG_SHOW_MODE.STATIC
-                            || pauseTimestamp !== bgRef.current.currentTime
-                        ) {
-                            return;
-                        }
-
-                        store.requestBg = wallpapers.currentBG;
-                    }, 5000);
-                };
-
-                bgRef.current.play().then(() => bgRef.current.pause());
-            }),
-            this._coreService.localEventBus.on('background/play', async () => {
-                console.log('wallpapers/play');
-                if (typeof store.captureFrameTimer === 'number') clearTimeout(+store.captureFrameTimer);
-                store.captureFrameTimer = null;
-
-                try {
-                    await new Promise((resolve, reject) => eventToBackground('wallpapers/play', {}, (data) => {
-                        console.log('background/play callback:', data);
-                        if (data.success) {
-                            resolve();
-                        } else {
-                            reject(new Error(JSON.stringify(data)));
-                        }
-                    }));
-                } catch (e) {
-                    console.log(e);
-                    captureException(e);
-                    return;
-                }
-
-                if (bgRef.current.play) {
-                    console.log('play background...');
-                    bgRef.current.play();
-                    bgRef.current.onpause = null;
-                } else {
-                    const currBG = wallpapers.currentBG;
-
-                    store.requestBg = new BackgroundEntity({
-                        ...currBG,
-                        pauseTimestamp: null,
-                        pauseStubSrc: null,
-                    });
-                }
-            }),
-        ]; */
-
         reaction(
             () => this.storage.data.bgCurrent?.id,
             () => {
@@ -254,4 +173,4 @@ class WallpaperService {
     }
 }
 
-export default WallpaperService;
+export default WallpaperSwitchService;

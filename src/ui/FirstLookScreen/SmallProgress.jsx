@@ -5,10 +5,10 @@ import {
     Typography, Fade,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { PREPARE_PROGRESS } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import { makeStyles } from '@material-ui/core/styles';
+import { PREPARE_PROGRESS } from '@/stores/app/core/service';
+import { useCoreService } from '@/stores/app/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -28,9 +28,9 @@ function SmallProgress() {
     const classes = useStyles();
     const { t } = useTranslation('firstLook');
     const coreService = useCoreService();
-    const [progress, setProgress] = useState(coreService.storage.persistent.data?.factoryResetProgress?.percent || 0);
+    const [progress, setProgress] = useState(coreService.storage.data?.factoryResetProgress?.percent || 0);
     const [stage, setStage] = useState(
-        coreService.storage.persistent.data?.factoryResetProgress?.stage
+        coreService.storage.data?.factoryResetProgress?.stage
         || PREPARE_PROGRESS.WAIT,
     );
     const [show, setShow] = useState(progress !== 100);

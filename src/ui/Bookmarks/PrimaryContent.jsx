@@ -9,7 +9,7 @@ import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import Stub from '@/ui-components/Stub';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import Favorites from '@/ui/Bookmarks/Favorites';
 import GreetingView from '@/ui/Bookmarks/GreetingView';
 

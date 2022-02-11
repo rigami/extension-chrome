@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { ACTIVITY, THEME } from '@/enum';
-import useAppService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import tabNamePage from './TabName';
 import greetingPage from './Greeting';
 import SectionHeader from '@/ui/Menu/SectionHeader';
@@ -22,7 +22,7 @@ const headerProps = { title: 'settings:common' };
 function AppSettings({ onSelect }) {
     const classes = useStyles();
     const { t } = useTranslation(['settingsCommon']);
-    const appService = useAppService();
+    const appStateService = useAppStateService();
 
     return (
         <React.Fragment>
@@ -32,8 +32,8 @@ function AppSettings({ onSelect }) {
                 description={t('openOnStartup.description')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
-                    value: appService.settings.defaultActivity === ACTIVITY.BOOKMARKS,
-                    onChange: (event, value) => appService.settings
+                    value: appStateService.settings.defaultActivity === ACTIVITY.BOOKMARKS,
+                    onChange: (event, value) => appStateService.settings
                         .update({ defaultActivity: value ? ACTIVITY.BOOKMARKS : ACTIVITY.DESKTOP }),
                 }}
             />
@@ -43,10 +43,10 @@ function AppSettings({ onSelect }) {
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     width: 72,
-                    checked: appService.settings.backdropTheme === THEME.DARK,
+                    checked: appStateService.settings.backdropTheme === THEME.DARK,
                     color: 'primary',
                     onChange: (event, value) => {
-                        appService.settings.update({ backdropTheme: value ? THEME.DARK : THEME.LIGHT });
+                        appStateService.settings.update({ backdropTheme: value ? THEME.DARK : THEME.LIGHT });
                     },
                 }}
             />
@@ -55,9 +55,9 @@ function AppSettings({ onSelect }) {
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     width: 72,
-                    checked: appService.settings.theme === THEME.DARK,
+                    checked: appStateService.settings.theme === THEME.DARK,
                     color: 'primary',
-                    onChange: (event, value) => appService.settings.update({ theme: value ? THEME.DARK : THEME.LIGHT }),
+                    onChange: (event, value) => appStateService.settings.update({ theme: value ? THEME.DARK : THEME.LIGHT }),
                 }}
             />
             <MenuRow
@@ -66,8 +66,8 @@ function AppSettings({ onSelect }) {
                     type: ROWS_TYPE.LINK,
                     onClick: () => onSelect(tabNamePage),
                     component: (
-                        <Typography className={(!appService.settings.tabName && classes.defaultTabValue) || ''}>
-                            {appService.settings.tabName || 'rigami'}
+                        <Typography className={(!appStateService.settings.tabName && classes.defaultTabValue) || ''}>
+                            {appStateService.settings.tabName || 'rigami'}
                         </Typography>
                     ),
                 }}

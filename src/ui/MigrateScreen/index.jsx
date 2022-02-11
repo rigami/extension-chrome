@@ -9,12 +9,12 @@ import {
     Typography,
 } from '@material-ui/core';
 import { cloneDeep } from 'lodash';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import Logo from '@/ui-components/Logo';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
+import { useAppStateService } from '@/stores/app/appState';
 import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import { BG_SOURCE, BKMS_VARIANT } from '@/enum';
 import db from '@/utils/db';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
@@ -38,11 +38,11 @@ function MigrateScreen({ onStart }) {
     const classes = useStyles();
     const { t } = useTranslation('firstLook');
     const coreService = useCoreService();
-    const bookmarksService = useBookmarksService();
-    const appService = useAppStateService();
-    const { widgets } = appService;
-    const { backgrounds } = appService;
-    const [progress, setProgress] = useState(coreService.storage.persistent.data?.migrateToMv3Progress?.percent || 0);
+    const workingSpaceService = useWorkingSpaceService();
+    const appStateService = useAppStateService();
+    const { widgetsService } = appStateService;
+    const { wallpapersService } = appStateService;
+    const [progress, setProgress] = useState(coreService.storage.data?.migrateToMv3Progress?.percent || 0);
 
     const migrate = async () => {
         setProgress(0);
@@ -50,7 +50,7 @@ function MigrateScreen({ onStart }) {
         if (localStorage.getItem('storage')) {
             const storage = JSON.parse(localStorage.getItem('storage'));
 
-            coreService.storage.persistent.update({
+            coreService.storage.update({
                 ...storage,
                 bgCurrent: storage.bgCurrent ? new Wallpaper({
                     ...storage.bgCurrent,
@@ -74,10 +74,10 @@ function MigrateScreen({ onStart }) {
         if (localStorage.getItem('settings')) {
             const settings = JSON.parse(localStorage.getItem('settings'));
 
-            bookmarksService.settings.update(settings.bookmarks);
-            backgrounds.settings.update(settings.backgrounds);
-            widgets.settings.update(settings.widgets);
-            appService.settings.update(settings.app);
+            workingSpaceService.settings.update(settings.bookmarks);
+            wallpapersService.settings.update(settings.backgrounds);
+            widgetsService.settings.update(settings.widgets);
+            appStateService.settings.update(settings.app);
         }
 
         setProgress(25);
@@ -199,7 +199,7 @@ function MigrateScreen({ onStart }) {
             }
         }
 
-        coreService.storage.persistent.update({ migrateToMv3Progress: null });
+        coreService.storage.update({ migrateToMv3Progress: null });
 
         localStorage.removeItem('storage');
         localStorage.removeItem('settings');

@@ -3,7 +3,7 @@ import { Card, CardActionArea, CardHeader } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import clsx from 'clsx';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useContextMenu } from '@/stores/app/ContextMenuProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: { width: theme.shape.dataCard.width },

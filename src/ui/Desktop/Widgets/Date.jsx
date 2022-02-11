@@ -1,8 +1,8 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { Link } from '@material-ui/core';
-import useAppStateService from '@/stores/app/AppStateProvider';
 import { last } from 'lodash';
 import { getI18n } from 'react-i18next';
+import { useAppStateService } from '@/stores/app/appState';
 
 const generateFormatter = (locale) => new Intl.DateTimeFormat(/* 'nu' */ locale, {
     weekday: 'long',
@@ -11,7 +11,7 @@ const generateFormatter = (locale) => new Intl.DateTimeFormat(/* 'nu' */ locale,
 });
 
 function DateWidget({ dot = false }) {
-    const { widgets } = useAppStateService();
+    const { widgetsService } = useAppStateService();
     const [now, setNow] = useState(new Date());
     const [formatter] = useState(generateFormatter(getI18n()?.language));
 
@@ -27,10 +27,10 @@ function DateWidget({ dot = false }) {
 
     const dotSymbol = last(date) !== '.' ? '. ' : ' ';
 
-    if (widgets.settings.dtwDateAction) {
+    if (widgetsService.settings.dtwDateAction) {
         return (
             <Link
-                href={widgets.settings.dtwDateAction}
+                href={widgetsService.settings.dtwDateAction}
                 target="_blank"
                 underline="none"
                 color="inherit"

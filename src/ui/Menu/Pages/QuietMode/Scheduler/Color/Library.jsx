@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { CheckRounded as SetIcon } from '@material-ui/icons';
 import colorsLibrary from '@/config/colors';
 import { eventToBackground } from '@/stores/universal/serviceBus';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 
 const useStyles = makeStyles((theme) => ({
     variant: {
@@ -125,7 +125,7 @@ function GradientsLibrary({ onClose }) {
                             name={color.name}
                             contrastColor={color.contrastColor}
                             colors={color.colors}
-                            select={coreService.storage.persistent.data.bgCurrent?.id === color.id}
+                            select={coreService.storage.data.bgCurrent?.id === color.id}
                             onSet={() => {
                                 eventToBackground('wallpapers/set', {
                                     kind: 'color',

@@ -5,9 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { map } from 'lodash';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import useAppStateService from '@/stores/app/AppStateProvider';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import useAppService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import {
     BKMS_FAP_ALIGN,
     BKMS_FAP_POSITION,
@@ -23,24 +22,24 @@ const pageProps = { width: 750 };
 
 function BackgroundsSection({ onSelect }) {
     const { t } = useTranslation(['settingsQuietMode']);
-    const { backgrounds } = useAppStateService();
+    const { wallpapersService } = useAppStateService();
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('backgrounds')} />
+            <SectionHeader title={t('wallpapersService')} />
             <MenuRow
                 title={t('dimmingPower.title')}
                 description={t('dimmingPower.description')}
                 action={{
                     type: ROWS_TYPE.SLIDER,
-                    value: typeof backgrounds.settings.dimmingPower === 'number'
-                        ? backgrounds.settings.dimmingPower
+                    value: typeof wallpapersService.settings.dimmingPower === 'number'
+                        ? wallpapersService.settings.dimmingPower
                         : 0,
                     onChange: (event, value) => {
-                        backgrounds.settings.update({ dimmingPower: value });
+                        wallpapersService.settings.update({ dimmingPower: value });
                     },
                     onChangeCommitted: (event, value) => {
-                        backgrounds.settings.update({ dimmingPower: value });
+                        wallpapersService.settings.update({ dimmingPower: value });
                     },
                     min: 0,
                     max: 90,
@@ -70,8 +69,7 @@ const enumSizeToNumber = (value) => [
 ].findIndex((size) => size === value) + 1;
 
 function WidgetsSettings() {
-    const bookmarksService = useBookmarksService();
-    const { widgets } = useAppService();
+    const { desktopService } = useAppStateService();
     const { t } = useTranslation(['settingsQuietMode']);
 
     return (
@@ -82,23 +80,23 @@ function WidgetsSettings() {
                 description={t('useWidgetsOnDesktop.description')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
-                    value: widgets.settings.useWidgets,
+                    value: desktopService.settings.useWidgets,
                     onChange: (event, value) => {
-                        widgets.settings.update({ useWidgets: value });
+                        desktopService.settings.update({ useWidgets: value });
                     },
                 }}
                 type={ROWS_TYPE.CHECKBOX}
             />
-            <Collapse in={widgets.settings.useWidgets}>
+            <Collapse in={desktopService.settings.useWidgets}>
                 <MenuRow
                     title={t('dtwPlace.title')}
                     // description={t('dtwPlace.description')}
                     action={{
                         type: ROWS_TYPE.SELECT,
                         format: (value) => t(`dtwPlace.value.${value}`),
-                        value: widgets.settings.dtwPosition,
+                        value: desktopService.settings.widgetsPosition,
                         onChange: (event) => {
-                            widgets.settings.update({ dtwPosition: event.target.value });
+                            desktopService.settings.update({ widgetsPosition: event.target.value });
                         },
                         values: map(WIDGET_DTW_POSITION, (key) => WIDGET_DTW_POSITION[key]),
                     }}
@@ -108,13 +106,13 @@ function WidgetsSettings() {
                     // description={t('dtwSize.description')}
                     action={{
                         type: ROWS_TYPE.SLIDER,
-                        value: enumSizeToNumber(widgets.settings.dtwSize),
+                        value: enumSizeToNumber(desktopService.settings.widgetsSize),
                         onChange: (event, value) => {
                             console.log('onChange', value, numberToEnumSize(value));
-                            widgets.settings.update({ dtwSize: numberToEnumSize(value) });
+                            desktopService.settings.update({ widgetsSize: numberToEnumSize(value) });
                         },
                         onChangeCommitted: (event, value) => {
-                            widgets.settings.update({ dtwSize: numberToEnumSize(value) });
+                            desktopService.settings.update({ widgetsSize: numberToEnumSize(value) });
                         },
                         min: 1,
                         max: 5,
@@ -143,8 +141,8 @@ function WidgetsSettings() {
 const ObserverWidgetsSettings = observer(WidgetsSettings);
 
 function FAPSettings() {
-    const bookmarksService = useBookmarksService();
-    const { widgets } = useAppService();
+    const workingSpaceService = useWorkingSpaceService();
+    const { desktopService } = useAppStateService();
     const { t } = useTranslation(['settingsQuietMode']);
 
     return (
@@ -155,28 +153,28 @@ function FAPSettings() {
                 description={t('useFap.description')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
-                    value: bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN,
-                    onChange: (event, value) => bookmarksService.settings
+                    value: desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN,
+                    onChange: (event, value) => desktopService.settings
                         .update({ fapStyle: value ? BKMS_FAP_STYLE.CONTAINED : BKMS_FAP_STYLE.HIDDEN }),
                 }}
             />
             <MenuRow>
                 <MenuInfo
                     show={(
-                        bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
-                        && bookmarksService.favorites.length === 0
+                        desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+                        && workingSpaceService.favorites.length === 0
                     )}
                     message={t('fapEmptyWarningMessage')}
                 />
             </MenuRow>
-            <Collapse in={bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN}>
+            <Collapse in={desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN}>
                 <MenuRow
                     title={t('fapStyle.title')}
                     action={{
                         type: ROWS_TYPE.SELECT,
                         format: (value) => t(`fapStyle.value.${value}`),
-                        value: bookmarksService.settings.fapStyle,
-                        onChange: (event) => bookmarksService.settings.update({ fapStyle: event.target.value }),
+                        value: desktopService.settings.fapStyle,
+                        onChange: (event) => desktopService.settings.update({ fapStyle: event.target.value }),
                         values: [BKMS_FAP_STYLE.CONTAINED, BKMS_FAP_STYLE.TRANSPARENT, BKMS_FAP_STYLE.PRODUCTIVITY],
                     }}
                 />
@@ -185,8 +183,8 @@ function FAPSettings() {
                     action={{
                         type: ROWS_TYPE.SELECT,
                         format: (value) => t(`fapPosition.value.${value}`),
-                        value: bookmarksService.settings.fapPosition,
-                        onChange: (event) => bookmarksService.settings.update({ fapPosition: event.target.value }),
+                        value: desktopService.settings.fapPosition,
+                        onChange: (event) => desktopService.settings.update({ fapPosition: event.target.value }),
                         values: [BKMS_FAP_POSITION.TOP, BKMS_FAP_POSITION.BOTTOM],
                     }}
                 />
@@ -195,8 +193,8 @@ function FAPSettings() {
                     action={{
                         type: ROWS_TYPE.SELECT,
                         format: (value) => t(`fapAlign.value.${value}`),
-                        value: bookmarksService.settings.fapAlign,
-                        onChange: (event) => bookmarksService.settings.update({ fapAlign: event.target.value }),
+                        value: desktopService.settings.fapAlign,
+                        onChange: (event) => desktopService.settings.update({ fapAlign: event.target.value }),
                         values: [BKMS_FAP_ALIGN.LEFT, BKMS_FAP_ALIGN.CENTER],
                     }}
                 />

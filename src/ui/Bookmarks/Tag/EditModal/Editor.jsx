@@ -8,7 +8,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { captureException } from '@sentry/react';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 
 const useStyles = makeStyles((theme) => ({
@@ -30,14 +30,14 @@ function Editor({ onSave, editId }) {
     const { t } = useTranslation(['tag']);
     const [tagName, setTagName] = useState('');
     const [error, setError] = useState(null);
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const [editTag, setEditTag] = useState();
     const [isLoading, setIsLoading] = useState(Boolean(editId));
 
     const handlerSubmit = (event) => {
         event.preventDefault();
         if (tagName.trim() !== '') {
-            bookmarksService.tags.save({
+            workingSpaceService.tags.save({
                 name: tagName,
                 id: editId,
             })

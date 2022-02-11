@@ -13,7 +13,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import { reaction } from 'mobx';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 
 const useStyles = makeStyles((theme) => ({
     menu: {

@@ -6,15 +6,15 @@ import React, {
     useState,
 } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import AppService from '@/stores/app/AppState';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import AppStateService from '@/stores/app/appState/service';
+import { useCoreService } from '@/stores/app/core';
 import { SERVICE_STATE } from '@/enum';
 
 const context = createContext({});
 
 function AppStateProvider({ children, onChangeTheme }) {
     const coreService = useCoreService();
-    const store = useLocalObservable(() => new AppService({ coreService }));
+    const store = useLocalObservable(() => new AppStateService({ coreService }));
     const Context = context;
     const isFirstRender = useRef(true);
     const [state, setState] = useState(store.state);
@@ -42,5 +42,4 @@ function AppStateProvider({ children, onChangeTheme }) {
 const observerProvider = observer(AppStateProvider);
 const useService = () => useContext(context);
 
-export default useService;
-export { observerProvider as Provider };
+export { observerProvider as AppStateProvider, useService as useAppStateService };

@@ -20,7 +20,7 @@ import {
 import { observer } from 'mobx-react-lite';
 import { FETCH } from '@/enum';
 import api from '@/utils/helpers/api';
-import authStorage from '@/stores/universal/AuthStorage';
+import authStorage from '@/stores/universal/storage/auth';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import MenuInfo from '@/ui/Menu/MenuInfo';

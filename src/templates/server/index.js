@@ -5,7 +5,8 @@ import {
 import BackgroundApp from '@/stores/server';
 import asyncAction from '@/utils/helpers/asyncAction';
 import { uuid } from '@/utils/generate/uuid';
-import { StorageConnector } from '@/stores/universal/storage';
+
+import StorageConnector from '@/stores/universal/storage/connector';
 import initSentry from '@/config/sentry/server';
 
 initSentry();

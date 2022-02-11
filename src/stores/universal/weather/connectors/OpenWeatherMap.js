@@ -1,5 +1,5 @@
 import { toJS } from 'mobx';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import fetchData from '@/utils/helpers/fetchData';
 import WeatherLocation from '@/entities/WeatherLocation';
 import { FETCH } from '@/enum';

@@ -14,7 +14,7 @@ import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookm
 import stateRender from '@/utils/helpers/stateRender';
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import Header from '@/ui/Bookmarks/BookmarksViewer/Header';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 import BookmarksList from '@/ui/Bookmarks/BookmarksList';
 
@@ -94,7 +94,7 @@ function BookmarksViewer(props) {
         style: externalStyle,
     } = props;
     const classes = useStyles();
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const searchService = useSearchService();
     const { t } = useTranslation(['bookmark']);
     const store = useLocalObservable(() => ({
@@ -112,7 +112,7 @@ function BookmarksViewer(props) {
     const checkIsFavorite = (bookmark) => {
         if (bookmark.id in store.favoriteCheckCache) return store.favoriteCheckCache[bookmark.id];
 
-        const isFavorite = bookmarksService.findFavorite({
+        const isFavorite = workingSpaceService.findFavorite({
             itemId: bookmark.id,
             itemType: 'bookmark',
         });
@@ -174,7 +174,7 @@ function BookmarksViewer(props) {
 
                 console.log('store.usedFields', store.usedFields);
             });
-    }, [searchService.searchRequestId, folderId, bookmarksService.lastTruthSearchTimestamp]);
+    }, [searchService.searchRequestId, folderId, workingSpaceService.lastTruthSearchTimestamp]);
 
     return stateRender(
         /* FETCH.PENDING, */ store.loadState,
@@ -187,13 +187,13 @@ function BookmarksViewer(props) {
                                 <Fragment>
                                     <Header title={t('search.bestMatches')} />
                                     <Box display="flex">
-                                        {bookmarksService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
+                                        {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
                                             <BookmarksGrid
                                                 bookmarks={store.bestBookmarks}
                                                 columns={columns}
                                             />
                                         )}
-                                        {bookmarksService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
+                                        {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
                                             <BookmarksList
                                                 bookmarks={store.bestBookmarks}
                                                 className={classes.listBookmarks}
@@ -216,13 +216,13 @@ function BookmarksViewer(props) {
                                         <Fragment>
                                             <Header subtitle={t('search.partMatches')} />
                                             <Box display="flex">
-                                                {bookmarksService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
+                                                {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
                                                     <BookmarksGrid
                                                         bookmarks={store.partBookmarks}
                                                         columns={columns}
                                                     />
                                                 )}
-                                                {bookmarksService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
+                                                {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
                                                     <BookmarksList
                                                         bookmarks={store.bestBookmarks}
                                                         className={classes.listBookmarks}
@@ -237,13 +237,13 @@ function BookmarksViewer(props) {
                                         <Fragment>
                                             <Header subtitle={t('search.indirectlyMatches')} />
                                             <Box display="flex">
-                                                {bookmarksService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
+                                                {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
                                                     <BookmarksGrid
                                                         bookmarks={store.indirectlyBookmarks}
                                                         columns={columns}
                                                     />
                                                 )}
-                                                {bookmarksService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
+                                                {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
                                                     <BookmarksList
                                                         bookmarks={store.bestBookmarks}
                                                         className={classes.listBookmarks}
@@ -263,13 +263,13 @@ function BookmarksViewer(props) {
                     )}
                     {(!store.usedFields.query && !store.usedFields.tags) && (
                         <Box display="flex">
-                            {bookmarksService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
+                            {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
                                 <BookmarksGrid
                                     bookmarks={store.allBookmarks}
                                     columns={columns}
                                 />
                             )}
-                            {bookmarksService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
+                            {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
                                 <BookmarksList
                                     bookmarks={store.bestBookmarks}
                                     className={classes.listBookmarks}

@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import fetchData from '@/utils/helpers/fetchData';
 import parseSite, { getDomain } from '@/utils/localSiteParse';
 import api from '@/utils/helpers/api';

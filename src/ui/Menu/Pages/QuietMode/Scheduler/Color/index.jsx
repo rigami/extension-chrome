@@ -9,11 +9,11 @@ import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { BG_CHANGE_INTERVAL, BG_SELECT_MODE } from '@/enum';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import colors from '@/config/colors';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import gradientsLibraryPage, { ColorPreview } from './Library';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 
 const useStyles = makeStyles((theme) => ({
     grid: { width: '100%' },
@@ -22,12 +22,12 @@ const useStyles = makeStyles((theme) => ({
 
 function Gradient({ onSelect }) {
     const classes = useStyles();
-    const { backgrounds } = useAppStateService();
+    const { wallpapersService } = useAppStateService();
     const { t } = useTranslation(['settingsQuietMode', 'background']);
     const coreService = useCoreService();
 
     return (
-        <Collapse in={backgrounds.settings.kind === BG_SELECT_MODE.COLOR} unmountOnExit>
+        <Collapse in={wallpapersService.settings.kind === BG_SELECT_MODE.COLOR} unmountOnExit>
             <MenuRow
                 description={t(`kind.value.${BG_SELECT_MODE.COLOR}`, { context: 'description' })}
             />
@@ -37,8 +37,8 @@ function Gradient({ onSelect }) {
                 action={{
                     type: ROWS_TYPE.SELECT,
                     format: (value) => t(`changeInterval.value.${value}`),
-                    value: backgrounds.settings.changeInterval,
-                    onChange: (event) => backgrounds.settings.update({ changeInterval: event.target.value }),
+                    value: wallpapersService.settings.changeInterval,
+                    onChange: (event) => wallpapersService.settings.update({ changeInterval: event.target.value }),
                     values: [
                         BG_CHANGE_INTERVAL.NEVER,
                         BG_CHANGE_INTERVAL.OPEN_TAB,
@@ -65,7 +65,7 @@ function Gradient({ onSelect }) {
                                 name={color.name}
                                 contrastColor={color.contrastColor}
                                 colors={color.colors}
-                                select={coreService.storage.persistent.data.bgCurrent?.id === color.id}
+                                select={coreService.storage.data.bgCurrent?.id === color.id}
                                 onSet={() => {
                                     eventToBackground('wallpapers/set', {
                                         kind: 'color',

@@ -1,4 +1,4 @@
-import { PersistentStorage } from '@/stores/universal/storage';
+import PersistentStorage from './persistent';
 
 const authStorage = new PersistentStorage(
     'auth',

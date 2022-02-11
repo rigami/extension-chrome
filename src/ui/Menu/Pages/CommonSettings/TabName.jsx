@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import TabNameExampleImage from '@/images/tabName.svg';
-import useAppService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 
 const useStyles = makeStyles((theme) => ({
     row: { padding: `${theme.spacing(1)}px ${theme.spacing(2)}px` },
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 const headerProps = { title: 'settingsCommon:tabName.title' };
 
 function TabName() {
-    const appService = useAppService();
+    const appStateService = useAppStateService();
     const { t } = useTranslation(['settingsCommon']);
     const classes = useStyles();
 
@@ -53,7 +53,7 @@ function TabName() {
                     }}
                     className={classes.siteName}
                 >
-                    {appService.settings.tabName}
+                    {appStateService.settings.tabName}
                 </span>
             </Box>
             <Box className={classes.row}>
@@ -66,10 +66,10 @@ function TabName() {
                     variant="outlined"
                     fullWidth
                     placeholder={t('tabName.emptyName', { context: 'placeholder' })}
-                    defaultValue={appService.settings.tabName}
+                    defaultValue={appStateService.settings.tabName}
                     onChange={(event) => {
                         document.title = event.target.value || '\u200E';
-                        appService.settings.update({ tabName: event.target.value });
+                        appStateService.settings.update({ tabName: event.target.value });
                     }}
                 />
             </Box>

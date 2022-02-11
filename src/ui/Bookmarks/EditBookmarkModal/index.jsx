@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 
 function EditBookmarkModal() {
     const coreService = useCoreService();

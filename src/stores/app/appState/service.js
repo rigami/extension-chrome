@@ -1,18 +1,20 @@
 import { action, makeAutoObservable } from 'mobx';
-import { AppSettings } from '@/stores/universal/settings';
-import WidgetsService from '@/stores/app/widgets';
-import BackgroundsService from '@/stores/app/backgrounds';
+import AppSettings from '@/stores/universal/settings/app';
+import WidgetsService from '@/stores/app/widgetsService';
+import WallpapersService from '@/stores/app/wallpapersService';
 import { ACTIVITY, SERVICE_STATE } from '@/enum';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
-import { PersistentStorage } from '@/stores/universal/storage';
+import PersistentStorage from '@/stores/universal/storage/persistent';
+import DesktopService from '@/stores/app/desktopService';
 
-class AppState {
+class AppStateService {
     coreService;
     activity = ACTIVITY.DESKTOP;
     settings;
     cloudSync;
-    widgets;
-    backgrounds;
+    widgetsService;
+    wallpapersService;
+    desktopService;
     state = SERVICE_STATE.WAIT;
 
     constructor({ coreService }) {
@@ -20,8 +22,9 @@ class AppState {
         this.coreService = coreService;
         this.settings = new AppSettings();
         this.cloudSync = new PersistentStorage('cloudSync', (currState) => ({ ...(currState || {}) }));
-        this.widgets = new WidgetsService(coreService);
-        this.backgrounds = new BackgroundsService(coreService);
+        this.widgetsService = new WidgetsService(coreService);
+        this.wallpapersService = new WallpapersService(coreService);
+        this.desktopService = new DesktopService(coreService);
 
         this.subscribe();
     }
@@ -64,8 +67,8 @@ class AppState {
         this.state = SERVICE_STATE.INSTALL;
         await awaitInstallStorage(this.cloudSync);
         await awaitInstallStorage(this.settings);
-        await awaitInstallStorage(this.widgets.settings);
-        await awaitInstallStorage(this.backgrounds.settings);
+        await awaitInstallStorage(this.widgetsService.settings);
+        await awaitInstallStorage(this.wallpapersService.settings);
 
         this.activity = this.settings.defaultActivity || ACTIVITY.DESKTOP;
         this.state = SERVICE_STATE.DONE;
@@ -74,4 +77,4 @@ class AppState {
     }
 }
 
-export default AppState;
+export default AppStateService;

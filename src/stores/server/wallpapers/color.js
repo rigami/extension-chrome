@@ -12,7 +12,7 @@ class ColorWallpapersService {
     constructor(core) {
         makeAutoObservable(this);
         this.core = core;
-        this.storage = this.core.storage.persistent;
+        this.storage = this.core.storage;
         this.settings = this.core.settingsService.backgrounds;
     }
 

@@ -13,11 +13,11 @@ import {
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { runInAction } from 'mobx';
 import { makeStyles } from '@material-ui/core/styles';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { FETCH } from '@/enum';
 import api from '@/utils/helpers/api';
-import authStorage from '@/stores/universal/AuthStorage';
+import authStorage from '@/stores/universal/storage/auth';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 
 const useStyles = makeStyles((theme) => ({
@@ -55,7 +55,7 @@ const { format: format24 } = new Intl.DateTimeFormat(getI18n()?.language, {
 function Device({ type, lastActivityDate, current = false, onClick }) {
     const classes = useStyles();
     const { t } = useTranslation(['settingsSync']);
-    const { widgets } = useAppStateService();
+    const { widgetsService } = useAppStateService();
 
     return (
         <MenuRow
@@ -69,7 +69,7 @@ function Device({ type, lastActivityDate, current = false, onClick }) {
                             <Typography variant="body2">
                                 {
                                     lastActivityDate
-                                        ? (widgets.settings.dtwTimeFormat12 ? format12 : format24)(new Date(lastActivityDate))
+                                        ? (widgetsService.settings.dtwTimeFormat12 ? format12 : format24)(new Date(lastActivityDate))
                                         : t('syncDevices.notSynced')
                                 }
                             </Typography>
@@ -91,7 +91,7 @@ function Device({ type, lastActivityDate, current = false, onClick }) {
 function LinkedDevices() {
     const classes = useStyles();
     const { t } = useTranslation(['settingsSync']);
-    const { widgets } = useAppStateService();
+    const { widgetsService } = useAppStateService();
     const store = useLocalObservable(() => ({
         status: FETCH.WAIT,
         currentDevice: null,
@@ -262,7 +262,7 @@ function LinkedDevices() {
                                     <br />
                                     {
                                         device.createDate
-                                            ? (widgets.settings.dtwTimeFormat12 ? format12 : format24)(new Date(device.createDate))
+                                            ? (widgetsService.settings.dtwTimeFormat12 ? format12 : format24)(new Date(device.createDate))
                                             : '-'
                                     }
                                     <br />

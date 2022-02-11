@@ -1,17 +1,16 @@
 import { action, makeAutoObservable, reaction } from 'mobx';
 import { BKMS_FAP_STYLE, DESTINATION } from '@/enum';
-import { BookmarksSettings } from '@/stores/universal/settings';
+import WorkingSpaceSettings from '@/stores/universal/settings/workingSpace';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import TagsStore from './tags';
 import FoldersStore from './folders';
 import BookmarksStore from './bookmarks';
 
-class BookmarksService {
+class WorkingSpaceService {
     tags;
     bookmarks;
     folders;
     favorites = [];
-    fapIsDisplay;
     _coreService;
     settings;
 
@@ -21,54 +20,44 @@ class BookmarksService {
         this.tags = new TagsStore(coreService, this);
         this.folders = new FoldersStore(coreService, this);
         this.bookmarks = new BookmarksStore(coreService, this);
-        this.settings = new BookmarksSettings();
+        this.settings = new WorkingSpaceSettings();
 
         if (!this._coreService) return;
 
         this.syncFavorites();
 
         this._coreService.globalEventBus.on('bookmark/new', () => {
-            this._coreService.storage.persistent.update({ bkmsLastTruthSearchTimestamp: Date.now() });
+            this._coreService.storage.update({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
         this._coreService.globalEventBus.on('bookmark/removed', async () => {
-            this._coreService.storage.persistent.update({ bkmsLastTruthSearchTimestamp: Date.now() });
+            this._coreService.storage.update({ bkmsLastTruthSearchTimestamp: Date.now() });
             await this.syncFavorites();
         });
         this._coreService.globalEventBus.on('tag/new', async () => {
-            this._coreService.storage.persistent.update({ bkmsLastTruthSearchTimestamp: Date.now() });
+            this._coreService.storage.update({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
         this._coreService.globalEventBus.on('tag/removed', async () => {
-            this._coreService.storage.persistent.update({ bkmsLastTruthSearchTimestamp: Date.now() });
+            this._coreService.storage.update({ bkmsLastTruthSearchTimestamp: Date.now() });
 
             await this.syncFavorites();
         });
         this._coreService.globalEventBus.on('folder/removed', async () => {
-            this._coreService.storage.persistent.update({ bkmsLastTruthSearchTimestamp: Date.now() });
+            this._coreService.storage.update({ bkmsLastTruthSearchTimestamp: Date.now() });
             await this.syncFavorites();
         });
         this._coreService.globalEventBus.on('folder/new', async () => {
-            this._coreService.storage.persistent.update({ bkmsLastTruthSearchTimestamp: Date.now() });
+            this._coreService.storage.update({ bkmsLastTruthSearchTimestamp: Date.now() });
         });
         this._coreService.globalEventBus.on('favorite/new', () => this.syncFavorites());
         this._coreService.globalEventBus.on('favorite/remove', () => this.syncFavorites());
-
-        reaction(
-            () => this.settings.fapStyle,
-            () => { this.fapIsDisplay = this.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && this.favorites.length; },
-        );
-
-        reaction(
-            () => this.favorites.length,
-            () => { this.fapIsDisplay = this.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN && this.favorites.length; },
-        );
     }
 
     get lastSearch() {
-        return this._coreService.storage.persistent.data.bkmsLastSearch;
+        return this._coreService.storage.data.bkmsLastSearch;
     }
 
     get lastTruthSearchTimestamp() {
-        return this._coreService.storage.persistent.data.bkmsLastTruthSearchTimestamp;
+        return this._coreService.storage.data.bkmsLastTruthSearchTimestamp;
     }
 
     @action('sync favorites')
@@ -105,4 +94,4 @@ class BookmarksService {
     }
 }
 
-export default BookmarksService;
+export default WorkingSpaceService;

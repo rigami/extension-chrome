@@ -3,15 +3,13 @@ import packageFile from '@/../package.json';
 import BrowserAPI from '@/utils/browserAPI';
 
 export default {
-    notifyNewVersion: false,
     extensionId: BrowserAPI.extensionId(),
     version: packageFile.version,
     db: {
         name: 'rigami',
         version: 10,
     },
-    storage: { version: 1 },
-    fs: { root: `chrome-extension://${BrowserAPI.extensionId()}/persistent/` },
+    storage: { version: 2 },
     rest: {
         url: PRODUCTION_MODE || PRODUCTION_ENV
             ? 'https://api.rigami.io'

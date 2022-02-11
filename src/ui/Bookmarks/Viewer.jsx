@@ -7,17 +7,17 @@ import { useResizeDetector } from 'react-resize-detector';
 import FoldersPanel from '@/ui/Bookmarks/FoldersPanel';
 import ToolsPanel from '@/ui/Bookmarks/ToolsPanel';
 import Scrollbar from '@/ui-components/CustomScroll';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useContextMenu } from '@/stores/app/ContextMenuProvider';
 import PrimaryContent from '@/ui/Bookmarks/PrimaryContent';
 import SecondaryContent from '@/ui/Bookmarks/SecondaryContent';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import { SearchServiceProvider, useSearchService } from '@/ui/Bookmarks/searchProvider';
 import GreetingView from '@/ui/Bookmarks/GreetingView';
-import { APP_STATE } from '@/stores/app/core';
+import { APP_STATE } from '@/stores/app/core/service';
 import FirstLookScreen from '@/ui/FirstLookScreen';
 
 const useStyles = makeStyles((theme) => ({

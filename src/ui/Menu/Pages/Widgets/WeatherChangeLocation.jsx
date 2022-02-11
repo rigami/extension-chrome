@@ -19,7 +19,7 @@ import { round } from 'lodash';
 import { runInAction } from 'mobx';
 import { useSnackbar } from 'notistack';
 import { captureException } from '@sentry/react';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import Stub from '@/ui-components/Stub';
 import {
     NearMeDisabledRounded as CustomLocationIcon,
@@ -27,7 +27,7 @@ import {
 } from '@/icons';
 import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 
 const useStyles = makeStyles((theme) => ({
     row: {
@@ -56,14 +56,14 @@ const useStyles = makeStyles((theme) => ({
 function HeaderActions() {
     const classes = useStyles();
     const { t } = useTranslation(['settingsWidget']);
-    const { widgets } = useAppStateService();
+    const { widgetsService } = useAppStateService();
     const coreService = useCoreService();
     const { enqueueSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
 
     const isAuto = (
-        coreService.storage.persistent.data.location
-        && !coreService.storage.persistent.data.location?.manual
+        coreService.storage.data.location
+        && !coreService.storage.data.location?.manual
     );
 
     return (
@@ -84,7 +84,7 @@ function HeaderActions() {
                                 coreService.localEventBus.call('system/widgets/weather/focusManualSearchInput');
                             } else {
                                 setLoading(true);
-                                widgets.autoDetectLocationAndUpdateWeather()
+                                widgetsService.autoDetectLocationAndUpdateWeather()
                                     .catch((e) => {
                                         captureException(e);
                                         console.error(e);
@@ -126,15 +126,15 @@ function Location(props) {
         onClick,
     } = props;
     const classes = useStyles();
-    const { widgets } = useAppStateService();
+    const { widgetsService } = useAppStateService();
 
     let units;
     let temp;
 
-    if (widgets.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.FAHRENHEIT) {
+    if (widgetsService.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.FAHRENHEIT) {
         units = '°F';
         temp = ((currTemp || 0) - 273.15) * (9 / 5) + 32;
-    } else if (widgets.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.KELVIN) {
+    } else if (widgetsService.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.KELVIN) {
         units = 'К';
         temp = currTemp || 0;
     } else {
@@ -159,10 +159,10 @@ function Location(props) {
 function WeatherChangeLocation({ onClose }) {
     const classes = useStyles();
     const { t } = useTranslation(['settingsWidget']);
-    const { widgets } = useAppStateService();
+    const { widgetsService } = useAppStateService();
     const coreService = useCoreService();
     const store = useLocalObservable(() => ({
-        searchRequest: coreService.storage.persistent.data.location?.name,
+        searchRequest: coreService.storage.data.location?.name,
         list: [],
         status: FETCH.WAIT,
     }));
@@ -174,7 +174,7 @@ function WeatherChangeLocation({ onClose }) {
         store.status = FETCH.PENDING;
 
         try {
-            const list = await widgets.searchLocation(store.searchRequest);
+            const list = await widgetsService.searchLocation(store.searchRequest);
 
             runInAction(() => {
                 store.list = list;
@@ -206,7 +206,7 @@ function WeatherChangeLocation({ onClose }) {
                     fullWidth
                     inputRef={inputRef}
                     className={classes.input}
-                    placeholder={coreService.storage.persistent.data.location?.name}
+                    placeholder={coreService.storage.data.location?.name}
                     variant="outlined"
                     autoFocus
                     onChange={(event) => {
@@ -233,7 +233,7 @@ function WeatherChangeLocation({ onClose }) {
                     latitude={item.location.latitude}
                     longitude={item.location.longitude}
                     onClick={() => {
-                        widgets.setLocation(item.location);
+                        widgetsService.setLocation(item.location);
                         onClose();
                     }}
                 />
@@ -251,33 +251,33 @@ function WeatherChangeLocation({ onClose }) {
                     description={t('weather.region.search.error.failed', { context: 'description' })}
                 />
             )}
-            {store.status === FETCH.WAIT && !coreService.storage.persistent.data.location && (
+            {store.status === FETCH.WAIT && !coreService.storage.data.location && (
                 <Stub
                     icon={WrongLocationIcon}
                     message={t('weather.region.search.wait.failed')}
                     description={t('weather.region.search.wait.failed', { context: 'description' })}
                 />
             )}
-            {store.status === FETCH.WAIT && coreService.storage.persistent.data.location?.manual && (
+            {store.status === FETCH.WAIT && coreService.storage.data.location?.manual && (
                 <Stub
                     icon={PlaceIcon}
                     message={t(
                         'weather.region.search.wait.manual',
-                        { locationName: coreService.storage.persistent.data.location?.name },
+                        { locationName: coreService.storage.data.location?.name },
                     )}
                     description={t('weather.region.search.wait.manual', { context: 'description' })}
                 />
             )}
             {
                 store.status === FETCH.WAIT
-                && coreService.storage.persistent.data.location
-                && !coreService.storage.persistent.data.location?.manual
+                && coreService.storage.data.location
+                && !coreService.storage.data.location?.manual
                 && (
                     <Stub
                         icon={MyLocationIcon}
                         message={t(
                             'weather.region.search.wait.auto',
-                            { locationName: coreService.storage.persistent.data.location?.name },
+                            { locationName: coreService.storage.data.location?.name },
                         )}
                         description={t('weather.region.search.wait.auto', { context: 'description' })}
                     />

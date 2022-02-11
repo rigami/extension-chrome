@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import clsx from 'clsx';
-import useAppService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import { CLOUD_SYNC } from '@/enum';
 import SyncFailedIcon from '@/icons/resources/sync_problem_black_24px.svg';
 import SyncProcessIcon from '@/icons/resources/sync_process_black_24px.svg';
@@ -91,8 +91,8 @@ function SyncFailed() {
 
 function CloudSync() {
     const classes = useStyles();
-    const appService = useAppService();
-    const { cloudSync } = appService;
+    const appStateService = useAppStateService();
+    const { cloudSync } = appStateService;
     const store = useLocalObservable(() => ({
         isShow: false,
         firstRender: true,

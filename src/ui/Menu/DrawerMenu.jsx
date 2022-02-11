@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { useTheme } from '@material-ui/styles';
 import Header from '@/ui/Menu/PageHeader';
 import Scrollbar from '@/ui-components/CustomScroll';
-import useAppService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import { ACTIVITY } from '@/enum';
 import backgroundsPage from './Pages/QuietMode';
 import MenuList from './Pages';
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 function Menu({ open, onClose }) {
     const classes = useStyles();
     const theme = useTheme();
-    const appService = useAppService();
+    const appStateService = useAppStateService();
     const [stack, setStack] = useState([backgroundsPage]);
 
     const handleBack = () => {
@@ -84,7 +84,7 @@ function Menu({ open, onClose }) {
                 open={open}
                 onClick={onClose}
                 invisible
-                className={clsx(classes.backdrop, appService.activity !== ACTIVITY.DESKTOP && classes.darkBackdrop)}
+                className={clsx(classes.backdrop, appStateService.activity !== ACTIVITY.DESKTOP && classes.darkBackdrop)}
             />
             <Slide
                 in={open}

@@ -1,38 +1,16 @@
 import {
     action,
     computed,
-    makeAutoObservable,
     makeObservable,
     observable,
-    runInAction, toJS,
+    runInAction,
+    toJS,
 } from 'mobx';
 import { assign, throttle } from 'lodash';
 import { captureException } from '@sentry/browser';
-import BrowserAPI from '@/utils/browserAPI';
 import { SERVICE_STATE } from '@/enum';
-
-class StorageConnector {
-    static async get(keyOrKeys) {
-        console.log('[StorageConnector] Get item:', keyOrKeys);
-
-        return new Promise((resolve) => (
-            BrowserAPI.localStorage.get(keyOrKeys, (data) => resolve(data || {}))
-        ));
-    }
-
-    static async set(data) {
-        console.log('[StorageConnector] Set item:', data);
-        return new Promise((resolve) => BrowserAPI.localStorage.set(
-            JSON.parse(JSON.stringify(data)),
-            () => resolve(data),
-        ));
-    }
-
-    static async remove(keyOrKeys) {
-        console.log('[StorageConnector] Remove item:', keyOrKeys);
-        return new Promise((resolve) => BrowserAPI.localStorage.remove(keyOrKeys, resolve));
-    }
-}
+import BrowserAPI from '@/utils/browserAPI';
+import StorageConnector from './connector';
 
 class PersistentStorage {
     @observable _data = {};
@@ -126,39 +104,4 @@ class PersistentStorage {
     }
 }
 
-class TempStorage {
-    _data = {};
-
-    constructor() {
-        makeAutoObservable(this);
-    }
-
-    @computed
-    get data() {
-        return this._data;
-    }
-
-    @action.bound
-    update(changeData = {}) {
-        assign(this._data, changeData);
-    }
-}
-
-class Storage {
-    temp;
-    persistent;
-
-    constructor(namespace, upgrade) {
-        makeAutoObservable(this);
-        this.temp = new TempStorage();
-        this.persistent = new PersistentStorage(namespace, upgrade && (() => ({})));
-    }
-}
-
-export default Storage;
-
-export {
-    TempStorage,
-    PersistentStorage,
-    StorageConnector,
-};
+export default PersistentStorage;

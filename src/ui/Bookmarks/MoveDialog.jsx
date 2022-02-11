@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import PopperDialog, { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
 import { Button } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
+import { makeStyles } from '@material-ui/core/styles';
+import PopperDialog, { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
 import { DriveFileMoveFilled as MoveIcon } from '@/icons';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import Folders from '@/ui/Bookmarks/FoldersPanel/Folders';
-import { useTranslation } from 'react-i18next';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import { makeStyles } from '@material-ui/core/styles';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
+import { useCoreService } from '@/stores/app/core';
 
 const useStyles = makeStyles((theme) => ({
     dialog: {
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 function MoveDialog({ }) {
     const classes = useStyles();
     const { t } = useTranslation(['folder']);
-    const bookmarksStore = useBookmarksService();
+    const bookmarksStore = useWorkingSpaceService();
     const coreService = useCoreService();
     const [open, setOpen] = useState(false);
     const [edit, setEdit] = useState(null);

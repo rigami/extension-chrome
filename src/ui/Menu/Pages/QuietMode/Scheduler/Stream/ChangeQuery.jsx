@@ -21,10 +21,10 @@ import { runInAction } from 'mobx';
 import { captureException } from '@sentry/react';
 import { BG_SOURCE, BG_TYPE, FETCH } from '@/enum';
 import Stub from '@/ui-components/Stub';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import fetchData from '@/utils/helpers/fetchData';
-import appVariables from '@/config/appVariables';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import appVariables from '@/config/config';
+import { useAppStateService } from '@/stores/app/appState';
 import BackgroundCard from '@/ui/Menu/Pages/QuietMode/BackgroundCard';
 import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
@@ -83,14 +83,14 @@ const pageProps = { width: 960 };
 
 function BackgroundPreview({ bg, isAdded = false }) {
     const coreService = useCoreService();
-    const { backgrounds } = useAppStateService();
+    const { wallpapersService } = useAppStateService();
     const [isLoaded, setIsLoaded] = useState(isAdded);
 
     return (
         <BackgroundCard
             {...bg}
-            select={coreService.storage.persistent.data.bgCurrent?.id === bg.id}
-            onSet={() => backgrounds.setBG(bg)}
+            select={coreService.storage.data.bgCurrent?.id === bg.id}
+            onSet={() => wallpapersService.setWallpaper(bg)}
             onAdd={!isLoaded && (() => {
                 setIsLoaded(true);
                 WallpapersUniversalService.addToLibrary(bg);
@@ -103,11 +103,11 @@ function ChangeQuery({ onClose }) {
     const classes = useStyles();
     const { t } = useTranslation(['settingsQuietMode']);
     const coreService = useCoreService();
-    const { backgrounds } = useAppStateService();
+    const { wallpapersService } = useAppStateService();
     const store = useLocalObservable(() => ({
-        searchRequest: coreService.storage.persistent.data.wallpapersStreamQuery?.type !== 'collection'
-            && coreService.storage.persistent.data.wallpapersStreamQuery?.type !== 'saved-only'
-            ? coreService.storage.persistent.data.wallpapersStreamQuery?.value
+        searchRequest: coreService.storage.data.wallpapersStreamQuery?.type !== 'collection'
+            && coreService.storage.data.wallpapersStreamQuery?.type !== 'saved-only'
+            ? coreService.storage.data.wallpapersStreamQuery?.value
             : '',
         foundRequest: '',
         list: [],
@@ -128,13 +128,13 @@ function ChangeQuery({ onClose }) {
             let { response: list } = await api.get('wallpapers/search', {
                 query: {
                     count: 30,
-                    type: backgrounds.settings.type.join(',')
+                    type: wallpapersService.settings.type.join(',')
                         .toLowerCase(),
                     query: store.searchRequest,
                 },
             });
 
-            const allAdded = await backgrounds.getAll();
+            const allAdded = await wallpapersService.getAll();
 
             list = list.map((bg) => new Wallpaper({
                 ...bg,
@@ -160,7 +160,7 @@ function ChangeQuery({ onClose }) {
     };
 
     const handleSelect = () => {
-        coreService.storage.persistent.update({
+        coreService.storage.update({
             wallpapersStreamQuery: {
                 type: 'custom-query',
                 value: store.searchRequest,

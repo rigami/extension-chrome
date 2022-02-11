@@ -1,18 +1,19 @@
 import EventBus from '@/utils/eventBus';
 import BusService, { eventToApp, eventToPopup, initBus } from '@/stores/universal/serviceBus';
-import Storage, { StorageConnector } from '@/stores/universal/storage';
 import { DESTINATION } from '@/enum';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import FactorySettingsService from './factorySettingsService';
 import SyncChromeBookmarksService from './localSync/syncChromeBookmarksService';
 import CloudSyncService from './cloudSync';
-import authStorage from '@/stores/universal/AuthStorage';
+import authStorage from '@/stores/universal/storage/auth';
 import SettingsService from './settingsService';
 import LocalBackupService from './localBackup';
 import BookmarksService from './bookmarksService';
 import WeatherService from './weatherService';
 import WallpapersService from './wallpapers';
+import PersistentStorage from '@/stores/universal/storage/persistent';
+import StorageConnector from '@/stores/universal/storage/connector';
 
 class ServerApp {
     localBus;
@@ -22,7 +23,7 @@ class ServerApp {
     localBackupService;
     cloudSyncService;
     systemBookmarksService;
-    bookmarksService;
+    workingSpaceService;
     weatherService;
     wallpapersService;
     factorySettingsService;
@@ -54,24 +55,25 @@ class ServerApp {
             console.log('Require upgrade storage version from', storageVersion, 'to', appVariables.storage.version);
         }
 
-        this.storage = new Storage('storage', storageVersion < appVariables.storage.version);
+        this.storage = new PersistentStorage('storage');
         this.settingsService = new SettingsService(storageVersion < appVariables.storage.version);
 
         await StorageConnector.set({ storageVersion: appVariables.storage.version });
 
         await Promise.all([
-            this.storage.persistent,
+            this.storage,
             authStorage,
-            this.settingsService.settings,
-            this.settingsService.backgrounds,
+            this.settingsService.app,
+            this.settingsService.desktop,
+            this.settingsService.wallpapers,
             this.settingsService.widgets,
-            this.settingsService.bookmarks,
+            this.settingsService.workingSpace,
         ].map((storage) => awaitInstallStorage(storage)));
 
         console.log(
             'wallpapers storage state',
-            JSON.stringify(this.settingsService.backgrounds.type),
-            JSON.stringify(this.settingsService.backgrounds._data.type),
+            JSON.stringify(this.settingsService.wallpapers.type),
+            JSON.stringify(this.settingsService.wallpapers._data.type),
         );
     }
 
@@ -84,7 +86,7 @@ class ServerApp {
         console.timeEnd('Starting server time');
 
         // Bookmarks
-        if (BUILD === 'full') { this.bookmarksService = new BookmarksService(this); }
+        if (BUILD === 'full') { this.workingSpaceService = new BookmarksService(this); }
 
         // Weather
         this.weatherService = new WeatherService(this);

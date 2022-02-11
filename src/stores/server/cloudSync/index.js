@@ -1,7 +1,7 @@
 import { makeAutoObservable, when } from 'mobx';
 import api from '@/utils/helpers/api';
-import authStorage from '@/stores/universal/AuthStorage';
-import { PersistentStorage } from '@/stores/universal/storage';
+import authStorage from '@/stores/universal/storage/auth';
+import PersistentStorage from '@/stores/universal/storage/persistent';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import { setAwaitInterval, stopAwaitInterval } from '@/utils/helpers/setAwaitInterval';
 import CloudSyncBookmarksService from './bookmarks';

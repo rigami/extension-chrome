@@ -21,13 +21,13 @@ import {
     BG_SHOW_MODE,
 } from '@/enum';
 import Stub from '@/ui-components/Stub';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import BackgroundEntity from '@/stores/universal/wallpapers/entities/wallpaper';
 import WallpaperInfo from '@/ui/Desktop/WallpaperInfo';
 import { eventToBackground } from '@/stores/universal/serviceBus';
-import useAppService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
-import WallpaperService from '@/ui/Desktop/wallpaperService';
+import WallpaperSwitchService from '@/ui/Desktop/wallpaperSwitchService';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -190,8 +190,8 @@ function ItemStack(props) {
 function Wallpaper({ service }) {
     const classes = useStyles();
     const theme = useTheme();
-    const appService = useAppService();
-    const { backgrounds } = appService;
+    const appStateService = useAppStateService();
+    const { wallpapersService } = appStateService;
     const coreService = useCoreService();
     const store = useLocalObservable(() => ({
         stack: [],
@@ -208,7 +208,7 @@ function Wallpaper({ service }) {
     return (
         <Box className={classes.root}>
             {
-                appService.activity !== ACTIVITY.FAVORITES
+                appStateService.activity !== ACTIVITY.FAVORITES
                 && service.current
                 && service.current.source !== BG_SOURCE.USER
                 && service.current.kind === 'media'
@@ -253,7 +253,7 @@ function Wallpaper({ service }) {
             {store.stateLoadBg !== FETCH.FAILED && (
                 <div
                     className={classes.dimmingSurface}
-                    style={{ opacity: backgrounds.settings.dimmingPower / 100 || 0 }}
+                    style={{ opacity: wallpapersService.settings.dimmingPower / 100 || 0 }}
                 />
             )}
         </Box>

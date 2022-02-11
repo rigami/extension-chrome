@@ -2,7 +2,7 @@ import { openDB } from 'idb/with-async-ittr.js';
 import dbConfig from '@/config/db';
 import { SERVICE_STATE } from '@/enum';
 import forceCrash from '@/utils/helpers/forceCrash';
-import appVariables from '../config/appVariables';
+import appVariables from '../config/config';
 
 let _db = null;
 const openAwaitRequests = [];

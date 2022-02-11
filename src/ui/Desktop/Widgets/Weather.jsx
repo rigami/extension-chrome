@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'lodash';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 function WeatherWidget() {
     const classes = useStyles();
     const { t } = useTranslation(['desktop']);
-    const { widgets } = useAppStateService();
+    const { widgetsService } = useAppStateService();
 
     useEffect(() => {
         eventToBackground('widgets/weather/update');
@@ -42,38 +42,38 @@ function WeatherWidget() {
     let units;
     let temp;
 
-    if (widgets.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.FAHRENHEIT) {
+    if (widgetsService.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.FAHRENHEIT) {
         units = '°';
-        temp = ((widgets.weather?.currTemp || 0) - 273.15) * (9 / 5) + 32;
-    } else if (widgets.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.KELVIN) {
+        temp = ((widgetsService.weather?.currTemp || 0) - 273.15) * (9 / 5) + 32;
+    } else if (widgetsService.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.KELVIN) {
         units = 'К';
-        temp = widgets.weather?.currTemp || 0;
+        temp = widgetsService.weather?.currTemp || 0;
     } else {
         units = '°';
-        temp = (widgets.weather?.currTemp || 0) - 273.15;
+        temp = (widgetsService.weather?.currTemp || 0) - 273.15;
     }
 
     return (
-        <Fade in={widgets.showWeather}>
+        <Fade in={widgetsService.showWeather}>
             <Tooltip title={t('widget.weather.button.openInNewTab')}>
                 <span className={classes.root}>
                     <Link
-                        href={widgets.settings.dtwWeatherAction || widgets.weather?.dashboardUrl}
+                        href={widgetsService.settings.dtwWeatherAction || widgetsService.weather?.dashboardUrl}
                         target="_blank"
                         underline="none"
                         color="inherit"
                         className={classes.link}
                     >
-                        {widgets.weather?.status === FETCH.PENDING && (
+                        {widgetsService.weather?.status === FETCH.PENDING && (
                             <CircularProgress className={classes.loader} size={15} />
                         )}
                         {
-                            widgets.weather?.currTemp
+                            widgetsService.weather?.currTemp
                                 ? `${Math.round(temp)} ${units}`
                                 : t('widget.weather.error.unavailable')
                         }
-                        {widgets.weather?.currTempDescription && (
-                            <span className={classes.description}>{capitalize(widgets.weather?.currTempDescription)}</span>
+                        {widgetsService.weather?.currTempDescription && (
+                            <span className={classes.description}>{capitalize(widgetsService.weather?.currTempDescription)}</span>
                         )}
                     </Link>
                 </span>

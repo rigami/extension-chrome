@@ -10,10 +10,10 @@ import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 import { FETCH } from '@/enum';
 import asyncAction from '@/utils/helpers/asyncAction';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useContextMenu } from '@/stores/app/ContextMenuProvider';
 import { FIRST_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
@@ -153,7 +153,7 @@ function SecondaryContent({ columns }) {
         anchorEl: null,
         state: FETCH.WAIT,
     }));
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
 
     useEffect(() => {
         store.state = FETCH.PENDING;
@@ -171,7 +171,7 @@ function SecondaryContent({ columns }) {
             captureException(error);
             store.state = FETCH.FAILED;
         });
-    }, [searchService.selectFolderId, bookmarksService.lastTruthSearchTimestamp]);
+    }, [searchService.selectFolderId, workingSpaceService.lastTruthSearchTimestamp]);
 
     if (store.state === FETCH.FAILED) {
         return 'Что то пошло не так';

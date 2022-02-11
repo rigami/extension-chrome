@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useAppStateService from '@/stores/app/AppStateProvider';
-import SectionHeader from '@/ui/Menu/SectionHeader';
-import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import {
     Button,
     Collapse,
@@ -13,9 +10,12 @@ import {
     TextField,
     Typography,
 } from '@material-ui/core';
-import { getDomain } from '@/utils/localSiteParse';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
+import { useAppStateService } from '@/stores/app/appState';
+import SectionHeader from '@/ui/Menu/SectionHeader';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
+import { getDomain } from '@/utils/localSiteParse';
 
 const useStyles = makeStyles((theme) => ({
     notSetValue: {
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 function DateWidget() {
     const classes = useStyles();
     const { t } = useTranslation(['settingsWidget']);
-    const { widgets } = useAppStateService();
+    const { widgetsService } = useAppStateService();
     const [actionEditorOpen, setActionEditorOpen] = useState(false);
     const [actionUrl, setActionUrl] = useState('');
 
@@ -38,21 +38,21 @@ function DateWidget() {
                 title={t('date.useDate')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
-                    value: widgets.settings.dtwUseDate,
+                    value: widgetsService.settings.useDate,
                     onChange: (event, value) => {
-                        widgets.settings.update({ dtwUseDate: value });
+                        widgetsService.settings.update({ useDate: value });
                     },
                 }}
             />
-            <Collapse in={widgets.settings.dtwUseDate}>
+            <Collapse in={widgetsService.settings.useDate}>
                 <MenuRow
                     title={t('date.clickAction.title')}
                     description={t('date.clickAction.description')}
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => { setActionEditorOpen(true); },
-                        component: widgets.settings.dtwDateAction
-                            ? `open: ${getDomain(widgets.settings.dtwDateAction)}`
+                        component: widgetsService.settings.dateAction
+                            ? `open: ${getDomain(widgetsService.settings.dateAction)}`
                             : (
                                 <Typography className={classes.notSetValue}>
                                     {t('common:notSet')}
@@ -69,7 +69,7 @@ function DateWidget() {
                         <TextField
                             autoFocus
                             margin="dense"
-                            defaultValue={widgets.settings.dtwDateAction}
+                            defaultValue={widgetsService.settings.dateAction}
                             fullWidth
                             label={t('date.clickAction.dialog.url')}
                             onChange={(event) => { setActionUrl(event.target.value); }}
@@ -88,7 +88,7 @@ function DateWidget() {
                             color="primary"
                             onClick={() => {
                                 setActionEditorOpen(false);
-                                widgets.settings.update({ dtwDateAction: actionUrl });
+                                widgetsService.settings.update({ dateAction: actionUrl });
                             }}
                         >
                             {t('common:button.save')}

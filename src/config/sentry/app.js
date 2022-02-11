@@ -1,7 +1,7 @@
 import { init, setTag, setUser } from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import packageFile from '@/../package.json';
-import { StorageConnector } from '@/stores/universal/storage';
+import StorageConnector from '@/stores/universal/storage/connector';
 
 const beforeBreadcrumb = (breadcrumb, hint) => {
     if (breadcrumb.category === 'ui.click') {

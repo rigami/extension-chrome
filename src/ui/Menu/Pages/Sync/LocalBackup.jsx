@@ -15,7 +15,7 @@ import { captureException } from '@sentry/react';
 import { SaveAltRounded as SaveIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import { eventToApp, eventToBackground } from '@/stores/universal/serviceBus';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import SectionHeader from '@/ui/Menu/SectionHeader';

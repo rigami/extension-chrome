@@ -5,7 +5,7 @@ import db from '@/utils/db';
 import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import { search as searchLight } from '@/stores/universal/bookmarks/search';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import getPreview from '@/utils/createPreview';
 import { BG_TYPE } from '@/enum';
 import { uuid } from '@/utils/generate/uuid';

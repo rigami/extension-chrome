@@ -8,8 +8,8 @@ import { alpha, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import Widgets from './Widgets';
 import Greeting from './Greeting';
-import useAppService from '@/stores/app/AppStateProvider';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
+import { useCoreService } from '@/stores/app/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,10 +35,10 @@ const useStyles = makeStyles((theme) => ({
 function GreetingView() {
     const classes = useStyles();
     const coreService = useCoreService();
-    const { widgets } = useAppService();
+    const { widgetsService } = useAppStateService();
 
-    const greeting = coreService.storage.persistent.data.userName;
-    const date = widgets.settings.dtwUseTime || widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather;
+    const greeting = coreService.storage.data.userName;
+    const date = widgetsService.settings.useTime || widgetsService.settings.useDate || widgetsService.settings.useWeather;
 
     if (!greeting && !date) return null;
 

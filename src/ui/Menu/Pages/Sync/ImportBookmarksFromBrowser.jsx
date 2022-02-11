@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import React, { useState } from 'react';
-import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { Button } from '@material-ui/core';
-import { eventToBackground } from '@/stores/universal/serviceBus';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
+import { eventToBackground } from '@/stores/universal/serviceBus';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
+import { useCoreService } from '@/stores/app/core';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 
 const useStyles = makeStyles(() => ({
@@ -38,7 +38,7 @@ function BrowserSync() {
                             eventToBackground('system/importSystemBookmarks', {}, () => {
                                 console.log('FINISH SYNC!');
                                 setSyncing(false);
-                                coreService.storage.persistent.update({ bkmsLastTruthSearchTimestamp: Date.now() });
+                                coreService.storage.update({ bkmsLastTruthSearchTimestamp: Date.now() });
                             });
                         }}
                     >

@@ -1,7 +1,7 @@
 import { action, makeAutoObservable } from 'mobx';
+import { captureException } from '@sentry/react';
 import { DESTINATION } from '@/enum';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import { captureException } from '@sentry/react';
 
 class BookmarksStore {
     _coreService;
@@ -15,7 +15,7 @@ class BookmarksStore {
 
     @action('query bookmarks')
     async query(searchQuery = {}) {
-        this._coreService.storage.persistent.update({ bkmsLastSearch: searchQuery });
+        this._coreService.storage.update({ bkmsLastSearch: searchQuery });
 
         return BookmarksUniversalService.query(searchQuery);
     }

@@ -2,14 +2,14 @@ import { makeAutoObservable } from 'mobx';
 import { first } from 'lodash';
 import db from '@/utils/db';
 import fetchData from '@/utils/helpers/fetchData';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
-import { PREPARE_PROGRESS } from '@/stores/app/core';
+import { PREPARE_PROGRESS } from '@/stores/app/core/service';
 import { eventToApp } from '@/stores/universal/serviceBus';
 import api from '@/utils/helpers/api';
-import authStorage from '@/stores/universal/AuthStorage';
+import authStorage from '@/stores/universal/storage/auth';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 import timeout from '@/utils/helpers/timeout';
@@ -21,7 +21,7 @@ class FactorySettingsService {
     constructor(core) {
         makeAutoObservable(this);
         this.core = core;
-        this.storage = this.core.storage.persistent;
+        this.storage = this.core.storage;
 
         this.subscribe();
     }

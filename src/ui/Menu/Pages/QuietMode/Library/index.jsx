@@ -13,8 +13,8 @@ import { last } from 'lodash';
 import { captureException } from '@sentry/react';
 import { PhotoLibraryRounded as EmptyLibraryIcon } from '@material-ui/icons';
 import Stub from '@/ui-components/Stub';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import { useCoreService } from '@/stores/app/core';
+import { useAppStateService } from '@/stores/app/appState';
 import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import BackgroundCard from '@/ui/Menu/Pages/QuietMode/BackgroundCard';
 import { FETCH } from '@/enum';
@@ -50,7 +50,7 @@ function HeaderActions() {
 }
 
 function LibraryMenu() {
-    const { backgrounds } = useAppStateService();
+    const { wallpapersService } = useAppStateService();
     const coreService = useCoreService();
     const { t } = useTranslation(['settingsQuietMode', 'background']);
     const classes = useStyles();
@@ -59,7 +59,7 @@ function LibraryMenu() {
     const [state, setState] = useState(FETCH.PENDING);
 
     const fetchBackgrounds = () => {
-        backgrounds.getAll()
+        wallpapersService.getAll()
             .then((values) => {
                 console.log('getAll', values);
                 const groups = values.reduce((acc, bg) => {
@@ -138,7 +138,7 @@ function LibraryMenu() {
                                     <ImageListItem key={bg.id}>
                                         <BackgroundCard
                                             {...bg}
-                                            select={coreService.storage.persistent.data.bgCurrent?.id === bg.id}
+                                            select={coreService.storage.data.bgCurrent?.id === bg.id}
                                             onSet={() => {
                                                 eventToBackground('wallpapers/set', {
                                                     kind: 'media',

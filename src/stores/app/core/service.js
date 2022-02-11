@@ -1,5 +1,3 @@
-import BusService, { initBus } from '@/stores/universal/serviceBus';
-import { DESTINATION } from '@/enum';
 import {
     makeAutoObservable,
     runInAction,
@@ -9,12 +7,16 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import { captureException } from '@sentry/react';
+import { DESTINATION } from '@/enum';
+import BusService, { initBus } from '@/stores/universal/serviceBus';
 import BrowserAPI from '@/utils/browserAPI';
-import Storage, { StorageConnector } from '@/stores/universal/storage';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import forceCrash from '@/utils/helpers/forceCrash';
-import packageJson from '@/../package.json';
-import localEventBus from '@/stores/app/localEventBus';
+import packageJson from '../../../../package.json';
+import localEventBus from '@/utils/localEventBus';
+import PersistentStorage from '@/stores/universal/storage/persistent';
+import StorageConnector from '@/stores/universal/storage/connector';
+import TempStorage from '@/stores/universal/storage/temp';
 
 const APP_STATE = {
     WAIT: 'WAIT',
@@ -35,7 +37,7 @@ const PREPARE_PROGRESS = {
     DONE: 'DONE',
 };
 
-class Core {
+class CoreService {
     globalEventBus;
     localEventBus;
     storage;
@@ -97,7 +99,8 @@ class Core {
         initBus(side || DESTINATION.APP);
         this.globalEventBus = BusService();
         this.localEventBus = localEventBus;
-        this.storage = new Storage('storage');
+        this.storage = new PersistentStorage('storage');
+        this.tempStorage = new TempStorage();
 
         this.globalEventBus.on('system/ping', ({ data, callback }) => {
             callback({ type: data });
@@ -111,7 +114,7 @@ class Core {
             await this.initI18n();
             console.timeEnd('Initialization time');
 
-            console.log('this.storage.persistent:', toJS(this.storage.persistent.data));
+            console.log('this.storage:', toJS(this.storage.data));
         } catch (e) {
             console.error(e);
             captureException(e);
@@ -120,11 +123,11 @@ class Core {
             return;
         }
 
-        console.log('Await sync storage...', this.storage.persistent);
+        console.log('Await sync storage...', this.storage);
         console.time('Await install storage service');
 
         try {
-            await awaitInstallStorage(this.storage.persistent);
+            await awaitInstallStorage(this.storage);
         } catch (e) {
             console.error(e);
             forceCrash(new Error('ERR_INIT_STORAGE'));
@@ -136,16 +139,16 @@ class Core {
 
         runInAction(() => {
             if (
-                this.storage.persistent.data.migrateToMv3Progress
+                this.storage.data.migrateToMv3Progress
                 || (
-                    this.storage.persistent.data.lastUsageVersion
-                    && this.storage.persistent.data.lastUsageVersion !== packageJson.version
+                    this.storage.data.lastUsageVersion
+                    && this.storage.data.lastUsageVersion !== packageJson.version
                 )
             ) {
                 this.appState = APP_STATE.REQUIRE_MIGRATE;
             } else if (
-                this.storage.persistent.data.factoryResetProgress
-                || !this.storage.persistent.data.lastUsageVersion
+                this.storage.data.factoryResetProgress
+                || !this.storage.data.lastUsageVersion
             ) {
                 this.appState = APP_STATE.REQUIRE_SETUP;
             } else {
@@ -155,5 +158,5 @@ class Core {
     }
 }
 
-export default Core;
-export { APP_STATE, PREPARE_PROGRESS, Storage };
+export default CoreService;
+export { APP_STATE, PREPARE_PROGRESS };

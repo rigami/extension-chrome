@@ -1,12 +1,12 @@
 import { makeAutoObservable, reaction, toJS } from 'mobx';
-import { WidgetsSettings } from '@/stores/universal/settings';
+import { captureException } from '@sentry/react';
+import { first } from 'lodash';
+import WidgetsSettings from '@/stores/universal/settings/widgets';
 import { FETCH } from '@/enum';
 import { eventToBackground } from '@/stores/universal/serviceBus';
-import { captureException } from '@sentry/react';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import OpenWeatherMap from '@/stores/universal/weather/connectors/OpenWeatherMap';
 import WeatherLocation from '@/entities/WeatherLocation';
-import { first } from 'lodash';
 
 class WeatherService {
     _coreService;
@@ -21,7 +21,7 @@ class WeatherService {
         this._coreService = coreService;
         this.settings = new WidgetsSettings();
         this.connector = new OpenWeatherMap();
-        this.storage = this._coreService.storage.persistent;
+        this.storage = this._coreService.storage;
 
         this.subscribe();
     }
@@ -120,15 +120,15 @@ class WeatherService {
         );
 
         reaction(
-            () => [this.settings.dtwUseWeather, this.weather?.status, this.weather?.lastUpdateStatus],
+            () => [this.settings.useWeather, this.weather?.status, this.weather?.lastUpdateStatus],
             () => {
-                this.showWeather = this.settings.dtwUseWeather
+                this.showWeather = this.settings.useWeather
                     && (this.weather?.status === FETCH.ONLINE || this.weather?.status === FETCH.PENDING)
                     && this.weather?.lastUpdateStatus === FETCH.DONE;
             },
         );
 
-        if (this.settings.dtwUseWeather) {
+        if (this.settings.useWeather) {
             if (!this.storage.data.location || !this.storage.data.location?.id) {
                 console.log('[weather] Location not set. Get current...');
                 const location = await this.autoDetectLocation();
@@ -138,7 +138,7 @@ class WeatherService {
             } else {
                 this.weather = this.storage.data.weather;
 
-                this.showWeather = this.settings.dtwUseWeather
+                this.showWeather = this.settings.useWeather
                     && (this.weather?.status === FETCH.ONLINE || this.weather?.status === FETCH.PENDING)
                     && this.weather?.lastUpdateStatus === FETCH.DONE;
             }

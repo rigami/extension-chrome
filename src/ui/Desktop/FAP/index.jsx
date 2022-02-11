@@ -4,7 +4,8 @@ import { useResizeDetector } from 'react-resize-detector';
 import { makeStyles, alpha } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import clsx from 'clsx';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { captureException } from '@sentry/react';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import {
     ACTIVITY,
     BKMS_FAP_ALIGN,
@@ -16,12 +17,11 @@ import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
 import TagEntity from '@/stores/universal/bookmarks/entities/tag';
-import useAppService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import asyncAction from '@/utils/helpers/asyncAction';
-import { captureException } from '@sentry/react';
 import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
-import useBaseStateService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import Folder from './Folder';
 import Tag from './Tag';
 import Link from './Link';
@@ -106,25 +106,25 @@ const useStyles = makeStyles((theme) => ({
 
 function FAP() {
     const classes = useStyles();
-    const service = useBaseStateService();
-    const appService = useAppService();
-    const bookmarksService = useBookmarksService();
+    const service = useCoreService();
+    const appStateService = useAppStateService();
+    const { desktopService } = appStateService;
+    const workingSpaceService = useWorkingSpaceService();
     const store = useLocalObservable(() => ({
         favorites: [],
         isLoading: true,
         maxCount: 0,
     }));
-    const fapSettings = bookmarksService.settings;
 
     const onResize = useCallback((width, height) => {
         store.maxCount = Math.max(Math.floor((width + 16) / 56) - 1, 0);
-        service.storage.temp.update({ desktopFapHeight: height });
+        service.tempStorage.update({ desktopFapHeight: height });
     }, []);
 
     const { ref } = useResizeDetector({ onResize });
 
     useEffect(() => {
-        if (bookmarksService.favorites.length === 0) {
+        if (workingSpaceService.favorites.length === 0) {
             store.favorites = [];
             return;
         }
@@ -139,7 +139,7 @@ function FAP() {
         console.time('fap load');
 
         asyncAction(async () => {
-            const queue = bookmarksService.favorites.slice(0, store.maxCount).map((fav) => {
+            const queue = workingSpaceService.favorites.slice(0, store.maxCount).map((fav) => {
                 if (fav.itemType === 'bookmark') {
                     return BookmarksUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'folder') {
@@ -170,11 +170,11 @@ function FAP() {
                 captureException(e);
                 store.isLoading = false;
             });
-    }, [bookmarksService.favorites.length, store.maxCount, bookmarksService.lastTruthSearchTimestamp]);
+    }, [workingSpaceService.favorites.length, store.maxCount, workingSpaceService.lastTruthSearchTimestamp]);
 
-    const overload = store.maxCount < bookmarksService.favorites.length;
+    const overload = store.maxCount < workingSpaceService.favorites.length;
 
-    const isContained = fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED;
+    const isContained = desktopService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED;
 
     return (
         <Fade in={!store.isLoading}>
@@ -182,7 +182,7 @@ function FAP() {
                 ref={ref}
                 className={clsx(
                     classes.root,
-                    (fapSettings.fapPosition === BKMS_FAP_POSITION.BOTTOM || appService.activity === ACTIVITY.FAVORITES)
+                    (desktopService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM || appStateService.activity === ACTIVITY.FAVORITES)
                     && classes.stickyRoot,
                     isContained && classes.contained,
                 )}
@@ -192,9 +192,9 @@ function FAP() {
                     className={clsx(
                         classes.card,
                         isContained && classes.backdrop,
-                        fapSettings.fapAlign === BKMS_FAP_ALIGN.LEFT && classes.leftAlign,
-                        appService.activity === ACTIVITY.BOOKMARKS && classes.contrastBackdrop,
-                        fapSettings.fapStyle === BKMS_FAP_STYLE.PRODUCTIVITY && classes.disableLeftPadding,
+                        desktopService.settings.fapAlign === BKMS_FAP_ALIGN.LEFT && classes.leftAlign,
+                        appStateService.activity === ACTIVITY.BOOKMARKS && classes.contrastBackdrop,
+                        desktopService.settings.fapStyle === BKMS_FAP_STYLE.PRODUCTIVITY && classes.disableLeftPadding,
                     )}
                 >
                     {store.maxCount.length !== 0 && store.favorites.slice(0, store.maxCount).map((fav) => {
@@ -202,7 +202,7 @@ function FAP() {
                             ...fav,
                             key: `${fav.constructor.name}-${fav.id}`,
                             isBlurBackdrop: !isContained,
-                            dense: fapSettings.fapStyle === FAP_STYLE.PRODUCTIVITY,
+                            dense: desktopService.settings.fapStyle === FAP_STYLE.PRODUCTIVITY,
                         };
 
                         if (fav instanceof FolderEntity || fav instanceof TagEntity) {
@@ -258,10 +258,16 @@ function FAP() {
 const ObserverFAP = observer(FAP);
 
 function FAPWrapper() {
-    const appService = useAppService();
-    const bookmarksService = useBookmarksService();
+    const appStateService = useAppStateService();
+    const workingSpaceService = useWorkingSpaceService();
 
-    if (bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN || appService.activity === ACTIVITY.FAVORITES) {
+    if (
+        (
+            workingSpaceService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+            && workingSpaceService.favorites.length !== 0
+        )
+        || appStateService.activity === ACTIVITY.FAVORITES
+    ) {
         return (<ObserverFAP />);
     }
 

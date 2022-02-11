@@ -4,12 +4,12 @@ import { observer } from 'mobx-react-lite';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Stub from '@/ui-components/Stub';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import SmallProgress from '@/ui/FirstLookScreen/SmallProgress';
 import { ACTIVITY } from '@/enum';
 import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
 import packageJson from '@/../package.json';
-import { APP_STATE, PREPARE_PROGRESS } from '@/stores/app/core';
+import { APP_STATE, PREPARE_PROGRESS } from '@/stores/app/core/service';
 import defaultSettings from '@/config/settings';
 import WaitEndInstall from './WaitEndInstall';
 import Hello from './Hello';
@@ -43,7 +43,7 @@ function FirstLookScreen({ onStart, style: externalStyle = {} }) {
     const { t, ready } = useTranslation('firstLook');
     const coreService = useCoreService();
     const [stage, setStage] = useState(
-        coreService.storage.persistent.data.wizardSettings
+        coreService.storage.data.wizardSettings
             ? INSTALL_STAGE.WAIT_END_INSTALL
             : INSTALL_STAGE.HELLO,
     );
@@ -57,7 +57,7 @@ function FirstLookScreen({ onStart, style: externalStyle = {} }) {
             }
         });
 
-        if (!coreService.storage.persistent.data?.factoryResetProgress) {
+        if (!coreService.storage.data?.factoryResetProgress) {
             localStorage.setItem('appTabName', defaultSettings.app.tabName);
         }
 
@@ -69,7 +69,7 @@ function FirstLookScreen({ onStart, style: externalStyle = {} }) {
     }
 
     const handleStart = () => {
-        coreService.storage.persistent.update({ lastUsageVersion: packageJson.version });
+        coreService.storage.update({ lastUsageVersion: packageJson.version });
         document.title = defaultSettings.app.tabName;
         onStart();
 
@@ -77,9 +77,9 @@ function FirstLookScreen({ onStart, style: externalStyle = {} }) {
     };
 
     const applySettings = (newSettings) => {
-        coreService.storage.persistent.update({ wizardSettings: newSettings });
+        coreService.storage.update({ wizardSettings: newSettings });
 
-        if (coreService.storage.persistent.data.factoryResetProgress) {
+        if (coreService.storage.data.factoryResetProgress) {
             setStage(INSTALL_STAGE.WAIT_END_INSTALL);
         } else {
             handleStart();
@@ -88,7 +88,7 @@ function FirstLookScreen({ onStart, style: externalStyle = {} }) {
 
     return (
         <Box className={classes.root} style={externalStyle}>
-            {stage !== INSTALL_STAGE.WAIT_END_INSTALL && coreService.storage.persistent.data?.factoryResetProgress && (
+            {stage !== INSTALL_STAGE.WAIT_END_INSTALL && coreService.storage.data?.factoryResetProgress && (
                 <SmallProgress />
             )}
             {stage === INSTALL_STAGE.HELLO && (

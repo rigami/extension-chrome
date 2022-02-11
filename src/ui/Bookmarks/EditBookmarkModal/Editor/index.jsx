@@ -7,7 +7,7 @@ import {
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import BookmarkEditor, { STATE_EDITOR } from './BookmarkEditor';
 import FieldsEditor from './Fields';
 import Preview from './Preview';
@@ -42,7 +42,7 @@ function Editor(props) {
     } = props;
     const classes = useStyles();
 
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const service = useLocalObservable(() => new BookmarkEditor({
         defaultData: {
             id: editBookmarkId,
@@ -51,7 +51,7 @@ function Editor(props) {
             folderId: defaultFolderId,
             tagsIds: defaultTagsIds,
         },
-        bookmarksService,
+        workingSpaceService,
     }));
 
     useEffect(() => onStage(service.state), [service.state]);

@@ -7,8 +7,8 @@ import { alpha, makeStyles, lighten } from '@material-ui/core/styles';
 import { CloseRounded as CloseIcon, StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
+import { useContextMenu } from '@/stores/app/ContextMenuProvider';
 import getUniqueColor from '@/utils/generate/uniqueColor';
 
 const useStyles = makeStyles((theme) => ({
@@ -101,12 +101,12 @@ function Tag(props) {
     } = props;
     const classes = useStyles();
     const { t } = useTranslation(['tag']);
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const contextMenu = useContextMenu({
         itemId: id,
         itemType: 'tag',
     });
-    const [isPin, setIsPin] = useState(bookmarksService.findFavorite({
+    const [isPin, setIsPin] = useState(workingSpaceService.findFavorite({
         itemId: id,
         itemType: 'tag',
     }));
@@ -114,11 +114,11 @@ function Tag(props) {
     const repairColor = colorKey ? getUniqueColor(colorKey) || '#686868' : '#686868';
 
     useEffect(() => {
-        setIsPin(bookmarksService.findFavorite({
+        setIsPin(workingSpaceService.findFavorite({
             itemId: id,
             itemType: 'tag',
         }));
-    }, [bookmarksService.favorites.length]);
+    }, [workingSpaceService.favorites.length]);
 
     if (dense) {
         const repairColorTransparent = alpha(repairColor, 0.14);

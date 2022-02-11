@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { SelfImprovementRounded as DesktopIcon } from '@/icons';
 import { ACTIVITY } from '@/enum';
-import useAppService from '@/stores/app/AppStateProvider';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useAppStateService } from '@/stores/app/appState';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import FolderBreadcrumbs from './FolderBreadcrumbs';
 import SearchBlock from './Search';
 import ShowFavorites from './ShowFavorites';
@@ -64,8 +64,8 @@ const useStyles = makeStyles((theme) => ({
 function ToolsPanel() {
     const classes = useStyles();
     const { t } = useTranslation(['desktop']);
-    const appService = useAppService();
-    const bookmarksService = useBookmarksService();
+    const appStateService = useAppStateService();
+    const workingSpaceService = useWorkingSpaceService();
     const searchService = useSearchService();
 
     return (
@@ -88,14 +88,14 @@ function ToolsPanel() {
                     <SearchBlock />
                 </Box>
                 <Box className={classes.wrapperTools}>
-                    {bookmarksService.favorites.length > 0 && (
+                    {workingSpaceService.favorites.length > 0 && (
                         <ShowFavorites className={classes.fixVisualMargin} />
                     )}
                     <ExtendButtonGroup>
                         <ExtendButton
                             tooltip={t('desktop:button.open')}
                             data-ui-path="desktop.open"
-                            onClick={() => appService.setActivity(ACTIVITY.DESKTOP)}
+                            onClick={() => appStateService.setActivity(ACTIVITY.DESKTOP)}
                             icon={DesktopIcon}
                         />
                     </ExtendButtonGroup>

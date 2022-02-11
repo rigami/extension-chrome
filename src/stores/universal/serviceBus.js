@@ -1,6 +1,6 @@
 import EventBus from '@/utils/eventBus';
 import { DESTINATION } from '@/enum';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 
 let serviceBus = null;
 const instanceId = Date.now();

@@ -6,9 +6,9 @@ import { withProfiler } from '@sentry/react';
 import { DESTINATION, THEME } from '@/enum';
 import lightTheme from '@/themes/defaultTheme';
 import darkTheme from '@/themes/darkTheme';
-import useCoreService, { Provider as BaseStateProvider } from '@/stores/app/BaseStateProvider';
-import { Provider as BookmarksProvider } from '@/stores/app/BookmarksProvider';
-import { APP_STATE } from '@/stores/app/core';
+import { CoreProvider, useCoreService } from '@/stores/app/core';
+import { WorkingSpaceProvider } from '@/stores/app/workingSpace';
+import { APP_STATE } from '@/stores/app/core/service';
 import initSentry from '@/config/sentry/app';
 import Nest from '@/utils/helpers/Nest';
 import Editor from './Editor';
@@ -41,9 +41,9 @@ function PopupRoot() {
             <Nest
                 components={[
                     ({ children }) => (<ThemeProvider theme={theme}>{children}</ThemeProvider>),
-                    ({ children }) => (<BaseStateProvider side={DESTINATION.POPUP}>{children}</BaseStateProvider>),
+                    ({ children }) => (<CoreProvider side={DESTINATION.POPUP}>{children}</CoreProvider>),
                     ObserverLoadStoreWait,
-                    BookmarksProvider,
+                    WorkingSpaceProvider,
                 ]}
             >
                 <CssBaseline />

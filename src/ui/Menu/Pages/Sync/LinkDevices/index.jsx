@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow from '@/ui/Menu/MenuRow';
-import authStorage from '@/stores/universal/AuthStorage';
+import authStorage from '@/stores/universal/storage/auth';
 import CreateLinkRequest from './CreateLinkRequest';
 import ApplyLinkRequest from './ApplyLinkRequest';
 import LinkedDevices from './LinkedDevices';

@@ -6,7 +6,7 @@ import { useLocalObservable, observer } from 'mobx-react-lite';
 import { captureException } from '@sentry/react';
 import { useSnackbar } from 'notistack';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { NULL_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
@@ -32,9 +32,9 @@ const useStyles = makeStyles((theme) => ({
 function Editor({ onSave, editId, parentId = NULL_UUID }) {
     const classes = useStyles();
     const { t } = useTranslation(['folder']);
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     // const { enqueueSnackbar } = useSnackbar();
-    const foldersService = bookmarksService.folders;
+    const foldersService = workingSpaceService.folders;
     const store = useLocalObservable(() => ({
         editId,
         parentId,

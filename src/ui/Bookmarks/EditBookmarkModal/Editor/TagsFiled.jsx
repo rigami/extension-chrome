@@ -16,7 +16,7 @@ import { captureException } from '@sentry/react';
 import { runInAction } from 'mobx';
 import Tag from '../../Tag';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
 function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
     const classes = useStyles();
     const { t } = useTranslation(['tag']);
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const store = useLocalObservable(() => ({
         inputValue: '',
         focus: false,
@@ -121,7 +121,7 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
     const createTag = (tagName) => {
         store.inputValue = '';
 
-        bookmarksService.tags.save({ name: tagName })
+        workingSpaceService.tags.save({ name: tagName })
             .then((tagId) => TagsUniversalService.get(tagId))
             .then((tag) => {
                 if (!store.tags.includes(tag.id)) {
@@ -162,7 +162,7 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
                     });
                 });
             });
-    }, [bookmarksService.lastTruthSearchTimestamp]);
+    }, [workingSpaceService.lastTruthSearchTimestamp]);
 
     useEffect(() => {
         if (store.selectTag === -1) {

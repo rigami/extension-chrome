@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import useAppStateService from '@/stores/app/AppStateProvider';
-import SectionHeader from '@/ui/Menu/SectionHeader';
-import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { Collapse } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
+import { useAppStateService } from '@/stores/app/appState';
+import SectionHeader from '@/ui/Menu/SectionHeader';
+import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 
 function TimeWidget() {
     const { t } = useTranslation(['settingsWidget']);
-    const { widgets } = useAppStateService();
+    const { widgetsService } = useAppStateService();
 
     return (
         <React.Fragment>
@@ -17,20 +17,20 @@ function TimeWidget() {
                 title={t('time.useTime')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
-                    value: widgets.settings.dtwUseTime,
+                    value: widgetsService.settings.useTime,
                     onChange: (event, value) => {
-                        widgets.settings.update({ dtwUseTime: value });
+                        widgetsService.settings.update({ useTime: value });
                     },
                 }}
             />
-            <Collapse in={widgets.settings.dtwUseTime}>
+            <Collapse in={widgetsService.settings.useTime}>
                 <MenuRow
                     title={t('time.format12')}
                     action={{
                         type: ROWS_TYPE.CHECKBOX,
-                        value: widgets.settings.dtwTimeFormat12,
+                        value: widgetsService.settings.timeFormat12,
                         onChange: (event, value) => {
-                            widgets.settings.update({ dtwTimeFormat12: value });
+                            widgetsService.settings.update({ timeFormat12: value });
                         },
                     }}
                 />

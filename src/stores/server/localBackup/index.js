@@ -2,9 +2,10 @@ import { makeAutoObservable } from 'mobx';
 import { map } from 'lodash';
 import JSZip from 'jszip';
 import { captureException } from '@sentry/browser';
-import appVariables from '@/config/appVariables';
+import appVariables from '@/config/config';
 import { eventToApp } from '@/stores/universal/serviceBus';
-import { StorageConnector } from '@/stores/universal/storage';
+
+import StorageConnector from '@/stores/universal/storage/connector';
 import { BG_TYPE } from '@/enum';
 import SyncBookmarks from '@/stores/server/localBackup/syncBookmarks';
 import SyncBackgrounds from '@/stores/server/localBackup/syncBackgrounds';
@@ -28,7 +29,7 @@ class LocalBackupService {
 
     async createBackup({ settings, bookmarks, backgrounds }) {
         eventToApp('system/backup/local/create/progress', { stage: 'start' });
-        this.core.storage.persistent.update({ localBackup: 'creating' });
+        this.core.storage.update({ localBackup: 'creating' });
 
         console.log('system/backup/local/create:', {
             settings,
@@ -91,12 +92,12 @@ class LocalBackupService {
                 path: `${appVariables.rest.url}/temp/backup.zip`,
                 stage: 'done',
             });
-            this.core.storage.persistent.update({ localBackup: 'done' });
+            this.core.storage.update({ localBackup: 'done' });
         } catch (e) {
             console.error(e);
             captureException(e);
             eventToApp('system/backup/local/create/progress', { stage: 'error' });
-            this.core.storage.persistent.update({ localBackup: 'failed' });
+            this.core.storage.update({ localBackup: 'failed' });
         }
     }
 
@@ -156,7 +157,7 @@ class LocalBackupService {
                 result: 'error',
                 message: 'brokenFile',
             });
-            this.core.storage.persistent.update({
+            this.core.storage.update({
                 restoreBackup: 'error',
                 restoreBackupError: 'brokenFile',
             });
@@ -186,7 +187,7 @@ class LocalBackupService {
                 result: 'error',
                 message: 'brokenFile',
             });
-            this.core.storage.persistent.update({
+            this.core.storage.update({
                 restoreBackup: 'error',
                 restoreBackupError: 'brokenFile',
             });
@@ -199,7 +200,7 @@ class LocalBackupService {
 
     async restoreBackup({ type = 'rigami', path }) {
         console.log('restoreFile:', type);
-        this.core.storage.persistent.update({ restoreBackup: 'restoring' });
+        this.core.storage.update({ restoreBackup: 'restoring' });
 
         const cache = await caches.open('temp');
         const rawBackup = await cache.match(path);
@@ -215,7 +216,7 @@ class LocalBackupService {
                 result: 'error',
                 message: 'wrongSchema',
             });
-            this.core.storage.persistent.update({
+            this.core.storage.update({
                 restoreBackup: 'error',
                 restoreBackupError: 'wrongSchema',
             });
@@ -231,7 +232,7 @@ class LocalBackupService {
                     result: 'error',
                     message: 'wrongVersion',
                 });
-                this.core.storage.persistent.update({
+                this.core.storage.update({
                     restoreBackup: 'error',
                     restoreBackupError: 'wrongSchema',
                 });
@@ -251,7 +252,7 @@ class LocalBackupService {
                 );
             }
             eventToApp('system/backup/local/restore/progress', { result: 'done' });
-            this.core.storage.persistent.update({ restoreBackup: 'done' });
+            this.core.storage.update({ restoreBackup: 'done' });
         } catch (e) {
             console.error(e);
             captureException(e);
@@ -259,7 +260,7 @@ class LocalBackupService {
                 result: 'error',
                 message: 'brokenFile',
             });
-            this.core.storage.persistent.update({
+            this.core.storage.update({
                 restoreBackup: 'error',
                 restoreBackupError: 'brokenFile',
             });

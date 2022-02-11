@@ -16,8 +16,8 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
+import { useContextMenu } from '@/stores/app/ContextMenuProvider';
 import Tag from '../Tag';
 import Collapser from '@/ui/Bookmarks/Tag/Collapser';
 
@@ -178,8 +178,8 @@ function RowItem(props) {
         ...other
     } = props;
     const classes = useStyles();
-    const bookmarksService = useBookmarksService();
-    const [isPin, setIsPin] = useState(bookmarksService.findFavorite({
+    const workingSpaceService = useWorkingSpaceService();
+    const [isPin, setIsPin] = useState(workingSpaceService.findFavorite({
         itemId: id,
         itemType: 'bookmark',
     }));
@@ -201,11 +201,11 @@ function RowItem(props) {
     };
 
     useEffect(() => {
-        setIsPin(bookmarksService.findFavorite({
+        setIsPin(workingSpaceService.findFavorite({
             itemId: id,
             itemType: 'bookmark',
         }));
-    }, [bookmarksService.favorites.length]);
+    }, [workingSpaceService.favorites.length]);
 
     return (
         <Tooltip

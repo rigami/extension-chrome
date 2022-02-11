@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import useAppStateService from '@/stores/app/AppStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
 
 const formatter = new Intl.DateTimeFormat('nu', {
     hour: '2-digit',
@@ -13,7 +13,7 @@ const formatter12 = new Intl.DateTimeFormat('nu', {
 });
 
 function Time() {
-    const { widgets } = useAppStateService();
+    const { widgetsService } = useAppStateService();
     const [now, setNow] = useState(new Date());
 
     useEffect(() => {
@@ -26,7 +26,7 @@ function Time() {
 
     return (
         <Fragment>
-            {(widgets.settings.dtwTimeFormat12 ? formatter12 : formatter).format(now)}
+            {(widgetsService.settings.dtwTimeFormat12 ? formatter12 : formatter).format(now)}
         </Fragment>
     );
 }

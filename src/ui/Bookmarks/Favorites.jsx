@@ -11,7 +11,7 @@ import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
 import Folder from '@/ui/Desktop/FAP/Folder';
 import TagEntity from '@/stores/universal/bookmarks/entities/tag';
 import Tag from '@/ui/Desktop/FAP/Tag';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import asyncAction from '@/utils/helpers/asyncAction';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 function Favorites() {
     const classes = useStyles();
     const { t } = useTranslation();
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const store = useLocalObservable(() => ({
         favorites: [],
         isLoading: true,
@@ -59,13 +59,13 @@ function Favorites() {
     }));
 
     useEffect(() => {
-        if (bookmarksService.favorites.length === 0) {
+        if (workingSpaceService.favorites.length === 0) {
             store.favorites = [];
             return;
         }
 
         asyncAction(async () => {
-            const queue = bookmarksService.favorites.map((fav) => {
+            const queue = workingSpaceService.favorites.map((fav) => {
                 if (fav.itemType === 'bookmark') {
                     return BookmarksUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'folder') {
@@ -96,9 +96,9 @@ function Favorites() {
                 captureException(e);
                 store.isLoading = false;
             });
-    }, [bookmarksService.favorites.length, bookmarksService.lastTruthSearchTimestamp]);
+    }, [workingSpaceService.favorites.length, workingSpaceService.lastTruthSearchTimestamp]);
 
-    if (bookmarksService.favorites.length === 0) return null;
+    if (workingSpaceService.favorites.length === 0) return null;
 
     return (
         <Box pl={2} mb={4}>

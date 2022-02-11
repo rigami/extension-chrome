@@ -1,6 +1,7 @@
-import packageFile from '@/../package.json';
-import { StorageConnector } from '@/stores/universal/storage';
 import { init, setTag, setUser } from '@sentry/browser';
+import packageFile from '@/../package.json';
+
+import StorageConnector from '@/stores/universal/storage/connector';
 import { DESTINATION } from '@/enum';
 
 export default () => {

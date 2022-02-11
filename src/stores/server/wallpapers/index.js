@@ -31,8 +31,8 @@ class WallpapersService {
     constructor(core) {
         makeAutoObservable(this);
         this.core = core;
-        this.storage = this.core.storage.persistent;
-        this.settings = this.core.settingsService.backgrounds;
+        this.storage = this.core.storage;
+        this.settings = this.core.settingsService.wallpapers;
 
         this.subscribe();
     }
