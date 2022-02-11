@@ -1,25 +1,25 @@
 import { computed, makeObservable, override } from 'mobx';
-import { pick } from 'lodash';
+import { mapKeys, pick } from 'lodash';
 import PersistentStorage from '../storage/persistent';
 import defaultSettings from '@/config/settings';
 
 class WorkingSpaceSettings extends PersistentStorage {
     constructor(upgrade) {
-        super('workingSpace', upgrade && ((currState) => ({
-            displayVariant: defaultSettings.workingSpace.displayVariant,
+        super('settings', ((currState) => ({
+            'workingSpace.displayVariant': defaultSettings.workingSpace.displayVariant,
             ...(currState || {}),
         })));
         makeObservable(this);
     }
 
     @computed
-    get displayVariant() { return this.data.displayVariant; }
+    get displayVariant() { return this.data['workingSpace.displayVariant']; }
 
     @override
     update(props = {}) {
         const updProps = pick(props, ['displayVariant']);
 
-        super.update(updProps);
+        super.update(mapKeys(updProps, (value, key) => `workingSpace.${key}`));
     }
 }
 

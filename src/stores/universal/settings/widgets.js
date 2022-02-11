@@ -1,43 +1,43 @@
 import { computed, makeObservable, override } from 'mobx';
-import { pick } from 'lodash';
+import { mapKeys, pick } from 'lodash';
 import PersistentStorage from '../storage/persistent';
 import defaultSettings from '@/config/settings';
 
 class WidgetsSettings extends PersistentStorage {
     constructor(upgrade) {
-        super('widgets', upgrade && ((currState) => ({
-            useDate: defaultSettings.widgets.useDate,
-            dateAction: defaultSettings.widgets.dateDefaultAction,
-            useTime: defaultSettings.widgets.useTime,
-            timeFormat12: defaultSettings.widgets.timeFormat12,
-            useWeather: defaultSettings.widgets.useWeather,
-            weatherMetrics: defaultSettings.widgets.weatherMetrics,
-            weatherAction: defaultSettings.widgets.weatherDefaultAction,
+        super('settings', ((currState) => ({
+            'widgets.useDate': defaultSettings.widgets.useDate,
+            'widgets.dateAction': defaultSettings.widgets.dateDefaultAction,
+            'widgets.useTime': defaultSettings.widgets.useTime,
+            'widgets.timeFormat12': defaultSettings.widgets.timeFormat12,
+            'widgets.useWeather': defaultSettings.widgets.useWeather,
+            'widgets.weatherMetrics': defaultSettings.widgets.weatherMetrics,
+            'widgets.weatherAction': defaultSettings.widgets.weatherDefaultAction,
             ...(currState || {}),
         })));
         makeObservable(this);
     }
 
     @computed
-    get useDate() { return this.data.useDate; }
+    get useDate() { return this.data['widgets.useDate']; }
 
     @computed
-    get dateAction() { return this.data.dateAction; }
+    get dateAction() { return this.data['widgets.dateAction']; }
 
     @computed
-    get useTime() { return this.data.useTime; }
+    get useTime() { return this.data['widgets.useTime']; }
 
     @computed
-    get timeFormat12() { return this.data.timeFormat12; }
+    get timeFormat12() { return this.data['widgets.timeFormat12']; }
 
     @computed
-    get useWeather() { return this.data.useWeather; }
+    get useWeather() { return this.data['widgets.useWeather']; }
 
     @computed
-    get weatherMetrics() { return this.data.weatherMetrics; }
+    get weatherMetrics() { return this.data['widgets.weatherMetrics']; }
 
     @computed
-    get weatherAction() { return this.data.weatherAction; }
+    get weatherAction() { return this.data['widgets.weatherAction']; }
 
     @override
     update(props = {}) {
@@ -51,7 +51,7 @@ class WidgetsSettings extends PersistentStorage {
             'weatherAction',
         ]);
 
-        super.update(updProps);
+        super.update(mapKeys(updProps, (value, key) => `widgets.${key}`));
     }
 }
 

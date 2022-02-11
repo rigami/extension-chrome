@@ -1,31 +1,31 @@
 import { computed, makeObservable, override } from 'mobx';
-import { pick } from 'lodash';
+import { mapKeys, pick } from 'lodash';
 import PersistentStorage from '../storage/persistent';
 import defaultSettings from '@/config/settings';
 
 class AppSettings extends PersistentStorage {
     constructor(upgrade) {
-        super('app', upgrade && ((currState) => ({
-            backdropTheme: defaultSettings.app.backdropTheme,
-            theme: defaultSettings.app.theme,
-            tabName: defaultSettings.app.tabName,
-            defaultActivity: defaultSettings.app.defaultActivity,
+        super('settings', ((currState) => ({
+            'app.backdropTheme': defaultSettings.app.backdropTheme,
+            'app.theme': defaultSettings.app.theme,
+            'app.tabName': defaultSettings.app.tabName,
+            'app.defaultActivity': defaultSettings.app.defaultActivity,
             ...(currState || {}),
         })));
         makeObservable(this);
     }
 
     @computed
-    get backdropTheme() { return this.data.backdropTheme; }
+    get backdropTheme() { return this.data['app.backdropTheme']; }
 
     @computed
-    get theme() { return this.data.theme; }
+    get theme() { return this.data['app.theme']; }
 
     @computed
-    get tabName() { return this.data.tabName; }
+    get tabName() { return this.data['app.tabName']; }
 
     @computed
-    get defaultActivity() { return this.data.defaultActivity; }
+    get defaultActivity() { return this.data['app.defaultActivity']; }
 
     @override
     update(props = {}) {
@@ -36,7 +36,7 @@ class AppSettings extends PersistentStorage {
             'defaultActivity',
         ]);
 
-        super.update(updProps);
+        super.update(mapKeys(updProps, (value, key) => `app.${key}`));
 
         if ('localStorage' in self) {
             localStorage.setItem('backdropTheme', this.backdropTheme || defaultSettings.app.backdropTheme);
