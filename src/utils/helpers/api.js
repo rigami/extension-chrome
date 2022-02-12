@@ -5,6 +5,7 @@ import fetchData from '@/utils/helpers/fetchData';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import { SERVICE_STATE } from '@/enum';
 import authStorage from '@/stores/universal/storage/auth';
+import { eventToBackground } from '@/stores/universal/serviceBus';
 
 const queueAwaitRequests = [];
 let refreshingAccessToken = false;
@@ -72,7 +73,29 @@ const refreshAccessToken = async () => {
             authStorage.update({
                 accessToken: loginResponse.accessToken,
                 refreshToken: loginResponse.refreshToken,
+                synced: false,
             });
+
+            const { response: devicesResponse } = await fetchData(
+                `${appVariables.rest.url}/v1/devices`,
+                {
+                    method: 'GET',
+                    cache: 'no-store',
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Device-Sign': deviceSign,
+                        'Device-Type': 'extension-chrome',
+                        'Device-Platform': navigator.userAgentData.platform,
+                        'Authorization': `Bearer ${loginResponse.accessToken}`,
+                    },
+                },
+            );
+
+            if (devicesResponse && devicesResponse.otherDevices.length !== 0) {
+                authStorage.update({ synced: true });
+
+                eventToBackground('sync/forceSync', { newAuthToken: tokenInfo.authToken });
+            }
         }
 
         if (tokenInfo.status === 'device-deleted') {
@@ -97,6 +120,7 @@ const refreshAccessToken = async () => {
                 accessToken: registrationResponse.accessToken,
                 refreshToken: registrationResponse.refreshToken,
                 deviceSign: registrationResponse.deviceSign,
+                synced: false,
             });
         }
     }

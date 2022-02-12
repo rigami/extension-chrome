@@ -105,6 +105,7 @@ function ApplyLinkRequest() {
                 authStorage.update({
                     accessToken: loginResponse.accessToken,
                     refreshToken: loginResponse.refreshToken,
+                    synced: true,
                 });
 
                 eventToBackground('sync/forceSync', { newAuthToken: response.authToken });

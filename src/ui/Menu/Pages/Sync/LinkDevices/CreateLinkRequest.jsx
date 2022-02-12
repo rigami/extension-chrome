@@ -109,6 +109,7 @@ function CreateLinkRequest({ onLink }) {
                     authStorage.update({
                         accessToken: loginResponse.accessToken,
                         refreshToken: loginResponse.refreshToken,
+                        synced: true,
                     });
 
                     if (onLink) onLink();

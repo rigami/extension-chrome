@@ -28,11 +28,11 @@ class CloudSyncService {
 
         console.log('authStorage.data.authToken:', authStorage.data);
 
-        if (authStorage.data.authToken) {
+        if (authStorage.data.synced) {
             this.subscribe();
         } else {
             when(
-                () => authStorage.data.authToken,
+                () => authStorage.data.synced,
                 () => {
                     console.log('when authStorage.data.username:', authStorage.data.username);
                     this.subscribe();
@@ -268,12 +268,12 @@ class CloudSyncService {
                 }
             }
 
-            if (authStorage.data.authToken === newAuthToken) {
+            if (authStorage.data.authToken === newAuthToken && authStorage.data.synced) {
                 this.runSyncCycle();
             } else {
                 console.log('[CloudSync] Wait login...');
                 when(
-                    () => authStorage.data.authToken === newAuthToken,
+                    () => authStorage.data.authToken === newAuthToken && authStorage.data.synced,
                     () => {
                         this.runSyncCycle();
                     },
