@@ -1,33 +1,36 @@
 import { computed, makeObservable, override } from 'mobx';
-import { mapKeys, pick } from 'lodash';
-import PersistentStorage from '../storage/persistent';
+import { pick } from 'lodash';
 import defaultSettings from '@/config/settings';
+import settingsStorage from '@/stores/universal/settings/rootSettings';
 
-class AppSettings extends PersistentStorage {
-    constructor(upgrade) {
-        super('settings', ((currState) => ({
-            'app.backdropTheme': defaultSettings.app.backdropTheme,
-            'app.theme': defaultSettings.app.theme,
-            'app.tabName': defaultSettings.app.tabName,
-            'app.defaultActivity': defaultSettings.app.defaultActivity,
-            ...(currState || {}),
-        })));
+export const migration = (currState) => ({
+    'app.backdropTheme': currState['app.backdropTheme'] || defaultSettings.app.backdropTheme,
+    'app.theme': currState['app.theme'] || defaultSettings.app.theme,
+    'app.tabName': currState['app.tabName'] || defaultSettings.app.tabName,
+    'app.defaultActivity': currState['app.defaultActivity'] || defaultSettings.app.defaultActivity,
+});
+
+class AppSettings {
+    _storage;
+
+    constructor() {
         makeObservable(this);
+
+        this._storage = settingsStorage;
     }
 
     @computed
-    get backdropTheme() { return this.data['app.backdropTheme']; }
+    get backdropTheme() { return this._storage.data['app.backdropTheme']; }
 
     @computed
-    get theme() { return this.data['app.theme']; }
+    get theme() { return this._storage.data['app.theme']; }
 
     @computed
-    get tabName() { return this.data['app.tabName']; }
+    get tabName() { return this._storage.data['app.tabName']; }
 
     @computed
-    get defaultActivity() { return this.data['app.defaultActivity']; }
+    get defaultActivity() { return this._storage.data['app.defaultActivity']; }
 
-    @override
     update(props = {}) {
         const updProps = pick(props, [
             'backdropTheme',
@@ -36,7 +39,7 @@ class AppSettings extends PersistentStorage {
             'defaultActivity',
         ]);
 
-        super.update(mapKeys(updProps, (value, key) => `app.${key}`));
+        this._storage.update('app', updProps);
 
         if ('localStorage' in self) {
             localStorage.setItem('backdropTheme', this.backdropTheme || defaultSettings.app.backdropTheme);

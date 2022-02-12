@@ -6,6 +6,7 @@ import { ACTIVITY, SERVICE_STATE } from '@/enum';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import PersistentStorage from '@/stores/universal/storage/persistent';
 import DesktopService from '@/stores/app/desktopService';
+import settingsStorage from '@/stores/universal/settings/rootSettings';
 
 class AppStateService {
     coreService;
@@ -66,9 +67,7 @@ class AppStateService {
         console.log('Await install services...');
         this.state = SERVICE_STATE.INSTALL;
         await awaitInstallStorage(this.cloudSync);
-        await awaitInstallStorage(this.settings);
-        await awaitInstallStorage(this.widgetsService.settings);
-        await awaitInstallStorage(this.wallpapersService.settings);
+        await awaitInstallStorage(settingsStorage);
 
         this.activity = this.settings.defaultActivity || ACTIVITY.DESKTOP;
         this.state = SERVICE_STATE.DONE;

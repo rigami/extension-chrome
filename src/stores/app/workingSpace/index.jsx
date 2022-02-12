@@ -8,6 +8,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import WorkingSpaceService from '@/stores/app/workingSpace/service';
 import { useCoreService } from '@/stores/app/core';
 import { SERVICE_STATE } from '@/enum';
+import settingsStorage from '@/stores/universal/settings/rootSettings';
 
 const context = createContext({});
 
@@ -15,11 +16,11 @@ function WorkingSpaceProvider({ children }) {
     const coreService = useCoreService();
     const store = useLocalObservable(() => new WorkingSpaceService(coreService));
     const Context = context;
-    const [state, setState] = useState(store.settings.state);
+    const [state, setState] = useState(settingsStorage.state);
 
     useEffect(() => {
-        setState(store.settings.state);
-    }, [store.settings.state]);
+        setState(settingsStorage.state);
+    }, [settingsStorage.state]);
 
     return state === SERVICE_STATE.DONE && (
         <Context.Provider value={store}>

@@ -7,6 +7,7 @@ import { eventToBackground } from '@/stores/universal/serviceBus';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import OpenWeatherMap from '@/stores/universal/weather/connectors/OpenWeatherMap';
 import WeatherLocation from '@/entities/WeatherLocation';
+import settingsStorage from '@/stores/universal/settings/rootSettings';
 
 class WeatherService {
     _coreService;
@@ -109,7 +110,7 @@ class WeatherService {
     }
 
     async subscribe() {
-        await awaitInstallStorage(this.settings);
+        await awaitInstallStorage(settingsStorage);
 
         reaction(
             () => this.storage.data.weather,

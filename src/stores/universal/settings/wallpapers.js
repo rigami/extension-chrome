@@ -1,33 +1,36 @@
 import { computed, makeObservable, override } from 'mobx';
-import { mapKeys, pick } from 'lodash';
-import PersistentStorage from '../storage/persistent';
+import { pick } from 'lodash';
 import defaultSettings from '@/config/settings';
+import settingsStorage from '@/stores/universal/settings/rootSettings';
 
-class WallpapersSettings extends PersistentStorage {
-    constructor(upgrade) {
-        super('settings', ((currState) => ({
-            'wallpapers.changeInterval': defaultSettings.wallpapers.changeInterval,
-            'wallpapers.type': defaultSettings.wallpapers.type,
-            'wallpapers.kind': defaultSettings.wallpapers.kind,
-            'wallpapers.dimmingPower': defaultSettings.wallpapers.dimmingPower,
-            ...(currState || {}),
-        })));
+export const migration = (currState) => ({
+    'wallpapers.changeInterval': currState['wallpapers.changeInterval'] || defaultSettings.wallpapers.changeInterval,
+    'wallpapers.type': currState['wallpapers.type'] || defaultSettings.wallpapers.type,
+    'wallpapers.kind': currState['wallpapers.kind'] || defaultSettings.wallpapers.kind,
+    'wallpapers.dimmingPower': currState['wallpapers.dimmingPower'] || defaultSettings.wallpapers.dimmingPower,
+});
+
+class WallpapersSettings {
+    _storage;
+
+    constructor() {
         makeObservable(this);
+
+        this._storage = settingsStorage;
     }
 
     @computed
-    get changeInterval() { return this.data['wallpapers.changeInterval']; }
+    get changeInterval() { return this._storage.data['wallpapers.changeInterval']; }
 
     @computed
-    get type() { return this.data['wallpapers.type']; }
+    get type() { return this._storage.data['wallpapers.type']; }
 
     @computed
-    get kind() { return this.data['wallpapers.kind']; }
+    get kind() { return this._storage.data['wallpapers.kind']; }
 
     @computed
-    get dimmingPower() { return this.data['wallpapers.dimmingPower']; }
+    get dimmingPower() { return this._storage.data['wallpapers.dimmingPower']; }
 
-    @override
     update(props = {}) {
         const updProps = pick(props, [
             'changeInterval',
@@ -36,7 +39,7 @@ class WallpapersSettings extends PersistentStorage {
             'dimmingPower',
         ]);
 
-        super.update(mapKeys(updProps, (value, key) => `wallpapers.${key}`));
+        this._storage.update('wallpapers', updProps);
     }
 }
 

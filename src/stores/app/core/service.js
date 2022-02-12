@@ -155,6 +155,23 @@ class CoreService {
                 this.appState = APP_STATE.WORK;
             }
         });
+
+        if (
+            this.storage.data.migrateToMv3Progress
+            || (
+                this.storage.data.lastUsageVersion
+                && this.storage.data.lastUsageVersion !== packageJson.version
+            )
+        ) {
+            this.appState = APP_STATE.REQUIRE_MIGRATE;
+        } else if (
+            this.storage.data.factoryResetProgress
+            || !this.storage.data.lastUsageVersion
+        ) {
+            this.appState = APP_STATE.REQUIRE_SETUP;
+        } else {
+            this.appState = APP_STATE.WORK;
+        }
     }
 }
 

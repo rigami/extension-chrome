@@ -1,7 +1,7 @@
-import { makeAutoObservable, reaction } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import DesktopSettings from '@/stores/universal/settings/desktop';
-import { BKMS_FAP_STYLE } from '@/enum';
+import settingsStorage from '@/stores/universal/settings/rootSettings';
 
 class DesktopService {
     _coreService;
@@ -19,7 +19,7 @@ class DesktopService {
     }
 
     async subscribe() {
-        await awaitInstallStorage(this.settings);
+        await awaitInstallStorage(settingsStorage);
     }
 }
 

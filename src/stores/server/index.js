@@ -56,25 +56,9 @@ class ServerApp {
         }
 
         this.storage = new PersistentStorage('storage');
-        this.settingsService = new SettingsService(storageVersion < appVariables.storage.version);
+        this.settingsService = new SettingsService();
 
-        await Promise.all([
-            this.storage,
-            authStorage,
-            this.settingsService.app,
-            this.settingsService.desktop,
-            this.settingsService.wallpapers,
-            this.settingsService.widgets,
-            this.settingsService.workingSpace,
-        ].map((storage) => awaitInstallStorage(storage)));
-
-        await StorageConnector.set({ storageVersion: appVariables.storage.version });
-
-        console.log(
-            'wallpapers storage state',
-            JSON.stringify(this.settingsService.wallpapers.type),
-            JSON.stringify(this.settingsService.wallpapers._data.type),
-        );
+        await Promise.all([this.storage, authStorage, this.settingsService.settingsStorage].map((storage) => awaitInstallStorage(storage)));
     }
 
     async start() {
