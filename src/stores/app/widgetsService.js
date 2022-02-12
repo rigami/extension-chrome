@@ -8,6 +8,7 @@ import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import OpenWeatherMap from '@/stores/universal/weather/connectors/OpenWeatherMap';
 import WeatherLocation from '@/entities/WeatherLocation';
 import settingsStorage from '@/stores/universal/settings/rootSettings';
+import Weather from '@/entities/Weather';
 
 class WeatherService {
     _coreService;
@@ -31,7 +32,7 @@ class WeatherService {
         const { state } = await navigator.permissions.query({ name: 'geolocation' });
 
         if (state !== 'granted') {
-            return this._getPermissionsToGeolocation();
+            await this._getPermissionsToGeolocation();
         }
 
         console.log('[weather] Update current position...');
@@ -82,31 +83,64 @@ class WeatherService {
     }
 
     async autoDetectLocationAndUpdateWeather() {
-        const location = await this.autoDetectLocation();
+        try {
+            const location = await this.autoDetectLocation();
 
-        this.setLocation(location);
+            console.log('autoDetectLocationAndUpdateWeather:', location);
+
+            this.setLocation(location);
+        } catch (e) {
+            this.storage.update({
+                location: null,
+                weather: new Weather({
+                    ...this.storage.data.weather,
+                    status: FETCH.FAILED,
+                    lastUpdateStatus: FETCH.FAILED,
+                }),
+            });
+
+            throw e;
+        }
     }
 
     async _getPermissionsToGeolocation() {
         console.log('[weather] Get permissions to weather...');
-        const { state } = await navigator.permissions.query({ name: 'geolocation' });
+        const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
 
-        console.log('[weather] Permissions to weather is', state);
+        console.log('[weather] Permissions to weather is', permissionStatus.state);
 
-        if (state === 'denied') {
-            return Promise.reject(new Error('Denied'));
-        }
-
-        try {
-            if (!navigator.geolocation) {
-                return Promise.reject(new Error('Not supported'));
-            }
+        if (permissionStatus.state === 'granted') {
+            console.log('[weather] Permission to geolocation done. Continue...');
 
             return Promise.resolve();
-        } catch (e) {
-            captureException(e);
-            return Promise.reject(e);
         }
+
+        if (permissionStatus.state === 'prompt') {
+            return new Promise((resolve, reject) => {
+                console.log('[weather] Wait answer of request permissions...', permissionStatus.state);
+
+                permissionStatus.onchange = () => {
+                    if (permissionStatus.state === 'granted') {
+                        console.log('[weather] Permission to geolocation done. Continue...');
+
+                        resolve();
+                        return;
+                    }
+
+                    reject();
+                };
+
+                navigator.geolocation.getCurrentPosition(console.log, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0,
+                });
+            });
+        }
+
+        console.log('[weather] Denied permissions to geolocation. Abort...');
+
+        return Promise.reject(new Error('Denied'));
     }
 
     async subscribe() {

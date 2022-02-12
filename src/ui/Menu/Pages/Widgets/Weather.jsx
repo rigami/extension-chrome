@@ -43,6 +43,8 @@ function WeatherWidget({ onSelect }) {
     const [actionEditorOpen, setActionEditorOpen] = useState(false);
     const [actionUrl, setActionUrl] = useState('');
 
+    console.log('coreService.storage.data:', coreService.storage.data);
+
     return (
         <React.Fragment>
             <SectionHeader title={t('weather.title')} />
@@ -71,31 +73,37 @@ function WeatherWidget({ onSelect }) {
                 }}
             />
             <Collapse in={widgetsService.settings.useWeather}>
-                <MenuInfo
-                    show={
-                        !coreService.storage.data.location
-                        && coreService.storage.data.weather?.status === FETCH.FAILED
-                    }
-                    message={t('weather.region.notDetected.title')}
-                    description={t('weather.region.notDetected.description')}
-                    actions={(
-                        <Button
-                            data-ui-path="weather.region.notDetected.changeRegion"
-                            variant="outlined"
-                            color="inherit"
-                            onClick={() => onSelect(changeLocationPage)}
-                        >
-                            {t('weather.region.button.change')}
-                        </Button>
-                    )}
-                />
-                <MenuInfo
-                    show={
-                        coreService.storage.data.location
-                        && coreService.storage.data.weather?.status === FETCH.FAILED
-                    }
-                    message={t('weather.error.serviceUnavailable')}
-                />
+                <MenuRow>
+                    <MenuInfo
+                        show={
+                            !coreService.storage.data.location
+                            && coreService.storage.data.weather?.status === FETCH.FAILED
+                        }
+                        variant="warn"
+                        message={t('weather.region.notDetected.title')}
+                        description={t('weather.region.notDetected.description')}
+                        actions={(
+                            <Button
+                                data-ui-path="weather.region.notDetected.changeRegion"
+                                variant="outlined"
+                                color="inherit"
+                                onClick={() => onSelect(changeLocationPage)}
+                            >
+                                {t('weather.region.button.change')}
+                            </Button>
+                        )}
+                    />
+                </MenuRow>
+                <MenuRow>
+                    <MenuInfo
+                        show={
+                            coreService.storage.data.location
+                            && coreService.storage.data.weather?.status === FETCH.FAILED
+                        }
+                        variant="warn"
+                        message={t('weather.error.serviceUnavailable')}
+                    />
+                </MenuRow>
                 <MenuRow
                     title={t('weather.units.title')}
                     action={{
