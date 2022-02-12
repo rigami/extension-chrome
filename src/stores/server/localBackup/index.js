@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { map } from 'lodash';
+import { forEach, map } from 'lodash';
 import JSZip from 'jszip';
 import { captureException } from '@sentry/browser';
 import appVariables from '@/config/config';
@@ -7,14 +7,20 @@ import { eventToApp } from '@/stores/universal/serviceBus';
 
 import StorageConnector from '@/stores/universal/storage/connector';
 import { BG_TYPE } from '@/enum';
-import SyncBookmarks from '@/stores/server/localBackup/syncBookmarks';
-import SyncBackgrounds from '@/stores/server/localBackup/syncBackgrounds';
-import convertBackupClockTabToRigamiFormat from '../utils/convertBackupClockTabToRigamiFormat';
+import WorkingSpace from '@/stores/server/localBackup/workingSpace';
+import Wallpapers from '@/stores/server/localBackup/wallpapers';
+import migrationClockTabTo5 from './migration/clockTab_5';
+import migration5To6 from './migration/5_6';
+import consoleBinder from '@/utils/console/bind';
+import settingsStorage from '@/stores/universal/settings/rootSettings';
+import createBackupFile from '@/stores/server/localBackup/createBackupFile';
+
+const bindConsole = consoleBinder('local-backup');
 
 class LocalBackupService {
     core;
-    bookmarksSyncService;
-    backgroundsSyncService;
+    workingSpaceService;
+    wallpapersService;
 
     constructor(core) {
         makeAutoObservable(this);
@@ -23,69 +29,42 @@ class LocalBackupService {
         this.subscribe();
     }
 
-    async collectSettings() {
-        return StorageConnector.get(null);
-    }
-
-    async createBackup({ settings, bookmarks, backgrounds }) {
+    async createBackup({ settings, workingSpace, wallpapers }) {
         eventToApp('system/backup/local/create/progress', { stage: 'start' });
         this.core.storage.update({ localBackup: 'creating' });
 
         console.log('system/backup/local/create:', {
             settings,
-            bookmarks,
-            backgrounds,
+            workingSpace,
+            wallpapers,
         });
 
         try {
-            const backup = {};
+            let backup = {};
 
             if (settings) {
-                backup.settings = await this.collectSettings();
+                backup.settings = await StorageConnector.get('settings');
             }
 
-            if (BUILD === 'full' && bookmarks) {
-                backup.bookmarks = await this.bookmarksSyncService.collect();
+            backup.storage = await StorageConnector.get('storage');
+
+            if (BUILD === 'full' && workingSpace) {
+                const workingSpaceData = await this.workingSpaceService.collect();
+
+                backup = {
+                    ...backup,
+                    ...workingSpaceData,
+                };
             }
 
-            if (backgrounds) {
-                backup.backgrounds = await this.backgroundsSyncService.collect();
+            if (wallpapers) {
+                backup.wallpapers = await this.wallpapersService.collect();
             }
 
-            backup.meta = {
-                date: new Date().toISOString(),
-                appVersion: appVariables.version,
-                appType: 'extension.chrome',
-                version: appVariables.backup.version,
-            };
-
-            console.log('Backup:', backup);
-
-            const zip = new JSZip();
-
-            zip.file('meta.json', JSON.stringify(backup.meta));
-            if (settings) zip.file('settings.json', JSON.stringify(backup.settings));
-            if (BUILD === 'full' && bookmarks) zip.file('bookmarks.json', JSON.stringify(backup.bookmarks));
-            if (backgrounds) {
-                zip.file('wallpapers.json', JSON.stringify(backup.backgrounds.meta));
-                zip.folder('backgrounds');
-                zip.folder('previews');
-
-                backup.backgrounds.full.forEach((file, fileName) => {
-                    zip.file(`backgrounds/${fileName}`, file);
-                });
-
-                backup.backgrounds.preview.forEach((file, fileName) => {
-                    zip.file(`previews/${fileName}`, file);
-                });
-            }
-
-            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            const zipBlob = await createBackupFile(backup);
 
             const cache = await caches.open('temp');
-
             const zipResponse = new Response(zipBlob);
-
             await cache.put(`${appVariables.rest.url}/temp/backup.zip`, zipResponse);
 
             eventToApp('system/backup/local/create/progress', {
@@ -101,105 +80,70 @@ class LocalBackupService {
         }
     }
 
-    async restoreRigami(rawBackup) {
+    async readModern(rawBackup) {
         const backup = {};
+        const restoreFile = await rawBackup.blob();
+        const zip = await new JSZip().loadAsync(restoreFile);
+        const backgrounds = {};
+        const previews = {};
+        const files = map(zip.files, (file) => file);
 
-        try {
-            const restoreFile = await rawBackup.blob();
-            const zip = await new JSZip().loadAsync(restoreFile);
-            const backgrounds = {};
-            const previews = {};
-            const files = map(zip.files, (file) => file);
-
-            for await (const file of files) {
-                if (
-                    [
-                        'meta.json',
-                        'settings.json',
-                        'bookmarks.json',
-                        'wallpapers.json',
-                    ].includes(file.name)
-                ) {
-                    const value = await file.async('text');
-                    backup[file.name.slice(0, -5)] = JSON.parse(value);
-                }
-
-                if (file.name.indexOf('wallpapers/') !== -1 && !file.dir) {
-                    const fileName = file.name.substring(12);
-                    const splitIndex = fileName.indexOf('.');
-                    const id = splitIndex === -1 ? fileName : fileName.substring(0, splitIndex);
-                    const ext = splitIndex === -1 ? '' : fileName.substring(splitIndex + 1);
-                    const bgType = backup.backgrounds.all
-                        .find(({ idInSource, source }) => `${source.toLowerCase()}-${idInSource}` === id)
-                        .type;
-                    const blob = await file.async('blob');
-
-                    backgrounds[id] = new Blob(
-                        [blob],
-                        { type: `${bgType === BG_TYPE.VIDEO ? 'video' : 'image'}/${ext}` },
-                    );
-                } else if (file.name.indexOf('previews/') !== -1 && !file.dir) {
-                    const fileName = file.name.substring(9);
-                    const splitIndex = fileName.indexOf('.');
-                    const id = fileName.substring(0, splitIndex);
-                    const blob = await file.async('blob');
-
-                    previews[id] = new Blob([blob], { type: 'image/jpeg' });
-                }
+        for await (const file of files) {
+            if (
+                [
+                    'meta.json',
+                    'settings.json',
+                    'bookmarks.json',
+                    'wallpapers.json',
+                ].includes(file.name)
+            ) {
+                const value = await file.async('text');
+                backup[file.name.slice(0, -5)] = JSON.parse(value);
             }
 
-            backup.backgroundsFiles = backgrounds;
-            backup.previewsFiles = previews;
-        } catch (e) {
-            console.error(e);
-            captureException(e);
-            eventToApp('system/backup/local/restore/progress', {
-                result: 'error',
-                message: 'brokenFile',
-            });
-            this.core.storage.update({
-                restoreBackup: 'error',
-                restoreBackupError: 'brokenFile',
-            });
+            if (file.name.indexOf('wallpapers/') !== -1 && !file.dir) {
+                const fileName = file.name.substring(12);
+                const splitIndex = fileName.indexOf('.');
+                const id = splitIndex === -1 ? fileName : fileName.substring(0, splitIndex);
+                const ext = splitIndex === -1 ? '' : fileName.substring(splitIndex + 1);
+                const bgType = backup.backgrounds.all
+                    .find(({ idInSource, source }) => `${source.toLowerCase()}-${idInSource}` === id)
+                    .type;
+                const blob = await file.async('blob');
 
-            return null;
+                backgrounds[id] = new Blob(
+                    [blob],
+                    { type: `${bgType === BG_TYPE.VIDEO ? 'video' : 'image'}/${ext}` },
+                );
+            } else if (file.name.indexOf('previews/') !== -1 && !file.dir) {
+                const fileName = file.name.substring(9);
+                const splitIndex = fileName.indexOf('.');
+                const id = fileName.substring(0, splitIndex);
+                const blob = await file.async('blob');
+
+                previews[id] = new Blob([blob], { type: 'image/jpeg' });
+            }
         }
+
+        backup.wallpapers = backgrounds;
+        backup.wallpapersPreview = previews;
 
         return backup;
     }
 
-    async restoreLegacy(rawBackup, type) {
-        let backup = {};
+    async readLegacy(rawBackup, type) {
+        const restoreData = await rawBackup.text();
+        let file = JSON.parse(restoreData);
 
-        try {
-            const restoreData = await rawBackup.text();
-            let file = JSON.parse(restoreData);
-
-            if (type === 'ctbup') {
-                file = convertBackupClockTabToRigamiFormat(file);
-            }
-
-            backup = { ...file };
-        } catch (e) {
-            console.error(e);
-            captureException(e);
-            eventToApp('system/backup/local/restore/progress', {
-                result: 'error',
-                message: 'brokenFile',
-            });
-            this.core.storage.update({
-                restoreBackup: 'error',
-                restoreBackupError: 'brokenFile',
-            });
-
-            return null;
+        if (type === 'ctbup') {
+            file = migrationClockTabTo5(file);
         }
 
-        return backup;
+        return { ...file };
     }
 
     async restoreBackup({ type = 'rigami', path }) {
-        console.log('restoreFile:', type);
+        bindConsole.log(`Restore file type:${type} path:${path}...`);
         this.core.storage.update({ restoreBackup: 'restoring' });
 
         const cache = await caches.open('temp');
@@ -207,24 +151,44 @@ class LocalBackupService {
 
         let backup = {};
 
-        if (type === 'rigami') {
-            backup = await this.restoreRigami(rawBackup);
-        } else if (type === 'json' || type === 'ctbup') {
-            backup = await this.restoreLegacy(rawBackup, type);
-        } else {
+        bindConsole.log('Raw backup file:', rawBackup);
+
+        try {
+            if (type === 'rigami') {
+                backup = await this.readModern(rawBackup);
+            } else if (type === 'json' || type === 'ctbup') {
+                backup = await this.readLegacy(rawBackup, type);
+            } else {
+                eventToApp('system/backup/local/restore/progress', {
+                    result: 'error',
+                    message: 'wrongSchema',
+                });
+                this.core.storage.update({
+                    restoreBackup: 'error',
+                    restoreBackupError: 'wrongSchema',
+                });
+
+                return;
+            }
+        } catch (e) {
+            captureException(e);
             eventToApp('system/backup/local/restore/progress', {
                 result: 'error',
-                message: 'wrongSchema',
+                message: 'brokenFile',
             });
             this.core.storage.update({
                 restoreBackup: 'error',
-                restoreBackupError: 'wrongSchema',
+                restoreBackupError: 'brokenFile',
             });
 
             return;
         }
 
-        console.log('restore backup', backup);
+        if (backup.meta.version === 5) {
+            backup = migration5To6(backup);
+        }
+
+        bindConsole.log('Backup file:', backup);
 
         try {
             if (backup.meta.version > appVariables.backup.version) {
@@ -240,14 +204,25 @@ class LocalBackupService {
                 return;
             }
 
-            if (backup.settings) await StorageConnector.set(backup.settings);
-            if (BUILD === 'full' && backup.bookmarks) {
-                await this.core.bookmarksSyncService.restore(backup.bookmarks);
+            if (backup.settings) {
+                forEach(backup.settings, (value, key) => {
+                    settingsStorage.update(key, value);
+                });
             }
-            if (backup.backgrounds) {
-                await this.core.backgroundsSyncService.restore(
-                    backup.backgrounds.all,
-                    backup.backgroundsFiles,
+
+            if (BUILD === 'full' && (backup.bookmarks || backup.tags || backup.folders || backup.favorites)) {
+                await this.workingSpaceService.restore({
+                    bookmarks: backup.bookmarks,
+                    tags: backup.tags,
+                    folders: backup.folders,
+                    favorites: backup.favorites,
+                });
+            }
+
+            if (backup.wallpapers) {
+                await this.wallpapersService.restore(
+                    backup.wallpapers.all,
+                    backup.wallpapersFiles,
                     backup.previewsFiles,
                 );
             }
@@ -268,8 +243,8 @@ class LocalBackupService {
     }
 
     subscribe() {
-        if (BUILD === 'full') { this.bookmarksSyncService = new SyncBookmarks(this); }
-        this.backgroundsSyncService = new SyncBackgrounds(this);
+        if (BUILD === 'full') { this.workingSpaceService = new WorkingSpace(this); }
+        this.wallpapersService = new Wallpapers(this);
 
         this.core.globalEventBus.on('system/backup/local/create', ({ data: { settings, bookmarks, backgrounds } }) => {
             this.createBackup({

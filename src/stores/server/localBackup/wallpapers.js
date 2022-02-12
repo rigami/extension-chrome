@@ -3,7 +3,7 @@ import { omit } from 'lodash';
 import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 
-class SyncBackgrounds {
+class Wallpapers {
     core;
 
     constructor(core) {
@@ -80,4 +80,4 @@ class SyncBackgrounds {
     }
 }
 
-export default SyncBackgrounds;
+export default Wallpapers;

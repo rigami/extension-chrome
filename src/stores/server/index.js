@@ -4,7 +4,6 @@ import { DESTINATION } from '@/enum';
 import appVariables from '@/config/config';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import FactorySettingsService from './factorySettingsService';
-import SyncChromeBookmarksService from './localSync/syncChromeBookmarksService';
 import CloudSyncService from './cloudSync';
 import authStorage from '@/stores/universal/storage/auth';
 import SettingsService from './settingsService';
@@ -83,9 +82,6 @@ class ServerApp {
 
         // Cloud Sync
         this.cloudSyncService = new CloudSyncService(this);
-
-        // Local Sync
-        if (BUILD === 'full') { this.systemBookmarksService = new SyncChromeBookmarksService(this); }
 
         // Other
         this.factorySettingsService = new FactorySettingsService(this);

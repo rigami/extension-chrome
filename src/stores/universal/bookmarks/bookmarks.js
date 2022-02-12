@@ -65,6 +65,10 @@ class BookmarksUniversalService {
             saveIcoUrl = api.computeUrl(`site-parse/processing-image?url=${encodeURIComponent(sourceIcoUrl)}`);
         }
 
+        if (imageBase64 && !sourceIcoUrl) {
+            saveIcoUrl = api.computeUrl(`site-parse/processing-image?site-url=${encodeURIComponent(url)}`);
+        }
+
         if (id) {
             const oldBookmark = id ? await this.get(id) : null;
             const newBookmark = cloneDeep({

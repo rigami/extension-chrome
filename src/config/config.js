@@ -27,7 +27,7 @@ export default {
             },
         },
     },
-    backup: { version: 5 },
+    backup: { version: 6 },
     wallpapers: {
         maxUploadFiles: 15,
         fallback: {

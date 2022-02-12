@@ -51,6 +51,7 @@ const methodPromise = (args, method) => new Promise((resolve, reject) => {
         method,
         args,
     });
+
     open();
 });
 

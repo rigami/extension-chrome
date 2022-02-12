@@ -53,18 +53,24 @@ class RootSettings extends PersistentStorage {
         if (sync) {
             forEach(props, async (value, key) => {
                 console.log('SettingsStorage update prop:', value, key);
-                const pairRow = await db().get('pair_with_cloud', `setting_${namespace}.${key}`);
+                try {
+                    const pairRow = await db().get('pair_with_cloud', `setting_${namespace}.${key}`);
 
-                db().put('pair_with_cloud', {
-                    entityType_localId: `setting_${namespace}.${key}`,
-                    entityType: 'setting',
-                    localId: `${namespace}.${key}`,
-                    cloudId: pairRow?.cloudId || null,
-                    isPair: +Boolean(pairRow?.cloudId),
-                    isSync: +false,
-                    isDeleted: +false,
-                    modifiedTimestamp: Date.now(),
-                });
+                    console.log('pairRow:', pairRow);
+
+                    db().put('pair_with_cloud', {
+                        entityType_localId: `setting_${namespace}.${key}`,
+                        entityType: 'setting',
+                        localId: `${namespace}.${key}`,
+                        cloudId: pairRow?.cloudId || null,
+                        isPair: +Boolean(pairRow?.cloudId),
+                        isSync: +false,
+                        isDeleted: +false,
+                        modifiedTimestamp: Date.now(),
+                    });
+                } catch (e) {
+                    console.error('ERR:', e);
+                }
             });
         }
     }

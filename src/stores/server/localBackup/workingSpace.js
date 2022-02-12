@@ -1,16 +1,17 @@
 import { makeAutoObservable } from 'mobx';
 import { omit, uniq } from 'lodash';
+import { captureException } from '@sentry/browser';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import Favorite from '@/stores/universal/bookmarks/entities/favorite';
 import fetchData from '@/utils/helpers/fetchData';
-import { captureException } from '@sentry/browser';
 import Tag from '@/stores/universal/bookmarks/entities/tag';
 import Folder from '@/stores/universal/bookmarks/entities/folder';
+import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 
-class SyncBookmarks {
+class WorkingSpace {
     core;
 
     constructor(core) {
@@ -19,7 +20,7 @@ class SyncBookmarks {
     }
 
     async collect() {
-        if (BUILD !== 'full') return;
+        if (BUILD !== 'full') return {};
 
         const { all: bookmarksAll } = await BookmarksUniversalService.query();
 
@@ -69,8 +70,13 @@ class SyncBookmarks {
         };
     }
 
-    async restore(bookmarks) {
-        console.log('restore bookmarks', bookmarks, this.core);
+    async restore({ bookmarks, tags, folders, favorites }) {
+        console.log('restore bookmarks', {
+            bookmarks,
+            tags,
+            folders,
+            favorites,
+        }, this.core);
 
         const { all: localBookmarks } = await BookmarksUniversalService.query();
         const localTags = await TagsUniversalService.getAll();
@@ -86,7 +92,10 @@ class SyncBookmarks {
 
         console.log('Restore folders...');
 
-        const replaceFolderId = {};
+        const replaceFolderId = {
+            0: NULL_UUID,
+            1: FIRST_UUID,
+        };
 
         const compareLevel = async (level, localLevel) => {
             for await (const folder of level) {
@@ -99,6 +108,7 @@ class SyncBookmarks {
                     await FoldersUniversalService.save({
                         ...findFolder,
                         ...folder,
+                        parentId: replaceFolderId[folder.parentId],
                         id: findFolder.id,
                     });
 
@@ -107,6 +117,7 @@ class SyncBookmarks {
                     console.log(`Folder '${folder.name}' not find in local store. Save as new`);
                     replaceFolderId[folder.id] = await FoldersUniversalService.save({
                         ...folder,
+                        parentId: replaceFolderId[folder.parentId],
                         id: null,
                     });
                 }
@@ -115,13 +126,13 @@ class SyncBookmarks {
             }
         };
 
-        if (bookmarks.folders) await compareLevel(bookmarks.folders, localFolders);
+        if (folders) await compareLevel(folders, localFolders);
 
         console.log('Restore tags...');
 
         const replaceTagId = {};
 
-        for await (const tag of (bookmarks.categories || bookmarks.tags)) {
+        for await (const tag of tags) {
             console.log('Check tag:', tag);
             const findTag = localTags.find(({ name }) => tag.name === name);
 
@@ -150,7 +161,7 @@ class SyncBookmarks {
 
         const replaceBookmarkId = {};
 
-        for await (const bookmark of bookmarks.bookmarks) {
+        for await (const bookmark of bookmarks) {
             console.log('Check bookmark:', bookmark);
 
             const findBookmark = localBookmarks.find(({ url }) => bookmark.url === url);
@@ -187,7 +198,7 @@ class SyncBookmarks {
 
         console.log('Restore favorites...');
 
-        for await (const favorite of bookmarks.favorites) {
+        for await (const favorite of favorites) {
             console.log('Check favorite:', favorite);
 
             const favType = favorite.itemType || favorite.type;
@@ -222,4 +233,4 @@ class SyncBookmarks {
     }
 }
 
-export default SyncBookmarks;
+export default WorkingSpace;
