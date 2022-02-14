@@ -2,18 +2,13 @@ import React from 'react';
 import {
     Box,
     Typography,
-    Container,
     Button,
-    ListItemIcon,
-    ListItemText,
-    ListItem,
     DialogActions,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import { ArrowForward as GoToIcon } from '@material-ui/icons';
-import Logo from '@/ui-components/Logo';
+import { ArrowForward as GoToIcon, SyncRounded as SyncIcon } from '@material-ui/icons';
 import Banner from '@/ui-components/Banner';
 
 const useStyles = makeStyles((theme) => ({
@@ -66,7 +61,7 @@ function Hello({ onApplyDefaultSetting, onStartWizard, onLogin }) {
                 <Button
                     variant="contained"
                     color="primary"
-                    endIcon={(<GoToIcon />)}
+                    endIcon={(<SyncIcon />)}
                     onClick={onLogin}
                 >
                     {t('button.login')}
