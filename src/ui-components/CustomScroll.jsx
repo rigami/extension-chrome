@@ -63,7 +63,7 @@ function CustomScroll(rootProps, ref) {
                         <div
                             {...restProps}
                             ref={elementRef}
-                            className={clsx(reverse && classes.reverse)}
+                            className={clsx(externalClasses.scroller, reverse && classes.reverse)}
                         />
                     );
                 },

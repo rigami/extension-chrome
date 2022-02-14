@@ -43,9 +43,11 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
     },
+    scrollContent: { width: '100%' },
+    scroller: { display: 'flex' },
 }));
 
-function FullSearch({ columns, open, onClose }) {
+function FullSearch({ open, onClose }) {
     const classes = useStyles();
     const inputRef = useRef();
     const searchService = useSearchService();
@@ -117,9 +119,14 @@ function FullSearch({ columns, open, onClose }) {
                         && (
                             <React.Fragment>
                                 <Divider />
-                                <CustomScroll translateContentSizeYToHolder>
+                                <CustomScroll
+                                    translateContentSizeYToHolder
+                                    classes={{
+                                        scroller: classes.scroller,
+                                        content: classes.scrollContent,
+                                    }}
+                                >
                                     <FastResults
-                                        columns={columns}
                                         onGoToFolder={(folderId, apply) => {
                                             if (!apply) searchService.resetChanges();
                                             searchService.setSelectFolder(folderId, false);

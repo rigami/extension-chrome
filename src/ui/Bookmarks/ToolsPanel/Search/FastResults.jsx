@@ -8,9 +8,8 @@ import {
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { ArrowForward as GoToIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { map, size, omit } from 'lodash';
-import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import stateRender from '@/utils/helpers/stateRender';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { FETCH } from '@/enum';
@@ -20,7 +19,7 @@ import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 import BookmarksList from '@/ui/Bookmarks/BookmarksList';
 
 const useStyles = makeStyles((theme) => ({
-    root: { marginBottom: theme.spacing(1) },
+    root: { paddingBottom: theme.spacing(1) },
     goToButton: {
         textTransform: 'none',
         color: theme.palette.secondary.main,
@@ -53,8 +52,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function FastResults({ columns, onGoToFolder }) {
-    const theme = useTheme();
+function FastResults({ onGoToFolder }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const workingSpaceService = useWorkingSpaceService();
@@ -97,10 +95,7 @@ function FastResults({ columns, onGoToFolder }) {
     }, [workingSpaceService.lastTruthSearchTimestamp, searchService.tempSearchRequest]);
 
     return (
-        <Box
-            className={classes.root}
-            style={{ width: (theme.shape.dataCard.width + theme.spacing(2)) * columns + theme.spacing(2) }}
-        >
+        <Box className={classes.root}>
             {stateRender(
                 store.loadState,
                 <Fragment>
@@ -132,7 +127,7 @@ function FastResults({ columns, onGoToFolder }) {
                                         variant="caption"
                                         className={classes.countOtherResults}
                                     >
-                                        {t('search.otherResults', { count: bookmarks.length - renderCount })}
+                                        {t('search.otherResults', { count: store.bookmarks.length - renderCount })}
                                     </Typography>
                                 )}
                             />
