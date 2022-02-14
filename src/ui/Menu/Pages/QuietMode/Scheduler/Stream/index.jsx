@@ -23,7 +23,7 @@ import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { useCoreService } from '@/stores/app/core';
 import { useAppStateService } from '@/stores/app/appState';
 import appVariables from '@/config/config';
-import MenuInfo from '@/ui/Menu/MenuInfo';
+import Banner from '@/ui-components/Banner';
 import changeQueryPage from './ChangeQuery';
 import libraryPage from '@/ui/Menu/Pages/QuietMode/Library';
 
@@ -145,12 +145,15 @@ function Stream({ onSelect }) {
             <MenuRow
                 description={t(`kind.value.${BG_SELECT_MODE.STREAM}`, { context: 'description' })}
             />
-            <MenuInfo
-                show={coreService.isOffline}
-                variant="warn"
-                message={t('notConnectionUseLocal')}
-                description={t('notConnectionUseLocal', { context: 'description' })}
-            />
+            <Collapse in={coreService.isOffline}>
+                <MenuRow>
+                    <Banner
+                        variant="warn"
+                        message={t('notConnectionUseLocal')}
+                        description={t('notConnectionUseLocal', { context: 'description' })}
+                    />
+                </MenuRow>
+            </Collapse>
             <MenuRow
                 title={t('changeInterval.title')}
                 description={t('changeInterval.description')}

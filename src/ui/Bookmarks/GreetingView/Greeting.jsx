@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
     Box,
     Button,
+    Collapse,
     Fade,
     Tooltip,
     Typography,
@@ -12,7 +13,7 @@ import { sample, first, last } from 'lodash';
 import clsx from 'clsx';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { useCoreService } from '@/stores/app/core';
-import MenuInfo from '@/ui/Menu/MenuInfo';
+import Banner from '@/ui-components/Banner';
 import { SERVICE_STATE } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
@@ -213,26 +214,27 @@ function Greeting(props) {
                             />
                         </span>
                     </Typography>
-                    <MenuInfo
-                        classes={{ root: classes.info }}
-                        component="div"
-                        show={!store.userName?.trim()}
-                        message={t('cancelInfo')}
-                        description={t('cancelInfo', { context: 'description' })}
-                        toolbarActions={[
-                            <Button
-                                key="cancel"
-                                onClick={() => {
-                                    if (!force) store.enabled = false;
-                                    coreService.storage.update({ userName: null });
+                    <Collapse in={!store.userName?.trim()}>
+                        <Banner
+                            classes={{ root: classes.info }}
+                            component="div"
+                            message={t('cancelInfo')}
+                            description={t('cancelInfo', { context: 'description' })}
+                            toolbarActions={[
+                                <Button
+                                    key="cancel"
+                                    onClick={() => {
+                                        if (!force) store.enabled = false;
+                                        coreService.storage.update({ userName: null });
 
-                                    if (onHide) onHide();
-                                }}
-                            >
-                                {t('cancel')}
-                            </Button>,
-                        ]}
-                    />
+                                        if (onHide) onHide();
+                                    }}
+                                >
+                                    {t('cancel')}
+                                </Button>,
+                            ]}
+                        />
+                    </Collapse>
                 </Box>
             </Fade>
         );

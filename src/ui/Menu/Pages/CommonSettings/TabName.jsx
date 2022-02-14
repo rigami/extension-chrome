@@ -7,7 +7,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import TabNameExampleImage from '@/images/tabName.svg';
+import TabNameExampleImage from '@/images/tab_name.svg';
 import { useAppStateService } from '@/stores/app/appState';
 
 const useStyles = makeStyles((theme) => ({
@@ -15,7 +15,9 @@ const useStyles = makeStyles((theme) => ({
     splash: {
         position: 'relative',
         overflow: 'hidden',
-        marginBottom: theme.spacing(2),
+        margin: theme.spacing(2),
+        borderRadius: theme.shape.borderRadiusBolder,
+        '& svg': { display: 'block' },
     },
     siteName: {
         position: 'absolute',

@@ -14,7 +14,7 @@ import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { ArrowForward as GoToIcon } from '@material-ui/icons';
 import Logo from '@/ui-components/Logo';
-import MenuInfo from '@/ui/Menu/MenuInfo';
+import Banner from '@/ui-components/Banner';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,8 +48,7 @@ function Hello({ onApplyDefaultSetting, onStartWizard, onLogin }) {
     return (
         <Box className={classes.root}>
             <Typography variant="h3">{t('greeting')}</Typography>
-            <MenuInfo
-                show
+            <Banner
                 classes={{ root: classes.banner }}
                 message={t('beta.title')}
                 description={t('beta.description')}

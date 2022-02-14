@@ -131,7 +131,7 @@ function About() {
             />
             <ListItem className={classes.row}>
                 <ListItemIcon />
-                <ListItemText secondary="Danilkinkin | 2020-2022" />
+                <ListItemText secondary="danilkinkin | 2020-2022" />
             </ListItem>
         </React.Fragment>
     );

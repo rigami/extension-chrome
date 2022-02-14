@@ -10,6 +10,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import {
     Button,
+    Collapse,
     Dialog,
     DialogActions,
     DialogContent,
@@ -23,7 +24,7 @@ import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/storage/auth';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import MenuInfo from '@/ui/Menu/MenuInfo';
+import Banner from '@/ui-components/Banner';
 
 const useStyles = makeStyles((theme) => ({
     fullWidth: { width: '100%' },
@@ -159,8 +160,7 @@ function ApplyLinkRequest() {
                     <DialogContentText>
                         {t('mergeUsers.applyRequest.dialog.description')}
                     </DialogContentText>
-                    <MenuInfo
-                        show
+                    <Banner
                         variant="warn"
                         classes={{ root: classes.banner }}
                         message={t('mergeUsers.applyRequest.dialog.warn.title')}
@@ -177,12 +177,13 @@ function ApplyLinkRequest() {
                         InputProps={{ inputComponent: NumberFormatCustom }}
                         onChange={(event) => setCode(event.target.value)}
                     />
-                    <MenuInfo
-                        show={error && status === FETCH.FAILED}
-                        variant="error"
-                        classes={{ root: classes.banner }}
-                        message={t(`mergeUsers.applyRequest.dialog.error.${error}`)}
-                    />
+                    <Collapse in={error && status === FETCH.FAILED}>
+                        <Banner
+                            variant="error"
+                            classes={{ root: classes.banner }}
+                            message={t(`mergeUsers.applyRequest.dialog.error.${error}`)}
+                        />
+                    </Collapse>
                 </DialogContent>
                 <DialogActions>
                     <Button

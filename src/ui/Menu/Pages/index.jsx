@@ -4,13 +4,16 @@ import {
     ListItemText,
     Divider,
     ListItemAvatar,
-    Avatar,
     Box,
-    Link, List, AppBar, Toolbar, IconButton, Typography,
+    Link,
+    List,
+    AppBar,
+    Toolbar,
+    IconButton,
+    Typography,
 } from '@material-ui/core';
 import {
     SettingsRounded as SettingsIcon,
-    CollectionsBookmarkRounded as BookmarksIcon,
     HelpRounded as AboutIcon,
     BackupRounded as SyncIcon,
     WidgetsRounded as WidgetsIcon,
@@ -19,16 +22,12 @@ import {
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import { alpha } from '@material-ui/core/styles/colorManipulator';
 import {
     SelfImprovementRounded as QuietModeIcon,
     VolunteerActivismRounded as ShareIcon,
 } from '@/icons';
-
-import MenuInfo from '@/ui/Menu/MenuInfo';
+import Banner from '@/ui-components/Banner';
 import appVariables from '@/config/config';
-import Header from '@/ui/Menu/PageHeader';
 import quietModePage from './QuietMode';
 import aboutPage from './About';
 import commonSettingsPage from './CommonSettings';
@@ -82,7 +81,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         minHeight: `calc(100vh - ${theme.spacing(4)}px)`,
-        // boxShadow: theme.shadows[20],
         pointerEvents: 'auto',
         flexShrink: 0,
         position: 'sticky',
@@ -94,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 3,
     },
     icon: {
-        marginLeft: 5,
+        marginLeft: theme.spacing(1),
         display: 'block',
     },
     text: {
@@ -165,7 +163,11 @@ function Row(props) {
             <ListItemAvatar className={classes.iconContainer}>
                 {React.cloneElement(Icon, { className: classes.icon })}
             </ListItemAvatar>
-            <ListItemText className={classes.text} primary={t(page.id)} secondary={t(page.id, { context: 'description' })} />
+            <ListItemText
+                className={classes.text}
+                primary={t(page.id)}
+                secondary={t(page.id, { context: 'description' })}
+            />
         </ListItem>
     );
 }
@@ -194,8 +196,7 @@ function GeneralMenu({ selected, onSelect }) {
                 />
             ))}
             <Box className={classes.bannerWrapper}>
-                <MenuInfo
-                    show
+                <Banner
                     variant="default"
                     icon={ShareIcon}
                     message={t('shareBanner.message')}

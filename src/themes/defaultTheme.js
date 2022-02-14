@@ -7,9 +7,9 @@ const baseThemeValues = {
     palette: {
         type: 'light',
         primary: {
-            light: '#5263fa',
-            main: '#4557f6',
-            dark: '#3a4bde',
+            light: '#28d27c',
+            main: '#00BA61',
+            dark: '#008c4a',
             contrastText: '#fff',
         },
         secondary: {

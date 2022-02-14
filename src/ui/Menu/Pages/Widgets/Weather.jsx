@@ -23,7 +23,7 @@ import { useCoreService } from '@/stores/app/core';
 import SectionHeader from '@/ui/Menu/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
 import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
-import MenuInfo from '@/ui/Menu/MenuInfo';
+import Banner from '@/ui-components/Banner';
 import { getDomain } from '@/utils/localSiteParse';
 import changeLocationPage from './WeatherChangeLocation';
 
@@ -73,37 +73,43 @@ function WeatherWidget({ onSelect }) {
                 }}
             />
             <Collapse in={widgetsService.settings.useWeather}>
-                <MenuRow>
-                    <MenuInfo
-                        show={
-                            !coreService.storage.data.location
-                            && coreService.storage.data.weather?.status === FETCH.FAILED
-                        }
-                        variant="warn"
-                        message={t('weather.region.notDetected.title')}
-                        description={t('weather.region.notDetected.description')}
-                        actions={(
-                            <Button
-                                data-ui-path="weather.region.notDetected.changeRegion"
-                                variant="outlined"
-                                color="inherit"
-                                onClick={() => onSelect(changeLocationPage)}
-                            >
-                                {t('weather.region.button.change')}
-                            </Button>
-                        )}
-                    />
-                </MenuRow>
-                <MenuRow>
-                    <MenuInfo
-                        show={
-                            coreService.storage.data.location
-                            && coreService.storage.data.weather?.status === FETCH.FAILED
-                        }
-                        variant="warn"
-                        message={t('weather.error.serviceUnavailable')}
-                    />
-                </MenuRow>
+                <Collapse
+                    in={
+                        !coreService.storage.data.location
+                        && coreService.storage.data.weather?.status === FETCH.FAILED
+                    }
+                >
+                    <MenuRow>
+                        <Banner
+                            variant="warn"
+                            message={t('weather.region.notDetected.title')}
+                            description={t('weather.region.notDetected.description')}
+                            actions={(
+                                <Button
+                                    data-ui-path="weather.region.notDetected.changeRegion"
+                                    variant="outlined"
+                                    color="inherit"
+                                    onClick={() => onSelect(changeLocationPage)}
+                                >
+                                    {t('weather.region.button.change')}
+                                </Button>
+                            )}
+                        />
+                    </MenuRow>
+                </Collapse>
+                <Collapse
+                    in={
+                        coreService.storage.data.location
+                        && coreService.storage.data.weather?.status === FETCH.FAILED
+                    }
+                >
+                    <MenuRow>
+                        <Banner
+                            variant="warn"
+                            message={t('weather.error.serviceUnavailable')}
+                        />
+                    </MenuRow>
+                </Collapse>
                 <MenuRow
                     title={t('weather.units.title')}
                     action={{

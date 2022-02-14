@@ -93,7 +93,7 @@ function Menu({ open, onClose }) {
                 onExited={() => setStack([backgroundsPage])}
             >
                 <Box className={classes.drawer}>
-                    <Box className={classes.section} style={{ width: 300 + 750 + theme.spacing(2) * 2 }}>
+                    <Box className={classes.section} style={{ width: 280 + 750 + theme.spacing(2) * 2 }}>
                         <Scrollbar
                             classes={{
                                 trackY: classes.trackY,

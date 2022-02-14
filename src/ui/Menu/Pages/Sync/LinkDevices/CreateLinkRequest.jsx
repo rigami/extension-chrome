@@ -15,7 +15,7 @@ import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/storage/auth';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import MenuRow, { ROWS_TYPE } from '@/ui/Menu/MenuRow';
-import MenuInfo from '@/ui/Menu/MenuInfo';
+import Banner from '@/ui-components/Banner';
 
 const useStyles = makeStyles((theme) => ({
     banner: {
@@ -208,8 +208,7 @@ function CreateLinkRequest({ onLink }) {
                 }}
             />
             <MenuRow>
-                <MenuInfo
-                    show
+                <Banner
                     variant="warn"
                     message={t('mergeUsers.createRequest.dialog.warn.title')}
                     classes={{ root: classes.banner }}

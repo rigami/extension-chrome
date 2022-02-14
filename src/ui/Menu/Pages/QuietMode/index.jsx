@@ -14,7 +14,7 @@ import {
     WIDGET_DTW_POSITION,
     WIDGET_DTW_SIZE,
 } from '@/enum';
-import MenuInfo from '@/ui/Menu/MenuInfo';
+import Banner from '@/ui-components/Banner';
 import SchedulerSection from './Scheduler';
 
 const headerProps = { title: 'settings:quietMode' };
@@ -26,7 +26,7 @@ function BackgroundsSection({ onSelect }) {
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('wallpapersService')} />
+            <SectionHeader title={t('wallpapers')} />
             <MenuRow
                 title={t('dimmingPower.title')}
                 description={t('dimmingPower.description')}
@@ -158,15 +158,16 @@ function FAPSettings() {
                         .update({ fapStyle: value ? BKMS_FAP_STYLE.CONTAINED : BKMS_FAP_STYLE.HIDDEN }),
                 }}
             />
-            <MenuRow>
-                <MenuInfo
-                    show={(
-                        desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
-                        && workingSpaceService.favorites.length === 0
-                    )}
-                    message={t('fapEmptyWarningMessage')}
-                />
-            </MenuRow>
+            <Collapse
+                in={(
+                    desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+                    && workingSpaceService.favorites.length === 0
+                )}
+            >
+                <MenuRow>
+                    <Banner message={t('fapEmptyWarningMessage')} />
+                </MenuRow>
+            </Collapse>
             <Collapse in={desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN}>
                 <MenuRow
                     title={t('fapStyle.title')}

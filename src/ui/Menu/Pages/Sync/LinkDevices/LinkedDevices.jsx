@@ -255,7 +255,7 @@ function LinkedDevices() {
                         <MenuRow
                             description={(
                                 <Fragment>
-                                    {device.lastActivityIp}
+                                    {device.lastActivityIp || '-'}
                                     <br />
                                     <Typography variant="caption">{t('syncDevices.lastActivityIp')}</Typography>
                                     <br />
@@ -269,12 +269,12 @@ function LinkedDevices() {
                                     <Typography variant="caption">{t('syncDevices.createDate')}</Typography>
                                     <br />
                                     <br />
-                                    {device.userAgent}
+                                    {device.userAgent || '-'}
                                     <br />
                                     <Typography variant="caption">{t('syncDevices.userAgent')}</Typography>
                                     <br />
                                     <br />
-                                    {device.id}
+                                    {device.id || '-'}
                                     <br />
                                     <Typography variant="caption">{t('syncDevices.id')}</Typography>
                                 </Fragment>

@@ -67,10 +67,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function MenuInfo(props) {
+function Banner(props) {
     const {
         component = 'li',
-        show,
         message,
         description,
         width,
@@ -97,46 +96,44 @@ function MenuInfo(props) {
     }
 
     return (
-        <Collapse in={show} className={clsx(classes.collapse, externalClasses.wrapper)}>
-            <ListItem
-                ContainerComponent={component}
-                className={clsx(
-                    classes.root,
-                    variant === 'info' && classes.info,
-                    variant === 'warn' && classes.warn,
-                    variant === 'error' && classes.error,
-                    externalClasses.root,
+        <ListItem
+            ContainerComponent={component}
+            className={clsx(
+                classes.root,
+                variant === 'info' && classes.info,
+                variant === 'warn' && classes.warn,
+                variant === 'error' && classes.error,
+                externalClasses.root,
+            )}
+            style={{ width }}
+        >
+            <Box display="flex" flexDirection="row">
+                {Icon && (
+                    <ListItemIcon className={classes.iconWrapper}>
+                        <Icon className={classes.icon} />
+                    </ListItemIcon>
                 )}
-                style={{ width }}
-            >
-                <Box display="flex" flexDirection="row">
-                    {Icon && (
-                        <ListItemIcon className={classes.iconWrapper}>
-                            <Icon className={classes.icon} />
-                        </ListItemIcon>
-                    )}
-                    <ListItemText
-                        classes={{
-                            primary: classes.messageText,
-                            secondary: classes.descriptionText,
-                        }}
-                        primary={message}
-                        secondary={description}
-                    />
-                    {actions && (
-                        <Box className={classes.actions}>
-                            {actions}
-                        </Box>
-                    )}
-                </Box>
-                {toolbarActions && (
-                    <CardActions className={classes.toolbarActions}>
-                        {toolbarActions}
-                    </CardActions>
+                <ListItemText
+                    classes={{
+                        primary: classes.messageText,
+                        secondary: classes.descriptionText,
+                    }}
+                    primary={message}
+                    secondary={description}
+                />
+                {actions && (
+                    <Box className={classes.actions}>
+                        {actions}
+                    </Box>
                 )}
-            </ListItem>
-        </Collapse>
+            </Box>
+            {toolbarActions && (
+                <CardActions className={classes.toolbarActions}>
+                    {toolbarActions}
+                </CardActions>
+            )}
+        </ListItem>
     );
 }
 
-export default MenuInfo;
+export default Banner;

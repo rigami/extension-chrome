@@ -4,10 +4,8 @@
     "currentTitle": "Это устройство",
     "otherTitle": "Другие устройства",
     "type": {
-      "EXTENSION_CHROME": "Расширение для браузера (Chrome)",
-      "WEB": "Веб-страница (Chrome)",
-      "ANDROID": "Android приложение",
-      "IOS": "IOS приложение"
+      "extension_chrome": "Расширение для браузера (Chrome)",
+      "web": "Веб-страница (Chrome)"
     },
     "notSynced": "не синхронизируется",
     "synced": "синхронизируется",
@@ -99,8 +97,8 @@
     "syncItem": {
       "settings": "Настройки",
       "bookmarks": "Закладки",
-      "backgrounds": "Фоны",
-      "backgrounds_description": "Очень сильно увеличивает размер файла"
+      "wallpapers": "Фоны",
+      "wallpapers_description": "Очень сильно увеличивает размер файла"
     },
     "restore": {
       "state": {

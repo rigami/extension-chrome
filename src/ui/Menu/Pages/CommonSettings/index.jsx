@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
+import { Divider, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
@@ -37,6 +37,7 @@ function AppSettings({ onSelect }) {
                         .update({ defaultActivity: value ? ACTIVITY.BOOKMARKS : ACTIVITY.DESKTOP }),
                 }}
             />
+            <Divider variant="middle" />
             <SectionHeader title={t('appearance')} />
             <MenuRow
                 title={t('darkThemeBackdrop')}
