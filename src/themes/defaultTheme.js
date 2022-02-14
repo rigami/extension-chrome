@@ -7,13 +7,13 @@ const baseThemeValues = {
     palette: {
         type: 'light',
         primary: {
-            light: '#28d27c',
-            main: '#00BA61',
-            dark: '#008c4a',
+            light: '#DEF8F2',
+            main: '#23CFA6',
+            dark: '#12AB86',
             contrastText: '#fff',
         },
         secondary: {
-            main: '#3386E4',
+            main: '#23CFA6',
             contrastText: '#fff',
         },
         warning: {
@@ -161,8 +161,8 @@ const theme = {
                 '&:active': { boxShadow: 'none' },
             },
             containedPrimary: {
-                color: baseTheme.palette.primary.main,
-                backgroundColor: alpha(baseTheme.palette.primary.main, 0.06),
+                color: baseTheme.palette.primary.dark,
+                backgroundColor: baseTheme.palette.primary.light,
                 '&:hover': {
                     color: baseTheme.palette.common.white,
                     backgroundColor: baseTheme.palette.primary.main,
@@ -180,7 +180,7 @@ const theme = {
                     duration: baseTheme.transitions.duration.standard,
                     easing: baseTheme.transitions.easing.easeInOut,
                 }),
-                '&.Mui-selected': { color: baseTheme.palette.primary.main },
+                '&.Mui-selected': { color: baseTheme.palette.primary.dark },
             },
             labelIcon: {
                 minHeight: baseTheme.spacing(6),
