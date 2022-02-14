@@ -9,7 +9,6 @@ import {
     List,
     AppBar,
     Toolbar,
-    IconButton,
     Typography,
 } from '@material-ui/core';
 import {
@@ -18,10 +17,10 @@ import {
     BackupRounded as SyncIcon,
     WidgetsRounded as WidgetsIcon,
     DeveloperBoardRounded as DevToolsIcon,
-    ArrowBackRounded as BackIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import {
     SelfImprovementRounded as QuietModeIcon,
     VolunteerActivismRounded as ShareIcon,
@@ -57,11 +56,6 @@ const useStyles = makeStyles((theme) => ({
     toolbar: {
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
-    },
-    backButton: {
-        padding: theme.spacing(1),
-        marginRight: theme.spacing(2),
-        color: theme.palette.getContrastText(theme.palette.background.paper),
     },
     title: {
         fontSize: '22px',
@@ -105,46 +99,40 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadius,
         padding: theme.spacing(1),
     },
+    headerIcon: { alignSelf: 'center' },
 }));
 
 const general = [
     {
         icon: <QuietModeIcon />,
         page: quietModePage,
-        color: '#2675F0',
     },
     {
         icon: <WidgetsIcon />,
         page: widgetsPage,
-        color: '#e72575',
     },
     {
         icon: <SettingsIcon />,
         page: commonSettingsPage,
-        color: '#F88317',
     },
     {
         icon: <SyncIcon />,
         page: syncPage,
-        color: '#0f9d58',
     },
     !PRODUCTION_MODE && {
         icon: <DevToolsIcon />,
         page: devTools,
-        color: '#49C5B6',
     },
 ].filter((isAvailable) => isAvailable);
 const additional = [
     {
         icon: <AboutIcon />,
         page: aboutPage,
-        color: '#9C27B0',
     },
 ];
 
 function Row(props) {
     const {
-        color,
         icon: Icon,
         page,
         selected,
@@ -242,7 +230,7 @@ function GeneralMenu({ selected, onSelect }) {
     );
 }
 
-function PageHeader({ onBack }) {
+function PageHeader() {
     const classes = useStyles();
     const { t } = useTranslation(['settings']);
 
@@ -254,23 +242,17 @@ function PageHeader({ onBack }) {
             className={classes.root}
         >
             <Toolbar className={classes.toolbar}>
-                <IconButton
-                    data-ui-path="settings.back"
-                    className={classes.backButton}
-                    onClick={() => onBack()}
-                >
-                    <BackIcon />
-                </IconButton>
+                <ListItemAvatar className={clsx(classes.iconContainer, classes.headerIcon)}>
+                    <SettingsIcon className={classes.icon} />
+                </ListItemAvatar>
                 <Typography className={classes.title} variant="h6" noWrap>{t('title')}</Typography>
             </Toolbar>
         </AppBar>
     );
 }
 
-function MenuList({ selected, onClose, onSelect }) {
+function MenuList({ selected, onSelect }) {
     const classes = useStyles();
-
-    console.log('selected:', selected);
 
     return (
         <List
@@ -278,7 +260,7 @@ function MenuList({ selected, onClose, onSelect }) {
             className={classes.menuList}
             style={{ width: 280 }}
         >
-            <PageHeader onBack={onClose} />
+            <PageHeader />
             <GeneralMenu
                 selected={selected}
                 onSelect={onSelect}
