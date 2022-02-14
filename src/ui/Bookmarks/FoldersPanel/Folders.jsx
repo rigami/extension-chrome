@@ -30,7 +30,7 @@ import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
     expandIcon: {
-        borderRadius: theme.spacing(0.5),
+        borderRadius: theme.shape.borderRadius,
         padding: 2,
         marginRight: 'auto',
         '& svg': {
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         paddingLeft: theme.spacing(0.75),
         paddingRight: theme.spacing(0.75),
-        borderRadius: theme.shape.borderRadius,
+        borderRadius: theme.shape.borderRadiusButton,
         fontSize: '0.9rem',
         fontWeight: 550,
         justifyContent: 'flex-start',

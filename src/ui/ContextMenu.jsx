@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         backgroundColor: alpha(theme.palette.background.paper, 0.8),
         backdropFilter: 'blur(35px) brightness(110%) contrast(1.2)',
-        borderRadius: theme.shape.borderRadiusBold,
+        borderRadius: theme.shape.borderRadiusButtonBold,
     },
 }));
 

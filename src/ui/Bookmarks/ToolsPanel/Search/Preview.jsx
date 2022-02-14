@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     placeholder: {
         width: '100%',
         textAlign: 'center',
-        fontSize: '1rem',
+        fontSize: theme.typography.body2.fontSize,
         fontFamily: theme.typography.specialFontFamily,
         fontWeight: 600,
         color: theme.palette.text.secondary,

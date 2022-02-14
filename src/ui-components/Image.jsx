@@ -10,9 +10,9 @@ import clsx from 'clsx';
 import { BKMS_VARIANT } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
-    roundedIconStub: { borderRadius: theme.shape.borderRadiusBold },
+    roundedIconStub: { borderRadius: theme.shape.borderRadiusButtonBold },
     roundedIcon: {
-        borderRadius: theme.shape.borderRadiusBold,
+        borderRadius: theme.shape.borderRadiusButtonBold,
         color: theme.palette.getContrastText(theme.palette.background.backdrop),
         fontWeight: 800,
         fontFamily: theme.typography.specialFontFamily,

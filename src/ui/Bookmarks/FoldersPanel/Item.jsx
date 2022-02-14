@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: theme.spacing(1),
         position: 'relative',
         fontWeight: 550,
-        borderRadius: theme.shape.borderRadius,
+        borderRadius: theme.shape.borderRadiusButton,
         width: '100%',
         height: 30,
     },

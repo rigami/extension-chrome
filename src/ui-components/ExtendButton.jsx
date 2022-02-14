@@ -9,7 +9,7 @@ import { makeStyles, alpha } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     card: {
-        borderRadius: theme.shape.borderRadiusButton,
+        borderRadius: theme.shape.borderRadiusBold,
         display: 'flex',
         flexDirection: 'column',
         background: 'none',

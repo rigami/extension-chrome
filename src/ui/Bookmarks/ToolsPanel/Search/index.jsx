@@ -58,8 +58,8 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'flex-start',
-        borderTopRightRadius: theme.shape.borderRadiusButton,
-        borderBottomRightRadius: theme.shape.borderRadiusButton,
+        borderTopRightRadius: theme.shape.borderRadiusBold,
+        borderBottomRightRadius: theme.shape.borderRadiusBold,
         pointerEvents: 'none',
     },
     resetIcon: {
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     extend: {
         '& $resetIconWrapper': {
             height: 36,
-            borderBottomRightRadius: theme.shape.borderRadiusButton,
+            borderBottomRightRadius: theme.shape.borderRadiusBold,
         },
     },
     open: {

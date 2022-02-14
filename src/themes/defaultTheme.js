@@ -38,7 +38,8 @@ const baseThemeValues = {
     shape: {
         borderRadius: 4,
         borderRadiusButton: 6,
-        borderRadiusBold: 8,
+        borderRadiusButtonBold: 8,
+        borderRadiusBold: 10,
         borderRadiusBolder: 12,
         dataCard: {
             width: 210,
@@ -174,7 +175,7 @@ const theme = {
                 textTransform: 'none',
                 fontWeight: 800,
                 zIndex: 1,
-                borderRadius: baseTheme.shape.borderRadiusBold,
+                borderRadius: baseTheme.shape.borderRadiusButtonBold,
                 transition: baseTheme.transitions.create(['color'], {
                     duration: baseTheme.transitions.duration.standard,
                     easing: baseTheme.transitions.easing.easeInOut,
@@ -258,15 +259,15 @@ const theme = {
             },
             indicator: {
                 height: '100%',
-                borderRadius: baseTheme.shape.borderRadiusBold,
+                borderRadius: baseTheme.shape.borderRadiusButtonBold,
                 backgroundColor: baseTheme.palette.background.paper,
             },
         },
         MuiFilledInput: {
             root: {
-                borderRadius: baseTheme.shape.borderRadiusBold,
-                borderTopLeftRadius: baseTheme.shape.borderRadiusBold,
-                borderTopRightRadius: baseTheme.shape.borderRadiusBold,
+                borderRadius: baseTheme.shape.borderRadiusButtonBold,
+                borderTopLeftRadius: baseTheme.shape.borderRadiusButtonBold,
+                borderTopRightRadius: baseTheme.shape.borderRadiusButtonBold,
                 '&.Mui-focused': { boxShadow: `${alpha(baseTheme.palette.primary.main, 0.4)} 0px 0px 0px 3px` },
             },
             inputMarginDense: {

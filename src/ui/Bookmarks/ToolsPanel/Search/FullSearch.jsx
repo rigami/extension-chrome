@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
         border: `1px solid ${alpha(theme.palette.background.backdrop, 0.52)}`,
         overflow: 'hidden',
         boxSizing: 'border-box',
-        borderRadius: theme.shape.borderRadiusButton,
+        borderRadius: theme.shape.borderRadiusBold,
         backgroundColor: alpha(theme.palette.background.paper, 0),
     },
     openFullSearch: {

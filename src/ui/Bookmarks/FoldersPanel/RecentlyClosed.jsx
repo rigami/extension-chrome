@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 400,
         width: 400,
         minHeight: 400,
-        borderRadius: theme.shape.borderRadiusBold,
+        borderRadius: theme.shape.borderRadiusButtonBold,
     },
     listContainer: {
         display: 'flex',

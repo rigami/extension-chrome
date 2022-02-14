@@ -1,16 +1,12 @@
 import React from 'react';
-import {
-    Box, CardActionArea, CardHeader, Tooltip,
-} from '@material-ui/core';
-import { alpha, makeStyles } from '@material-ui/core/styles';
+import { Box, CardActionArea, CardHeader } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
-import { UnfoldLess as LessIcon, UnfoldMore as MoreIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import LogoIcon from '@/images/logo-icon.svg';
 import LogoText from '@/images/logo-text.svg';
 import Subheader from '@/ui/Bookmarks/FoldersPanel/Subheader';
-import { ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
 import LastClosed from './RecentlyClosed';
 import Folders from './Folders';
 import { NULL_UUID } from '@/utils/generate/uuid';
@@ -24,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
         height: '100vh',
         position: 'sticky',
         top: 0,
-        // backgroundColor: alpha(theme.palette.background.backdrop, 0.3),
         paddingTop: theme.spacing(1.75),
     },
     '@media (max-width: 1700px)': { root: { width: 220 } },
@@ -58,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     greetingViewBtn: {
         marginLeft: theme.spacing(1),
         width: `calc(100% - ${theme.spacing(1)}px)`,
-        borderRadius: theme.shape.borderRadius,
+        borderRadius: theme.shape.borderRadiusButton,
     },
 }));
 
@@ -69,7 +64,10 @@ function FoldersPanel() {
 
     return (
         <Box className={classes.root}>
-            <CardActionArea className={classes.greetingViewBtn} onClick={() => searchService.setSelectFolder(NULL_UUID)}>
+            <CardActionArea
+                className={classes.greetingViewBtn}
+                onClick={() => searchService.setSelectFolder(NULL_UUID)}
+            >
                 <CardHeader
                     avatar={(<LogoIcon className={classes.appLogoIcon} />)}
                     title={(<LogoText className={classes.appLogoText} />)}
