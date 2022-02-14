@@ -18,7 +18,7 @@ import { useCoreService } from '@/stores/app/core';
 const useStyles = makeStyles((theme) => ({
     menu: {
         width: 230,
-        padding: theme.spacing(0.75, 0),
+        padding: theme.spacing(0.5, 0),
         boxShadow: `inset 0px 0px 0px 1px ${theme.palette.divider}`,
         borderRadius: 'inherit',
     },
@@ -27,10 +27,15 @@ const useStyles = makeStyles((theme) => ({
         fontStyle: 'italic',
     },
     divider: {
-        marginTop: theme.spacing(0.75),
-        marginBottom: theme.spacing(0.75),
+        marginTop: theme.spacing(0.5),
+        marginBottom: theme.spacing(0.5),
     },
-    item: { padding: theme.spacing(0.5, 1.5) },
+    item: {
+        padding: theme.spacing(0.5, 1.5),
+        margin: theme.spacing(0, 0.5),
+        width: `calc(100% - ${theme.spacing(1)}px)`,
+        borderRadius: theme.shape.borderRadiusButton,
+    },
     icon: {
         minWidth: 22 + 12,
         display: 'flex',
