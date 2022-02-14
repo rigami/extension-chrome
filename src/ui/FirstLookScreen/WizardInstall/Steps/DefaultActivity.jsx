@@ -1,27 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import { ButtonBase, CardActions, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { observer } from 'mobx-react-lite';
 import { ACTIVITY } from '@/enum';
 import SchemeBackground from '@/images/scheme_background.svg';
 import SchemeBookmarks from '@/images/scheme_bookmarks.svg';
+import { useAppStateService } from '@/stores/app/appState';
 
 const useStyles = makeStyles((theme) => ({
     checkboxButton: {
         padding: theme.spacing(2),
-        borderRadius: theme.shape.borderRadius,
+        borderRadius: theme.shape.borderRadiusBolder,
         border: '1px solid transparent',
         display: 'flex',
         flexDirection: 'column',
     },
     activeCheckboxButton: {
         backgroundColor: alpha(theme.palette.primary.main, 0.1),
-        border: `1px solid ${theme.palette.primary.main}`,
+        border: `1px solid ${alpha(theme.palette.primary.main, 0.4)}`,
     },
     image: {
-        width: 420,
-        height: 298,
+        width: '100%',
+        height: 'auto',
         backgroundColor: theme.palette.background.paper,
         marginBottom: theme.spacing(2),
         borderRadius: theme.shape.borderRadius,
@@ -45,34 +47,27 @@ function CheckboxWithImage({ active, image, subtitle, onClick }) {
     );
 }
 
-function DefaultActivity({ defaultSettings, onMutationSettings }) {
+function DefaultActivity() {
     const classes = useStyles();
     const { t } = useTranslation('firstLook');
-    const [activity, setActivity] = useState(defaultSettings.activity);
-
-    useEffect(() => {
-        onMutationSettings({
-            ...defaultSettings,
-            activity,
-        });
-    }, [activity]);
+    const appStateService = useAppStateService();
 
     return (
         <CardActions className={classes.checkboxesContainer}>
             <CheckboxWithImage
-                active={activity === ACTIVITY.DESKTOP}
+                active={appStateService.settings.defaultActivity === ACTIVITY.DESKTOP}
                 image={SchemeBackground}
                 subtitle={t('defaultActivityQuestion.button.desktop')}
-                onClick={() => setActivity(ACTIVITY.DESKTOP)}
+                onClick={() => appStateService.settings.update({ defaultActivity: ACTIVITY.DESKTOP })}
             />
             <CheckboxWithImage
-                active={activity === ACTIVITY.BOOKMARKS}
+                active={appStateService.settings.defaultActivity === ACTIVITY.BOOKMARKS}
                 image={SchemeBookmarks}
                 subtitle={t('defaultActivityQuestion.button.bookmarks')}
-                onClick={() => setActivity(ACTIVITY.BOOKMARKS)}
+                onClick={() => appStateService.settings.update({ defaultActivity: ACTIVITY.BOOKMARKS })}
             />
         </CardActions>
     );
 }
 
-export default DefaultActivity;
+export default observer(DefaultActivity);

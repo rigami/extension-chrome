@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { APP_STATE } from '@/stores/app/core/service';
-import { useWorkingSpaceService } from '@/stores/app/workingSpace';
-import { useAppStateService } from '@/stores/app/appState';
 import MigrateScreen from '@/ui/MigrateScreen';
 import packageJson from '@/../package.json';
 import { useCoreService } from '@/stores/app/core';
@@ -13,33 +11,6 @@ const STATE = {
     FIRST_CONTACT: 'FIRST_CONTACT',
     MIGRATE: 'MIGRATE',
 };
-
-function ApplyWizardSettingsProvider({ children }) {
-    const coreService = useCoreService();
-    const workingSpaceService = useWorkingSpaceService();
-    const appStateService = useAppStateService();
-    const { widgetsService } = appStateService;
-
-    const { wizardSettings } = coreService.storage.data;
-
-    if (!wizardSettings) return children;
-
-    coreService.storage.update({
-        wizardSettings: null,
-        userName: wizardSettings.userName,
-    });
-    if (BUILD === 'full') {
-        workingSpaceService.settings.update({ fapStyle: wizardSettings.fapStyle });
-    }
-    widgetsService.settings.update({
-        useDate: wizardSettings.useDate,
-        useTime: wizardSettings.useTime,
-    });
-    appStateService.settings.update({ defaultActivity: wizardSettings.activity });
-    appStateService.setActivity(wizardSettings.activity);
-
-    return children;
-}
 
 function InitApp({ children }) {
     const coreService = useCoreService();
@@ -82,4 +53,3 @@ function InitApp({ children }) {
 }
 
 export default observer(InitApp);
-export { ApplyWizardSettingsProvider };

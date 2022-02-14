@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     contentWrapper: { margin: theme.spacing(0, -4) },
 }));
 
-function Login({ defaultSettings, onCancel, onEnd }) {
+function Login({ onCancel, onEnd }) {
     const classes = useStyles();
     const { t } = useTranslation('firstLook');
 

@@ -6,8 +6,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Stub from '@/ui-components/Stub';
 import { useCoreService } from '@/stores/app/core';
 import SmallProgress from '@/ui/FirstLookScreen/SmallProgress';
-import { ACTIVITY } from '@/enum';
-import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
 import packageJson from '@/../package.json';
 import { APP_STATE, PREPARE_PROGRESS } from '@/stores/app/core/service';
 import defaultSettings from '@/config/settings';
@@ -16,7 +14,7 @@ import Hello from './Hello';
 import WizardInstall from './WizardInstall';
 import Login from './Login';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
@@ -28,14 +26,6 @@ const INSTALL_STAGE = {
     WIZARD: 'WIZARD',
     LOGIN: 'LOGIN',
     WAIT_END_INSTALL: 'WAIT_END_INSTALL',
-};
-
-const defaultWizardSettings = {
-    activity: ACTIVITY.DESKTOP,
-    useTime: true,
-    useDate: true,
-    fapStyle: BUILD === 'full' ? FAP_STYLE.PRODUCTIVITY : FAP_STYLE.HIDDEN,
-    userName: undefined,
 };
 
 function FirstLookScreen({ onStart, style: externalStyle = {} }) {
@@ -76,9 +66,7 @@ function FirstLookScreen({ onStart, style: externalStyle = {} }) {
         coreService.appState = APP_STATE.WORK;
     };
 
-    const applySettings = (newSettings) => {
-        coreService.storage.update({ wizardSettings: newSettings });
-
+    const applySettings = () => {
         if (coreService.storage.data.factoryResetProgress) {
             setStage(INSTALL_STAGE.WAIT_END_INSTALL);
         } else {
@@ -93,7 +81,7 @@ function FirstLookScreen({ onStart, style: externalStyle = {} }) {
             )}
             {stage === INSTALL_STAGE.HELLO && (
                 <Hello
-                    onApplyDefaultSetting={() => applySettings(defaultWizardSettings)}
+                    onApplyDefaultSetting={() => applySettings()}
                     onStartWizard={() => { setStage(INSTALL_STAGE.WIZARD); }}
                     onLogin={() => { setStage(INSTALL_STAGE.LOGIN); }}
                 />
@@ -101,16 +89,14 @@ function FirstLookScreen({ onStart, style: externalStyle = {} }) {
             {stage === INSTALL_STAGE.WAIT_END_INSTALL && (<WaitEndInstall onDone={handleStart} />)}
             {stage === INSTALL_STAGE.WIZARD && (
                 <WizardInstall
-                    defaultSettings={defaultWizardSettings}
                     onCancel={() => setStage(INSTALL_STAGE.HELLO)}
-                    onEnd={(wizardSettings) => applySettings(wizardSettings)}
+                    onEnd={() => applySettings()}
                 />
             )}
             {stage === INSTALL_STAGE.LOGIN && (
                 <Login
-                    defaultSettings={defaultWizardSettings}
                     onCancel={() => setStage(INSTALL_STAGE.HELLO)}
-                    onEnd={(wizardSettings) => applySettings(wizardSettings)}
+                    onEnd={() => applySettings()}
                 />
             )}
         </Box>

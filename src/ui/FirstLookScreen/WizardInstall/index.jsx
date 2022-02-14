@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
     Box,
     Button,
-    Container,
     DialogActions,
     Typography,
 } from '@material-ui/core';
@@ -66,10 +65,9 @@ const questions = [
     },
 ].filter((isExist) => isExist);
 
-function WizardInstall({ defaultSettings, onCancel, onEnd }) {
+function WizardInstall({ onCancel, onEnd }) {
     const classes = useStyles();
     const { t } = useTranslation('firstLook');
-    const [settings, setSettings] = useState(defaultSettings);
     const [question, setQuestion] = useState(0);
     const [disabledNext, setDisabledNext] = useState(false);
 
@@ -83,11 +81,7 @@ function WizardInstall({ defaultSettings, onCancel, onEnd }) {
     };
 
     const handleEnd = () => {
-        onEnd(settings);
-    };
-
-    const handleMutationSettings = (newSettings) => {
-        setSettings(newSettings);
+        onEnd();
     };
 
     const Question = questions[question].ui;
@@ -106,8 +100,6 @@ function WizardInstall({ defaultSettings, onCancel, onEnd }) {
             </Typography>
             <Typography variant="h3">{t(`${questions[question].id}Question.title`)}</Typography>
             <Question
-                defaultSettings={settings}
-                onMutationSettings={handleMutationSettings}
                 onNext={question === questions.length - 1 ? handleEnd : handleNext}
                 onDisabledNext={(isDisabled) => setDisabledNext(isDisabled)}
             />

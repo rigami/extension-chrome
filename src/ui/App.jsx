@@ -13,7 +13,7 @@ import { CoreProvider } from '@/stores/app/core';
 import { AppStateProvider } from '@/stores/app/appState';
 import { WorkingSpaceProvider } from '@/stores/app/workingSpace';
 import { ContextMenuProvider } from '@/stores/app/ContextMenuProvider';
-import InitApp, { ApplyWizardSettingsProvider } from '@/stores/app/InitApp';
+import InitApp from '@/stores/app/InitApp';
 import initSentry from '@/config/sentry/app';
 import FabMenu from '@/ui/Menu/FabMenu';
 import Menu from '@/ui/Menu';
@@ -52,7 +52,6 @@ function RootApp({ onChangeTheme }) {
                 UploadBGForm,
                 GlobalModals,
                 ContextMenuProvider,
-                ApplyWizardSettingsProvider,
             ]}
         >
             <Desktop />
