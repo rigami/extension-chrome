@@ -59,7 +59,7 @@ class FactorySettingsService {
         console.log('Fetch BG');
         progressCallback(35, PREPARE_PROGRESS.FETCH_BG);
 
-        const { response: bgListResponse } = await api.get('wallpapers/collection/editor-choice?count=1&type=image').catch(() => ({ response: [] }));
+        const { response: bgListResponse } = await api.get('wallpapers/collection/editors-choice?count=1&type=image').catch(() => ({ response: [] }));
 
         progressCallback(70, PREPARE_PROGRESS.SAVE_BG);
 

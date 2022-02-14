@@ -49,7 +49,7 @@ export default {
         stream: {
             prefetchCount: 5,
             preloadMetaCount: 10,
-            collections: ['editor-choice'],
+            collections: ['editors-choice'],
             queryPresets: [
                 'Nature',
                 'Minimalism',

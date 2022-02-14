@@ -224,7 +224,7 @@ function Stream({ onSelect }) {
                                 classes.chip,
                                 classes.recommendedChip,
                                 classes.editorChoiceChip,
-                                selected?.type === 'collection' && selected?.value === 'editor-choice' && classes.selected,
+                                selected?.type === 'collection' && selected?.value === 'editors-choice' && classes.selected,
                             )}
                             classes={{ icon: classes.chipIcon }}
                             variant="outlined"
@@ -234,7 +234,7 @@ function Stream({ onSelect }) {
                                 coreService.storage.update({
                                     wallpapersStreamQuery: {
                                         type: 'collection',
-                                        value: 'editor-choice',
+                                        value: 'editors-choice',
                                     },
                                     bgsStream: [],
                                     prepareBGStream: null,
