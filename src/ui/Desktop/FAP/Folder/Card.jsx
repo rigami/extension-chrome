@@ -3,7 +3,7 @@ import { Card, CardActionArea, CardHeader } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import clsx from 'clsx';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 
 const useStyles = makeStyles((theme) => ({
     root: { width: theme.shape.dataCard.width },
@@ -31,10 +31,10 @@ function FolderCard(props) {
         ...other
     } = props;
     const classes = useStyles();
-    const contextMenu = useContextMenu({
+    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: 'folder',
-    });
+    }));
 
     return (
         <Card
@@ -44,7 +44,7 @@ function FolderCard(props) {
         >
             <CardActionArea
                 onClick={onClick}
-                onContextMenu={contextMenu}
+                onContextMenu={dispatchContextMenu}
             >
                 <CardHeader
                     avatar={<FolderIcon />}

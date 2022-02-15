@@ -8,7 +8,7 @@ import { CloseRounded as CloseIcon, StarRounded as FavoriteIcon } from '@materia
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 import getUniqueColor from '@/utils/generate/uniqueColor';
 
 const useStyles = makeStyles((theme) => ({
@@ -102,10 +102,10 @@ function Tag(props) {
     const classes = useStyles();
     const { t } = useTranslation(['tag']);
     const workingSpaceService = useWorkingSpaceService();
-    const contextMenu = useContextMenu({
+    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: 'tag',
-    });
+    }));
     const [isPin, setIsPin] = useState(workingSpaceService.findFavorite({
         itemId: id,
         itemType: 'tag',
@@ -154,7 +154,7 @@ function Tag(props) {
                 borderColor: isSelect && repairColor,
             }}
             onClick={onClick}
-            onContextMenu={contextMenu}
+            onContextMenu={dispatchContextMenu}
         >
             <div className={classes.colorIcon} style={{ backgroundColor: repairColor }} />
             <Typography component="span" className={classes.text}>

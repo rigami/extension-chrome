@@ -21,8 +21,8 @@ import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { useCoreService } from '@/stores/app/core';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
-import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
+import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -103,7 +103,7 @@ function Folder(props) {
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
     const [folders, setFolders] = useState([]);
-    const contextMenu = useContextMenu(() => [
+    const { dispatchContextMenu } = useContextMenuService(() => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
@@ -139,7 +139,7 @@ function Folder(props) {
             onClick={() => {
                 if (shrink) onBack();
             }}
-            onContextMenu={contextMenu}
+            onContextMenu={dispatchContextMenu}
             elevation={0}
         >
             <CardHeader

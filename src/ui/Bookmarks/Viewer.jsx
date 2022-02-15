@@ -1,5 +1,5 @@
-import React, { Fragment, useCallback, useEffect } from 'react';
-import { Box, Fab, Tooltip } from '@material-ui/core';
+import React, { useCallback, useEffect } from 'react';
+import { Box, Fab } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -8,10 +8,10 @@ import FoldersPanel from '@/ui/Bookmarks/FoldersPanel';
 import ToolsPanel from '@/ui/Bookmarks/ToolsPanel';
 import Scrollbar from '@/ui-components/CustomScroll';
 import { useCoreService } from '@/stores/app/core';
-import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
+import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 import PrimaryContent from '@/ui/Bookmarks/PrimaryContent';
 import SecondaryContent from '@/ui/Bookmarks/SecondaryContent';
 import { NULL_UUID } from '@/utils/generate/uuid';
@@ -75,7 +75,7 @@ function Bookmarks() {
         columnsCount: 0,
         maxColumnsCount: 0,
     }));
-    const contextMenu = useContextMenu(() => [
+    const { dispatchContextMenu, activeItem } = useContextMenuService(() => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
@@ -90,6 +90,7 @@ function Bookmarks() {
             },
         }),
     ]);
+
     const onResize = useCallback((width) => {
         store.width = width;
         store.maxColumnsCount = Math.floor((width - 48 - 32 + 16) / (theme.shape.dataCard.width + 16));
@@ -126,7 +127,7 @@ function Bookmarks() {
             className={classes.root}
             display="flex"
             flexGrow={1}
-            onContextMenu={contextMenu}
+            onContextMenu={(event) => dispatchContextMenu(event)}
         >
             <FoldersPanel />
             <Box flexGrow={1} overflow="auto" ref={ref}>

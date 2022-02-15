@@ -12,7 +12,7 @@ import Nest from '@/utils/helpers/Nest';
 import { CoreProvider } from '@/stores/app/core';
 import { AppStateProvider } from '@/stores/app/appState';
 import { WorkingSpaceProvider } from '@/stores/app/workingSpace';
-import { ContextMenuProvider } from '@/stores/app/ContextMenuProvider';
+import { ContextMenuProvider } from '@/stores/app/contextMenu';
 import InitApp from '@/stores/app/InitApp';
 import initSentry from '@/config/sentry/app';
 import FabMenu from '@/ui/Menu/FabMenu';

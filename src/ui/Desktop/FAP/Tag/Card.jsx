@@ -3,7 +3,7 @@ import { Card, CardActionArea, CardHeader } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { LabelRounded as TagIcon } from '@material-ui/icons';
 import clsx from 'clsx';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 
 const useStyles = makeStyles((theme) => ({
     root: { width: theme.shape.dataCard.width },
@@ -32,10 +32,10 @@ function TagCard(props) {
         ...other
     } = props;
     const classes = useStyles();
-    const contextMenu = useContextMenu({
+    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: 'tag',
-    });
+    }));
 
     return (
         <Card
@@ -45,7 +45,7 @@ function TagCard(props) {
         >
             <CardActionArea
                 onClick={onClick}
-                onContextMenu={contextMenu}
+                onContextMenu={dispatchContextMenu}
             >
                 <CardHeader
                     avatar={<TagIcon style={{ color }} />}

@@ -17,7 +17,7 @@ import { observer } from 'mobx-react-lite';
 import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 import Tag from '../Tag';
 import Collapser from '@/ui/Bookmarks/Tag/Collapser';
 
@@ -198,10 +198,10 @@ function CardLink(props) {
         itemId: id,
         itemType: 'bookmark',
     }));
-    const contextMenu = useContextMenu({
+    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: 'bookmark',
-    });
+    }));
 
     const handleClick = (event) => {
         if (onClick) {
@@ -249,7 +249,7 @@ function CardLink(props) {
                 <CardActionArea
                     className={classes.rootActionWrapper}
                     onMouseUp={handleClick}
-                    onContextMenu={!preview ? contextMenu : undefined}
+                    onContextMenu={!preview ? dispatchContextMenu : undefined}
                 >
                     {icoVariant !== BKMS_VARIANT.POSTER && (
                         <Box className={classes.imageWrapper}>

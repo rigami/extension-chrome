@@ -24,9 +24,11 @@ import { FETCH } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import asyncAction from '@/utils/helpers/asyncAction';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
-import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
+import { NULL_UUID } from '@/utils/generate/uuid';
+import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
+import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 
 const useStyles = makeStyles((theme) => ({
     expandIcon: {
@@ -89,12 +91,10 @@ function FolderItem(props) {
     const { t } = useTranslation(['folder', 'bookmark']);
     const rootRef = useRef();
     const workingSpaceService = useWorkingSpaceService();
-    const contextMenu = useContextMenu({
+    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: 'folder',
-        disableRemove: id === FIRST_UUID,
-        disableMove: id === FIRST_UUID,
-    });
+    }));
     const [isPin, setIsPin] = useState(workingSpaceService.findFavorite({
         itemId: id,
         itemType: 'folder',
@@ -113,7 +113,7 @@ function FolderItem(props) {
             level={level}
             disabled={isDisabled}
             selected={isSelected}
-            onContextMenu={contextMenu}
+            onContextMenu={dispatchContextMenu}
             title={name}
             onClick={() => {
                 if (isExpand && isSelected) onExpandChange();

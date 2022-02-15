@@ -4,8 +4,6 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     RefreshRounded as RefreshIcon,
     AddPhotoAlternateRounded as UploadFromComputerIcon,
-    FavoriteBorder as SaveBgIcon,
-    Favorite as SavedBgIcon,
     OpenInNewRounded as OpenSourceIcon,
     CloseRounded as CloseIcon,
     ArrowUpwardRounded as ExpandDesktopIcon,
@@ -34,20 +32,18 @@ import {
     BG_SELECT_MODE, BG_SHOW_MODE,
     BG_SHOW_STATE,
     BG_SOURCE, BG_TYPE,
-    FETCH,
     THEME,
 } from '@/enum';
 import { useAppStateService } from '@/stores/app/appState';
-import { ContextMenuItem, ContextMenuDivider } from '@/stores/app/entities/contextMenu';
+import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import FAP from '@/ui/Desktop/FAP';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
 import { useCoreService } from '@/stores/app/core';
 import Wallpaper from './Wallpaper';
 import Widgets from './Widgets';
 import WallpaperSwitchService from '@/ui/Desktop/wallpaperSwitchService';
-import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -145,19 +141,15 @@ function Desktop() {
         coreService,
         wallpapersSettings: wallpapersService,
     }));
-
-    const contextMenu = useContextMenu(() => [
-        ...(BUILD === 'full' ? [
-            new ContextMenuItem({
-                title: t('bookmark:button.add'),
-                icon: AddBookmarkIcon,
-                onClick: () => {
-                    coreService.localEventBus.call('bookmark/create');
-                },
-            }),
-            new ContextMenuDivider(),
-        ] : []),
-        ...(wallpapersService.settings.kind !== BG_SELECT_MODE.SPECIFIC ? [
+    const { dispatchContextMenu } = useContextMenuService(() => [
+        BUILD === 'full' && new ContextMenuItem({
+            title: t('bookmark:button.add'),
+            icon: AddBookmarkIcon,
+            onClick: () => {
+                coreService.localEventBus.call('bookmark/create');
+            },
+        }),
+        wallpapersService.settings.kind !== BG_SELECT_MODE.SPECIFIC && [
             new ContextMenuItem({
                 title: wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH
                     ? t('background:fetchingNextBG')
@@ -170,8 +162,8 @@ function Desktop() {
                 } : {},
                 onClick: () => eventToBackground('wallpapers/next'),
             }),
-        ] : []),
-        ...(wallpaperSwitchService.currentDisplayed?.source !== BG_SOURCE.USER ? [
+        ],
+        wallpaperSwitchService.currentDisplayed?.source !== BG_SOURCE.USER && [
             new ContextMenuItem({
                 title: (
                     !wallpaperSwitchService.currentDisplayed?.isLiked ? t('background:liked') : t('background:button.like')
@@ -200,8 +192,7 @@ function Desktop() {
                 icon: OpenSourceIcon,
                 onClick: () => window.open(wallpaperSwitchService.currentDisplayed?.sourceLink, '_blank'),
             }),
-        ] : []),
-        new ContextMenuDivider(),
+        ],
         new ContextMenuItem({
             title: t('background:button.add'),
             icon: UploadFromComputerIcon,
@@ -455,7 +446,7 @@ function Desktop() {
                         }px))`
                         : '',
                 }}
-                onContextMenu={contextMenu}
+                onContextMenu={dispatchContextMenu}
             >
                 {store.isRender && (
                     <React.Fragment>

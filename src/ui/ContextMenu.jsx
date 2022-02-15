@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
     Menu,
     ListItem,
@@ -13,7 +13,6 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import { reaction } from 'mobx';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { useCoreService } from '@/stores/app/core';
 
 const useStyles = makeStyles((theme) => ({
     menu: {
@@ -71,32 +70,25 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function ContextMenu() {
+function ContextMenu({ service }) {
     const { t } = useTranslation();
     const classes = useStyles();
-    const coreService = useCoreService();
     const store = useLocalObservable(() => ({
         position: null,
-        actions: [],
+        actions: null,
         reactions: [],
-        onOpen: null,
-        onClose: null,
         userClassName: null,
     }));
     const [, setForceRender] = useState(0);
 
     useEffect(() => {
-        const listenId = coreService.localEventBus.on('system/contextMenu', (props) => {
-            store.onOpen = props.onOpen;
-            store.onClose = props.onClose;
-            store.position = props.position;
-            store.actions = props.actions;
-            store.reactions = props.reactions || [];
-            store.userClassName = props.className;
-        });
+        if (!service.activeItem) return;
 
-        return () => coreService.localEventBus.removeListener(listenId);
-    }, []);
+        store.position = service.activeItem.position;
+        store.actions = service.activeItem.actions;
+        store.reactions = service.activeItem.reactions || [];
+        store.userClassName = service.activeItem.className;
+    }, [service.activeItem]);
 
     useEffect(() => {
         store.reactions.forEach((rule) => {
@@ -107,10 +99,12 @@ function ContextMenu() {
     }, [store.reactions.length]);
 
     useEffect(() => {
-        if (store.position) store.onOpen?.();
+        if (store.position) service.handleOpen();
     }, [store.position]);
 
-    const calcActions = typeof store.actions === 'function' ? store.actions() : store.actions;
+    if (!store.actions) return null;
+
+    const calcActions = store.actions().filter(Boolean);
 
     return (
         <Menu
@@ -118,7 +112,7 @@ function ContextMenu() {
             open={store.position !== null}
             onClose={() => {
                 store.position = null;
-                store.onClose?.();
+                service.handleClose();
             }}
             anchorReference="anchorPosition"
             anchorPosition={store.position}
@@ -126,7 +120,7 @@ function ContextMenu() {
             onContextMenu={(event) => {
                 event.preventDefault();
                 store.position = null;
-                store.onClose?.();
+                service.handleClose();
             }}
             elevation={18}
             PaperProps={{ className: classes.paper }}
@@ -140,51 +134,56 @@ function ContextMenu() {
                     <ListItemText primary={t('contextMenu.empty')} />
                 </ListItem>
             )}
-            {calcActions.map((element) => {
-                if (element.type === 'divider') {
-                    return (
-                        <Divider key="divider" className={classes.divider} />
-                    );
-                } else if (element.type === 'customItem') {
-                    return element.render();
-                } else {
-                    const Icon = element.icon;
+            {calcActions.map((group, index) => (
+                [
+                    index !== 0 && (<Divider key="divider" className={classes.divider} />),
+                    group.map((element) => {
+                        if (element.type === 'divider') {
+                            return (
+                                <Divider key="divider" className={classes.divider} />
+                            );
+                        } else if (element.type === 'customItem') {
+                            return element.render();
+                        } else {
+                            const Icon = element.icon;
 
-                    return (
-                        <ListItem
-                            classes={{ container: classes.itemContainer }}
-                            className={classes.item}
-                            key={element.title}
-                            button={element.onClick}
-                            dense
-                            disabled={element.disabled}
-                            onClick={async () => {
-                                const result = await element.onClick(() => {
-                                    store.position = null;
-                                    store.onClose?.();
-                                });
+                            return (
+                                <ListItem
+                                    classes={{ container: classes.itemContainer }}
+                                    className={classes.item}
+                                    key={element.title}
+                                    button={element.onClick}
+                                    dense
+                                    disabled={element.disabled}
+                                    onClick={async () => {
+                                        const result = await element.onClick(() => {
+                                            store.position = null;
+                                            service.handleClose();
+                                        });
 
-                                if (!result) {
-                                    store.position = null;
-                                    store.onClose?.();
-                                }
-                            }}
-                        >
-                            <Box className={classes.itemHelper}>
-                                <ListItemIcon className={classes.icon}>
-                                    {Icon && (<Icon {...element.iconProps} />)}
-                                </ListItemIcon>
-                                <ListItemText primary={element.title} secondary={element.description} />
-                                {element.action && (
-                                    <ListItemSecondaryAction className={classes.secondaryAction}>
-                                        {element.action}
-                                    </ListItemSecondaryAction>
-                                )}
-                            </Box>
-                        </ListItem>
-                    );
-                }
-            })}
+                                        if (!result) {
+                                            store.position = null;
+                                            service.handleClose();
+                                        }
+                                    }}
+                                >
+                                    <Box className={classes.itemHelper}>
+                                        <ListItemIcon className={classes.icon}>
+                                            {Icon && (<Icon {...element.iconProps} />)}
+                                        </ListItemIcon>
+                                        <ListItemText primary={element.title} secondary={element.description} />
+                                        {element.action && (
+                                            <ListItemSecondaryAction className={classes.secondaryAction}>
+                                                {element.action}
+                                            </ListItemSecondaryAction>
+                                        )}
+                                    </Box>
+                                </ListItem>
+                            );
+                        }
+                    }),
+                ]
+            ))}
         </Menu>
     );
 }

@@ -13,7 +13,7 @@ import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 import { FIRST_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
@@ -86,12 +86,10 @@ function Folder({ data, columns }) {
     const searchService = useSearchService();
     const { t } = useTranslation(['bookmark']);
     const [isActive, setIsActive] = useState(false);
-    const contextMenu = useContextMenu({
+    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
         itemId: data.id,
         itemType: 'folder',
-        disableRemove: data.id === FIRST_UUID,
-        disableMove: data.id === FIRST_UUID,
-    }, {
+    }), {
         onOpen: () => { setIsActive(true); },
         onClose: () => { setIsActive(false); },
     });
@@ -100,7 +98,7 @@ function Folder({ data, columns }) {
         <Box
             className={clsx(classes.folderContainer, isActive && classes.containerActive)}
             style={{ width: columns * (theme.shape.dataCard.width + 16) + 16 }}
-            onContextMenu={contextMenu}
+            onContextMenu={dispatchContextMenu}
         >
             <Box className={classes.header}>
                 <Button

@@ -1,26 +1,28 @@
 import React, { memo, useEffect, useState } from 'react';
 import {
-    Box, Typography, CardActionArea, Avatar, ButtonBase,
+    Box,
+    Typography,
+    CardActionArea,
+    Avatar,
 } from '@material-ui/core';
 import {
     SettingsRounded as SettingsIcon,
-    StarBorderRounded as AddFavoriteIcon,
-    StarRounded as RemoveFavoriteIcon,
-    ArrowForward as GoToIcon, AddPhotoAlternateRounded as UploadFromComputerIcon, WallpaperRounded as WallpaperIcon,
+    ArrowForward as GoToIcon,
+    AddPhotoAlternateRounded as UploadFromComputerIcon,
+    WallpaperRounded as WallpaperIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import { captureException } from '@sentry/react';
-import { ACTIVITY, BKMS_DISPLAY_VARIANT, BKMS_FAP_STYLE } from '@/enum';
+import { ACTIVITY, BKMS_DISPLAY_VARIANT } from '@/enum';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
 import { useCoreService } from '@/stores/app/core';
 import { useAppStateService } from '@/stores/app/appState';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
-import { ContextMenuDivider, ContextMenuItem, ContextMenuCustomItem } from '@/stores/app/entities/contextMenu';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import { useContextMenuService } from '@/stores/app/contextMenu';
+import { ContextMenuDivider, ContextMenuItem, ContextMenuCustomItem } from '@/stores/app/contextMenu/entities';
 import DisplayCardsImage from '@/images/display_cards.svg';
 import DisplayRowsImage from '@/images/display_rows.svg';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
@@ -130,11 +132,11 @@ function BackgroundSelector() {
 
 function FabMenu() {
     const classes = useStyles();
+    const { t } = useTranslation(['bookmark', 'settings', 'background']);
     const coreService = useCoreService();
     const appStateService = useAppStateService();
     const workingSpaceService = useWorkingSpaceService();
-    const { t } = useTranslation(['bookmark', 'settings', 'background']);
-    const contextMenu = useContextMenu(() => [
+    const { dispatchContextMenu } = useContextMenuService(() => [
         ...(appStateService.activity !== ACTIVITY.DESKTOP ? [
             new ContextMenuItem({ title: t('settings:display.title') }),
             new ContextMenuCustomItem({
@@ -218,7 +220,7 @@ function FabMenu() {
                     <ExtendButton
                         tooltip={t('settings:title')}
                         data-ui-path="settings.open"
-                        onClick={(event) => contextMenu(event)}
+                        onClick={dispatchContextMenu}
                         icon={SettingsIcon}
                     />
                 </ExtendButtonGroup>

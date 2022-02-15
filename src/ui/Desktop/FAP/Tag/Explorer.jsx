@@ -22,9 +22,9 @@ import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookm
 import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { useCoreService } from '@/stores/app/core';
-import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
+import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -55,7 +55,7 @@ function Folder({ id }) {
     const [tag, setTag] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
-    const contextMenu = useContextMenu(() => [
+    const { dispatchContextMenu } = useContextMenuService(() => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
@@ -78,7 +78,7 @@ function Folder({ id }) {
     return (
         <Card
             className={classes.root} elevation={16}
-            onContextMenu={contextMenu}
+            onContextMenu={dispatchContextMenu}
         >
             <CardHeader
                 avatar={(

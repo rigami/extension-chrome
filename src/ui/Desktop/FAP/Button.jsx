@@ -3,7 +3,7 @@ import { ButtonBase, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useContextMenu } from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 
 const useStyles = makeStyles((theme) => ({ root: { borderRadius: theme.shape.borderRadiusBold } }));
 
@@ -13,19 +13,15 @@ function FAPButton(props) {
         tooltip,
         type = 'bookmark',
         children,
-        disableMove = false,
-        disableRemove = false,
         className: externalClassName,
         ...other
     } = props;
     const ref = useRef();
     const classes = useStyles();
-    const contextMenu = useContextMenu({
+    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: type,
-        disableMove,
-        disableRemove,
-    });
+    }));
 
     return (
         <Tooltip
@@ -39,7 +35,7 @@ function FAPButton(props) {
                     classes.root,
                     externalClassName,
                 )}
-                onContextMenu={contextMenu}
+                onContextMenu={dispatchContextMenu}
                 {...other}
             >
                 {children}
