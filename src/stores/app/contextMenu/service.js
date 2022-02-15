@@ -13,6 +13,7 @@ class ContextMenuService {
     workingSpaceService;
     t;
     activeItem;
+    activeKey;
 
     constructor({ coreService, t, workingSpaceService }) {
         makeAutoObservable(this);
@@ -57,19 +58,21 @@ class ContextMenuService {
     handleClose() {
         this.activeItem?.onClose?.();
         this.activeItem = undefined;
+        this.activeKey = undefined;
     }
 
     @action.bound
-    createContextMenu(fabric = () => [], options = {}) {
+    createContextMenu(fabric = () => [], options = {}, key) {
         return {
-            dispatchContextMenu: (event) => context.dispatchContextMenu(fabric, options, event),
-            activeItem: context.activeItem,
+            dispatchContextMenu: (event) => context.dispatchContextMenu(fabric, options, key, event),
+            isOpen: context.activeKey === key,
         };
     }
 
     @action.bound
-    dispatchContextMenu(fabric = () => [], options = {}, event) {
+    dispatchContextMenu(fabric = () => [], options = {}, activeKey, event) {
         const {
+            key,
             useAnchorEl,
             reactions,
             onOpen,
@@ -96,6 +99,7 @@ class ContextMenuService {
         }
 
         this.activeItem = {
+            key,
             actions: () => {
                 const actions = fabric(this._baseContextMenu, event);
 
@@ -124,6 +128,7 @@ class ContextMenuService {
             onClose,
             className,
         };
+        this.activeKey = activeKey;
     }
 }
 

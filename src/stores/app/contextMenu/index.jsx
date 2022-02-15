@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { useCoreService } from '@/stores/app/core';
@@ -28,6 +28,10 @@ function ContextMenuProvider({ children }) {
 }
 
 const observerProvider = observer(ContextMenuProvider);
-const useService = (fabric, options) => useContext(context)(fabric, options);
+const useService = (fabric, options) => {
+    const [key] = useState(() => Math.random(), []);
+
+    return useContext(context)(fabric, options, key);
+};
 
 export { observerProvider as ContextMenuProvider, useService as useContextMenuService };

@@ -27,8 +27,6 @@ import asyncAction from '@/utils/helpers/asyncAction';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
 import { NULL_UUID } from '@/utils/generate/uuid';
-import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
-import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 
 const useStyles = makeStyles((theme) => ({
     expandIcon: {
@@ -91,7 +89,7 @@ function FolderItem(props) {
     const { t } = useTranslation(['folder', 'bookmark']);
     const rootRef = useRef();
     const workingSpaceService = useWorkingSpaceService();
-    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
+    const { dispatchContextMenu, isOpen } = useContextMenuService((baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: 'folder',
     }));
@@ -112,7 +110,7 @@ function FolderItem(props) {
             ref={rootRef}
             level={level}
             disabled={isDisabled}
-            selected={isSelected}
+            selected={isOpen || isSelected}
             onContextMenu={dispatchContextMenu}
             title={name}
             onClick={() => {
