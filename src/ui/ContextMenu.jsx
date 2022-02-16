@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Menu,
     ListItem,
@@ -17,7 +17,7 @@ import clsx from 'clsx';
 const useStyles = makeStyles((theme) => ({
     menu: {
         width: 230,
-        padding: theme.spacing(0.5, 0),
+        padding: theme.spacing(0.625, 0),
         boxShadow: `inset 0px 0px 0px 1px ${theme.palette.divider}`,
         borderRadius: 'inherit',
     },
@@ -31,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
     },
     item: {
         padding: theme.spacing(0.5, 1.5),
-        margin: theme.spacing(0, 0.5),
-        width: `calc(100% - ${theme.spacing(1)}px)`,
+        margin: theme.spacing(0, 0.625),
+        width: `calc(100% - ${theme.spacing(1.25)}px)`,
         borderRadius: theme.shape.borderRadiusButton,
     },
     icon: {
