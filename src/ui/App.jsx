@@ -48,10 +48,10 @@ function RootApp({ onChangeTheme }) {
                         {children}
                     </AppStateProvider>
                 ),
+                ContextMenuProvider,
                 InitApp,
                 UploadBGForm,
                 GlobalModals,
-                ContextMenuProvider,
             ]}
         >
             <Desktop />

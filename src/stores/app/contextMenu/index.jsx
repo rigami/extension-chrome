@@ -6,7 +6,7 @@ import ContextMenuService from './service';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import ContextMenu from '@/ui/ContextMenu';
 
-const context = createContext({});
+const context = createContext();
 
 function ContextMenuProvider({ children }) {
     const coreService = useCoreService();
@@ -31,7 +31,11 @@ const observerProvider = observer(ContextMenuProvider);
 const useService = (fabric, options) => {
     const [key] = useState(() => Math.random(), []);
 
-    return useContext(context)(fabric, options, key);
+    const creator = useContext(context);
+
+    if (!creator) return { };
+
+    return creator(fabric, options, key);
 };
 
 export { observerProvider as ContextMenuProvider, useService as useContextMenuService };
