@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { captureException } from '@sentry/react';
 import { FolderRounded as FolderIcon, ArrowForward as GoToIcon } from '@material-ui/icons';
@@ -14,7 +14,6 @@ import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { useContextMenuService } from '@/stores/app/contextMenu';
-import { FIRST_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
     folderContainer: {
@@ -78,6 +77,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'inline-flex',
         verticalAlign: 'sub',
     },
+    forceShowIcon: { opacity: 1 },
 }));
 
 function Folder({ data, columns }) {
@@ -85,18 +85,14 @@ function Folder({ data, columns }) {
     const classes = useStyles();
     const searchService = useSearchService();
     const { t } = useTranslation(['bookmark']);
-    const [isActive, setIsActive] = useState(false);
-    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
+    const { dispatchContextMenu, isOpen } = useContextMenuService((baseContextMenu) => baseContextMenu({
         itemId: data.id,
         itemType: 'folder',
-    }), {
-        onOpen: () => { setIsActive(true); },
-        onClose: () => { setIsActive(false); },
-    });
+    }));
 
     return (
         <Box
-            className={clsx(classes.folderContainer, isActive && classes.containerActive)}
+            className={clsx(classes.folderContainer, isOpen && classes.containerActive)}
             style={{ width: columns * (theme.shape.dataCard.width + 16) + 16 }}
             onContextMenu={dispatchContextMenu}
         >
@@ -105,7 +101,7 @@ function Folder({ data, columns }) {
                     classes={{
                         root: clsx(classes.overflow, classes.last),
                         label: classes.label,
-                        endIcon: classes.icon,
+                        endIcon: clsx(classes.icon, isOpen && classes.forceShowIcon),
                     }}
                     endIcon={(<GoToIcon />)}
                     onClick={() => searchService.setSelectFolder(data.id)}
@@ -144,6 +140,8 @@ function Folder({ data, columns }) {
     );
 }
 
+const ObserverFolder = observer(Folder);
+
 function SecondaryContent({ columns }) {
     const searchService = useSearchService();
     const store = useLocalObservable(() => ({
@@ -176,7 +174,7 @@ function SecondaryContent({ columns }) {
     }
 
     return store.tree.map((folder) => (
-        <Folder
+        <ObserverFolder
             key={folder.id}
             data={folder}
             columns={columns}
