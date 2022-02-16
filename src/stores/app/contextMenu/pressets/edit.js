@@ -12,6 +12,7 @@ const editContextMenu = ({
     remove = true,
     itemType,
     itemId,
+    position = {},
 }) => [
     edit && new ContextMenuItem({
         title: t(`common:button.${itemType === 'bookmark' ? 'edit' : 'rename'}`),
@@ -20,8 +21,8 @@ const editContextMenu = ({
             coreService.localEventBus.call(`${itemType}/edit`, {
                 id: itemId,
                 position: {
-                    left: event.clientX,
-                    top: event.clientY,
+                    left: position.left,
+                    top: position.top,
                 },
             });
         },
@@ -36,8 +37,8 @@ const editContextMenu = ({
                 coreService.localEventBus.call(`${itemType}/move`, {
                     id: itemId,
                     position: {
-                        left: event.clientX,
-                        top: event.clientY,
+                        left: position.left,
+                        top: position.top,
                     },
                     folderId: bookmark.folderId,
                 });
@@ -48,8 +49,8 @@ const editContextMenu = ({
                 coreService.localEventBus.call(`${itemType}/move`, {
                     id: itemId,
                     position: {
-                        left: event.clientX,
-                        top: event.clientY,
+                        left: position.left,
+                        top: position.top,
                     },
                     parentId: folder.parentId,
                 });

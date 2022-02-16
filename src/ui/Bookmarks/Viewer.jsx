@@ -75,7 +75,7 @@ function Bookmarks() {
         columnsCount: 0,
         maxColumnsCount: 0,
     }));
-    const { dispatchContextMenu, activeItem } = useContextMenuService(() => [
+    const { dispatchContextMenu, activeItem } = useContextMenuService((position) => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
@@ -85,6 +85,7 @@ function Bookmarks() {
                     {
                         defaultFolderId: searchService.selectFolderId,
                         defaultTagsIds: searchService.tags,
+                        position
                     },
                 );
             },

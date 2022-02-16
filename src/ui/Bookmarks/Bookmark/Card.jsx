@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
             pointerEvents: 'auto',
         },
     },
+    selected: { backgroundColor: theme.palette.action.selected },
     middle: { height: (theme.shape.dataCard.height + theme.spacing(2)) * 2 - theme.spacing(2) },
     large: { height: (theme.shape.dataCard.height + theme.spacing(2)) * 3 - theme.spacing(2) },
     rootActionWrapper: {
@@ -198,7 +199,7 @@ function CardLink(props) {
         itemId: id,
         itemType: 'bookmark',
     }));
-    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
+    const { dispatchContextMenu, isOpen } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: 'bookmark',
     }));
@@ -242,6 +243,7 @@ function CardLink(props) {
                     icoVariant === BKMS_VARIANT.POSTER && !description && classes.middle,
                     icoVariant === BKMS_VARIANT.POSTER && description && classes.large,
                     externalClassName,
+                    isOpen && classes.selected,
                 )}
                 variant="outlined"
                 {...other}

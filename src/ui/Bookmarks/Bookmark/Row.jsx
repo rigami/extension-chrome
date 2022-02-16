@@ -182,7 +182,7 @@ function RowItem(props) {
         itemId: id,
         itemType: 'bookmark',
     }));
-    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
+    const { dispatchContextMenu } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: 'bookmark',
     }));

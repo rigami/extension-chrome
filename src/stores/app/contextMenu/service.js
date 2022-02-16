@@ -24,7 +24,7 @@ class ContextMenuService {
         context = this;
     }
 
-    _baseContextMenu = ({ itemId, itemType }) => [
+    _baseContextMenu = ({ position = {} }) => ({ itemId, itemType }) => [
         favoriteContextMenu({
             workingSpaceService: this.workingSpaceService,
             t: this.t,
@@ -35,6 +35,7 @@ class ContextMenuService {
             coreService: this.coreService,
             t: this.t,
             itemId,
+            position,
         }),
         itemType === 'bookmark' && bookmarkContextMenu({
             t: this.t,
@@ -48,6 +49,7 @@ class ContextMenuService {
             remove: itemId !== FIRST_UUID,
             itemId,
             itemType,
+            position,
         }),
     ];
 
@@ -101,7 +103,7 @@ class ContextMenuService {
         this.activeItem = {
             key,
             actions: () => {
-                const actions = fabric(this._baseContextMenu, event);
+                const actions = fabric(position, this._baseContextMenu({ position }));
 
                 const calcActions = [];
                 let lastIsArray = true;

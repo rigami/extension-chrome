@@ -64,7 +64,7 @@ function FolderItem(props) {
     const { t } = useTranslation(['folder', 'bookmark']);
     const rootRef = useRef();
     const workingSpaceService = useWorkingSpaceService();
-    const { dispatchContextMenu, isOpen } = useContextMenuService((baseContextMenu) => baseContextMenu({
+    const { dispatchContextMenu, isOpen } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: 'folder',
     }));

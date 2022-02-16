@@ -102,7 +102,7 @@ function Tag(props) {
     const classes = useStyles();
     const { t } = useTranslation(['tag']);
     const workingSpaceService = useWorkingSpaceService();
-    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
+    const { dispatchContextMenu } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: 'tag',
     }));

@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'unset',
     },
     paper: {
-        margin: theme.spacing(1),
+        // margin: theme.spacing(1),
         border: `1px solid ${theme.palette.divider}`,
         display: 'flex',
         flexDirection: 'column',

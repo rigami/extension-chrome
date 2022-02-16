@@ -18,7 +18,7 @@ function FAPButton(props) {
     } = props;
     const ref = useRef();
     const classes = useStyles();
-    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
+    const { dispatchContextMenu } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: type,
     }));

@@ -5,7 +5,7 @@ import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 
 const bookmarkContextMenu = ({ t, itemId }) => [
     new ContextMenuItem({
-        title: t('button.copyUrl'),
+        title: t('bookmark:button.copyUrl'),
         icon: CopyToClipboardIcon,
         onClick: async () => {
             const bookmark = await BookmarksUniversalService.get(itemId);
@@ -13,7 +13,7 @@ const bookmarkContextMenu = ({ t, itemId }) => [
         },
     }),
     new ContextMenuItem({
-        title: t('button.copy'),
+        title: t('bookmark:button.copy'),
         icon: CopyToClipboardIcon,
         onClick: async () => {
             const bookmark = await BookmarksUniversalService.get(itemId);

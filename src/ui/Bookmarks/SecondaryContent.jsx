@@ -85,7 +85,7 @@ function Folder({ data, columns }) {
     const classes = useStyles();
     const searchService = useSearchService();
     const { t } = useTranslation(['bookmark']);
-    const { dispatchContextMenu, isOpen } = useContextMenuService((baseContextMenu) => baseContextMenu({
+    const { dispatchContextMenu, isOpen } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
         itemId: data.id,
         itemType: 'folder',
     }));

@@ -32,7 +32,7 @@ function TagCard(props) {
         ...other
     } = props;
     const classes = useStyles();
-    const { dispatchContextMenu } = useContextMenuService((baseContextMenu) => baseContextMenu({
+    const { dispatchContextMenu } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
         itemId: id,
         itemType: 'tag',
     }));
