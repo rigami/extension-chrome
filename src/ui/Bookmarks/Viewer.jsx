@@ -4,6 +4,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
+import { CreateNewFolderRounded as AddNewFolderIcon } from '@material-ui/icons';
 import FoldersPanel from '@/ui/Bookmarks/FoldersPanel';
 import ToolsPanel from '@/ui/Bookmarks/ToolsPanel';
 import Scrollbar from '@/ui-components/CustomScroll';
@@ -85,6 +86,14 @@ function Bookmarks() {
                 itemType: 'bookmark',
                 defaultFolderId: searchService.selectFolderId,
                 defaultTagsIds: searchService.tags,
+            }, event, position, next),
+        }),
+        new ContextMenuItem({
+            title: t('folder:button.create'),
+            icon: AddNewFolderIcon,
+            onClick: () => dispatchEdit({
+                itemType: 'folder',
+                parentId: searchService.selectFolderId,
             }, event, position, next),
         }),
     ]);

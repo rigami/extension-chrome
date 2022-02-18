@@ -14,7 +14,7 @@ import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { useContextMenuService } from '@/stores/app/contextMenu';
-import { useContextActions } from '@/stores/app/contextActions';
+import { useContextActions, useContextEdit } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
     folderContainer: {
@@ -81,6 +81,28 @@ const useStyles = makeStyles((theme) => ({
     forceShowIcon: { opacity: 1 },
 }));
 
+function SubFolder({ id, name }) {
+    const classes = useStyles();
+    const searchService = useSearchService();
+    const contextActions = useContextActions({
+        itemId: id,
+        itemType: 'folder',
+    });
+    const { dispatchContextMenu, isOpen } = useContextMenuService(contextActions);
+
+    return (
+        <ExtendButtonGroup key={id} className={clsx(classes.childFolder, isOpen && classes.containerActive)}>
+            <ExtendButton
+                label={name}
+                onClick={() => searchService.setSelectFolder(id)}
+                icon={() => <FolderIcon />}
+                onContextMenu={dispatchContextMenu}
+                unwrap
+            />
+        </ExtendButtonGroup>
+    );
+}
+
 function Folder({ data, columns }) {
     const theme = useTheme();
     const classes = useStyles();
@@ -128,14 +150,7 @@ function Folder({ data, columns }) {
             />
             <Box className={classes.childFolders}>
                 {data.children.map((childFolder) => (
-                    <ExtendButtonGroup key={childFolder.id} className={classes.childFolder}>
-                        <ExtendButton
-                            label={childFolder.name}
-                            onClick={() => searchService.setSelectFolder(childFolder.id)}
-                            icon={() => <FolderIcon />}
-                            unwrap
-                        />
-                    </ExtendButtonGroup>
+                    <SubFolder key={childFolder.id} id={childFolder.id} name={childFolder.name} />
                 ))}
             </Box>
         </Box>
