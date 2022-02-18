@@ -16,7 +16,7 @@ import Scrollbar from '@/ui-components/CustomScroll';
 import Stub from '@/ui-components/Stub';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
+import BookmarksGrid from '@/ui/WorkingSpace/BookmarksViewer/BookmarksGrid';
 import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { useCoreService } from '@/stores/app/core';

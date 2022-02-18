@@ -5,11 +5,11 @@ import { useCoreService } from '@/stores/app/core';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import baseContextMenu from '@/stores/app/contextActions/contextMenu';
 import { useContextPopoverDispatcher } from '@/stores/app/contextPopover';
-import FolderEditor from '@/ui/Bookmarks/Folders/Editor';
+import FolderEditor from '@/ui/WorkingSpace/Folders/Editor';
 import { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
-import BookmarkEditor from '@/ui/Bookmarks/Bookmark/Editor';
-import TagEditor from '@/ui/Bookmarks/Tag/Editor';
-import MoveDialog from '@/ui/Bookmarks/MoveDialog';
+import BookmarkEditor from '@/ui/WorkingSpace/Bookmark/Editor';
+import TagEditor from '@/ui/WorkingSpace/Tag/Editor';
+import MoveDialog from '@/ui/WorkingSpace/MoveDialog';
 
 const context = createContext();
 

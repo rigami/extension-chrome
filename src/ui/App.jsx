@@ -15,10 +15,10 @@ import { WorkingSpaceProvider } from '@/stores/app/workingSpace';
 import { ContextMenuProvider } from '@/stores/app/contextMenu';
 import InitApp from '@/stores/app/InitApp';
 import initSentry from '@/config/sentry/app';
-import FabMenu from '@/ui/Menu/FabMenu';
-import Menu from '@/ui/Menu';
+import FabMenu from '@/ui/Settings/FabMenu';
+import Menu from '@/ui/Settings';
 import CrashCatch from '@/ui/CrashCatch';
-import Bookmarks from './Bookmarks';
+import WorkingSpace from './WorkingSpace';
 import Desktop from './Desktop';
 import GlobalModals from './GlobalModals';
 import { ContextPopoverProvider } from '@/stores/app/contextPopover';
@@ -59,7 +59,7 @@ function RootApp({ onChangeTheme }) {
             ]}
         >
             <Desktop />
-            {BUILD === 'full' && (<Bookmarks />)}
+            {BUILD === 'full' && (<WorkingSpace />)}
             <FabMenu />
             <Menu />
         </Nest>

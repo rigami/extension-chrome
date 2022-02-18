@@ -24,7 +24,7 @@ import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import Stub from '@/ui-components/Stub';
 import Scrollbar from '@/ui-components/CustomScroll';
-import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
+import BookmarksGrid from '@/ui/WorkingSpace/BookmarksViewer/BookmarksGrid';
 import { useCoreService } from '@/stores/app/core';
 import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
 import TagCard from '@/ui/Desktop/FAP/Tag/Card';

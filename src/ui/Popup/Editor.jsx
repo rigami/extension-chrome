@@ -8,12 +8,12 @@ import {
 } from '@material-ui/core';
 import asyncAction from '@/utils/helpers/asyncAction';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
-import EditorBookmark from '@/ui/Bookmarks/Bookmark/Editor';
+import EditorBookmark from '@/ui/WorkingSpace/Bookmark/Editor';
 import Stub from '@/ui-components/Stub';
-import FolderBreadcrumbs from '@/ui/Bookmarks/ToolsPanel/FolderBreadcrumbs';
-import CloudSync from '@/ui/Bookmarks/ToolsPanel/CloudSync';
-import SearchBlock from '@/ui/Bookmarks/ToolsPanel/Search';
-import ShowFavorites from '@/ui/Bookmarks/ToolsPanel/ShowFavorites';
+import FolderBreadcrumbs from '@/ui/WorkingSpace/ToolsPanel/FolderBreadcrumbs';
+import CloudSync from '@/ui/WorkingSpace/ToolsPanel/CloudSync';
+import SearchBlock from '@/ui/WorkingSpace/ToolsPanel/Search';
+import ShowFavorites from '@/ui/WorkingSpace/ToolsPanel/ShowFavorites';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { ACTIVITY } from '@/enum';
 import { SelfImprovementRounded as DesktopIcon } from '@/icons';

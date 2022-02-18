@@ -19,7 +19,7 @@ import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import Scrollbar from '@/ui-components/CustomScroll';
 import Stub from '@/ui-components/Stub';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
-import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
+import BookmarksGrid from '@/ui/WorkingSpace/BookmarksViewer/BookmarksGrid';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { useCoreService } from '@/stores/app/core';
 import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
