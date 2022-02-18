@@ -17,8 +17,6 @@ import clsx from 'clsx';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import { Item, ItemAction } from '@/ui/WorkingSpace/SidePanel/Item';
-import { useContextPopoverDispatcher } from '@/stores/app/contextPopover';
-import SimpleEditor from '@/ui/WorkingSpace/Folders/Editor';
 import { useContextActions, useContextEdit } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
