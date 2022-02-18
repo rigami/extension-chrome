@@ -1,93 +1,87 @@
 import { action, makeAutoObservable } from 'mobx';
 import { last } from 'lodash';
-import favoriteContextMenu from '@/stores/app/contextMenu/pressets/favorite';
-import folderContextMenu from './pressets/folder';
-import editContextMenu from '@/stores/app/contextMenu/pressets/edit';
-import { FIRST_UUID } from '@/utils/generate/uuid';
-import bookmarkContextMenu from './pressets/bookmark';
 
 let context;
 
 class ContextMenuService {
-    coreService;
-    workingSpaceService;
-    t;
-    activeItem;
-    activeKey;
+    menu;
+    isOpen = false;
+    activeStateKeys = [];
 
-    constructor({ coreService, t, workingSpaceService }) {
+    constructor() {
         makeAutoObservable(this);
-        this.coreService = coreService;
-        this.workingSpaceService = workingSpaceService;
-        this.t = t;
 
         context = this;
     }
 
-    _baseContextMenu = ({ position = {} }) => ({ itemId, itemType }) => [
-        favoriteContextMenu({
-            workingSpaceService: this.workingSpaceService,
-            t: this.t,
-            itemId,
-            itemType,
-        }),
-        itemType === 'folder' && folderContextMenu({
-            coreService: this.coreService,
-            t: this.t,
-            itemId,
-            position,
-        }),
-        itemType === 'bookmark' && bookmarkContextMenu({
-            t: this.t,
-            itemId,
-        }),
-        editContextMenu({
-            coreService: this.coreService,
-            t: this.t,
-            edit: true,
-            move: itemId !== FIRST_UUID,
-            remove: itemId !== FIRST_UUID,
-            itemId,
-            itemType,
-            position,
-        }),
-    ];
-
-    handleOpen() {
-        this.activeItem?.onOpen?.();
-    }
-
-    handleClose() {
-        this.activeItem?.onClose?.();
-        this.activeItem = undefined;
-        this.activeKey = undefined;
+    @action.bound
+    close() {
+        console.log('Close stateKey:', context.menu.stateKey);
+        context._closeKey(context.menu.stateKey);
+        context.menu?.onClose?.();
+        context.isOpen = false;
     }
 
     @action.bound
-    createContextMenu(fabric = () => [], options = {}, key) {
+    createDispatcher(fabric = () => [], options = {}, stateKey) {
         return {
-            dispatchContextMenu: (event) => context.dispatchContextMenu(fabric, options, key, event),
-            isOpen: context.activeKey === key,
+            dispatchContextMenu: (event, overridePosition, data) => context.dispatchContextMenu(fabric, options, {
+                overridePosition,
+                stateKey,
+                event,
+                data,
+            }),
+            isOpen: context.activeStateKeys.indexOf(stateKey) !== -1,
         };
     }
 
     @action.bound
-    dispatchContextMenu(fabric = () => [], options = {}, activeKey, event) {
+    _closeKey(stateKey) {
+        let isFound = false;
+
+        context.activeStateKeys = context.activeStateKeys.filter((key) => {
+            if (!isFound && key === stateKey) {
+                isFound = true;
+
+                return false;
+            }
+
+            return true;
+        });
+    }
+
+    @action.bound
+    _nextBind(stateKey) {
+        return () => {
+            console.log('Next open stateKey:', stateKey);
+            context.activeStateKeys.push(stateKey);
+
+            return () => {
+                console.log('Next close stateKey:', stateKey);
+                context._closeKey(stateKey);
+            };
+        };
+    }
+
+    @action.bound
+    dispatchContextMenu(fabric = () => [], options = {}, props = {}) {
         const {
-            key,
             useAnchorEl,
             reactions,
             onOpen,
             onClose,
             className,
         } = options;
+        const {
+            overridePosition,
+            stateKey,
+            event,
+        } = props;
 
         event.stopPropagation();
         event.preventDefault();
 
-        this.activeItem = event;
-
-        let position = {
+        let position = overridePosition || {
             top: event.nativeEvent.clientY,
             left: event.nativeEvent.clientX,
         };
@@ -100,10 +94,9 @@ class ContextMenuService {
             };
         }
 
-        this.activeItem = {
-            key,
+        this.menu = {
             actions: () => {
-                const actions = fabric(position, this._baseContextMenu({ position }));
+                const actions = fabric(event, position, this._nextBind(stateKey));
 
                 const calcActions = [];
                 let lastIsArray = true;
@@ -129,8 +122,12 @@ class ContextMenuService {
             onOpen,
             onClose,
             className,
+            stateKey,
         };
-        this.activeKey = activeKey;
+        this.activeStateKeys.push(stateKey);
+        this.menu?.onOpen?.();
+        this.isOpen = true;
+        console.log('Open stateKey:', stateKey);
     }
 }
 

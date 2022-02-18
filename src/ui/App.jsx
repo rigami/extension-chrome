@@ -21,6 +21,8 @@ import CrashCatch from '@/ui/CrashCatch';
 import Bookmarks from './Bookmarks';
 import Desktop from './Desktop';
 import GlobalModals from './GlobalModals';
+import { ContextPopoverProvider } from '@/stores/app/contextPopover';
+import { ContextActionsProvider } from '@/stores/app/contextActions';
 
 initSentry(DESTINATION.APP);
 
@@ -48,7 +50,9 @@ function RootApp({ onChangeTheme }) {
                         {children}
                     </AppStateProvider>
                 ),
+                ContextPopoverProvider,
                 ContextMenuProvider,
+                ContextActionsProvider,
                 InitApp,
                 UploadBGForm,
                 GlobalModals,

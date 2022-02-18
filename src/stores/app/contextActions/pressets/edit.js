@@ -13,19 +13,17 @@ const editContextMenu = ({
     itemType,
     itemId,
     position = {},
+    editDispatcher,
+    moveDispatcher,
+    next,
 }) => [
     edit && new ContextMenuItem({
         title: t(`common:button.${itemType === 'bookmark' ? 'edit' : 'rename'}`),
         icon: EditIcon,
-        onClick: () => {
-            coreService.localEventBus.call(`${itemType}/edit`, {
-                id: itemId,
-                position: {
-                    left: position.left,
-                    top: position.top,
-                },
-            });
-        },
+        onClick: () => editDispatcher(null, position, {
+            itemType,
+            itemId,
+        }, next),
     }),
     move && new ContextMenuItem({
         title: t('common:button.move'),
@@ -34,26 +32,20 @@ const editContextMenu = ({
             if (itemType === 'bookmark') {
                 const bookmark = await BookmarksUniversalService.get(itemId);
 
-                coreService.localEventBus.call(`${itemType}/move`, {
-                    id: itemId,
-                    position: {
-                        left: position.left,
-                        top: position.top,
-                    },
-                    folderId: bookmark.folderId,
-                });
+                moveDispatcher(null, position, {
+                    itemType,
+                    itemId,
+                    moveId: bookmark.folderId,
+                }, next);
             }
             if (itemType === 'folder') {
                 const folder = await FoldersUniversalService.get(itemId);
 
-                coreService.localEventBus.call(`${itemType}/move`, {
-                    id: itemId,
-                    position: {
-                        left: position.left,
-                        top: position.top,
-                    },
+                moveDispatcher(null, position, {
+                    itemType,
+                    itemId,
                     parentId: folder.parentId,
-                });
+                }, next);
             }
         },
     }),

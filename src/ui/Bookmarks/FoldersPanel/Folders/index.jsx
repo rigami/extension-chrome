@@ -12,6 +12,9 @@ import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import asyncAction from '@/utils/helpers/asyncAction';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import TreeFolders from './TreeFolders';
+import { useContextMenuService } from '@/stores/app/contextMenu';
+import { useContextPopoverDispatcher } from '@/stores/app/contextPopover';
+import SimpleEditor from '@/ui/Bookmarks/Folders/EditModal/EditorSimple';
 
 const useStyles = makeStyles((theme) => ({
     addRootButton: {
@@ -54,6 +57,19 @@ function Folders(props) {
         expanded: defaultExpanded,
         disabled: defaultDisabled,
     }));
+    const { dispatchPopover, isOpen } = useContextPopoverDispatcher((position, close) => (
+        <SimpleEditor
+            onSave={(folderId) => {
+                store.expanded = [...store.expanded, store.parentFolder];
+                store.anchorEl = null;
+                store.parentFolder = null;
+
+                FoldersUniversalService.get(folderId)
+                    .then(onClickFolder);
+            }}
+            onCancel={close}
+        />
+    ));
 
     useEffect(() => {
         store.state = FETCH.PENDING;
@@ -117,12 +133,9 @@ function Folders(props) {
                 {!disableAdd && (
                     <ListItem
                         className={classes.addRootButton}
-                        onClick={(event) => {
-                            store.anchorEl = event.currentTarget;
-                            store.parentFolder = NULL_UUID;
-                        }}
+                        onClick={dispatchPopover}
                         button
-                        selected={store.parentFolder === NULL_UUID && store.anchorEl}
+                        selected={isOpen}
                     >
                         <AddIcon />
                         {t('button.create')}

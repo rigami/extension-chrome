@@ -19,6 +19,7 @@ import { SearchServiceProvider, useSearchService } from '@/ui/Bookmarks/searchPr
 import GreetingView from '@/ui/Bookmarks/GreetingView';
 import { APP_STATE } from '@/stores/app/core/service';
 import FirstLookScreen from '@/ui/FirstLookScreen';
+import { useContextEdit } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -75,20 +76,16 @@ function Bookmarks() {
         columnsCount: 0,
         maxColumnsCount: 0,
     }));
-    const { dispatchContextMenu, activeItem } = useContextMenuService((position) => [
+    const { dispatchEdit } = useContextEdit();
+    const { dispatchContextMenu } = useContextMenuService((event, position, next) => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
-            onClick: () => {
-                coreService.localEventBus.call(
-                    'bookmark/create',
-                    {
-                        defaultFolderId: searchService.selectFolderId,
-                        defaultTagsIds: searchService.tags,
-                        position
-                    },
-                );
-            },
+            onClick: () => dispatchEdit({
+                itemType: 'bookmark',
+                defaultFolderId: searchService.selectFolderId,
+                defaultTagsIds: searchService.tags,
+            }, event, position, next),
         }),
     ]);
 
@@ -169,16 +166,10 @@ function Bookmarks() {
                 variant="extended"
                 className={classes.fab}
                 color="primary"
-                onClick={(event) => coreService.localEventBus.call(
-                    'bookmark/create',
-                    {
-                        defaultFolderId: searchService.selectFolderId,
-                        position: {
-                            left: event.clientX,
-                            top: event.clientY,
-                        },
-                    },
-                )}
+                onClick={(event) => dispatchEdit({
+                    itemType: 'bookmark',
+                    defaultFolderId: searchService.selectFolderId,
+                }, event)}
             >
                 <AddBookmarkIcon />
                 {t('bookmark:button.add', { context: 'short' })}

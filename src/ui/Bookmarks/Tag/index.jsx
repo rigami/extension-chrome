@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import getUniqueColor from '@/utils/generate/uniqueColor';
+import { useContextActions } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -102,10 +103,11 @@ function Tag(props) {
     const classes = useStyles();
     const { t } = useTranslation(['tag']);
     const workingSpaceService = useWorkingSpaceService();
-    const { dispatchContextMenu } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
+    const contextActions = useContextActions({
         itemId: id,
         itemType: 'tag',
-    }));
+    });
+    const { dispatchContextMenu } = useContextMenuService(contextActions);
     const [isPin, setIsPin] = useState(workingSpaceService.findFavorite({
         itemId: id,
         itemType: 'tag',

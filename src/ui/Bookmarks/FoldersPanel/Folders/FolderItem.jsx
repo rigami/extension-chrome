@@ -17,6 +17,10 @@ import clsx from 'clsx';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
+import { useContextPopoverDispatcher } from '@/stores/app/contextPopover';
+import SimpleEditor from '@/ui/Bookmarks/Folders/EditModal/EditorSimple';
+import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import { useContextActions } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
     expandIcon: {
@@ -64,10 +68,18 @@ function FolderItem(props) {
     const { t } = useTranslation(['folder', 'bookmark']);
     const rootRef = useRef();
     const workingSpaceService = useWorkingSpaceService();
-    const { dispatchContextMenu, isOpen } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
+    const contextActions = useContextActions({
         itemId: id,
         itemType: 'folder',
-    }));
+    });
+
+    const { dispatchPopover, isOpen: isOpenContextPopover } = useContextPopoverDispatcher((position, close) => (
+        <SimpleEditor
+            editId={id}
+            onCancel={close}
+        />
+    ));
+    const { dispatchContextMenu, isOpen: isOpenContextMenu } = useContextMenuService(contextActions);
     const [isPin, setIsPin] = useState(workingSpaceService.findFavorite({
         itemId: id,
         itemType: 'folder',
@@ -85,7 +97,7 @@ function FolderItem(props) {
             ref={rootRef}
             level={level}
             disabled={isDisabled}
-            selected={isOpen || isSelected}
+            selected={isOpenContextMenu || isOpenContextPopover || isSelected}
             onContextMenu={dispatchContextMenu}
             title={name}
             onClick={() => {
@@ -113,10 +125,7 @@ function FolderItem(props) {
                         <Tooltip title={t('button.create', { context: 'sub' })}>
                             <ItemAction
                                 className={classes.addSubFolder}
-                                onClick={() => onCreateSubFolder({
-                                    anchorEl: rootRef.current,
-                                    parentFolder: id,
-                                })}
+                                onClick={dispatchPopover}
                             >
                                 <AddIcon />
                             </ItemAction>

@@ -27,6 +27,7 @@ import DisplayCardsImage from '@/images/display_cards.svg';
 import DisplayRowsImage from '@/images/display_rows.svg';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
+import { useContextEdit } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -136,7 +137,8 @@ function FabMenu() {
     const coreService = useCoreService();
     const appStateService = useAppStateService();
     const workingSpaceService = useWorkingSpaceService();
-    const { dispatchContextMenu } = useContextMenuService(() => [
+    const { dispatchEdit } = useContextEdit();
+    const { dispatchContextMenu } = useContextMenuService((event, position, next) => [
         ...(appStateService.activity !== ACTIVITY.DESKTOP ? [
             new ContextMenuItem({ title: t('settings:display.title') }),
             new ContextMenuCustomItem({
@@ -172,8 +174,8 @@ function FabMenu() {
                     shadowInput.setAttribute('multiple', 'true');
                     shadowInput.setAttribute('type', 'file');
                     shadowInput.setAttribute('accept', 'video/*,image/*');
-                    shadowInput.onchange = (event) => {
-                        const form = event.target;
+                    shadowInput.onchange = (uploadEvent) => {
+                        const form = uploadEvent.target;
                         if (form.files.length === 0) return;
 
                         appStateService.wallpapersService.addToUploadQueue(form.files)
@@ -188,9 +190,7 @@ function FabMenu() {
             new ContextMenuItem({
                 title: t('bookmark:button.add'),
                 icon: AddBookmarkIcon,
-                onClick: () => {
-                    coreService.localEventBus.call('bookmark/create');
-                },
+                onClick: () => dispatchEdit({ itemType: 'bookmark' }, event, position, next),
             }),
         ]),
         new ContextMenuDivider(),

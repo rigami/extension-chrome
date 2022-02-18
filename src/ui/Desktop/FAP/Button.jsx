@@ -4,8 +4,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { useContextMenuService } from '@/stores/app/contextMenu';
+import { useContextActions } from '@/stores/app/contextActions';
 
-const useStyles = makeStyles((theme) => ({ root: { borderRadius: theme.shape.borderRadiusBold } }));
+const useStyles = makeStyles((theme) => ({
+    root: { borderRadius: theme.shape.borderRadiusBold },
+    selected: { backgroundColor: theme.palette.action.selected },
+}));
 
 function FAPButton(props) {
     const {
@@ -18,10 +22,11 @@ function FAPButton(props) {
     } = props;
     const ref = useRef();
     const classes = useStyles();
-    const { dispatchContextMenu } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
+    const contextActions = useContextActions({
         itemId: id,
         itemType: type,
-    }));
+    });
+    const { dispatchContextMenu, isOpen } = useContextMenuService(contextActions);
 
     return (
         <Tooltip
@@ -34,6 +39,7 @@ function FAPButton(props) {
                 className={clsx(
                     classes.root,
                     externalClassName,
+                    isOpen && classes.selected,
                 )}
                 onContextMenu={dispatchContextMenu}
                 {...other}

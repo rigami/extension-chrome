@@ -13,14 +13,8 @@ import FieldsEditor from './Fields';
 import Preview from './Preview';
 
 const useStyles = makeStyles(() => ({
-    container: {
-        maxWidth: 800,
-        // minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-    },
     editor: {
+        minWidth: 680,
         display: 'flex',
         overflow: 'unset',
     },

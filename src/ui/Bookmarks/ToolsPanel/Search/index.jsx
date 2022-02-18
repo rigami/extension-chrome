@@ -98,8 +98,6 @@ function Search() {
 
     const oneRow = (!usedFields.tags && usedFields.query) || (usedFields.tags && !usedFields.query);
 
-    console.log('isOpen:', isOpen);
-
     return (
         <Box className={clsx(classes.wrapper, isOpen && classes.open, oneRow && classes.extend)} ref={rootRef}>
             {(usedFields.query || usedFields.tags) && (

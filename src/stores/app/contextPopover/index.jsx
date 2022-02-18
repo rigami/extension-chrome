@@ -3,17 +3,16 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { useCoreService } from '@/stores/app/core';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
-import ContextMenuService from './service';
-import ContextMenu from './ContextMenu';
+import ContextPopoverService from './service';
+import ContextPopover from './ContextPopover';
 
 const context = createContext();
 
-function ContextMenuProvider({ children }) {
+function ContextPopoverProvider({ children }) {
     const coreService = useCoreService();
     const workingSpaceService = useWorkingSpaceService();
     const { t } = useTranslation();
-
-    const service = useLocalObservable(() => new ContextMenuService({
+    const service = useLocalObservable(() => new ContextPopoverService({
         coreService,
         workingSpaceService,
         t,
@@ -23,21 +22,29 @@ function ContextMenuProvider({ children }) {
     return (
         <Context.Provider value={service.createDispatcher}>
             {children}
-            <ContextMenu service={service} />
+            {service.stateKeys.map((stateKey) => (
+                <ContextPopover
+                    key={stateKey}
+                    stateKey={stateKey}
+                    service={service}
+                />
+            ))}
         </Context.Provider>
     );
 }
 
-const observerProvider = observer(ContextMenuProvider);
-
-function useService(fabric, options) {
-    const [stateKey] = useState(() => Math.random().toString(), []);
+const observerProvider = observer(ContextPopoverProvider);
+const useDispatcher = (fabric, options) => {
+    const [key] = useState(() => Math.random(), []);
 
     const creator = useContext(context);
 
     if (!creator) return { };
 
-    return creator(fabric, options, stateKey);
-}
+    return creator(fabric, options, key);
+};
 
-export { observerProvider as ContextMenuProvider, useService as useContextMenuService };
+export {
+    observerProvider as ContextPopoverProvider,
+    useDispatcher as useContextPopoverDispatcher,
+};

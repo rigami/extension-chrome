@@ -13,9 +13,7 @@ import { useSnackbar } from 'notistack';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useCoreService } from '@/stores/app/core';
 import EditTagModal from '@/ui/Bookmarks/Tag/EditModal';
-import { default as EditBookmarkModal } from '@/ui/Bookmarks/EditBookmarkModal';
 import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
-import MoveDialog from '@/ui/Bookmarks/MoveDialog';
 import fetchData from '@/utils/helpers/fetchData';
 import Changelog from './Changelog';
 
@@ -197,8 +195,6 @@ function GlobalModals({ children }) {
             <Changelog />
             {BUILD === 'full' && (
                 <React.Fragment>
-                    <MoveDialog />
-                    <EditBookmarkModal />
                     <EditTagModal
                         anchorEl={edit && edit.anchorEl}
                         isOpen={edit && edit.type === 'tag' && edit.action === 'edit'}

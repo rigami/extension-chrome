@@ -20,6 +20,7 @@ import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import Tag from '../Tag';
 import Collapser from '@/ui/Bookmarks/Tag/Collapser';
+import { useContextActions } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -199,10 +200,11 @@ function CardLink(props) {
         itemId: id,
         itemType: 'bookmark',
     }));
-    const { dispatchContextMenu, isOpen } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
+    const contextActions = useContextActions({
         itemId: id,
         itemType: 'bookmark',
-    }));
+    });
+    const { dispatchContextMenu, isOpen } = useContextMenuService(contextActions);
 
     const handleClick = (event) => {
         if (onClick) {

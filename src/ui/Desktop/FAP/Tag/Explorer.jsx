@@ -25,6 +25,7 @@ import { useCoreService } from '@/stores/app/core';
 import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 import { useContextMenuService } from '@/stores/app/contextMenu';
+import { useContextEdit } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -55,13 +56,15 @@ function Folder({ id }) {
     const [tag, setTag] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
-    const { dispatchContextMenu } = useContextMenuService(() => [
+    const { dispatchEdit } = useContextEdit();
+    const { dispatchContextMenu } = useContextMenuService((event, position, next) => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
-            onClick: () => {
-                coreService.localEventBus.call('bookmark/create', { defaultTagsIds: [id] });
-            },
+            onClick: () => dispatchEdit({
+                itemType: 'bookmark',
+                defaultTagsIds: [id],
+            }, event, position, next),
         }),
     ]);
 
@@ -111,9 +114,11 @@ function Folder({ id }) {
             {!isSearching && findBookmarks.length === 0 && (
                 <Stub message={t('bookmark:empty')}>
                     <Button
-                        onClick={() => coreService.localEventBus.call(
-                            'bookmark/create',
-                            { defaultTagsIds: [id] },
+                        onClick={(event) => dispatchEdit(
+                            {
+                                itemType: 'bookmark',
+                                defaultTagsIds: [id],
+                            }, event,
                         )}
                         startIcon={<AddBookmarkIcon />}
                         variant="contained"

@@ -9,7 +9,7 @@ import {
     Box,
 } from '@material-ui/core';
 import { alpha, makeStyles } from '@material-ui/core/styles';
-import { observer, useLocalObservable } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { reaction } from 'mobx';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -73,54 +73,33 @@ const useStyles = makeStyles((theme) => ({
 function ContextMenu({ service }) {
     const { t } = useTranslation();
     const classes = useStyles();
-    const store = useLocalObservable(() => ({
-        position: null,
-        actions: null,
-        reactions: [],
-        userClassName: null,
-    }));
     const [, setForceRender] = useState(0);
 
     useEffect(() => {
-        if (!service.activeItem) return;
+        if (!service.menu || !service.isOpen || !Array.isArray(service.menu.reactions)) return;
 
-        store.position = service.activeItem.position;
-        store.actions = service.activeItem.actions;
-        store.reactions = service.activeItem.reactions || [];
-        store.userClassName = service.activeItem.className;
-    }, [service.activeItem]);
-
-    useEffect(() => {
-        store.reactions.forEach((rule) => {
+        service.menu.reactions.forEach((rule) => {
             reaction(rule, () => {
                 setForceRender((old) => (old > 10 ? 0 : old + 1));
             });
         });
-    }, [store.reactions.length]);
+    }, [service.menu?.reactions?.length]);
 
-    useEffect(() => {
-        if (store.position) service.handleOpen();
-    }, [store.position]);
+    if (!service.menu?.actions) return null;
 
-    if (!store.actions) return null;
-
-    const calcActions = store.actions().filter(Boolean);
+    const calcActions = service.menu?.actions().filter(Boolean);
 
     return (
         <Menu
             data-role="contextmenu"
-            open={store.position !== null}
-            onClose={() => {
-                store.position = null;
-                service.handleClose();
-            }}
+            open={service.isOpen}
+            onClose={service.close}
             anchorReference="anchorPosition"
-            anchorPosition={store.position}
-            classes={{ list: clsx(classes.menu, store.userClassName) }}
+            anchorPosition={service.menu?.position}
+            classes={{ list: clsx(classes.menu, service.menu.className) }}
             onContextMenu={(event) => {
                 event.preventDefault();
-                store.position = null;
-                service.handleClose();
+                service.close();
             }}
             elevation={18}
             PaperProps={{ className: classes.paper }}
@@ -152,18 +131,16 @@ function ContextMenu({ service }) {
                                     classes={{ container: classes.itemContainer }}
                                     className={classes.item}
                                     key={element.title}
-                                    button={element.onClick}
+                                    button={Boolean(element.onClick)}
                                     dense
                                     disabled={element.disabled}
                                     onClick={async () => {
                                         const result = await element.onClick(() => {
-                                            store.position = null;
-                                            service.handleClose();
+                                            service.close();
                                         });
 
                                         if (!result) {
-                                            store.position = null;
-                                            service.handleClose();
+                                            service.close();
                                         }
                                     }}
                                 >

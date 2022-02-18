@@ -14,6 +14,7 @@ import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { useContextMenuService } from '@/stores/app/contextMenu';
+import { useContextActions } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
     folderContainer: {
@@ -85,10 +86,11 @@ function Folder({ data, columns }) {
     const classes = useStyles();
     const searchService = useSearchService();
     const { t } = useTranslation(['bookmark']);
-    const { dispatchContextMenu, isOpen } = useContextMenuService((event, baseContextMenu) => baseContextMenu({
+    const contextActions = useContextActions({
         itemId: data.id,
         itemType: 'folder',
-    }));
+    });
+    const { dispatchContextMenu, isOpen } = useContextMenuService(contextActions);
 
     return (
         <Box

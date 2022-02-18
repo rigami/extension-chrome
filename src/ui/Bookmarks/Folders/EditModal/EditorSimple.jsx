@@ -49,7 +49,7 @@ function Editor({ onSave, editId, parentId = NULL_UUID }) {
                 parentId: store.parentId,
                 id: store.editId,
             })
-                .then((tagId) => onSave(tagId))
+                .then((tagId) => onSave?.(tagId))
                 .catch((e) => {
                     captureException(e);
                     /* enqueueSnackbar({

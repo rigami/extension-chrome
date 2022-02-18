@@ -12,6 +12,7 @@ import { APP_STATE } from '@/stores/app/core/service';
 import initSentry from '@/config/sentry/app';
 import Nest from '@/utils/helpers/Nest';
 import Editor from './Editor';
+import { ContextPopoverProvider } from '@/stores/app/contextPopover';
 
 initSentry(DESTINATION.POPUP);
 
@@ -44,6 +45,7 @@ function PopupRoot() {
                     ({ children }) => (<CoreProvider side={DESTINATION.POPUP}>{children}</CoreProvider>),
                     ObserverLoadStoreWait,
                     WorkingSpaceProvider,
+                    ContextPopoverProvider,
                 ]}
             >
                 <CssBaseline />

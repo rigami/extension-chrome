@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { alpha, makeStyles, useTheme } from '@material-ui/core/styles';
-import { Button, Box } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { sample } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import BookmarksViewer from '@/ui/Bookmarks/BookmarksViewer';
@@ -9,9 +9,8 @@ import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import Stub from '@/ui-components/Stub';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import { useCoreService } from '@/stores/app/core';
 import Favorites from '@/ui/Bookmarks/Favorites';
-import GreetingView from '@/ui/Bookmarks/GreetingView';
+import { useContextEdit } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
     bookmarks: {
@@ -57,8 +56,8 @@ function PrimaryContent({ columns }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const searchService = useSearchService();
-    const coreService = useCoreService();
     const [emoticon] = useState(() => sample(emoticons));
+    const { dispatchEdit } = useContextEdit();
 
     return (
         <Fragment>
@@ -84,10 +83,10 @@ function PrimaryContent({ columns }) {
                             }}
                         >
                             <Button
-                                onClick={() => coreService.localEventBus.call(
-                                    'bookmark/create',
-                                    { defaultFolderId: searchService.selectFolderId },
-                                )}
+                                onClick={(event) => dispatchEdit({
+                                    itemType: 'bookmark',
+                                    defaultFolderId: searchService.selectFolderId,
+                                }, event)}
                                 startIcon={<AddBookmarkIcon />}
                                 variant="outlined"
                                 color="primary"
