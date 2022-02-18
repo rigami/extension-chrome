@@ -52,6 +52,7 @@ class ContextPopoverService {
 
     @action.bound
     dispatchPopover(fabric = () => [], options = {}, props = {}) {
+        console.log('dispatchPopover:', options, props);
         const {
             useAnchorEl,
             reactions,
@@ -82,7 +83,7 @@ class ContextPopoverService {
 
         this.popovers[stateKey] = {
             stateKey,
-            content: () => fabric(data, position),
+            content: () => fabric(data, position, () => this.close(stateKey)),
             nextClose: next && next(),
             position,
             reactions,

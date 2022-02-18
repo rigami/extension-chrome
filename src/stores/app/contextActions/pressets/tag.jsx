@@ -1,7 +1,7 @@
 import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 
-const folderContextMenu = ({
+const tagContextMenu = ({
     t,
     itemId,
     position = {},
@@ -13,9 +13,9 @@ const folderContextMenu = ({
         icon: AddBookmarkIcon,
         onClick: () => editDispatcher(null, position, {
             itemType: 'bookmark',
-            defaultFolderId: itemId,
+            defaultTagsIds: [itemId],
         }, next),
     }),
 ];
 
-export default folderContextMenu;
+export default tagContextMenu;

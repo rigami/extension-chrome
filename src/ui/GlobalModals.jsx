@@ -12,8 +12,6 @@ import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useCoreService } from '@/stores/app/core';
-import EditTagModal from '@/ui/Bookmarks/Tag/EditModal';
-import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import fetchData from '@/utils/helpers/fetchData';
 import Changelog from './Changelog';
 
@@ -31,24 +29,10 @@ function GlobalModals({ children }) {
                 action: 'remove',
                 id,
             })),
-            coreService.localEventBus.on('tag/edit', ({ id, anchorEl }) => setEdit({
-                type: 'tag',
-                action: 'edit',
-                id,
-                anchorEl,
-            })),
             coreService.localEventBus.on('tag/remove', ({ id }) => setEdit({
                 type: 'tag',
                 action: 'remove',
                 id,
-            })),
-            coreService.localEventBus.on('folder/edit', ({ id, anchorEl, position, options }) => setEdit({
-                type: 'folder',
-                action: 'edit',
-                id,
-                anchorEl,
-                position,
-                options,
             })),
             coreService.localEventBus.on('folder/remove', ({ id }) => setEdit({
                 type: 'folder',
@@ -195,23 +179,6 @@ function GlobalModals({ children }) {
             <Changelog />
             {BUILD === 'full' && (
                 <React.Fragment>
-                    <EditTagModal
-                        anchorEl={edit && edit.anchorEl}
-                        isOpen={edit && edit.type === 'tag' && edit.action === 'edit'}
-                        onSave={() => setEdit(null)}
-                        onClose={() => setEdit(null)}
-                        editId={edit && edit.id}
-                    />
-                    <EditFolderModal
-                        anchorEl={edit && edit.anchorEl}
-                        position={edit && edit.position}
-                        isOpen={edit && edit.type === 'folder' && edit.action === 'edit'}
-                        onSave={() => setEdit(null)}
-                        onClose={() => setEdit(null)}
-                        editId={edit && edit.id}
-                        simple
-                        {...(edit?.options || {})}
-                    />
                     {['bookmark', 'tag', 'folder'].map((type) => (
                         <Dialog
                             data-role="dialog"

@@ -9,7 +9,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
-import clsx from 'clsx';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import EditFolderModal from './EditModal';
 

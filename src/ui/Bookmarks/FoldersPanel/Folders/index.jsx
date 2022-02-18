@@ -1,5 +1,5 @@
 ﻿import React, { useEffect } from 'react';
-import { Box, List, ListItem, } from '@material-ui/core';
+import { Box, List, ListItem } from '@material-ui/core';
 import { AddRounded as AddIcon, HomeRounded as HomeIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { useLocalObservable, observer } from 'mobx-react-lite';
@@ -8,13 +8,10 @@ import { captureException } from '@sentry/react';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { FETCH } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import EditFolderModal from '@/ui/Bookmarks/Folders/EditModal';
 import asyncAction from '@/utils/helpers/asyncAction';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import TreeFolders from './TreeFolders';
-import { useContextMenuService } from '@/stores/app/contextMenu';
-import { useContextPopoverDispatcher } from '@/stores/app/contextPopover';
-import SimpleEditor from '@/ui/Bookmarks/Folders/EditModal/EditorSimple';
+import { useContextEdit } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
     addRootButton: {
@@ -57,19 +54,16 @@ function Folders(props) {
         expanded: defaultExpanded,
         disabled: defaultDisabled,
     }));
-    const { dispatchPopover, isOpen } = useContextPopoverDispatcher((position, close) => (
-        <SimpleEditor
-            onSave={(folderId) => {
-                store.expanded = [...store.expanded, store.parentFolder];
-                store.anchorEl = null;
-                store.parentFolder = null;
+    const { dispatchEdit, isOpen } = useContextEdit();
 
-                FoldersUniversalService.get(folderId)
-                    .then(onClickFolder);
-            }}
-            onCancel={close}
-        />
-    ));
+    const handleSave = (folderId) => {
+        store.expanded = [...store.expanded, store.parentFolder];
+        store.anchorEl = null;
+        store.parentFolder = null;
+
+        FoldersUniversalService.get(folderId)
+            .then(onClickFolder);
+    };
 
     useEffect(() => {
         store.state = FETCH.PENDING;
@@ -116,10 +110,7 @@ function Folders(props) {
                         level={0}
                         selectedId={selectFolder}
                         onClickFolder={onClickFolder}
-                        onCreateSubFolder={({ anchorEl, parentFolder }) => {
-                            store.anchorEl = anchorEl;
-                            store.parentFolder = parentFolder;
-                        }}
+                        onCreateSubFolder={(parentFolder) => handleSave(parentFolder)}
                         onChangeExpanded={(folderId) => {
                             if (store.expanded.includes(folderId)) {
                                 store.expanded = store.expanded.filter((id) => id !== folderId);
@@ -133,7 +124,10 @@ function Folders(props) {
                 {!disableAdd && (
                     <ListItem
                         className={classes.addRootButton}
-                        onClick={dispatchPopover}
+                        onClick={(event) => dispatchEdit({
+                            itemType: 'folder',
+                            onSave: handleSave,
+                        }, event)}
                         button
                         selected={isOpen}
                     >
@@ -142,27 +136,6 @@ function Folders(props) {
                     </ListItem>
                 )}
             </List>
-            {!disableAdd && (
-                <EditFolderModal
-                    simple
-                    isOpen={Boolean(store.anchorEl)}
-                    anchorEl={store.anchorEl}
-                    onClose={() => {
-                        store.anchorEl = null;
-                        store.parentFolder = null;
-                    }}
-                    onSave={(folderId) => {
-                        store.expanded = [...store.expanded, store.parentFolder];
-                        store.anchorEl = null;
-                        store.parentFolder = null;
-
-                        FoldersUniversalService.get(folderId)
-                            .then(onClickFolder);
-                    }}
-                    parentId={store.parentFolder}
-                    placement="left"
-                />
-            )}
         </Box>
     );
 }

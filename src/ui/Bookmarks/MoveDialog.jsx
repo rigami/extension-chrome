@@ -17,7 +17,14 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function MoveDialog({ itemType, itemId, itemParentId, moveId: defaultMoveId }) {
+function MoveDialog(props) {
+    const {
+        itemType,
+        itemId,
+        itemParentId,
+        moveId: defaultMoveId,
+        onMove,
+    } = props;
     const classes = useStyles();
     const { t } = useTranslation(['folder']);
     const bookmarksStore = useWorkingSpaceService();
@@ -39,6 +46,8 @@ function MoveDialog({ itemType, itemId, itemParentId, moveId: defaultMoveId }) {
                                     ...bookmark,
                                     folderId: moveId,
                                 });
+
+                                onMove?.(moveId);
                             }
                             if (itemType === 'folder') {
                                 const folder = await FoldersUniversalService.get(itemId);
@@ -46,6 +55,8 @@ function MoveDialog({ itemType, itemId, itemParentId, moveId: defaultMoveId }) {
                                     ...folder,
                                     parentId: moveId,
                                 });
+
+                                onMove?.(itemId);
                             }
                         }}
                         color="primary"

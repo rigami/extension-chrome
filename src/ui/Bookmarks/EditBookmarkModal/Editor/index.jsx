@@ -36,6 +36,8 @@ function Editor(props) {
     } = props;
     const classes = useStyles();
 
+    console.log('Editor bookmark props:', props);
+
     const workingSpaceService = useWorkingSpaceService();
     const service = useLocalObservable(() => new BookmarkEditor({
         defaultData: {

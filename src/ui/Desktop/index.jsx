@@ -44,10 +44,6 @@ import { useCoreService } from '@/stores/app/core';
 import Wallpaper from './Wallpaper';
 import Widgets from './Widgets';
 import WallpaperSwitchService from '@/ui/Desktop/wallpaperSwitchService';
-import { useContextPopoverDispatcher } from '@/stores/app/contextPopover';
-import SimpleEditor from '@/ui/Bookmarks/Folders/EditModal/EditorSimple';
-import { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
-import Editor from '@/ui/Bookmarks/EditBookmarkModal/Editor';
 import { useContextEdit } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
