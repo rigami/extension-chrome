@@ -8,7 +8,7 @@ import {
 } from '@material-ui/core';
 import asyncAction from '@/utils/helpers/asyncAction';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
-import EditorBookmark from '@/ui/Bookmarks/EditBookmarkModal/Editor';
+import EditorBookmark from '@/ui/Bookmarks/Bookmark/Editor';
 import Stub from '@/ui-components/Stub';
 import FolderBreadcrumbs from '@/ui/Bookmarks/ToolsPanel/FolderBreadcrumbs';
 import CloudSync from '@/ui/Bookmarks/ToolsPanel/CloudSync';

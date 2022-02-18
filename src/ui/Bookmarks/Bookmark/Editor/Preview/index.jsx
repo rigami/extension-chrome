@@ -19,7 +19,7 @@ import CardLink from '@/ui/Bookmarks/Bookmark/Card';
 import Stub from '@/ui-components/Stub';
 import { FETCH } from '@/enum';
 import Scrollbar from '@/ui-components/CustomScroll';
-import { STATE_EDITOR } from '@/ui/Bookmarks/EditBookmarkModal/Editor/BookmarkEditor';
+import { STATE_EDITOR } from '@/ui/Bookmarks/Bookmark/Editor/BookmarkEditor';
 
 const useStyles = makeStyles((theme) => ({
     cover: {

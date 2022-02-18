@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import asyncAction from '@/utils/helpers/asyncAction';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
-import EditorBookmark from '@/ui/Bookmarks/EditBookmarkModal/Editor';
+import EditorBookmark from '@/ui/Bookmarks/Bookmark/Editor';
 import Stub from '@/ui-components/Stub';
 
 const useStyles = makeStyles(() => ({

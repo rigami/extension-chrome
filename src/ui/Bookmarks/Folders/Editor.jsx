@@ -4,18 +4,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { captureException } from '@sentry/react';
-import { useSnackbar } from 'notistack';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { NULL_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
-    popper: {
-        display: 'flex',
-        flexDirection: 'column',
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-    },
     input: { padding: theme.spacing(1, 2) },
     saveButton: {
         margin: theme.spacing(0.5),

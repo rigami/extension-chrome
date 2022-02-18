@@ -19,13 +19,9 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import { captureException } from '@sentry/react';
 import clsx from 'clsx';
 import { FETCH } from '@/enum';
-import FolderSelector from '@/ui/Bookmarks/Folders/Selector';
-import SearchSiteField from './SearchSiteField';
-import Tag from '../../Tag';
-import Tags from '@/ui/Bookmarks/ToolsPanel/Search/Tags';
-import TagsFiled from '@/ui/Bookmarks/EditBookmarkModal/Editor/TagsFiled';
-import Folders from '@/ui/Bookmarks/FoldersPanel/Folders';
-import Search from '@/ui/Bookmarks/EditBookmarkModal/Editor/SearchSiteField/Search';
+import TagsFiled from '@/ui/Bookmarks/Bookmark/Editor/TagsFiled';
+import Folders from '@/ui/Bookmarks/Folders';
+import Search from '@/ui/Bookmarks/Bookmark/Editor/SearchSiteField/Search';
 
 const useStyles = makeStyles((theme) => ({
     content: {

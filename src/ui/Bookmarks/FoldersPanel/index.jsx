@@ -8,7 +8,7 @@ import LogoIcon from '@/images/logo-icon.svg';
 import LogoText from '@/images/logo-text.svg';
 import Subheader from '@/ui/Bookmarks/FoldersPanel/Subheader';
 import LastClosed from './RecentlyClosed';
-import Folders from './Folders';
+import Folders from '../Folders';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import { useSearchService } from '@/ui/Bookmarks/searchProvider';
 

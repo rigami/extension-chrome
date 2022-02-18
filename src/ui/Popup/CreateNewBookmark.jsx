@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import EditorBookmark from '@/ui/Bookmarks/EditBookmarkModal/Editor';
+import EditorBookmark from '@/ui/Bookmarks/Bookmark/Editor';
 
 const useStyles = makeStyles(() => ({
     editor: { padding: 0 },

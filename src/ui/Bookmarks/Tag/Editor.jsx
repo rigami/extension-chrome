@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Card,
     InputBase,
     Button,
     Typography,
+    Box,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -12,12 +12,12 @@ import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
 
 const useStyles = makeStyles((theme) => ({
-    popper: {
-        display: 'flex',
-        flexDirection: 'column',
+    input: { padding: theme.spacing(1, 2) },
+    saveButton: {
+        margin: theme.spacing(0.5),
+        marginLeft: theme.spacing(0),
+        borderRadius: theme.shape.borderRadiusButton,
     },
-    input: { padding: theme.spacing(2) },
-    saveButton: { marginRight: theme.spacing(2) },
     errorMessage: { padding: theme.spacing(1, 2) },
     form: {
         display: 'flex',
@@ -64,7 +64,7 @@ function Editor({ onSave, editId }) {
     }, []);
 
     return !isLoading && (
-        <Card className={classes.popper} elevation={16}>
+        <Box>
             <form onSubmit={handlerSubmit} className={classes.form}>
                 <InputBase
                     className={classes.input}
@@ -93,7 +93,7 @@ function Editor({ onSave, editId }) {
                     {t(`editor.error.${error}`, 'editor.error.unknown')}
                 </Typography>
             )}
-        </Card>
+        </Box>
     );
 }
 

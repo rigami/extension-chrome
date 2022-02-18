@@ -6,7 +6,7 @@ import { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
 import { DriveFileMoveFilled as MoveIcon } from '@/icons';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import Folders from '@/ui/Bookmarks/FoldersPanel/Folders';
+import Folders from '@/ui/Bookmarks/Folders';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 
 const useStyles = makeStyles(() => ({

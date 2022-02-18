@@ -18,7 +18,7 @@ import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import { Item, ItemAction } from '@/ui/Bookmarks/FoldersPanel/Item';
 import { useContextPopoverDispatcher } from '@/stores/app/contextPopover';
-import SimpleEditor from '@/ui/Bookmarks/Folders/EditModal/EditorSimple';
+import SimpleEditor from '@/ui/Bookmarks/Folders/Editor';
 import { useContextActions, useContextEdit } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Box, ButtonBase, Typography, IconButton, Tooltip,
+    Box,
+    ButtonBase,
+    Typography,
+    IconButton,
+    Tooltip,
 } from '@material-ui/core';
 import clsx from 'clsx';
 import { alpha, makeStyles, lighten } from '@material-ui/core/styles';
@@ -33,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
     },
     active: {},
+    selected: { backgroundColor: theme.palette.action.selected },
     favorite: {
         color: theme.palette.favorite.main,
         width: 18,
@@ -107,7 +112,7 @@ function Tag(props) {
         itemId: id,
         itemType: 'tag',
     });
-    const { dispatchContextMenu } = useContextMenuService(contextActions);
+    const { dispatchContextMenu, isOpen } = useContextMenuService(contextActions);
     const [isPin, setIsPin] = useState(workingSpaceService.findFavorite({
         itemId: id,
         itemType: 'tag',
@@ -150,7 +155,13 @@ function Tag(props) {
 
     return (
         <ButtonBase
-            className={clsx(classes.root, classes.normal, isSelect && classes.active, externalClassName)}
+            className={clsx(
+                classes.root,
+                classes.normal,
+                isSelect && classes.active,
+                isOpen && classes.selected,
+                externalClassName,
+            )}
             style={{
                 backgroundColor: isSelect && alpha(repairColor, 0.14),
                 borderColor: isSelect && repairColor,

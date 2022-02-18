@@ -1,5 +1,5 @@
 import { BKMS_VARIANT } from '@/enum';
-import { getImage } from '@/ui/Bookmarks/EditBookmarkModal/Editor/utils/siteSearch';
+import { getImage } from '@/ui/Bookmarks/Bookmark/Editor/utils/siteSearch';
 
 export const checkValidImage = async (url) => new Promise(((resolve, reject) => {
     const imgCache = document.createElement('img');
