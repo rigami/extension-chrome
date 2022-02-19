@@ -441,7 +441,7 @@ function Desktop() {
                 style={{
                     transform: appStateService.activity === ACTIVITY.FAVORITES
                         ? `translateY(calc(-100vh + ${
-                            Math.max(coreService.tempStorage.data.desktopWidgetsHeight, 72)
+                            Math.max(coreService.tempStorage.data.desktopWidgetsHeight, 64)
                         + coreService.tempStorage.data.desktopFapHeight
                         }px))`
                         : '',

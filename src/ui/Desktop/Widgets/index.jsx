@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import { useResizeDetector } from 'react-resize-detector';
@@ -133,10 +133,23 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '4rem',
         lineHeight: '100%',
     },
+    xLeft: {
+        alignItems: 'flex-start',
+        '& $widget': { alignItems: 'flex-start' },
+    },
+    xCenter: { alignItems: 'center' },
+    xRight: {
+        alignItems: 'flex-end',
+        '& $widget': { alignItems: 'flex-end' },
+    },
+    yTop: { justifyContent: 'flex-start' },
+    yMiddle: { justifyContent: 'center' },
+    yBottom: { justifyContent: 'flex-end' },
 }));
 
 function Widgets({ stickToBottom, color }) {
     const classes = useStyles();
+    const theme = useTheme();
     const service = useCoreService();
     const appStateService = useAppStateService();
     const { widgetsService, desktopService } = appStateService;
@@ -149,6 +162,7 @@ function Widgets({ stickToBottom, color }) {
 
     const { height: heightWidget, ref: refWidget } = useResizeDetector({ onResize });
 
+    let positionOffsetSide = '';
     let positionOffset = '';
 
     if (BUILD === 'full') {
@@ -159,26 +173,93 @@ function Widgets({ stickToBottom, color }) {
                 && desktopService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
             ) || appStateService.activity === ACTIVITY.FAVORITES
         ) {
-            positionOffset = 'bottom';
+            positionOffsetSide = 'bottom';
+            positionOffset = service.tempStorage.data.desktopFapHeight;
         } else if (
             workingSpaceService.favorites.length !== 0
             && desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
             && desktopService.settings.fapPosition === BKMS_FAP_POSITION.TOP
         ) {
-            positionOffset = 'top';
+            positionOffsetSide = 'top';
+            positionOffset = Math.max(service.tempStorage.data.desktopFapHeight, theme.spacing(4) + 36);
         }
     }
+
+    const positions = {
+        [DTW_POSITION.LEFT_TOP]: {
+            classes: [classes.xLeft, classes.yTop],
+            x: 'left',
+            y: 'top',
+        },
+        [DTW_POSITION.CENTER_TOP]: {
+            classes: [classes.xCenter, classes.yTop],
+            x: 'center',
+            y: 'top',
+        },
+        [DTW_POSITION.RIGHT_TOP]: {
+            classes: [classes.xRight, classes.yTop],
+            x: 'right',
+            y: 'top',
+        },
+        [DTW_POSITION.LEFT_MIDDLE]: {
+            classes: [classes.xLeft, classes.yMiddle],
+            x: 'left',
+            y: 'center',
+        },
+        [DTW_POSITION.CENTER_MIDDLE]: {
+            classes: [classes.xCenter, classes.yMiddle],
+            x: 'center',
+            y: 'center',
+        },
+        [DTW_POSITION.RIGHT_MIDDLE]: {
+            classes: [classes.xRight, classes.yMiddle],
+            x: 'right',
+            y: 'center',
+        },
+        [DTW_POSITION.LEFT_BOTTOM]: {
+            classes: [classes.xLeft, classes.yBottom],
+            x: 'left',
+            y: 'bottom',
+        },
+        [DTW_POSITION.CENTER_BOTTOM]: {
+            classes: [classes.xCenter, classes.yBottom],
+            x: 'center',
+            y: 'bottom',
+        },
+        [DTW_POSITION.RIGHT_BOTTOM]: {
+            classes: [classes.xRight, classes.yBottom],
+            x: 'right',
+            y: 'bottom',
+        },
+    };
+
+    let translate = '';
+
+    if (
+        desktopService.settings.widgetsPosition === DTW_POSITION.LEFT_MIDDLE
+        || desktopService.settings.widgetsPosition === DTW_POSITION.CENTER_MIDDLE
+        || desktopService.settings.widgetsPosition === DTW_POSITION.RIGHT_MIDDLE
+    ) {
+        translate = `translateY(calc(${heightRoot / 2}px - ${64 / 2}px))`;
+    } else if (
+        desktopService.settings.widgetsPosition === DTW_POSITION.LEFT_TOP
+        || desktopService.settings.widgetsPosition === DTW_POSITION.CENTER_TOP
+        || desktopService.settings.widgetsPosition === DTW_POSITION.RIGHT_TOP
+    ) {
+        translate = `translateY(calc(${heightRoot}px - ${64}px))`;
+    }
+
+    const currPosition = positions[desktopService.settings.widgetsPosition];
 
     return (
         <Box
             className={clsx(
                 classes.root,
-                desktopService.settings.widgetsPosition === DTW_POSITION.LEFT_BOTTOM && classes.leftBottom,
-                desktopService.settings.widgetsPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddle,
-                desktopService.settings.widgetsPosition === DTW_POSITION.CENTER_TOP && classes.centerTop,
+                ...currPosition.classes,
             )}
             style={{
-                [positionOffset]: service.tempStorage.data.desktopFapHeight,
+                top: theme.spacing(4) + 36,
+                [positionOffsetSide]: positionOffset,
                 color,
                 textShadow: color ? '0 2px 17px #00000000' : '0 2px 17px #00000029',
             }}
@@ -188,11 +269,8 @@ function Widgets({ stickToBottom, color }) {
                 className={classes.widget}
                 ref={refWidget}
                 style={{
-                    transform: stickToBottom && `${
-                        desktopService.settings.widgetsPosition !== DTW_POSITION.LEFT_BOTTOM
-                            ? `translateY(calc(${heightRoot / 2}px - ${heightWidget / 2}px))`
-                            : ''
-                    } scale(${64 / heightWidget})`,
+                    transform: stickToBottom && `${translate} scale(${64 / heightWidget})`,
+                    transformOrigin: `${currPosition.x} ${currPosition.y}`,
                 }}
             >
                 {widgetsService.settings.useTime && (
