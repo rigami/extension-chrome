@@ -20,7 +20,7 @@ module.exports = () => {
         },
         'background': { 'service_worker': 'server.js' },
         'chrome_url_overrides': { 'newtab': 'index.html' },
-        'host_permissions': ['http://danilkinkin.com/', '*://*/*'],
+        'host_permissions': ['https://danilkinkin.com/', '*://*/*'],
         'content_security_policy': {
             'extension_pages':
                 'default-src \'self\';'
