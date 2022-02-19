@@ -31,7 +31,7 @@ const baseThemeValues = {
         background: {
             backdrop: '#ececec',
             backdropLight: '#F9F9F9',
-            default: '#F9F9F9',
+            default: '#FFFFFF',
         },
         text: { primary: alpha('#000', 0.76) },
     },

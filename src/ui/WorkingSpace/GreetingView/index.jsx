@@ -19,10 +19,9 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 4 * (theme.shape.dataCard.width + 16) + 24 + 8,
     },
     card: {
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: theme.palette.background.backdropLight,
         padding: theme.spacing(3, 4),
-        borderColor: alpha(theme.palette.divider, 0.06),
-        borderRadius: theme.shape.borderRadiusBolder,
+        borderRadius: 24,
     },
     divider: {
         marginTop: theme.spacing(2),
@@ -36,13 +35,17 @@ function GreetingView() {
     const { widgetsService } = useAppStateService();
 
     const greeting = coreService.storage.data.userName;
-    const date = widgetsService.settings.useTime || widgetsService.settings.useDate || widgetsService.settings.useWeather;
+    const date = (
+        widgetsService.settings.useTime
+        || widgetsService.settings.useDate
+        || widgetsService.settings.useWeather
+    );
 
     if (!greeting && !date) return null;
 
     return (
         <Box className={classes.root}>
-            <Card variant="outlined" className={classes.card}>
+            <Card elevation={0} className={classes.card}>
                 <Greeting />
                 {greeting && date && (<Divider className={classes.divider} />)}
                 <Widgets />
