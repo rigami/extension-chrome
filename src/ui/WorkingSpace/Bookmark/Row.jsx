@@ -45,8 +45,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'stretch',
         justifyContent: 'flex-start',
         padding: theme.spacing(1),
-        margin: theme.spacing(0, 1),
-        borderRadius: theme.shape.borderRadius,
+        borderRadius: theme.shape.borderRadiusBold,
     },
     icon: {
         width: 32,
@@ -77,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: theme.shape.borderRadius / 2,
+        borderRadius: theme.shape.borderRadiusBold / 2,
         filter: 'brightness(0.96)',
         backgroundColor: theme.palette.background.default,
     },
@@ -141,6 +140,7 @@ const useStyles = makeStyles((theme) => ({
         // minHeight: 58,
         overflow: 'auto',
     },
+    selected: { backgroundColor: theme.palette.action.selected },
 }));
 
 function Tags({ tags }) {
@@ -187,7 +187,7 @@ function RowItem(props) {
         itemId: id,
         itemType: 'bookmark',
     });
-    const { dispatchContextMenu } = useContextMenuService(contextActions);
+    const { dispatchContextMenu, isOpen } = useContextMenuService(contextActions);
 
     const handleClick = (event) => {
         if (onClick) {
@@ -229,7 +229,7 @@ function RowItem(props) {
                 {...other}
             >
                 <CardActionArea
-                    className={classes.rootActionWrapper}
+                    className={clsx(classes.rootActionWrapper, isOpen && classes.selected)}
                     onMouseUp={handleClick}
                     onContextMenu={!preview ? dispatchContextMenu : undefined}
                 >

@@ -22,6 +22,7 @@ import ListRecentlyClosed from './List';
 const useStyles = makeStyles((theme) => ({
     subheader: {
         paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(0.5),
         '&:hover $action': { display: 'flex' },
     },
     action: {

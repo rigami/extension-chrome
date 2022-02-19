@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     hideSkeleton: { opacity: 0 },
     listBookmarks: {
         width: '100%',
-        margin: theme.spacing(0, -2),
+        margin: theme.spacing(0, -1),
     },
 }));
 

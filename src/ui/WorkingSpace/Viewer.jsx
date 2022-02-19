@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: theme.spacing(7),
         paddingRight: theme.spacing(3),
     },
+    '@media (max-width: 1700px)': { sideBar: { maxWidth: 360 } },
     inlineWidgets: {
         marginBottom: theme.spacing(4),
         padding: theme.spacing(0, 2),

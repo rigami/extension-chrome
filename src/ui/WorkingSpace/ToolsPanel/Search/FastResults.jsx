@@ -50,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'block',
         color: theme.palette.text.secondary,
     },
+    bookmarksList: { padding: theme.spacing(0, 1) },
 }));
 
 function FastResults({ onGoToFolder }) {
@@ -121,7 +122,10 @@ function FastResults({ onGoToFolder }) {
                             <BookmarksList
                                 bookmarks={store.currentFolder}
                                 max={3}
-                                classes={{ bookmarks: classes.bookmarksGrid }}
+                                classes={{
+                                    root: classes.bookmarksList,
+                                    bookmarks: classes.bookmarksGrid,
+                                }}
                                 overloadContent={(renderCount) => (
                                     <Typography
                                         variant="caption"
@@ -158,7 +162,10 @@ function FastResults({ onGoToFolder }) {
                             <BookmarksList
                                 bookmarks={bookmarks}
                                 max={3}
-                                classes={{ bookmarks: classes.bookmarksGrid }}
+                                classes={{
+                                    root: classes.bookmarksList,
+                                    bookmarks: classes.bookmarksGrid,
+                                }}
                                 overloadContent={(renderCount) => (
                                     <Typography
                                         variant="caption"

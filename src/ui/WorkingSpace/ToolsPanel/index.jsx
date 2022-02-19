@@ -16,7 +16,7 @@ import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        backgroundColor: alpha(theme.palette.background.default, 0.91),
+        backgroundColor: alpha(theme.palette.background.default, 0.6),
         backdropFilter: `blur(${theme.spacing(2)}px)`,
     },
     toolbar: {

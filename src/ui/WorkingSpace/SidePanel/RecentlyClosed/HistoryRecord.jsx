@@ -43,7 +43,9 @@ function HistoryRecord({ sessionId, url, favIconUrl, title }) {
         new ContextMenuItem({
             title: t('bookmark:button.copyUrl'),
             icon: CopyToClipboardIcon,
-            onClick: () => copyToClipboard(url),
+            onClick: () => {
+                copyToClipboard(url);
+            },
         }),
     ]);
 

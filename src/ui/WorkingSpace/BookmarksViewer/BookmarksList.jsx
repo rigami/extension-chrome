@@ -1,6 +1,6 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Divider } from '@material-ui/core';
+import { Divider } from '@material-ui/core';
 import clsx from 'clsx';
 import RowItem from '@/ui/WorkingSpace/Bookmark/Row';
 
@@ -34,10 +34,7 @@ const useStyles = makeStyles((theme) => ({
     folderBreadcrumbs: { overflow: 'auto' },
     divider: {
         opacity: 1,
-        transition: theme.transitions.create(['opacity'], {
-            duration: theme.transitions.duration.standard,
-            easing: theme.transitions.easing.easeInOut,
-        }),
+        margin: theme.spacing(0.5, 0),
     },
     hide: { opacity: 0 },
 }));
@@ -51,7 +48,6 @@ function BookmarksList(props) {
         className: externalClassName,
         overloadContent,
     } = props;
-    const [hoverIndex, setHoverIndex] = useState(null);
 
     return (
         <ul className={clsx(classes.root, externalClasses.root, externalClassName)}>
@@ -60,10 +56,7 @@ function BookmarksList(props) {
                     {index !== 0 && (
                         <Divider
                             variant="middle"
-                            className={clsx(
-                                classes.divider,
-                                hoverIndex !== null && (hoverIndex === index || hoverIndex + 1 === index) && classes.hide,
-                            )}
+                            className={classes.divider}
                         />
                     )}
                     <RowItem
@@ -75,8 +68,6 @@ function BookmarksList(props) {
                         icoVariant={bookmark.icoVariant}
                         description={bookmark.description}
                         icoUrl={bookmark.icoUrl}
-                        onMouseEnter={() => { setHoverIndex(index); }}
-                        onMouseLeave={() => { setHoverIndex(null); }}
                     />
                 </Fragment>
             ))}
