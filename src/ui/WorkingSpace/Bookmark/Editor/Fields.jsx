@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         flex: '1 0 auto',
         minHeight: 450,
         backgroundColor: theme.palette.background.backdropLight,
-        borderRadius: theme.shape.borderRadius,
+        borderRadius: theme.shape.borderRadiusButton,
         margin: theme.spacing(2),
         marginLeft: 0,
         marginBottom: 0,
@@ -59,8 +59,10 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(1),
         marginLeft: theme.spacing(-1),
         fontWeight: theme.typography.body1.fontWeight,
-        fontSize: theme.typography.body1.fontSize,
+        fontSize: theme.typography.body2.fontSize,
         color: theme.palette.text.secondary,
+        alignSelf: 'flex-start',
+        padding: theme.spacing(0.25, 1.25),
     },
     saveIcon: {
         height: theme.spacing(2),
@@ -142,14 +144,6 @@ function Fields(props) {
     return (
         <Box className={classes.details}>
             <CardContent className={classes.content}>
-                {/* <Typography variant="h6" className={classes.header}>
-                    {t('editor', { context: service.editBookmarkId ? 'edit' : 'add' })}
-                </Typography> */}
-                {/* <SearchSiteField
-                    url={service.url}
-                    marginThreshold={marginThreshold}
-                    onSelect={(selectProps) => service.updateValues(selectProps)}
-                /> */}
                 <InputBase
                     placeholder={t('editor.bookmarkUrl', { context: 'placeholder' })}
                     fullWidth
