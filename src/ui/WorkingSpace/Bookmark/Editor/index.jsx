@@ -53,7 +53,7 @@ function Editor(props) {
     }
 
     return (
-        <Card className={clsx(classes.editor, externalClasses.editor)}>
+        <Card className={clsx(classes.editor, externalClasses.editor)} elevation={0}>
             <Preview editorService={service} />
             <FieldsEditor
                 editorService={service}
