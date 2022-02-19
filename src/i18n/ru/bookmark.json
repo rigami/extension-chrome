@@ -10,6 +10,7 @@
     "bookmarkDescription_placeholder": "Добавить описание...",
     "bookmarkTags": "Теги",
     "bookmarkTags_placeholder": "Добавить тег...",
+    "saveInCurrentFolder": "Сохранено здесь",
     "button": {
       "addDescription": "Добавить описание...",
       "forceAdd": "Все равно добавить",
@@ -29,7 +30,7 @@
       }
     },
     "save": {
-      "success": "Закладка успешно сохранена",
+      "success": "Закладка сохранена",
       "saving": "Сохранение..."
     },
     "helper": {

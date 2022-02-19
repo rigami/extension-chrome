@@ -54,7 +54,7 @@ function CustomScroll(rootProps, ref) {
 
     return (
         <Scrollbar
-            className={clsx(classes.root, externalClassName)}
+            className={clsx(classes.root, externalClassName, externalClasses.root)}
             noDefaultStyles
             scrollerProps={{
                 renderer: (props) => {

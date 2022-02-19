@@ -4,15 +4,10 @@ import {
     Box,
     CardContent,
     Typography,
-    TextField,
     CircularProgress,
-    InputAdornment, Paper,
     InputBase, Divider,
 } from '@material-ui/core';
-import {
-    AddRounded as AddIcon,
-    DoneRounded as DoneIcon,
-} from '@material-ui/icons';
+import { DoneRounded as DoneIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -22,6 +17,7 @@ import { FETCH } from '@/enum';
 import TagsFiled from '@/ui/WorkingSpace/Bookmark/Editor/TagsFiled';
 import Folders from '@/ui/WorkingSpace/Folders';
 import Search from '@/ui/WorkingSpace/Bookmark/Editor/SearchSiteField/Search';
+import Scrollbar from '@/ui-components/CustomScroll';
 
 const useStyles = makeStyles((theme) => ({
     content: {
@@ -32,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(2),
         marginLeft: 0,
         marginBottom: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        paddingBottom: 0,
     },
     header: { marginBottom: theme.spacing(1) },
     controls: {
@@ -90,6 +89,12 @@ const useStyles = makeStyles((theme) => ({
         height: theme.spacing(2),
         boxSizing: 'content-box',
     },
+    saveInCurrentFolderCaption: { padding: theme.spacing(0, 0.75) },
+    foldersContainer: {
+        height: 'auto',
+        flexGrow: 1,
+    },
+    foldersContainerTrack: { right: -10 },
 }));
 
 function Fields(props) {
@@ -216,76 +221,31 @@ function Fields(props) {
                             </Button>
                         )}
                         <Divider />
-                        <Folders
-                            className={classes.folderPicker}
-                            selectFolder={service.folderId}
-                            onClickFolder={({ id }) => { }}
-                            actions={({ id, name, permanent }) => service.folderId !== id && !permanent && (
-                                <Fragment>
-                                    <Button
-                                        onClick={() => {
-                                            service.updateValues({ folderId: id });
-                                        }}
+                        <Scrollbar
+                            classes={{
+                                root: classes.foldersContainer,
+                                trackY: classes.foldersContainerTrack,
+                            }}
+                        >
+                            <Folders
+                                className={classes.folderPicker}
+                                selectFolder={service.folderId}
+                                onClickFolder={({ id }) => {
+                                    service.updateValues({ folderId: id });
+                                }}
+                                actions={({ id, permanent }) => service.folderId === id && permanent && (
+                                    <Typography
+                                        variant="caption"
+                                        className={classes.saveInCurrentFolderCaption}
                                     >
-                                        {service.editBookmarkId ? 'Переместить' : 'Сохранить'}
-                                    </Button>
-                                </Fragment>
-                            )}
-                        />
+                                        {t('editor.saveInCurrentFolder')}
+                                    </Typography>
+                                )}
+                            />
+                        </Scrollbar>
                     </Fragment>
                 )}
             </CardContent>
-            {/* <div className={classes.controls}>
-                <FolderSelector
-                    className={classes.folderPicker}
-                    value={service.folderId}
-                    onChange={(newFolder) => service.updateValues({ folderId: newFolder })}
-                />
-                {onCancel && (
-                    <Button
-                        data-ui-path="cancel"
-                        variant="text"
-                        color="default"
-                        className={classes.button}
-                        onClick={onCancel}
-                    >
-                        {t('common:button.cancel')}
-                    </Button>
-                )}
-                <div className={classes.button}>
-                    {store.saveState === FETCH.WAIT && (
-                        <Button
-                            data-ui-path="save"
-                            variant="contained"
-                            color="primary"
-                            disabled={!service.url || !service.name?.trim()}
-                            onClick={() => {
-                                service.save()
-                                    .then(() => { store.saveState = FETCH.DONE; onSave(); })
-                                    .catch((e) => {
-                                        captureException(e);
-                                        store.saveState = FETCH.FAILED;
-                                    });
-                            }}
-                        >
-                            {t('editor.button.saveBookmark')}
-                        </Button>
-                    )}
-                    {store.saveState === FETCH.PENDING && (
-                        <Box display="flex" alignItems="center">
-                            <CircularProgress size={24} color="primary" className={classes.saveIcon} />
-                            {t('editor.save.saving')}
-                            ...
-                        </Box>
-                    )}
-                    {store.saveState === FETCH.DONE && (
-                        <Box display="flex" alignItems="center">
-                            <DoneIcon color="primary" className={classes.saveIcon} />
-                            {t('editor.save.success')}
-                        </Box>
-                    )}
-                </div>
-            </div> */}
             <div className={classes.stateCaption}>
                 {store.saveState === FETCH.PENDING && (
                     <Fragment>
