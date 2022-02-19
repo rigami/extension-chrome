@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BG_SOURCE } from '@/enum';
 import {
     Avatar,
     Box,
@@ -19,6 +18,7 @@ import {
 } from '@material-ui/icons';
 import { makeStyles, alpha } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { BG_SOURCE } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
     bgCard: {

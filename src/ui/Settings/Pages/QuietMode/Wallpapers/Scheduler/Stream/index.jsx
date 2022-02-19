@@ -25,7 +25,7 @@ import { useAppStateService } from '@/stores/app/appState';
 import appVariables from '@/config/config';
 import Banner from '@/ui-components/Banner';
 import changeQueryPage from './ChangeQuery';
-import libraryPage from '@/ui/Settings/Pages/QuietMode/Library';
+import libraryPage from '@/ui/Settings/Pages/QuietMode/Wallpapers/Library';
 
 const useStyles = makeStyles((theme) => ({
     chipsWrapper: { paddingRight: theme.spacing(1) },

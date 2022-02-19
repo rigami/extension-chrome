@@ -16,7 +16,7 @@ import Stub from '@/ui-components/Stub';
 import { useCoreService } from '@/stores/app/core';
 import { useAppStateService } from '@/stores/app/appState';
 import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
-import BackgroundCard from '@/ui/Settings/Pages/QuietMode/BackgroundCard';
+import BackgroundCard from '@/ui/Settings/Pages/QuietMode/Wallpapers/BackgroundCard';
 import { FETCH } from '@/enum';
 import LoadBGFromLocalButton from './LoadBGFromLocalButton';
 import { eventToBackground } from '@/stores/universal/serviceBus';

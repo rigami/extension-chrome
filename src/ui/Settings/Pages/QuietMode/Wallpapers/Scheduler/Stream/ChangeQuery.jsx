@@ -25,7 +25,7 @@ import { useCoreService } from '@/stores/app/core';
 import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/config';
 import { useAppStateService } from '@/stores/app/appState';
-import BackgroundCard from '@/ui/Settings/Pages/QuietMode/BackgroundCard';
+import BackgroundCard from '@/ui/Settings/Pages/QuietMode/Wallpapers/BackgroundCard';
 import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import api from '@/utils/helpers/api';
