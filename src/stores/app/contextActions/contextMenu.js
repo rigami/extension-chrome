@@ -8,9 +8,9 @@ import tagContextMenu from '@/stores/app/contextActions/pressets/tag';
 const baseContextMenu = ({
     workingSpaceService,
     t,
-    coreService,
     contextEdit,
     contextMove,
+    contextDelete,
 }) => (event, position, { itemId, itemType }, next) => [
     favoriteContextMenu({
         workingSpaceService,
@@ -37,7 +37,6 @@ const baseContextMenu = ({
         itemId,
     }),
     editContextMenu({
-        coreService,
         t,
         edit: true,
         move: itemId !== FIRST_UUID && itemType !== 'tag',
@@ -47,6 +46,7 @@ const baseContextMenu = ({
         position,
         editDispatcher: contextEdit.dispatchPopover,
         moveDispatcher: contextMove.dispatchPopover,
+        deleteDispatcher: contextDelete.dispatchPopover,
         next,
     }),
 ];

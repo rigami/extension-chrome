@@ -5,7 +5,6 @@ import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 
 const editContextMenu = ({
-    coreService,
     t,
     edit = true,
     move = true,
@@ -15,6 +14,7 @@ const editContextMenu = ({
     position = {},
     editDispatcher,
     moveDispatcher,
+    deleteDispatcher,
     next,
 }) => [
     edit && new ContextMenuItem({
@@ -52,9 +52,10 @@ const editContextMenu = ({
     remove && new ContextMenuItem({
         title: t('common:button.remove'),
         icon: RemoveIcon,
-        onClick: () => {
-            coreService.localEventBus.call(`${itemType}/remove`, { id: itemId });
-        },
+        onClick: () => deleteDispatcher(null, position, {
+            itemType,
+            itemId,
+        }, next),
     }),
 ].filter(Boolean);
 

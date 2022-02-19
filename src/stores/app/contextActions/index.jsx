@@ -1,7 +1,6 @@
 import React, { createContext, useContext, Fragment } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { useCoreService } from '@/stores/app/core';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import baseContextMenu from '@/stores/app/contextActions/contextMenu';
 import { useContextPopoverDispatcher } from '@/stores/app/contextPopover';
@@ -10,6 +9,7 @@ import { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
 import BookmarkEditor from '@/ui/WorkingSpace/Bookmark/Editor';
 import TagEditor from '@/ui/WorkingSpace/Tag/Editor';
 import MoveDialog from '@/ui/WorkingSpace/MoveDialog';
+import DeleteDialog from '@/ui/WorkingSpace/DeleteDialog';
 
 const context = createContext();
 
@@ -65,8 +65,18 @@ function MoveComposer({ data = {}, close }) {
     );
 }
 
+function DeleteComposer({ data = {}, close }) {
+    return (
+        <DeleteDialog
+            itemType={data.itemType}
+            itemId={data.itemId}
+            onDelete={() => close() & data.onDelete?.()}
+            onCancel={close}
+        />
+    );
+}
+
 function ContextActionsProvider({ children }) {
-    const coreService = useCoreService();
     const workingSpaceService = useWorkingSpaceService();
     const { t } = useTranslation();
 
@@ -76,12 +86,15 @@ function ContextActionsProvider({ children }) {
     const contextMove = useContextPopoverDispatcher((data = {}, position, close) => (
         <MoveComposer data={data} position={position} close={close} />
     ));
+    const contextDelete = useContextPopoverDispatcher((data = {}, position, close) => (
+        <DeleteComposer data={data} position={position} close={close} />
+    ));
     const contextMenu = baseContextMenu({
         workingSpaceService,
         t,
-        coreService,
         contextEdit,
         contextMove,
+        contextDelete,
     });
     const Context = context;
 
@@ -141,9 +154,28 @@ function useContextMoveService() {
     };
 }
 
+function useContextDeleteService() {
+    const contextDelete = useContextPopoverDispatcher((data = {}, position, close) => (
+        <DeleteComposer data={data} position={position} close={close} />
+    ));
+
+    const dispatcher = (config, event, overridePosition, next) => contextDelete.dispatchPopover(
+        event,
+        overridePosition,
+        config,
+        next,
+    );
+
+    return {
+        ...contextDelete,
+        dispatchDelete: dispatcher,
+    };
+}
+
 export {
     observerProvider as ContextActionsProvider,
     useContextMenuService as useContextActions,
     useContextEditService as useContextEdit,
     useContextMoveService as useContextMove,
+    useContextDeleteService as useContextDelete,
 };

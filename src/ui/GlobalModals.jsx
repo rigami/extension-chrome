@@ -1,46 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
-    Button,
-} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useCoreService } from '@/stores/app/core';
 import fetchData from '@/utils/helpers/fetchData';
 import Changelog from './Changelog';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation(['folder']);
-    const bookmarksStore = useWorkingSpaceService();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const coreService = useCoreService();
-    const [edit, setEdit] = useState(null);
 
     useEffect(() => {
-        const localListeners = [
-            coreService.localEventBus.on('bookmark/remove', ({ id }) => setEdit({
-                type: 'bookmark',
-                action: 'remove',
-                id,
-            })),
-            coreService.localEventBus.on('tag/remove', ({ id }) => setEdit({
-                type: 'tag',
-                action: 'remove',
-                id,
-            })),
-            coreService.localEventBus.on('folder/remove', ({ id }) => setEdit({
-                type: 'folder',
-                action: 'remove',
-                id,
-            })),
-        ];
-
         const saveLocalBackup = async (path) => {
             console.log('path:', path);
             const generateFormatter = new Intl.DateTimeFormat('en', {
@@ -168,7 +139,6 @@ function GlobalModals({ children }) {
         }
 
         return () => {
-            localListeners.forEach((listenerId) => coreService.localEventBus.removeListener(listenerId));
             globalListeners.forEach((listenerId) => coreService.localEventBus.removeListener(listenerId));
         };
     }, []);
@@ -177,54 +147,6 @@ function GlobalModals({ children }) {
         <React.Fragment>
             {children}
             <Changelog />
-            {BUILD === 'full' && (
-                <React.Fragment>
-                    {['bookmark', 'tag', 'folder'].map((type) => (
-                        <Dialog
-                            data-role="dialog"
-                            key={type}
-                            open={(edit && edit.action === 'remove' && edit.type === type) || false}
-                            onClose={() => setEdit(null)}
-                            disableEnforceFocus
-                        >
-                            <DialogTitle>
-                                {t(`${type}:remove.confirm`)}
-                            </DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    {t(`${type}:remove.confirm`, { context: 'description' })}
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button
-                                    data-ui-path={`dialog.${type}.cancelRemove`}
-                                    onClick={() => setEdit(null)}
-                                    color="primary"
-                                >
-                                    {t('common:button.cancel')}
-                                </Button>
-                                <Button
-                                    data-ui-path={`dialog.${type}.remove`}
-                                    onClick={() => {
-                                        if (type === 'bookmark') {
-                                            bookmarksStore.bookmarks.remove(edit.id);
-                                        } else if (type === 'tag') {
-                                            bookmarksStore.tags.remove(edit.id);
-                                        } else if (type === 'folder') {
-                                            bookmarksStore.folders.remove(edit.id);
-                                        }
-                                        setEdit(null);
-                                    }}
-                                    color="primary"
-                                    autoFocus
-                                >
-                                    {t('common:button.remove')}
-                                </Button>
-                            </DialogActions>
-                        </Dialog>
-                    ))}
-                </React.Fragment>
-            )}
         </React.Fragment>
     );
 }
