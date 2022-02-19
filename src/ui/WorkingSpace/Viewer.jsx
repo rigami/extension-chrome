@@ -50,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(4, 3),
         paddingBottom: theme.spacing(12),
     },
+    '@media (max-width: 1400px)': { content: { padding: theme.spacing(4, 0) } },
     sideBar: {
         position: 'sticky',
         top: 68,
@@ -60,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: theme.spacing(7),
         paddingRight: theme.spacing(3),
     },
-    '@media (max-width: 1700px)': { sideBar: { maxWidth: 360 } },
+    // '@media (max-width: 1700px)': { sideBar: { maxWidth: 360 } },
     inlineWidgets: {
         marginBottom: theme.spacing(4),
         padding: theme.spacing(0, 2),
@@ -106,7 +107,7 @@ function Bookmarks() {
         store.columnsCount = Math.max(
             Math.min(
                 store.maxColumnsCount >= 4 && searchService.selectFolderId === NULL_UUID
-                    ? store.maxColumnsCount - 2
+                    ? store.maxColumnsCount - 1
                     : store.maxColumnsCount,
                 4,
             ),

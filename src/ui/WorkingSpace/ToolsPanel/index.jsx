@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 'auto',
         paddingLeft: theme.spacing(2),
     },
+    '@media (max-width: 1400px)': { wrapperBreadcrumbs: { paddingLeft: theme.spacing(0) } },
     wrapperSearch: {
         padding: theme.spacing(0, 1),
         paddingLeft: theme.spacing(2),
