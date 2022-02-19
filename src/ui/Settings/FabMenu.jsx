@@ -220,7 +220,10 @@ function FabMenu() {
                     <ExtendButton
                         tooltip={t('settings:title')}
                         data-ui-path="settings.open"
-                        onClick={dispatchContextMenu}
+                        onClick={(event) => dispatchContextMenu(event, {
+                            left: document.documentElement.clientWidth,
+                            top: 16 + 36 + 8,
+                        })}
                         icon={SettingsIcon}
                     />
                 </ExtendButtonGroup>

@@ -10,7 +10,7 @@ import Preview from './Preview';
 
 const useStyles = makeStyles(() => ({
     editor: {
-        minWidth: 680,
+        width: 680,
         display: 'flex',
         overflow: 'unset',
     },
