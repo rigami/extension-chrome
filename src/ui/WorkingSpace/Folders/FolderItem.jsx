@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
     },
     addSubFolder: { display: 'none' },
     userActions: { display: 'none' },
+    forceShow: { display: 'flex' },
 }));
 
 function FolderItem(props) {
@@ -116,7 +117,7 @@ function FolderItem(props) {
                     {!isDisabled && onCreateSubFolder && (
                         <Tooltip title={t('button.create', { context: 'sub' })}>
                             <ItemAction
-                                className={classes.addSubFolder}
+                                className={clsx(classes.addSubFolder, isOpenEdit && classes.forceShow)}
                                 onClick={(event) => dispatchEdit({
                                     itemType: 'folder',
                                     parentId: id,

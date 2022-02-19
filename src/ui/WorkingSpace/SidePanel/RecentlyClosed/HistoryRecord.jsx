@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import copyToClipboard from 'copy-to-clipboard';
 import { observer } from 'mobx-react-lite';
+import clsx from 'clsx';
 import { getFaviconUrl } from '@/utils/localSiteParse';
 import { Item, ItemAction } from '@/ui/WorkingSpace/SidePanel/Item';
 import { useContextEdit } from '@/stores/app/contextActions';
@@ -14,7 +15,7 @@ import { BookmarkAddRounded as AddBookmarkIcon, ContentCopyFilled as CopyToClipb
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        paddingLeft: theme.spacing(2),
+        paddingLeft: theme.spacing(1),
         '&:hover $action': { display: 'flex' },
     },
     favicon: {
@@ -22,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
         height: theme.spacing(2),
     },
     action: { display: 'none' },
+    forceShow: { display: 'flex' },
 }));
 
 function HistoryRecord({ sessionId, url, favIconUrl, title }) {
@@ -66,7 +68,7 @@ function HistoryRecord({ sessionId, url, favIconUrl, title }) {
             actions={(
                 <Tooltip title={t('bookmark:button.add', { context: 'short' })}>
                     <ItemAction
-                        className={classes.action}
+                        className={clsx(classes.action, isOpenEdit && classes.forceShow)}
                         onClick={(event) => dispatchEdit({
                             itemType: 'bookmark',
                             defaultUrl: url,

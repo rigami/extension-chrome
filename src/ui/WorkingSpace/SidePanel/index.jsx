@@ -47,7 +47,8 @@ const useStyles = makeStyles((theme) => ({
     activeGreetingView: { backgroundColor: theme.palette.action.selected },
     offsetTop: {
         marginTop: 'auto',
-        paddingLeft: theme.spacing(1),
+        padding: theme.spacing(1),
+        paddingRight: 0,
     },
     folders: { marginLeft: theme.spacing(1) },
     greetingViewBtn: {

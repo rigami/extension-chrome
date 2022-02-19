@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     itemRoot: {
         color: theme.palette.text.secondary,
         padding: 0,
-        paddingRight: theme.spacing(1),
+        paddingRight: theme.spacing(0.5),
         position: 'relative',
         fontWeight: 550,
         borderRadius: theme.shape.borderRadiusButton,

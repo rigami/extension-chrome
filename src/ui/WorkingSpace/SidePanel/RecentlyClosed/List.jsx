@@ -7,6 +7,7 @@ import { Box, Button, List } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import Stub from '@/ui-components/Stub';
 import PopperDialog, { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
 import HistoryRecord from './HistoryRecord';
@@ -43,6 +44,7 @@ function ListRecentlyClosed(props) {
         max = 8,
         disablePadding = false,
         overloadContent,
+        className: externalClassName,
     } = props;
     const { t } = useTranslation(['session']);
     const classes = useStyles();
@@ -89,7 +91,7 @@ function ListRecentlyClosed(props) {
     console.log('store.sessions:', store.sessions);
 
     return (
-        <Box component="li" className={classes.listContainer}>
+        <Box component="li" className={clsx(classes.listContainer, externalClassName)}>
             {store.sessions.length === 0 && !store.loading && (
                 <Stub
                     icon={EmptyHistoryIcon}

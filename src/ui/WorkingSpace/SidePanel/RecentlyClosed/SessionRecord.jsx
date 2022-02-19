@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
         width: theme.spacing(2),
         height: theme.spacing(2),
     },
-    itemOffset: { paddingLeft: theme.spacing(2) },
+    itemOffset: { paddingLeft: theme.spacing(1) },
 }));
 
 function SessionRecord({ sessionId, size, selected, onClick }) {
