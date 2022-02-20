@@ -46,12 +46,7 @@ module.exports = () => {
                 'default_popup': 'popup.html',
             },
         };
-        permissions = [
-            ...permissions,
-            'activeTab',
-            'sessions',
-            'bookmarks',
-        ];
+        permissions = [...permissions, 'activeTab', 'sessions'];
     }
 
     if (process.env.BUILD === 'wallpapers') {
