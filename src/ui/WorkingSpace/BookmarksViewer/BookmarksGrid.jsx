@@ -56,6 +56,7 @@ function BookmarksGrid(props) {
         };
 
         columnStabilizer[column] += curr.icoVariant === BKMS_VARIANT.POSTER ? 2 : 1;
+        columnStabilizer[column] += curr.icoVariant === BKMS_VARIANT.COVER ? 2 : 0;
         columnStabilizer[column] += curr.description ? 1 : 0;
         renderCount += 1;
 

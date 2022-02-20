@@ -43,7 +43,7 @@ const baseThemeValues = {
         borderRadiusBolder: 12,
         dataCard: {
             width: 210,
-            height: 86,
+            height: 82,
         },
     },
     typography: {

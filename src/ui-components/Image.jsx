@@ -46,13 +46,13 @@ function Image(props) {
         imgCache.src = src;
     }, []);
 
-    if (variant === BKMS_VARIANT.POSTER) {
+    if (variant === BKMS_VARIANT.POSTER || variant === BKMS_VARIANT.COVER) {
         return (
             <React.Fragment>
                 {isLoading && (
                     <Box
                         width={180}
-                        height={84}
+                        height={variant === BKMS_VARIANT.COVER ? 180 : 84}
                         className={clsx(classes.skeleton, externalClassName)}
                     />
                 )}

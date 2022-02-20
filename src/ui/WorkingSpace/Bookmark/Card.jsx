@@ -83,15 +83,15 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(1, 1.5),
-        paddingBottom: theme.spacing(0),
-        minHeight: 54,
+        padding: theme.spacing(0.75, 1.5),
+        paddingBottom: theme.spacing(0.25),
+        minHeight: 56,
         boxSizing: 'border-box',
         flexShrink: 0,
     },
     extendBanner: {
         width: `calc(100% - ${theme.spacing(1)}px)`,
-        height: 108,
+        height: 104,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -100,9 +100,10 @@ const useStyles = makeStyles((theme) => ({
         filter: 'brightness(0.96)',
         backgroundColor: theme.palette.background.default,
     },
+    coverBanner: { height: 202 },
     extendBannerTitleContainer: {
-        margin: theme.spacing(1, 1.5),
-        marginBottom: theme.spacing(0.5),
+        margin: theme.spacing(1.125, 1.5),
+        marginBottom: theme.spacing(0.625),
         height: 32,
         display: 'flex',
         alignItems: 'center',
@@ -124,12 +125,11 @@ const useStyles = makeStyles((theme) => ({
     infoWrapper: {
         display: 'flex',
         width: '100%',
-        height: 24,
+        height: 26,
         alignItems: 'center',
         flexShrink: 0,
-        padding: theme.spacing(0.5, 0.75),
-        marginTop: theme.spacing(0.5),
-        marginBottom: theme.spacing(0.25),
+        padding: theme.spacing(0.75),
+        paddingTop: theme.spacing(0.5),
     },
     favorite: {
         color: theme.palette.favorite.main,
@@ -244,6 +244,7 @@ function CardLink(props) {
                     icoVariant !== BKMS_VARIANT.POSTER && description && classes.middle,
                     icoVariant === BKMS_VARIANT.POSTER && !description && classes.middle,
                     icoVariant === BKMS_VARIANT.POSTER && description && classes.large,
+                    icoVariant === BKMS_VARIANT.COVER && classes.large,
                     externalClassName,
                     isOpen && classes.selected,
                 )}
@@ -255,7 +256,7 @@ function CardLink(props) {
                     onMouseUp={handleClick}
                     onContextMenu={!preview ? dispatchContextMenu : undefined}
                 >
-                    {icoVariant !== BKMS_VARIANT.POSTER && (
+                    {icoVariant !== BKMS_VARIANT.POSTER && icoVariant !== BKMS_VARIANT.COVER && (
                         <Box className={classes.imageWrapper}>
                             <Image
                                 variant={icoVariant}
@@ -272,7 +273,25 @@ function CardLink(props) {
                     )}
                     {icoVariant === BKMS_VARIANT.POSTER && (
                         <Box className={classes.banner}>
-                            <Image variant={BKMS_VARIANT.POSTER} src={icoUrl} className={classes.extendBanner} />
+                            <Image
+                                variant={BKMS_VARIANT.POSTER}
+                                src={icoUrl}
+                                className={classes.extendBanner}
+                            />
+                            <Box className={classes.extendBannerTitleContainer}>
+                                <Typography className={clsx(classes.title, classes.extendBannerTitle)}>
+                                    {name}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    )}
+                    {icoVariant === BKMS_VARIANT.COVER && (
+                        <Box className={classes.banner}>
+                            <Image
+                                variant={BKMS_VARIANT.COVER}
+                                src={icoUrl}
+                                className={clsx(classes.extendBanner, classes.coverBanner)}
+                            />
                             <Box className={classes.extendBannerTitleContainer}>
                                 <Typography className={clsx(classes.title, classes.extendBannerTitle)}>
                                     {name}
