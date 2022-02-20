@@ -176,10 +176,15 @@ class BookmarkEditor {
             if (!onlyAdditionalIcons) {
                 this.name = this.name || siteData.name || siteData.title;
                 this.description = this.description || siteData.description;
+            } else {
+                siteData.images = siteData.images.filter((image) => (
+                    image.baseUrl !== this.defaultImage?.baseUrl
+                    && image.type.toUpperCase() !== this.defaultImage?.icoVariant
+                ));
             }
 
             if (this.url !== currentFetchUrl) return;
-            this.allImages = siteData.images.sort((a, b) => a.score - b.score);
+            this.allImages = siteData.images.sort((a, b) => b.score - a.score);
         } catch (e) {
             captureException(e);
             if (this.url !== currentFetchUrl) return;
