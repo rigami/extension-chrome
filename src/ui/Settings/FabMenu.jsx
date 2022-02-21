@@ -69,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(1),
         width: 'auto',
     },
+    selected: { backgroundColor: theme.palette.action.selected },
 }));
 
 function DisplayVariant({ image: Image, label, selected, onClick }) {
@@ -139,7 +140,7 @@ function FabMenu() {
     const appStateService = useAppStateService();
     const workingSpaceService = useWorkingSpaceService();
     const { dispatchEdit } = useContextEdit();
-    const { dispatchContextMenu } = useContextMenuService((event, position, next) => [
+    const { dispatchContextMenu, isOpen } = useContextMenuService((event, position, next) => [
         ...(appStateService.activity !== ACTIVITY.DESKTOP ? [
             new ContextMenuItem({ title: t('settings:display.title') }),
             new ContextMenuCustomItem({
@@ -213,11 +214,14 @@ function FabMenu() {
         <Box className={classes.root}>
             <MouseDistanceFade
                 unionKey="desktop-fab"
-                show={appStateService.activity === ACTIVITY.DESKTOP ? undefined : true}
+                show={appStateService.activity === ACTIVITY.DESKTOP && !isOpen ? undefined : true}
                 distanceMax={750}
                 distanceMin={300}
             >
-                <ExtendButtonGroup variant="blurBackdrop" className={clsx(classes.group, classes.button)}>
+                <ExtendButtonGroup
+                    variant="blurBackdrop"
+                    className={clsx(classes.group, classes.button, isOpen && classes.selected)}
+                >
                     <ExtendButton
                         tooltip={t('settings:title')}
                         data-ui-path="settings.open"
