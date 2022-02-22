@@ -9,7 +9,9 @@ import {
     WIDGET_DTW_POSITION,
     WIDGET_DTW_SIZE,
     WIDGET_DTW_UNITS,
-    BKMS_FAP_ALIGN, BKMS_DISPLAY_VARIANT,
+    BKMS_FAP_ALIGN,
+    BKMS_DISPLAY_VARIANT,
+    BKMS_SORTING,
 } from '@/enum';
 
 export default {
@@ -27,7 +29,10 @@ export default {
         widgetsPosition: WIDGET_DTW_POSITION.LEFT_BOTTOM,
         widgetsSize: WIDGET_DTW_SIZE.SMALL,
     },
-    workingSpace: { displayVariant: BKMS_DISPLAY_VARIANT.CARDS },
+    workingSpace: {
+        displayVariant: BKMS_DISPLAY_VARIANT.CARDS,
+        sorting: BKMS_SORTING.BY_RELATIVE,
+    },
     widgets: {
         useDate: true,
         dateDefaultAction: '',

@@ -11,6 +11,7 @@ import BKMS_FAP_STYLE from './BKMS/FAP_STYLE';
 import BKMS_FAP_ALIGN from './BKMS/FAP_ALIGN';
 import BKMS_VARIANT from './BKMS/VARIANT';
 import BKMS_DISPLAY_VARIANT from './BKMS/DISPLAY_VARIANT';
+import BKMS_SORTING from './BKMS/SORTING';
 import THEME from './THEME';
 import FETCH from './FETCH';
 import DESTINATION from './DESTINATION';
@@ -36,6 +37,7 @@ export {
     BKMS_FAP_ALIGN,
     BKMS_VARIANT,
     BKMS_DISPLAY_VARIANT,
+    BKMS_SORTING,
     THEME,
     FETCH,
     DESTINATION,

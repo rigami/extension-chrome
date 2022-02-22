@@ -9,7 +9,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { BKMS_DISPLAY_VARIANT, FETCH } from '@/enum';
+import { BKMS_DISPLAY_VARIANT, BKMS_SORTING, FETCH } from '@/enum';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import stateRender from '@/utils/helpers/stateRender';
 import BookmarksGrid from '@/ui/WorkingSpace/BookmarksViewer/BookmarksGrid';
@@ -135,6 +135,26 @@ function BookmarksViewer(props) {
         return 0;
     });
 
+    const sortByNewest = (list) => list.sort((bookmarkA, bookmarkB) => {
+        if (bookmarkA.createTimestamp > bookmarkB.createTimestamp) return -1;
+        else if (bookmarkA.createTimestamp < bookmarkB.createTimestamp) return 1;
+
+        return 0;
+    });
+
+    const sortByOldest = (list) => list.sort((bookmarkA, bookmarkB) => {
+        if (bookmarkA.createTimestamp < bookmarkB.createTimestamp) return -1;
+        else if (bookmarkA.createTimestamp > bookmarkB.createTimestamp) return 1;
+
+        return 0;
+    });
+
+    const sorting = {
+        [BKMS_SORTING.BY_RELATIVE]: sortByRelative,
+        [BKMS_SORTING.OLDEST_FIRST]: sortByOldest,
+        [BKMS_SORTING.NEWEST_FIRST]: sortByNewest,
+    };
+
     useEffect(() => {
         console.log(`[BookmarksViewer] existMatches: ${store.existMatches}`);
         if (!store.existMatches) store.loadState = FETCH.PENDING;
@@ -148,6 +168,8 @@ function BookmarksViewer(props) {
 
             store.loadState = FETCH.PENDING;
         }, 100); */
+
+        const sort = sorting[workingSpaceService.settings.sorting];
 
         BookmarksUniversalService.query(new SearchQuery(({
             query: searchService.searchRequest.query,
@@ -164,17 +186,22 @@ function BookmarksViewer(props) {
                 });
 
                 store.favoriteCheckCache = {};
-                store.bestBookmarks = (result.best && sortByRelative(result.best)) || [];
-                store.partBookmarks = (result.part && sortByRelative(result.part)) || [];
-                store.indirectlyBookmarks = (result.indirectly && sortByRelative(result.indirectly)) || [];
-                store.allBookmarks = (result.all && sortByRelative(result.all)) || [];
+                store.bestBookmarks = (result.best && sort(result.best)) || [];
+                store.partBookmarks = (result.part && sort(result.part)) || [];
+                store.indirectlyBookmarks = (result.indirectly && sort(result.indirectly)) || [];
+                store.allBookmarks = (result.all && sort(result.all)) || [];
                 store.existMatches = (result.best.length + result.all.length) !== 0;
                 store.usedFields = { ...searchService.searchRequest.usedFields };
                 store.loadState = FETCH.DONE;
 
                 console.log('store.usedFields', store.usedFields);
             });
-    }, [searchService.searchRequestId, folderId, workingSpaceService.lastTruthSearchTimestamp]);
+    }, [
+        searchService.searchRequestId,
+        folderId,
+        workingSpaceService.lastTruthSearchTimestamp,
+        workingSpaceService.settings.sorting,
+    ]);
 
     return stateRender(
         /* FETCH.PENDING, */ store.loadState,

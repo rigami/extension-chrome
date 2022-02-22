@@ -1,9 +1,12 @@
 import { action, computed, makeObservable } from 'mobx';
 import { pick } from 'lodash';
 import defaultSettings from '@/config/settings';
-import settingsStorage from '@/stores/universal/settings/rootSettings';
+import settingsStorage from './rootSettings';
 
-export const migration = (currState) => ({ 'workingSpace.displayVariant': currState['workingSpace.displayVariant'] || defaultSettings.workingSpace.displayVariant });
+export const migration = (currState) => ({
+    'workingSpace.displayVariant': currState['workingSpace.displayVariant'] || defaultSettings.workingSpace.displayVariant,
+    'workingSpace.sorting': currState['workingSpace.sorting'] || defaultSettings.workingSpace.sorting,
+});
 
 class WorkingSpaceSettings {
     constructor() {
@@ -15,11 +18,12 @@ class WorkingSpaceSettings {
     @computed
     get displayVariant() { return this._storage.data['workingSpace.displayVariant']; }
 
+    @computed
+    get sorting() { return this._storage.data['workingSpace.sorting']; }
+
     @action
     update(props = {}) {
-        console.log('UPD PROPS:', props);
-
-        const updProps = pick(props, ['displayVariant']);
+        const updProps = pick(props, ['displayVariant', 'sorting']);
 
         this._storage.update('workingSpace', updProps);
     }

@@ -169,20 +169,10 @@ function FabMenu() {
             }),
             new ContextMenuSelect({
                 title: t('settings:sorting.title'),
-                variants: [
-                    {
-                        value: BKMS_SORTING.BY_RELATIVE,
-                        label: t(`settings:sorting.variant.${BKMS_SORTING.BY_RELATIVE}`),
-                    },
-                    {
-                        value: BKMS_SORTING.NEWEST_FIRST,
-                        label: t(`settings:sorting.variant.${BKMS_SORTING.NEWEST_FIRST}`),
-                    },
-                    {
-                        value: BKMS_SORTING.OLDEST_FIRST,
-                        label: t(`settings:sorting.variant.${BKMS_SORTING.OLDEST_FIRST}`),
-                    },
-                ],
+                variants: Object.keys(BKMS_SORTING).map((variant) => ({
+                    value: variant,
+                    label: t(`settings:sorting.variant.${variant}`),
+                })),
                 value: workingSpaceService.settings.sorting,
                 onChange: (value) => {
                     console.log('onChange:', value);
