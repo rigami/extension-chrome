@@ -260,10 +260,11 @@ const ObserverFAP = observer(FAP);
 function FAPWrapper() {
     const appStateService = useAppStateService();
     const workingSpaceService = useWorkingSpaceService();
+    const { desktopService } = appStateService;
 
     if (
         (
-            workingSpaceService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+            desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
             && workingSpaceService.favorites.length !== 0
         )
         || appStateService.activity === ACTIVITY.FAVORITES
