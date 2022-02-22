@@ -16,13 +16,18 @@ import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import { captureException } from '@sentry/react';
-import { ACTIVITY, BKMS_DISPLAY_VARIANT } from '@/enum';
+import { ACTIVITY, BKMS_DISPLAY_VARIANT, BKMS_SORTING } from '@/enum';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
 import { useCoreService } from '@/stores/app/core';
 import { useAppStateService } from '@/stores/app/appState';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { useContextMenuService } from '@/stores/app/contextMenu';
-import { ContextMenuDivider, ContextMenuItem, ContextMenuCustomItem } from '@/stores/app/contextMenu/entities';
+import {
+    ContextMenuDivider,
+    ContextMenuItem,
+    ContextMenuCustomItem,
+    ContextMenuSelect,
+} from '@/stores/app/contextMenu/entities';
 import DisplayCardsImage from '@/images/display_cards.svg';
 import DisplayRowsImage from '@/images/display_rows.svg';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
@@ -70,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
         width: 'auto',
     },
     selected: { backgroundColor: theme.palette.action.selected },
+    contextMenuItemIconContainer: { minWidth: 0 },
 }));
 
 function DisplayVariant({ image: Image, label, selected, onClick }) {
@@ -161,6 +167,28 @@ function FabMenu() {
                     </Box>
                 ),
             }),
+            new ContextMenuSelect({
+                title: t('settings:sorting.title'),
+                variants: [
+                    {
+                        value: BKMS_SORTING.BY_RELATIVE,
+                        label: t(`settings:sorting.variant.${BKMS_SORTING.BY_RELATIVE}`),
+                    },
+                    {
+                        value: BKMS_SORTING.NEWEST_FIRST,
+                        label: t(`settings:sorting.variant.${BKMS_SORTING.NEWEST_FIRST}`),
+                    },
+                    {
+                        value: BKMS_SORTING.OLDEST_FIRST,
+                        label: t(`settings:sorting.variant.${BKMS_SORTING.OLDEST_FIRST}`),
+                    },
+                ],
+                value: workingSpaceService.settings.sorting,
+                onChange: (value) => {
+                    console.log('onChange:', value);
+                    workingSpaceService.settings.update({ sorting: value });
+                },
+            }),
         ] : [
             new ContextMenuItem({ title: t('settings:changeBackground.title') }),
             new ContextMenuCustomItem({
@@ -170,7 +198,6 @@ function FabMenu() {
             }),
             new ContextMenuItem({
                 title: t('background:button.add'),
-                icon: UploadFromComputerIcon,
                 onClick: () => {
                     const shadowInput = document.createElement('input');
                     shadowInput.setAttribute('multiple', 'true');
@@ -191,14 +218,12 @@ function FabMenu() {
             new ContextMenuDivider(),
             new ContextMenuItem({
                 title: t('bookmark:button.add'),
-                icon: AddBookmarkIcon,
                 onClick: () => dispatchEdit({ itemType: 'bookmark' }, event, position, next),
             }),
         ]),
         new ContextMenuDivider(),
         new ContextMenuItem({
             title: t('settings:advancedSettings'),
-            icon: SettingsIcon,
             onClick: async () => {
                 coreService.localEventBus.call('settings/open');
 
@@ -208,7 +233,12 @@ function FabMenu() {
                 <GoToIcon />
             ),
         }),
-    ], { className: classes.contextMenu });
+    ], {
+        classes: {
+            root: classes.contextMenu,
+            itemIconContainer: classes.contextMenuItemIconContainer,
+        },
+    });
 
     return (
         <Box className={classes.root}>

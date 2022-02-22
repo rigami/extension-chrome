@@ -70,7 +70,7 @@ class ContextMenuService {
             reactions,
             onOpen,
             onClose,
-            className,
+            classes,
         } = options;
         const {
             overridePosition,
@@ -121,7 +121,7 @@ class ContextMenuService {
             reactions,
             onOpen,
             onClose,
-            className,
+            classes,
             stateKey,
         };
         this.activeStateKeys.push(stateKey);

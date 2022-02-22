@@ -2,17 +2,16 @@ import React, { useEffect, useState } from 'react';
 import {
     Menu,
     ListItem,
-    ListItemIcon,
     ListItemText,
     Divider,
-    ListItemSecondaryAction,
-    Box,
 } from '@material-ui/core';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { reaction } from 'mobx';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import SelectItem from './SelectItem';
+import DefaultItem from './DefaultItem';
 
 const useStyles = makeStyles((theme) => ({
     menu: {
@@ -28,40 +27,6 @@ const useStyles = makeStyles((theme) => ({
     divider: {
         marginTop: theme.spacing(0.5),
         marginBottom: theme.spacing(0.5),
-    },
-    item: {
-        padding: theme.spacing(0.5, 1.5),
-        margin: theme.spacing(0, 0.625),
-        width: `calc(100% - ${theme.spacing(1.25)}px)`,
-        borderRadius: theme.shape.borderRadiusButton,
-    },
-    icon: {
-        minWidth: 22 + 12,
-        display: 'flex',
-        alignItems: 'center',
-        '& svg': {
-            width: 22,
-            height: 22,
-        },
-    },
-    secondaryAction: {
-        justifyContent: 'flex-end',
-        display: 'flex',
-        alignItems: 'center',
-        justifySelf: 'center',
-        position: 'relative',
-        right: 'unset',
-        top: 'unset',
-        transform: 'unset',
-        flexShrink: 0,
-        flexGrow: 1,
-        paddingLeft: theme.spacing(1),
-        // paddingRight: theme.spacing(2),
-    },
-    itemContainer: { display: 'flex' },
-    itemHelper: {
-        display: 'flex',
-        width: '100%',
     },
     paper: {
         backgroundColor: alpha(theme.palette.background.paper, 0.8),
@@ -96,7 +61,7 @@ function ContextMenu({ service }) {
             onClose={service.close}
             anchorReference="anchorPosition"
             anchorPosition={service.menu?.position}
-            classes={{ list: clsx(classes.menu, service.menu.className) }}
+            classes={{ list: clsx(classes.menu, service.menu?.classes?.root) }}
             onContextMenu={(event) => {
                 event.preventDefault();
                 service.close();
@@ -123,39 +88,23 @@ function ContextMenu({ service }) {
                             );
                         } else if (element.type === 'customItem') {
                             return element.render();
-                        } else {
-                            const Icon = element.icon;
-
+                        } else if (element.type === 'select') {
                             return (
-                                <ListItem
-                                    classes={{ container: classes.itemContainer }}
-                                    className={classes.item}
+                                <SelectItem
                                     key={element.title}
-                                    button={Boolean(element.onClick)}
-                                    dense
-                                    disabled={element.disabled}
-                                    onClick={async () => {
-                                        const result = await element.onClick(() => {
-                                            service.close();
-                                        });
-
-                                        if (!result) {
-                                            service.close();
-                                        }
-                                    }}
-                                >
-                                    <Box className={classes.itemHelper}>
-                                        <ListItemIcon className={classes.icon}>
-                                            {Icon && (<Icon {...element.iconProps} />)}
-                                        </ListItemIcon>
-                                        <ListItemText primary={element.title} secondary={element.description} />
-                                        {element.action && (
-                                            <ListItemSecondaryAction className={classes.secondaryAction}>
-                                                {element.action}
-                                            </ListItemSecondaryAction>
-                                        )}
-                                    </Box>
-                                </ListItem>
+                                    {...element}
+                                    classes={service.menu?.classes}
+                                    service={service}
+                                />
+                            );
+                        } else {
+                            return (
+                                <DefaultItem
+                                    key={element.title}
+                                    {...element}
+                                    classes={service.menu?.classes}
+                                    service={service}
+                                />
                             );
                         }
                     }),

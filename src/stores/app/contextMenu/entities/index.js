@@ -25,6 +25,19 @@ class ContextMenuDivider {
     type = 'divider';
 }
 
+class ContextMenuSelect extends ContextMenuItem {
+    type = 'select';
+    variants;
+    value;
+    onChange;
+
+    constructor(item) {
+        super(item);
+
+        assign(this, pick(item, ['variants', 'value', 'onChange']));
+    }
+}
+
 class ContextMenuCustomItem {
     type = 'customItem';
     render;
@@ -36,6 +49,7 @@ class ContextMenuCustomItem {
 
 export {
     ContextMenuItem,
+    ContextMenuSelect,
     ContextMenuCustomItem,
     ContextMenuDivider,
 };
