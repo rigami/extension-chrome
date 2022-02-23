@@ -198,6 +198,8 @@ function FAP() {
                     )}
                 >
                     {store.maxCount.length !== 0 && store.favorites.slice(0, store.maxCount).map((fav) => {
+                        if (!fav) return;
+
                         let a11props = {
                             ...fav,
                             key: `${fav.constructor.name}-${fav.id}`,

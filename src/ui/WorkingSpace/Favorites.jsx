@@ -108,6 +108,8 @@ function Favorites() {
             </Box>
             <Box className={classes.favoritesContainer}>
                 {store.favorites.map((fav) => {
+                    if (!fav) return;
+
                     const a11props = {
                         ...fav,
                         key: `${fav.constructor.name}-${fav.id}`,
