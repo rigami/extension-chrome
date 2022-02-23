@@ -1,5 +1,5 @@
 import { action } from 'mobx';
-import { last } from 'lodash';
+import { cloneDeep, last } from 'lodash';
 import db from '@/utils/db';
 import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
 import Tag from '@/stores/universal/bookmarks/entities/tag';
@@ -103,14 +103,14 @@ class TagsUniversalService {
             await FavoritesUniversalService.removeFromFavorites(favoriteItem.id);
         }
 
-        await db().delete('tags', tagId);
-
         const { all: bookmarks } = await BookmarksUniversalService.query(new SearchQuery({ tags: [tagId] }));
 
-        await Promise.all(bookmarks.map(({ tags, ...bookmark }) => db().put('bookmarks', {
+        await Promise.all(bookmarks.map(({ tags, ...bookmark }) => db().put('bookmarks', cloneDeep({
             ...bookmark,
             tags: tags.filter((id) => id !== tagId),
-        })));
+        }))));
+
+        await db().delete('tags', tagId);
 
         const pairRow = await db().get('pair_with_cloud', `tag_${tagId}`);
 
