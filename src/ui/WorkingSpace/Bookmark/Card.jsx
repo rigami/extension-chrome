@@ -165,7 +165,7 @@ function Tags({ tags }) {
 
     return (
         <Collapser className={classes.tagsWrapper}>
-            {tags.map((tag) => (
+            {tags.map((tag) => tag && (
                 <Tag
                     key={tag.id}
                     id={tag.id}

@@ -1,9 +1,10 @@
 import React, { Fragment, useEffect, useRef } from 'react';
 import {
-    Box, ClickAwayListener, Divider,
-    InputAdornment, ListItem, ListItemText,
+    Box,
+    Divider,
+    ListItem,
+    ListItemText,
     Paper,
-    TextField,
     Typography,
     InputBase,
 } from '@material-ui/core';
