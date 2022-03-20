@@ -38,7 +38,7 @@ export default {
             color: '#0c590c',
             description: '',
             kind: 'media',
-            id: 'unsplash-nL1pAWmRFYU',
+            id: btoa(JSON.stringify({ idInSource: 'nL1pAWmRFYU', source: BG_SOURCE.UNSPLASH.toLowerCase() })),
             rawSrc: 'https://images.unsplash.com/photo-1607374904945-feef89bffa1f?ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1',
             sourceLink: 'https://unsplash.com/photos/nL1pAWmRFYU',
             source: BG_SOURCE.UNSPLASH,
