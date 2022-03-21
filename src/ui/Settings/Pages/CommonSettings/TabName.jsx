@@ -26,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
+    exampleImage: {
+        color: theme.palette.type === 'dark' ? '#b5b5b5' : '#9b9b9b',
+    },
 }));
 
 const headerProps = { title: 'settingsCommon:tabName.title' };
@@ -38,7 +41,7 @@ function TabName() {
     return (
         <React.Fragment>
             <Box className={classes.splash}>
-                <TabNameExampleImage />
+                <TabNameExampleImage className={classes.exampleImage} />
                 <span
                     style={{
                         left: -29,

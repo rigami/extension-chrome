@@ -1,12 +1,12 @@
 <svg width="1596" height="1131" viewBox="0 0 1596 1131" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_1441_3547)">
-<rect width="1595.55" height="1131" fill="#ECECEC"/>
-<path d="M207.5 413L-42.5 512V1251.5L1227.5 1217.5L1180 745L964 710.5L669.5 598L444 546.5L300 437L207.5 413Z" fill="#E1E1E1"/>
-<path d="M173.5 772.5L-42.5 728V1197C134.5 1207.17 492.6 1226.8 509 1224C525.4 1221.2 625.167 1031.17 673 936.5L416.5 810L173.5 772.5Z" fill="#D2D2D2"/>
-<path d="M289.5 988L53.5 1162.5L1645.5 1179.5L1673.5 451.5L1468.5 431L1182.5 672.5L750 733L289.5 988Z" fill="#C7C7C7"/>
+<g clip-path="url(#clip0_1529_3557)">
+<rect width="1595.55" height="1131" fill="currentColor" fill-opacity="0.07"/>
+<path d="M207.5 413L-42.5 512V1251.5L1227.5 1217.5L1180 745L964 710.5L669.5 598L444 546.5L300 437L207.5 413Z" fill="currentColor" fill-opacity="0.2"/>
+<path d="M173.5 772.5L-42.5 728V1197C134.5 1207.17 492.6 1226.8 509 1224C525.4 1221.2 625.167 1031.17 673 936.5L416.5 810L173.5 772.5Z" fill="currentColor" fill-opacity="0.5"/>
+<path d="M289.5 988L53.5 1162.5L1645.5 1179.5L1673.5 451.5L1468.5 431L1182.5 672.5L750 733L289.5 988Z" fill="currentColor"/>
 </g>
 <defs>
-<clipPath id="clip0_1441_3547">
+<clipPath id="clip0_1529_3557">
 <rect width="1595.45" height="1131" fill="white"/>
 </clipPath>
 </defs>

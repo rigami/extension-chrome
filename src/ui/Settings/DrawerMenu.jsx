@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadius,
         margin: theme.spacing(2),
         minHeight: `calc(100vh - ${theme.spacing(4)}px)`,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: theme.palette.background.backdropLight,
     },
     menu: {
         minHeight: `calc(100vh - ${theme.spacing(4)}px)`,

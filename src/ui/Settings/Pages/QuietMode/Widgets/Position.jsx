@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     container: {
         width: '100%',
         minHeight: 160,
-        backgroundColor: theme.palette.background.backdrop,
+        // backgroundColor: theme.palette.background.backdrop,
         overflow: 'hidden',
         position: 'relative',
     },
@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         left: 0,
         top: 0,
+        color: theme.palette.type === 'dark' ? '#565656' : '#cbcbcb',
     },
     group: {
         width: '100%',
