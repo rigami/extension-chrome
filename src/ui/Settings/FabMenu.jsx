@@ -141,7 +141,7 @@ function BackgroundSelector() {
 
 function FabMenu() {
     const classes = useStyles();
-    const { t } = useTranslation(['bookmark', 'settings', 'background']);
+    const { t } = useTranslation(['bookmark', 'settings', 'wallpaper']);
     const coreService = useCoreService();
     const appStateService = useAppStateService();
     const workingSpaceService = useWorkingSpaceService();
@@ -187,7 +187,7 @@ function FabMenu() {
                 ),
             }),
             new ContextMenuItem({
-                title: t('background:button.add'),
+                title: t('wallpaper:button.add'),
                 onClick: () => {
                     const shadowInput = document.createElement('input');
                     shadowInput.setAttribute('multiple', 'true');

@@ -114,7 +114,7 @@ function BGCard(props) {
         onDone,
         ...other
     } = props;
-    const { t } = useTranslation(['background']);
+    const { t } = useTranslation(['wallpaper']);
     const classes = useStyles();
     const theme = useTheme();
 
@@ -201,7 +201,7 @@ const MemoBGCard = memo(BGCard);
 function UploadBackground({ children }) {
     const { wallpapersService } = useAppStateService();
     const { enqueueSnackbar } = useSnackbar();
-    const { t } = useTranslation(['background']);
+    const { t } = useTranslation(['wallpaper']);
 
     const classes = useStyles();
     const theme = useTheme();

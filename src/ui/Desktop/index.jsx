@@ -126,7 +126,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Desktop() {
-    const { t } = useTranslation(['bookmark', 'background']);
+    const { t } = useTranslation(['bookmark', 'wallpaper']);
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
@@ -152,8 +152,8 @@ function Desktop() {
         wallpapersService.settings.kind !== BG_SELECT_MODE.SPECIFIC && [
             new ContextMenuItem({
                 title: wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH
-                    ? t('background:fetchingNextBG')
-                    : t('background:button.next'),
+                    ? t('wallpaper:fetchingNextBG')
+                    : t('wallpaper:button.next'),
                 disabled: wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH,
                 icon: wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH ? CircularProgress : RefreshIcon,
                 iconProps: wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH ? {
@@ -166,7 +166,7 @@ function Desktop() {
         wallpaperSwitchService.currentDisplayed?.source !== BG_SOURCE.USER && [
             new ContextMenuItem({
                 title: (
-                    !wallpaperSwitchService.currentDisplayed?.isLiked ? t('background:liked') : t('background:button.like')
+                    !wallpaperSwitchService.currentDisplayed?.isLiked ? t('wallpaper:liked') : t('wallpaper:button.like')
                 ),
                 icon: (
                     !wallpaperSwitchService.currentDisplayed?.isLiked ? LikedIcon : LikeIcon
@@ -176,25 +176,25 @@ function Desktop() {
                 },
             }),
             new ContextMenuItem({
-                title: t('background:button.dislike'),
+                title: t('wallpaper:button.dislike'),
                 icon: DislikeIcon,
                 onClick: () => {
                     wallpapersService.rate(wallpaperSwitchService.currentDisplayed, BG_RATE.DISLIKE);
 
                     enqueueSnackbar({
-                        message: t('background:dislike.noty'),
+                        message: t('wallpaper:dislike.noty'),
                         variant: 'success',
                     });
                 },
             }),
             new ContextMenuItem({
-                title: t('background:button.openSource'),
+                title: t('wallpaper:button.openSource'),
                 icon: OpenSourceIcon,
                 onClick: () => window.open(wallpaperSwitchService.currentDisplayed?.sourceLink, '_blank'),
             }),
         ],
         new ContextMenuItem({
-            title: t('background:button.add'),
+            title: t('wallpaper:button.add'),
             icon: UploadFromComputerIcon,
             onClick: () => {
                 const shadowInput = document.createElement('input');
@@ -308,8 +308,8 @@ function Desktop() {
                                         <ExtendButton
                                             tooltip={
                                                 wallpapersService.bgShowMode === BG_SHOW_MODE.LIVE
-                                                    ? t('background:button.pause')
-                                                    : t('background:button.play')
+                                                    ? t('wallpaper:button.pause')
+                                                    : t('wallpaper:button.play')
                                             }
                                             data-ui-path={
                                                 wallpapersService.bgShowMode === BG_SHOW_MODE.LIVE
@@ -318,9 +318,9 @@ function Desktop() {
                                             }
                                             onClick={() => {
                                                 if (wallpapersService.bgShowMode === BG_SHOW_MODE.LIVE) {
-                                                    coreService.localEventBus.call('background/pause');
+                                                    coreService.localEventBus.call('wallpaper/pause');
                                                 } else {
-                                                    coreService.localEventBus.call('background/play');
+                                                    coreService.localEventBus.call('wallpaper/play');
                                                 }
                                             }}
                                             icon={wallpapersService.bgShowMode === BG_SHOW_MODE.LIVE ? PauseIcon : PlayIcon}
@@ -333,8 +333,8 @@ function Desktop() {
                                         <ExtendButton
                                             tooltip={
                                                 !wallpaperSwitchService.currentDisplayed?.isLiked
-                                                    ? t('background:button.like')
-                                                    : t('background:liked')
+                                                    ? t('wallpaper:button.like')
+                                                    : t('wallpaper:liked')
                                             }
                                             data-ui-path={
                                                 wallpaperSwitchService.currentDisplayed?.isLiked
@@ -352,13 +352,13 @@ function Desktop() {
                                         />
                                         <Divider orientation="vertical" flexItem />
                                         <ExtendButton
-                                            tooltip={t('background:button.dislike')}
+                                            tooltip={t('wallpaper:button.dislike')}
                                             data-ui-path="bg.dislike"
                                             onClick={() => {
                                                 wallpapersService.rate(wallpaperSwitchService.currentDisplayed, BG_RATE.DISLIKE);
 
                                                 enqueueSnackbar({
-                                                    message: t('background:dislike.noty'),
+                                                    message: t('wallpaper:dislike.noty'),
                                                     variant: 'success',
                                                 });
                                             }}
@@ -376,8 +376,8 @@ function Desktop() {
                                         <ExtendButton
                                             tooltip={
                                                 wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH
-                                                    ? t('background:fetchingNextBG')
-                                                    : t('background:button.next')
+                                                    ? t('wallpaper:fetchingNextBG')
+                                                    : t('wallpaper:button.next')
                                             }
                                             data-ui-path="bg.next"
                                             className={clsx(
