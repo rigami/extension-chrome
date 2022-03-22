@@ -26,30 +26,30 @@ class Wallpaper {
     @observable fullSrc;
     @observable pauseTimestamp;
 
-    constructor(background = {}) {
-        this.idInSource = background.idInSource;
-        this.isSaved = background.isSaved || false;
-        this.isLoad = background.isLoad || false;
-        this.isLiked = background.isLiked || false;
-        this.isDisliked = background.isDisliked || false;
-        this.fileName = background.fileName;
-        this.author = background.author;
-        this.authorName = background.authorName;
-        this.authorAvatarSrc = background.authorAvatarSrc;
-        this.description = background.description;
-        this.antiAliasing = background.antiAliasing === false ? false : (background.antiAliasing || true);
-        this.source = background.source || BG_SOURCE.USER;
-        this.id = background.id;
-        this.sourceLink = background.sourceLink;
-        this.type = background.type;
-        this.kind = background.kind;
-        this.angle = background.angle || 0;
-        this.colors = background.colors || [];
-        this.contrastColor = background.contrastColor;
-        this.previewSrc = background.previewSrc;
-        this.pauseStubSrc = background.pauseStubSrc;
-        this.fullSrc = background.fullSrc;
-        this.pauseTimestamp = background.pauseTimestamp;
+    constructor(wallpaper = {}) {
+        this.idInSource = wallpaper.idInSource;
+        this.isSaved = wallpaper.isSaved || false;
+        this.isLoad = wallpaper.isLoad || false;
+        this.isLiked = wallpaper.isLiked || false;
+        this.isDisliked = wallpaper.isDisliked || false;
+        this.fileName = wallpaper.fileName;
+        this.author = wallpaper.author;
+        this.authorName = wallpaper.authorName;
+        this.authorAvatarSrc = wallpaper.authorAvatarSrc;
+        this.description = wallpaper.description;
+        this.antiAliasing = wallpaper.antiAliasing === false ? false : (wallpaper.antiAliasing || true);
+        this.source = wallpaper.source || BG_SOURCE.USER;
+        this.id = wallpaper.id;
+        this.sourceLink = wallpaper.sourceLink;
+        this.type = wallpaper.type;
+        this.kind = wallpaper.kind;
+        this.angle = wallpaper.angle || 0;
+        this.colors = wallpaper.colors || [];
+        this.contrastColor = wallpaper.contrastColor;
+        this.previewSrc = wallpaper.previewSrc;
+        this.pauseStubSrc = wallpaper.pauseStubSrc;
+        this.fullSrc = wallpaper.fullSrc;
+        this.pauseTimestamp = wallpaper.pauseTimestamp;
     }
 }
 

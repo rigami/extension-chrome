@@ -113,30 +113,30 @@ function MigrateScreen({ onStart }) {
             const cacheBackgrounds = await caches.open('backgrounds');
             let index = 0;
 
-            for await (const background of allBackgrounds) {
+            for await (const wallpaper of allBackgrounds) {
                 index += 1;
                 setProgress(25 + 50 * (index / allBackgrounds.length));
 
                 try {
                     let fullSrc;
 
-                    if (background.source === BG_SOURCE.USER) {
-                        fullSrc = `${appVariables.rest.url}/background/user?src=${background.id}`;
-                        const fullBlob = await getFile(`backgrounds/full/${background.fileName}`);
+                    if (wallpaper.source === BG_SOURCE.USER) {
+                        fullSrc = `${appVariables.rest.url}/background/user?src=${wallpaper.id}`;
+                        const fullBlob = await getFile(`backgrounds/full/${wallpaper.fileName}`);
                         const fullResponse = new Response(fullBlob);
                         await cacheBackgrounds.put(fullSrc, fullResponse);
                     } else {
-                        fullSrc = background.downloadLink;
+                        fullSrc = wallpaper.downloadLink;
                         await cacheBackgrounds.add(fullSrc);
                     }
 
-                    const previewSrc = `${appVariables.rest.url}/background/user/get-preview?id=${background.id}`;
-                    const previewBlob = await getFile(`backgrounds/preview/${background.fileName}`);
+                    const previewSrc = `${appVariables.rest.url}/background/user/get-preview?id=${wallpaper.id}`;
+                    const previewBlob = await getFile(`backgrounds/preview/${wallpaper.fileName}`);
                     const previewResponse = new Response(previewBlob);
                     await cacheBackgrounds.put(previewSrc, previewResponse);
 
                     await db().put('backgrounds', cloneDeep(new Wallpaper({
-                        ...background,
+                        ...wallpaper,
                         isSaved: true,
                         fullSrc,
                         previewSrc,
@@ -145,7 +145,7 @@ function MigrateScreen({ onStart }) {
                     console.error(e);
                 }
 
-                console.log('background:', background);
+                console.log('wallpaper:', wallpaper);
             }
 
             const { all: allBookmarks } = await BookmarksUniversalService.query();

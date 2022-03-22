@@ -12,22 +12,22 @@ class Wallpapers {
     }
 
     async collect() {
-        const allBackgrounds = await WallpapersUniversalService.getAll();
+        const allWallpapers = await WallpapersUniversalService.getAll();
 
         const meta = [];
         const fullBlobs = new Map();
         const previewBlobs = new Map();
-        const cache = await caches.open('backgrounds');
+        const cache = await caches.open('wallpapers');
 
-        for await (const background of allBackgrounds) {
-            const fullBlob = await cache.match(background.fullSrc).then((responseRaw) => responseRaw.blob());
-            const previewBlob = await cache.match(background.previewSrc).then((responseRaw) => responseRaw.blob());
+        for await (const wallpaper of allWallpapers) {
+            const fullBlob = await cache.match(wallpaper.fullSrc).then((responseRaw) => responseRaw.blob());
+            const previewBlob = await cache.match(wallpaper.previewSrc).then((responseRaw) => responseRaw.blob());
             const ext = fullBlob.type.substring(fullBlob.type.indexOf('/') + 1);
 
-            fullBlobs.set(`${background.id}.${ext}`, fullBlob);
-            previewBlobs.set(`${background.id}.jpeg`, previewBlob);
+            fullBlobs.set(`${wallpaper.id}.${ext}`, fullBlob);
+            previewBlobs.set(`${wallpaper.id}.jpeg`, previewBlob);
 
-            meta.push(omit(background, [
+            meta.push(omit(wallpaper, [
                 'fullSrc',
                 'previewSrc',
                 'isLoad',
@@ -44,16 +44,16 @@ class Wallpapers {
         };
     }
 
-    async restore(backgrounds, files, previewFiles) {
-        console.log('restore wallpapers', backgrounds, files, previewFiles, this.core);
+    async restore(wallpapers, files, previewFiles) {
+        console.log('restore wallpapers', wallpapers, files, previewFiles, this.core);
 
         const localBackgrounds = await WallpapersUniversalService.getAll();
 
         console.log('Restore wallpapers...');
 
-        for await (const background of backgrounds) {
-            console.log('Check background:', background);
-            const computeId = `${background.source.toLowerCase()}-${background.idInSource}`;
+        for await (const wallpaper of wallpapers) {
+            console.log('Check wallpaper:', wallpaper);
+            const computeId = `${wallpaper.source.toLowerCase()}-${wallpaper.idInSource}`;
             const findBackground = localBackgrounds.find(({ id }) => computeId === id);
 
             if (findBackground) {
@@ -64,14 +64,14 @@ class Wallpapers {
                 console.log('[wallpapers] Added to library...');
                 try {
                     await WallpapersUniversalService.addToLibrary(new Wallpaper({
-                        ...background,
+                        ...wallpaper,
                         id: null,
                     }), {
                         fullBlob: files[computeId],
                         previewBlob: (computeId in previewFiles) ? previewFiles[computeId] : null,
                     });
                 } catch (e) {
-                    console.warn('Failed add background:', e);
+                    console.warn('Failed add wallpaper:', e);
                 }
             }
         }
