@@ -216,8 +216,6 @@ function FabMenu() {
             title: t('settings:advancedSettings'),
             onClick: async () => {
                 coreService.localEventBus.call('settings/open');
-
-                await new Promise((resolve) => setTimeout(resolve, 2000));
             },
             action: (
                 <GoToIcon />
