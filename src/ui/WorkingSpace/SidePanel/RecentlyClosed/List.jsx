@@ -36,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
     },
     itemOffset: { paddingLeft: theme.spacing(2) },
     dialogAction: { borderRadius: theme.shape.borderRadiusButton },
+    list: {
+        padding: theme.spacing(0.5),
+    },
 }));
 
 function ListRecentlyClosed(props) {
