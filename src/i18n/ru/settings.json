@@ -10,6 +10,8 @@
   "sync_description": "Облачания синхронизация, локальная резервная копия",
   "about": "О расширении",
   "about_description": "Написать разработчику, отправить отчет, предложить идею",
+  "devTools": "Dev Tools",
+  "devTools_description": "",
   "advancedSettings": "Расширеные настройки",
   "shareBanner": {
     "message": "Помогите проекту",

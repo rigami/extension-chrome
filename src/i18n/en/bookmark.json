@@ -1,60 +1,81 @@
 {
   "editor_add": "Adding a new bookmark",
-  "editor_edit": "Editing a bookmark",
+  "editor_edit": "Bookmark editing",
   "editor": {
-    "bookmarkUrl": "URL or request",
+    "bookmarkUrl": "URL or Request",
+    "bookmarkUrl_placeholder": "Enter url or query...",
     "bookmarkName": "Bookmark name",
+    "bookmarkName_placeholder": "Add name...",
     "bookmarkDescription": "Description",
+    "bookmarkDescription_placeholder": "Add description...",
+    "bookmarkTags": "Tags",
+    "bookmarkTags_placeholder": "Add tag...",
+    "saveInCurrentFolder": "Saved here",
     "button": {
-      "addDescription": "Add description",
-      "forceAdd": "Add anyway",
+      "addDescription": "Add description...",
+      "forceAdd": "Add it anyway",
       "moreIcons": "More icons",
-      "scrollToMore": "Scroll to more"
+      "scrollToMore": "Scroll to More",
+      "saveBookmark": "Save Bookmark"
     },
     "search_url": "Search by address",
     "search_web": "Search the web",
     "search": {
       "urlNotRecognize": "Address not recognized",
-      "gettingSiteInfo": "Getting info",
-      "searchSiteFavicon": "Search site favicon",
+      "gettingSiteInfo": "Getting Information",
+      "searchSiteFavicon": "SearchSiteFavicon",
       "preview": {
-        "parsing": "Search for other variants...",
-        "download": "Analysis of variants..."
+        "parsing": "Searching for other options...",
+        "download": "Option Analysis..."
       }
     },
     "save": {
-      "success": "Bookmark saved successfully",
+      "success": "Bookmark Saved",
       "saving": "Saving..."
     },
-    "helper": {
-      "enterRequest": "Enter the address",
+    "help": {
+      "enterRequest": "Enter address",
       "selectResult": "Select a search result",
-      "enterName": "Enter the name of the bookmark"
+      "enterName": "Enter bookmark name"
     }
   },
   "button": {
     "add":"Add new bookmark",
-    "add_short":"Add bookmark",
+    "add_short": "Add bookmark",
     "add_first": "Create first bookmark",
-    "favorites": "Show favorites",
-    "open": "Open bookmarks",
+    "favorites": "Favorites",
+    "favorites_tooltip": "Show Favorites",
+    "open": "Bookmarks",
+    "open_tooltip": "Open Bookmarks",
     "copyUrl": "Copy url",
     "copy": "Copy"
   },
   "remove": {
     "confirm": "Delete bookmark?",
-    "confirm_description": "The bookmark will be deleted forever, are you sure?"
+    "confirm_description": "The bookmark will be permanently deleted, are you sure?"
   },
   "search": {
-    "nothingFound": "Nothing found. Try changing your request",
+    "nothingFound": "Nothing found. Try changing your query",
+    "nothingFoundInFolder": "Nothing was found in this folder",
     "everywhere": "Search everywhere",
     "everywhere_description": "Search for bookmarks throughout the system",
-    "bookmarks_placeholder": "Search for bookmarks",
-    "bestMatches": "Best matches",
-    "allMatches": "All matches",
-    "currentFolderMatches": "In the current folder",
-    "results": "{{count}} result",
-    "results_plural": "{{count}} results"
+    "bookmarks_placeholder": "Search bookmarks",
+    "bestMatches": "Best Matches",
+    "nothingFoundBestMatches": "No best matches found",
+    "otherMatches": "Also other matches",
+    "otherMatchesOnly": "But there are other matches",
+    "nothingFoundOtherMatches": "No other matches found",
+    "partMatches": "Partial",
+    "nothingFoundPartMatches": "No partial matches found",
+    "indirectlyMatches": "Indirect",
+    "nothingFoundIndirectlyMatches": "No indirect matches found",
+    "currentFolderMatches": "In current folder",
+    "results_one": "{{count}} result",
+    "results_few": "{{count}} results",
+    "results_many": "{{count}} results",
+    "otherResults_one": "...and another {{count}} result",
+    "otherResults_few": "...and {{count}} more results",
+    "otherResults_many": "...and {{count}} more results"
   },
-  "empty": "There are no bookmarks here yet"
+  "empty": "No bookmarks here yet"
 }

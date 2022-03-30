@@ -1,20 +1,27 @@
 {
   "button": {
-    "add":"Create new tag",
-    "add_short":"Add tag",
-    "add_first": "Create the first tag",
-    "showAll": "Show all",
-    "showLess": "Show less"
+    "add":"Create a new tag",
+    "add_short": "Add tag",
+    "add_first": "Create first tag"
   },
   "editor": {
     "name_placeholder": "Tag name",
+    "create": "Create tag",
     "error": {
-      "alreadyExist": "Tag already exist",
+      "alreadyExist": "The tag already exists",
       "unknown": "Unknown error"
+    },
+    "caption": {
+      "backspace": "Delete last tag",
+      "arrows": "Select tag",
+      "enter": "Add Tag"
+    },
+    "button": {
+      "remove_description": "Remove Tag"
     }
   },
   "remove": {
     "confirm": "Delete tag?",
-    "confirm_description": "The tag will be removed from all linked bookmarks, are you sure?"
+    "confirm_description": "The tag will be removed from all related bookmarks, are you sure?"
   }
 }

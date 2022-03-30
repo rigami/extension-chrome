@@ -4,10 +4,10 @@
     "size":"Size",
     "fileType":"File type",
     "dropToAdd":"Drop to add background",
-    "dropToAdd_plural":"Drop to add backgrounds",
+    "dropToAdd_1": "Drop to add backgrounds",
     "button": {
-      "discardAll":"Cancel all",
-      "antiAliasing": "Smoothing",
+      "discardAll":"Discard All",
+      "antiAliasing": "Antialiasing",
       "antiAliasing_helper": "Disable this option if you want to load a pixelated background"
     },
     "error": {
@@ -16,23 +16,23 @@
     }
   },
   "button": {
-    "addToLibrary": "Add to library",
+    "addToLibrary": "Add to Library",
     "apply": "Apply background",
     "add": "Add new background",
     "pause": "Pause background",
     "play": "Play background",
-    "like": "Mark background as you like",
+    "like": "Mark background as like",
     "dislike": "Skip background",
     "next": "Next background",
     "remove": "Remove background",
     "change": "Change background",
-    "openSource": "Open background in source"
+    "openSource": "Open"
   },
   "type": {
     "IMAGE": "Image",
     "IMAGE_plural": "Images",
     "VIDEO": "Video",
-    "VIDEO_plural": "Videos",
+    "VIDEO_plural": "Video Files",
     "ANIMATION": "Animation",
     "ANIMATION_plural": "Animations"
   },
@@ -42,14 +42,17 @@
     "PEXELS": "Pexels",
     "PIXABAY": "Pixabay"
   },
-  "error": {
-    "notFound": "No suitable background found",
-    "notFound_description": "",
-    "unknown": "Failed to set background",
-    "unknown_description": "Something went wrong, but it's not clear what, maybe the background is broken, try to delete it"
+  "dislike": {
+    "noty": "We won't show you this background again"
   },
-  "liked": "You liked this background and now it is in your library",
+  "error": {
+    "notFound": "No matching background found",
+    "notFound_description": "",
+    "unknown": "Unable to set background",
+    "unknown_description": "Something went wrong, but I don't know what, maybe the background is broken, try deleting it"
+  },
+  "liked": "You liked this background and now have it in your library",
   "fetchingNextBG": "Loading background...",
-  "removedBrokenBG": "Damaged background removed",
-  "backgroundSource": "by {{author}}, $t(serviceName.{{source}}, serviceName.unknown)"
+  "removedBrokenBG": "Broken background removed",
+  "backgroundSource": "From {{author}}, $t(serviceName.{{source}}, serviceName.unknown)"
 }
