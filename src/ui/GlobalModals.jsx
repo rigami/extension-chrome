@@ -22,7 +22,24 @@ function GlobalModals({ children }) {
             });
 
             // FIXME: A terrible solution, first we cache, then download and create a URL, try to change it somehow
-            const { response } = await fetchData(path, { responseType: 'blob' });
+            const { response, ok } = await fetchData(
+                path,
+                {
+                    responseType: 'blob',
+                    headers: {
+                        'pragma': 'cache',
+                        'cache-control': 'cache',
+                    },
+                },
+            );
+
+            if (!ok) {
+                enqueueSnackbar({
+                    message: t('settingsSync:localBackup.create.state.error'),
+                    variant: 'error',
+                });
+                return;
+            }
 
             const link = document.createElement('a');
 

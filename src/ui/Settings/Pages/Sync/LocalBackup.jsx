@@ -45,8 +45,8 @@ function BackupCreate() {
     const [open, setOpen] = useState(false);
     const [saveItems, setSaveItems] = useState({
         settings: true,
-        bookmarks: true,
-        backgrounds: false,
+        workingSpace: true,
+        wallpapers: false,
     });
 
     const handleChange = (key, value) => {
@@ -123,12 +123,12 @@ function BackupCreate() {
                                     </MenuItem>
                                     {BUILD === 'full' && (
                                         <MenuItem
-                                            onClick={() => handleChange('bookmarks', !saveItems.bookmarks)}
+                                            onClick={() => handleChange('workingSpace', !saveItems.workingSpace)}
                                         >
                                             <ListItemIcon className={classes.alignTop}>
                                                 <Checkbox
                                                     color="primary"
-                                                    checked={saveItems.bookmarks}
+                                                    checked={saveItems.workingSpace}
                                                 />
                                             </ListItemIcon>
                                             <ListItemText
@@ -138,13 +138,13 @@ function BackupCreate() {
                                         </MenuItem>
                                     )}
                                     <MenuItem
-                                        onClick={() => handleChange('backgrounds', !saveItems.backgrounds)}
+                                        onClick={() => handleChange('wallpapers', !saveItems.wallpapers)}
                                         divider
                                     >
                                         <ListItemIcon className={classes.alignTop}>
                                             <Checkbox
                                                 color="primary"
-                                                checked={saveItems.backgrounds}
+                                                checked={saveItems.wallpapers}
                                             />
                                         </ListItemIcon>
                                         <ListItemText
@@ -162,7 +162,7 @@ function BackupCreate() {
                                     <MenuItem
                                         onClick={handleSave}
                                         color="primary"
-                                        disabled={!saveItems.settings && !saveItems.bookmarks}
+                                        disabled={!saveItems.settings && !saveItems.workingSpace}
                                     >
                                         <ListItemIcon>
                                             <SaveIcon className={classes.saveIcon} />

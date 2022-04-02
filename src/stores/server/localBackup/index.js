@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, toJS } from 'mobx';
 import { forEach, map } from 'lodash';
 import JSZip from 'jszip';
 import { captureException } from '@sentry/browser';
@@ -43,10 +43,10 @@ class LocalBackupService {
             let backup = {};
 
             if (settings) {
-                backup.settings = await StorageConnector.get('settings');
+                backup.settings = toJS(settingsStorage.data);
             }
 
-            backup.storage = await StorageConnector.get('storage');
+            backup.storage = (await StorageConnector.get('storage')).storage || {};
 
             if (BUILD === 'full' && workingSpace) {
                 const workingSpaceData = await this.workingSpaceService.collect();
@@ -246,11 +246,11 @@ class LocalBackupService {
         if (BUILD === 'full') { this.workingSpaceService = new WorkingSpace(this); }
         this.wallpapersService = new Wallpapers(this);
 
-        this.core.globalEventBus.on('system/backup/local/create', ({ data: { settings, bookmarks, backgrounds } }) => {
+        this.core.globalEventBus.on('system/backup/local/create', ({ data: { settings, workingSpace, wallpapers } }) => {
             this.createBackup({
                 settings,
-                bookmarks,
-                backgrounds,
+                workingSpace,
+                wallpapers,
             });
         });
 

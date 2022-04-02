@@ -97,7 +97,7 @@
     "syncItem": {
       "settings": "Settings",
       "bookmarks": "Bookmarks",
-      "wallpapers": "Backgrounds",
+      "wallpapers": "Wallpapers",
       "wallpapers_description": "Greatly increases file size"
     },
     "restore": {

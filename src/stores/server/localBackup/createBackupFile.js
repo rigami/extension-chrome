@@ -23,7 +23,7 @@ export default async (data) => {
 
     zip.file('meta.json', JSON.stringify(backup.meta));
 
-    if (settings) zip.file('settings.json', JSON.stringify(backup.settings));
+    if (settings) zip.file('settings.json', JSON.stringify(settings));
 
     if (bookmarks || tags || folders || favorites) {
         zip.file('workingSpace.json', JSON.stringify({
@@ -35,15 +35,15 @@ export default async (data) => {
     }
 
     if (wallpapers) {
-        zip.file('wallpapers.json', JSON.stringify(backup.wallpapers.meta));
+        zip.file('wallpapers.json', JSON.stringify(wallpapers.meta));
         zip.folder('wallpapers');
         zip.folder('previews');
 
-        backup.wallpapers.full.forEach((file, fileName) => {
+        wallpapers.full.forEach((file, fileName) => {
             zip.file(`wallpapers/${fileName}`, file);
         });
 
-        backup.wallpapers.preview.forEach((file, fileName) => {
+        wallpapers.preview.forEach((file, fileName) => {
             zip.file(`wallpaperPreviews/${fileName}`, file);
         });
     }

@@ -20,12 +20,16 @@ class Wallpapers {
         const cache = await caches.open('wallpapers');
 
         for await (const wallpaper of allWallpapers) {
-            const fullBlob = await cache.match(wallpaper.fullSrc).then((responseRaw) => responseRaw.blob());
-            const previewBlob = await cache.match(wallpaper.previewSrc).then((responseRaw) => responseRaw.blob());
-            const ext = fullBlob.type.substring(fullBlob.type.indexOf('/') + 1);
+            try {
+                const fullBlob = await cache.match(wallpaper.fullSrc).then((responseRaw) => responseRaw.blob());
+                const previewBlob = await cache.match(wallpaper.previewSrc).then((responseRaw) => responseRaw.blob());
+                const ext = fullBlob.type.substring(fullBlob.type.indexOf('/') + 1);
 
-            fullBlobs.set(`${wallpaper.id}.${ext}`, fullBlob);
-            previewBlobs.set(`${wallpaper.id}.jpeg`, previewBlob);
+                fullBlobs.set(`${wallpaper.id}.${ext}`, fullBlob);
+                previewBlobs.set(`${wallpaper.id}.jpeg`, previewBlob);
+            } catch (e) {
+                console.warn('Failed download wallpaper:', wallpaper);
+            }
 
             meta.push(omit(wallpaper, [
                 'fullSrc',
