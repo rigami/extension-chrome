@@ -24,7 +24,7 @@
       "pendingData": "Pending data..."
     },
     "error": {
-      "serviceUnavailable": "Weather Service Unavailable",
+      "serviceUnavailable": "Weather service unavailable",
       "failedGeolocation": "Unable to determine your geolocation",
       "failedGeolocation_description": "Geolocation access may have been denied, or the weather service is not providing weather information for this location."
     },
@@ -37,9 +37,9 @@
       }
     },
     "provider": {
-      "title": "Weather Forecast Provider",
+      "title": "Weather forecast provider",
       "value": {
-        "openweathermap": "openweathermap"
+        "openweathermap": "OpenWeatherMap"
       }
     },
     "region": {

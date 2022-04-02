@@ -71,11 +71,9 @@
     "nothingFoundIndirectlyMatches": "No indirect matches found",
     "currentFolderMatches": "In current folder",
     "results_one": "{{count}} result",
-    "results_few": "{{count}} results",
-    "results_many": "{{count}} results",
+    "results_other": "{{count}} results",
     "otherResults_one": "...and another {{count}} result",
-    "otherResults_few": "...and {{count}} more results",
-    "otherResults_many": "...and {{count}} more results"
+    "otherResults_other": "...and {{count}} more results"
   },
   "empty": "No bookmarks here yet"
 }

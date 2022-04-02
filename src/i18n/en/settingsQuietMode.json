@@ -20,7 +20,7 @@
     "title": "Size",
     "value": {
       "smaller": "Smaller",
-      "bigger": "More"
+      "bigger": "Bigger"
     }
   },
   "useFap":{
@@ -30,7 +30,7 @@
   "fapStyle":{
     "title":"Panel Style",
     "value":{
-      "CONTAINED":"With backing",
+      "CONTAINED":"With backdrop",
       "TRANSPARENT":"Transparent",
       "PRODUCTIVITY":"Productive"
     }
@@ -64,7 +64,7 @@
     }
   },
   "dimmingPower":{
-    "title":"Dim background",
+    "title":"Level of dim background",
     "description":"Background fade level"
   },
   "kind":{

@@ -7,7 +7,7 @@
   "common": "General",
   "common_description": "Theme, tab name",
   "sync": "Synchronization and backup",
-  "sync_description": "Garments sync, local backup",
+  "sync_description": "Cloud sync, local backup",
   "about": "About extension",
   "about_description": "Write to the developer, send a report, suggest an idea",
   "devTools": "Dev Tools",
@@ -28,7 +28,7 @@
     }
   },
   "display": {
-    "title": "Performance",
+    "title": "Conception",
     "variant": {
       "cards": "Cards",
       "rows": "List"
@@ -37,7 +37,7 @@
   "sorting": {
     "title": "Sort",
     "variant": {
-      "BY_RELATIVE": "By realism",
+      "BY_RELATIVE": "By relative",
       "NEWEST_FIRST": "Newest first",
       "OLDEST_FIRST": "Oldest first"
     }
