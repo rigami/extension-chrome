@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
     selected: { backgroundColor: theme.palette.action.selected },
     middle: { height: (theme.shape.dataCard.height + theme.spacing(2)) * 2 - theme.spacing(2) },
     large: { height: (theme.shape.dataCard.height + theme.spacing(2)) * 3 - theme.spacing(2) },
+    largest: { height: (theme.shape.dataCard.height + theme.spacing(2)) * 4 - theme.spacing(2) },
     rootActionWrapper: {
         width: '100%',
         height: '100%',
@@ -53,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     },
     icon: {
         marginRight: theme.spacing(1.25),
-        marginTop: theme.spacing(0.75),
+        marginTop: theme.spacing(0.5),
         width: 32,
         height: 32,
         flexShrink: 0,
@@ -75,23 +76,24 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: theme.typography.specialFontFamily,
         fontWeight: 600,
         fontSize: '0.94rem',
-        marginTop: theme.spacing(-0.5),
-        marginBottom: theme.spacing(-0.5),
+        marginTop: theme.spacing(0.5),
+        marginBottom: theme.spacing(0.5),
     },
     banner: {},
     imageWrapper: {
         width: '100%',
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(0.75, 1.5),
+        padding: theme.spacing(0.75, 1),
         paddingBottom: theme.spacing(0.25),
-        minHeight: 56,
+        minHeight: 50,
+        maxHeight: 68,
         boxSizing: 'border-box',
         flexShrink: 0,
     },
     extendBanner: {
         width: `calc(100% - ${theme.spacing(1)}px)`,
-        height: 104,
+        height: 100,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -100,15 +102,18 @@ const useStyles = makeStyles((theme) => ({
         filter: 'brightness(0.96)',
         backgroundColor: theme.palette.background.default,
     },
-    coverBanner: { height: 202 },
+    coverBanner: { height: 192 },
     extendBannerTitleContainer: {
-        margin: theme.spacing(1.125, 1.5),
-        marginBottom: theme.spacing(0.625),
-        height: 32,
+        margin: theme.spacing(0.5, 1.5),
+        marginBottom: theme.spacing(0),
+        minHeight: 32,
         display: 'flex',
         alignItems: 'center',
     },
-    extendBannerTitle: { '-webkit-line-clamp': 2 },
+    extendBannerTitle: {
+        '-webkit-line-clamp': 2,
+        margin: 0,
+    },
     description: {
         color: theme.palette.text.secondary,
         marginTop: theme.spacing(0.5),
@@ -158,6 +163,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(0.5),
         flexShrink: 0,
     },
+    titleBig: { '-webkit-line-clamp': 3 },
 }));
 
 function Tags({ tags }) {
@@ -225,6 +231,8 @@ function CardLink(props) {
         }));
     }, [workingSpaceService.favorites.length]);
 
+    const infoRow = tagsFull.length !== 0 || isPin;
+
     return (
         <Tooltip
             title={(
@@ -244,7 +252,8 @@ function CardLink(props) {
                     icoVariant !== BKMS_VARIANT.POSTER && description && classes.middle,
                     icoVariant === BKMS_VARIANT.POSTER && !description && classes.middle,
                     icoVariant === BKMS_VARIANT.POSTER && description && classes.large,
-                    icoVariant === BKMS_VARIANT.COVER && classes.large,
+                    icoVariant === BKMS_VARIANT.COVER && !description && classes.large,
+                    icoVariant === BKMS_VARIANT.COVER && description && classes.largest,
                     externalClassName,
                     isOpen && classes.selected,
                 )}
@@ -268,7 +277,11 @@ function CardLink(props) {
                                 }
                                 className={classes.icon}
                             />
-                            <Typography className={classes.title}>{name}</Typography>
+                            <Typography
+                                className={clsx(classes.title, !infoRow && classes.titleBig)}
+                            >
+                                {name}
+                            </Typography>
                         </Box>
                     )}
                     {icoVariant === BKMS_VARIANT.POSTER && (
@@ -279,7 +292,13 @@ function CardLink(props) {
                                 className={classes.extendBanner}
                             />
                             <Box className={classes.extendBannerTitleContainer}>
-                                <Typography className={clsx(classes.title, classes.extendBannerTitle)}>
+                                <Typography
+                                    className={clsx(
+                                        classes.title,
+                                        !infoRow && classes.titleBig,
+                                        classes.extendBannerTitle,
+                                    )}
+                                >
                                     {name}
                                 </Typography>
                             </Box>
@@ -293,16 +312,24 @@ function CardLink(props) {
                                 className={clsx(classes.extendBanner, classes.coverBanner)}
                             />
                             <Box className={classes.extendBannerTitleContainer}>
-                                <Typography className={clsx(classes.title, classes.extendBannerTitle)}>
+                                <Typography
+                                    className={clsx(
+                                        classes.title,
+                                        !infoRow && classes.titleBig,
+                                        classes.extendBannerTitle,
+                                    )}
+                                >
                                     {name}
                                 </Typography>
                             </Box>
                         </Box>
                     )}
-                    <Box className={clsx(classes.infoWrapper, !description && classes.alignToBottom)}>
-                        {tagsFull && (<Tags tags={tagsFull} />)}
-                        {isPin && (<FavoriteIcon className={classes.favorite} />)}
-                    </Box>
+                    {infoRow && (
+                        <Box className={clsx(classes.infoWrapper, !description && classes.alignToBottom)}>
+                            {tagsFull && (<Tags tags={tagsFull} />)}
+                            {isPin && (<FavoriteIcon className={classes.favorite} />)}
+                        </Box>
+                    )}
                     {description && (
                         <Typography variant="body2" className={classes.description}>{description}</Typography>
                     )}
