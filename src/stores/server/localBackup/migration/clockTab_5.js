@@ -46,6 +46,7 @@ const migrateSettings = (backup) => {
             defaultActivity: backup.settings.open_site_panel_start
                 ? ACTIVITY.BOOKMARKS
                 : ACTIVITY.DESKTOP,
+            searchRunOnAnyKey: true,
             theme: backup.settings.dark_theme ? THEME.DARK : THEME.LIGHT,
         },
         backgrounds: {

@@ -7,6 +7,10 @@
     "title": "Open bookmarks bar on startup",
     "description": "Bookmarks bar opens when opening a new tab"
   },
+  "searchRunOnAnyKey": {
+    "title": "Start search on any key press",
+    "description": "Start the search when any key is pressed, otherwise the search opens when you press the combination Ctrl+Q"
+  },
   "tabName":{
     "title":"Tab Title",
     "description":"Enter a title for your tab",

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, CardActionArea, CardHeader } from '@material-ui/core';
+import {
+    Box, CardActionArea, CardHeader, Tooltip,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
@@ -16,6 +18,7 @@ import Folders from '../Folders';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
 import { useCoreService } from '@/stores/app/core';
+import { useAppStateService } from '@/stores/app/appState';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -78,6 +81,7 @@ function SidePanel() {
     const { t } = useTranslation(['folder', 'bookmark']);
     const searchService = useSearchService();
     const coreService = useCoreService();
+    const appStateService = useAppStateService();
     const classes = useStyles();
 
     return (
@@ -100,14 +104,22 @@ function SidePanel() {
                     }}
                 />
             </CardActionArea>
-            <Subheader
-                icon={<SearchIcon className={classes.icon} />}
-                title={t('bookmark:search.title')}
-                className={clsx(classes.subheaderButton, classes.searchButton)}
-                onClick={() => {
-                    coreService.localEventBus.call('search');
-                }}
-            />
+            <Tooltip
+                title={
+                    appStateService.settings.searchRunOnAnyKey
+                        ? t('bookmark:search.hotKeyAny')
+                        : t('bookmark:search.hotKeyCtrlQ')
+                }
+            >
+                <Subheader
+                    icon={<SearchIcon className={classes.icon} />}
+                    title={t('bookmark:search.title')}
+                    className={clsx(classes.subheaderButton, classes.searchButton)}
+                    onClick={() => {
+                        coreService.localEventBus.call('search');
+                    }}
+                />
+            </Tooltip>
             <Box overflow="auto" py={2} pt={0.5}>
                 <Subheader
                     icon={<FolderIcon className={classes.icon} />}

@@ -11,6 +11,8 @@ import FullSearch from '@/ui/Search/FullSearch';
 import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
 import { useCoreService } from '@/stores/app/core';
 import Scrollbar from '@/ui-components/CustomScroll';
+import { useHotKeysService } from '@/stores/app/hotKeys';
+import { useAppStateService } from '@/stores/app/appState';
 
 const useStyles = makeStyles((theme) => ({
     dialog: {
@@ -38,8 +40,10 @@ const useStyles = makeStyles((theme) => ({
 
 function Search() {
     const classes = useStyles();
+    const appStateService = useAppStateService();
     const coreService = useCoreService();
     const searchService = useSearchService();
+    const hotKeysService = useHotKeysService();
     const [isOpen, setIsOpen] = useState(false);
     const rootRef = useRef();
 
@@ -48,10 +52,32 @@ function Search() {
             setIsOpen(true);
         });
 
+        let hotKeysListener;
+
+        if (appStateService.settings.searchRunOnAnyKey) {
+            hotKeysListener = hotKeysService.on(['*'], (combination) => {
+                console.log('combination:', combination);
+                if (
+                    combination.length !== 1
+                    || (
+                        combination[0].indexOf('Key') === -1
+                        && combination[0].indexOf('Digit') === -1
+                    )
+                ) return;
+
+                setIsOpen(true);
+            });
+        } else {
+            hotKeysListener = hotKeysService.on(['ControlLeft', 'KeyQ'], () => {
+                setIsOpen(true);
+            });
+        }
+
         return () => {
             coreService.localEventBus.removeListener(listener);
+            hotKeysService.removeListener(hotKeysListener);
         };
-    }, []);
+    }, [appStateService.settings.searchRunOnAnyKey]);
 
     const handleClose = () => {
         setIsOpen(false);

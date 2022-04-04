@@ -47,5 +47,6 @@ export default {
         theme: THEME.LIGHT,
         tabName: 'rigami',
         defaultActivity: ACTIVITY.BOOKMARKS,
+        searchRunOnAnyKey: true,
     },
 };

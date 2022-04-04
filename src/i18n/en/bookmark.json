@@ -73,7 +73,9 @@
     "results_one": "{{count}} result",
     "results_other": "{{count}} results",
     "otherResults_one": "...and another {{count}} result",
-    "otherResults_other": "...and {{count}} more results"
+    "otherResults_other": "...and {{count}} more results",
+    "hotKeyCtrlQ": "Search (Ctrl+Q)",
+    "hotKeyAny": "Search (Start typing to start searching)"
   },
   "empty": "No bookmarks here yet"
 }

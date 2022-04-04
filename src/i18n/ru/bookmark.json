@@ -77,7 +77,9 @@
     "results_many": "{{count}} результатов",
     "otherResults_one": "...и ещё {{count}} результат",
     "otherResults_few": "...и ещё {{count}} результа",
-    "otherResults_many": "...и ещё {{count}} результатов"
+    "otherResults_many": "...и ещё {{count}} результатов",
+    "hotKeyCtrlQ": "Поиск (Ctrl+Q)",
+    "hotKeyAny": "Поиск (Начните печатать, чтобы начать поиск)"
   },
   "empty": "Здесь пока нет закладок"
 }

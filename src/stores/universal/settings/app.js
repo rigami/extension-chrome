@@ -8,6 +8,7 @@ export const migration = (currState) => ({
     'app.theme': currState['app.theme'] || defaultSettings.app.theme,
     'app.tabName': currState['app.tabName'] || defaultSettings.app.tabName,
     'app.defaultActivity': currState['app.defaultActivity'] || defaultSettings.app.defaultActivity,
+    'app.searchRunOnAnyKey': currState['app.searchRunOnAnyKey'] || defaultSettings.app.searchRunOnAnyKey,
 });
 
 class AppSettings {
@@ -31,12 +32,16 @@ class AppSettings {
     @computed
     get defaultActivity() { return this._storage.data['app.defaultActivity']; }
 
+    @computed
+    get searchRunOnAnyKey() { return this._storage.data['app.searchRunOnAnyKey']; }
+
     update(props = {}) {
         const updProps = pick(props, [
             'backdropTheme',
             'theme',
             'tabName',
             'defaultActivity',
+            'searchRunOnAnyKey',
         ]);
 
         this._storage.update('app', updProps);

@@ -37,6 +37,16 @@ function AppSettings({ onSelect }) {
                         .update({ defaultActivity: value ? ACTIVITY.BOOKMARKS : ACTIVITY.DESKTOP }),
                 }}
             />
+            <MenuRow
+                title={t('searchRunOnAnyKey.title')}
+                description={t('searchRunOnAnyKey.description')}
+                action={{
+                    type: ROWS_TYPE.CHECKBOX,
+                    value: appStateService.settings.searchRunOnAnyKey,
+                    onChange: (event, value) => appStateService.settings
+                        .update({ searchRunOnAnyKey: value }),
+                }}
+            />
             <Divider variant="middle" />
             <SectionHeader title={t('appearance')} />
             <MenuRow

@@ -20,6 +20,7 @@ class HotKeysService {
             () => this.combination.toString(),
             () => {
                 this.bus.call(this.combination.sort().join(','));
+                this.bus.call('*');
             },
         );
     }
@@ -41,7 +42,7 @@ class HotKeysService {
 
     @action.bound
     on(keys, callback) {
-        return this.bus.on(keys.sort().join(','), callback);
+        return this.bus.on(keys.sort().join(','), () => callback(this.combination));
     }
 
     @action.bound
