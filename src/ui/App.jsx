@@ -24,6 +24,7 @@ import GlobalModals from './GlobalModals';
 import { ContextPopoverProvider } from '@/stores/app/contextPopover';
 import { ContextActionsProvider } from '@/stores/app/contextActions';
 import { SearchServiceProvider } from '@/ui/WorkingSpace/searchProvider';
+import { HotKeysProvider } from '@/stores/app/hotKeys';
 
 initSentry(DESTINATION.APP);
 
@@ -51,6 +52,7 @@ function RootApp({ onChangeTheme }) {
                         {children}
                     </AppStateProvider>
                 ),
+                HotKeysProvider,
                 ContextPopoverProvider,
                 ContextMenuProvider,
                 ContextActionsProvider,
