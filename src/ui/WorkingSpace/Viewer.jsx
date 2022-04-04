@@ -191,12 +191,4 @@ function Bookmarks() {
 
 const ObserverBookmarks = observer(Bookmarks);
 
-function RootBookmark() {
-    return (
-        <SearchServiceProvider>
-            <ObserverBookmarks />
-        </SearchServiceProvider>
-    );
-}
-
-export default RootBookmark;
+export default ObserverBookmarks;

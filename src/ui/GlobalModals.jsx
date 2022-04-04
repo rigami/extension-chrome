@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import { useCoreService } from '@/stores/app/core';
 import fetchData from '@/utils/helpers/fetchData';
 import Changelog from './Changelog';
+import Search from '@/ui/Search';
 
 function GlobalModals({ children }) {
     const { t } = useTranslation(['folder']);
@@ -163,6 +164,7 @@ function GlobalModals({ children }) {
     return (
         <React.Fragment>
             {children}
+            <Search />
             <Changelog />
         </React.Fragment>
     );

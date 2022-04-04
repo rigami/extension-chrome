@@ -4,6 +4,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import {
+    SearchRounded as SearchIcon,
+    FolderOpenRounded as FolderIcon,
+} from '@material-ui/icons';
 import LogoIcon from '@/images/logo-icon.svg';
 import LogoText from '@/images/logo-text.svg';
 import Subheader from '@/ui/WorkingSpace/SidePanel/Subheader';
@@ -11,6 +15,7 @@ import LastClosed from './RecentlyClosed';
 import Folders from '../Folders';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
+import { useCoreService } from '@/stores/app/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -31,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     header: {
         height: 40,
         padding: 0,
-        paddingLeft: theme.spacing(1),
+        paddingLeft: theme.spacing(0.5),
         paddingRight: theme.spacing(1),
     },
     appLogoIcon: {
@@ -56,11 +61,23 @@ const useStyles = makeStyles((theme) => ({
         width: `calc(100% - ${theme.spacing(1)}px)`,
         borderRadius: theme.shape.borderRadiusButton,
     },
+    subheaderButton: {
+        paddingLeft: theme.spacing(0.75),
+        marginLeft: theme.spacing(1),
+        width: `calc(100% - ${theme.spacing(1)}px)`,
+    },
+    icon: {
+        marginRight: theme.spacing(0.5),
+        width: 18,
+        height: 18,
+    },
+    searchButton: { marginTop: theme.spacing(2) },
 }));
 
 function SidePanel() {
-    const { t } = useTranslation(['folder']);
+    const { t } = useTranslation(['folder', 'bookmark']);
     const searchService = useSearchService();
+    const coreService = useCoreService();
     const classes = useStyles();
 
     return (
@@ -83,9 +100,19 @@ function SidePanel() {
                     }}
                 />
             </CardActionArea>
-            <Box overflow="auto" py={2}>
+            <Subheader
+                icon={<SearchIcon className={classes.icon} />}
+                title={t('bookmark:search.title')}
+                className={clsx(classes.subheaderButton, classes.searchButton)}
+                onClick={() => {
+                    coreService.localEventBus.call('search');
+                }}
+            />
+            <Box overflow="auto" py={2} pt={0.5}>
                 <Subheader
+                    icon={<FolderIcon className={classes.icon} />}
                     title={t('listTitle')}
+                    className={classes.subheaderButton}
                     disableButton
                 />
                 <Folders

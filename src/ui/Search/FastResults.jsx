@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
     Box,
     Button,
@@ -8,8 +8,13 @@ import {
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { ArrowForward as GoToIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { makeStyles } from '@material-ui/core/styles';
-import { map, size, omit } from 'lodash';
+import { alpha, makeStyles } from '@material-ui/core/styles';
+import {
+    map,
+    size,
+    omit,
+    sample,
+} from 'lodash';
 import stateRender from '@/utils/helpers/stateRender';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { FETCH } from '@/enum';
@@ -17,9 +22,15 @@ import FolderBreadcrumbs from '@/ui/WorkingSpace/ToolsPanel/FolderBreadcrumbs';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
 import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
+import Stub from '@/ui-components/Stub';
 
 const useStyles = makeStyles((theme) => ({
-    root: { paddingBottom: theme.spacing(1) },
+    root: {
+        paddingBottom: theme.spacing(1),
+        minHeight: 380,
+        display: 'flex',
+        flexDirection: 'column',
+    },
     goToButton: {
         textTransform: 'none',
         color: theme.palette.secondary.main,
@@ -43,7 +54,10 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 'auto',
         flexShrink: 0,
     },
-    stub: { padding: theme.spacing(2) },
+    stub: {
+        padding: theme.spacing(2),
+        paddingTop: theme.spacing(3),
+    },
     folderBreadcrumbs: { overflow: 'auto' },
     countOtherResults: {
         padding: theme.spacing(1, 2),
@@ -51,12 +65,40 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
     },
     bookmarksList: { padding: theme.spacing(0, 1) },
+    emoticon: {
+        fontSize: '5rem',
+        color: alpha(theme.palette.text.secondary, 0.06),
+        fontWeight: 700,
+    },
+    message: {
+        fontSize: '1.4rem',
+        fontWeight: 600,
+        marginTop: theme.spacing(5),
+        color: theme.palette.text.primary,
+    },
 }));
+
+const emoticons = [
+    '(^_^)b',
+    '(；⌣̀_⌣́)',
+    '(⇀‸↼‶)',
+    '(눈_눈)',
+    '(ᗒᗣᗕ)՞',
+    '(￢_￢;)',
+    'ヾ( ￣O￣)ツ',
+    '(╥_╥)',
+    '( ╥ω╥ )',
+    '¯\\_(ツ)_/¯',
+    '┐( ˘ ､ ˘ )┌',
+    '╮( ˘_˘ )╭',
+    '(⊙_⊙)',
+];
 
 function FastResults({ onGoToFolder }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const workingSpaceService = useWorkingSpaceService();
+    const [emoticon] = useState(() => sample(emoticons));
     const searchService = useSearchService();
     const store = useLocalObservable(() => ({
         bookmarks: null,
@@ -178,12 +220,23 @@ function FastResults({ onGoToFolder }) {
                         </Fragment>
                     ))}
                     {size(store.otherFolders) === 0 && store.currentFolder.length === 0 && (
-                        <Typography variant="body1" className={classes.stub}>{t('search.nothingFound')}</Typography>
+                        <Stub
+                            maxWidth={false}
+                            message={emoticon}
+                            description={t('search.nothingFound')}
+                            classes={{
+                                root: classes.stub,
+                                title: classes.emoticon,
+                                description: classes.message,
+                            }}
+                        />
                     )}
                 </Fragment>,
-                <Typography variant="body1" className={classes.stub}>
-                    {t('common:search')}
-                </Typography>,
+                <Stub
+                    maxWidth={false}
+                    description={t('common:search')}
+                    classes={{ root: classes.stub }}
+                />,
             )}
         </Box>
     );

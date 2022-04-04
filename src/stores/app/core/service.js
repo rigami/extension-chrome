@@ -75,7 +75,7 @@ class CoreService {
                 ns: [
                     'common',
                     'bookmark',
-                    'background',
+                    'wallpaper',
                     'tag',
                     'desktop',
                     'settings',

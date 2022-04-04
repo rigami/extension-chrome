@@ -12,7 +12,7 @@ import EditorBookmark from '@/ui/WorkingSpace/Bookmark/Editor';
 import Stub from '@/ui-components/Stub';
 import FolderBreadcrumbs from '@/ui/WorkingSpace/ToolsPanel/FolderBreadcrumbs';
 import CloudSync from '@/ui/WorkingSpace/ToolsPanel/CloudSync';
-import SearchBlock from '@/ui/WorkingSpace/ToolsPanel/Search';
+import SearchBlock from '@/ui/Search';
 import ShowFavorites from '@/ui/WorkingSpace/ToolsPanel/ShowFavorites';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { ACTIVITY } from '@/enum';

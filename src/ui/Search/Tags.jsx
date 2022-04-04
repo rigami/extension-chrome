@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import Tag from '../../Tag';
+import Tag from '../WorkingSpace/Tag';
 
 const useStyles = makeStyles((theme) => ({
     root: {

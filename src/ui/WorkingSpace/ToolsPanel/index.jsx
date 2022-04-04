@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Box } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
@@ -8,51 +8,29 @@ import { SelfImprovementRounded as DesktopIcon } from '@/icons';
 import { ACTIVITY } from '@/enum';
 import { useAppStateService } from '@/stores/app/appState';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
-import FolderBreadcrumbs from './FolderBreadcrumbs';
-import SearchBlock from './Search';
 import ShowFavorites from './ShowFavorites';
 import CloudSync from '@/ui/WorkingSpace/ToolsPanel/CloudSync';
-import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        position: 'sticky',
+        width: 'fit-content',
+        marginLeft: 'auto',
+        top: theme.spacing(1),
+        display: 'flex',
+        marginTop: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        padding: theme.spacing(1),
+        borderRadius: theme.shape.borderRadiusBold,
+        zIndex: 100,
         backgroundColor: alpha(theme.palette.background.default, 0.6),
         backdropFilter: `blur(${theme.spacing(2)}px)`,
-    },
-    toolbar: {
-        minHeight: 36,
-        display: 'flex',
-        padding: theme.spacing(2),
-        alignItems: 'flex-start',
-        boxSizing: 'content-box',
-    },
-    wrapperBreadcrumbs: {
-        overflow: 'auto',
-        marginRight: 'auto',
-        paddingLeft: theme.spacing(2),
-    },
-    '@media (max-width: 1400px)': { wrapperBreadcrumbs: { paddingLeft: theme.spacing(0) } },
-    wrapperSearch: {
-        padding: theme.spacing(0, 1),
-        paddingLeft: theme.spacing(2),
-        display: 'flex',
-        flexGrow: 1,
-        flexShrink: 0,
-        justifyContent: 'center',
-        maxWidth: 600,
-        marginTop: 0,
-        boxSizing: 'content-box',
     },
     wrapperTools: {
         flexShrink: 0,
         display: 'grid',
         gridAutoFlow: 'column',
         gridGap: theme.spacing(1),
-    },
-    widthHelper: {
-        flexShrink: 1,
-        display: 'flex',
-        flexGrow: 1,
     },
     toolStub: {
         visibility: 'hidden',
@@ -66,43 +44,25 @@ function ToolsPanel() {
     const { t } = useTranslation(['desktop']);
     const appStateService = useAppStateService();
     const workingSpaceService = useWorkingSpaceService();
-    const searchService = useSearchService();
 
     return (
-        <AppBar
-            position="sticky"
-            color="transparent"
-            elevation={0}
-            className={classes.root}
-        >
-            <Toolbar disableGutters className={classes.toolbar}>
-                <Box className={classes.wrapperBreadcrumbs}>
-                    <FolderBreadcrumbs
-                        key={searchService.selectFolderId}
-                        folderId={searchService.selectFolderId}
-                        onSelectFolder={(folderId) => searchService.setSelectFolder(folderId)}
+        <Box disableGutters className={classes.root}>
+            <CloudSync />
+            <Box className={classes.wrapperTools}>
+                {workingSpaceService.favorites.length > 0 && (
+                    <ShowFavorites className={classes.fixVisualMargin} />
+                )}
+                <ExtendButtonGroup>
+                    <ExtendButton
+                        tooltip={t('desktop:button.open')}
+                        data-ui-path="desktop.open"
+                        onClick={() => appStateService.setActivity(ACTIVITY.DESKTOP)}
+                        icon={DesktopIcon}
                     />
-                </Box>
-                <CloudSync />
-                <Box className={classes.wrapperSearch}>
-                    <SearchBlock />
-                </Box>
-                <Box className={classes.wrapperTools}>
-                    {workingSpaceService.favorites.length > 0 && (
-                        <ShowFavorites className={classes.fixVisualMargin} />
-                    )}
-                    <ExtendButtonGroup>
-                        <ExtendButton
-                            tooltip={t('desktop:button.open')}
-                            data-ui-path="desktop.open"
-                            onClick={() => appStateService.setActivity(ACTIVITY.DESKTOP)}
-                            icon={DesktopIcon}
-                        />
-                    </ExtendButtonGroup>
-                    <ExtendButtonGroup className={classes.toolStub} />
-                </Box>
-            </Toolbar>
-        </AppBar>
+                </ExtendButtonGroup>
+                <ExtendButtonGroup className={classes.toolStub} />
+            </Box>
+        </Box>
     );
 }
 

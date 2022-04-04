@@ -11,6 +11,7 @@ import Stub from '@/ui-components/Stub';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import Favorites from '@/ui/WorkingSpace/Favorites';
 import { useContextEdit } from '@/stores/app/contextActions';
+import FolderBreadcrumbs from '@/ui/WorkingSpace/ToolsPanel/FolderBreadcrumbs';
 
 const useStyles = makeStyles((theme) => ({
     bookmarks: {
@@ -65,50 +66,57 @@ function PrimaryContent({ columns }) {
                 <Favorites />
             )}
             {searchService.selectFolderId !== NULL_UUID && (
-                <BookmarksViewer
-                    style={{ width: columns * (theme.shape.dataCard.width + 16) + 16 }}
-                    className={classes.bookmarks}
-                    folderId={searchService.selectFolderId}
-                    columns={columns}
-                    emptyRender={() => (
-                        <Stub
-                            key="empty"
-                            maxWidth={false}
-                            message={emoticon}
-                            description={t('empty')}
-                            classes={{
-                                root: classes.stub,
-                                title: classes.emoticon,
-                                description: classes.message,
-                            }}
-                        >
-                            <Button
-                                onClick={(event) => dispatchEdit({
-                                    itemType: 'bookmark',
-                                    defaultFolderId: searchService.selectFolderId,
-                                }, event)}
-                                startIcon={<AddBookmarkIcon />}
-                                variant="outlined"
-                                color="primary"
+                <Fragment>
+                    <FolderBreadcrumbs
+                        key={searchService.selectFolderId}
+                        folderId={searchService.selectFolderId}
+                        onSelectFolder={(folderId) => searchService.setSelectFolder(folderId)}
+                    />
+                    <BookmarksViewer
+                        style={{ width: columns * (theme.shape.dataCard.width + 16) + 16 }}
+                        className={classes.bookmarks}
+                        folderId={searchService.selectFolderId}
+                        columns={columns}
+                        emptyRender={() => (
+                            <Stub
+                                key="empty"
+                                maxWidth={false}
+                                message={emoticon}
+                                description={t('empty')}
+                                classes={{
+                                    root: classes.stub,
+                                    title: classes.emoticon,
+                                    description: classes.message,
+                                }}
                             >
-                                {t('button.add', { context: 'first' })}
-                            </Button>
-                        </Stub>
-                    )}
-                    nothingFoundRender={() => (
-                        <Stub
-                            key="nothing-found"
-                            maxWidth={false}
-                            message={emoticon}
-                            description={t('search.nothingFound')}
-                            classes={{
-                                root: classes.stub,
-                                title: classes.emoticon,
-                                description: classes.message,
-                            }}
-                        />
-                    )}
-                />
+                                <Button
+                                    onClick={(event) => dispatchEdit({
+                                        itemType: 'bookmark',
+                                        defaultFolderId: searchService.selectFolderId,
+                                    }, event)}
+                                    startIcon={<AddBookmarkIcon />}
+                                    variant="outlined"
+                                    color="primary"
+                                >
+                                    {t('button.add', { context: 'first' })}
+                                </Button>
+                            </Stub>
+                        )}
+                        nothingFoundRender={() => (
+                            <Stub
+                                key="nothing-found"
+                                maxWidth={false}
+                                message={emoticon}
+                                description={t('search.nothingFound')}
+                                classes={{
+                                    root: classes.stub,
+                                    title: classes.emoticon,
+                                    description: classes.message,
+                                }}
+                            />
+                        )}
+                    />
+                </Fragment>
             )}
         </Fragment>
     );

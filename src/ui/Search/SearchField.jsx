@@ -4,6 +4,7 @@ import { Box, InputBase } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { debounce } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -15,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     icon: {
         width: 22,
         height: 22,
-        margin: theme.spacing(1 - 0.25),
+        margin: theme.spacing(2),
     },
     input: {
         fontFamily: theme.typography.specialFontFamily,
@@ -26,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SearchField({ query, onChange, inputRef, ...other }) {
     const classes = useStyles();
+    const { t } = useTranslation(['bookmark']);
     const store = useLocalObservable(() => ({ query }));
     const [updateQuery] = useState(() => debounce(
         (value) => {
@@ -53,6 +55,7 @@ function SearchField({ query, onChange, inputRef, ...other }) {
                 autoFocus
                 fullWidth
                 value={store.query}
+                placeholder={t('search.placeholder')}
                 onChange={(event) => { store.query = event.currentTarget.value; }}
             />
         </Box>
