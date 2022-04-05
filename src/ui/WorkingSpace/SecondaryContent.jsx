@@ -1,8 +1,18 @@
 import React, { useEffect } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { captureException } from '@sentry/react';
-import { FolderRounded as FolderIcon, ArrowForward as GoToIcon } from '@material-ui/icons';
-import { Box, Button, Typography } from '@material-ui/core';
+import {
+    FolderRounded as FolderIcon,
+    ArrowForward as GoToIcon,
+    MoreVertRounded as ContextMenuIcon,
+} from '@material-ui/icons';
+import {
+    Box,
+    Button,
+    Typography,
+    IconButton,
+    Tooltip,
+} from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         '&:hover $icon': { opacity: 1 },
+        '&:hover $contextMenuButton': { opacity: 1 },
     },
     containerActive: { backgroundColor: theme.palette.action.selected },
     header: {
@@ -77,6 +88,13 @@ const useStyles = makeStyles((theme) => ({
         opacity: 0,
         display: 'inline-flex',
         verticalAlign: 'sub',
+    },
+    contextMenuButton: {
+        opacity: 0,
+        marginLeft: 'auto',
+        flexShrink: 0,
+        alignSelf: 'center',
+        marginRight: theme.spacing(2),
     },
     forceShowIcon: { opacity: 1 },
 }));
@@ -132,6 +150,15 @@ function Folder({ data, columns }) {
                 >
                     {data.name}
                 </Button>
+                <Tooltip title={t('common:button.contextMenu')}>
+                    <IconButton
+                        className={clsx(classes.contextMenuButton, isOpen && classes.forceShowIcon)}
+                        size="small"
+                        onClick={dispatchContextMenu}
+                    >
+                        <ContextMenuIcon />
+                    </IconButton>
+                </Tooltip>
             </Box>
             <BookmarksViewer
                 folderId={data.id}
