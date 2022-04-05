@@ -13,13 +13,11 @@ import CloudSync from '@/ui/WorkingSpace/ToolsPanel/CloudSync';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        position: 'sticky',
+        position: 'fixed',
         width: 'fit-content',
-        marginLeft: 'auto',
         top: theme.spacing(1),
+        right: theme.spacing(1),
         display: 'flex',
-        marginTop: theme.spacing(1),
-        marginRight: theme.spacing(1),
         padding: theme.spacing(1),
         borderRadius: theme.shape.borderRadiusBold,
         zIndex: 100,
