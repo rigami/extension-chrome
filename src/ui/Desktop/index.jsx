@@ -77,8 +77,8 @@ const useStyles = makeStyles((theme) => ({
     loadBGIcon: { color: theme.palette.text.primary },
     loadBGIconWhite: {
         position: 'absolute',
-        top: theme.spacing(3.5) - 1,
-        right: theme.spacing(3.5) - 1,
+        top: theme.spacing(3),
+        right: theme.spacing(3),
         zIndex: 1,
         color: theme.palette.common.white,
     },
@@ -381,12 +381,12 @@ function Desktop() {
                                             }
                                             data-ui-path="bg.next"
                                             className={clsx(
-                                                wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH && classes.notClickable,
+                                                wallpaperSwitchService.state !== BG_SHOW_STATE.SEARCH && classes.notClickable,
                                             )}
                                             disableRipple={wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH}
                                             onClick={() => (
                                                 wallpaperSwitchService.state !== BG_SHOW_STATE.SEARCH
-                                            && eventToBackground('wallpapers/next')
+                                                && eventToBackground('wallpapers/next')
                                             )}
                                             icon={() => (
                                                 <React.Fragment>
@@ -396,7 +396,7 @@ function Desktop() {
                                                     {wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH && (
                                                         <CircularProgress
                                                             className={classes.loadBGIcon}
-                                                            size={20}
+                                                            size={22}
                                                         />
                                                     )}
                                                 </React.Fragment>
@@ -461,7 +461,7 @@ function Desktop() {
                         {wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH && (
                             <CircularProgress
                                 className={classes.loadBGIconWhite}
-                                size={20}
+                                size={22}
                             />
                         )}
                         <Box
