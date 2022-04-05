@@ -12,7 +12,7 @@ import { useCoreService } from '@/stores/app/core';
 function Specific({ onSelect }) {
     const coreService = useCoreService();
     const { wallpapersService } = useAppStateService();
-    const { t } = useTranslation(['settingsQuietMode', 'background']);
+    const { t } = useTranslation(['settingsQuietMode', 'wallpaper']);
 
     return (
         <Collapse in={wallpapersService.settings.kind === BG_SELECT_MODE.SPECIFIC} unmountOnExit>
@@ -21,7 +21,7 @@ function Specific({ onSelect }) {
             />
             <MenuRow
                 title={t('specificBg')}
-                description={t('background:button.change')}
+                description={t('wallpaper:button.change')}
                 action={{
                     type: ROWS_TYPE.LINK,
                     onClick: () => onSelect(libraryPage),

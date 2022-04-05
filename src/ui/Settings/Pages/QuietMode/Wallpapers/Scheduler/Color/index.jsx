@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 function Gradient({ onSelect }) {
     const classes = useStyles();
     const { wallpapersService } = useAppStateService();
-    const { t } = useTranslation(['settingsQuietMode', 'background']);
+    const { t } = useTranslation(['settingsQuietMode', 'wallpaper']);
     const coreService = useCoreService();
 
     return (

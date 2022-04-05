@@ -96,7 +96,7 @@ function WallpaperInfo(props) {
     } = props;
     const classes = useStyles();
     const workingSpaceService = useWorkingSpaceService();
-    const { t } = useTranslation(['background']);
+    const { t } = useTranslation(['wallpaper']);
 
     let serviceName = 'Unknown';
     let serviceUrl = '#';

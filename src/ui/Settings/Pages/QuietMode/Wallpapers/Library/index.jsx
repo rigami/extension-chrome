@@ -52,7 +52,7 @@ function HeaderActions() {
 function LibraryMenu() {
     const { wallpapersService } = useAppStateService();
     const coreService = useCoreService();
-    const { t } = useTranslation(['settingsQuietMode', 'background']);
+    const { t } = useTranslation(['settingsQuietMode', 'wallpaper']);
     const classes = useStyles();
 
     const [bgs, setBgs] = useState(null);
@@ -130,7 +130,7 @@ function LibraryMenu() {
                                 (
                                     <ImageListItem cols={4} style={{ height: 'auto' }} key={group.type}>
                                         <ListSubheader component="div">
-                                            {t(`background:type.${group.type}`, { context: 'plural' })}
+                                            {t(`wallpaper:type.${group.type}`, { context: 'plural' })}
                                         </ListSubheader>
                                     </ImageListItem>
                                 ),

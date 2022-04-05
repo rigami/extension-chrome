@@ -119,7 +119,7 @@ function BackgroundCard(props) {
         onRemove,
         onAdd,
     } = props;
-    const { t } = useTranslation(['background']);
+    const { t } = useTranslation(['wallpaper']);
     const classes = useStyles();
 
     return (

@@ -177,7 +177,7 @@ function Stream({ onSelect }) {
             <Collapse in={wallpapersService.settings.changeInterval === BG_CHANGE_INTERVAL.NEVER}>
                 <MenuRow
                     title={t('specificBg')}
-                    description={t('background:button.change')}
+                    description={t('wallpaper:button.change')}
                     action={{
                         type: ROWS_TYPE.LINK,
                         onClick: () => onSelect(libraryPage),

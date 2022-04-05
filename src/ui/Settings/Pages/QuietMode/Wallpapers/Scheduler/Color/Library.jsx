@@ -72,7 +72,7 @@ export function ColorPreview(props) {
         onSet,
     } = props;
     const classes = useStyles();
-    const { t } = useTranslation(['background']);
+    const { t } = useTranslation(['wallpaper']);
 
     const colorPropName = colors.length > 1 ? 'backgroundImage' : 'backgroundColor';
     const colorPropValue = colors.length > 1 ? `linear-gradient(${angle || 0}deg, ${colors.join(', ')}` : colors[0];
