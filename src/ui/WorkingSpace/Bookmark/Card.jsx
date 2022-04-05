@@ -104,19 +104,18 @@ const useStyles = makeStyles((theme) => ({
     },
     coverBanner: { height: 192 },
     extendBannerTitleContainer: {
-        margin: theme.spacing(0.5, 1.5),
-        marginBottom: theme.spacing(0),
-        minHeight: 32,
+        margin: theme.spacing(0.75, 1.5),
+        minHeight: 26,
         display: 'flex',
         alignItems: 'center',
     },
     extendBannerTitle: {
-        '-webkit-line-clamp': 2,
+        '-webkit-line-clamp': 1,
         margin: 0,
     },
     description: {
         color: theme.palette.text.secondary,
-        marginTop: theme.spacing(0.5),
+        marginTop: theme.spacing(1.25),
         margin: theme.spacing(0, 1.5),
         fontFamily: theme.typography.fontFamily,
         fontWeight: 400,
@@ -124,8 +123,12 @@ const useStyles = makeStyles((theme) => ({
         wordBreak: 'break-word',
         display: '-webkit-box',
         '-webkit-box-orient': 'vertical',
-        '-webkit-line-clamp': 5,
+        '-webkit-line-clamp': 4,
         overflow: 'hidden',
+    },
+    descriptionBig: {
+        '-webkit-line-clamp': 5,
+        marginTop: theme.spacing(0.5),
     },
     infoWrapper: {
         display: 'flex',
@@ -331,7 +334,12 @@ function CardLink(props) {
                         </Box>
                     )}
                     {description && (
-                        <Typography variant="body2" className={classes.description}>{description}</Typography>
+                        <Typography
+                            variant="body2"
+                            className={clsx(classes.description, !infoRow && classes.descriptionBig)}
+                        >
+                            {description}
+                        </Typography>
                     )}
                 </CardActionArea>
             </Card>
