@@ -234,7 +234,7 @@ function CardLink(props) {
         }));
     }, [workingSpaceService.favorites.length]);
 
-    const infoRow = tagsFull.length !== 0 || isPin;
+    const infoRow = tagsFull?.length > 0 || isPin;
 
     return (
         <Tooltip
