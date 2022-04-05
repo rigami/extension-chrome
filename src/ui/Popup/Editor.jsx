@@ -10,7 +10,7 @@ import asyncAction from '@/utils/helpers/asyncAction';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import EditorBookmark from '@/ui/WorkingSpace/Bookmark/Editor';
 import Stub from '@/ui-components/Stub';
-import FolderBreadcrumbs from '@/ui/WorkingSpace/ToolsPanel/FolderBreadcrumbs';
+import FolderBreadcrumbs from '@/ui/WorkingSpace/FolderBreadcrumbs';
 import CloudSync from '@/ui/WorkingSpace/ToolsPanel/CloudSync';
 import SearchBlock from '@/ui/Search';
 import ShowFavorites from '@/ui/WorkingSpace/ToolsPanel/ShowFavorites';

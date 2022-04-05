@@ -18,7 +18,7 @@ import {
 import stateRender from '@/utils/helpers/stateRender';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { FETCH } from '@/enum';
-import FolderBreadcrumbs from '@/ui/WorkingSpace/ToolsPanel/FolderBreadcrumbs';
+import FolderBreadcrumbs from '@/ui/WorkingSpace/FolderBreadcrumbs';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
 import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
@@ -173,7 +173,7 @@ function FastResults({ onGoToFolder }) {
                                         variant="caption"
                                         className={classes.countOtherResults}
                                     >
-                                        {t('search.otherResults', { count: store.bookmarks.length - renderCount })}
+                                        {t('search.otherResults', { count: store.bookmarks?.length - renderCount })}
                                     </Typography>
                                 )}
                             />

@@ -11,7 +11,7 @@ import Stub from '@/ui-components/Stub';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import Favorites from '@/ui/WorkingSpace/Favorites';
 import { useContextEdit } from '@/stores/app/contextActions';
-import FolderBreadcrumbs from '@/ui/WorkingSpace/ToolsPanel/FolderBreadcrumbs';
+import FolderBreadcrumbs from '@/ui/WorkingSpace/FolderBreadcrumbs';
 
 const useStyles = makeStyles((theme) => ({
     bookmarks: {
@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(4),
         color: theme.palette.text.primary,
     },
+    breadcrumbs: { paddingLeft: theme.spacing(1) },
 }));
 
 const emoticons = [
@@ -69,6 +70,9 @@ function PrimaryContent({ columns }) {
                 <Fragment>
                     <FolderBreadcrumbs
                         key={searchService.selectFolderId}
+                        className={classes.breadcrumbs}
+                        showRoot
+                        maxItems={4}
                         folderId={searchService.selectFolderId}
                         onSelectFolder={(folderId) => searchService.setSelectFolder(folderId)}
                     />

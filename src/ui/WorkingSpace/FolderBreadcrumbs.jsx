@@ -4,14 +4,16 @@ import {
     Breadcrumbs,
     Button,
     Typography,
+    IconButton,
 } from '@material-ui/core';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
-import { ArrowForward as GoToIcon } from '@material-ui/icons';
+import { ArrowForward as GoToIcon, HomeRounded as HomeIcon } from '@material-ui/icons';
 import clsx from 'clsx';
 import { FETCH } from '@/enum';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
+import { NULL_UUID } from '@/utils/generate/uuid';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -73,7 +75,9 @@ const useStyles = makeStyles((theme) => ({
 function FolderBreadcrumbs(props) {
     const {
         folderId,
+        showRoot = false,
         lastClickable = false,
+        maxItems = 2,
         className: externalClassName,
         classes: externalClasses = {},
         onSelectFolder,
@@ -104,7 +108,7 @@ function FolderBreadcrumbs(props) {
     return (
         <Box className={clsx(classes.root, externalClassName, externalClasses.root)}>
             <Breadcrumbs
-                maxItems={2}
+                maxItems={maxItems}
                 classes={{
                     root: classes.breadcrumbsRoot,
                     ol: classes.ol,
@@ -112,6 +116,15 @@ function FolderBreadcrumbs(props) {
                     separator: classes.separator,
                 }}
             >
+                {showRoot && (
+                    <IconButton
+                        onClick={() => {
+                            if (onSelectFolder) onSelectFolder(NULL_UUID);
+                        }}
+                    >
+                        <HomeIcon />
+                    </IconButton>
+                )}
                 {store.path && store.path.map((folder, index) => (index === store.path.length - 1 ? (
                     lastClickable ? (
                         <Button
