@@ -4,11 +4,11 @@ import React, {
     useState,
     memo,
 } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import clsx from 'clsx';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { BKMS_DISPLAY_VARIANT, BKMS_SORTING, FETCH } from '@/enum';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import stateRender from '@/utils/helpers/stateRender';
@@ -17,6 +17,9 @@ import Header from '@/ui/WorkingSpace/BookmarksViewer/Header';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
 import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
+import Collapser from '@/ui/WorkingSpace/Tag/Collapser';
+import Tag from '@/ui/WorkingSpace/Tag';
+import db from '@/utils/db';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -43,6 +46,15 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         margin: theme.spacing(0, -1),
     },
+    tagsWrapper: {
+        display: 'inline-flex',
+        alignItems: 'center',
+        marginRight: theme.spacing(0.5),
+        marginLeft: theme.spacing(-0.5),
+        verticalAlign: 'middle',
+    },
+    tag: { marginLeft: theme.spacing(1) },
+    query: { fontStyle: 'italic' },
 }));
 
 function Skeleton() {
@@ -84,6 +96,51 @@ function Skeleton() {
     );
 }
 
+function Tags({ tags }) {
+    const classes = useStyles();
+    const { t } = useTranslation(['bookmark']);
+
+    if (tags.length === 0) return null;
+
+    return (
+        <span>
+            {t('search.withTags')}
+            {' '}
+            <span className={classes.tagsWrapper}>
+                {tags.map((tag) => tag && (
+                    <Tag
+                        key={tag.id}
+                        id={tag.id}
+                        name={tag.name}
+                        colorKey={tag.colorKey}
+                        dense
+                        className={classes.tag}
+                    />
+                ))}
+            </span>
+        </span>
+    );
+}
+
+function Query({ query }) {
+    const classes = useStyles();
+    const { t } = useTranslation(['bookmark']);
+
+    if (!query) return null;
+
+    return (
+        <span>
+            {t('search.byQuery')}
+            {' '}
+            <Typography component="span" className={classes.query}>
+                "
+                {query}
+                "
+            </Typography>
+        </span>
+    );
+}
+
 function BookmarksViewer(props) {
     const {
         folderId,
@@ -106,6 +163,7 @@ function BookmarksViewer(props) {
         requestId: 0,
         loadState: FETCH.WAIT,
         usedFields: {},
+        queryTagsFull: [],
         favoriteCheckCache: {},
     }));
 
@@ -176,7 +234,19 @@ function BookmarksViewer(props) {
             tags: searchService.searchRequest.tags,
             folderId,
         })))
-            .then((result) => {
+            .then(async (result) => {
+                const allTags = {};
+
+                (await db().getAll('tags')).forEach((tag) => {
+                    allTags[tag.id] = tag;
+                });
+
+                return {
+                    result,
+                    allTags,
+                };
+            })
+            .then(({ result, allTags }) => {
                 if (currentRequestId !== store.requestId) return;
 
                 // isDoneRequest = true;
@@ -192,6 +262,7 @@ function BookmarksViewer(props) {
                 store.allBookmarks = (result.all && sort(result.all)) || [];
                 store.existMatches = (result.best.length + result.all.length) !== 0;
                 store.usedFields = { ...searchService.searchRequest.usedFields };
+                store.queryTagsFull = searchService.searchRequest.tags.map((tagId) => allTags[tagId]);
                 store.loadState = FETCH.DONE;
 
                 console.log('store.usedFields', store.usedFields);
@@ -212,7 +283,14 @@ function BookmarksViewer(props) {
                         <Fragment>
                             {store.bestBookmarks.length !== 0 ? (
                                 <Fragment>
-                                    <Header title={t('search.bestMatches')} />
+                                    <Header
+                                        title={(
+                                            <Trans t={t} i18nKey="search.bestMatches">
+                                                <Query query={searchService.searchRequest.query} />
+                                                <Tags tags={store.queryTagsFull} />
+                                            </Trans>
+                                        )}
+                                    />
                                     <Box display="flex">
                                         {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
                                             <BookmarksGrid
@@ -229,7 +307,14 @@ function BookmarksViewer(props) {
                                     </Box>
                                 </Fragment>
                             ) : (
-                                <Header title={t('search.nothingFoundBestMatches')} />
+                                <Header
+                                    title={(
+                                        <Trans t={t} i18nKey="search.nothingFoundBestMatches">
+                                            <Query query={searchService.searchRequest.query} />
+                                            <Tags tags={store.queryTagsFull} />
+                                        </Trans>
+                                    )}
+                                />
                             )}
                             {(store.partBookmarks.length !== 0 || store.indirectlyBookmarks !== 0) && (
                                 <Fragment>
