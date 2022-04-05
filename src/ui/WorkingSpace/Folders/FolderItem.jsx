@@ -9,6 +9,7 @@ import {
     ChevronRightRounded as ChevronRightIcon,
     ExpandMoreRounded,
     StarRounded as FavoriteIcon,
+    MoreVertRounded as ContextMenuIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
@@ -40,10 +41,10 @@ const useStyles = makeStyles((theme) => ({
         boxSizing: 'content-box',
     },
     folderItem: {
-        '&:hover $addSubFolder': { display: 'flex' },
+        '&:hover $action': { display: 'flex' },
         '&:hover $userActions': { display: 'flex' },
     },
-    addSubFolder: { display: 'none' },
+    action: { display: 'none' },
     userActions: { display: 'none' },
     forceShow: { display: 'flex' },
 }));
@@ -114,10 +115,20 @@ function FolderItem(props) {
                     {isPin && (
                         <FavoriteIcon className={classes.favorite} />
                     )}
+                    {!isDisabled && (
+                        <Tooltip title={t('common:button.contextMenu')}>
+                            <ItemAction
+                                className={clsx(classes.action, isOpenEdit && classes.forceShow)}
+                                onClick={(event) => dispatchContextMenu(event)}
+                            >
+                                <ContextMenuIcon />
+                            </ItemAction>
+                        </Tooltip>
+                    )}
                     {!isDisabled && onCreateSubFolder && (
                         <Tooltip title={t('button.create', { context: 'sub' })}>
                             <ItemAction
-                                className={clsx(classes.addSubFolder, isOpenEdit && classes.forceShow)}
+                                className={clsx(classes.action, isOpenEdit && classes.forceShow)}
                                 onClick={(event) => dispatchEdit({
                                     itemType: 'folder',
                                     parentId: id,
