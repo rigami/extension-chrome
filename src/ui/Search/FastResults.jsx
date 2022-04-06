@@ -1,4 +1,6 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, {
+    Fragment, useEffect, useRef, useState,
+} from 'react';
 import {
     Box,
     Button,
@@ -15,6 +17,7 @@ import {
     omit,
     sample,
 } from 'lodash';
+import clsx from 'clsx';
 import stateRender from '@/utils/helpers/stateRender';
 import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
 import { FETCH } from '@/enum';
@@ -23,6 +26,8 @@ import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
 import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
 import Stub from '@/ui-components/Stub';
+import { useHotKeysService } from '@/stores/app/hotKeys';
+import RowItem from '@/ui/WorkingSpace/Bookmark/Row';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -64,7 +69,10 @@ const useStyles = makeStyles((theme) => ({
         display: 'block',
         color: theme.palette.text.secondary,
     },
-    bookmarksList: { padding: theme.spacing(0, 1) },
+    bookmarksList: {
+        margin: 0,
+        padding: theme.spacing(0, 1),
+    },
     emoticon: {
         fontSize: '5rem',
         color: alpha(theme.palette.text.secondary, 0.06),
@@ -76,6 +84,12 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(5),
         color: theme.palette.text.primary,
     },
+    divider: {
+        opacity: 1,
+        margin: theme.spacing(0.5, 0),
+    },
+    option: {},
+    selected: { backgroundColor: theme.palette.action.selected },
 }));
 
 const emoticons = [
@@ -98,6 +112,7 @@ function FastResults({ onGoToFolder }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const workingSpaceService = useWorkingSpaceService();
+    const hotKeysService = useHotKeysService();
     const [emoticon] = useState(() => sample(emoticons));
     const searchService = useSearchService();
     const store = useLocalObservable(() => ({
@@ -106,7 +121,11 @@ function FastResults({ onGoToFolder }) {
         otherFolders: [],
         requestId: 0,
         loadState: FETCH.WAIT,
+        options: [],
+        currOptionIndex: 1,
+        selectedOption: null,
     }));
+    const ref = useRef();
 
     useEffect(() => {
         store.loadState = FETCH.PENDING;
@@ -134,11 +153,62 @@ function FastResults({ onGoToFolder }) {
                     }),
                 );
                 store.loadState = FETCH.DONE;
+                store.currOptionIndex = 1;
+                store.selectedOption = null;
             });
     }, [workingSpaceService.lastTruthSearchTimestamp, searchService.tempSearchRequest]);
 
+    useEffect(() => {
+        const hotKeysListeners = [];
+
+        hotKeysListeners.push(hotKeysService.on(['Enter'], () => {
+            const item = ref.current.querySelector(`[optionKey=${store.selectedOption}]`);
+
+            if (item) {
+                if (item.attributes.optiontype.value === 'folder') {
+                    onGoToFolder(item.attributes.optionid.value, true);
+                } else if (item.attributes.optiontype.value === 'bookmark') {
+                    item.querySelector('button').click();
+                }
+            }
+        }));
+
+        hotKeysListeners.push(hotKeysService.on(['ArrowUp'], () => {
+            const items = Array.from(ref.current.querySelectorAll(`.${classes.option}`))
+                .map((option) => option.attributes.optionkey?.value);
+
+            store.currOptionIndex -= 1;
+            store.currOptionIndex = store.currOptionIndex < 0 ? items.length - 1 : store.currOptionIndex;
+            store.selectedOption = items[store.currOptionIndex];
+        }));
+
+        hotKeysListeners.push(hotKeysService.on(['ArrowDown'], () => {
+            const items = Array.from(ref.current.querySelectorAll(`.${classes.option}`))
+                .map((option) => option.attributes.optionkey?.value);
+
+            store.currOptionIndex += 1;
+            store.currOptionIndex = store.currOptionIndex >= items.length ? 0 : store.currOptionIndex;
+            store.selectedOption = items[store.currOptionIndex];
+        }));
+
+        return () => {
+            hotKeysListeners.forEach((listener) => hotKeysService.removeListener(listener));
+        };
+    }, []);
+
+    useEffect(() => {
+        if (store.loadState === FETCH.DONE) {
+            const items = Array.from(ref.current.querySelectorAll(`.${classes.option}`))
+                .map((option) => option.attributes.optionkey?.value);
+
+            store.currOptionIndex = store.currOptionIndex >= items.length ? 0 : store.currOptionIndex;
+            store.currOptionIndex = store.currOptionIndex < 0 ? items.length - 1 : store.currOptionIndex;
+            store.selectedOption = items[store.currOptionIndex];
+        }
+    });
+
     return (
-        <Box className={classes.root}>
+        <Box className={classes.root} ref={ref}>
             {stateRender(
                 store.loadState,
                 <Fragment>
@@ -146,8 +216,15 @@ function FastResults({ onGoToFolder }) {
                         <Fragment>
                             <Box className={classes.header}>
                                 <Button
+                                    optionKey={`f-${searchService.selectFolderId}`}
+                                    optionType="folder"
+                                    optionId={searchService.selectFolderId}
                                     endIcon={(<GoToIcon />)}
-                                    className={classes.goToButton}
+                                    className={clsx(
+                                        classes.goToButton,
+                                        classes.option,
+                                        store.selectedOption === `f-${searchService.selectFolderId}` && classes.selected,
+                                    )}
                                     onClick={() => {
                                         onGoToFolder(searchService.selectFolderId, true);
                                     }}
@@ -161,22 +238,48 @@ function FastResults({ onGoToFolder }) {
                                     {t('search.results', { count: store.currentFolder.length })}
                                 </Typography>
                             </Box>
-                            <BookmarksList
-                                bookmarks={store.currentFolder}
-                                max={3}
-                                classes={{
-                                    root: classes.bookmarksList,
-                                    bookmarks: classes.bookmarksGrid,
-                                }}
-                                overloadContent={(renderCount) => (
+                            <ul className={clsx(classes.bookmarksList)}>
+                                {store.currentFolder.slice(0, 3).map((bookmark, index) => (
+                                    <Fragment key={bookmark.id}>
+                                        {index !== 0 && (
+                                            <Divider
+                                                variant="middle"
+                                                className={classes.divider}
+                                            />
+                                        )}
+                                        <RowItem
+                                            id={bookmark.id}
+                                            name={bookmark.name}
+                                            url={bookmark.url}
+                                            tags={bookmark.tags}
+                                            tagsFull={bookmark.tagsFull}
+                                            icoVariant={bookmark.icoVariant}
+                                            description={bookmark.description}
+                                            icoUrl={bookmark.icoUrl}
+                                            className={classes.option}
+                                            classes={{
+                                                button: clsx(
+                                                    store.selectedOption === `b-${bookmark.id}` && classes.selected,
+                                                ),
+                                            }}
+                                            optionKey={`b-${bookmark.id}`}
+                                            optionType="bookmark"
+                                            optionId={bookmark.id}
+                                        />
+                                    </Fragment>
+                                ))}
+                                {store.currentFolder.length > 3 && (
                                     <Typography
                                         variant="caption"
                                         className={classes.countOtherResults}
                                     >
-                                        {t('search.otherResults', { count: store.bookmarks?.length - renderCount })}
+                                        {t(
+                                            'search.otherResults',
+                                            { count: store.bookmarks?.length - Math.min(store.currentFolder.length, 3) },
+                                        )}
                                     </Typography>
                                 )}
-                            />
+                            </ul>
                         </Fragment>
                     )}
                     {store.otherFolders.map(({ bookmarks, folderId }, index) => (
@@ -184,11 +287,18 @@ function FastResults({ onGoToFolder }) {
                             {(index !== 0 || (index === 0 && store.currentFolder.length !== 0)) && (<Divider />)}
                             <Box className={classes.header}>
                                 <FolderBreadcrumbs
+                                    optionKey={`f-${folderId}`}
+                                    optionType="folder"
+                                    optionId={folderId}
                                     folderId={folderId}
                                     lastClickable
+                                    className={classes.option}
                                     classes={{
                                         root: classes.folderBreadcrumbs,
-                                        last: classes.goToButton,
+                                        last: clsx(
+                                            classes.goToButton,
+                                            store.selectedOption === `f-${folderId}` && classes.selected,
+                                        ),
                                     }}
                                     onSelectFolder={(selectFolderId) => {
                                         onGoToFolder(selectFolderId, selectFolderId === folderId);
@@ -201,22 +311,48 @@ function FastResults({ onGoToFolder }) {
                                     {t('search.results', { count: bookmarks.length })}
                                 </Typography>
                             </Box>
-                            <BookmarksList
-                                bookmarks={bookmarks}
-                                max={3}
-                                classes={{
-                                    root: classes.bookmarksList,
-                                    bookmarks: classes.bookmarksGrid,
-                                }}
-                                overloadContent={(renderCount) => (
+                            <ul className={clsx(classes.bookmarksList)}>
+                                {bookmarks.slice(0, 3).map((bookmark, index) => (
+                                    <Fragment key={bookmark.id}>
+                                        {index !== 0 && (
+                                            <Divider
+                                                variant="middle"
+                                                className={classes.divider}
+                                            />
+                                        )}
+                                        <RowItem
+                                            id={bookmark.id}
+                                            name={bookmark.name}
+                                            url={bookmark.url}
+                                            tags={bookmark.tags}
+                                            tagsFull={bookmark.tagsFull}
+                                            icoVariant={bookmark.icoVariant}
+                                            description={bookmark.description}
+                                            icoUrl={bookmark.icoUrl}
+                                            className={classes.option}
+                                            classes={{
+                                                button: clsx(
+                                                    store.selectedOption === `b-${bookmark.id}` && classes.selected,
+                                                ),
+                                            }}
+                                            optionKey={`b-${bookmark.id}`}
+                                            optionType="bookmark"
+                                            optionId={bookmark.id}
+                                        />
+                                    </Fragment>
+                                ))}
+                                {bookmarks.length > 3 && (
                                     <Typography
                                         variant="caption"
                                         className={classes.countOtherResults}
                                     >
-                                        {t('search.otherResults', { count: bookmarks.length - renderCount })}
+                                        {t(
+                                            'search.otherResults',
+                                            { count: bookmarks.length - Math.min(bookmarks.length, 3) },
+                                        )}
                                     </Typography>
                                 )}
-                            />
+                            </ul>
                         </Fragment>
                     ))}
                     {size(store.otherFolders) === 0 && store.currentFolder.length === 0 && (

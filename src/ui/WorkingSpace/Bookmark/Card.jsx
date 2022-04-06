@@ -265,7 +265,7 @@ function CardLink(props) {
             >
                 <CardActionArea
                     className={classes.rootActionWrapper}
-                    onMouseUp={handleClick}
+                    onClick={handleClick}
                     onContextMenu={!preview ? dispatchContextMenu : undefined}
                 >
                     {icoVariant !== BKMS_VARIANT.POSTER && icoVariant !== BKMS_VARIANT.COVER && (

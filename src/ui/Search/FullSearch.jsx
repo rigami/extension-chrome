@@ -1,8 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import {
-    Divider,
-    Box,
-} from '@material-ui/core';
+import React, { useRef } from 'react';
+import { Divider, Box } from '@material-ui/core';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -16,7 +13,6 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         boxSizing: 'border-box',
     },
-    openFullSearch: {},
     tags: {
         padding: theme.spacing(1.5),
         paddingBottom: theme.spacing(0.75),
@@ -35,35 +31,14 @@ const useStyles = makeStyles((theme) => ({
     scroller: { display: 'flex' },
 }));
 
-function FullSearch({ open, onClose }) {
+function FullSearch({ onClose }) {
     const classes = useStyles();
     const inputRef = useRef();
     const searchService = useSearchService();
     const store = useLocalObservable(() => ({ localSearchRequestId: 0 }));
 
-    const handleKeyDown = (event) => {
-        if (event.code === 'Escape') {
-            onClose(null, false);
-        }
-        if (event.code === 'Enter') {
-            onClose(null, true);
-        }
-    };
-
-    useEffect(() => {
-        if (open) {
-            window.addEventListener('keydown', handleKeyDown, true);
-            if (inputRef.current) inputRef.current.focus();
-            store.localSearchRequestId = searchService.searchRequestId;
-        }
-
-        return () => {
-            if (open) window.removeEventListener('keydown', handleKeyDown, true);
-        };
-    }, [open]);
-
     return (
-        <Box className={clsx(classes.fullSearch, open && classes.openFullSearch)}>
+        <Box className={clsx(classes.fullSearch)}>
             <SearchField
                 className={classes.search}
                 inputRef={inputRef}
@@ -93,9 +68,8 @@ function FullSearch({ open, onClose }) {
                         <Divider />
                         <FastResults
                             onGoToFolder={(folderId, apply) => {
-                                if (!apply) searchService.resetChanges();
                                 searchService.setSelectFolder(folderId, false);
-                                onClose(null, apply);
+                                onClose(apply);
                             }}
                         />
                     </React.Fragment>

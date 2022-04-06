@@ -175,6 +175,7 @@ function RowItem(props) {
         tagsFull,
         onClick,
         className: externalClassName,
+        classes: externalClasses = {},
         ...other
     } = props;
     const classes = useStyles();
@@ -229,8 +230,8 @@ function RowItem(props) {
                 {...other}
             >
                 <CardActionArea
-                    className={clsx(classes.rootActionWrapper, isOpen && classes.selected)}
-                    onMouseUp={handleClick}
+                    className={clsx(classes.rootActionWrapper, externalClasses.button, isOpen && classes.selected)}
+                    onClick={handleClick}
                     onContextMenu={!preview ? dispatchContextMenu : undefined}
                 >
                     <Box className={classes.imageWrapper}>

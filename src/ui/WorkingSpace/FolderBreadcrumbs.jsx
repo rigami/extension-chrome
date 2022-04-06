@@ -81,6 +81,7 @@ function FolderBreadcrumbs(props) {
         className: externalClassName,
         classes: externalClasses = {},
         onSelectFolder,
+        ...other
     } = props;
     const classes = useStyles();
     const workingSpaceService = useWorkingSpaceService();
@@ -106,7 +107,7 @@ function FolderBreadcrumbs(props) {
     }, [folderId, workingSpaceService.lastTruthSearchTimestamp]);
 
     return (
-        <Box className={clsx(classes.root, externalClassName, externalClasses.root)}>
+        <Box className={clsx(classes.root, externalClassName, externalClasses.root)} {...other}>
             <Breadcrumbs
                 maxItems={maxItems}
                 classes={{

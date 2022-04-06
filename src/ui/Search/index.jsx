@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Container,
     Paper,
@@ -45,18 +45,16 @@ function Search() {
     const searchService = useSearchService();
     const hotKeysService = useHotKeysService();
     const [isOpen, setIsOpen] = useState(false);
-    const rootRef = useRef();
 
     useEffect(() => {
-        const listener = coreService.localEventBus.on('search', () => {
+        const busListener = coreService.localEventBus.on('search', () => {
             setIsOpen(true);
         });
 
-        let hotKeysListener;
+        const hotKeysListeners = [];
 
         if (appStateService.settings.searchRunOnAnyKey) {
-            hotKeysListener = hotKeysService.on(['*'], (combination) => {
-                console.log('combination:', combination);
+            hotKeysListeners.push(hotKeysService.on(['*'], (combination) => {
                 if (
                     combination.length !== 1
                     || (
@@ -66,20 +64,25 @@ function Search() {
                 ) return;
 
                 setIsOpen(true);
-            });
+            }));
         } else {
-            hotKeysListener = hotKeysService.on(['ControlLeft', 'KeyQ'], () => {
+            hotKeysListeners.push(hotKeysService.on(['ControlLeft', 'KeyQ'], () => {
                 setIsOpen(true);
-            });
+            }));
         }
 
         return () => {
-            coreService.localEventBus.removeListener(listener);
-            hotKeysService.removeListener(hotKeysListener);
+            coreService.localEventBus.removeListener(busListener);
+            hotKeysListeners.forEach((listener) => hotKeysService.removeListener(listener));
         };
     }, [appStateService.settings.searchRunOnAnyKey]);
 
-    const handleClose = () => {
+    const handleClose = (event) => {
+        if (event && event.path.find((elem) => (
+            elem.dataset?.role === 'contextmenu'
+            || elem.dataset?.role === 'dialog'
+        ))) return;
+
         setIsOpen(false);
     };
 
@@ -90,6 +93,7 @@ function Search() {
                 container: classes.dialog,
                 paper: classes.paper,
             }}
+            onClose={handleClose}
         >
             <Scrollbar>
                 <Container
@@ -99,18 +103,10 @@ function Search() {
                     <ClickAwayListener onClickAway={handleClose}>
                         <Paper>
                             <FullSearch
-                                open={isOpen}
-                                onClose={(event, apply) => {
-                                    if (event && event.path.find((elem) => (
-                                        elem.dataset?.role === 'contextmenu'
-                                        || elem.dataset?.role === 'dialog'
-                                    ))) return;
-
-                                    if (!event || !event.path.includes(rootRef.current)) {
-                                        setIsOpen(false);
-                                        if (apply) searchService.applyChanges();
-                                        else searchService.resetChanges();
-                                    }
+                                onClose={(apply) => {
+                                    handleClose();
+                                    if (apply) searchService.applyChanges();
+                                    else searchService.resetChanges();
                                 }}
                             />
                         </Paper>
