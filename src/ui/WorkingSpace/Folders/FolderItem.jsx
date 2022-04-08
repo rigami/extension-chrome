@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 'auto',
         padding: theme.spacing(0.25),
         boxSizing: 'content-box',
+        pointerEvents: 'none',
     },
     folderItem: {
         '&:hover $action': { display: 'flex' },
