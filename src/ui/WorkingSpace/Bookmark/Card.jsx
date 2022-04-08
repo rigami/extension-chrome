@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         padding: theme.spacing(0.75, 1),
         paddingBottom: theme.spacing(0.25),
-        minHeight: 50,
+        minHeight: 49,
         maxHeight: 68,
         boxSizing: 'border-box',
         flexShrink: 0,
@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
     coverBanner: { height: 192 },
     extendBannerTitleContainer: {
         margin: theme.spacing(0.75, 1.5),
-        minHeight: 26,
+        minHeight: 25,
         display: 'flex',
         alignItems: 'center',
     },
