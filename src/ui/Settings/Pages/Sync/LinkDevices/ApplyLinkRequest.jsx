@@ -111,7 +111,7 @@ function ApplyLinkRequest() {
 
                 eventToBackground('sync/forceSync', { newAuthToken: response.authToken });
             } else if (response.action === 'confirm') {
-
+                authStorage.update({ synced: true });
             } else {
 
             }

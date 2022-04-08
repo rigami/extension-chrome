@@ -40,7 +40,7 @@ class CloudSyncSettingsService {
 
             const payload = {
                 name: pair.localId,
-                value: setting,
+                value: JSON.stringify(setting),
             };
 
             if (!pair.isPair) {

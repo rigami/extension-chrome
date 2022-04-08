@@ -108,16 +108,31 @@ class CloudSyncTagsService {
                     modifiedTimestamp: new Date(snapshot.updateDate).valueOf(),
                 }, false);
 
-                await db().add('pair_with_cloud', {
-                    entityType_localId: `tag_${localTagId}`,
-                    entityType: 'tag',
-                    localId: localTagId,
-                    cloudId: snapshot.id,
-                    isPair: +true,
-                    isSync: +true,
-                    isDeleted: +false,
-                    modifiedTimestamp: Date.now(),
-                });
+                const pairReCheck = await db().get('pair_with_cloud', `tag_${localTagId}`);
+
+                if (pairReCheck) {
+                    await db().put('pair_with_cloud', {
+                        entityType_localId: `tag_${localTagId}`,
+                        entityType: 'tag',
+                        localId: localTagId,
+                        cloudId: snapshot.id,
+                        isPair: +true,
+                        isSync: +true,
+                        isDeleted: +false,
+                        modifiedTimestamp: Date.now(),
+                    });
+                } else {
+                    await db().add('pair_with_cloud', {
+                        entityType_localId: `tag_${localTagId}`,
+                        entityType: 'tag',
+                        localId: localTagId,
+                        cloudId: snapshot.id,
+                        isPair: +true,
+                        isSync: +true,
+                        isDeleted: +false,
+                        modifiedTimestamp: Date.now(),
+                    });
+                }
             }
         }));
 
