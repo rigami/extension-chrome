@@ -27,6 +27,14 @@ class TagsUniversalService {
         const oldTag = id ? await this.get(id) : null;
         let newColorKey;
 
+        const similarTag = await db().getFromIndex('tags', 'name', name.trim());
+
+        console.log('Similar tag', similarTag, name, id, colorKey);
+
+        if (similarTag && similarTag.id !== id) {
+            return similarTag?.id;
+        }
+
         if (!id || !oldTag) {
             const allColorsIds = (await db().getAll('tags')).map((tag) => tag.colorKey).sort((a, b) => a - b);
 
@@ -35,22 +43,17 @@ class TagsUniversalService {
                 nextColorKey += 1;
             }
 
-            newColorKey = colorKey || nextColorKey;
+            newColorKey = similarTag ? nextColorKey : colorKey || nextColorKey;
         } else {
             newColorKey = colorKey || oldTag.colorKey;
         }
 
-        const similarTag = await db().getFromIndex('tags', 'name', name.trim());
-
-        if (similarTag && similarTag.id !== id) {
-            return similarTag?.id;
-        }
-
         let saveTagId = id;
 
-        if (id) {
+        if (id || similarTag) {
+            console.log('Update tag', similarTag, name, id, newColorKey);
             await db().put('tags', {
-                id,
+                id: id || similarTag?.id,
                 name: name.trim(),
                 colorKey: newColorKey,
                 createTimestamp: oldTag?.createTimestamp || Date.now(),
@@ -67,6 +70,7 @@ class TagsUniversalService {
                 });
             }
         } else {
+            console.log('Create tag', name, id, newColorKey);
             saveTagId = await db().add('tags', {
                 id: uuid(),
                 name: name.trim(),
