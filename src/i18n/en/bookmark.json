@@ -55,6 +55,8 @@
     "confirm_description": "The bookmark will be permanently deleted, are you sure?"
   },
   "search": {
+    "title": "Search",
+    "placeholder": "Enter a query to search",
     "nothingFound": "Nothing found. Try changing your query",
     "nothingFoundInFolder": "Nothing was found in this folder",
     "everywhere": "Search everywhere",

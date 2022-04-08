@@ -5,9 +5,8 @@
     "expand": "Раскрыть список",
     "collapse": "Свернуть список",
     "restoreWindow": "Восстановить окно",
-    "windowSessionTitle": "{{count}} вкладки",
-    "windowSessionTitle_0": "{{count}} вкладка",
-    "windowSessionTitle_1": "{{count}} вкладки",
-    "windowSessionTitle_2": "{{count}} вкладок"
+    "windowSessionTitle_one": "{{count}} вкладка",
+    "windowSessionTitle_few": "{{count}} вкладки",
+    "windowSessionTitle_many": "{{count}} вкладок"
   }
 }
