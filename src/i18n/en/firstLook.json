@@ -7,6 +7,7 @@
     "continue": "Continue",
     "skipAndApplyDefaultSettings": "Skip and apply default settings",
     "startSettingsWizard": "Set up",
+    "login": "Synchronize",
     "next": "Next",
     "back": "Back",
     "finish": "Finish"
@@ -15,7 +16,7 @@
     "title": "The extension is still in beta testing",
     "description": "The extension is still in beta testing, the functionality may be unstable or vary greatly"
   },
-  "loginQuestion": {
+  "login": {
     "title": "Login for import data"
   },
   "defaultActivityQuestion": {
@@ -29,6 +30,7 @@
     "title": "What would you like to see on this screen?",
     "widgets": "Widgets",
     "fap": "Favorites bookmarks",
+    "failedGetWeather": "Failed to determine location. Specify manually in settings",
     "button": {
       "useTime": "Current time",
       "useDate": "Current date",
@@ -45,6 +47,7 @@
     "WAIT": "Waiting...",
     "CREATE_FS": "Creating file system...",
     "CREATE_DEFAULT_STRUCTURE": "Adding magic...",
+    "REGISTRATION_IN_CLOUD": "Create a cloud profile...",
     "IMPORT_BOOKMARKS": "Importing bookmarks from chrome...",
     "FETCH_BG": "Fetching first background...",
     "SAVE_BG": "Saving background...",
