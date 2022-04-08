@@ -33,6 +33,8 @@ function ContextPopover({ stateKey, service }) {
 
     return (
         <Popover
+            data-role="contextpopover"
+            data-open={service.isOpen[stateKey]}
             action={(actions) => { updatePosition.current = actions?.updatePosition; }}
             anchorOrigin={{
                 vertical: 'bottom',

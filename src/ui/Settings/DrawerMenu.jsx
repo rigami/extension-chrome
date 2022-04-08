@@ -88,6 +88,7 @@ function Menu({ open, onClose }) {
             />
             <Slide
                 in={open}
+                role="settings"
                 direction="left"
                 unmountOnExit
                 onExited={() => setStack([backgroundsPage])}

@@ -61,6 +61,9 @@ function Search() {
                         combination[0].indexOf('Key') === -1
                         && combination[0].indexOf('Digit') === -1
                     )
+                    || document.activeElement?.tagName === 'INPUT'
+                    || document.querySelector('[role=presentation]')
+                    || document.querySelector('[role=settings]')
                 ) return;
 
                 setIsOpen(true);
@@ -93,7 +96,7 @@ function Search() {
                 container: classes.dialog,
                 paper: classes.paper,
             }}
-            onClose={handleClose}
+            onClose={() => handleClose()}
         >
             <Scrollbar>
                 <Container

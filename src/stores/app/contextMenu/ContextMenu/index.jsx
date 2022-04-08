@@ -57,6 +57,7 @@ function ContextMenu({ service }) {
     return (
         <Menu
             data-role="contextmenu"
+            data-open={service.isOpen}
             open={service.isOpen}
             onClose={service.close}
             anchorReference="anchorPosition"
