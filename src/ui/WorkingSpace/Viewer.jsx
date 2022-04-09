@@ -102,11 +102,11 @@ function Bookmarks() {
 
     const onResize = useCallback((width) => {
         store.width = width;
-        store.maxColumnsCount = Math.floor((width - 48 - 32 + 16) / (theme.shape.dataCard.width + 16));
-        console.log('width:', width - 32 - 48 + 16, (width - 48 - 32 + 16) / (theme.shape.dataCard.width + 16));
+        store.maxColumnsCount = Math.floor((width - 16) / (theme.shape.dataCard.width + 16));
+        console.log('width:', width - 16, (width - 16) / (theme.shape.dataCard.width + 16));
         store.columnsCount = Math.max(
             Math.min(
-                store.maxColumnsCount >= 4 && searchService.selectFolderId === NULL_UUID
+                store.maxColumnsCount >= 4.5 && searchService.selectFolderId === NULL_UUID
                     ? store.maxColumnsCount - 1
                     : store.maxColumnsCount,
                 4,
@@ -145,7 +145,7 @@ function Bookmarks() {
                     <Box className={classes.container}>
                         <Box className={classes.content}>
                             <PrimaryContent columns={store.columnsCount} />
-                            {store.maxColumnsCount < 4 && searchService.selectFolderId === NULL_UUID && (
+                            {store.maxColumnsCount < 4.5 && searchService.selectFolderId === NULL_UUID && (
                                 <Box className={classes.inlineWidgets}>
                                     <GreetingView />
                                 </Box>
@@ -165,7 +165,7 @@ function Bookmarks() {
                                 )
                             }
                         </Box>
-                        {store.maxColumnsCount >= 4 && searchService.selectFolderId === NULL_UUID && (
+                        {store.maxColumnsCount >= 4.5 && searchService.selectFolderId === NULL_UUID && (
                             <Box className={classes.sideBar}>
                                 <GreetingView />
                             </Box>
