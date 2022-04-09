@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Tooltip } from '@material-ui/core';
+import { Box, Fade, Tooltip } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -24,16 +24,17 @@ const useStyles = makeStyles((theme) => ({
     failedSync: { color: theme.palette.error.main },
     successSync: { color: theme.palette.success.main },
     processSync: { color: theme.palette.text.secondary },
-    hide: {
-        opacity: 0,
-        pointerEvents: 'none',
-    },
     icon: {
-        width: 24,
-        height: 24,
+        width: 36,
+        height: 36,
         position: 'relative',
+        marginRight: theme.spacing(1),
+        padding: 7,
     },
-    arrowsIcon: { padding: 2 },
+    arrowsIcon: {
+        width: 22,
+        height: 22,
+    },
     spin: { animation: '1s infinite linear $spinAnimation' },
     '@keyframes spinAnimation': {
         from: { transform: 'rotate(0deg)' },
@@ -118,24 +119,25 @@ function CloudSync() {
     }, [cloudSync.data.stage]);
 
     return (
-        <Box
-            className={clsx(
-                classes.root,
-                cloudSync.data.stage === CLOUD_SYNC.FAILED_SYNC && classes.failedSync,
-                cloudSync.data.stage === CLOUD_SYNC.SYNCED && classes.successSync,
-                !store.isShow && classes.hide,
-            )}
-        >
-            {cloudSync.data.stage === CLOUD_SYNC.SYNCED && (
-                <SyncDone />
-            )}
-            {cloudSync.data.stage === CLOUD_SYNC.FAILED_SYNC && (
-                <SyncFailed />
-            )}
-            {(cloudSync.data.stage === CLOUD_SYNC.SYNCING_PULL || cloudSync.data.stage === CLOUD_SYNC.SYNCING_PUSH) && (
-                <SyncProcess state={cloudSync.data.stage} />
-            )}
-        </Box>
+        <Fade in={store.isShow} unmountOnExit>
+            <Box
+                className={clsx(
+                    classes.root,
+                    cloudSync.data.stage === CLOUD_SYNC.FAILED_SYNC && classes.failedSync,
+                    cloudSync.data.stage === CLOUD_SYNC.SYNCED && classes.successSync,
+                )}
+            >
+                {cloudSync.data.stage === CLOUD_SYNC.SYNCED && (
+                    <SyncDone />
+                )}
+                {cloudSync.data.stage === CLOUD_SYNC.FAILED_SYNC && (
+                    <SyncFailed />
+                )}
+                {(cloudSync.data.stage === CLOUD_SYNC.SYNCING_PULL || cloudSync.data.stage === CLOUD_SYNC.SYNCING_PUSH) && (
+                    <SyncProcess state={cloudSync.data.stage} />
+                )}
+            </Box>
+        </Fade>
     );
 }
 
