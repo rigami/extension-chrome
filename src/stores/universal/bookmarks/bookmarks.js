@@ -121,18 +121,22 @@ class BookmarksUniversalService {
             }
         }
         if (imageBase64 || sourceIcoUrl) {
-            let blob;
+            try {
+                let blob;
 
-            if (imageBase64) {
-                blob = await (await fetch(imageBase64)).blob();
-            } else {
-                blob = await getPreview(sourceIcoUrl, BG_TYPE.IMAGE, { size: 'full' });
+                if (imageBase64) {
+                    blob = await (await fetch(imageBase64)).blob();
+                } else {
+                    blob = await getPreview(saveIcoUrl, BG_TYPE.IMAGE, { size: 'full' });
+                }
+
+                const cache = await caches.open('icons');
+                const iconResponse = new Response(blob);
+
+                await cache.put(saveIcoUrl, iconResponse);
+            } catch (e) {
+                console.warn('Failed get image preview', e);
             }
-
-            const cache = await caches.open('icons');
-            const iconResponse = new Response(blob);
-
-            await cache.put(saveIcoUrl, iconResponse);
         }
 
         return saveBookmarkId;
