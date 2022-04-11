@@ -67,6 +67,14 @@ function FakeInput(props) {
         setState(value);
     }, [value]);
 
+    useEffect(() => {
+        inputRef.current.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = e.clipboardData.getData('text/plain');
+            document.execCommand('insertHTML', false, text);
+        });
+    }, []);
+
     return (
         <Tooltip title={t('button.edit')}>
             <span>
