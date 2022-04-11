@@ -114,6 +114,7 @@ class CloudSyncService {
         const favoritesChanges = await this.favorites.grubChanges(commits.filter(({ entityType }) => entityType === 'favorite'));
         const settingsChanges = await this.settings.grubChanges(commits.filter(({ entityType }) => entityType === 'setting'));
 
+        if (!authStorage.data.synced) return;
         const { response, ok } = await api.put(
             'sync/push', {
                 body: {
@@ -204,6 +205,8 @@ class CloudSyncService {
     runSyncCycle() {
         console.log('[CloudSync] Run sync cycle...');
         this._syncCycle = setAwaitInterval(async () => {
+            if (!authStorage.data.synced) return;
+
             try {
                 await this.pushChanges();
 
@@ -250,7 +253,10 @@ class CloudSyncService {
         this.core.globalEventBus.on('sync/forceSync', async ({ data: newAuthToken }) => {
             console.log('[CloudSync] Force re sync...');
             this.stopSyncCycle();
-            this.storage.update({ localCommit: null });
+            this.storage.update({
+                localCommit: null,
+                stage: CLOUD_SYNC.WAIT,
+            });
 
             console.log('[CloudSync] Reset pairs with cloud...');
             const pairs = await db().getAll('pair_with_cloud');

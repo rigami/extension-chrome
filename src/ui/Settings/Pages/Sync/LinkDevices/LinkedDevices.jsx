@@ -19,6 +19,7 @@ import { FETCH } from '@/enum';
 import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/storage/auth';
 import SectionHeader from '@/ui/Settings/SectionHeader';
+import { eventToBackground } from '@/stores/universal/serviceBus';
 
 const useStyles = makeStyles((theme) => ({
     fullWidth: { width: '100%' },
@@ -156,7 +157,9 @@ function LinkedDevices() {
                     accessToken: registrationResponse.accessToken,
                     refreshToken: registrationResponse.refreshToken,
                     deviceSign: registrationResponse.deviceSign,
+                    synced: false,
                 });
+                eventToBackground('sync/forceSync', { newAuthToken: registrationResponse.authToken });
             } else {
                 await fetchDevices();
             }
@@ -304,6 +307,8 @@ function LinkedDevices() {
             <Dialog
                 open={store.disconnectedDevice}
                 onClose={() => { if (store.disconnectStatus !== FETCH.PENDING) store.disconnectedDevice = null; }}
+                maxWidth="xs"
+                fullWidth
             >
                 <DialogTitle>{t('syncDevices.disconnectDevice.title')}</DialogTitle>
                 <DialogContent>
