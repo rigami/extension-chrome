@@ -11,7 +11,7 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'lodash';
 import { useAppStateService } from '@/stores/app/appState';
-import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
+import { FETCH, WIDGET_UNITS } from '@/enum';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 
 const useStyles = makeStyles((theme) => ({
@@ -42,10 +42,10 @@ function WeatherWidget() {
     let units;
     let temp;
 
-    if (widgetsService.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.FAHRENHEIT) {
+    if (widgetsService.settings.weatherMetrics === WIDGET_UNITS.FAHRENHEIT) {
         units = '°';
         temp = ((widgetsService.weather?.currTemp || 0) - 273.15) * (9 / 5) + 32;
-    } else if (widgetsService.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.KELVIN) {
+    } else if (widgetsService.settings.weatherMetrics === WIDGET_UNITS.KELVIN) {
         units = 'К';
         temp = widgetsService.weather?.currTemp || 0;
     } else {
@@ -58,7 +58,7 @@ function WeatherWidget() {
             <Tooltip title={t('widget.weather.button.openInNewTab')}>
                 <span className={classes.root}>
                     <Link
-                        href={widgetsService.settings.dtwWeatherAction || widgetsService.weather?.dashboardUrl}
+                        href={widgetsService.settings.weatherAction || widgetsService.weather?.dashboardUrl}
                         target="_blank"
                         underline="none"
                         color="inherit"
@@ -73,7 +73,9 @@ function WeatherWidget() {
                                 : t('widget.weather.error.unavailable')
                         }
                         {widgetsService.weather?.currTempDescription && (
-                            <span className={classes.description}>{capitalize(widgetsService.weather?.currTempDescription)}</span>
+                            <span className={classes.description}>
+                                {capitalize(widgetsService.weather?.currTempDescription)}
+                            </span>
                         )}
                     </Link>
                 </span>

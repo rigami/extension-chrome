@@ -22,7 +22,7 @@ import { useAppStateService } from '@/stores/app/appState';
 import { useCoreService } from '@/stores/app/core';
 import SectionHeader from '@/ui/Settings/SectionHeader';
 import MenuRow, { ROWS_TYPE } from '@/ui/Settings/MenuRow';
-import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
+import { FETCH, WIDGET_UNITS } from '@/enum';
 import Banner from '@/ui-components/Banner';
 import { getDomain } from '@/utils/localSiteParse';
 import changeLocationPage from './WeatherChangeLocation';
@@ -39,7 +39,7 @@ function WeatherWidget({ onSelect }) {
     const { t } = useTranslation(['settingsWidget']);
     const { widgetsService } = useAppStateService();
     const coreService = useCoreService();
-    const [useWeather, setDtwUseWeather] = useState(widgetsService.settings.useWeather);
+    const [useWeather, setUseWeather] = useState(widgetsService.settings.useWeather);
     const [actionEditorOpen, setActionEditorOpen] = useState(false);
     const [actionUrl, setActionUrl] = useState('');
 
@@ -55,7 +55,7 @@ function WeatherWidget({ onSelect }) {
                     value: useWeather,
                     disabled: useWeather !== widgetsService.settings.useWeather,
                     onChange: (event, value) => {
-                        setDtwUseWeather(value);
+                        setUseWeather(value);
 
                         if (value) {
                             widgetsService.autoDetectLocationAndUpdateWeather()
@@ -119,7 +119,7 @@ function WeatherWidget({ onSelect }) {
                         onChange: (event) => {
                             widgetsService.settings.update({ weatherMetrics: event.target.value });
                         },
-                        values: map(WIDGET_DTW_UNITS, (key) => WIDGET_DTW_UNITS[key]),
+                        values: map(WIDGET_UNITS, (key) => WIDGET_UNITS[key]),
                     }}
                 />
                 <MenuRow

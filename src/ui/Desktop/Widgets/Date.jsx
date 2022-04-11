@@ -27,10 +27,10 @@ function DateWidget({ dot = false }) {
 
     const dotSymbol = last(date) !== '.' ? '. ' : ' ';
 
-    if (widgetsService.settings.dtwDateAction) {
+    if (widgetsService.settings.dateAction) {
         return (
             <Link
-                href={widgetsService.settings.dtwDateAction}
+                href={widgetsService.settings.dateAction}
                 target="_blank"
                 underline="none"
                 color="inherit"

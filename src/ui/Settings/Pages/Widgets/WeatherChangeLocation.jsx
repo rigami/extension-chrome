@@ -25,7 +25,7 @@ import {
     NearMeDisabledRounded as CustomLocationIcon,
     WrongLocationRounded as WrongLocationIcon,
 } from '@/icons';
-import { FETCH, WIDGET_DTW_UNITS } from '@/enum';
+import { FETCH, WIDGET_UNITS } from '@/enum';
 import MenuRow, { ROWS_TYPE } from '@/ui/Settings/MenuRow';
 import { useAppStateService } from '@/stores/app/appState';
 
@@ -131,10 +131,10 @@ function Location(props) {
     let units;
     let temp;
 
-    if (widgetsService.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.FAHRENHEIT) {
+    if (widgetsService.settings.weatherMetrics === WIDGET_UNITS.FAHRENHEIT) {
         units = '°F';
         temp = ((currTemp || 0) - 273.15) * (9 / 5) + 32;
-    } else if (widgetsService.settings.dtwWeatherMetrics === WIDGET_DTW_UNITS.KELVIN) {
+    } else if (widgetsService.settings.weatherMetrics === WIDGET_UNITS.KELVIN) {
         units = 'К';
         temp = currTemp || 0;
     } else {

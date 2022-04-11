@@ -58,6 +58,8 @@ function Device({ type, lastActivityDate, current = false, onClick }) {
     const { t } = useTranslation(['settingsSync']);
     const { widgetsService } = useAppStateService();
 
+    const dateFormatter = widgetsService.settings.timeFormat12 ? format12 : format24;
+
     return (
         <MenuRow
             title={t(`syncDevices.type.${type}`)}
@@ -70,7 +72,7 @@ function Device({ type, lastActivityDate, current = false, onClick }) {
                             <Typography variant="body2">
                                 {
                                     lastActivityDate
-                                        ? (widgetsService.settings.dtwTimeFormat12 ? format12 : format24)(new Date(lastActivityDate))
+                                        ? dateFormatter(new Date(lastActivityDate))
                                         : t('syncDevices.notSynced')
                                 }
                             </Typography>
@@ -208,6 +210,8 @@ function LinkedDevices() {
         return null;
     }
 
+    const dateFormatter = widgetsService.settings.timeFormat12 ? format12 : format24;
+
     return (
         <Fragment>
             <SectionHeader h={2} title={t('syncDevices.currentTitle')} />
@@ -265,7 +269,7 @@ function LinkedDevices() {
                                     <br />
                                     {
                                         device.createDate
-                                            ? (widgetsService.settings.dtwTimeFormat12 ? format12 : format24)(new Date(device.createDate))
+                                            ? dateFormatter(new Date(device.createDate))
                                             : '-'
                                     }
                                     <br />

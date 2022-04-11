@@ -7,9 +7,10 @@ import { useResizeDetector } from 'react-resize-detector';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import {
     ACTIVITY,
-    BKMS_FAP_POSITION, BKMS_FAP_STYLE,
+    BKMS_FAP_POSITION,
+    BKMS_FAP_STYLE,
+    WIDGET_POSITION,
 } from '@/enum';
-import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
 import { useAppStateService } from '@/stores/app/appState';
 import { useCoreService } from '@/stores/app/core';
@@ -186,47 +187,47 @@ function Widgets({ stickToBottom, color }) {
     }
 
     const positions = {
-        [DTW_POSITION.LEFT_TOP]: {
+        [WIDGET_POSITION.LEFT_TOP]: {
             classes: [classes.xLeft, classes.yTop],
             x: 'left',
             y: 'top',
         },
-        [DTW_POSITION.CENTER_TOP]: {
+        [WIDGET_POSITION.CENTER_TOP]: {
             classes: [classes.xCenter, classes.yTop],
             x: 'center',
             y: 'top',
         },
-        [DTW_POSITION.RIGHT_TOP]: {
+        [WIDGET_POSITION.RIGHT_TOP]: {
             classes: [classes.xRight, classes.yTop],
             x: 'right',
             y: 'top',
         },
-        [DTW_POSITION.LEFT_MIDDLE]: {
+        [WIDGET_POSITION.LEFT_MIDDLE]: {
             classes: [classes.xLeft, classes.yMiddle],
             x: 'left',
             y: 'center',
         },
-        [DTW_POSITION.CENTER_MIDDLE]: {
+        [WIDGET_POSITION.CENTER_MIDDLE]: {
             classes: [classes.xCenter, classes.yMiddle],
             x: 'center',
             y: 'center',
         },
-        [DTW_POSITION.RIGHT_MIDDLE]: {
+        [WIDGET_POSITION.RIGHT_MIDDLE]: {
             classes: [classes.xRight, classes.yMiddle],
             x: 'right',
             y: 'center',
         },
-        [DTW_POSITION.LEFT_BOTTOM]: {
+        [WIDGET_POSITION.LEFT_BOTTOM]: {
             classes: [classes.xLeft, classes.yBottom],
             x: 'left',
             y: 'bottom',
         },
-        [DTW_POSITION.CENTER_BOTTOM]: {
+        [WIDGET_POSITION.CENTER_BOTTOM]: {
             classes: [classes.xCenter, classes.yBottom],
             x: 'center',
             y: 'bottom',
         },
-        [DTW_POSITION.RIGHT_BOTTOM]: {
+        [WIDGET_POSITION.RIGHT_BOTTOM]: {
             classes: [classes.xRight, classes.yBottom],
             x: 'right',
             y: 'bottom',
@@ -236,15 +237,15 @@ function Widgets({ stickToBottom, color }) {
     let translate = '';
 
     if (
-        desktopService.settings.widgetsPosition === DTW_POSITION.LEFT_MIDDLE
-        || desktopService.settings.widgetsPosition === DTW_POSITION.CENTER_MIDDLE
-        || desktopService.settings.widgetsPosition === DTW_POSITION.RIGHT_MIDDLE
+        desktopService.settings.widgetsPosition === WIDGET_POSITION.LEFT_MIDDLE
+        || desktopService.settings.widgetsPosition === WIDGET_POSITION.CENTER_MIDDLE
+        || desktopService.settings.widgetsPosition === WIDGET_POSITION.RIGHT_MIDDLE
     ) {
         translate = `translateY(calc(${heightRoot / 2}px - ${64 / 2}px))`;
     } else if (
-        desktopService.settings.widgetsPosition === DTW_POSITION.LEFT_TOP
-        || desktopService.settings.widgetsPosition === DTW_POSITION.CENTER_TOP
-        || desktopService.settings.widgetsPosition === DTW_POSITION.RIGHT_TOP
+        desktopService.settings.widgetsPosition === WIDGET_POSITION.LEFT_TOP
+        || desktopService.settings.widgetsPosition === WIDGET_POSITION.CENTER_TOP
+        || desktopService.settings.widgetsPosition === WIDGET_POSITION.RIGHT_TOP
     ) {
         translate = `translateY(calc(${heightRoot}px - ${64}px))`;
     }

@@ -1,13 +1,10 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { map } from 'lodash';
-import {
-    Button, Paper, Radio, RadioGroup,
-} from '@material-ui/core';
+import { Paper, Radio, RadioGroup } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuRow, { ROWS_TYPE } from '@/ui/Settings/MenuRow';
-import { WIDGET_DTW_POSITION } from '@/enum';
+import { WIDGET_POSITION } from '@/enum';
 import { useAppStateService } from '@/stores/app/appState';
 import DesktopPreview from '@/images/desktop_scheme_preview.svg';
 
@@ -44,7 +41,7 @@ function WidgetsPosition() {
 
     return (
         <MenuRow
-            title={t('dtwPlace.title')}
+            title={t('widgets.place.title')}
             action={{
                 type: ROWS_TYPE.CUSTOM,
                 onClick: () => {},
@@ -64,15 +61,15 @@ function WidgetsPosition() {
                                 desktopService.settings.update({ widgetsPosition: event.target.value });
                             }}
                         >
-                            <Radio className={classes.radio} size="small" value={WIDGET_DTW_POSITION.LEFT_TOP} />
-                            <Radio className={classes.radio} size="small" value={WIDGET_DTW_POSITION.CENTER_TOP} />
-                            <Radio className={classes.radio} size="small" value={WIDGET_DTW_POSITION.RIGHT_TOP} />
-                            <Radio className={classes.radio} size="small" value={WIDGET_DTW_POSITION.LEFT_MIDDLE} />
-                            <Radio className={classes.radio} size="small" value={WIDGET_DTW_POSITION.CENTER_MIDDLE} />
-                            <Radio className={classes.radio} size="small" value={WIDGET_DTW_POSITION.RIGHT_MIDDLE} />
-                            <Radio className={classes.radio} size="small" value={WIDGET_DTW_POSITION.LEFT_BOTTOM} />
-                            <Radio className={classes.radio} size="small" value={WIDGET_DTW_POSITION.CENTER_BOTTOM} />
-                            <Radio className={classes.radio} size="small" value={WIDGET_DTW_POSITION.RIGHT_BOTTOM} />
+                            <Radio className={classes.radio} size="small" value={WIDGET_POSITION.LEFT_TOP} />
+                            <Radio className={classes.radio} size="small" value={WIDGET_POSITION.CENTER_TOP} />
+                            <Radio className={classes.radio} size="small" value={WIDGET_POSITION.RIGHT_TOP} />
+                            <Radio className={classes.radio} size="small" value={WIDGET_POSITION.LEFT_MIDDLE} />
+                            <Radio className={classes.radio} size="small" value={WIDGET_POSITION.CENTER_MIDDLE} />
+                            <Radio className={classes.radio} size="small" value={WIDGET_POSITION.RIGHT_MIDDLE} />
+                            <Radio className={classes.radio} size="small" value={WIDGET_POSITION.LEFT_BOTTOM} />
+                            <Radio className={classes.radio} size="small" value={WIDGET_POSITION.CENTER_BOTTOM} />
+                            <Radio className={classes.radio} size="small" value={WIDGET_POSITION.RIGHT_BOTTOM} />
                         </RadioGroup>
                     </Paper>
                 ),

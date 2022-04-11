@@ -14,10 +14,10 @@ function WidgetsSettings() {
 
     return (
         <React.Fragment>
-            <SectionHeader title={t('widgets')} />
+            <SectionHeader title={t('widgets.title')} />
             <MenuRow
-                title={t('useWidgetsOnDesktop.title')}
-                description={t('useWidgetsOnDesktop.description')}
+                title={t('widgets.useOnDesktop.title')}
+                description={t('widgets.useOnDesktop.description')}
                 action={{
                     type: ROWS_TYPE.CHECKBOX,
                     value: desktopService.settings.useWidgets,

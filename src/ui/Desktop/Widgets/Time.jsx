@@ -26,7 +26,7 @@ function Time() {
 
     return (
         <Fragment>
-            {(widgetsService.settings.dtwTimeFormat12 ? formatter12 : formatter).format(now)}
+            {(widgetsService.settings.timeFormat12 ? formatter12 : formatter).format(now)}
         </Fragment>
     );
 }

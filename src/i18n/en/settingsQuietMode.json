@@ -1,26 +1,27 @@
 {
   "fap": "Quick Access Toolbar",
-  "widgets": "Widgets",
   "wallpapers": "Wallpaper",
   "fapEmptyWarningMessage": "Panel is not displayed because no item has been added to favorites. Add folder, bookmark or tag to favorites",
-  "useWidgetsOnDesktop": {
-    "title": "Use desktop widgets",
-    "description": "Widgets provide quick access to time, date and weather."
-  },
-  "dtw": "Date, time and weather",
-  "dtwPlace": {
-    "title": "Position",
-    "value": {
-      "LEFT_BOTTOM": "Bottom Left",
-      "CENTER_TOP": "Top Center",
-      "LEFT_MIDDLE": "Left Center"
-    }
-  },
-  "dtwSize": {
-    "title": "Size",
-    "value": {
-      "smaller": "Smaller",
-      "bigger": "Bigger"
+  "widgets": {
+    "title": "Widgets",
+    "useOnDesktop": {
+      "title": "Use desktop widgets",
+      "description": "Widgets provide quick access to time, date and weather."
+    },
+    "place": {
+      "title": "Position",
+      "value": {
+        "LEFT_BOTTOM": "Bottom Left",
+        "CENTER_TOP": "Top Center",
+        "LEFT_MIDDLE": "Left Center"
+      }
+    },
+    "size": {
+      "title": "Size",
+      "value": {
+        "smaller": "Smaller",
+        "bigger": "Bigger"
+      }
     }
   },
   "useFap":{

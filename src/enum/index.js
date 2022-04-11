@@ -16,9 +16,9 @@ import THEME from './THEME';
 import FETCH from './FETCH';
 import DESTINATION from './DESTINATION';
 import ACTIVITY from './ACTIVITY';
-import WIDGET_DTW_POSITION from './WIDGET/DTW_POSITION';
-import WIDGET_DTW_SIZE from './WIDGET/DTW_SIZE';
-import WIDGET_DTW_UNITS from './WIDGET/DTW_UNITS';
+import WIDGET_POSITION from './WIDGET/POSITION';
+import WIDGET_SIZE from './WIDGET/SIZE';
+import WIDGET_UNITS from './WIDGET/UNITS';
 import TYPE from './TYPE';
 import SERVICE_STATE from './SERVICE_STATE';
 import CLOUD_SYNC from './CLOUD_SYNC';
@@ -42,9 +42,9 @@ export {
     FETCH,
     DESTINATION,
     ACTIVITY,
-    WIDGET_DTW_POSITION,
-    WIDGET_DTW_SIZE,
-    WIDGET_DTW_UNITS,
+    WIDGET_POSITION,
+    WIDGET_SIZE,
+    WIDGET_UNITS,
     TYPE,
     SERVICE_STATE,
     CLOUD_SYNC,
