@@ -1,7 +1,7 @@
 {
   "fap": "Quick Access Toolbar",
   "widgets": "Widgets",
-  "wallpapers": "background",
+  "wallpapers": "Wallpaper",
   "fapEmptyWarningMessage": "Panel is not displayed because no item has been added to favorites. Add folder, bookmark or tag to favorites",
   "useWidgetsOnDesktop": {
     "title": "Use desktop widgets",
