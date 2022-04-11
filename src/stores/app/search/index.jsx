@@ -1,10 +1,10 @@
 import React, { createContext, useContext } from 'react';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import SearchService from '@/ui/WorkingSpace/searchService';
+import SearchService from './service';
 
 const context = createContext({});
 
-function SearchServiceProvider({ children }) {
+function SearchProvider({ children }) {
     const store = useLocalObservable(() => new SearchService());
     const Context = context;
 
@@ -15,8 +15,8 @@ function SearchServiceProvider({ children }) {
     );
 }
 
-const observerProvider = observer(SearchServiceProvider);
+const observerProvider = observer(SearchProvider);
 const useService = () => useContext(context);
 
 export default useService;
-export { observerProvider as SearchServiceProvider, useService as useSearchService };
+export { observerProvider as SearchProvider, useService as useSearchService };

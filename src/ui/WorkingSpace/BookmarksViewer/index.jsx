@@ -15,7 +15,7 @@ import stateRender from '@/utils/helpers/stateRender';
 import BookmarksGrid from '@/ui/WorkingSpace/BookmarksViewer/BookmarksGrid';
 import Header from '@/ui/WorkingSpace/BookmarksViewer/Header';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
-import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
+import { useSearchService } from '@/stores/app/search';
 import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
 import Collapser from '@/ui/WorkingSpace/Tag/Collapser';
 import Tag from '@/ui/WorkingSpace/Tag';

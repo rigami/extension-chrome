@@ -23,7 +23,7 @@ import Desktop from './Desktop';
 import GlobalModals from './GlobalModals';
 import { ContextPopoverProvider } from '@/stores/app/contextPopover';
 import { ContextActionsProvider } from '@/stores/app/contextActions';
-import { SearchServiceProvider } from '@/ui/WorkingSpace/searchProvider';
+import { SearchProvider } from '@/stores/app/search';
 import { HotKeysProvider } from '@/stores/app/hotKeys';
 
 initSentry(DESTINATION.APP);
@@ -58,7 +58,7 @@ function RootApp({ onChangeTheme }) {
                 ContextActionsProvider,
                 InitApp,
                 UploadBGForm,
-                SearchServiceProvider,
+                SearchProvider,
                 GlobalModals,
             ]}
         >

@@ -16,7 +16,7 @@ import { useContextMenuService } from '@/stores/app/contextMenu';
 import PrimaryContent from '@/ui/WorkingSpace/PrimaryContent';
 import SecondaryContent from '@/ui/WorkingSpace/SecondaryContent';
 import { NULL_UUID } from '@/utils/generate/uuid';
-import { SearchServiceProvider, useSearchService } from '@/ui/WorkingSpace/searchProvider';
+import { useSearchService } from '@/stores/app/search';
 import GreetingView from '@/ui/WorkingSpace/GreetingView';
 import { APP_STATE } from '@/stores/app/core/service';
 import FirstLookScreen from '@/ui/WorkingSpace/FirstLookScreen';

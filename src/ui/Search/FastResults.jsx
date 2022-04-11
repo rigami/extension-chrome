@@ -23,7 +23,7 @@ import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookm
 import { FETCH } from '@/enum';
 import FolderBreadcrumbs from '@/ui/WorkingSpace/FolderBreadcrumbs';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
-import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
+import { useSearchService } from '@/stores/app/search';
 import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
 import Stub from '@/ui-components/Stub';
 import { useHotKeysService } from '@/stores/app/hotKeys';

@@ -6,7 +6,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import SearchField from '@/ui/Search/SearchField';
 import Tags from './Tags';
 import FastResults from '@/ui/Search/FastResults';
-import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
+import { useSearchService } from '@/stores/app/search';
 
 const useStyles = makeStyles((theme) => ({
     fullSearch: {

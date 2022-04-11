@@ -8,7 +8,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import FullSearch from '@/ui/Search/FullSearch';
-import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
+import { useSearchService } from '@/stores/app/search';
 import { useCoreService } from '@/stores/app/core';
 import Scrollbar from '@/ui-components/CustomScroll';
 import { useHotKeysService } from '@/stores/app/hotKeys';

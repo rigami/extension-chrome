@@ -16,7 +16,7 @@ import {
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
+import { useSearchService } from '@/stores/app/search';
 import { FETCH } from '@/enum';
 import asyncAction from '@/utils/helpers/asyncAction';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';

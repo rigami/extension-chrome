@@ -16,7 +16,7 @@ import Subheader from '@/ui/WorkingSpace/SidePanel/Subheader';
 import LastClosed from './RecentlyClosed';
 import Folders from '../Folders';
 import { NULL_UUID } from '@/utils/generate/uuid';
-import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
+import { useSearchService } from '@/stores/app/search';
 import { useCoreService } from '@/stores/app/core';
 import { useAppStateService } from '@/stores/app/appState';
 

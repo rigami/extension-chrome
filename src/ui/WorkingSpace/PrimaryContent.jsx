@@ -5,7 +5,7 @@ import { Button } from '@material-ui/core';
 import { sample } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import BookmarksViewer from '@/ui/WorkingSpace/BookmarksViewer';
-import { useSearchService } from '@/ui/WorkingSpace/searchProvider';
+import { useSearchService } from '@/stores/app/search';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import Stub from '@/ui-components/Stub';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
