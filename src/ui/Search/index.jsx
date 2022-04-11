@@ -62,6 +62,7 @@ function Search() {
                         && combination[0].indexOf('Digit') === -1
                     )
                     || document.activeElement?.tagName === 'INPUT'
+                    || document.activeElement?.attributes.role?.value === 'textbox'
                     || document.querySelector('[role=presentation]')
                     || document.querySelector('[role=settings]')
                 ) return;
