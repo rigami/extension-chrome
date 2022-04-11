@@ -190,15 +190,18 @@ function RowItem(props) {
     });
     const { dispatchContextMenu, isOpen } = useContextMenuService(contextActions);
 
-    const handleClick = (event) => {
+    const handleClick = () => {
         if (onClick) {
             onClick();
             return;
         }
-        if (event.button === 1) {
+
+        window.open(url, '_self');
+    };
+
+    const handleClickAlternative = (event) => {
+        if (event.button === 1 && !onClick) {
             window.open(url);
-        } else if (event.button === 0) {
-            window.open(url, '_self');
         }
     };
 
@@ -232,6 +235,7 @@ function RowItem(props) {
                 <CardActionArea
                     className={clsx(classes.rootActionWrapper, externalClasses.button, isOpen && classes.selected)}
                     onClick={handleClick}
+                    onMouseUp={handleClickAlternative}
                     onContextMenu={!preview ? dispatchContextMenu : undefined}
                 >
                     <Box className={classes.imageWrapper}>
