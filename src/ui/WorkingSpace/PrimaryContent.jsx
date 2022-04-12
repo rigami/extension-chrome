@@ -76,7 +76,10 @@ function PrimaryContent({ columns }) {
                     showRoot
                     maxItems={4}
                     folderId={navigationService.folderId}
-                    onSelectFolder={(folderId) => navigationService.setFolder(folderId)}
+                    onSelectFolder={(folderId) => {
+                        navigationService.setFolder(folderId);
+                        searchService.resetChanges();
+                    }}
                 />
             )}
             {navigationService.folderId !== NULL_UUID && !searchService.isSearching && (
