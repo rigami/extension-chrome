@@ -68,13 +68,11 @@ class SearchService {
 
     applyChanges() {
         console.log('applyChanges');
-        const searchRequest = new SearchQuery({
+        this.searchRequest = new SearchQuery({
             query: this._temp.query,
             tags: this._temp.tags,
             folderId: this._temp.folderId,
         });
-
-        this.searchRequest = searchRequest;
         this.searchRequestId += 1;
 
         this._temp = {
@@ -93,14 +91,14 @@ class SearchService {
 
     resetChanges() {
         this._temp = {
-            query: this.searchRequest.query,
-            tags: this.searchRequest.tags,
-            folderId: this.searchRequest.folderId,
+            query: '',
+            tags: [],
+            folderId: NULL_UUID,
         };
         this.tempSearchRequest = new SearchQuery({
-            query: this.searchRequest.query,
-            tags: this.searchRequest.tags,
-            folderId: this.searchRequest.folderId,
+            query: this._temp.query,
+            tags: this._temp.tags,
+            folderId: this._temp.folderId,
         });
         this.searchRequest = null;
         this.isSearching = false;

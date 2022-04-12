@@ -81,13 +81,16 @@ function Search() {
         };
     }, [appStateService.settings.searchRunOnAnyKey]);
 
-    const handleClose = (event) => {
+    const handleClose = (applyChanges = true, event) => {
         if (event && event.path.find((elem) => (
             elem.dataset?.role === 'contextmenu'
             || elem.dataset?.role === 'dialog'
         ))) return;
 
         setIsOpen(false);
+
+        if (applyChanges) searchService.applyChanges();
+        else searchService.resetChanges();
     };
 
     return (
@@ -97,22 +100,16 @@ function Search() {
                 container: classes.dialog,
                 paper: classes.paper,
             }}
-            onClose={() => handleClose()}
+            onClose={() => handleClose(false)}
         >
             <Scrollbar>
                 <Container
                     maxWidth="sm"
                     className={classes.container}
                 >
-                    <ClickAwayListener onClickAway={handleClose}>
+                    <ClickAwayListener onClickAway={(event) => handleClose(false, event)}>
                         <Paper>
-                            <FullSearch
-                                onClose={(apply) => {
-                                    handleClose();
-                                    if (apply) searchService.applyChanges();
-                                    else searchService.resetChanges();
-                                }}
-                            />
+                            <FullSearch onClose={(apply) => handleClose(apply)} />
                         </Paper>
                     </ClickAwayListener>
                 </Container>
