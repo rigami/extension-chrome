@@ -24,6 +24,7 @@ import GlobalModals from './GlobalModals';
 import { ContextPopoverProvider } from '@/stores/app/contextPopover';
 import { ContextActionsProvider } from '@/stores/app/contextActions';
 import { SearchProvider } from '@/stores/app/search';
+import { NavigationProvider } from '@/stores/app/navigation';
 import { HotKeysProvider } from '@/stores/app/hotKeys';
 
 initSentry(DESTINATION.APP);
@@ -58,6 +59,7 @@ function RootApp({ onChangeTheme }) {
                 ContextActionsProvider,
                 InitApp,
                 UploadBGForm,
+                NavigationProvider,
                 SearchProvider,
                 GlobalModals,
             ]}

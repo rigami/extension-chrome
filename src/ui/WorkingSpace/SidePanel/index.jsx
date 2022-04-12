@@ -15,10 +15,10 @@ import LogoText from '@/images/logo-text.svg';
 import Subheader from '@/ui/WorkingSpace/SidePanel/Subheader';
 import LastClosed from './RecentlyClosed';
 import Folders from '../Folders';
-import { NULL_UUID } from '@/utils/generate/uuid';
 import { useSearchService } from '@/stores/app/search';
 import { useCoreService } from '@/stores/app/core';
 import { useAppStateService } from '@/stores/app/appState';
+import { useNavigationService } from '@/stores/app/navigation';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -80,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
 function SidePanel() {
     const { t } = useTranslation(['folder', 'bookmark']);
     const searchService = useSearchService();
+    const navigationService = useNavigationService();
     const coreService = useCoreService();
     const appStateService = useAppStateService();
     const classes = useStyles();
@@ -88,7 +89,10 @@ function SidePanel() {
         <Box className={classes.root}>
             <CardActionArea
                 className={classes.greetingViewBtn}
-                onClick={() => searchService.setSelectFolder(NULL_UUID)}
+                onClick={() => {
+                    navigationService.resetFolder();
+                    searchService.resetChanges();
+                }}
             >
                 <CardHeader
                     avatar={(<LogoIcon className={classes.appLogoIcon} />)}
@@ -129,8 +133,11 @@ function SidePanel() {
                 />
                 <Folders
                     className={classes.folders}
-                    selectFolder={searchService.selectFolderId}
-                    onClickFolder={({ id }) => searchService.setSelectFolder(id)}
+                    selectFolder={navigationService.folderId}
+                    onClickFolder={({ id }) => {
+                        navigationService.setFolder(id);
+                        searchService.resetChanges();
+                    }}
                 />
             </Box>
             <LastClosed className={classes.offsetTop} />

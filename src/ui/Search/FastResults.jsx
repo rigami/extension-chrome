@@ -1,5 +1,8 @@
 import React, {
-    Fragment, useEffect, useRef, useState,
+    Fragment,
+    useEffect,
+    useRef,
+    useState,
 } from 'react';
 import {
     Box,
@@ -24,10 +27,10 @@ import { FETCH } from '@/enum';
 import FolderBreadcrumbs from '@/ui/WorkingSpace/FolderBreadcrumbs';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useSearchService } from '@/stores/app/search';
-import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
 import Stub from '@/ui-components/Stub';
 import { useHotKeysService } from '@/stores/app/hotKeys';
 import RowItem from '@/ui/WorkingSpace/Bookmark/Row';
+import { useNavigationService } from '@/stores/app/navigation';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -115,6 +118,7 @@ function FastResults({ onGoToFolder }) {
     const hotKeysService = useHotKeysService();
     const [emoticon] = useState(() => sample(emoticons));
     const searchService = useSearchService();
+    const navigationService = useNavigationService();
     const store = useLocalObservable(() => ({
         bookmarks: null,
         currentFolder: [],
@@ -144,9 +148,9 @@ function FastResults({ onGoToFolder }) {
                     byFolders[bookmark.folderId] = [...(byFolders[bookmark.folderId] || []), bookmark];
                 });
 
-                store.currentFolder = byFolders[searchService.selectFolderId] || [];
+                store.currentFolder = byFolders[navigationService.folderId] || [];
                 store.otherFolders = map(
-                    omit(byFolders, [searchService.selectFolderId]),
+                    omit(byFolders, [navigationService.folderId]),
                     (bookmarks, folderId) => ({
                         bookmarks,
                         folderId,
@@ -216,17 +220,17 @@ function FastResults({ onGoToFolder }) {
                         <Fragment>
                             <Box className={classes.header}>
                                 <Button
-                                    optionKey={`f-${searchService.selectFolderId}`}
+                                    optionKey={`f-${navigationService.folderId}`}
                                     optionType="folder"
-                                    optionId={searchService.selectFolderId}
+                                    optionId={navigationService.folderId}
                                     endIcon={(<GoToIcon />)}
                                     className={clsx(
                                         classes.goToButton,
                                         classes.option,
-                                        store.selectedOption === `f-${searchService.selectFolderId}` && classes.selected,
+                                        store.selectedOption === `f-${navigationService.folderId}` && classes.selected,
                                     )}
                                     onClick={() => {
-                                        onGoToFolder(searchService.selectFolderId, true);
+                                        onGoToFolder(navigationService.folderId, true);
                                     }}
                                 >
                                     {t('search.currentFolderMatches')}

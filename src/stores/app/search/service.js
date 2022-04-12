@@ -20,12 +20,14 @@ export const SEARCH_STATE = {
 class SearchService {
     activeFolderId = null;
     selectFolderId = NULL_UUID; // Used
-    searchRequest = new SearchQuery({});
+    searchRequest = null;
     tempSearchRequest = new SearchQuery({});
+    isSearching = false;
     state = SEARCH_STATE.WAIT;
     _temp = {
         query: '',
         tags: [],
+        folderId: NULL_UUID,
     };
 
     searchRequestId = 0;
@@ -42,26 +44,13 @@ class SearchService {
         this.tempSearchRequest = new SearchQuery({
             query: this._temp.query,
             tags: this._temp.tags,
+            folderId: this._temp.folderId,
         });
         this.searchRequest = new SearchQuery({
             query: this._temp.query,
             tags: this._temp.tags,
-            folderId: this.selectFolderId,
+            folderId: this._temp.folderId,
         });
-    }
-
-    // Used
-    setSelectFolder(folderId, user = true) {
-        this.selectFolderId = folderId;
-
-        if (user) {
-            this.updateRequest({
-                query: '',
-                tags: [],
-            }, { force: true });
-        }
-
-        this.applyChanges();
     }
 
     _applyRequest() {
@@ -69,6 +58,7 @@ class SearchService {
         const searchRequest = new SearchQuery({
             query: this._temp.query,
             tags: this._temp.tags,
+            folderId: this._temp.folderId,
         });
 
         if (!isEqual(searchRequest, this.tempSearchRequest)) {
@@ -81,30 +71,44 @@ class SearchService {
         const searchRequest = new SearchQuery({
             query: this._temp.query,
             tags: this._temp.tags,
-            folderId: this.selectFolderId,
+            folderId: this._temp.folderId,
         });
 
-        if (!isEqual(searchRequest, this.searchRequest)) {
-            this.searchRequest = searchRequest;
-            this.searchRequestId += 1;
-        }
+        this.searchRequest = searchRequest;
+        this.searchRequestId += 1;
+
+        this._temp = {
+            query: '',
+            tags: [],
+            folderId: NULL_UUID,
+        };
+        this.tempSearchRequest = new SearchQuery({
+            query: this._temp.query,
+            tags: this._temp.tags,
+            folderId: this._temp.folderId,
+        });
+
+        this.isSearching = true;
     }
 
     resetChanges() {
         this._temp = {
             query: this.searchRequest.query,
             tags: this.searchRequest.tags,
+            folderId: this.searchRequest.folderId,
         };
         this.tempSearchRequest = new SearchQuery({
             query: this.searchRequest.query,
             tags: this.searchRequest.tags,
             folderId: this.searchRequest.folderId,
         });
+        this.searchRequest = null;
+        this.isSearching = false;
     }
 
     updateRequest(request, { force = false } = {}) {
         console.log('updateRequest', request, { force });
-        const changeValues = pick(request, ['query', 'tags']);
+        const changeValues = pick(request, ['query', 'tags', 'folderId']);
         assign(this._temp, changeValues);
         if (size(changeValues) > 0) {
             if (force) this._applyRequest();

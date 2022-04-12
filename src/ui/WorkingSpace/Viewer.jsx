@@ -21,6 +21,7 @@ import GreetingView from '@/ui/WorkingSpace/GreetingView';
 import { APP_STATE } from '@/stores/app/core/service';
 import FirstLookScreen from '@/ui/WorkingSpace/FirstLookScreen';
 import { useContextEdit } from '@/stores/app/contextActions';
+import { useNavigationService } from '@/stores/app/navigation';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -74,6 +75,7 @@ function Bookmarks() {
     const { t } = useTranslation(['bookmark']);
     const coreService = useCoreService();
     const searchService = useSearchService();
+    const navigationService = useNavigationService();
     const store = useLocalObservable(() => ({
         width: 0,
         columnsCount: 0,
@@ -86,7 +88,7 @@ function Bookmarks() {
             icon: AddBookmarkIcon,
             onClick: () => dispatchEdit({
                 itemType: 'bookmark',
-                defaultFolderId: searchService.selectFolderId,
+                defaultFolderId: navigationService.folderId,
                 defaultTagsIds: searchService.tags,
             }, event, position, next),
         }),
@@ -95,7 +97,7 @@ function Bookmarks() {
             icon: AddNewFolderIcon,
             onClick: () => dispatchEdit({
                 itemType: 'folder',
-                parentId: searchService.selectFolderId,
+                parentId: navigationService.folderId,
             }, event, position, next),
         }),
     ]);
@@ -106,7 +108,7 @@ function Bookmarks() {
         console.log('width:', width - 16, (width - 16) / (theme.shape.dataCard.width + 16));
         store.columnsCount = Math.max(
             Math.min(
-                store.maxColumnsCount >= 4.5 && searchService.selectFolderId === NULL_UUID
+                store.maxColumnsCount >= 4.5 && navigationService.folderId === NULL_UUID
                     ? store.maxColumnsCount - 1
                     : store.maxColumnsCount,
                 4,
@@ -119,9 +121,9 @@ function Bookmarks() {
 
     useEffect(() => {
         const listenId = coreService.globalEventBus.on('folder/removed', async () => {
-            const folder = await FoldersUniversalService.get(searchService.selectFolderId);
+            const folder = await FoldersUniversalService.get(navigationService.folderId);
 
-            if (!folder) searchService.setSelectFolder(NULL_UUID);
+            if (!folder) navigationService.resetFolder();
         });
 
         return () => coreService.globalEventBus.removeListener(listenId);
@@ -129,7 +131,7 @@ function Bookmarks() {
 
     useEffect(() => {
         if (store.width) onResize(store.width);
-    }, [searchService.selectFolderId]);
+    }, [navigationService.folderId]);
 
     return (
         <Box
@@ -145,31 +147,45 @@ function Bookmarks() {
                     <Box className={classes.container}>
                         <Box className={classes.content}>
                             <PrimaryContent columns={store.columnsCount} />
-                            {store.maxColumnsCount < 4.5 && searchService.selectFolderId === NULL_UUID && (
-                                <Box className={classes.inlineWidgets}>
-                                    <GreetingView />
-                                </Box>
-                            )}
-                            {coreService.appState === APP_STATE.REQUIRE_SETUP && (
-                                <FirstLookScreen
-                                    style={{ maxWidth: store.columnsCount * (theme.shape.dataCard.width + 16) + 16 }}
-                                    onStart={() => { console.log('done'); }}
-                                />
-                            )}
                             {
-                                !searchService.searchRequest.usedFields.query
-                                && !searchService.searchRequest.usedFields.tags
+                                store.maxColumnsCount < 4.5
+                                && navigationService.folderId === NULL_UUID
+                                && !searchService.isSearching
+                                && (
+                                    <Box className={classes.inlineWidgets}>
+                                        <GreetingView />
+                                    </Box>
+                                )
+                            }
+                            {
+                                coreService.appState === APP_STATE.REQUIRE_SETUP
+                                && navigationService.folderId === NULL_UUID
+                                && !searchService.isSearching
+                                && (
+                                    <FirstLookScreen
+                                        style={{ maxWidth: store.columnsCount * (theme.shape.dataCard.width + 16) + 16 }}
+                                        onStart={() => { console.log('done'); }}
+                                    />
+                                )
+                            }
+                            {
+                                !searchService.isSearching
                                 && coreService.appState !== APP_STATE.REQUIRE_SETUP
                                 && (
                                     <SecondaryContent columns={store.columnsCount} />
                                 )
                             }
                         </Box>
-                        {store.maxColumnsCount >= 4.5 && searchService.selectFolderId === NULL_UUID && (
-                            <Box className={classes.sideBar}>
-                                <GreetingView />
-                            </Box>
-                        )}
+                        {
+                            store.maxColumnsCount >= 4.5
+                            && navigationService.folderId === NULL_UUID
+                            && !searchService.isSearching
+                            && (
+                                <Box className={classes.sideBar}>
+                                    <GreetingView />
+                                </Box>
+                            )
+                        }
                     </Box>
                 </Scrollbar>
             </Box>
@@ -179,7 +195,7 @@ function Bookmarks() {
                 color="primary"
                 onClick={(event) => dispatchEdit({
                     itemType: 'bookmark',
-                    defaultFolderId: searchService.selectFolderId,
+                    defaultFolderId: navigationService.folderId,
                 }, event)}
             >
                 <AddBookmarkIcon />

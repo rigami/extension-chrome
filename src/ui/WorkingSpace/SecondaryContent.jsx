@@ -16,7 +16,6 @@ import {
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { useSearchService } from '@/stores/app/search';
 import { FETCH } from '@/enum';
 import asyncAction from '@/utils/helpers/asyncAction';
 import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
@@ -25,6 +24,7 @@ import BookmarksViewer from '@/ui/WorkingSpace/BookmarksViewer';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import { useContextActions } from '@/stores/app/contextActions';
+import { useNavigationService } from '@/stores/app/navigation';
 
 const useStyles = makeStyles((theme) => ({
     folderContainer: {
@@ -101,7 +101,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SubFolder({ id, name }) {
     const classes = useStyles();
-    const searchService = useSearchService();
+    const navigationService = useNavigationService();
     const contextActions = useContextActions({
         itemId: id,
         itemType: 'folder',
@@ -112,7 +112,7 @@ function SubFolder({ id, name }) {
         <ExtendButtonGroup key={id} className={clsx(classes.childFolder, isOpen && classes.containerActive)}>
             <ExtendButton
                 label={name}
-                onClick={() => searchService.setSelectFolder(id)}
+                onClick={() => navigationService.setFolder(id)}
                 icon={() => <FolderIcon />}
                 onContextMenu={dispatchContextMenu}
                 unwrap
@@ -124,7 +124,7 @@ function SubFolder({ id, name }) {
 function Folder({ data, columns }) {
     const theme = useTheme();
     const classes = useStyles();
-    const searchService = useSearchService();
+    const navigationService = useNavigationService();
     const { t } = useTranslation(['bookmark']);
     const contextActions = useContextActions({
         itemId: data.id,
@@ -146,7 +146,7 @@ function Folder({ data, columns }) {
                         endIcon: clsx(classes.icon, isOpen && classes.forceShowIcon),
                     }}
                     endIcon={(<GoToIcon />)}
-                    onClick={() => searchService.setSelectFolder(data.id)}
+                    onClick={() => navigationService.setFolder(data.id)}
                 >
                     {data.name}
                 </Button>
@@ -169,11 +169,6 @@ function Folder({ data, columns }) {
                         <Typography color="textSecondary">{t('empty')}</Typography>
                     </Box>
                 )}
-                nothingFoundRender={() => (
-                    <Box key="empty" mb={2}>
-                        <Typography color="textSecondary">{t('search.nothingFoundInFolder')}</Typography>
-                    </Box>
-                )}
             />
             <Box className={classes.childFolders}>
                 {data.children.map((childFolder) => (
@@ -187,7 +182,7 @@ function Folder({ data, columns }) {
 const ObserverFolder = observer(Folder);
 
 function SecondaryContent({ columns }) {
-    const searchService = useSearchService();
+    const navigationService = useNavigationService();
     const store = useLocalObservable(() => ({
         tree: [],
         anchorEl: null,
@@ -199,11 +194,11 @@ function SecondaryContent({ columns }) {
         store.state = FETCH.PENDING;
 
         asyncAction(async () => {
-            const folders = searchService.selectFolderId
-                ? await FoldersUniversalService.getTree(searchService.selectFolderId)
+            const folders = navigationService.folderId
+                ? await FoldersUniversalService.getTree(navigationService.folderId)
                 : [];
 
-            console.log('[SecondaryContent] folders:', folders, searchService.selectFolderId);
+            console.log('[SecondaryContent] folders:', folders, navigationService.folderId);
             store.tree = folders;
             store.state = FETCH.DONE;
         }).catch((error) => {
@@ -211,7 +206,7 @@ function SecondaryContent({ columns }) {
             captureException(error);
             store.state = FETCH.FAILED;
         });
-    }, [searchService.selectFolderId, workingSpaceService.lastTruthSearchTimestamp]);
+    }, [navigationService.folderId, workingSpaceService.lastTruthSearchTimestamp]);
 
     if (store.state === FETCH.FAILED) {
         return 'Что то пошло не так';

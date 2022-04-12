@@ -7,6 +7,7 @@ import SearchField from '@/ui/Search/SearchField';
 import Tags from './Tags';
 import FastResults from '@/ui/Search/FastResults';
 import { useSearchService } from '@/stores/app/search';
+import { useNavigationService } from '@/stores/app/navigation';
 
 const useStyles = makeStyles((theme) => ({
     fullSearch: {
@@ -35,6 +36,7 @@ function FullSearch({ onClose }) {
     const classes = useStyles();
     const inputRef = useRef();
     const searchService = useSearchService();
+    const navigationService = useNavigationService();
     const store = useLocalObservable(() => ({ localSearchRequestId: 0 }));
 
     return (
@@ -68,7 +70,8 @@ function FullSearch({ onClose }) {
                         <Divider />
                         <FastResults
                             onGoToFolder={(folderId, apply) => {
-                                searchService.setSelectFolder(folderId, false);
+                                searchService.updateRequest({ folderId });
+                                navigationService.setFolder(folderId);
                                 onClose(apply);
                             }}
                         />
