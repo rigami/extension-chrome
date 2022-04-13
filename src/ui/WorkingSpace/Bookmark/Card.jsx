@@ -129,8 +129,9 @@ const useStyles = makeStyles((theme) => ({
     },
     descriptionBig: {
         '-webkit-line-clamp': 5,
-        marginTop: theme.spacing(0.5),
+        marginTop: 0,
     },
+    descriptionIcon: { marginTop: theme.spacing(0.5) },
     infoWrapper: {
         display: 'flex',
         width: '100%',
@@ -341,7 +342,11 @@ function CardLink(props) {
                     {description && (
                         <Typography
                             variant="body2"
-                            className={clsx(classes.description, !infoRow && classes.descriptionBig)}
+                            className={clsx(
+                                classes.description,
+                                !infoRow && classes.descriptionBig,
+                                icoVariant !== BKMS_VARIANT.POSTER && icoVariant !== BKMS_VARIANT.COVER && classes.descriptionIcon,
+                            )}
                         >
                             {description}
                         </Typography>
