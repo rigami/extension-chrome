@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(0.5),
         borderRadius: theme.shape.borderRadiusButton,
         fontSize: 12,
-        fontWeight: '400',
+        fontWeight: 500,
         fontFamily: theme.typography.fontFamily,
         whiteSpace: 'nowrap',
         lineHeight: '14px',
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
         right: 0,
         top: 0,
         marginRight: 0,
-        boxShadow: '0px 1px 6px 6px #fff',
+        boxShadow: `0px 1px 6px 6px ${theme.palette.background.paper}`,
     },
 }));
 
