@@ -12,6 +12,7 @@ import {
     makeStyles,
     lighten,
     darken,
+    useTheme,
 } from '@material-ui/core/styles';
 import { CloseRounded as CloseIcon, StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
@@ -110,6 +111,7 @@ function Tag(props) {
         onDelete,
         className: externalClassName,
     } = props;
+    const theme = useTheme();
     const classes = useStyles();
     const { t } = useTranslation(['tag']);
     const workingSpaceService = useWorkingSpaceService();
@@ -134,7 +136,9 @@ function Tag(props) {
 
     if (dense) {
         const repairColorTransparent = alpha(repairColor, 0.14);
-        const repairColorDark = alpha(darken(repairColor, 0.5), 0.84);
+        const repairColorDark = theme.palette.type === 'dark'
+            ? alpha(lighten(repairColor, 0.5), 0.84)
+            : alpha(darken(repairColor, 0.5), 0.84);
         const repairColorDeleteBtn = alpha(lighten(repairColor, 0.86), 0.84);
 
         return (
