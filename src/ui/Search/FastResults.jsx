@@ -279,7 +279,7 @@ function FastResults({ onGoToFolder }) {
                                     >
                                         {t(
                                             'search.otherResults',
-                                            { count: store.bookmarks?.length - Math.min(store.currentFolder.length, 3) },
+                                            { count: store.currentFolder.length - Math.min(store.currentFolder.length, 3) },
                                         )}
                                     </Typography>
                                 )}
