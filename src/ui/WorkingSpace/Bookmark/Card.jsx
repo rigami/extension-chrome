@@ -86,6 +86,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         padding: theme.spacing(0.75, 1),
         paddingBottom: theme.spacing(0.25),
+        paddingRight: theme.spacing(1.5),
         minHeight: 49,
         maxHeight: 68,
         boxSizing: 'border-box',
