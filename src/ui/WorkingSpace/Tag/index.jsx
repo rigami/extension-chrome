@@ -7,7 +7,12 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import clsx from 'clsx';
-import { alpha, makeStyles, lighten } from '@material-ui/core/styles';
+import {
+    alpha,
+    makeStyles,
+    lighten,
+    darken,
+} from '@material-ui/core/styles';
 import { CloseRounded as CloseIcon, StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
@@ -67,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
         // marginRight: theme.spacing(0.5),
         borderRadius: theme.shape.borderRadiusButton,
         fontSize: 12,
-        fontWeight: '400',
+        fontWeight: 500,
         fontFamily: theme.typography.fontFamily,
         whiteSpace: 'nowrap',
         lineHeight: '14px',
@@ -129,12 +134,16 @@ function Tag(props) {
 
     if (dense) {
         const repairColorTransparent = alpha(repairColor, 0.14);
+        const repairColorDark = alpha(darken(repairColor, 0.5), 0.84);
         const repairColorDeleteBtn = alpha(lighten(repairColor, 0.86), 0.84);
 
         return (
             <Box
                 className={clsx(classes.root, classes.dense, onDelete && classes.denseWithDelete, externalClassName)}
-                style={{ backgroundColor: repairColorTransparent }}
+                style={{
+                    backgroundColor: repairColorTransparent,
+                    color: repairColorDark,
+                }}
                 onClick={onClick}
             >
                 {name}
