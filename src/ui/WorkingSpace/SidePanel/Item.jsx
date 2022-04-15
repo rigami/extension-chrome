@@ -62,8 +62,8 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
     },
     startAction: {
-        marginLeft: -(theme.spacing(0.5) + 20),
-        marginRight: theme.spacing(0.25),
+        marginLeft: -(theme.spacing(0.5) + 22),
+        marginRight: theme.spacing(0.5),
         display: 'flex',
     },
     textContainer: {
@@ -112,7 +112,7 @@ function Item(props, ref) {
                 container: classes.itemContainer,
             }}
             button={!disableButton}
-            style={{ paddingLeft: Number.isFinite(level) ? (28 + level * 8) : null }}
+            style={{ paddingLeft: Number.isFinite(level) ? (30 + level * 8) : null }}
             onClick={(event) => {
                 if (
                     event.nativeEvent.path.includes(startActionRef.current)
