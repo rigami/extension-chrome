@@ -1,6 +1,7 @@
 import React, { createContext, useContext, Fragment } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
+import { makeStyles } from '@material-ui/core/styles';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import baseContextMenu from '@/stores/app/contextActions/contextMenu';
 import { useContextPopoverDispatcher } from '@/stores/app/contextPopover';
@@ -11,9 +12,12 @@ import TagEditor from '@/ui/WorkingSpace/Tag/Editor';
 import MoveDialog from '@/ui/WorkingSpace/MoveDialog';
 import DeleteDialog from '@/ui/WorkingSpace/DeleteDialog';
 
+const useStyles = makeStyles(() => ({ editor: { maxHeight: 500 } }));
+
 const context = createContext();
 
 function EditorComposer({ data = {}, close }) {
+    const classes = useStyles();
     const { t } = useTranslation();
 
     return (
@@ -45,6 +49,7 @@ function EditorComposer({ data = {}, close }) {
                             close();
                         }}
                         editBookmarkId={data.itemId}
+                        className={classes.editor}
                         {...data}
                     />
                 </Fragment>

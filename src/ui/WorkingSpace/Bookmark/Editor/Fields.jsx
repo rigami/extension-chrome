@@ -5,9 +5,12 @@ import {
     CardContent,
     Typography,
     CircularProgress,
-    InputBase, Divider,
+    InputBase,
+    Divider,
+    InputAdornment,
+    IconButton,
 } from '@material-ui/core';
-import { DoneRounded as DoneIcon } from '@material-ui/icons';
+import { DoneRounded as DoneIcon, ArrowForwardRounded as SearchIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -21,8 +24,6 @@ import Scrollbar from '@/ui-components/CustomScroll';
 
 const useStyles = makeStyles((theme) => ({
     content: {
-        flex: '1 0 auto',
-        minHeight: 450,
         backgroundColor: theme.palette.background.backdropLight,
         borderRadius: theme.shape.borderRadiusButton,
         margin: theme.spacing(2),
@@ -31,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         paddingBottom: 0,
+        overflow: 'auto',
     },
     header: { marginBottom: theme.spacing(1) },
     controls: {
@@ -48,10 +50,13 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
-        // overflow: 'auto',
+        minHeight: 500,
+        overflow: 'auto',
     },
     input: {
-        // marginTop: theme.spacing(1)
+        marginBottom: theme.spacing(2),
+        marginRight: theme.spacing(-2),
+        width: `calc(100% + ${theme.spacing(1)}px)`,
     },
     inputUrl: { textOverflow: 'ellipsis' },
     inputDescription: { marginBottom: theme.spacing(1) },
@@ -90,13 +95,20 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'flex-end',
         height: theme.spacing(2),
         boxSizing: 'content-box',
+        marginTop: 'auto',
+        flexShrink: 0,
     },
     saveInCurrentFolderCaption: { padding: theme.spacing(0, 0.75) },
     foldersContainer: {
         height: 'auto',
         flexGrow: 1,
+        marginBottom: theme.spacing(1),
     },
     foldersContainerTrack: { right: -10 },
+    foldersScrollContent: {
+        width: '100%',
+        display: 'block !important',
+    },
 }));
 
 function Fields(props) {
@@ -127,6 +139,10 @@ function Fields(props) {
         if (service.unsavedChange) await save();
     };
 
+    const handleApplySearchForce = () => {
+        service.updateValues({ url: store.query });
+    };
+
     useEffect(() => {
         if (service.isChange) store.saveState = FETCH.WAIT;
     }, [service.isChange]);
@@ -147,6 +163,7 @@ function Fields(props) {
                 <InputBase
                     placeholder={t('editor.bookmarkUrl', { context: 'placeholder' })}
                     fullWidth
+                    autoFocus
                     value={store.query}
                     className={classes.input}
                     classes={{ input: classes.inputUrl }}
@@ -155,21 +172,25 @@ function Fields(props) {
                     }}
                     onKeyDown={(event) => {
                         if (event.code === 'Enter') {
-                            service.updateValues({ url: store.query });
+                            handleApplySearchForce();
                         }
                     }}
+                    endAdornment={store.query && (store.query !== service.url || !service.url) && (
+                        <InputAdornment position="end">
+                            <IconButton onClick={handleApplySearchForce}>
+                                <SearchIcon />
+                            </IconButton>
+                        </InputAdornment>
+                    )}
                 />
                 {(store.query !== service.url || !service.url) && (
-                    <Fragment>
-                        <Divider />
-                        <Search
-                            query={store.query}
-                            onSelect={(result) => {
-                                store.query = '';
-                                service.updateValues(result);
-                            }}
-                        />
-                    </Fragment>
+                    <Search
+                        query={store.query}
+                        onSelect={(result) => {
+                            store.query = '';
+                            service.updateValues(result);
+                        }}
+                    />
                 )}
                 {store.query === service.url && service.url && (
                     <Fragment>
@@ -198,9 +219,9 @@ function Fields(props) {
                                 placeholder={t('editor.bookmarkDescription', { context: 'placeholder' })}
                                 fullWidth
                                 value={service.description}
-                                className={clsx(classes.inputDescription, classes.input)}
+                                className={clsx(classes.inputDescription)}
                                 multiline
-                                rows={3}
+                                rows={1}
                                 rowsMax={6}
                                 onChange={(event) => service.updateValues({ description: event.target.value })}
                             />
@@ -208,7 +229,7 @@ function Fields(props) {
                         {!service.useDescription && (
                             <Button
                                 data-ui-path="editor.description.add"
-                                className={clsx(classes.addDescriptionButton, classes.input)}
+                                className={clsx(classes.addDescriptionButton)}
                                 onClick={() => service.updateValues({ useDescription: true })}
                             >
                                 {t('editor.button.addDescription')}
@@ -219,7 +240,9 @@ function Fields(props) {
                             classes={{
                                 root: classes.foldersContainer,
                                 trackY: classes.foldersContainerTrack,
+                                content: classes.foldersScrollContent,
                             }}
+                            translateContentSizeYToHolder
                         >
                             <Folders
                                 className={classes.folderPicker}

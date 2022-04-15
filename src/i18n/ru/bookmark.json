@@ -19,7 +19,7 @@
       "saveBookmark": "Сохранить закладку"
     },
     "search_url": "Поиск по адресу",
-    "search_web": "Искать в Интернете",
+    "search_web": "Поиск в Интернете",
     "search": {
       "urlNotRecognize": "Адрес не распознан",
       "gettingSiteInfo": "Получение информации",

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Button,
     Avatar,
     List,
     ListSubheader,
@@ -10,19 +9,21 @@ import {
     Fade,
     Collapse,
     Box,
+    Divider,
 } from '@material-ui/core';
 import { PublicRounded as WebSiteIcon } from '@material-ui/icons';
-import { getFaviconUrl } from '@/utils/localSiteParse';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { captureException } from '@sentry/react';
+import { getFaviconUrl } from '@/utils/localSiteParse';
 import { getSiteInfoLocal, search } from '../utils/siteSearch';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
-        minHeight: 52,
+        minHeight: 72,
+        margin: theme.spacing(0, -2),
     },
     search: {
         padding: theme.spacing(2),
@@ -30,6 +31,8 @@ const useStyles = makeStyles((theme) => ({
         bottom: 0,
         left: 0,
         right: 0,
+        display: 'flex',
+        alignItems: 'center',
     },
     avatar: { minWidth: theme.spacing(4.5) },
     favicon: {
@@ -41,11 +44,8 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
     },
-    forceAdd: { marginLeft: theme.spacing(2) },
-    subheader: {
-        backgroundColor: theme.palette.background.paper,
-        top: 72,
-    },
+    subheader: { color: theme.palette.text.secondary },
+    stub: { minHeight: 72 },
 }));
 
 function Search({ query = '', onSelect }) {
@@ -120,14 +120,15 @@ function Search({ query = '', onSelect }) {
     return (
         <Fade in={straightLoading || globalLoading || isOpen} unmountOnExit>
             <Box className={classes.root}>
+                <Divider />
                 <Fade in={straightLoading && globalLoading}>
-                    <Box className={clsx(classes.search)}>
+                    <Box className={clsx(classes.search, classes.stub)}>
                         {t('common:search')}
                     </Box>
                 </Fade>
                 <Collapse in={(!globalLoading || !straightLoading) && isOpen}>
                     <List disablePadding>
-                        <ListSubheader className={classes.subheader}>
+                        <ListSubheader className={classes.subheader} disableSticky>
                             {t('editor.search', { context: 'url' })}
                         </ListSubheader>
                         {!straightLoading && straightResults && (
@@ -186,23 +187,16 @@ function Search({ query = '', onSelect }) {
                             </React.Fragment>
                         )}
                         {!straightLoading && !straightResults && (
-                            <ListItem>
+                            <ListItem className={classes.stub}>
                                 {t('editor.search.urlNotRecognize')}
-                                <Button
-                                    data-ui-path="bookmark.editor.forceAddURL"
-                                    className={classes.forceAdd}
-                                    onClick={() => onSelect({ url: query }, true)}
-                                >
-                                    {t('editor.button.forceAdd')}
-                                </Button>
                             </ListItem>
                         )}
                         {straightLoading && (
-                            <ListItem>
+                            <ListItem className={classes.stub}>
                                 {t('common:search')}
                             </ListItem>
                         )}
-                        <ListSubheader className={classes.subheader}>
+                        <ListSubheader className={classes.subheader} disableSticky>
                             {t('editor.search', { context: 'web' })}
                         </ListSubheader>
                         {!globalLoading && globalResults && globalResults.map((option) => (
@@ -234,12 +228,12 @@ function Search({ query = '', onSelect }) {
                             </ListItem>
                         ))}
                         {!globalLoading && globalResults && globalResults.length === 0 && (
-                            <ListItem>
+                            <ListItem className={classes.stub}>
                                 {t('common:nothingFound')}
                             </ListItem>
                         )}
                         {globalLoading && (
-                            <ListItem>
+                            <ListItem className={classes.stub}>
                                 {t('common:search')}
                             </ListItem>
                         )}
