@@ -43,6 +43,10 @@ class ServerApp {
             location.reload();
         });
 
+        this.globalEventBus.on('health-check', ({ callback }) => {
+            callback();
+        });
+
         self.addEventListener('offline', () => { this.isOffline = true; });
         self.addEventListener('online', () => { this.isOffline = false; });
     }

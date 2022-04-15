@@ -8,7 +8,7 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import { captureException } from '@sentry/react';
 import { DESTINATION } from '@/enum';
-import BusService, { initBus } from '@/stores/universal/serviceBus';
+import BusService, { eventToBackground, initBus } from '@/stores/universal/serviceBus';
 import BrowserAPI from '@/utils/browserAPI';
 import awaitInstallStorage from '@/utils/helpers/awaitInstallStorage';
 import forceCrash from '@/utils/helpers/forceCrash';
@@ -43,6 +43,7 @@ class CoreService {
     storage;
     appState = APP_STATE.WAIT;
     isOffline = !window.navigator.onLine;
+    serviceWorkerHealthCheckInterval;
 
     constructor({ side }) {
         makeAutoObservable(this);
@@ -105,6 +106,20 @@ class CoreService {
         this.globalEventBus.on('system/ping', ({ data, callback }) => {
             callback({ type: data });
         });
+
+        clearInterval(this.serviceWorkerHealthCheckInterval);
+
+        this.serviceWorkerHealthCheckInterval = setInterval(() => {
+            console.info('Ping service worker...');
+            const deathServiceWorkerCallback = setTimeout(() => {
+                console.warn('Service worker inactive. Try wake up');
+            }, 5000);
+
+            eventToBackground('health-check', null, () => {
+                console.info('Pong service worker...');
+                clearTimeout(deathServiceWorkerCallback);
+            });
+        }, 30 * 1000);
 
         window.addEventListener('offline', () => { this.isOffline = true; });
         window.addEventListener('online', () => { this.isOffline = false; });
