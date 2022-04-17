@@ -173,7 +173,7 @@ async function getDeviceSign() {
     return authStorage.data.deviceSign;
 }
 
-async function api(path, options = {}) {
+async function api(pathOrUrl, options = {}) {
     const {
         useToken = true,
         version = 1,
@@ -205,7 +205,7 @@ async function api(path, options = {}) {
         defaultOptions.headers.Authorization = `Bearer ${useToken}`;
     }
 
-    let url = `${appVariables.rest.url}/v${version}/${path}`;
+    let url = pathOrUrl.indexOf('://') !== -1 ? pathOrUrl : `${appVariables.rest.url}/v${version}/${pathOrUrl}`;
 
     if (body) {
         defaultOptions.body = JSON.stringify(body);
@@ -342,6 +342,10 @@ api.sse = function sse(path, options = {}) {
     };
 };
 
-api.computeUrl = (path, { version = 1 } = {}) => `${appVariables.rest.url}/v${version}/${path}`;
+api.computeUrl = (pathOrUrl, { version = 1 } = {}) => (
+    pathOrUrl.indexOf('://') !== -1
+        ? pathOrUrl
+        : `${appVariables.rest.url}/v${version}/${pathOrUrl}`
+);
 
 export default api;

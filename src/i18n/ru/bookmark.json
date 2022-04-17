@@ -37,6 +37,12 @@
       "enterRequest": "Введите адрес",
       "selectResult": "Выберите результат поиска",
       "enterName": "Введите название закладки"
+    },
+    "iconVariant": {
+      "SMALL-ICON": "Простая икнока",
+      "ICON": "Иконка",
+      "POSTER": "Постер",
+      "COVER": "Обложка"
     }
   },
   "button": {

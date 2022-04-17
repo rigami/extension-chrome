@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import {
     CardMedia,
     Box,
@@ -7,13 +7,19 @@ import {
     Button,
     Fade,
     Badge,
+    Collapse,
+    Tab,
+    Tabs,
 } from '@material-ui/core';
-import { LinkRounded as URLIcon, DoneRounded as SelectIcon } from '@material-ui/icons';
+import {
+    LinkRounded as URLIcon,
+    DoneRounded as SelectIcon,
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import clsx from 'clsx';
-import ResizeDetector, { useResizeDetector } from 'react-resize-detector';
+import { useResizeDetector } from 'react-resize-detector';
 import { captureException } from '@sentry/react';
 import CardLink from '@/ui/WorkingSpace/Bookmark/Card';
 import Stub from '@/ui-components/Stub';
@@ -91,52 +97,128 @@ const useStyles = makeStyles((theme) => ({
     badgePlace: { transform: 'scale(1) translate(30%, -40%)' },
     badgeInvisiblePlace: { transform: 'scale(0) translate(30%, -40%) !important' },
     hideList: { display: 'none' },
+    primaryContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 1,
+    },
+    loadingPrimaryCard: {
+        height: theme.spacing(3),
+        padding: theme.spacing(0.25, 1),
+        margin: theme.spacing(2, 2),
+        marginBottom: 0,
+        borderRadius: theme.shape.borderRadiusButtonBold,
+        backgroundColor: theme.palette.background.backdrop,
+        fontWeight: 800,
+        fontFamily: theme.typography.specialFontFamily,
+        fontSize: '0.7rem',
+        color: theme.palette.text.secondary,
+        display: 'flex',
+        alignItems: 'center',
+    },
+    tabsRoot: {
+        minHeight: theme.spacing(3),
+        padding: theme.spacing(0.25),
+        margin: theme.spacing(2, 2),
+        marginBottom: 0,
+        borderRadius: theme.shape.borderRadiusButtonBold,
+    },
+    tab: {
+        fontSize: '0.7rem',
+        minHeight: theme.spacing(3),
+        padding: theme.spacing(0.25, 0.75),
+        minWidth: theme.spacing(4),
+        borderRadius: theme.shape.borderRadiusButton,
+    },
+    tabsIndicator: { borderRadius: theme.shape.borderRadiusButton },
 }));
 
 function PreviewCard(props) {
+    const classes = useStyles();
+    const { t } = useTranslation(['bookmark']);
     const {
         active,
         url,
         icoUrl,
         icoVariant,
-        onClick,
+        availableVariants = [],
         name,
         description,
         tagsFull,
         className: externalClassName,
+        onClick,
+        onChangeVariant,
     } = props;
-    const classes = useStyles();
+    const [tempVariant, setTempVariant] = useState(icoVariant);
+
+    console.log('icoVariant:', icoVariant, availableVariants, icoUrl);
 
     return (
-        <Badge
-            invisible={!active}
-            badgeContent={<SelectIcon />}
-            color="primary"
-            classes={{
-                root: clsx(
-                    classes.card,
-                    externalClassName,
-                ),
-                badge: classes.badge,
-                anchorOriginTopRightRectangle: classes.badgePlace,
-                invisible: classes.badgeInvisiblePlace,
-            }}
-        >
-            <CardLink
-                name={name}
-                description={description}
-                icoVariant={icoVariant}
-                url={url}
-                icoUrl={icoUrl}
-                preview
-                tagsFull={tagsFull}
-                onClick={() => onClick({
-                    url: icoUrl,
-                    icoVariant,
-                })}
-                className={clsx(active && classes.activeCard)}
-            />
-        </Badge>
+        <Box>
+            {availableVariants.length > 1 && (
+                <Collapse in={active} unmountOnExit>
+                    <Tabs
+                        classes={{
+                            root: classes.tabsRoot,
+                            indicator: classes.tabsIndicator,
+                        }}
+                        indicatorColor="primary"
+                        variant="scrollable"
+                        value={icoVariant}
+                        onChange={(event, newValue) => {
+                            console.log('icoVariant: Set value:', newValue);
+                            const urlParsed = new URL(icoUrl);
+                            const query = urlParsed.searchParams;
+                            query.set('type', newValue.toLowerCase());
+
+                            onClick({
+                                url: `${urlParsed.origin}${urlParsed.pathname}?${query}`,
+                                icoVariant: newValue,
+                            });
+                            // if (onChangeVariant) onChangeVariant(newValue);
+                        }}
+                    >
+                        {availableVariants.map((variant) => (
+                            <Tab
+                                className={classes.tab}
+                                key={variant}
+                                value={variant}
+                                label={t(`editor.iconVariant.${variant}`)}
+                            />
+                        ))}
+                    </Tabs>
+                </Collapse>
+            )}
+            <Badge
+                invisible={!active}
+                badgeContent={<SelectIcon />}
+                color="primary"
+                classes={{
+                    root: clsx(
+                        classes.card,
+                        externalClassName,
+                    ),
+                    badge: classes.badge,
+                    anchorOriginTopRightRectangle: classes.badgePlace,
+                    invisible: classes.badgeInvisiblePlace,
+                }}
+            >
+                <CardLink
+                    name={name}
+                    description={description}
+                    icoVariant={icoVariant}
+                    url={url}
+                    icoUrl={icoUrl}
+                    preview
+                    tagsFull={tagsFull}
+                    onClick={() => onClick({
+                        url: icoUrl,
+                        icoVariant,
+                    })}
+                    className={clsx(active && classes.activeCard)}
+                />
+            </Badge>
+        </Box>
     );
 }
 
@@ -156,8 +238,16 @@ function Preview({ editorService: service }) {
         store.heightContainer = height;
     }, []);
 
+    const onResizeCard = useCallback((width, height) => {
+        console.log('card height:', height);
+        store.heightCard = height + 2 + 16;
+    }, []);
+
     const { ref } = useResizeDetector({ onResize });
-    const { ref: listRef, height: listHeight } = useResizeDetector();
+    const { ref: cardRef } = useResizeDetector({
+        onResize: onResizeCard,
+        handleHeight: true,
+    });
 
     const handleScrollStart = ({ scrollTop: scrollTopNow }, { scrollTop: scrollTopBefore }) => {
         if (store.primaryImagesState === FETCH.DONE && scrollTopNow - scrollTopBefore > 0) {
@@ -250,28 +340,34 @@ function Preview({ editorService: service }) {
                             display="flex"
                             flexDirection="column"
                             minHeight={store.heightContainer}
-                            ref={listRef}
                         >
-                            <ResizeDetector
-                                handleHeight
-                                onResize={(width, height) => {
-                                    console.log('card height:', height);
-                                    store.heightCard = height + 2 + 16;
-                                }}
-                            >
-                                {() => (
-                                    <PreviewCard
-                                        active={service.sourceIcoUrl === service.defaultImage.sourceUrl}
-                                        name={service.name}
-                                        description={service.useDescription && service.description}
-                                        url={service.url}
-                                        tagsFull={service.tagsFull}
-                                        icoVariant={service.defaultImage.icoVariant}
-                                        icoUrl={service.defaultImage.url}
-                                        onClick={() => service.setPreview(service.defaultImage)}
-                                    />
-                                )}
-                            </ResizeDetector>
+                            <Box ref={cardRef} className={classes.primaryContainer}>
+                                <Collapse in={service.defaultImage.state === FETCH.PENDING}>
+                                    <Box className={classes.loadingPrimaryCard}>{t('common:loading')}</Box>
+                                </Collapse>
+                                <PreviewCard
+                                    active={service.sourceIcoUrl === service.defaultImage.sourceUrl}
+                                    name={service.name}
+                                    description={service.useDescription && service.description}
+                                    url={service.url}
+                                    tagsFull={service.tagsFull}
+                                    icoVariant={
+                                        service.sourceIcoUrl !== service.defaultImage.sourceUrl
+                                            ? service.defaultImage.icoVariant
+                                            : service.icoVariant
+                                    }
+                                    availableVariants={service.defaultImage.availableVariants}
+                                    icoUrl={
+                                        service.sourceIcoUrl !== service.defaultImage.sourceUrl
+                                            ? service.defaultImage.url
+                                            : service.icoUrl
+                                    }
+                                    onClick={(overrideIcon) => service.setPreview({
+                                        ...service.defaultImage,
+                                        ...overrideIcon,
+                                    })}
+                                />
+                            </Box>
                             <Box
                                 className={clsx(
                                     classes.shortList,
@@ -289,37 +385,20 @@ function Preview({ editorService: service }) {
                                     }px)`,
                                 }}
                             >
-                                {service.primaryImages.map(({ url, sourceUrl, icoVariant }) => (
+                                {[...service.primaryImages, ...service.secondaryImages].map((image) => (
                                     <PreviewCard
-                                        key={url}
-                                        active={service.sourceIcoUrl === sourceUrl}
+                                        key={image.url}
+                                        active={service.sourceIcoUrl === image.sourceUrl}
                                         name={service.name}
                                         description={service.useDescription && service.description}
-                                        icoVariant={icoVariant}
+                                        icoVariant={service.sourceIcoUrl !== image.sourceUrl ? image.icoVariant : service.icoVariant}
+                                        availableVariants={image.availableVariants}
                                         url={service.url}
                                         tagsFull={service.tagsFull}
-                                        icoUrl={url}
-                                        onClick={() => service.setPreview({
-                                            url,
-                                            sourceUrl,
-                                            icoVariant,
-                                        })}
-                                    />
-                                ))}
-                                {service.secondaryImages.map(({ url, sourceUrl, icoVariant }) => (
-                                    <PreviewCard
-                                        key={url}
-                                        active={service.sourceIcoUrl === sourceUrl}
-                                        name={service.name}
-                                        description={service.useDescription && service.description}
-                                        icoVariant={icoVariant}
-                                        url={service.url}
-                                        tagsFull={service.tagsFull}
-                                        icoUrl={url}
-                                        onClick={() => service.setPreview({
-                                            url,
-                                            sourceUrl,
-                                            icoVariant,
+                                        icoUrl={service.sourceIcoUrl !== image.sourceUrl ? image.url : service.icoUrl}
+                                        onClick={(overrideIcon) => service.setPreview({
+                                            ...image,
+                                            ...overrideIcon,
                                         })}
                                     />
                                 ))}

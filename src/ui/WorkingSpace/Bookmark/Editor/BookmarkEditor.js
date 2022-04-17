@@ -1,6 +1,6 @@
 import { makeAutoObservable, reaction, toJS } from 'mobx';
 import { captureException } from '@sentry/react';
-import { BKMS_VARIANT } from '@/enum';
+import { BKMS_VARIANT, FETCH } from '@/enum';
 import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 import { getImage, getSiteInfo } from './utils/siteSearch';
@@ -68,6 +68,8 @@ class BookmarkEditor {
                         url: bookmark.icoUrl,
                         sourceUrl: bookmark.sourceIcoUrl,
                         icoVariant: bookmark.icoVariant,
+                        availableVariants: [],
+                        state: FETCH.WAIT,
                     };
                     this.fetchSiteInfo({
                         url: bookmark.url,
@@ -151,6 +153,11 @@ class BookmarkEditor {
             this.icoUrl = null;
             this.sourceIcoUrl = null;
             this.defaultImage = null;
+        } else if (this.defaultImage) {
+            this.defaultImage = {
+                ...this.defaultImage,
+                state: FETCH.PENDING,
+            };
         }
         this.allImages = [];
         this.primaryImages = [];
@@ -204,9 +211,21 @@ class BookmarkEditor {
             this.state = STATE_EDITOR.SEARCH_DEFAULT_IMAGE;
             const result = await getDefaultImage(this.allImages);
             if (this.url !== currentFetchUrl) return;
-            this.defaultImage = result.image;
+            this.defaultImage = {
+                ...result.image,
+                state: FETCH.DONE,
+            };
             this.allImages = result.list;
             this.setPreview(this.defaultImage);
+        } else {
+            const result = await getImage(this.defaultImage.url);
+
+            console.log('Update default image:', result);
+
+            this.defaultImage = {
+                ...result,
+                state: FETCH.DONE,
+            };
         }
         console.log('done fetch site', fetchUrl, this.url);
 
