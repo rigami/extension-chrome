@@ -24,14 +24,20 @@ import Scrollbar from '@/ui-components/CustomScroll';
 
 const useStyles = makeStyles((theme) => ({
     content: {
+        backgroundColor: theme.palette.background.backdrop,
+        borderRadius: theme.shape.borderRadiusButton,
+        display: 'flex',
+        flexDirection: 'column',
+        paddingBottom: '0 !important',
+        overflow: 'auto',
+    },
+    contentBackdrop: {
         backgroundColor: theme.palette.background.backdropLight,
         borderRadius: theme.shape.borderRadiusButton,
         margin: theme.spacing(2),
         marginLeft: 0,
         marginBottom: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        paddingBottom: 0,
+        flexGrow: 1,
         overflow: 'auto',
     },
     header: { marginBottom: theme.spacing(1) },
@@ -159,110 +165,112 @@ function Fields(props) {
 
     return (
         <Box className={classes.details}>
-            <CardContent className={classes.content}>
-                <InputBase
-                    placeholder={t('editor.bookmarkUrl', { context: 'placeholder' })}
-                    fullWidth
-                    autoFocus
-                    value={store.query}
-                    className={classes.input}
-                    classes={{ input: classes.inputUrl }}
-                    onChange={(event) => {
-                        store.query = event.target.value;
-                    }}
-                    onKeyDown={(event) => {
-                        if (event.code === 'Enter') {
-                            handleApplySearchForce();
-                        }
-                    }}
-                    endAdornment={store.query && (store.query !== service.url || !service.url) && (
-                        <InputAdornment position="end">
-                            <IconButton onClick={handleApplySearchForce}>
-                                <SearchIcon />
-                            </IconButton>
-                        </InputAdornment>
-                    )}
-                />
-                {(store.query !== service.url || !service.url) && (
-                    <Search
-                        query={store.query}
-                        onSelect={(result) => {
-                            store.query = '';
-                            service.updateValues(result);
+            <Box className={classes.contentBackdrop}>
+                <CardContent className={classes.content}>
+                    <InputBase
+                        placeholder={t('editor.bookmarkUrl', { context: 'placeholder' })}
+                        fullWidth
+                        autoFocus
+                        value={store.query}
+                        className={classes.input}
+                        classes={{ input: classes.inputUrl }}
+                        onChange={(event) => {
+                            store.query = event.target.value;
                         }}
+                        onKeyDown={(event) => {
+                            if (event.code === 'Enter') {
+                                handleApplySearchForce();
+                            }
+                        }}
+                        endAdornment={store.query && (store.query !== service.url || !service.url) && (
+                            <InputAdornment position="end">
+                                <IconButton onClick={handleApplySearchForce}>
+                                    <SearchIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        )}
                     />
-                )}
-                {store.query === service.url && service.url && (
-                    <Fragment>
-                        <InputBase
-                            placeholder={t('editor.bookmarkName', { context: 'placeholder' })}
-                            fullWidth
-                            multiline
-                            value={service.name}
-                            className={clsx(classes.inputName, classes.input)}
-                            onChange={(event) => service.updateValues({ name: event.target.value })}
-                            onKeyDown={(event) => {
-                                if (event.code === 'Enter') {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                }
+                    {(store.query !== service.url || !service.url) && (
+                        <Search
+                            query={store.query}
+                            onSelect={(result) => {
+                                store.query = '';
+                                service.updateValues(result);
                             }}
                         />
-                        <TagsFiled
-                            selectedTags={service.tags}
-                            onChange={(newTags) => service.updateValues({ tags: newTags })}
-                            className={classes.input}
-                        />
-                        {service.useDescription && (
+                    )}
+                    {store.query === service.url && service.url && (
+                        <Fragment>
                             <InputBase
-                                autoFocus
-                                placeholder={t('editor.bookmarkDescription', { context: 'placeholder' })}
+                                placeholder={t('editor.bookmarkName', { context: 'placeholder' })}
                                 fullWidth
-                                value={service.description}
-                                className={clsx(classes.inputDescription)}
                                 multiline
-                                rows={1}
-                                rowsMax={6}
-                                onChange={(event) => service.updateValues({ description: event.target.value })}
-                            />
-                        )}
-                        {!service.useDescription && (
-                            <Button
-                                data-ui-path="editor.description.add"
-                                className={clsx(classes.addDescriptionButton)}
-                                onClick={() => service.updateValues({ useDescription: true })}
-                            >
-                                {t('editor.button.addDescription')}
-                            </Button>
-                        )}
-                        <Divider />
-                        <Scrollbar
-                            classes={{
-                                root: classes.foldersContainer,
-                                trackY: classes.foldersContainerTrack,
-                                content: classes.foldersScrollContent,
-                            }}
-                            translateContentSizeYToHolder
-                        >
-                            <Folders
-                                className={classes.folderPicker}
-                                selectFolder={service.folderId}
-                                onClickFolder={({ id }) => {
-                                    service.updateValues({ folderId: id });
+                                value={service.name}
+                                className={clsx(classes.inputName, classes.input)}
+                                onChange={(event) => service.updateValues({ name: event.target.value })}
+                                onKeyDown={(event) => {
+                                    if (event.code === 'Enter') {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                    }
                                 }}
-                                actions={({ id, permanent }) => service.folderId === id && permanent && (
-                                    <Typography
-                                        variant="caption"
-                                        className={classes.saveInCurrentFolderCaption}
-                                    >
-                                        {t('editor.saveInCurrentFolder')}
-                                    </Typography>
-                                )}
                             />
-                        </Scrollbar>
-                    </Fragment>
-                )}
-            </CardContent>
+                            <TagsFiled
+                                selectedTags={service.tags}
+                                onChange={(newTags) => service.updateValues({ tags: newTags })}
+                                className={classes.input}
+                            />
+                            {service.useDescription && (
+                                <InputBase
+                                    autoFocus
+                                    placeholder={t('editor.bookmarkDescription', { context: 'placeholder' })}
+                                    fullWidth
+                                    value={service.description}
+                                    className={clsx(classes.inputDescription)}
+                                    multiline
+                                    rows={1}
+                                    rowsMax={6}
+                                    onChange={(event) => service.updateValues({ description: event.target.value })}
+                                />
+                            )}
+                            {!service.useDescription && (
+                                <Button
+                                    data-ui-path="editor.description.add"
+                                    className={clsx(classes.addDescriptionButton)}
+                                    onClick={() => service.updateValues({ useDescription: true })}
+                                >
+                                    {t('editor.button.addDescription')}
+                                </Button>
+                            )}
+                            <Divider />
+                            <Scrollbar
+                                classes={{
+                                    root: classes.foldersContainer,
+                                    trackY: classes.foldersContainerTrack,
+                                    content: classes.foldersScrollContent,
+                                }}
+                                translateContentSizeYToHolder
+                            >
+                                <Folders
+                                    className={classes.folderPicker}
+                                    selectFolder={service.folderId}
+                                    onClickFolder={({ id }) => {
+                                        service.updateValues({ folderId: id });
+                                    }}
+                                    actions={({ id, permanent }) => service.folderId === id && permanent && (
+                                        <Typography
+                                            variant="caption"
+                                            className={classes.saveInCurrentFolderCaption}
+                                        >
+                                            {t('editor.saveInCurrentFolder')}
+                                        </Typography>
+                                    )}
+                                />
+                            </Scrollbar>
+                        </Fragment>
+                    )}
+                </CardContent>
+            </Box>
             <div className={classes.stateCaption}>
                 {store.saveState === FETCH.PENDING && (
                     <Fragment>
