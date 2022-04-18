@@ -205,7 +205,7 @@ async function api(pathOrUrl, options = {}) {
         defaultOptions.headers.Authorization = `Bearer ${useToken}`;
     }
 
-    let url = pathOrUrl.indexOf('://') !== -1 ? pathOrUrl : `${appVariables.rest.url}/v${version}/${pathOrUrl}`;
+    let url = pathOrUrl?.indexOf('://') !== -1 ? pathOrUrl : `${appVariables.rest.url}/v${version}/${pathOrUrl}`;
 
     if (body) {
         defaultOptions.body = JSON.stringify(body);
@@ -343,7 +343,7 @@ api.sse = function sse(path, options = {}) {
 };
 
 api.computeUrl = (pathOrUrl, { version = 1 } = {}) => (
-    pathOrUrl.indexOf('://') !== -1
+    pathOrUrl?.indexOf('://') !== -1
         ? pathOrUrl
         : `${appVariables.rest.url}/v${version}/${pathOrUrl}`
 );

@@ -153,7 +153,7 @@ class BookmarkEditor {
             this.icoUrl = null;
             this.sourceIcoUrl = null;
             this.defaultImage = null;
-        } else if (this.defaultImage) {
+        } else if (this.defaultImage?.url) {
             this.defaultImage = {
                 ...this.defaultImage,
                 state: FETCH.PENDING,
@@ -183,7 +183,7 @@ class BookmarkEditor {
             if (!onlyAdditionalIcons) {
                 this.name = this.name || siteData.name || siteData.title;
                 this.description = this.description || siteData.description;
-            } else {
+            } else if (siteData.images) {
                 siteData.images = siteData.images.filter((image) => (
                     image.baseUrl !== this.defaultImage?.baseUrl
                     && image.type.toUpperCase() !== this.defaultImage?.icoVariant
@@ -191,7 +191,7 @@ class BookmarkEditor {
             }
 
             if (this.url !== currentFetchUrl) return;
-            this.allImages = siteData.images.sort((a, b) => b.score - a.score);
+            this.allImages = siteData.images?.sort((a, b) => b.score - a.score);
         } catch (e) {
             captureException(e);
             if (this.url !== currentFetchUrl) return;
@@ -217,7 +217,7 @@ class BookmarkEditor {
             };
             this.allImages = result.list;
             this.setPreview(this.defaultImage);
-        } else {
+        } else if (this.defaultImage?.url) {
             const result = await getImage(this.defaultImage.url);
 
             console.log('Update default image:', result);

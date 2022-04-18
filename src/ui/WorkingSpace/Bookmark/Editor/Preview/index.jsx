@@ -286,7 +286,7 @@ function Preview({ editorService: service }) {
             store.primaryImagesState = FETCH.WAIT;
             store.secondaryImagesState = FETCH.WAIT;
         }
-        if (service.state === STATE_EDITOR.DONE && service.allImages.length > 0) {
+        if (service.state === STATE_EDITOR.DONE && service.allImages?.length > 0) {
             loadShortList();
         }
     }, [service.state]);
@@ -342,8 +342,61 @@ function Preview({ editorService: service }) {
                             minHeight={store.heightContainer}
                         >
                             <Box ref={cardRef} className={classes.primaryContainer}>
-                                <Collapse in={service.defaultImage.state === FETCH.PENDING}>
-                                    <Box className={classes.loadingPrimaryCard}>{t('common:loading')}</Box>
+                                <Collapse
+                                    in={
+                                        service.sourceIcoUrl === service.defaultImage.sourceUrl
+                                        && (
+                                            service.defaultImage.state === FETCH.PENDING
+                                            || service.defaultImage.availableVariants.length !== 0
+                                        )
+                                    }
+                                >
+                                    <Tabs
+                                        classes={{
+                                            root: classes.tabsRoot,
+                                            indicator: classes.tabsIndicator,
+                                        }}
+                                        indicatorColor="primary"
+                                        variant="scrollable"
+                                        value={
+                                            service.sourceIcoUrl !== service.defaultImage.sourceUrl
+                                                ? service.defaultImage.icoVariant
+                                                : service.icoVariant
+                                        }
+                                        onChange={(event, newValue) => {
+                                            console.log('icoVariant: Set value:', newValue);
+                                            const urlParsed = new URL(
+                                                service.sourceIcoUrl !== service.defaultImage.sourceUrl
+                                                    ? service.defaultImage.url
+                                                    : service.icoUrl,
+                                            );
+                                            const query = urlParsed.searchParams;
+                                            query.set('type', newValue.toLowerCase());
+
+                                            service.setPreview({
+                                                ...service.defaultImage,
+                                                url: `${urlParsed.origin}${urlParsed.pathname}?${query}`,
+                                                icoVariant: newValue,
+                                            });
+                                        }}
+                                    >
+                                        {service.defaultImage.state === FETCH.PENDING && (
+                                            <Tab
+                                                className={classes.tab}
+                                                disabled
+                                                value={FETCH.PENDING}
+                                                label={t('common:loading')}
+                                            />
+                                        )}
+                                        {service.defaultImage.availableVariants.map((variant) => (
+                                            <Tab
+                                                className={classes.tab}
+                                                key={variant}
+                                                value={variant}
+                                                label={t(`editor.iconVariant.${variant}`)}
+                                            />
+                                        ))}
+                                    </Tabs>
                                 </Collapse>
                                 <PreviewCard
                                     active={service.sourceIcoUrl === service.defaultImage.sourceUrl}
@@ -356,7 +409,6 @@ function Preview({ editorService: service }) {
                                             ? service.defaultImage.icoVariant
                                             : service.icoVariant
                                     }
-                                    availableVariants={service.defaultImage.availableVariants}
                                     icoUrl={
                                         service.sourceIcoUrl !== service.defaultImage.sourceUrl
                                             ? service.defaultImage.url
@@ -403,7 +455,7 @@ function Preview({ editorService: service }) {
                                     />
                                 ))}
                                 {
-                                    service.allImages.length !== 0
+                                    service.allImages?.length !== 0
                                     && store.secondaryImagesState !== FETCH.DONE
                                     && store.secondaryImagesState !== FETCH.FAILED
                                     && (
