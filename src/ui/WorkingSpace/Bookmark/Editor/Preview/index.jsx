@@ -142,10 +142,13 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.easeInOut,
             duration: theme.transitions.duration.standard,
         }),
+        marginRight: theme.spacing(-3),
     },
     tabsScrollable: {
-        marginLeft: theme.spacing(-3),
-        marginRight: theme.spacing(-3),
+        '&+$tabsScrollButton': {
+            marginRight: 0,
+            marginLeft: theme.spacing(-3),
+        },
     },
 }));
 
