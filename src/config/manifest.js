@@ -18,6 +18,7 @@ module.exports = () => {
             '64': 'resource/64x64.png',
             '128': 'resource/128x128.png',
         },
+        'omnibox': { 'keyword': 'rigami' },
         'background': { 'service_worker': 'server.js' },
         'chrome_url_overrides': { 'newtab': 'index.html' },
         'host_permissions': ['https://danilkinkin.com/', '*://*/*'],

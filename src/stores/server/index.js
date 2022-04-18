@@ -11,6 +11,7 @@ import LocalBackupService from './localBackup';
 import BookmarksService from './bookmarksService';
 import WeatherService from './weatherService';
 import WallpapersService from './wallpapers';
+import OmniboxService from './omniboxService';
 import PersistentStorage from '@/stores/universal/storage/persistent';
 import StorageConnector from '@/stores/universal/storage/connector';
 
@@ -26,6 +27,7 @@ class ServerApp {
     weatherService;
     wallpapersService;
     factorySettingsService;
+    omniboxService;
     isOffline = !self.navigator.onLine;
 
     constructor() {
@@ -89,6 +91,8 @@ class ServerApp {
 
         // Other
         this.factorySettingsService = new FactorySettingsService(this);
+
+        this.omniboxService = new OmniboxService(this);
 
         console.log('Server app is run!');
     }
