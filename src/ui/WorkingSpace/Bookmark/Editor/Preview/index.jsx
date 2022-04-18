@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
     CardMedia,
     Box,
@@ -131,6 +131,22 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusButton,
     },
     tabsIndicator: { borderRadius: theme.shape.borderRadiusButton },
+    tabsScrollButton: {
+        width: theme.spacing(3),
+        margin: 0,
+        borderRadius: theme.shape.borderRadiusButton,
+        background: theme.palette.background.paper,
+        zIndex: 10,
+        opacity: 1,
+        transition: theme.transitions.create('', {
+            easing: theme.transitions.easing.easeInOut,
+            duration: theme.transitions.duration.standard,
+        }),
+    },
+    tabsScrollable: {
+        marginLeft: theme.spacing(-3),
+        marginRight: theme.spacing(-3),
+    },
 }));
 
 function PreviewCard(props) {
@@ -147,11 +163,7 @@ function PreviewCard(props) {
         tagsFull,
         className: externalClassName,
         onClick,
-        onChangeVariant,
     } = props;
-    const [tempVariant, setTempVariant] = useState(icoVariant);
-
-    console.log('icoVariant:', icoVariant, availableVariants, icoUrl);
 
     return (
         <Box>
@@ -161,6 +173,8 @@ function PreviewCard(props) {
                         classes={{
                             root: classes.tabsRoot,
                             indicator: classes.tabsIndicator,
+                            scrollButtons: classes.tabsScrollButton,
+                            scrollable: classes.tabsScrollable,
                         }}
                         indicatorColor="primary"
                         variant="scrollable"
@@ -175,7 +189,6 @@ function PreviewCard(props) {
                                 url: `${urlParsed.origin}${urlParsed.pathname}?${query}`,
                                 icoVariant: newValue,
                             });
-                            // if (onChangeVariant) onChangeVariant(newValue);
                         }}
                     >
                         {availableVariants.map((variant) => (
@@ -355,6 +368,8 @@ function Preview({ editorService: service }) {
                                         classes={{
                                             root: classes.tabsRoot,
                                             indicator: classes.tabsIndicator,
+                                            scrollButtons: classes.tabsScrollButton,
+                                            scrollable: classes.tabsScrollable,
                                         }}
                                         indicatorColor="primary"
                                         variant="scrollable"
