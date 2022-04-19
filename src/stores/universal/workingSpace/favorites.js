@@ -4,6 +4,7 @@ import Favorite from './entities/favorite';
 import { uuid } from '@/utils/generate/uuid';
 
 let cacheFavorites = [];
+let searchCache = {};
 
 class FavoritesUniversalService {
     @action('get all favorites')
@@ -11,6 +12,12 @@ class FavoritesUniversalService {
         const favorites = await db().getAll('favorites');
 
         cacheFavorites = favorites.map((favorite) => new Favorite(favorite));
+
+        searchCache = {};
+
+        cacheFavorites.forEach((fav) => {
+            searchCache[`${fav.itemType}#${fav.itemId}`] = fav;
+        });
 
         return cacheFavorites;
     }
@@ -44,7 +51,7 @@ class FavoritesUniversalService {
 
     @action('find favorite')
     static findFavorite({ itemType, itemId }) {
-        return cacheFavorites.find((fav) => fav.itemId === itemId && fav.itemType === itemType);
+        return searchCache[`${itemType}#${itemId}`];
     }
 
     @action('remove favorite')
