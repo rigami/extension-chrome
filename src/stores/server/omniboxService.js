@@ -27,12 +27,42 @@ class OmniboxService {
                 });
         });
 
-        chrome.omnibox.onInputEntered.addListener((text) => {
-            console.log('[omnibox] onInputEntered', text);
+        chrome.omnibox.onInputEntered.addListener(async (query, where) => {
+            console.log('[omnibox] onInputEntered', query, where);
 
-            chrome.tabs.create({
-                url: text,
-                active: true,
+            let url = '';
+
+            try {
+                // eslint-disable-next-line no-new
+                new URL(query);
+
+                url = query;
+            } catch (e) {
+                url = await BookmarksUniversalService.query(new SearchQuery({ query }))
+                    .then((result) => {
+                        const best = [...result.best, ...result.part, ...result.indirectly][0];
+
+                        if (best) {
+                            return best.url;
+                        }
+
+                        return null;
+                    });
+            }
+
+            if (!url) {
+                return;
+            }
+
+            chrome.tabs.query({ active: true }, ([tab]) => {
+                if (tab.url) {
+                    chrome.tabs.create({
+                        url,
+                        active: true,
+                    });
+                } else {
+                    chrome.tabs.update(tab.id, { url });
+                }
             });
         });
     }
