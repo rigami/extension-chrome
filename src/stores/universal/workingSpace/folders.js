@@ -1,9 +1,8 @@
 import { action } from 'mobx';
 import db from '@/utils/db';
-import Folder from '@/stores/universal/bookmarks/entities/folder';
-import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import nowInISO from '@/utils/nowInISO';
+import Folder from './entities/folder';
+import FavoritesUniversalService from './favorites';
+import BookmarksUniversalService from './bookmarks';
 import { FIRST_UUID, NULL_UUID, uuid } from '@/utils/generate/uuid';
 
 class FoldersUniversalService {

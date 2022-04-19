@@ -1,11 +1,11 @@
 import { makeAutoObservable, reaction, toJS } from 'mobx';
 import { captureException } from '@sentry/react';
 import { BKMS_VARIANT, FETCH } from '@/enum';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 import { getImage, getSiteInfo } from './utils/siteSearch';
 import { getDefaultImage, getNextImage } from './utils/checkIcons';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 
 export const STATE_EDITOR = {
     LOADING_EDITOR: 'LOADING_EDITOR',

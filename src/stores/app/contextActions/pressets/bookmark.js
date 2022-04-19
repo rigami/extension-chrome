@@ -1,7 +1,7 @@
 import copyToClipboard from 'copy-to-clipboard';
 import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import { ContentCopyFilled as CopyToClipboardIcon } from '@/icons';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
 
 const bookmarkContextMenu = ({ t, itemId }) => [
     new ContextMenuItem({

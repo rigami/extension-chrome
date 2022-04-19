@@ -12,7 +12,7 @@ import Tag from '@/ui/WorkingSpace/Tag';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { useSearchService } from '@/stores/app/search';
 import { BKMS_DISPLAY_VARIANT, BKMS_SORTING, FETCH } from '@/enum';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/workingSpace/bookmarks';
 import db from '@/utils/db';
 import stateRender from '@/utils/helpers/stateRender';
 import Header from '@/ui/WorkingSpace/BookmarksViewer/Header';

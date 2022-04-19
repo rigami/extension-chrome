@@ -1,6 +1,6 @@
 import { action, makeAutoObservable } from 'mobx';
 import { DESTINATION } from '@/enum';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 
 class TagsStore {
     _coreService;

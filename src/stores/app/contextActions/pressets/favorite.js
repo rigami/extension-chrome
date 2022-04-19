@@ -1,6 +1,6 @@
 import { StarBorderRounded as AddFavoriteIcon, StarRounded as RemoveFavoriteIcon } from '@material-ui/icons';
 import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import Favorite from '@/stores/universal/workingSpace/entities/favorite';
 
 const favoriteContextMenu = ({ workingSpaceService, t, itemType, itemId }) => {
     const isFavorite = workingSpaceService.findFavorite({

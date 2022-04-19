@@ -18,8 +18,8 @@ import appVariables from '@/config/config';
 import { BG_SOURCE, BKMS_VARIANT } from '@/enum';
 import db from '@/utils/db';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
+import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
+import Bookmark from '@/stores/universal/workingSpace/entities/bookmark';
 
 const useStyles = makeStyles((theme) => ({
     root: {

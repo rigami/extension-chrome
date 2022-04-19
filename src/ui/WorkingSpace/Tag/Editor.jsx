@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { captureException } from '@sentry/react';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 
 const useStyles = makeStyles((theme) => ({
     input: { padding: theme.spacing(1, 2) },

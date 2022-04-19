@@ -11,7 +11,7 @@ import Scrollbar from '@/ui-components/CustomScroll';
 import { useCoreService } from '@/stores/app/core';
 import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import PrimaryContent from '@/ui/WorkingSpace/PrimaryContent';
 import SecondaryContent from '@/ui/WorkingSpace/SecondaryContent';

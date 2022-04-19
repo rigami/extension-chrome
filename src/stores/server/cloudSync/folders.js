@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { map } from 'lodash';
 import db from '@/utils/db';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 import { DESTINATION } from '@/enum';
 

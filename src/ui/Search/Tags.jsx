@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 import Tag from '../WorkingSpace/Tag';
 
 const useStyles = makeStyles((theme) => ({

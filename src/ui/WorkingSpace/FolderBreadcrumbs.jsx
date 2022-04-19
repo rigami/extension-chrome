@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { ArrowForward as GoToIcon, HomeRounded as HomeIcon } from '@material-ui/icons';
 import clsx from 'clsx';
 import { FETCH } from '@/enum';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { NULL_UUID } from '@/utils/generate/uuid';
 

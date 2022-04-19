@@ -1,8 +1,8 @@
 import { DeleteRounded as RemoveIcon, EditRounded as EditIcon } from '@material-ui/icons';
 import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import { DriveFileMoveFilled as MoveIcon } from '@/icons';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 
 const editContextMenu = ({
     t,

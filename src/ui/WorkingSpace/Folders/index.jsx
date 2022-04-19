@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { captureException } from '@sentry/react';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { FETCH } from '@/enum';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 import asyncAction from '@/utils/helpers/asyncAction';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import TreeFolders from './TreeFolders';

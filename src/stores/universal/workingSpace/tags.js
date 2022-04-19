@@ -1,10 +1,9 @@
 import { action } from 'mobx';
-import { cloneDeep, last } from 'lodash';
+import { cloneDeep } from 'lodash';
 import db from '@/utils/db';
-import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
-import Tag from '@/stores/universal/bookmarks/entities/tag';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
-import nowInISO from '@/utils/nowInISO';
+import Tag from './entities/tag';
+import FavoritesUniversalService from './favorites';
+import BookmarksUniversalService, { SearchQuery } from './bookmarks';
 import { uuid } from '@/utils/generate/uuid';
 
 class TagsUniversalService {

@@ -16,7 +16,7 @@ import { filter } from 'lodash';
 import { captureException } from '@sentry/react';
 import { runInAction } from 'mobx';
 import Tag from '../../Tag';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 
 const useStyles = makeStyles((theme) => ({

@@ -1,8 +1,8 @@
 import { values, intersectionWith, isEqual } from 'lodash';
-import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
+import FavoritesUniversalService from '@/stores/universal/workingSpace/favorites';
 import db from '@/utils/db';
-import { COMPARE, SearchQuery } from '@/stores/universal/bookmarks/searchQuery';
-import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
+import { COMPARE, SearchQuery } from '@/stores/universal/workingSpace/searchQuery';
+import Bookmark from '@/stores/universal/workingSpace/entities/bookmark';
 
 export const compare = (q, bookmark) => {
     let folder;

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles, alpha } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { ExtendButtonGroup } from '@/ui-components/ExtendButton';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 import Tag from '@/ui/WorkingSpace/Tag';
 import Collapser from '@/ui/WorkingSpace/Tag/Collapser';
 

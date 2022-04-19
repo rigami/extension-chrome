@@ -1,7 +1,7 @@
 import { action, makeAutoObservable } from 'mobx';
 import { captureException } from '@sentry/react';
 import { DESTINATION } from '@/enum';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
 
 class BookmarksStore {
     _coreService;

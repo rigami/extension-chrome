@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import db from '@/utils/db';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 import { DESTINATION } from '@/enum';
 import { NULL_UUID } from '@/utils/generate/uuid';
 

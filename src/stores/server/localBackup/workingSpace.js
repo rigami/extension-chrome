@@ -1,14 +1,14 @@
 import { makeAutoObservable } from 'mobx';
 import { omit, uniq } from 'lodash';
 import { captureException } from '@sentry/browser';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
+import FavoritesUniversalService from '@/stores/universal/workingSpace/favorites';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
+import Favorite from '@/stores/universal/workingSpace/entities/favorite';
 import fetchData from '@/utils/helpers/fetchData';
-import Tag from '@/stores/universal/bookmarks/entities/tag';
-import Folder from '@/stores/universal/bookmarks/entities/folder';
+import Tag from '@/stores/universal/workingSpace/entities/tag';
+import Folder from '@/stores/universal/workingSpace/entities/folder';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 
 class WorkingSpace {

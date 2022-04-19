@@ -1,5 +1,5 @@
 import { makeAutoObservable, toJS } from 'mobx';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/workingSpace/bookmarks';
 
 class OmniboxService {
     core;

@@ -1,6 +1,6 @@
 import { action, makeAutoObservable } from 'mobx';
 import { DESTINATION } from '@/enum';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 
 class FoldersStore {
     _coreService;

@@ -10,7 +10,7 @@ import { PREPARE_PROGRESS } from '@/stores/app/core/service';
 import { eventToApp } from '@/stores/universal/serviceBus';
 import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/storage/auth';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 import timeout from '@/utils/helpers/timeout';
 

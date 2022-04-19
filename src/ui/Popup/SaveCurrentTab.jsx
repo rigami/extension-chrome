@@ -4,7 +4,7 @@ import { captureException } from '@sentry/react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import asyncAction from '@/utils/helpers/asyncAction';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/workingSpace/bookmarks';
 import EditorBookmark from '@/ui/WorkingSpace/Bookmark/Editor';
 import Stub from '@/ui-components/Stub';
 

@@ -4,7 +4,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import { BKMS_DISPLAY_VARIANT, BKMS_SORTING, FETCH } from '@/enum';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/workingSpace/bookmarks';
 import stateRender from '@/utils/helpers/stateRender';
 import BookmarksGrid from '@/ui/WorkingSpace/BookmarksViewer/BookmarksGrid';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';

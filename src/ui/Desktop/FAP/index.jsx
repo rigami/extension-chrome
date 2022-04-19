@@ -12,13 +12,13 @@ import {
     BKMS_FAP_POSITION,
     BKMS_FAP_STYLE,
 } from '@/enum';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
-import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
-import TagEntity from '@/stores/universal/bookmarks/entities/tag';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
+import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
+import BookmarkEntity from '@/stores/universal/workingSpace/entities/bookmark';
+import FolderEntity from '@/stores/universal/workingSpace/entities/folder';
+import TagEntity from '@/stores/universal/workingSpace/entities/tag';
 import { useAppStateService } from '@/stores/app/appState';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 import asyncAction from '@/utils/helpers/asyncAction';
 import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
 import { useCoreService } from '@/stores/app/core';

@@ -3,8 +3,8 @@ import { Button, Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { PopoverDialogHeader } from '@/ui-components/PopoverDialog';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 import Folders from '@/ui/WorkingSpace/Folders';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import asyncAction from '@/utils/helpers/asyncAction';
@@ -15,12 +15,8 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 400,
         margin: 0,
     },
-    folders: {
-        padding: theme.spacing(0.5),
-    },
-    headerButton: {
-        borderRadius: theme.shape.borderRadiusButton
-    },
+    folders: { padding: theme.spacing(0.5) },
+    headerButton: { borderRadius: theme.shape.borderRadiusButton },
 }));
 
 function MoveDialog(props) {
@@ -52,7 +48,7 @@ function MoveDialog(props) {
                 parentId: id,
             });
         }
-    }
+    };
 
     useEffect(() => {
         asyncAction(async () => {
@@ -61,14 +57,14 @@ function MoveDialog(props) {
             if (itemType === 'bookmark') {
                 const bookmark = await BookmarksUniversalService.get(itemId);
 
-                setDefaultMoveId(bookmark.folderId)
+                setDefaultMoveId(bookmark.folderId);
             }
             if (itemType === 'folder') {
                 const folder = await FoldersUniversalService.get(itemId);
 
-                setDefaultMoveId(folder.parentId)
+                setDefaultMoveId(folder.parentId);
             }
-        })
+        });
     }, []);
 
     return (
@@ -100,7 +96,7 @@ function MoveDialog(props) {
                 defaultExpanded={itemType === 'folder' ? [itemParentId] : [moveId]}
                 onClickFolder={async ({ id }) => {
                     setMoveId(id);
-                    await move(id)
+                    await move(id);
                 }}
             />
         </Box>

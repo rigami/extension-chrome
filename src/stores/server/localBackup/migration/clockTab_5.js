@@ -7,9 +7,9 @@ import {
     BKMS_FAP_STYLE, BKMS_VARIANT,
     THEME,
 } from '@/enum';
-import Folder from '@/stores/universal/bookmarks/entities/folder';
-import Bookmark from '@/stores/universal/bookmarks/entities/bookmark';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import Folder from '@/stores/universal/workingSpace/entities/folder';
+import Bookmark from '@/stores/universal/workingSpace/entities/bookmark';
+import Favorite from '@/stores/universal/workingSpace/entities/favorite';
 
 const migrateSettings = (backup) => {
     const types = [BG_TYPE.ANIMATION];

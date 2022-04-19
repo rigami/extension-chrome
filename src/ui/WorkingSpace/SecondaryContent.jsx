@@ -18,7 +18,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { FETCH } from '@/enum';
 import asyncAction from '@/utils/helpers/asyncAction';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import BookmarksViewer from '@/ui/WorkingSpace/BookmarksViewer';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';

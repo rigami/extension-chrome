@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocalObservable, observer } from 'mobx-react-lite';
 import { captureException } from '@sentry/react';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { NULL_UUID } from '@/utils/generate/uuid';
 

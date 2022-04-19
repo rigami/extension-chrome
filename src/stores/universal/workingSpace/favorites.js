@@ -1,6 +1,6 @@
 import { action } from 'mobx';
 import db from '@/utils/db';
-import Favorite from '@/stores/universal/bookmarks/entities/favorite';
+import Favorite from './entities/favorite';
 import { uuid } from '@/utils/generate/uuid';
 
 let cacheFavorites = [];

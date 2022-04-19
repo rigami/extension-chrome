@@ -22,7 +22,7 @@ import {
 } from 'lodash';
 import clsx from 'clsx';
 import stateRender from '@/utils/helpers/stateRender';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/workingSpace/bookmarks';
 import { FETCH } from '@/enum';
 import FolderBreadcrumbs from '@/ui/WorkingSpace/FolderBreadcrumbs';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';

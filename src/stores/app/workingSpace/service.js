@@ -1,7 +1,7 @@
 import { action, makeAutoObservable, reaction } from 'mobx';
 import { BKMS_FAP_STYLE, DESTINATION } from '@/enum';
 import WorkingSpaceSettings from '@/stores/universal/settings/workingSpace';
-import FavoritesUniversalService from '@/stores/universal/bookmarks/favorites';
+import FavoritesUniversalService from '@/stores/universal/workingSpace/favorites';
 import TagsStore from './tags';
 import FoldersStore from './folders';
 import BookmarksStore from './bookmarks';

@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import db from '@/utils/db';
 import { DESTINATION } from '@/enum';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
+import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
 
 class CloudSyncBookmarksService {
     core;

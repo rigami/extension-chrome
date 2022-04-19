@@ -5,17 +5,17 @@ import { captureException } from '@sentry/react';
 import { makeStyles } from '@material-ui/core/styles';
 import { StarRounded as CheckIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
+import BookmarkEntity from '@/stores/universal/workingSpace/entities/bookmark';
 import Link from '@/ui/Desktop/FAP/Link';
-import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
+import FolderEntity from '@/stores/universal/workingSpace/entities/folder';
 import Folder from '@/ui/Desktop/FAP/Folder';
-import TagEntity from '@/stores/universal/bookmarks/entities/tag';
+import TagEntity from '@/stores/universal/workingSpace/entities/tag';
 import Tag from '@/ui/Desktop/FAP/Tag';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import asyncAction from '@/utils/helpers/asyncAction';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 
 const useStyles = makeStyles((theme) => ({
     root: {
