@@ -40,7 +40,7 @@ class OmniboxService {
             } catch (e) {
                 url = await BookmarksUniversalService.query(new SearchQuery({ query }))
                     .then((result) => {
-                        const best = [...result.best, ...result.part, ...result.indirectly][0];
+                        const best = [...result.best, ...result.part][0];
 
                         if (best) {
                             return best.url;
