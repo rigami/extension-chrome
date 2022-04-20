@@ -151,7 +151,14 @@ export const search = async (searchRequest = new SearchQuery()) => {
 
     await transaction.done; */
 
-    const allBookmarks = await db().getAll('bookmarks');
+    let allBookmarks;
+
+    if (searchRequest.folderId) {
+        allBookmarks = await db().getAllFromIndex('bookmarks', 'folder_id', searchRequest.folderId);
+    } else {
+        allBookmarks = await db().getAll('bookmarks');
+    }
+
     const allTags = {};
 
     (await db().getAll('tags')).forEach((tag) => {
