@@ -85,6 +85,7 @@ function Search() {
         if (event && event.path.find((elem) => (
             elem.dataset?.role === 'contextmenu'
             || elem.dataset?.role === 'dialog'
+            || elem.dataset?.role === 'contextpopover'
         ))) return;
 
         setIsOpen(false);
