@@ -1,10 +1,15 @@
-import { values, intersectionWith, isEqual } from 'lodash';
-import FavoritesUniversalService from '@/stores/universal/workingSpace/favorites';
-import db from '@/utils/db';
-import { COMPARE, SearchQuery } from '@/stores/universal/workingSpace/searchQuery';
-import Bookmark from '@/stores/universal/workingSpace/entities/bookmark';
+import { intersectionWith, isEqual } from 'lodash';
+import FavoritesUniversalService from '../favorites';
 
-export const compare = (q, bookmark) => {
+const COMPARE = {
+    FULL: 'FULL',
+    PART: 'PART',
+    INDIRECTLY: 'INDIRECTLY',
+    NONE: 'NONE',
+    IGNORE: 'IGNORE',
+};
+
+function compare(q, bookmark) {
     let folder;
 
     if (!q.folderId) {
@@ -117,91 +122,7 @@ export const compare = (q, bookmark) => {
         folder,
         summary,
     };
-};
+}
 
-export const search = async (searchRequest = new SearchQuery()) => {
-    const bestMatches = {};
-    const partMatches = {};
-    const indirectlyMatches = {};
-    const allMatches = {};
-
-    console.log('[search] searchRequest', searchRequest);
-
-    console.time('query');
-    // Save memory method, but slowly 10x
-    /* const transaction = db().transaction('bookmarks', 'readonly');
-
-    for await (const cursor of transaction.store) {
-        const compareResult = compare(searchRequest, cursor.value);
-
-        if (searchRequest.folderId && compareResult.folder === COMPARE.NONE) {
-            cursor.continue();
-            continue;
-        }
-
-        if (compareResult.summary === COMPARE.FULL) {
-            bestMatches[cursor.value.id] = cursor.value;
-            allMatches[cursor.value.id] = cursor.value;
-        } else if (compareResult.summary === COMPARE.PART) {
-            allMatches[cursor.value.id] = cursor.value;
-        }
-
-        cursor.continue();
-    }
-
-    await transaction.done; */
-
-    let allBookmarks;
-
-    if (searchRequest.folderId) {
-        allBookmarks = await db().getAllFromIndex('bookmarks', 'folder_id', searchRequest.folderId);
-    } else {
-        allBookmarks = await db().getAll('bookmarks');
-    }
-
-    const allTags = {};
-
-    (await db().getAll('tags')).forEach((tag) => {
-        allTags[tag.id] = tag;
-    });
-
-    allBookmarks.forEach((bookmark) => {
-        const compareResult = compare(searchRequest, bookmark);
-
-        console.log(`[search] folderId:${searchRequest.folderId} compare:${compareResult.folder}`);
-
-        if (searchRequest.folderId && compareResult.folder === COMPARE.NONE) return;
-
-        if (compareResult.summary === COMPARE.FULL) {
-            const entity = new Bookmark({
-                ...bookmark,
-                tagsFull: bookmark.tags.map((tagId) => allTags[tagId]),
-            });
-
-            bestMatches[bookmark.id] = entity;
-            allMatches[bookmark.id] = entity;
-        } else if (compareResult.summary === COMPARE.PART) {
-            allMatches[bookmark.id] = new Bookmark({
-                ...bookmark,
-                tagsFull: bookmark.tags.map((tagId) => allTags[tagId]),
-            });
-
-            partMatches[bookmark.id] = allMatches[bookmark.id];
-        } else if (compareResult.summary === COMPARE.INDIRECTLY) {
-            allMatches[bookmark.id] = new Bookmark({
-                ...bookmark,
-                tagsFull: bookmark.tags.map((tagId) => allTags[tagId]),
-            });
-
-            indirectlyMatches[bookmark.id] = allMatches[bookmark.id];
-        }
-    });
-    console.timeEnd('query');
-
-    return {
-        best: values(bestMatches),
-        part: values(partMatches),
-        indirectly: values(indirectlyMatches),
-        all: values(allMatches),
-    };
-};
+export default compare;
+export { COMPARE, compare };

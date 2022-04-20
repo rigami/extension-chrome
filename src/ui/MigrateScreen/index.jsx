@@ -18,8 +18,8 @@ import appVariables from '@/config/config';
 import { BG_SOURCE, BKMS_VARIANT } from '@/enum';
 import db from '@/utils/db';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
-import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
 import Bookmark from '@/stores/universal/workingSpace/entities/bookmark';
+import { search } from '@/stores/universal/workingSpace/search';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -148,7 +148,7 @@ function MigrateScreen({ onStart }) {
                 console.log('wallpaper:', wallpaper);
             }
 
-            const { all: allBookmarks } = await BookmarksUniversalService.query();
+            const { all: allBookmarks } = await search();
             const cacheIcons = await caches.open('icons');
             index = 0;
 

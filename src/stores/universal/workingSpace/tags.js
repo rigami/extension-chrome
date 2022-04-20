@@ -3,8 +3,8 @@ import { cloneDeep } from 'lodash';
 import db from '@/utils/db';
 import Tag from './entities/tag';
 import FavoritesUniversalService from './favorites';
-import BookmarksUniversalService, { SearchQuery } from './bookmarks';
 import { uuid } from '@/utils/generate/uuid';
+import { search, SearchQuery } from './search';
 
 class TagsUniversalService {
     @action
@@ -106,7 +106,7 @@ class TagsUniversalService {
             await FavoritesUniversalService.removeFromFavorites(favoriteItem.id);
         }
 
-        const { all: bookmarks } = await BookmarksUniversalService.query(new SearchQuery({ tags: [tagId] }));
+        const { all: bookmarks } = await search(new SearchQuery({ tags: [tagId] }));
 
         await Promise.all(bookmarks.map(({ tags, ...bookmark }) => db().put('bookmarks', cloneDeep({
             ...bookmark,

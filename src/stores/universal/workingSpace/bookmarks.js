@@ -2,15 +2,12 @@ import { action } from 'mobx';
 import { cloneDeep } from 'lodash';
 import { captureException } from '@sentry/browser';
 import db from '@/utils/db';
-import Bookmark from '@/stores/universal/workingSpace/entities/bookmark';
-import FavoritesUniversalService from '@/stores/universal/workingSpace/favorites';
-import { search as searchLight } from '@/stores/universal/workingSpace/search';
-import appVariables from '@/config/config';
+import Bookmark from './entities/bookmark';
+import FavoritesUniversalService from './favorites';
 import getPreview from '@/utils/createPreview';
 import { BG_TYPE } from '@/enum';
 import { uuid } from '@/utils/generate/uuid';
-import nowInISO from '@/utils/nowInISO';
-import { SearchQuery } from './searchQuery';
+import { search as searchLight } from './search';
 import api from '@/utils/helpers/api';
 
 class BookmarksUniversalService {
@@ -178,20 +175,6 @@ class BookmarksUniversalService {
             }
         }
     }
-
-    @action('query bookmarks')
-    static async query(searchRequest) {
-        try {
-            return searchLight(searchRequest);
-        } catch (e) {
-            console.error(e);
-            captureException(e);
-
-            return Promise.reject(e);
-        }
-    }
 }
-
-export { SearchQuery };
 
 export default BookmarksUniversalService;

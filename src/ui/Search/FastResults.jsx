@@ -22,7 +22,6 @@ import {
 } from 'lodash';
 import clsx from 'clsx';
 import stateRender from '@/utils/helpers/stateRender';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/workingSpace/bookmarks';
 import { FETCH } from '@/enum';
 import FolderBreadcrumbs from '@/ui/WorkingSpace/FolderBreadcrumbs';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
@@ -31,6 +30,7 @@ import Stub from '@/ui-components/Stub';
 import { useHotKeysService } from '@/stores/app/hotKeys';
 import RowItem from '@/ui/WorkingSpace/Bookmark/Row';
 import { useNavigationService } from '@/stores/app/navigation';
+import { search, SearchQuery } from '@/stores/universal/workingSpace/search';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -136,7 +136,7 @@ function FastResults({ onGoToFolder }) {
         store.requestId += 1;
         const currentRequestId = store.requestId;
 
-        BookmarksUniversalService.query(new SearchQuery({
+        search(new SearchQuery({
             query: searchService.tempSearchRequest.query,
             tags: searchService.tempSearchRequest.tags,
         }))

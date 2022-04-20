@@ -1,14 +1,6 @@
 import { computed } from 'mobx';
 
-export const COMPARE = {
-    FULL: 'FULL',
-    PART: 'PART',
-    INDIRECTLY: 'INDIRECTLY',
-    NONE: 'NONE',
-    IGNORE: 'IGNORE',
-};
-
-export class SearchQuery {
+export default class SearchQuery {
     tags = [];
     folderId = null;
     query = '';

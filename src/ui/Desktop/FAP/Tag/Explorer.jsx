@@ -18,7 +18,6 @@ import { observer } from 'mobx-react-lite';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import Scrollbar from '@/ui-components/CustomScroll';
 import Stub from '@/ui-components/Stub';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/workingSpace/bookmarks';
 import BookmarksGrid from '@/ui/WorkingSpace/BookmarksViewer/BookmarksGrid';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { useCoreService } from '@/stores/app/core';
@@ -26,6 +25,7 @@ import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import { useContextEdit } from '@/stores/app/contextActions';
+import { search, SearchQuery } from '@/stores/universal/workingSpace/search';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -71,7 +71,7 @@ function Folder({ id }) {
     useEffect(() => {
         setIsSearching(true);
         TagsUniversalService.get(id).then((findTag) => setTag(findTag));
-        BookmarksUniversalService.query(new SearchQuery({ tags: [id] }))
+        search(new SearchQuery({ tags: [id] }))
             .then(({ all }) => {
                 setFindBookmarks(all);
                 setIsSearching(false);

@@ -6,7 +6,7 @@ import {
     size,
     isEqual,
 } from 'lodash';
-import { SearchQuery } from '@/stores/universal/workingSpace/searchQuery';
+import { SearchQuery } from '@/stores/universal/workingSpace/search';
 import { NULL_UUID } from '@/utils/generate/uuid';
 
 export const SEARCH_STATE = {

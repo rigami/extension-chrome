@@ -4,9 +4,9 @@ import { captureException } from '@sentry/react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import asyncAction from '@/utils/helpers/asyncAction';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/workingSpace/bookmarks';
 import EditorBookmark from '@/ui/WorkingSpace/Bookmark/Editor';
 import Stub from '@/ui-components/Stub';
+import { search, SearchQuery } from '@/stores/universal/workingSpace/search';
 
 const useStyles = makeStyles(() => ({
     editor: { padding: 0 },
@@ -41,7 +41,7 @@ function SaveCurrentTabEditor() {
                 resolve();
             }));
 
-            const res = await BookmarksUniversalService.query(new SearchQuery({ query: data.url }));
+            const res = await search(new SearchQuery({ query: data.url }));
 
             if (res.best && res.best.length !== 0) {
                 data.id = first(res.best)?.id;

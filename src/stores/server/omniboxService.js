@@ -1,5 +1,5 @@
 import { makeAutoObservable, toJS } from 'mobx';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/workingSpace/bookmarks';
+import { search, SearchQuery } from '@/stores/universal/workingSpace/search';
 
 class OmniboxService {
     core;
@@ -15,7 +15,7 @@ class OmniboxService {
         chrome.omnibox.onInputChanged.addListener((text, suggest) => {
             console.log('[omnibox] onInputChanged', text);
 
-            BookmarksUniversalService.query(new SearchQuery({ query: text }))
+            search(new SearchQuery({ query: text }))
                 .then((result) => {
                     console.log('[omnibox] Search result:', toJS(result));
 
@@ -38,7 +38,7 @@ class OmniboxService {
 
                 url = query;
             } catch (e) {
-                url = await BookmarksUniversalService.query(new SearchQuery({ query }))
+                url = await search(new SearchQuery({ query }))
                     .then((result) => {
                         const best = [...result.best, ...result.part][0];
 

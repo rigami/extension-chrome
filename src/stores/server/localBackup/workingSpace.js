@@ -10,6 +10,7 @@ import fetchData from '@/utils/helpers/fetchData';
 import Tag from '@/stores/universal/workingSpace/entities/tag';
 import Folder from '@/stores/universal/workingSpace/entities/folder';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
+import { search } from '@/stores/universal/workingSpace/search';
 
 class WorkingSpace {
     core;
@@ -22,7 +23,7 @@ class WorkingSpace {
     async collect() {
         if (BUILD !== 'full') return {};
 
-        const { all: bookmarksAll } = await BookmarksUniversalService.query();
+        const { all: bookmarksAll } = await search();
 
         const bookmarks = await Promise.all(bookmarksAll.map(async (bookmark) => {
             let image;
@@ -78,7 +79,7 @@ class WorkingSpace {
             favorites,
         }, this.core);
 
-        const { all: localBookmarks } = await BookmarksUniversalService.query();
+        const { all: localBookmarks } = await search();
         const localTags = await TagsUniversalService.getAll();
         const localFolders = await FoldersUniversalService.getTree();
         const localFavorites = await FavoritesUniversalService.getAll();
