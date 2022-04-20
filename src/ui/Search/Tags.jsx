@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Collapse, Divider } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -56,25 +56,28 @@ function Tags(props) {
     }, [workingSpaceService.lastTruthSearchTimestamp, onlyFavorites]);
 
     return (
-        <Box className={clsx(classes.root, externalClassName)}>
-            {tags.map(({ id, name, colorKey }) => (
-                <Tag
-                    key={id}
-                    id={id}
-                    name={name}
-                    colorKey={colorKey}
-                    className={classes.tag}
-                    isSelect={selectedTags.includes(id)}
-                    onClick={() => {
-                        if (selectedTags.includes(id)) {
-                            setSelectedTags(selectedTags.filter((cId) => cId !== id));
-                        } else {
-                            setSelectedTags([...selectedTags, id]);
-                        }
-                    }}
-                />
-            ))}
-        </Box>
+        <Collapse in={tags.length > 0}>
+            <Divider />
+            <Box className={clsx(classes.root, externalClassName)}>
+                {tags.map(({ id, name, colorKey }) => (
+                    <Tag
+                        key={id}
+                        id={id}
+                        name={name}
+                        colorKey={colorKey}
+                        className={classes.tag}
+                        isSelect={selectedTags.includes(id)}
+                        onClick={() => {
+                            if (selectedTags.includes(id)) {
+                                setSelectedTags(selectedTags.filter((cId) => cId !== id));
+                            } else {
+                                setSelectedTags([...selectedTags, id]);
+                            }
+                        }}
+                    />
+                ))}
+            </Box>
+        </Collapse>
     );
 }
 

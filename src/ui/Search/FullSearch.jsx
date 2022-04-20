@@ -50,7 +50,6 @@ function FullSearch({ onClose }) {
                     searchService.updateRequest({ query: newQuery });
                 }}
             />
-            <Divider />
             <Tags
                 className={classes.tags}
                 value={searchService.tempSearchRequest.tags}
