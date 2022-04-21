@@ -144,7 +144,7 @@ function Bookmarks() {
             <Box flexGrow={1} overflow="auto" ref={ref}>
                 <Scrollbar>
                     <ToolsPanel />
-                    <Box className={classes.container}>
+                    <Box key={navigationService.folderId} className={classes.container}>
                         <Box className={classes.content}>
                             <PrimaryContent columns={store.columnsCount} />
                             {
