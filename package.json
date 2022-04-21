@@ -24,10 +24,10 @@
         "dev-wallpapers": "BUILD=wallpapers yarn dev",
         "dev-wallpapers:prod-env": "BUILD=wallpapers PRODUCTION_ENV=true yarn dev",
         "build-full": "BUILD=full yarn build",
-        "build-full:release-build": "COLLECT_LOGS=true yarn build-full && BUILD=full yarn build:zip",
+        "build-full:release-build": "COLLECT_LOGS=false yarn build-full && BUILD=full yarn build:zip",
         "build-full:analyze": "ANALYZE=true yarn build",
         "build-wallpapers": "BUILD=wallpapers yarn build",
-        "build-wallpapers:release-build": "COLLECT_LOGS=true yarn build-wallpapers && BUILD=wallpapers yarn build:zip",
+        "build-wallpapers:release-build": "COLLECT_LOGS=false yarn build-wallpapers && BUILD=wallpapers yarn build:zip",
         "build-wallpapers:analyze": "ANALYZE=true yarn build-wallpapers",
         "build:release": "yarn release:clear && yarn build-full:release-build && yarn build-wallpapers:release-build && yarn release"
     },
