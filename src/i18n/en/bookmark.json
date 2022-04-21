@@ -37,6 +37,12 @@
       "enterRequest": "Enter address",
       "selectResult": "Select a search result",
       "enterName": "Enter bookmark name"
+    },
+    "iconVariant": {
+      "SMALL-ICON": "Simple icon",
+      "ICON": "Icon",
+      "POSTER": "Poster",
+      "COVER": "Cover"
     }
   },
   "button": {
