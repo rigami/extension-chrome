@@ -36,12 +36,21 @@ class StreamWallpapersService {
             return this.core.wallpapersService.local.next();
         }
 
+        let nextWallpaper;
+
         if (!first(this.storage.data.wallpapersStreamQueue).isLoad) {
             try {
-                await WallpapersUniversalService.fetch(
+                const { url, previewUrl } = await WallpapersUniversalService.fetch(
                     first(this.storage.data.wallpapersStreamQueue),
                     { preview: false },
                 );
+
+                nextWallpaper = new Wallpaper({
+                    ...first(this.storage.data.wallpapersStreamQueue),
+                    fullSrc: url,
+                    previewSrc: previewUrl,
+                    isLoad: true,
+                });
             } catch (e) {
                 bindConsole.error('Failed prefetch wallpaper. Get next...', e);
                 captureException(e);
@@ -52,7 +61,7 @@ class StreamWallpapersService {
             }
         }
 
-        const nextWallpaper = new Wallpaper({
+        nextWallpaper = nextWallpaper || new Wallpaper({
             ...first(this.storage.data.wallpapersStreamQueue),
             isLoad: true,
         });
@@ -120,7 +129,20 @@ class StreamWallpapersService {
         const nextPrepare = this.storage.data.wallpapersStreamQueue[nextPrepareIndex];
 
         try {
-            await WallpapersUniversalService.fetch(nextPrepare, { preview: false });
+            const { url, previewUrl } = await WallpapersUniversalService.fetch(nextPrepare, { preview: false });
+
+            this.storage.update({
+                wallpapersStreamQueue: this.storage.data.wallpapersStreamQueue.map((bg) => {
+                    if (bg.id !== nextPrepare.id) return bg;
+
+                    return {
+                        ...bg,
+                        fullSrc: url,
+                        previewSrc: previewUrl,
+                        isLoad: true,
+                    };
+                }),
+            });
         } catch (e) {
             bindConsole.error('Failed prefetch wallpaper. Remove from queue and fetch next...', e);
             captureException(e);
@@ -130,17 +152,6 @@ class StreamWallpapersService {
             this._isPreparing = false;
             return this._prepareNextInQueue();
         }
-
-        this.storage.update({
-            wallpapersStreamQueue: this.storage.data.wallpapersStreamQueue.map((bg) => {
-                if (bg.id !== nextPrepare.id) return bg;
-
-                return {
-                    ...bg,
-                    isLoad: true,
-                };
-            }),
-        });
 
         if (
             nextPrepareIndex < appVariables.wallpapers.stream.prefetchCount

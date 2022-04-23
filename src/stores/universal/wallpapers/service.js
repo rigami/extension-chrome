@@ -108,6 +108,14 @@ class WallpapersUniversalService {
             return Promise.reject(e);
         }
 
+        const addedCacheMarker = (rawUrl) => {
+            const parsed = new URL(rawUrl);
+
+            parsed.searchParams.set('cache-scope', 'wallpapers');
+
+            return `${parsed.origin}${parsed.pathname}?${parsed.searchParams}`;
+        };
+
         if (preview) {
             try {
                 bindConsole.log('Create preview...');
@@ -118,10 +126,13 @@ class WallpapersUniversalService {
                         previewBlob
                         || (await fetchData(wallpaper.previewSrc, { responseType: 'blob' })).response
                     );
-                    await cacheManager.cache('backgrounds', previewUrl, previewBG);
+                    previewUrl = addedCacheMarker(previewUrl);
+
+                    await cacheManager.cache('wallpapers', previewUrl, previewBG);
                 } else {
                     previewUrl = wallpaper.previewSrc || api.computeUrl(`wallpapers/${wallpaper.id}/preview`);
-                    await cacheManager.cache('backgrounds', previewUrl);
+                    previewUrl = addedCacheMarker(previewUrl);
+                    await cacheManager.cache('wallpapers', previewUrl);
                 }
             } catch (e) {
                 bindConsole.warn('Failed create preview:', e);
@@ -134,11 +145,13 @@ class WallpapersUniversalService {
 
             if (wallpaper.source === BG_SOURCE.USER) {
                 url = api.computeUrl(`wallpapers/${wallpaper.id}`);
+                url = addedCacheMarker(url);
 
-                await cacheManager.cache('backgrounds', url, fullBG);
+                await cacheManager.cache('wallpapers', url, fullBG);
             } else {
                 url = wallpaper.fullSrc;
-                await cacheManager.cache('backgrounds', url);
+                url = addedCacheMarker(url);
+                await cacheManager.cache('wallpapers', url);
             }
         }
 
