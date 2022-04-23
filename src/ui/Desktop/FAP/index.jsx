@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
         // minHeight: theme.spacing(6) + theme.spacing(2.5) + 40,
     },
     card: {
-        minWidth: (40 + theme.spacing(2)) * 6 + 40 + theme.spacing(1.25) * 2,
+        minWidth: (40 + theme.spacing(1.5)) * 7 - theme.spacing(1.5) + theme.spacing(1.25) * 2,
         margin: 'auto',
         pointerEvents: 'auto',
         borderRadius: 8,
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 60,
     },
     link: {
-        marginRight: theme.spacing(2),
+        marginRight: theme.spacing(1.5),
         padding: 0,
         '&:last-child': { marginRight: 0 },
     },
