@@ -23,6 +23,7 @@ class BookmarkEditor {
     icoVariant;
     icoUrl = '';
     sourceIcoUrl = '';
+    icoSafeZone = false;
     name = '';
     description = '';
     useDescription;
@@ -57,6 +58,7 @@ class BookmarkEditor {
                     this.url = bookmark.url;
                     this.name = bookmark.name;
                     this.sourceIcoUrl = bookmark.sourceIcoUrl;
+                    this.icoSafeZone = bookmark.icoSafeZone;
                     this.icoUrl = bookmark.icoUrl;
                     this.icoVariant = bookmark.icoVariant;
                     this.useDescription = !!bookmark.description?.trim();
@@ -67,6 +69,7 @@ class BookmarkEditor {
                     this.defaultImage = {
                         url: bookmark.icoUrl,
                         sourceUrl: bookmark.sourceIcoUrl,
+                        icoSafeZone: bookmark.icoSafeZone,
                         icoVariant: bookmark.icoVariant,
                         availableVariants: [],
                         state: FETCH.WAIT,
@@ -125,6 +128,7 @@ class BookmarkEditor {
             description: (this.useDescription && this.description?.trim()) || '',
             icoUrl: this.icoUrl,
             sourceIcoUrl: this.sourceIcoUrl,
+            icoSafeZone: this.icoSafeZone,
             tags: this.tags,
             folderId: this.folderId,
             icoVariant: this.icoVariant,
@@ -152,6 +156,7 @@ class BookmarkEditor {
             this.url = currentFetchUrl;
             this.icoUrl = null;
             this.sourceIcoUrl = null;
+            this.icoSafeZone = null;
             this.defaultImage = null;
         } else if (this.defaultImage?.url) {
             this.defaultImage = {
@@ -199,6 +204,7 @@ class BookmarkEditor {
             if (!onlyAdditionalIcons) {
                 this.icoUrl = '';
                 this.sourceIcoUrl = '';
+                this.icoSafeZone = false;
                 this.icoVariant = BKMS_VARIANT.SYMBOL;
             }
             this.allImages = [];
@@ -234,7 +240,7 @@ class BookmarkEditor {
         }
     }
 
-    setPreview({ url, sourceUrl, icoVariant }) {
+    setPreview({ url, sourceUrl, icoVariant, safeZone }) {
         console.log('setPreview:', {
             url,
             sourceUrl,
@@ -243,6 +249,7 @@ class BookmarkEditor {
         this.icoUrl = url;
         this.sourceIcoUrl = sourceUrl;
         this.icoVariant = icoVariant;
+        this.icoSafeZone = safeZone;
         if (this.folderId) this.unsavedChange = true;
     }
 

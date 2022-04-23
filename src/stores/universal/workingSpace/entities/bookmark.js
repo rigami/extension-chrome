@@ -12,6 +12,7 @@ class Bookmark {
     icoUrl;
     imageBase64;
     icoFileName;
+    icoSafeZone;
     tags;
     tagsFull;
     folderId;
@@ -28,6 +29,7 @@ class Bookmark {
         this.description = bookmark.description || '';
         this.icoVariant = bookmark.icoVariant || BKMS_VARIANT.SYMBOL;
         this.sourceIcoUrl = bookmark.sourceIcoUrl;
+        this.icoSafeZone = bookmark.icoSafeZone;
         this.icoUrl = bookmark.icoUrl;
         this.imageBase64 = bookmark.imageBase64;
         this.tags = bookmark.tags || [];

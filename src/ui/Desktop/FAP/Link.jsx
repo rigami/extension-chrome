@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { first } from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import Image from '@/ui-components/Image';
 import { BKMS_VARIANT } from '@/enum';
 import FavoriteItem from '@/ui-components/FavoriteItem';
@@ -29,6 +30,7 @@ function LinkButton(props) {
         icoUrl,
         icoVariant,
         className: externalClassName,
+        classes: externalClasses = {},
         children,
         dense,
     } = props;
@@ -73,7 +75,7 @@ function LinkButton(props) {
                     src={icoUrl}
                     alternativeIcon={first(name)?.toUpperCase()}
                     variant={icoVariant === BKMS_VARIANT.POSTER ? BKMS_VARIANT.SYMBOL : icoVariant}
-                    className={classes.image}
+                    className={clsx(classes.image, externalClasses.image)}
                 />
             )}
         </FAPButton>

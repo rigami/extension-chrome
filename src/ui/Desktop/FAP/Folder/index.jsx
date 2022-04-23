@@ -1,8 +1,8 @@
 import React from 'react';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
-import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
 import { useTheme, alpha, makeStyles } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
+import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
 import FavoriteItem from '@/ui-components/FavoriteItem';
 import Explorer from './Explorer';
 
@@ -22,7 +22,7 @@ function Folder(props) {
     const {
         id,
         name,
-        classes: externalClasses,
+        classes: externalClasses = {},
         className: externalClassName,
         children,
         dense,

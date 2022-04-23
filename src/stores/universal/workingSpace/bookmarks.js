@@ -37,6 +37,7 @@ class BookmarksUniversalService {
             description,
             sourceIcoUrl,
             imageBase64,
+            icoSafeZone,
             tags = [],
             folderId,
             icoVariant,
@@ -51,6 +52,7 @@ class BookmarksUniversalService {
             description: description && description.trim(),
             icoVariant,
             sourceIcoUrl,
+            icoSafeZone,
             folderId,
             tags: tags.filter((isExist) => isExist),
         };

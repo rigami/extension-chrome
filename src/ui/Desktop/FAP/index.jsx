@@ -102,6 +102,7 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 1200,
         paddingBottom: theme.spacing(0.5),
     },
+    imageWithSafeZone: { padding: theme.spacing(0.5) },
 }));
 
 function FAP() {
@@ -175,6 +176,7 @@ function FAP() {
     const overload = store.maxCount < workingSpaceService.favorites.length;
 
     const isContained = desktopService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED;
+    const isProductivity = desktopService.settings.fapStyle === BKMS_FAP_STYLE.PRODUCTIVITY;
 
     return (
         <Fade in={!store.isLoading}>
@@ -194,7 +196,7 @@ function FAP() {
                         isContained && classes.backdrop,
                         desktopService.settings.fapAlign === BKMS_FAP_ALIGN.LEFT && classes.leftAlign,
                         appStateService.activity === ACTIVITY.BOOKMARKS && classes.contrastBackdrop,
-                        desktopService.settings.fapStyle === BKMS_FAP_STYLE.PRODUCTIVITY && classes.disableLeftPadding,
+                        isProductivity && classes.disableLeftPadding,
                     )}
                 >
                     {store.maxCount.length !== 0 && store.favorites.slice(0, store.maxCount).map((fav) => {
@@ -217,6 +219,13 @@ function FAP() {
                                         // isContained && classes.linkBackdrop,
                                     ),
                                 },
+                            };
+                        }
+
+                        if (fav instanceof BookmarkEntity) {
+                            a11props = {
+                                ...a11props,
+                                classes: { image: clsx(!isProductivity && fav.icoSafeZone && classes.imageWithSafeZone) },
                             };
                         }
 

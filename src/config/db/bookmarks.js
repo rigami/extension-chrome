@@ -52,6 +52,10 @@ export default async function upgradeOrCreateBookmarks(db, transaction, oldVersi
         store.createIndex('source_ico_url', 'sourceIcoUrl', { unique: false });
     }
 
+    if (!store.indexNames.contains('ico_safe_zone')) {
+        store.createIndex('ico_safe_zone', 'icoSafeZone', { unique: false });
+    }
+
     if (oldVersion !== 0 && oldVersion < 7) {
         const bookmarks = await store.getAll();
         const bookmarksByCategories = await transaction.objectStore('bookmarks_by_categories').getAll();

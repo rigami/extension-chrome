@@ -36,6 +36,7 @@ const getImage = async (icoUrl) => {
         icoVariant: raw.headers.get('image-type')?.toUpperCase(),
         availableVariants: (raw.headers.get('image-recommended-types') || '').toUpperCase().split(','),
         sourceUrl: raw.headers.get('image-base-url'),
+        safeZone: Boolean(raw.headers.get('image-safe-zone')),
     };
 };
 
