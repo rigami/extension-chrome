@@ -57,14 +57,30 @@ class BookmarksUniversalService {
 
         let saveBookmarkId;
         let saveIcoUrl;
+        const modifiedTimestamp = Date.now();
 
         if (sourceIcoUrl) {
-            saveIcoUrl = api.computeUrl(`site-parse/processing-image?url=${encodeURIComponent(sourceIcoUrl)}`);
+            const params = new URLSearchParams();
+            params.set('url', sourceIcoUrl);
+            params.set('type', icoVariant.toLowerCase());
+            params.set('stamp', modifiedTimestamp.toString());
+
+            saveIcoUrl = api.computeUrl(
+                `site-parse/processing-image?${params}`,
+            );
         }
 
         if (imageBase64 && !sourceIcoUrl) {
-            saveIcoUrl = api.computeUrl(`site-parse/processing-image?site-url=${encodeURIComponent(url)}`);
+            const params = new URLSearchParams();
+            params.set('site-url', url);
+            params.set('stamp', modifiedTimestamp.toString());
+
+            saveIcoUrl = api.computeUrl(
+                `site-parse/processing-image?${params}`,
+            );
         }
+
+        console.log('Save bookmark sourceIcoUrl', saveIcoUrl);
 
         if (id) {
             const oldBookmark = id ? await this.get(id) : null;
@@ -74,7 +90,7 @@ class BookmarksUniversalService {
                 icoUrl: saveIcoUrl,
                 sourceIcoUrl,
                 createTimestamp: oldBookmark?.createTimestamp || Date.now(),
-                modifiedTimestamp: Date.now(),
+                modifiedTimestamp,
             });
 
             saveBookmarkId = await db().put('bookmarks', newBookmark);
@@ -85,7 +101,7 @@ class BookmarksUniversalService {
                 await db().put('pair_with_cloud', {
                     ...pairRow,
                     isSync: +false,
-                    modifiedTimestamp: Date.now(),
+                    modifiedTimestamp,
                 });
             }
         } else {
@@ -96,7 +112,7 @@ class BookmarksUniversalService {
                     icoUrl: saveIcoUrl,
                     sourceIcoUrl,
                     createTimestamp: Date.now(),
-                    modifiedTimestamp: Date.now(),
+                    modifiedTimestamp,
                 }));
 
                 if (sync) {
@@ -108,7 +124,7 @@ class BookmarksUniversalService {
                         isPair: +false,
                         isSync: +false,
                         isDeleted: +false,
-                        modifiedTimestamp: Date.now(),
+                        modifiedTimestamp,
                     });
                 }
             } catch (e) {
