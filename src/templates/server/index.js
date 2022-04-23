@@ -8,6 +8,8 @@ import { uuid } from '@/utils/generate/uuid';
 
 import StorageConnector from '@/stores/universal/storage/connector';
 import initSentry from '@/config/sentry/server';
+import config from '@/config/config';
+import cacheManager from '@/utils/cacheManager';
 
 initSentry();
 
@@ -28,11 +30,38 @@ asyncAction(async () => {
     });
 
 self.addEventListener('fetch', (event) => {
-    const headers = event?.request?.headers;
+    const { request } = event;
+    const { headers } = request;
 
-    if (headers && headers.get('pragma') === 'no-cache' && headers.get('cache-control') === 'no-cache') {
-        event.respondWith(fetch(event.request));
-    } else {
-        event.respondWith(caches.match(event.request).then((response) => response || fetch(event.request)));
-    }
+    console.log('request:', request, new URL(request.url).origin === config.rest.url);
+
+    // eslint-disable-next-line no-async-promise-executor
+    event.respondWith(new Promise(async (resolve, reject) => {
+        if (headers.get('pragma') === 'no-cache' && headers.get('cache-control') === 'no-cache') {
+            resolve(fetch(request));
+        } else {
+            const cache = await caches.match(request);
+
+            if (cache) {
+                console.log(`Data ${request.url} already in cache. Return from cache`);
+                resolve(cache);
+                return;
+            }
+
+            const parsedUrl = new URL(request.url);
+            const cacheScope = parsedUrl.searchParams.get('cache-scope');
+
+            if (cacheScope) {
+                console.log(`Data ${request.url} must be cache. Fetching, caching and return`);
+                const blob = await fetch(request).then((res) => res.blob());
+
+                await cacheManager.cache(cacheScope, request.url, blob);
+
+                resolve(caches.match(request));
+            } else {
+                console.log(`Data ${request.url} not must be caching. Fetching and return`);
+                resolve(fetch(request));
+            }
+        }
+    }));
 });
