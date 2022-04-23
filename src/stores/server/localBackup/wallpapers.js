@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { omit } from 'lodash';
 import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
+import cacheManager from '@/utils/cacheManager';
 
 class Wallpapers {
     core;
@@ -17,12 +18,13 @@ class Wallpapers {
         const meta = [];
         const fullBlobs = new Map();
         const previewBlobs = new Map();
-        const cache = await caches.open('wallpapers');
 
         for await (const wallpaper of allWallpapers) {
             try {
-                const fullBlob = await cache.match(wallpaper.fullSrc).then((responseRaw) => responseRaw.blob());
-                const previewBlob = await cache.match(wallpaper.previewSrc).then((responseRaw) => responseRaw.blob());
+                const fullBlob = await cacheManager.get('wallpapers', wallpaper.fullSrc)
+                    .then((responseRaw) => responseRaw.blob());
+                const previewBlob = await cacheManager.get('wallpapers', wallpaper.previewSrc)
+                    .then((responseRaw) => responseRaw.blob());
                 const ext = fullBlob.type.substring(fullBlob.type.indexOf('/') + 1);
 
                 fullBlobs.set(`${wallpaper.id}.${ext}`, fullBlob);

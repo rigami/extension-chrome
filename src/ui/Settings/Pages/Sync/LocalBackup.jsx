@@ -19,6 +19,7 @@ import appVariables from '@/config/config';
 import { eventToApp, eventToBackground } from '@/stores/universal/serviceBus';
 import MenuRow, { ROWS_TYPE } from '@/ui/Settings/MenuRow';
 import SectionHeader from '@/ui/Settings/SectionHeader';
+import cacheManager from '@/utils/cacheManager';
 
 const useStyles = makeStyles((theme) => ({
     backupButton: { flexShrink: 0 },
@@ -195,11 +196,7 @@ function LocalBackup() {
             const file = form.files[0];
             const type = file.name.substring(file.name.lastIndexOf('.') + 1);
 
-            const cache = await caches.open('temp');
-
-            const zipResponse = new Response(file);
-
-            await cache.put(`${appVariables.rest.url}/temp/backup.zip`, zipResponse);
+            await cacheManager.cache('temp', `${appVariables.rest.url}/temp/backup.zip`, file);
 
             eventToBackground('system/backup/local/restore', {
                 type,

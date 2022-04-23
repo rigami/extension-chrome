@@ -20,6 +20,7 @@ import db from '@/utils/db';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import Bookmark from '@/stores/universal/workingSpace/entities/bookmark';
 import { search } from '@/stores/universal/workingSpace/search';
+import cacheManager from '@/utils/cacheManager';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -110,7 +111,6 @@ function MigrateScreen({ onStart }) {
 
         if (existFolders) {
             const allBackgrounds = await WallpapersUniversalService.getAll();
-            const cacheBackgrounds = await caches.open('backgrounds');
             let index = 0;
 
             for await (const wallpaper of allBackgrounds) {
@@ -123,17 +123,17 @@ function MigrateScreen({ onStart }) {
                     if (wallpaper.source === BG_SOURCE.USER) {
                         fullSrc = `${appVariables.rest.url}/background/user?src=${wallpaper.id}`;
                         const fullBlob = await getFile(`backgrounds/full/${wallpaper.fileName}`);
-                        const fullResponse = new Response(fullBlob);
-                        await cacheBackgrounds.put(fullSrc, fullResponse);
+
+                        await cacheManager.cache('backgrounds', fullSrc, fullBlob);
                     } else {
                         fullSrc = wallpaper.downloadLink;
-                        await cacheBackgrounds.add(fullSrc);
+                        await cacheManager.cache('backgrounds', fullSrc);
                     }
 
                     const previewSrc = `${appVariables.rest.url}/background/user/get-preview?id=${wallpaper.id}`;
                     const previewBlob = await getFile(`backgrounds/preview/${wallpaper.fileName}`);
-                    const previewResponse = new Response(previewBlob);
-                    await cacheBackgrounds.put(previewSrc, previewResponse);
+
+                    await cacheManager.cache('backgrounds', previewSrc, previewBlob);
 
                     await db().put('backgrounds', cloneDeep(new Wallpaper({
                         ...wallpaper,
@@ -149,7 +149,6 @@ function MigrateScreen({ onStart }) {
             }
 
             const { all: allBookmarks } = await search();
-            const cacheIcons = await caches.open('icons');
             index = 0;
 
             for await (const bookmark of allBookmarks) {
@@ -163,8 +162,7 @@ function MigrateScreen({ onStart }) {
 
                     try {
                         iconBlob = await getFile(`bookmarksIcons/${bookmark.icoFileName}`);
-                        const iconResponse = new Response(iconBlob);
-                        await cacheIcons.put(iconSrc, iconResponse);
+                        await cacheManager.cache('icons', iconSrc, iconBlob);
                     } catch (e) {
                         console.warn(e);
                     }

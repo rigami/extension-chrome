@@ -9,6 +9,7 @@ import { BG_TYPE } from '@/enum';
 import { uuid } from '@/utils/generate/uuid';
 import { search as searchLight } from './search';
 import api from '@/utils/helpers/api';
+import cacheManager from '@/utils/cacheManager';
 
 class BookmarksUniversalService {
     @action('get bookmark')
@@ -145,10 +146,7 @@ class BookmarksUniversalService {
                     blob = await getPreview(saveIcoUrl, BG_TYPE.IMAGE, { size: 'full' });
                 }
 
-                const cache = await caches.open('icons');
-                const iconResponse = new Response(blob);
-
-                await cache.put(saveIcoUrl, iconResponse);
+                await cacheManager.cache('icons', saveIcoUrl, blob);
             } catch (e) {
                 console.warn('Failed get image preview', e);
             }

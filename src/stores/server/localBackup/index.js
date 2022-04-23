@@ -14,6 +14,7 @@ import migration5To6 from './migration/5_6';
 import consoleBinder from '@/utils/console/bind';
 import settingsStorage from '@/stores/universal/settings/rootSettings';
 import createBackupFile from '@/stores/server/localBackup/createBackupFile';
+import cacheManager from '@/utils/cacheManager';
 
 const bindConsole = consoleBinder('local-backup');
 
@@ -63,9 +64,7 @@ class LocalBackupService {
 
             const zipBlob = await createBackupFile(backup);
 
-            const cache = await caches.open('temp');
-            const zipResponse = new Response(zipBlob);
-            await cache.put(`${appVariables.rest.url}/temp/backup.zip`, zipResponse);
+            await cacheManager.cache('temp', `${appVariables.rest.url}/temp/backup.zip`, zipBlob);
 
             eventToApp('system/backup/local/create/progress', {
                 path: `${appVariables.rest.url}/temp/backup.zip`,
@@ -146,8 +145,7 @@ class LocalBackupService {
         bindConsole.log(`Restore file type:${type} path:${path}...`);
         this.core.storage.update({ restoreBackup: 'restoring' });
 
-        const cache = await caches.open('temp');
-        const rawBackup = await cache.match(path);
+        const rawBackup = await cacheManager.get('temp', path);
 
         let backup = {};
 

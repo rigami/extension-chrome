@@ -7,6 +7,7 @@ import { BG_SOURCE } from '@/enum';
 import Wallpaper from './entities/wallpaper';
 import consoleBinder from '@/utils/console/bind';
 import api from '@/utils/helpers/api';
+import cacheManager from '@/utils/cacheManager';
 
 export const ERRORS = {
     TOO_MANY_FILES: 'TOO_MANY_FILES',
@@ -98,8 +99,6 @@ class WallpapersUniversalService {
         let url;
         let previewUrl;
 
-        const cache = await caches.open('backgrounds');
-
         try {
             fullBG = fullBlob || (await fetchData(wallpaper.fullSrc, { responseType: 'blob' })).response;
         } catch (e) {
@@ -115,13 +114,14 @@ class WallpapersUniversalService {
 
                 if (wallpaper.source === BG_SOURCE.USER) {
                     previewUrl = api.computeUrl(`wallpapers/${wallpaper.id}/preview`);
-                    previewBG = previewBlob || (await fetchData(wallpaper.previewSrc, { responseType: 'blob' })).response;
-                    const previewResponse = new Response(previewBG);
-
-                    await cache.put(previewUrl, previewResponse);
+                    previewBG = (
+                        previewBlob
+                        || (await fetchData(wallpaper.previewSrc, { responseType: 'blob' })).response
+                    );
+                    await cacheManager.cache('backgrounds', previewUrl, previewBG);
                 } else {
                     previewUrl = wallpaper.previewSrc || api.computeUrl(`wallpapers/${wallpaper.id}/preview`);
-                    await cache.add(previewUrl);
+                    await cacheManager.cache('backgrounds', previewUrl);
                 }
             } catch (e) {
                 bindConsole.warn('Failed create preview:', e);
@@ -134,11 +134,11 @@ class WallpapersUniversalService {
 
             if (wallpaper.source === BG_SOURCE.USER) {
                 url = api.computeUrl(`wallpapers/${wallpaper.id}`);
-                const fullResponse = new Response(fullBG);
-                await cache.put(url, fullResponse);
+
+                await cacheManager.cache('backgrounds', url, fullBG);
             } else {
                 url = wallpaper.fullSrc;
-                await cache.add(url);
+                await cacheManager.cache('backgrounds', url);
             }
         }
 
