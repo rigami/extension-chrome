@@ -67,6 +67,7 @@ class BookmarksUniversalService {
             params.set('url', sourceIcoUrl);
             params.set('type', icoVariant.toLowerCase());
             params.set('stamp', modifiedTimestamp.toString());
+            params.set('cache-scope', 'icons');
 
             saveIcoUrl = api.computeUrl(
                 `site-parse/processing-image?${params}`,
@@ -77,6 +78,7 @@ class BookmarksUniversalService {
             const params = new URLSearchParams();
             params.set('site-url', url);
             params.set('stamp', modifiedTimestamp.toString());
+            params.set('cache-scope', 'icons');
 
             saveIcoUrl = api.computeUrl(
                 `site-parse/processing-image?${params}`,
