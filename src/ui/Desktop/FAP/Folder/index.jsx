@@ -3,7 +3,6 @@ import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import { useTheme, alpha, makeStyles } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
 import { first } from 'lodash';
-import clsx from 'clsx';
 import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
 import FavoriteItem from '@/ui-components/FavoriteItem';
 import Explorer from './Explorer';

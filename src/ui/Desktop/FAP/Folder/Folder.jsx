@@ -8,7 +8,11 @@ import {
     Box,
     Button,
 } from '@material-ui/core';
-import { CloseRounded as CloseIcon, FolderRounded as FolderIcon } from '@material-ui/icons';
+import {
+    CloseRounded as CloseIcon,
+    FolderRounded as FolderIcon,
+    ArrowBackRounded as BackIcon, CreateNewFolderRounded as AddNewFolderIcon,
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -33,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 1,
         display: 'flex',
         flexDirection: 'column',
+        background: 'none',
         transition: theme.transitions.create(['width'], {
             duration: theme.transitions.duration.short,
             easing: theme.transitions.easing.easeInOut,
@@ -83,6 +88,7 @@ const useStyles = makeStyles((theme) => ({
     title: {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
+        fontFamily: theme.typography.specialFontFamily,
     },
 }));
 
@@ -112,6 +118,14 @@ function Folder(props) {
             onClick: () => dispatchEdit({
                 itemType: 'bookmark',
                 defaultFolderId: id,
+            }, event, position, next),
+        }),
+        new ContextMenuItem({
+            title: t('folder:button.create'),
+            icon: AddNewFolderIcon,
+            onClick: () => dispatchEdit({
+                itemType: 'folder',
+                parentId: id,
             }, event, position, next),
         }),
     ]);
@@ -168,7 +182,7 @@ function Folder(props) {
                     )
 
                 )}
-                action={rootFolder && (
+                action={rootFolder ? (
                     <Tooltip title={t('common:button.close')}>
                         <IconButton
                             onClick={() => {
@@ -178,6 +192,16 @@ function Folder(props) {
                             }}
                         >
                             <CloseIcon />
+                        </IconButton>
+                    </Tooltip>
+                ) : (
+                    <Tooltip title={t('common:button.back')}>
+                        <IconButton
+                            onClick={() => {
+                                onBack();
+                            }}
+                        >
+                            <BackIcon />
                         </IconButton>
                     </Tooltip>
                 )}
@@ -223,11 +247,17 @@ function Folder(props) {
                                     id={currFolder.id}
                                     name={currFolder.name}
                                     className={classes.folderCard}
-                                    onClick={() => onOpenFolder(currFolder.id)}
+                                    onClick={() => {
+                                        if (openFolderId === currFolder.id) {
+                                            onBack();
+                                        } else {
+                                            onOpenFolder(currFolder.id);
+                                        }
+                                    }}
                                 />
                             ))}
                         </Box>
-                        <Box display="flex" ml={2}>
+                        <Box display="flex" ml={2} mb={2}>
                             <BookmarksGrid
                                 bookmarks={findBookmarks}
                                 columns={2}

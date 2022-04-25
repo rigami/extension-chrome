@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Divider } from '@material-ui/core';
+import clsx from 'clsx';
+import { makeStyles } from '@material-ui/core/styles';
 import Folder from './Folder';
 
+const useStyles = makeStyles((theme) => ({ hide: { width: 0 } }));
+
 function Explorer({ id: rootId }) {
+    const classes = useStyles();
     const [path, setPath] = useState([rootId]);
 
     useEffect(() => setPath([rootId]), [rootId]);
@@ -26,6 +31,7 @@ function Explorer({ id: rootId }) {
                         onBack={() => {
                             setPath([...path.slice(0, index + 1)]);
                         }}
+                        className={clsx(path.length > 5 && index !== 0 && index < path.length - 2 && classes.hide)}
                     />
                     {index !== path.length - 1 && (
                         <Divider variant="fullWidth" orientation="vertical" flexItem />

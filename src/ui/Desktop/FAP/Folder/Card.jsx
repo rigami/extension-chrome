@@ -7,7 +7,10 @@ import { useContextMenuService } from '@/stores/app/contextMenu';
 import { useContextActions } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
-    root: { width: theme.shape.dataCard.width },
+    root: {
+        width: theme.shape.dataCard.width,
+        borderRadius: theme.shape.borderRadiusButton,
+    },
     header: { padding: theme.spacing(2) },
     headerContent: {
         overflow: 'hidden',
@@ -20,6 +23,11 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 600,
     },
     active: { backgroundColor: theme.palette.action.selected },
+    subFolder: { padding: theme.spacing(1.5, 2) },
+    subFolderIcon: {
+        alignItems: 'center',
+        display: 'flex',
+    },
 }));
 
 function FolderCard(props) {
@@ -52,9 +60,10 @@ function FolderCard(props) {
                     avatar={<FolderIcon />}
                     title={name}
                     classes={{
-                        root: classes.header,
+                        root: clsx(classes.header, classes.subFolder),
                         content: classes.headerContent,
                         title: classes.title,
+                        avatar: classes.subFolderIcon,
                     }}
                 />
             </CardActionArea>
