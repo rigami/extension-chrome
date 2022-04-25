@@ -61,14 +61,14 @@ function FolderPreview({ id }) {
         setIsSearching(true);
         let load = true;
 
-        FoldersUniversalService.getFoldersByParent(id)
+        FoldersUniversalService.getFoldersByParent(id, 4)
             .then((foundFolders) => {
                 setFolders(foundFolders);
                 setIsSearching(load);
                 load = false;
             });
 
-        BookmarksUniversalService.getAllInFolder(id)
+        BookmarksUniversalService.getAllInFolder(id, 4)
             .then((searchResult) => {
                 setFindBookmarks(searchResult);
                 setIsSearching(load);

@@ -7,9 +7,17 @@ import { FIRST_UUID, NULL_UUID, uuid } from '@/utils/generate/uuid';
 
 class FoldersUniversalService {
     @action('get folders root')
-    static async getFoldersByParent(parentId = NULL_UUID) {
+    static async getFoldersByParent(parentId = NULL_UUID, maxCount) {
         console.log('[folders] [getFoldersByParent] parentId:', parentId);
-        const folders = await db().getAllFromIndex('folders', 'parent_id', parentId);
+        const store = db().transaction('folders').objectStore('folders');
+        let folders;
+
+        if (maxCount) {
+            folders = await store.index('parent_id').getAll(parentId, maxCount);
+        } else {
+            folders = await store.index('parent_id').getAll(parentId);
+        }
+
         console.log('[folders] [getFoldersByParent] folders:', folders);
 
         return folders.map((folder) => new Folder(folder));

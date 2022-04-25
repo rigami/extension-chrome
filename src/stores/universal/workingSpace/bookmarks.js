@@ -4,10 +4,7 @@ import { captureException } from '@sentry/browser';
 import db from '@/utils/db';
 import Bookmark from './entities/bookmark';
 import FavoritesUniversalService from './favorites';
-import getPreview from '@/utils/createPreview';
-import { BG_TYPE } from '@/enum';
 import { uuid } from '@/utils/generate/uuid';
-import { search as searchLight } from './search';
 import api from '@/utils/helpers/api';
 import cacheManager from '@/utils/cacheManager';
 
@@ -20,14 +17,17 @@ class BookmarksUniversalService {
     }
 
     @action('query feature bookmarks')
-    static async getAllInFolder(folderId) {
-        const bookmarksKeys = await db().getAllFromIndex(
-            'bookmarks',
-            'folder_id',
-            folderId,
-        );
+    static async getAllInFolder(folderId, maxCount) {
+        const store = db().transaction('bookmarks').objectStore('bookmarks');
+        let value;
 
-        return Promise.all(bookmarksKeys.map(({ id }) => this.get(id)));
+        if (maxCount) {
+            value = await store.index('folder_id').getAll(folderId, maxCount);
+        } else {
+            value = await store.index('folder_id').getAll(folderId);
+        }
+
+        return Promise.all(value.map(({ id }) => this.get(id)));
     }
 
     @action('save bookmarks')
