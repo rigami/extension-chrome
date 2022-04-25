@@ -37,7 +37,7 @@ module.exports = () => {
         },
     };
 
-    let permissions = ['storage', 'unlimitedStorage'];
+    let permissions = ['storage', 'unlimitedStorage', 'alarms'];
 
     if (!process.env.BUILD || process.env.BUILD === 'full') {
         manifest = {

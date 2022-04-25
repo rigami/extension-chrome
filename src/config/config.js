@@ -27,6 +27,10 @@ export default {
             },
         },
     },
+    cache: {
+        lifetime: 7 * 24 * 60 * 60 * 1000,
+        checkScheduler: 2 * 60 * 60 * 1000,
+    },
     backup: { version: 6 },
     wallpapers: {
         maxUploadFiles: 15,
@@ -38,7 +42,10 @@ export default {
             color: '#0c590c',
             description: '',
             kind: 'media',
-            id: btoa(JSON.stringify({ idInSource: 'nL1pAWmRFYU', source: BG_SOURCE.UNSPLASH.toLowerCase() })),
+            id: btoa(JSON.stringify({
+                idInSource: 'nL1pAWmRFYU',
+                source: BG_SOURCE.UNSPLASH.toLowerCase(),
+            })),
             rawSrc: 'https://images.unsplash.com/photo-1607374904945-feef89bffa1f?ixid=MXwxODkwMjh8MHwxfGFsbHx8fHx8fHx8&ixlib=rb-1.2.1',
             sourceLink: 'https://unsplash.com/photos/nL1pAWmRFYU',
             source: BG_SOURCE.UNSPLASH,

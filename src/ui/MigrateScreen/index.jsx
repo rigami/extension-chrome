@@ -133,7 +133,7 @@ function MigrateScreen({ onStart }) {
                     const previewSrc = `${appVariables.rest.url}/background/user/get-preview?id=${wallpaper.id}`;
                     const previewBlob = await getFile(`backgrounds/preview/${wallpaper.fileName}`);
 
-                    await cacheManager.cache('wallpapers', previewSrc, previewBlob);
+                    await cacheManager.cache('wallpapers-preview', previewSrc, previewBlob);
 
                     await db().put('backgrounds', cloneDeep(new Wallpaper({
                         ...wallpaper,

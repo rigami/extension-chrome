@@ -67,7 +67,7 @@ class BookmarksUniversalService {
             params.set('url', sourceIcoUrl);
             params.set('type', icoVariant.toLowerCase());
             params.set('stamp', modifiedTimestamp.toString());
-            params.set('cache-scope', 'icons');
+            params.set('rigami-cache-scope', 'icons');
 
             saveIcoUrl = api.computeUrl(
                 `site-parse/processing-image?${params}`,
@@ -78,7 +78,7 @@ class BookmarksUniversalService {
             const params = new URLSearchParams();
             params.set('site-url', url);
             params.set('stamp', modifiedTimestamp.toString());
-            params.set('cache-scope', 'icons');
+            params.set('rigami-cache-scope', 'icons');
 
             saveIcoUrl = api.computeUrl(
                 `site-parse/processing-image?${params}`,
@@ -144,11 +144,11 @@ class BookmarksUniversalService {
 
                 if (imageBase64) {
                     blob = await (await fetch(imageBase64)).blob();
-                } else {
-                    blob = await getPreview(saveIcoUrl, BG_TYPE.IMAGE, { size: 'full' });
-                }
 
-                await cacheManager.cache('icons', saveIcoUrl, blob);
+                    await cacheManager.cache('icons', saveIcoUrl, blob);
+                } else {
+                    await cacheManager.cacheWithPrefetch('icons', saveIcoUrl);
+                }
             } catch (e) {
                 console.warn('Failed get image preview', e);
             }

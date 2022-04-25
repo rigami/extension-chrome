@@ -49,13 +49,11 @@ self.addEventListener('fetch', (event) => {
             }
 
             const parsedUrl = new URL(request.url);
-            const cacheScope = parsedUrl.searchParams.get('cache-scope');
+            const cacheScope = parsedUrl.searchParams.get('rigami-cache-scope');
 
             if (cacheScope) {
                 console.log(`Data ${request.url} must be cache. Fetching, caching and return`);
-                const blob = await fetch(request).then((res) => res.blob());
-
-                await cacheManager.cache(cacheScope, request.url, blob);
+                await cacheManager.cacheWithPrefetch(cacheScope, request.url);
 
                 resolve(caches.match(request));
             } else {

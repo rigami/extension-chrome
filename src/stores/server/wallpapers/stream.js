@@ -114,6 +114,7 @@ class StreamWallpapersService {
         if (
             nextPrepareIndex + 1 > appVariables.wallpapers.stream.prefetchCount
             || nextPrepareIndex > this.storage.data.wallpapersStreamQueue.length - 1
+            || nextPrepareIndex === -1
         ) {
             bindConsole.log('Prefetch enough wallpapers. Stopping');
 

@@ -14,6 +14,8 @@ import WallpapersService from './wallpapers';
 import OmniboxService from './omniboxService';
 import PersistentStorage from '@/stores/universal/storage/persistent';
 import StorageConnector from '@/stores/universal/storage/connector';
+import cacheManager from '@/utils/cacheManager';
+import config from '@/config/config';
 
 class ServerApp {
     localBus;
@@ -93,6 +95,27 @@ class ServerApp {
         this.factorySettingsService = new FactorySettingsService(this);
 
         this.omniboxService = new OmniboxService(this);
+
+        chrome.alarms.get('cache-clear').then((alarm) => {
+            const periodInMinutes = config.cache.checkScheduler / (60 * 1000);
+
+            if (alarm && alarm.periodInMinutes === periodInMinutes) return;
+
+            chrome.alarms.clear('cache-clear').finally(() => {
+                console.log('[alarms] Create new cache-clear alarm');
+                chrome.alarms.create('cache-clear', { periodInMinutes });
+            });
+        });
+
+        chrome.alarms.onAlarm.addListener(({ name }) => {
+            console.log('[alarms] Fire alarm with name =', name);
+            if (name !== 'cache-clear') return;
+
+            cacheManager.clean('icons', Date.now() - config.cache.lifetime);
+            cacheManager.clean('wallpapers', Date.now() - config.cache.lifetime);
+            cacheManager.clean('wallpapers-preview', Date.now() - config.cache.lifetime);
+            cacheManager.clean('temp', Date.now() - config.cache.lifetime);
+        });
 
         console.log('Server app is run!');
     }
