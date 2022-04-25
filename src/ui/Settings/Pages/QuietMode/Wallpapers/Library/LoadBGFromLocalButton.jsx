@@ -41,7 +41,7 @@ function LoadBGFromLocalButton() {
                     startIcon={<UploadFromComputerIcon />}
                     style={{ marginRight: 16 }}
                 >
-                    {t('library.button.uploadFromComputer')}
+                    {t('savedLibrary.button.uploadFromComputer')}
                 </Button>
             </label>
         </React.Fragment>
