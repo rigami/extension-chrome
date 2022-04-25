@@ -75,7 +75,8 @@ function LinkButton(props) {
                     src={icoUrl}
                     alternativeIcon={first(name)?.toUpperCase()}
                     variant={icoVariant === BKMS_VARIANT.POSTER ? BKMS_VARIANT.SYMBOL : icoVariant}
-                    className={clsx(classes.image, externalClasses.image)}
+                    className={classes.image}
+                    classes={{ rootImage: externalClasses.image }}
                 />
             )}
         </FAPButton>

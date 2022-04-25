@@ -26,6 +26,7 @@ function Image(props) {
         variant = BKMS_VARIANT.SMALL,
         src,
         className: externalClassName,
+        classes: externalClasses = {},
         alternativeIcon,
         dense,
     } = props;
@@ -74,7 +75,10 @@ function Image(props) {
                 {!isLoading && (
                     <Avatar
                         className={clsx(classes.roundedIcon, externalClassName)}
-                        classes={{ colorDefault: classes.roundedIconDefault }}
+                        classes={{
+                            colorDefault: classes.roundedIconDefault,
+                            img: externalClasses.rootImage,
+                        }}
                         src={(variant !== BKMS_VARIANT.SYMBOL && src) || undefined}
                         variant="rounded"
                     >

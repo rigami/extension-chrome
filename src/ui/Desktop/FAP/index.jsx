@@ -225,7 +225,12 @@ function FAP() {
                         if (fav instanceof BookmarkEntity) {
                             a11props = {
                                 ...a11props,
-                                classes: { image: clsx(!isProductivity && fav.icoSafeZone && classes.imageWithSafeZone) },
+                                classes: {
+                                    image: clsx(
+                                        classes.linkBackdropBlur,
+                                        !isProductivity && fav.icoSafeZone && classes.imageWithSafeZone,
+                                    ),
+                                },
                             };
                         }
 
@@ -235,7 +240,6 @@ function FAP() {
                                     {...a11props}
                                     className={clsx(
                                         classes.link,
-                                        classes.linkBackdropBlur,
                                         !isContained && classes.linkDense,
                                     )}
                                 />
