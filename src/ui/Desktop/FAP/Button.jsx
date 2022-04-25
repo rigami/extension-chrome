@@ -7,7 +7,10 @@ import { useContextMenuService } from '@/stores/app/contextMenu';
 import { useContextActions } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
-    root: { borderRadius: theme.shape.borderRadiusBold },
+    root: {
+        borderRadius: theme.shape.borderRadiusBold,
+        overflow: 'hidden',
+    },
     selected: { backgroundColor: theme.palette.action.selected },
 }));
 

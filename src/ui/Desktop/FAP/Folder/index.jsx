@@ -3,6 +3,7 @@ import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import { useTheme, alpha, makeStyles } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
 import { first } from 'lodash';
+import clsx from 'clsx';
 import ButtonWithPopper from '@/ui/Desktop/FAP/ButtonWithPopper';
 import FavoriteItem from '@/ui-components/FavoriteItem';
 import Explorer from './Explorer';
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
             width: theme.spacing(1.5),
             height: theme.spacing(1.5),
             margin: theme.spacing(0.25),
+            padding: 0,
         },
     },
     folderPreview: {
@@ -45,12 +47,13 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0.25),
     },
     folderPreviewStub: {
-        margin: theme.spacing(1),
+        display: 'flex',
+        padding: theme.spacing(1),
         color: alpha(theme.palette.text.secondary, 0.23),
     },
 }));
 
-function FolderPreview({ id }) {
+function FolderPreview({ id, classes: externalClasses = {} }) {
     const classes = useStyles();
     const workingSpaceService = useWorkingSpaceService();
     const [isSearching, setIsSearching] = useState(true);
@@ -79,7 +82,9 @@ function FolderPreview({ id }) {
     return (
         <Box className={classes.folderPreview}>
             {(isSearching || (folders.length === 0 && findBookmarks.length === 0)) && (
-                <FolderIcon className={classes.folderPreviewStub} />
+                <Box className={clsx(classes.folderPreviewStub, externalClasses.stub)}>
+                    <FolderIcon />
+                </Box>
             )}
             {!isSearching && (folders.length !== 0 || findBookmarks.length !== 0) && (
                 <Box className={classes.folderPreviewItems}>
@@ -130,7 +135,7 @@ function Folder(props) {
                 <React.Fragment>
                     {!dense && children}
                     {!dense && !children && (
-                        <FolderPreview id={id} />
+                        <FolderPreview id={id} classes={{ stub: externalClasses.stubFolderPreview }} />
                     )}
                     {!children && dense && (
                         <FavoriteItem

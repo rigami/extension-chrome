@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
         minWidth: (40 + theme.spacing(1.5)) * 7 - theme.spacing(1.5) + theme.spacing(1.25) * 2,
         margin: 'auto',
         pointerEvents: 'auto',
-        borderRadius: 8,
+        borderRadius: theme.shape.borderRadiusBold * 2,
         overflow: 'unset',
         display: 'flex',
         background: 'none',
@@ -89,6 +89,8 @@ const useStyles = makeStyles((theme) => ({
         backdropFilter: 'blur(10px) brightness(200%)',
         backgroundColor: alpha(theme.palette.background.default, 0.82),
     },
+    linkBackdropBlurLight: { backdropFilter: 'blur(10px) brightness(200%)' },
+    linkBackdropBlurColor: { backgroundColor: alpha(theme.palette.background.default, 0.82) },
     overload: {
         width: 40,
         height: 40,
@@ -209,15 +211,23 @@ function FAP() {
                             dense: desktopService.settings.fapStyle === FAP_STYLE.PRODUCTIVITY,
                         };
 
-                        if (fav instanceof FolderEntity || fav instanceof TagEntity) {
+                        if (fav instanceof FolderEntity) {
                             a11props = {
                                 ...a11props,
                                 classes: {
                                     root: clsx(classes.link, !isContained && classes.linkDense),
-                                    backdrop: clsx(
-                                        /* !isContained && */ classes.linkBackdropBlur,
-                                        // isContained && classes.linkBackdrop,
-                                    ),
+                                    backdrop: classes.linkBackdropBlurLight,
+                                    stubFolderPreview: classes.linkBackdropBlurColor,
+                                },
+                            };
+                        }
+
+                        if (fav instanceof TagEntity) {
+                            a11props = {
+                                ...a11props,
+                                classes: {
+                                    root: clsx(classes.link, !isContained && classes.linkDense),
+                                    backdrop: classes.linkBackdropBlur,
                                 },
                             };
                         }
