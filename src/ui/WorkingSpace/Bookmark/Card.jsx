@@ -134,9 +134,11 @@ const useStyles = makeStyles((theme) => ({
     descriptionIcon: { marginTop: theme.spacing(0.5) },
     infoWrapper: {
         display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
         width: '100%',
         height: 26,
-        alignItems: 'center',
         flexShrink: 0,
         padding: theme.spacing(0.75),
         paddingTop: theme.spacing(0.5),
@@ -335,7 +337,7 @@ function CardLink(props) {
                     )}
                     {infoRow && (
                         <Box className={clsx(classes.infoWrapper, !description && classes.alignToBottom)}>
-                            {tagsFull && (<Tags tags={tagsFull} />)}
+                            {tagsFull?.length > 0 && (<Tags tags={tagsFull} />)}
                             {isPin && (<FavoriteIcon className={classes.favorite} />)}
                         </Box>
                     )}
