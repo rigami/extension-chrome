@@ -98,7 +98,7 @@ const refreshAccessToken = async () => {
             }
         }
 
-        if (tokenInfo.status === 'device-deleted') {
+        if (tokenInfo.status === 'device-deleted' || tokenInfo.status === 'user-not-exist') {
             const { response: registrationResponse } = await fetchData(
                 `${appVariables.rest.url}/v1/auth/virtual/sign-device`,
                 {
@@ -122,6 +122,8 @@ const refreshAccessToken = async () => {
                 deviceSign: registrationResponse.deviceSign,
                 synced: false,
             });
+
+            eventToBackground('sync/forceSync', { newAuthToken: tokenInfo.authToken });
         }
     }
 
@@ -225,7 +227,7 @@ async function api(pathOrUrl, options = {}) {
     if (result.statusCode === 401 && retryIfFall) {
         await getAccessToken(true);
 
-        return api(path, {
+        return api(pathOrUrl, {
             ...options,
             retryIfFall: false,
         });
