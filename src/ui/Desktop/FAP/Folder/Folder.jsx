@@ -28,6 +28,9 @@ import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import { useContextEdit } from '@/stores/app/contextActions';
 import { search, SearchQuery } from '@/stores/universal/workingSpace/search';
+import { BKMS_DISPLAY_VARIANT } from '@/enum';
+import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
+import sorting from '@/ui/WorkingSpace/BookmarksViewer/utils/sort';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -91,6 +94,10 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         minHeight: '100%',
     },
+    listBookmarks: {
+        width: '100%',
+        margin: theme.spacing(0, -1),
+    },
 }));
 
 function Folder(props) {
@@ -143,9 +150,11 @@ function Folder(props) {
                 load = false;
             });
 
+        const sort = sorting[workingSpaceService.settings.sorting](workingSpaceService);
+
         search(new SearchQuery(({ folderId: id })))
             .then((result) => {
-                setFindBookmarks(result.all || []);
+                setFindBookmarks((result.all && sort(result.all)) || []);
                 setIsSearching(load);
                 load = false;
             });
@@ -247,10 +256,18 @@ function Folder(props) {
                         )}
                         {findBookmarks.length > 0 && (
                             <Box display="flex" ml={2} mb={2}>
-                                <BookmarksGrid
-                                    bookmarks={findBookmarks}
-                                    columns={2}
-                                />
+                                {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
+                                    <BookmarksGrid
+                                        bookmarks={findBookmarks}
+                                        columns={2}
+                                    />
+                                )}
+                                {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
+                                    <BookmarksList
+                                        bookmarks={findBookmarks}
+                                        className={classes.listBookmarks}
+                                    />
+                                )}
                             </Box>
                         )}
                         {(findBookmarks?.length === 0) && (

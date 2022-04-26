@@ -9,6 +9,7 @@ import BookmarksGrid from '@/ui/WorkingSpace/BookmarksViewer/BookmarksGrid';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
 import { search, SearchQuery } from '@/stores/universal/workingSpace/search';
+import sorting from './utils/sort';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -101,54 +102,7 @@ function BookmarksViewer(props) {
         existMatches: false,
         requestId: 0,
         loadState: FETCH.WAIT,
-        favoriteCheckCache: {},
     }));
-
-    const checkIsFavorite = (bookmark) => {
-        if (bookmark.id in store.favoriteCheckCache) return store.favoriteCheckCache[bookmark.id];
-
-        const isFavorite = workingSpaceService.findFavorite({
-            itemId: bookmark.id,
-            itemType: 'bookmark',
-        });
-
-        store.favoriteCheckCache[bookmark.id] = isFavorite;
-
-        return isFavorite;
-    };
-
-    const sortByRelative = (list) => list.sort((bookmarkA, bookmarkB) => {
-        const isFavoriteA = checkIsFavorite(bookmarkA);
-        const isFavoriteB = checkIsFavorite(bookmarkB);
-
-        if (isFavoriteA && !isFavoriteB) return -1;
-        else if (!isFavoriteA && isFavoriteB) return 1;
-
-        if (bookmarkA.name < bookmarkB.name) return -1;
-        else if (bookmarkA.name > bookmarkB.name) return 1;
-
-        return 0;
-    });
-
-    const sortByNewest = (list) => list.sort((bookmarkA, bookmarkB) => {
-        if (bookmarkA.createTimestamp > bookmarkB.createTimestamp) return -1;
-        else if (bookmarkA.createTimestamp < bookmarkB.createTimestamp) return 1;
-
-        return 0;
-    });
-
-    const sortByOldest = (list) => list.sort((bookmarkA, bookmarkB) => {
-        if (bookmarkA.createTimestamp < bookmarkB.createTimestamp) return -1;
-        else if (bookmarkA.createTimestamp > bookmarkB.createTimestamp) return 1;
-
-        return 0;
-    });
-
-    const sorting = {
-        [BKMS_SORTING.BY_RELATIVE]: sortByRelative,
-        [BKMS_SORTING.OLDEST_FIRST]: sortByOldest,
-        [BKMS_SORTING.NEWEST_FIRST]: sortByNewest,
-    };
 
     useEffect(() => {
         console.log(`[BookmarksViewer] existMatches: ${store.existMatches}`);
@@ -164,14 +118,13 @@ function BookmarksViewer(props) {
             store.loadState = FETCH.PENDING;
         }, 100); */
 
-        const sort = sorting[workingSpaceService.settings.sorting];
+        const sort = sorting[workingSpaceService.settings.sorting](workingSpaceService);
 
         search(new SearchQuery(({ folderId })))
             .then((result) => {
                 console.log('folder result:', result);
                 if (currentRequestId !== store.requestId) return;
 
-                store.favoriteCheckCache = {};
                 store.allBookmarks = (result.all && sort(result.all)) || [];
                 store.existMatches = (result.best.length + result.all.length) !== 0;
                 store.loadState = FETCH.DONE;
