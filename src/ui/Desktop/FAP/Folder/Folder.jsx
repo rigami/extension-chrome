@@ -38,10 +38,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         background: 'none',
-        transition: theme.transitions.create(['width'], {
-            duration: theme.transitions.duration.short,
-            easing: theme.transitions.easing.easeInOut,
-        }),
     },
     avatar: {
         display: 'flex',
