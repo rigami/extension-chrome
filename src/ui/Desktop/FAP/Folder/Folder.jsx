@@ -19,7 +19,6 @@ import clsx from 'clsx';
 import Scrollbar from '@/ui-components/CustomScroll';
 import Stub from '@/ui-components/Stub';
 import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
-import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
 import BookmarksGrid from '@/ui/WorkingSpace/BookmarksViewer/BookmarksGrid';
 import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
@@ -28,6 +27,7 @@ import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import { useContextEdit } from '@/stores/app/contextActions';
+import { search, SearchQuery } from '@/stores/universal/workingSpace/search';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -86,6 +86,11 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         fontFamily: theme.typography.specialFontFamily,
     },
+    scrollContent: {
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100%',
+    },
 }));
 
 function Folder(props) {
@@ -138,9 +143,9 @@ function Folder(props) {
                 load = false;
             });
 
-        BookmarksUniversalService.getAllInFolder(id)
-            .then((searchResult) => {
-                setFindBookmarks(searchResult);
+        search(new SearchQuery(({ folderId: id })))
+            .then((result) => {
+                setFindBookmarks(result.all || []);
                 setIsSearching(load);
                 load = false;
             });
@@ -214,51 +219,55 @@ function Folder(props) {
                     <CircularProgress />
                 </Stub>
             )}
-            {!isSearching && (findBookmarks?.length === 0 && folders?.length === 0) && (
-                <Stub message={t('bookmark:empty')}>
-                    <Button
-                        onClick={(event) => dispatchEdit({
-                            itemType: 'bookmark',
-                            defaultFolderId: id,
-                        }, event)}
-                        startIcon={<AddBookmarkIcon />}
-                        variant="contained"
-                        color="primary"
-                    >
-                        {t('bookmark:button.add', { context: 'first' })}
-                    </Button>
-                </Stub>
-            )}
-            {!isSearching && (folders?.length > 0 || findBookmarks?.length > 0) && (
+            {!isSearching && (
                 <Box
                     display="flex"
                     className={clsx(classes.bookmarks, shrink && classes.notActiveFolder)}
                 >
-                    <Scrollbar>
-                        <Box display="flex" flexWrap="wrap" ml={2}>
-                            {folders.map((currFolder) => (
-                                <FolderCard
-                                    active={openFolderId === currFolder.id}
-                                    key={currFolder.id}
-                                    id={currFolder.id}
-                                    name={currFolder.name}
-                                    className={classes.folderCard}
-                                    onClick={() => {
-                                        if (openFolderId === currFolder.id) {
-                                            onBack();
-                                        } else {
-                                            onOpenFolder(currFolder.id);
-                                        }
-                                    }}
+                    <Scrollbar classes={{ content: classes.scrollContent }}>
+                        {folders.length > 0 && (
+                            <Box display="flex" flexWrap="wrap" ml={2}>
+                                {folders.map((currFolder) => (
+                                    <FolderCard
+                                        active={openFolderId === currFolder.id}
+                                        key={currFolder.id}
+                                        id={currFolder.id}
+                                        name={currFolder.name}
+                                        className={classes.folderCard}
+                                        onClick={() => {
+                                            if (openFolderId === currFolder.id) {
+                                                onBack();
+                                            } else {
+                                                onOpenFolder(currFolder.id);
+                                            }
+                                        }}
+                                    />
+                                ))}
+                            </Box>
+                        )}
+                        {findBookmarks.length > 0 && (
+                            <Box display="flex" ml={2} mb={2}>
+                                <BookmarksGrid
+                                    bookmarks={findBookmarks}
+                                    columns={2}
                                 />
-                            ))}
-                        </Box>
-                        <Box display="flex" ml={2} mb={2}>
-                            <BookmarksGrid
-                                bookmarks={findBookmarks}
-                                columns={2}
-                            />
-                        </Box>
+                            </Box>
+                        )}
+                        {(findBookmarks?.length === 0) && (
+                            <Stub message={t('bookmark:empty')}>
+                                <Button
+                                    onClick={(event) => dispatchEdit({
+                                        itemType: 'bookmark',
+                                        defaultFolderId: id,
+                                    }, event)}
+                                    startIcon={<AddBookmarkIcon />}
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    {t('bookmark:button.add', { context: 'first' })}
+                                </Button>
+                            </Stub>
+                        )}
                     </Scrollbar>
                 </Box>
             )}
