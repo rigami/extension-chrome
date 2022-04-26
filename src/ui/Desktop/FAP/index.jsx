@@ -211,27 +211,6 @@ function FAP() {
                             dense: desktopService.settings.fapStyle === FAP_STYLE.PRODUCTIVITY,
                         };
 
-                        if (fav instanceof FolderEntity) {
-                            a11props = {
-                                ...a11props,
-                                classes: {
-                                    root: clsx(classes.link, !isContained && classes.linkDense),
-                                    backdrop: classes.linkBackdropBlurLight,
-                                    stubFolderPreview: classes.linkBackdropBlurColor,
-                                },
-                            };
-                        }
-
-                        if (fav instanceof TagEntity) {
-                            a11props = {
-                                ...a11props,
-                                classes: {
-                                    root: clsx(classes.link, !isContained && classes.linkDense),
-                                    backdrop: classes.linkBackdropBlur,
-                                },
-                            };
-                        }
-
                         if (fav instanceof BookmarkEntity) {
                             a11props = {
                                 ...a11props,
@@ -242,21 +221,40 @@ function FAP() {
                                     ),
                                 },
                             };
-                        }
 
-                        if (fav instanceof BookmarkEntity) {
                             return (
                                 <Link
                                     {...a11props}
                                     className={clsx(
                                         classes.link,
                                         !isContained && classes.linkDense,
+                                        isProductivity && classes.linkBackdropBlur,
                                     )}
                                 />
                             );
                         } else if (fav instanceof FolderEntity) {
+                            a11props = {
+                                ...a11props,
+                                classes: {
+                                    root: clsx(classes.link, !isContained && classes.linkDense),
+                                    backdrop: clsx(
+                                        classes.linkBackdropBlurLight,
+                                        isProductivity && classes.linkBackdropBlur,
+                                    ),
+                                    stubFolderPreview: classes.linkBackdropBlurColor,
+                                },
+                            };
+
                             return (<Folder {...a11props} />);
                         } else if (fav instanceof TagEntity) {
+                            a11props = {
+                                ...a11props,
+                                classes: {
+                                    root: clsx(classes.link, !isContained && classes.linkDense),
+                                    backdrop: classes.linkBackdropBlur,
+                                },
+                            };
+
                             return (<Tag {...a11props} />);
                         }
 
