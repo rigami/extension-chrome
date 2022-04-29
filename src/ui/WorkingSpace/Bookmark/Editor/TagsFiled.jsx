@@ -11,13 +11,16 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { observer, useLocalObservable } from 'mobx-react-lite';
+import { observer, useLocalObservable, useObserver } from 'mobx-react-lite';
 import { filter } from 'lodash';
 import { captureException } from '@sentry/react';
 import { runInAction } from 'mobx';
+import Scrollbar from '@/ui-components/CustomScroll';
 import Tag from '../../Tag';
 import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
+import { useContextPopoverDispatcher } from '@/stores/app/contextPopover';
+import { useHotKeysService } from '@/stores/app/hotKeys';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -61,19 +64,8 @@ const useStyles = makeStyles((theme) => ({
     },
     tagsListContainer: { position: 'relative' },
     tagsListWrapper: {
-        position: 'absolute',
-        width: 210,
-        zIndex: 1,
-        bottom: 0,
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-        border: `1px solid ${theme.palette.divider}`,
         display: 'flex',
         flexDirection: 'column',
-    },
-    tagsList: {
-        overflow: 'auto',
-        maxHeight: 220,
     },
     tagSearch: {
         // margin: theme.spacing(1, 0.5),
@@ -94,7 +86,181 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         // paddingLeft: theme.spacing(0.5),
     },
+    scrollContainer: { maxHeight: 220 },
+    scrollScrollContent: {
+        width: '100%',
+        display: 'block !important',
+    },
+    tagsSelectorPaper: { overflow: 'hidden' },
+    emptyTags: {
+        fontStyle: 'italic',
+        color: theme.palette.text.secondary,
+    },
 }));
+
+function TagSelector({ store: upStore, onCreateTag, onSelectTag, ...props }) {
+    const classes = useStyles();
+    const { t } = useTranslation(['tag']);
+    const hotKeysService = useHotKeysService();
+    const store = useLocalObservable(() => ({
+        tags: upStore.selectedTags || [],
+        selectTag: 0,
+    }));
+    const createTagRef = useRef();
+    const selectedTagRef = useRef();
+
+    const createdTagName = upStore.inputValue.trim();
+
+    useEffect(() => {
+        if (store.selectTag === -1) {
+            createTagRef.current?.scrollIntoView({
+                block: 'center',
+                behavior: 'smooth',
+            });
+        } else {
+            selectedTagRef.current?.scrollIntoView({
+                block: 'center',
+                behavior: 'smooth',
+            });
+        }
+    }, [selectedTagRef.current, store.selectTag]);
+
+    useEffect(() => {
+        store.selectTag = store.selectTag === -1 && upStore.inputValue
+            ? -1
+            : Math.max(Math.min(store.selectTag, upStore.filteredTags.length - 1), 0);
+    }, [upStore.filteredTags.length]);
+
+    useEffect(() => {
+        const hotKeysListeners = [];
+
+        hotKeysListeners.push(hotKeysService.on(['Enter'], () => {
+            console.log('Enter');
+
+            if (store.selectTag === -1) {
+                onCreateTag(upStore.inputValue.trim());
+            } else if (
+                upStore.filteredTags[store.selectTag]
+                && !store.tags.includes(upStore.filteredTags[store.selectTag].id)
+            ) {
+                onSelectTag(upStore.filteredTags[store.selectTag]);
+            }
+        }));
+
+        hotKeysListeners.push(hotKeysService.on(['ArrowUp'], () => {
+            const top = upStore.inputValue ? -1 : 0;
+            console.log('ArrowUp');
+            store.selectTag = store.selectTag <= top ? upStore.filteredTags.length - 1 : store.selectTag - 1;
+        }));
+
+        hotKeysListeners.push(hotKeysService.on(['ArrowDown'], () => {
+            const top = upStore.inputValue ? -1 : 0;
+            console.log('ArrowDown');
+            store.selectTag = store.selectTag >= upStore.filteredTags.length - 1 ? top : store.selectTag + 1;
+        }));
+
+        return () => {
+            hotKeysListeners.forEach((listener) => hotKeysService.removeListener(listener));
+        };
+    }, []);
+
+    return (
+        <Box className={classes.tagsListWrapper} {...props}>
+            <Scrollbar
+                classes={{
+                    root: classes.scrollContainer,
+                    content: classes.scrollScrollContent,
+                }}
+                translateContentSizeYToHolder
+            >
+                {createdTagName && (
+                    <ListItem
+                        // autoFocus
+                        selected={store.selectTag === -1}
+                        ref={createTagRef}
+                        dense
+                        button
+                        className={classes.item}
+                        onClick={() => { onCreateTag(createdTagName); }}
+                    >
+                        <ListItemText
+                            primary={(
+                                <Fragment>
+                                    {t('editor.create')}
+                                    <Tag
+                                        id={null}
+                                        name={upStore.inputValue}
+                                        colorKey={null}
+                                        className={classes.tagSearch}
+                                        dense
+                                    />
+                                </Fragment>
+                            )}
+                        />
+                    </ListItem>
+                )}
+                {createdTagName === '' && upStore.filteredTags.length === 0 && (
+                    <ListItem
+                        dense
+                        className={classes.item}
+                    >
+                        <ListItemText
+                            primary={(
+                                <Fragment>
+                                    {t('editor.noTags')}
+                                </Fragment>
+                            )}
+                            classes={{ primary: classes.emptyTags }}
+                        />
+                    </ListItem>
+                )}
+                {createdTagName !== '' && upStore.filteredTags.length !== 0 && (<Divider />)}
+                {upStore.filteredTags.map((tag, index) => (
+                    <ListItem
+                        key={tag.id}
+                        selected={store.selectTag === index}
+                        ref={store.selectTag === index ? selectedTagRef : undefined}
+                        dense
+                        button
+                        className={classes.item}
+                        onClick={() => {
+                            onSelectTag(tag);
+                        }}
+                    >
+                        <ListItemText
+                            primary={(
+                                <Tag
+                                    key={tag.id}
+                                    id={tag.id}
+                                    name={tag.name}
+                                    colorKey={tag.colorKey}
+                                    className={classes.tagSearch}
+                                    dense
+                                />
+                            )}
+                        />
+                    </ListItem>
+                ))}
+            </Scrollbar>
+            <Divider />
+            <Typography variant="caption" className={classes.caption}>
+                Backspace -
+                {' '}
+                {t('editor.caption.backspace')}
+                <br />
+                Up/Down -
+                {' '}
+                {t('editor.caption.arrows')}
+                <br />
+                Enter -
+                {' '}
+                {t('editor.caption.enter')}
+            </Typography>
+        </Box>
+    );
+}
+
+const ObserverTagSelector = observer(TagSelector);
 
 function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
     const classes = useStyles();
@@ -109,15 +275,8 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
         selectTag: 0,
         isBlock: false,
     }));
-    const createTagRef = useRef();
-    const selectedTagRef = useRef();
     const inputRef = useRef();
-
-    const filteredTags = filter(
-        store.allTags,
-        (tag) => tag.name.toLowerCase().indexOf(store.inputValue.toLowerCase()) !== -1 && !store.tags.includes(tag.id),
-    );
-    const createdTagName = store.inputValue.trim();
+    const tagSelectorAnchorRef = useRef();
 
     const createTag = (tagName) => {
         store.inputValue = '';
@@ -137,6 +296,42 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
             });
     };
 
+    const {
+        dispatchPopover: tagSelectorDispatcher,
+        close: closePopover,
+    } = useContextPopoverDispatcher((data = {}, position, close) => (
+        <ObserverTagSelector
+            data={data}
+            position={position}
+            close={close}
+            store={store}
+            /* query={store.inputValue}
+            filteredTags={store.filteredTags}
+            selectedTags={store.tags}
+            allTags={store.allTags} */
+            onCreateTag={(name) => {
+                createTag(name);
+            }}
+            onSelectTag={(tag) => {
+                if (!store.tags.includes(tag.id)) {
+                    store.tags = [...store.tags, tag.id];
+                }
+            }}
+            onMouseDown={() => {
+                store.isBlock = true;
+            }}
+            onMouseUp={() => {
+                store.isBlock = false;
+            }}
+        />
+    ), {
+        nonBlockEventsBackdrop: true,
+        disableAutoFocus: true,
+        disableEnforceFocus: true,
+        disableRestoreFocus: true,
+        classes: { paper: classes.tagsSelectorPaper },
+    });
+
     useEffect(() => {
         if (store.isFirstRun) return;
 
@@ -153,7 +348,6 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
     }, [store.tags.length]);
 
     useEffect(() => {
-        console.log('[TagsFiled] Re calc tags');
         TagsUniversalService.getAll()
             .then((allTags) => {
                 runInAction(() => {
@@ -166,22 +360,26 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
     }, [workingSpaceService.lastTruthSearchTimestamp]);
 
     useEffect(() => {
-        if (store.selectTag === -1) {
-            createTagRef.current?.scrollIntoView({
-                block: 'center',
-                behavior: 'smooth',
-            });
-        } else {
-            selectedTagRef.current?.scrollIntoView({
-                block: 'center',
-                behavior: 'smooth',
-            });
-        }
-    }, [selectedTagRef.current, store.selectTag]);
+        store.filteredTags = filter(
+            store.allTags,
+            (tag) => tag.name.toLowerCase().indexOf(store.inputValue.toLowerCase()) !== -1 && !store.tags.includes(tag.id),
+        );
+    }, [store.inputValue, store.tags, store.allTags]);
 
     useEffect(() => {
-        store.selectTag = filteredTags.length === 0 && store.inputValue ? -1 : 0;
-    }, [filteredTags.length]);
+        if (store.focus) {
+            const { top, left } = tagSelectorAnchorRef.current.getBoundingClientRect();
+
+            tagSelectorDispatcher(null, {
+                top: top + 16,
+                left,
+            });
+        } else {
+            closePopover();
+        }
+    }, [store.focus]);
+
+    useEffect(() => () => closePopover(), []);
 
     return (
         <Box className={clsx(classes.root, externalClassName)}>
@@ -198,92 +396,7 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
                     }}
                 />
             ))}
-            {(store.focus) && (
-                <Box className={classes.tagsListContainer}>
-                    <Paper
-                        className={classes.tagsListWrapper}
-                        elevation={22}
-                        onMouseDown={() => {
-                            store.isBlock = true;
-                        }}
-                        onMouseUp={() => {
-                            store.isBlock = false;
-                        }}
-                    >
-                        <Box className={classes.tagsList}>
-                            {store.inputValue && (
-                                <ListItem
-                                    // autoFocus
-                                    selected={store.selectTag === -1}
-                                    ref={createTagRef}
-                                    dense
-                                    button
-                                    className={classes.item}
-                                    onClick={() => { createTag(createdTagName); }}
-                                >
-                                    <ListItemText
-                                        primary={(
-                                            <Fragment>
-                                                {t('editor.create')}
-                                                <Tag
-                                                    id={null}
-                                                    name={store.inputValue}
-                                                    colorKey={null}
-                                                    className={classes.tagSearch}
-                                                    dense
-                                                />
-                                            </Fragment>
-                                        )}
-                                    />
-                                </ListItem>
-                            )}
-                            {createdTagName !== '' && filteredTags.length !== 0 && (<Divider />)}
-                            {filteredTags.map((tag, index) => (
-                                <ListItem
-                                    key={tag.id}
-                                    selected={store.selectTag === index}
-                                    ref={store.selectTag === index ? selectedTagRef : undefined}
-                                    dense
-                                    button
-                                    className={classes.item}
-                                    onClick={() => {
-                                        if (!store.tags.includes(tag.id)) {
-                                            store.tags = [...store.tags, tag.id];
-                                        }
-                                    }}
-                                >
-                                    <ListItemText
-                                        primary={(
-                                            <Tag
-                                                key={tag.id}
-                                                id={tag.id}
-                                                name={tag.name}
-                                                colorKey={tag.colorKey}
-                                                className={classes.tagSearch}
-                                                dense
-                                            />
-                                        )}
-                                    />
-                                </ListItem>
-                            ))}
-                        </Box>
-                        <Divider />
-                        <Typography variant="caption" className={classes.caption}>
-                            Backspace -
-                            {' '}
-                            {t('editor.caption.backspace')}
-                            <br />
-                            Up/Down -
-                            {' '}
-                            {t('editor.caption.arrows')}
-                            <br />
-                            Enter -
-                            {' '}
-                            {t('editor.caption.enter')}
-                        </Typography>
-                    </Paper>
-                </Box>
-            )}
+            <Box ref={tagSelectorAnchorRef} className={classes.tagsListContainer} />
             <InputBase
                 className={classes.input}
                 placeholder={t('bookmark:editor.bookmarkTags', { context: 'placeholder' })}
@@ -299,42 +412,14 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
                     }
                 }}
                 onChange={(event) => { store.inputValue = event.currentTarget.value; }}
-                onFocus={() => { store.focus = true; }}
+                onFocus={() => {
+                    store.focus = true;
+                }}
                 onKeyDown={(event) => {
-                    const top = store.inputValue ? -1 : 0;
-
-                    switch (event.code) {
-                        case 'Enter':
-                            event.preventDefault();
-                            event.stopPropagation();
-                            if (store.selectTag === -1) {
-                                createTag(createdTagName);
-                            } else if (
-                                filteredTags[store.selectTag]
-                                && !store.tags.includes(filteredTags[store.selectTag].id)
-                            ) {
-                                store.tags = [...store.tags, filteredTags[store.selectTag].id];
-                            }
-                            break;
-                        case 'ArrowDown':
-                            event.preventDefault();
-                            event.stopPropagation();
-                            store.selectTag = store.selectTag >= filteredTags.length - 1 ? top : store.selectTag + 1;
-                            break;
-                        case 'ArrowUp':
-                            event.preventDefault();
-                            event.stopPropagation();
-                            store.selectTag = store.selectTag <= top ? filteredTags.length - 1 : store.selectTag - 1;
-                            break;
-                        case 'Backspace':
-                            if (store.inputValue.length === 0) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                store.tags = store.tags.slice(0, -1);
-                            }
-                            break;
-                        default:
-                            break;
+                    if (event.code === 'Backspace' && store.inputValue.length === 0) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        store.tags = store.tags.slice(0, -1);
                     }
                 }}
             />

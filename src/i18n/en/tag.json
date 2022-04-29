@@ -7,6 +7,7 @@
   "editor": {
     "name_placeholder": "Tag name",
     "create": "Create tag",
+    "noTags": "No tags",
     "error": {
       "alreadyExist": "The tag already exists",
       "unknown": "Unknown error"
