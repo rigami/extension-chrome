@@ -26,6 +26,10 @@ import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 import { useContextMenuService } from '@/stores/app/contextMenu';
 import { useContextEdit } from '@/stores/app/contextActions';
 import { search, SearchQuery } from '@/stores/universal/workingSpace/search';
+import getUniqueColor from '@/utils/generate/uniqueColor';
+import sorting from '@/ui/WorkingSpace/BookmarksViewer/utils/sort';
+import { BKMS_DISPLAY_VARIANT } from '@/enum';
+import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -45,6 +49,20 @@ const useStyles = makeStyles((theme) => ({
     bookmarks: {
         flexGrow: 1,
         overflow: 'auto',
+    },
+    title: {
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        fontFamily: theme.typography.specialFontFamily,
+    },
+    scrollContent: {
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100%',
+    },
+    listBookmarks: {
+        width: '100%',
+        margin: theme.spacing(0, -1),
     },
 }));
 
@@ -71,12 +89,17 @@ function Folder({ id }) {
     useEffect(() => {
         setIsSearching(true);
         TagsUniversalService.get(id).then((findTag) => setTag(findTag));
+
+        const sort = sorting[workingSpaceService.settings.sorting](workingSpaceService);
+
         search(new SearchQuery({ tags: [id] }))
             .then(({ all }) => {
-                setFindBookmarks(all);
+                setFindBookmarks(sort(all));
                 setIsSearching(false);
             });
     }, [workingSpaceService.lastTruthSearchTimestamp]);
+
+    const color = getUniqueColor(tag?.colorKey) || '#000';
 
     return (
         <Card
@@ -85,7 +108,7 @@ function Folder({ id }) {
         >
             <CardHeader
                 avatar={(
-                    <LabelIcon style={{ color: tag?.color }} />
+                    <LabelIcon style={{ color }} />
                 )}
                 action={(
                     <Tooltip title={t('common:button.close')}>
@@ -104,6 +127,7 @@ function Folder({ id }) {
                 classes={{
                     avatar: classes.avatar,
                     action: classes.action,
+                    title: classes.title,
                 }}
             />
             {isSearching && (
@@ -130,12 +154,20 @@ function Folder({ id }) {
             )}
             {findBookmarks && findBookmarks.length !== 0 && (
                 <Box display="flex" className={classes.bookmarks}>
-                    <Scrollbar>
+                    <Scrollbar classes={{ content: classes.scrollContent }}>
                         <Box display="flex" ml={2}>
-                            <BookmarksGrid
-                                bookmarks={findBookmarks}
-                                columns={2}
-                            />
+                            {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
+                                <BookmarksGrid
+                                    bookmarks={findBookmarks}
+                                    columns={2}
+                                />
+                            )}
+                            {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
+                                <BookmarksList
+                                    bookmarks={findBookmarks}
+                                    className={classes.listBookmarks}
+                                />
+                            )}
                         </Box>
                     </Scrollbar>
                 </Box>
