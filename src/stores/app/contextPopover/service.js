@@ -42,6 +42,7 @@ class ContextPopoverService {
                 next,
             }),
             isOpen: context.activeStateKeys.indexOf(stateKey) !== -1,
+            close: () => context.close(stateKey),
         };
     }
 
@@ -59,6 +60,11 @@ class ContextPopoverService {
             onOpen,
             onClose,
             className,
+            classes = {},
+            nonBlockEventsBackdrop = false,
+            disableAutoFocus = false,
+            disableEnforceFocus = false,
+            disableRestoreFocus = false,
         } = options;
         const {
             stateKey,
@@ -90,6 +96,11 @@ class ContextPopoverService {
             onOpen,
             onClose,
             className,
+            classes,
+            nonBlockEventsBackdrop,
+            disableAutoFocus,
+            disableEnforceFocus,
+            disableRestoreFocus,
         };
 
         console.log('this.activeStateKeys:', toJS(this.activeStateKeys));

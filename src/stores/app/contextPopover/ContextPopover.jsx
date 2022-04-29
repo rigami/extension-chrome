@@ -16,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         borderRadius: theme.shape.borderRadiusButtonBold,
     },
+    nonBlockEventsBackdrop: {
+        pointerEvents: 'none',
+        '& $paper': { pointerEvents: 'all' },
+    },
 }));
 
 function ContextPopover({ stateKey, service }) {
@@ -51,13 +55,17 @@ function ContextPopover({ stateKey, service }) {
                 enter: theme.transitions.duration.enteringScreen,
                 exit: theme.transitions.duration.leavingScreen,
             }}
+            className={clsx(service.popovers[stateKey].nonBlockEventsBackdrop && classes.nonBlockEventsBackdrop)}
             anchorPosition={service.popovers[stateKey].position}
             open={service.isOpen[stateKey]}
             PaperProps={{ className: classes.resetPaper }}
             onClose={() => service.close(stateKey)}
             TransitionProps={{ onExited: () => service.clear(stateKey) }}
+            disableAutoFocus={service.popovers[stateKey].disableAutoFocus}
+            disableEnforceFocus={service.popovers[stateKey].disableEnforceFocus}
+            disableRestoreFocus={service.popovers[stateKey].disableRestoreFocus}
         >
-            <Paper className={clsx(classes.paper)} elevation={22}>
+            <Paper className={clsx(classes.paper, service.popovers[stateKey].classes.paper)} elevation={22}>
                 <ReactResizeDetector handleWidth handleHeight onResize={updatePopper}>
                     {() => (
                         <Box>
