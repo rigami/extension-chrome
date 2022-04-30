@@ -37,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
         position: 'relative',
     },
-    tagsListContainer: { position: 'relative' },
     tagsListWrapper: {
         display: 'flex',
         flexDirection: 'column',
@@ -140,6 +139,8 @@ function TagSelector({ store: upStore, onCreateTag, onSelectTag, ...props }) {
             hotKeysListeners.forEach((listener) => hotKeysService.removeListener(listener));
         };
     }, []);
+
+    console.log('selecctor props:', props);
 
     return (
         <Box className={classes.tagsListWrapper} {...props}>
@@ -253,7 +254,6 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
         isBlock: false,
     }));
     const inputRef = useRef();
-    const tagSelectorAnchorRef = useRef();
 
     const createTag = (tagName) => {
         store.inputValue = '';
@@ -275,14 +275,7 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
 
     const renderTagsSelector = useCallback((data = {}, position, close) => (
         <ObserverTagSelector
-            data={data}
-            position={position}
-            close={close}
             store={store}
-            /* query={store.inputValue}
-            filteredTags={store.filteredTags}
-            selectedTags={store.tags}
-            allTags={store.allTags} */
             onCreateTag={(name) => {
                 createTag(name);
             }}
@@ -350,12 +343,7 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
 
     useEffect(() => {
         if (store.focus) {
-            const { bottom, left } = inputRef.current.getBoundingClientRect();
-
-            tagSelectorDispatcher(null, {
-                top: bottom + 4,
-                left,
-            });
+            tagSelectorDispatcher(null, inputRef);
         } else {
             closePopover();
         }
@@ -378,7 +366,6 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
                     }}
                 />
             ))}
-            <Box ref={tagSelectorAnchorRef} className={classes.tagsListContainer} />
             <InputBase
                 className={classes.input}
                 placeholder={t('bookmark:editor.bookmarkTags', { context: 'placeholder' })}

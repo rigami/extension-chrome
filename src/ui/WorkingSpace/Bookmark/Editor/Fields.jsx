@@ -115,13 +115,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Fields(props) {
-    const {
-        editorService: service,
-        marginThreshold = 24,
-        onSave,
-        onCancel,
-    } = props;
+function Fields({ editorService: service }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
     const store = useLocalObservable(() => ({
