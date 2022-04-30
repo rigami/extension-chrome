@@ -116,7 +116,7 @@ function FolderItem(props) {
                     {isPin && (
                         <FavoriteIcon className={classes.favorite} />
                     )}
-                    {!isDisabled && (
+                    {!isDisabled && dispatchContextMenu && (
                         <Tooltip title={t('common:button.contextMenu')}>
                             <ItemAction
                                 className={clsx(classes.action, isOpenEdit && classes.forceShow)}
