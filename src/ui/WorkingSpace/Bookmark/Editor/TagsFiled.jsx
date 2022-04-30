@@ -1,17 +1,21 @@
-import React, { Fragment, useEffect, useRef } from 'react';
+import React, {
+    Fragment,
+    useCallback,
+    useEffect,
+    useRef,
+} from 'react';
 import {
     Box,
     Divider,
     ListItem,
     ListItemText,
-    Paper,
     Typography,
     InputBase,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { observer, useLocalObservable, useObserver } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import { filter } from 'lodash';
 import { captureException } from '@sentry/react';
 import { runInAction } from 'mobx';
@@ -29,38 +33,9 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     content: { flex: '1 0 auto' },
-    header: { marginBottom: theme.spacing(1) },
-    controls: {
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: theme.spacing(2),
-        paddingBottom: theme.spacing(2),
-        justifyContent: 'flex-end',
-    },
     button: {
         marginRight: theme.spacing(2),
         position: 'relative',
-    },
-    details: {
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        overflow: 'auto',
-    },
-    inputDescription: { marginTop: theme.spacing(2) },
-    addDescriptionButton: { marginTop: theme.spacing(2) },
-    saveIcon: { marginRight: theme.spacing(1) },
-    identBlock: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: theme.spacing(2),
-    },
-    folderPicker: { marginRight: 'auto' },
-    identBlockIcon: { marginRight: theme.spacing(1) },
-    identBlockIconTopAlign: {
-        height: theme.spacing(4),
-        alignSelf: 'flex-start',
     },
     tagsListContainer: { position: 'relative' },
     tagsListWrapper: {
@@ -126,9 +101,11 @@ function TagSelector({ store: upStore, onCreateTag, onSelectTag, ...props }) {
     }, [selectedTagRef.current, store.selectTag]);
 
     useEffect(() => {
-        store.selectTag = store.selectTag === -1 && upStore.inputValue
-            ? -1
-            : Math.max(Math.min(store.selectTag, upStore.filteredTags.length - 1), 0);
+        if (upStore.filteredTags.length === 0 && upStore.inputValue) {
+            store.selectTag = -1;
+        } else {
+            store.selectTag = Math.max(Math.min(store.selectTag, upStore.filteredTags.length - 1), 0);
+        }
     }, [upStore.filteredTags.length]);
 
     useEffect(() => {
@@ -296,10 +273,7 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
             });
     };
 
-    const {
-        dispatchPopover: tagSelectorDispatcher,
-        close: closePopover,
-    } = useContextPopoverDispatcher((data = {}, position, close) => (
+    const renderTagsSelector = useCallback((data = {}, position, close) => (
         <ObserverTagSelector
             data={data}
             position={position}
@@ -324,7 +298,12 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
                 store.isBlock = false;
             }}
         />
-    ), {
+    ), []);
+
+    const {
+        dispatchPopover: tagSelectorDispatcher,
+        close: closePopover,
+    } = useContextPopoverDispatcher(renderTagsSelector, {
         nonBlockEventsBackdrop: true,
         disableAutoFocus: true,
         disableEnforceFocus: true,
@@ -362,16 +341,19 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
     useEffect(() => {
         store.filteredTags = filter(
             store.allTags,
-            (tag) => tag.name.toLowerCase().indexOf(store.inputValue.toLowerCase()) !== -1 && !store.tags.includes(tag.id),
+            (tag) => (
+                tag.name.toLowerCase().indexOf(store.inputValue.toLowerCase()) !== -1
+                && !store.tags.includes(tag.id)
+            ),
         );
     }, [store.inputValue, store.tags, store.allTags]);
 
     useEffect(() => {
         if (store.focus) {
-            const { top, left } = tagSelectorAnchorRef.current.getBoundingClientRect();
+            const { bottom, left } = inputRef.current.getBoundingClientRect();
 
             tagSelectorDispatcher(null, {
-                top: top + 16,
+                top: bottom + 4,
                 left,
             });
         } else {
@@ -420,6 +402,8 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
                         event.preventDefault();
                         event.stopPropagation();
                         store.tags = store.tags.slice(0, -1);
+                    } else if (event.code === 'ArrowUp' || event.code === 'ArrowDown') {
+                        event.preventDefault();
                     }
                 }}
             />
