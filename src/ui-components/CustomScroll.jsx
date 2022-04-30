@@ -83,7 +83,13 @@ function CustomScroll(rootProps, ref) {
             wrapperProps={{
                 renderer: (props) => {
                     const { elementRef, ...restProps } = props;
-                    return <div {...restProps} ref={elementRef} className={classes.scrollWrapper} />;
+                    return (
+                        <div
+                            {...restProps}
+                            ref={elementRef}
+                            className={clsx(classes.scrollWrapper, externalClasses.wrapper)}
+                        />
+                    );
                 },
             }}
             trackYProps={{

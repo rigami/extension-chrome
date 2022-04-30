@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 0,
         marginBottom: 0,
         flexGrow: 1,
-        overflow: 'auto',
     },
     header: { marginBottom: theme.spacing(1) },
     controls: {
@@ -87,7 +86,10 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         marginTop: theme.spacing(2),
     },
-    folderPicker: { marginTop: theme.spacing(1) },
+    folderPicker: {
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
     identBlockIcon: { marginRight: theme.spacing(1) },
     identBlockIconTopAlign: {
         height: theme.spacing(4),
@@ -105,13 +107,9 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
     },
     saveInCurrentFolderCaption: { padding: theme.spacing(0, 0.75) },
-    foldersContainer: {
-        height: 'auto',
-        flexGrow: 1,
-        marginBottom: theme.spacing(1),
-    },
-    foldersContainerTrack: { right: -10 },
-    foldersScrollContent: {
+    scrollFixedBorderRadius: { borderRadius: 'inherit' },
+    scrollContainerTrack: { right: -10 },
+    scrollScrollContent: {
         width: '100%',
         display: 'block !important',
     },
@@ -166,91 +164,91 @@ function Fields(props) {
     return (
         <Box className={classes.details}>
             <Box className={classes.contentBackdrop}>
-                <CardContent className={classes.content}>
-                    <InputBase
-                        placeholder={t('editor.bookmarkUrl', { context: 'placeholder' })}
-                        fullWidth
-                        autoFocus
-                        value={store.query}
-                        className={classes.input}
-                        classes={{ input: classes.inputUrl }}
-                        onChange={(event) => {
-                            store.query = event.target.value;
-                        }}
-                        onKeyDown={(event) => {
-                            if (event.code === 'Enter') {
-                                handleApplySearchForce();
-                            }
-                        }}
-                        endAdornment={store.query && (store.query !== service.url || !service.url) && (
-                            <InputAdornment position="end">
-                                <IconButton onClick={handleApplySearchForce}>
-                                    <SearchIcon />
-                                </IconButton>
-                            </InputAdornment>
-                        )}
-                    />
-                    {(store.query !== service.url || !service.url) && (
-                        <Search
-                            query={store.query}
-                            onSelect={(result) => {
-                                store.query = '';
-                                service.updateValues(result);
+                <Scrollbar
+                    classes={{
+                        root: classes.scrollFixedBorderRadius,
+                        wrapper: classes.scrollFixedBorderRadius,
+                        trackY: classes.scrollContainerTrack,
+                        content: classes.scrollScrollContent,
+                    }}
+                >
+                    <CardContent className={classes.content}>
+                        <InputBase
+                            placeholder={t('editor.bookmarkUrl', { context: 'placeholder' })}
+                            fullWidth
+                            autoFocus
+                            value={store.query}
+                            className={classes.input}
+                            classes={{ input: classes.inputUrl }}
+                            onChange={(event) => {
+                                store.query = event.target.value;
                             }}
+                            onKeyDown={(event) => {
+                                if (event.code === 'Enter') {
+                                    handleApplySearchForce();
+                                }
+                            }}
+                            endAdornment={store.query && (store.query !== service.url || !service.url) && (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={handleApplySearchForce}>
+                                        <SearchIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            )}
                         />
-                    )}
-                    {store.query === service.url && service.url && (
-                        <Fragment>
-                            <InputBase
-                                placeholder={t('editor.bookmarkName', { context: 'placeholder' })}
-                                fullWidth
-                                multiline
-                                value={service.name}
-                                className={clsx(classes.inputName, classes.input)}
-                                onChange={(event) => service.updateValues({ name: event.target.value })}
-                                onKeyDown={(event) => {
-                                    if (event.code === 'Enter') {
-                                        event.preventDefault();
-                                        event.stopPropagation();
-                                    }
+                        {(store.query !== service.url || !service.url) && (
+                            <Search
+                                query={store.query}
+                                onSelect={(result) => {
+                                    store.query = '';
+                                    service.updateValues(result);
                                 }}
                             />
-                            <TagsFiled
-                                selectedTags={service.tags}
-                                onChange={(newTags) => service.updateValues({ tags: newTags })}
-                                className={classes.input}
-                            />
-                            {service.useDescription && (
+                        )}
+                        {store.query === service.url && service.url && (
+                            <Fragment>
                                 <InputBase
-                                    autoFocus
-                                    placeholder={t('editor.bookmarkDescription', { context: 'placeholder' })}
+                                    placeholder={t('editor.bookmarkName', { context: 'placeholder' })}
                                     fullWidth
-                                    value={service.description}
-                                    className={clsx(classes.inputDescription)}
                                     multiline
-                                    rows={1}
-                                    rowsMax={6}
-                                    onChange={(event) => service.updateValues({ description: event.target.value })}
+                                    value={service.name}
+                                    className={clsx(classes.inputName, classes.input)}
+                                    onChange={(event) => service.updateValues({ name: event.target.value })}
+                                    onKeyDown={(event) => {
+                                        if (event.code === 'Enter') {
+                                            event.preventDefault();
+                                            event.stopPropagation();
+                                        }
+                                    }}
                                 />
-                            )}
-                            {!service.useDescription && (
-                                <Button
-                                    data-ui-path="editor.description.add"
-                                    className={clsx(classes.addDescriptionButton)}
-                                    onClick={() => service.updateValues({ useDescription: true })}
-                                >
-                                    {t('editor.button.addDescription')}
-                                </Button>
-                            )}
-                            <Divider />
-                            <Scrollbar
-                                classes={{
-                                    root: classes.foldersContainer,
-                                    trackY: classes.foldersContainerTrack,
-                                    content: classes.foldersScrollContent,
-                                }}
-                                translateContentSizeYToHolder
-                            >
+                                <TagsFiled
+                                    selectedTags={service.tags}
+                                    onChange={(newTags) => service.updateValues({ tags: newTags })}
+                                    className={classes.input}
+                                />
+                                {service.useDescription && (
+                                    <InputBase
+                                        autoFocus
+                                        placeholder={t('editor.bookmarkDescription', { context: 'placeholder' })}
+                                        fullWidth
+                                        value={service.description}
+                                        className={clsx(classes.inputDescription)}
+                                        multiline
+                                        rows={1}
+                                        rowsMax={6}
+                                        onChange={(event) => service.updateValues({ description: event.target.value })}
+                                    />
+                                )}
+                                {!service.useDescription && (
+                                    <Button
+                                        data-ui-path="editor.description.add"
+                                        className={clsx(classes.addDescriptionButton)}
+                                        onClick={() => service.updateValues({ useDescription: true })}
+                                    >
+                                        {t('editor.button.addDescription')}
+                                    </Button>
+                                )}
+                                <Divider />
                                 <Folders
                                     className={classes.folderPicker}
                                     selectFolder={service.folderId}
@@ -266,10 +264,10 @@ function Fields(props) {
                                         </Typography>
                                     )}
                                 />
-                            </Scrollbar>
-                        </Fragment>
-                    )}
-                </CardContent>
+                            </Fragment>
+                        )}
+                    </CardContent>
+                </Scrollbar>
             </Box>
             <div className={classes.stateCaption}>
                 {store.saveState === FETCH.PENDING && (
