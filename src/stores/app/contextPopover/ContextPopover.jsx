@@ -1,8 +1,8 @@
-import React, { useRef } from 'react';
-import { Popover, Box, Paper } from '@material-ui/core';
+import React, { useCallback, useRef } from 'react';
+import { Popover, Paper } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import ReactResizeDetector from 'react-resize-detector';
+import { useResizeDetector } from 'react-resize-detector';
 import { observer } from 'mobx-react-lite';
 
 const useStyles = makeStyles((theme) => ({
@@ -27,13 +27,19 @@ function ContextPopover({ stateKey, service }) {
     const theme = useTheme();
     const updatePosition = useRef(null);
 
-    const updatePopper = () => {
+    const updatePopper = useCallback(() => {
         if (!updatePosition?.current) return;
 
         requestAnimationFrame(() => {
             updatePosition.current();
         });
-    };
+    }, []);
+
+    const { ref: contentRef } = useResizeDetector({ onResize: updatePopper });
+    useResizeDetector({
+        targetRef: service.popovers[stateKey].anchorEl || { current: null },
+        onResize: updatePopper,
+    });
 
     return (
         <Popover
@@ -48,7 +54,7 @@ function ContextPopover({ stateKey, service }) {
                 vertical: 'top',
                 horizontal: 'left',
             }}
-            anchorReference="anchorPosition"
+            anchorReference={service.popovers[stateKey].anchorEl ? 'anchorEl' : 'anchorPosition'}
             elevation={0}
             transitionDuration={{
                 appear: theme.transitions.duration.standard,
@@ -57,6 +63,7 @@ function ContextPopover({ stateKey, service }) {
             }}
             className={clsx(service.popovers[stateKey].nonBlockEventsBackdrop && classes.nonBlockEventsBackdrop)}
             anchorPosition={service.popovers[stateKey].position}
+            anchorEl={service.popovers[stateKey].anchorEl?.current}
             open={service.isOpen[stateKey]}
             PaperProps={{ className: classes.resetPaper }}
             onClose={() => service.close(stateKey)}
@@ -65,14 +72,12 @@ function ContextPopover({ stateKey, service }) {
             disableEnforceFocus={service.popovers[stateKey].disableEnforceFocus}
             disableRestoreFocus={service.popovers[stateKey].disableRestoreFocus}
         >
-            <Paper className={clsx(classes.paper, service.popovers[stateKey].classes.paper)} elevation={22}>
-                <ReactResizeDetector handleWidth handleHeight onResize={updatePopper}>
-                    {() => (
-                        <Box>
-                            {service.popovers[stateKey].content()}
-                        </Box>
-                    )}
-                </ReactResizeDetector>
+            <Paper
+                className={clsx(classes.paper, service.popovers[stateKey].classes.paper)}
+                elevation={22}
+                ref={contentRef}
+            >
+                {service.popovers[stateKey].content()}
             </Paper>
         </Popover>
     );

@@ -74,14 +74,14 @@ class ContextPopoverService {
             next,
         } = props;
 
-        let position = overridePosition || {
+        let positionOrAnchor = overridePosition || {
             top: event.nativeEvent.clientY,
             left: event.nativeEvent.clientX,
         };
 
         if (useAnchorEl) {
             const { top, left } = event.currentTarget.getBoundingClientRect();
-            position = {
+            positionOrAnchor = {
                 top,
                 left,
             };
@@ -89,9 +89,10 @@ class ContextPopoverService {
 
         this.popovers[stateKey] = {
             stateKey,
-            content: () => fabric(data, position, () => this.close(stateKey)),
+            content: () => fabric(data, positionOrAnchor, () => this.close(stateKey)),
             nextClose: next && next(),
-            position,
+            position: positionOrAnchor.top ? positionOrAnchor : null,
+            anchorEl: positionOrAnchor.current ? positionOrAnchor : null,
             reactions,
             onOpen,
             onClose,
