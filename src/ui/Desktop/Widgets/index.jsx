@@ -241,13 +241,13 @@ function Widgets({ stickToBottom, color }) {
         || desktopService.settings.widgetsPosition === WIDGET_POSITION.CENTER_MIDDLE
         || desktopService.settings.widgetsPosition === WIDGET_POSITION.RIGHT_MIDDLE
     ) {
-        translate = `translateY(calc(${heightRoot / 2}px - ${64 / 2}px))`;
+        translate = `translateY(${heightRoot / 2 - 64 / 2}px)`;
     } else if (
         desktopService.settings.widgetsPosition === WIDGET_POSITION.LEFT_TOP
         || desktopService.settings.widgetsPosition === WIDGET_POSITION.CENTER_TOP
         || desktopService.settings.widgetsPosition === WIDGET_POSITION.RIGHT_TOP
     ) {
-        translate = `translateY(calc(${heightRoot}px - ${64}px))`;
+        translate = `translateY(${heightRoot - 64}px)`;
     }
 
     const currPosition = positions[desktopService.settings.widgetsPosition];
