@@ -15,9 +15,12 @@
       "NO_FILES": "No files found"
     }
   },
+  "selected": "Selected",
   "button": {
     "addToLibrary": "Add to Library",
+    "addToLibrary_short": "Save",
     "apply": "Apply background",
+    "apply_short": "Apply",
     "add": "Add new background",
     "pause": "Pause background",
     "play": "Play background",
