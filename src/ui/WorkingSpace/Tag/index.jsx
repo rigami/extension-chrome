@@ -14,7 +14,7 @@ import {
     darken,
     useTheme,
 } from '@material-ui/core/styles';
-import { CloseRounded as CloseIcon, StarRounded as FavoriteIcon } from '@material-ui/icons';
+import { CloseRounded as RemoveIcon, StarRounded as FavoriteIcon } from '@material-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { useWorkingSpaceService } from '@/stores/app/workingSpace';
@@ -139,7 +139,9 @@ function Tag(props) {
         const repairColorDark = theme.palette.type === 'dark'
             ? alpha(lighten(repairColor, 0.5), 0.84)
             : alpha(darken(repairColor, 0.5), 0.84);
-        const repairColorDeleteBtn = alpha(lighten(repairColor, 0.86), 0.84);
+        const repairColorDeleteBtn = theme.palette.type === 'dark'
+            ? alpha(darken(repairColor, 0.86), 0.84)
+            : alpha(lighten(repairColor, 0.86), 0.84);
 
         return (
             <Box
@@ -158,7 +160,7 @@ function Tag(props) {
                             style={{ backgroundColor: repairColorDeleteBtn }}
                             onClick={onDelete}
                         >
-                            <CloseIcon className={classes.deleteIconDense} />
+                            <RemoveIcon className={classes.deleteIconDense} />
                         </IconButton>
                     </Tooltip>
                 )}

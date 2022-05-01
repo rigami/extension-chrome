@@ -273,7 +273,7 @@ function TagsFiled({ selectedTags, onChange, className: externalClassName }) {
             });
     };
 
-    const renderTagsSelector = useCallback((data = {}, position, close) => (
+    const renderTagsSelector = useCallback(() => (
         <ObserverTagSelector
             store={store}
             onCreateTag={(name) => {

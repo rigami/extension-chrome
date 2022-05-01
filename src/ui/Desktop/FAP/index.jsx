@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     leftAlign: { marginLeft: 0 },
     backdrop: {
         backdropFilter: 'blur(40px) brightness(110%)  contrast(1.2) invert(0.06)',
-        backgroundColor: alpha(theme.palette.background.backdrop, 0.22),
+        backgroundColor: alpha(theme.palette.background.backdrop, 0.12),
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
         padding: theme.spacing(1.25),
@@ -87,10 +87,10 @@ const useStyles = makeStyles((theme) => ({
     linkBackdrop: { backgroundColor: theme.palette.background.default },
     linkBackdropBlur: {
         backdropFilter: 'blur(10px) brightness(200%)',
-        backgroundColor: alpha(theme.palette.background.default, 0.82),
+        backgroundColor: alpha(theme.palette.background.default, 0.3),
     },
     linkBackdropBlurLight: { backdropFilter: 'blur(10px) brightness(200%)' },
-    linkBackdropBlurColor: { backgroundColor: alpha(theme.palette.background.default, 0.82) },
+    linkBackdropBlurColor: { backgroundColor: alpha(theme.palette.background.default, 0.3) },
     overload: {
         width: 40,
         height: 40,

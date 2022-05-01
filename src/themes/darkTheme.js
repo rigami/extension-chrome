@@ -3,7 +3,7 @@ import merge from '@/utils/mergeObjects';
 import { themeValuesRaw as defaultThemeValues } from './defaultTheme';
 import themeOverrides from '@/themes/themeOverrides';
 
-const baseThemeValues =  merge(
+const baseThemeValues = merge(
     defaultThemeValues,
     {
         palette: {
@@ -23,7 +23,7 @@ const baseThemeValues =  merge(
                 paper: '#151515',
                 backdrop: '#1d1d1d',
                 default: '#161616',
-                backdropLight: '#222222',
+                backdropLight: '#181818',
             },
             text: {
                 primary: alpha('#fff', 0.76),

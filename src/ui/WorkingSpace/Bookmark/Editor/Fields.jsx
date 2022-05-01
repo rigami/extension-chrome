@@ -171,6 +171,7 @@ function Fields({ editorService: service }) {
                             placeholder={t('editor.bookmarkUrl', { context: 'placeholder' })}
                             fullWidth
                             autoFocus
+                            spellCheck={false}
                             value={store.query}
                             className={classes.input}
                             classes={{ input: classes.inputUrl }}

@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadiusButton,
         margin: theme.spacing(0.125),
         fontSize: '0.8rem',
-        backgroundColor: '#d1d1d1',
+        backgroundColor: theme.palette.background.backdrop,
         '& $folderPreviewStub': {
             width: theme.spacing(1.5),
             height: theme.spacing(1.5),
