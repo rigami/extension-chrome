@@ -139,7 +139,7 @@ function ChangeQuery({ onClose }) {
             list = list.map((bg) => new Wallpaper({
                 ...bg,
                 kind: 'media',
-                contrastColor: bg.color,
+                // contrastColor: bg.color,
                 idInSource: bg.idInSource,
                 source: BG_SOURCE[bg.source.toUpperCase()],
                 type: BG_TYPE[bg.type.toUpperCase()],
