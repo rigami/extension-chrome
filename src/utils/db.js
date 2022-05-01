@@ -1,4 +1,4 @@
-import { openDB } from 'idb/with-async-ittr.js';
+import { openDB } from 'idb/with-async-ittr';
 import dbConfig from '@/config/db';
 import { SERVICE_STATE } from '@/enum';
 import forceCrash from '@/utils/helpers/forceCrash';
