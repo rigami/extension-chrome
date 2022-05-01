@@ -22,6 +22,30 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function ContentPopover({ content, onReCalc, className: externalClassName }) {
+    const classes = useStyles();
+    const contentRef = useRef(null);
+
+    useResizeDetector({
+        handleHeight: true,
+        handleWidth: true,
+        targetRef: contentRef,
+        onResize: onReCalc,
+    });
+
+    const Content = useCallback(() => content(), []);
+
+    return (
+        <Paper
+            className={clsx(classes.paper, externalClassName)}
+            elevation={22}
+            ref={contentRef}
+        >
+            <Content />
+        </Paper>
+    );
+}
+
 function ContextPopover({ stateKey, service }) {
     const classes = useStyles();
     const theme = useTheme();
@@ -35,7 +59,6 @@ function ContextPopover({ stateKey, service }) {
         });
     }, []);
 
-    const { ref: contentRef } = useResizeDetector({ onResize: updatePopper });
     useResizeDetector({
         targetRef: service.popovers[stateKey].anchorEl || { current: null },
         onResize: updatePopper,
@@ -72,13 +95,11 @@ function ContextPopover({ stateKey, service }) {
             disableEnforceFocus={service.popovers[stateKey].disableEnforceFocus}
             disableRestoreFocus={service.popovers[stateKey].disableRestoreFocus}
         >
-            <Paper
-                className={clsx(classes.paper, service.popovers[stateKey].classes.paper)}
-                elevation={22}
-                ref={contentRef}
-            >
-                {service.popovers[stateKey].content()}
-            </Paper>
+            <ContentPopover
+                content={service.popovers[stateKey].content}
+                onReCalc={updatePopper}
+                className={service.popovers[stateKey].classes.paper}
+            />
         </Popover>
     );
 }
