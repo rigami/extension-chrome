@@ -48,8 +48,9 @@ async function cleanCache(cacheName, timestamp) {
         const response = await cache.match(request);
 
         const cachedTime = new Date(response.headers.get('rigami-time-cached')).valueOf();
+        const cacheLifetime = response.headers.get('rigami-cache-lifetime');
 
-        if (cachedTime < timestamp) {
+        if (cachedTime < timestamp && cacheLifetime !== 'infinite') {
             console.log('[CacheManager] Delete cache:', cacheName, response);
             await cache.delete(request);
         }
@@ -57,7 +58,13 @@ async function cleanCache(cacheName, timestamp) {
 }
 
 async function deleteFromCache(cacheName, url) {
+    console.log('deleteFromCache:', cacheName, url);
     const cache = await caches.open(cacheName);
+    const request = await caches.match(url);
+
+    console.log('deleteFromCache: request', cacheName, url, request);
+
+    await cache.delete(url);
 }
 
 const manager = {

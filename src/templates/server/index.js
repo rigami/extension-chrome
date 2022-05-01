@@ -48,18 +48,8 @@ self.addEventListener('fetch', (event) => {
                 return;
             }
 
-            const parsedUrl = new URL(request.url);
-            const cacheScope = parsedUrl.searchParams.get('rigami-cache-scope');
-
-            if (cacheScope) {
-                console.log(`Data ${request.url} must be cache. Fetching, caching and return`);
-                await cacheManager.cacheWithPrefetch(cacheScope, request.url);
-
-                resolve(caches.match(request));
-            } else {
-                console.log(`Data ${request.url} not must be caching. Fetching and return`);
-                resolve(fetch(request));
-            }
+            console.log(`Data ${request.url} not must be caching. Fetching and return`);
+            resolve(fetch(request));
         }
     }));
 });

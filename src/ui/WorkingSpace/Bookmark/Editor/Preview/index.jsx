@@ -187,6 +187,8 @@ function PreviewCard(props) {
                             const urlParsed = new URL(icoUrl);
                             const query = urlParsed.searchParams;
                             query.set('type', newValue.toLowerCase());
+                            query.delete('rigami-cache-scope');
+                            query.delete('rigami-cache-lifetime');
 
                             onClick({
                                 url: `${urlParsed.origin}${urlParsed.pathname}?${query}`,
@@ -390,6 +392,8 @@ function Preview({ editorService: service }) {
                                             );
                                             const query = urlParsed.searchParams;
                                             query.set('type', newValue.toLowerCase());
+                                            query.delete('rigami-cache-scope');
+                                            query.delete('rigami-cache-lifetime');
 
                                             service.setPreview({
                                                 ...service.defaultImage,

@@ -24,7 +24,10 @@ class WallpapersUniversalService {
     static async addToLibrary(saveBG, blobs = {}) {
         console.log('[wallpapers] Add bg to library', saveBG, blobs);
 
-        const urls = await this.fetch(saveBG, blobs);
+        const urls = await this.fetch(saveBG, {
+            ...blobs,
+            cacheTime: 'infinity',
+        });
 
         console.log('urls:', urls);
 
@@ -66,7 +69,9 @@ class WallpapersUniversalService {
 
         if (!notRemoveCache) {
             try {
-                // TODO: Added remove bg from cache
+                await cacheManager.delete('wallpapers', removeBG.fullSrc);
+                await cacheManager.delete('wallpapers', removeBG.previewSrc);
+
                 console.log('[wallpapers] Remove from file system...');
             } catch (e) {
                 console.log(`[backgrounds] BG with id=${removeBG.id} not find in file system`);
@@ -83,6 +88,7 @@ class WallpapersUniversalService {
             preview = true,
             fullBlob,
             previewBlob,
+            cacheTime = 'temp',
         } = options;
         const fileName = Date.now().toString();
         bindConsole.log('Fetch wallpaper', {
@@ -103,6 +109,7 @@ class WallpapersUniversalService {
             const parsed = new URL(rawUrl);
 
             parsed.searchParams.set('rigami-cache-scope', 'wallpapers');
+            parsed.searchParams.set('rigami-cache-lifetime', cacheTime);
 
             return `${parsed.origin}${parsed.pathname}?${parsed.searchParams}`;
         };

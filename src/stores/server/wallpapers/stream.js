@@ -42,7 +42,10 @@ class StreamWallpapersService {
             try {
                 const { url, previewUrl } = await WallpapersUniversalService.fetch(
                     first(this.storage.data.wallpapersStreamQueue),
-                    { preview: false },
+                    {
+                        preview: false,
+                        cacheTime: 'temp',
+                    },
                 );
 
                 nextWallpaper = new Wallpaper({
@@ -130,7 +133,10 @@ class StreamWallpapersService {
         const nextPrepare = this.storage.data.wallpapersStreamQueue[nextPrepareIndex];
 
         try {
-            const { url, previewUrl } = await WallpapersUniversalService.fetch(nextPrepare, { preview: false });
+            const { url, previewUrl } = await WallpapersUniversalService.fetch(nextPrepare, {
+                preview: false,
+                cacheTime: 'temp',
+            });
 
             this.storage.update({
                 wallpapersStreamQueue: this.storage.data.wallpapersStreamQueue.map((bg) => {

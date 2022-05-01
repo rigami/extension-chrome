@@ -68,6 +68,7 @@ class BookmarksUniversalService {
             params.set('type', icoVariant.toLowerCase());
             params.set('stamp', modifiedTimestamp.toString());
             params.set('rigami-cache-scope', 'icons');
+            params.set('rigami-cache-lifetime', 'infinity');
 
             saveIcoUrl = api.computeUrl(
                 `site-parse/processing-image?${params}`,
@@ -79,6 +80,7 @@ class BookmarksUniversalService {
             params.set('site-url', url);
             params.set('stamp', modifiedTimestamp.toString());
             params.set('rigami-cache-scope', 'icons');
+            params.set('rigami-cache-lifetime', 'infinity');
 
             saveIcoUrl = api.computeUrl(
                 `site-parse/processing-image?${params}`,
@@ -97,6 +99,10 @@ class BookmarksUniversalService {
                 createTimestamp: oldBookmark?.createTimestamp || Date.now(),
                 modifiedTimestamp,
             });
+
+            if (oldBookmark) {
+                await cacheManager.delete('icons', oldBookmark.icoUrl);
+            }
 
             saveBookmarkId = await db().put('bookmarks', newBookmark);
 

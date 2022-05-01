@@ -169,7 +169,10 @@ class WallpapersService {
             let urls;
 
             try {
-                urls = await WallpapersUniversalService.fetch(wallpaper, { preview: false });
+                urls = await WallpapersUniversalService.fetch(wallpaper, {
+                    preview: false,
+                    cacheTime: 'temp',
+                });
             } catch (e) {
                 bindConsole.error('Failed fetch wallpaper', e);
                 captureException(e);
