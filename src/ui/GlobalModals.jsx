@@ -9,12 +9,14 @@ import Search from '@/ui/Search';
 import { useAppStateService } from '@/stores/app/appState';
 
 function GlobalModals({ children }) {
-    const { t } = useTranslation(['folder']);
+    const { t, ready } = useTranslation(['folder', 'settingsSync']);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const appStateService = useAppStateService();
     const coreService = useCoreService();
 
     useEffect(() => {
+        if (!ready) return;
+
         const saveLocalBackup = async (path) => {
             console.log('path:', path);
             const generateFormatter = new Intl.DateTimeFormat('en', {
@@ -95,9 +97,9 @@ function GlobalModals({ children }) {
                     }, { persist: true });
 
                     coreService.tempStorage.update({ progressRestoreSnackbar: snackId });
-                } else if (data.result === 'reloadAndApply') {
-                    location.reload();
                 } else if (data.result === 'done') {
+                    appStateService.settings.recalc();
+
                     location.reload();
                 } else if (data.result === 'error') {
                     enqueueSnackbar({
@@ -140,14 +142,6 @@ function GlobalModals({ children }) {
                 }, { persist: true });
 
                 coreService.tempStorage.update({ progressRestoreSnackbar: snackId });
-            } else if (coreService.storage.data.restoreBackup === 'reloadAndApply') {
-                appStateService.settings.recalc();
-
-                coreService.storage.update({
-                    restoreBackup: 'done',
-                    restoreBackupError: null,
-                }, true);
-                location.reload();
             } else if (coreService.storage.data.restoreBackup === 'error') {
                 enqueueSnackbar({
                     message: t(`settingsSync:localBackup.restore.error.${
@@ -171,7 +165,7 @@ function GlobalModals({ children }) {
         return () => {
             globalListeners.forEach((listenerId) => coreService.localEventBus.removeListener(listenerId));
         };
-    }, []);
+    }, [ready]);
 
     return (
         <React.Fragment>

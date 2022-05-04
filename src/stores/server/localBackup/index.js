@@ -223,11 +223,6 @@ class LocalBackupService {
 
             if (backup.settings) {
                 this.core.settingsService.settingsStorage.updateRaw(backup.settings, true);
-                this.core.settingsService.app.recalc();
-                this.core.settingsService.desktop.recalc();
-                this.core.settingsService.wallpapers.recalc();
-                this.core.settingsService.widgets.recalc();
-                this.core.settingsService.workingSpace.recalc();
             }
 
             if (BUILD === 'full' && backup.workingSpace) {
@@ -241,8 +236,8 @@ class LocalBackupService {
                     backup.wallpaperPreviewFiles,
                 );
             }
-            this.core.storage.update({ restoreBackup: 'reloadAndApply' }, true);
-            eventToApp('system/backup/local/restore/progress', { result: 'reloadAndApply' });
+            this.core.storage.update({ restoreBackup: 'done' }, true);
+            eventToApp('system/backup/local/restore/progress', { result: 'done' });
         } catch (e) {
             console.error(e);
             captureException(e);
