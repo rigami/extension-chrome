@@ -163,6 +163,8 @@ class LocalBackupService {
 
         bindConsole.log('Raw backup file:', rawBackup);
 
+        await cacheManager.delete('temp', path);
+
         try {
             if (type === 'rigami') {
                 backup = await this.readModern(rawBackup);
