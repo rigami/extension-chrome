@@ -7,8 +7,6 @@ import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 import Favorite from '@/stores/universal/workingSpace/entities/favorite';
 import fetchData from '@/utils/helpers/fetchData';
-import Tag from '@/stores/universal/workingSpace/entities/tag';
-import Folder from '@/stores/universal/workingSpace/entities/folder';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 import { search } from '@/stores/universal/workingSpace/search';
 import db from '@/utils/db';
@@ -38,12 +36,15 @@ class WorkingSpace {
 
         // Collect folders
 
-        const foldersReplaceIds = {};
+        const foldersReplaceIds = {
+            NULL_UUID: 0,
+            FIRST_UUID: 1,
+        };
 
         const folders = await db().getAll('folders');
 
         folders.forEach((folder) => {
-            foldersReplaceIds[folder.id] = Object.keys(foldersReplaceIds).length;
+            if (!(folder.id in foldersReplaceIds)) foldersReplaceIds[folder.id] = Object.keys(foldersReplaceIds).length;
 
             folder.id = foldersReplaceIds[folder.id];
         });
@@ -88,14 +89,18 @@ class WorkingSpace {
 
         // Collect favorites
 
-        const favorites = await FavoritesUniversalService.getAll();
+        let favorites = await FavoritesUniversalService.getAll();
 
-        favorites.forEach((favorite) => {
+        favorites = favorites.map((favorite) => {
             if (favorite.itemType === 'folder') {
                 favorite.itemId = foldersReplaceIds[favorite.itemId];
             } else if (favorite.itemType === 'bookmark') {
                 favorite.itemId = bookmarksReplaceIds[favorite.itemId];
+            } else if (favorite.itemType === 'tag') {
+                favorite.itemId = tagsReplaceIds[favorite.itemId];
             }
+
+            return omit(favorite, ['id']);
         });
 
         return {
@@ -106,7 +111,7 @@ class WorkingSpace {
         };
     }
 
-    async restore({ bookmarks, tags, folders, favorites }) {
+    async restore({ tags, folders, bookmarks, favorites }) {
         console.log('restore bookmarks', {
             bookmarks,
             tags,
@@ -144,7 +149,7 @@ class WorkingSpace {
                     await FoldersUniversalService.save({
                         ...findFolder,
                         ...folder,
-                        parentId: replaceFolderId[folder.parentId],
+                        parentId: replaceFolderId[folder.parentId || 0],
                         id: findFolder.id,
                     });
 
@@ -153,7 +158,7 @@ class WorkingSpace {
                     console.log(`Folder '${folder.name}' not find in local store. Save as new`);
                     replaceFolderId[folder.id] = await FoldersUniversalService.save({
                         ...folder,
-                        parentId: replaceFolderId[folder.parentId],
+                        parentId: replaceFolderId[folder.parentId || 0],
                         id: null,
                     });
                 }
@@ -237,27 +242,26 @@ class WorkingSpace {
         for await (const favorite of favorites) {
             console.log('Check favorite:', favorite);
 
-            const favType = favorite.itemType || favorite.type;
-            const favId = favorite.itemId || favorite.id;
+            const favType = favorite.itemType;
+            const favId = favorite.itemId;
 
-            const favoriteItemId = (
-                (favType === 'bookmark' && (replaceBookmarkId[favId] || favId))
-                || (favType === 'tag' && (replaceTagId[favId] || favId))
-                || (favType === 'folder' && (replaceFolderId[favId] || favId))
-            );
+            const replaceIdByType = {
+                bookmark: replaceBookmarkId,
+                folder: replaceFolderId,
+                tag: replaceTagId,
+            };
 
-            const favoriteId = (
-                (favType === 'bookmark' && (replaceBookmarkId[favId] || favId))
-                || (favType === 'tag' && (replaceTagId[favId] || favId))
-                || (favType === 'folder' && (replaceFolderId[favId] || favId))
-            );
+            const favoriteItemId = replaceIdByType[favType][favId];
 
             const findFavorite = localFavorites.find(({ itemType, itemId }) => (
-                favType === itemType && favoriteId === itemId
+                favType === itemType && favoriteItemId === itemId
             ));
 
             if (!findFavorite) {
-                console.log('Save new favorite', favorite);
+                console.log('Save new favorite', favorite, 'as', {
+                    itemType: favType,
+                    itemId: favoriteItemId,
+                });
                 await FavoritesUniversalService.addToFavorites(new Favorite({
                     itemType: favType,
                     itemId: favoriteItemId,

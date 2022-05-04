@@ -46,7 +46,15 @@ class LocalBackupService {
                 backup.settings = omit(toJS(settingsStorage.data), ['updateTimestamp']);
             }
 
-            backup.storage = omit((await StorageConnector.get('storage')).storage || {}, ['updateTimestamp']);
+            backup.storage = omit((await StorageConnector.get('storage')).storage || {}, [
+                'localBackup',
+                'restoreBackup',
+                'restoreBackupError',
+                'lastUsageVersion',
+                'factoryResetProgress',
+                'wallpaperState',
+                'updateTimestamp',
+            ]);
 
             if (BUILD === 'full' && workingSpace) {
                 const workingSpaceData = await this.workingSpaceService.collect();
@@ -89,11 +97,13 @@ class LocalBackupService {
         const files = map(zip.files, (file) => file);
 
         for await (const file of files) {
+            console.log('file', file);
             if (
                 [
                     'meta.json',
+                    'storage.json',
                     'settings.json',
-                    'bookmarks.json',
+                    'workingSpace.json',
                     'wallpapers.json',
                 ].includes(file.name)
             ) {
@@ -102,12 +112,13 @@ class LocalBackupService {
             }
 
             if (file.name.indexOf('wallpapers/') !== -1 && !file.dir) {
-                const fileName = file.name.substring(12);
+                const fileName = file.name.substring(11);
                 const splitIndex = fileName.indexOf('.');
                 const id = splitIndex === -1 ? fileName : fileName.substring(0, splitIndex);
                 const ext = splitIndex === -1 ? '' : fileName.substring(splitIndex + 1);
-                const bgType = backup.backgrounds.all
-                    .find(({ idInSource, source }) => `${source.toLowerCase()}-${idInSource}` === id)
+
+                const bgType = backup.wallpapers.all
+                    .find((wallpaper) => wallpaper.id === id)
                     .type;
                 const blob = await file.async('blob');
 
@@ -115,8 +126,8 @@ class LocalBackupService {
                     [blob],
                     { type: `${bgType === BG_TYPE.VIDEO ? 'video' : 'image'}/${ext}` },
                 );
-            } else if (file.name.indexOf('previews/') !== -1 && !file.dir) {
-                const fileName = file.name.substring(9);
+            } else if (file.name.indexOf('wallpaperPreviews/') !== -1 && !file.dir) {
+                const fileName = file.name.substring(18);
                 const splitIndex = fileName.indexOf('.');
                 const id = fileName.substring(0, splitIndex);
                 const blob = await file.async('blob');
@@ -125,8 +136,8 @@ class LocalBackupService {
             }
         }
 
-        backup.wallpapers = backgrounds;
-        backup.wallpapersPreview = previews;
+        backup.wallpaperFiles = backgrounds;
+        backup.wallpaperPreviewFiles = previews;
 
         return backup;
     }
@@ -170,6 +181,7 @@ class LocalBackupService {
                 return;
             }
         } catch (e) {
+            bindConsole.error(e);
             captureException(e);
             eventToApp('system/backup/local/restore/progress', {
                 result: 'error',
@@ -203,30 +215,32 @@ class LocalBackupService {
                 return;
             }
 
-            if (backup.settings) {
-                forEach(backup.settings, (value, key) => {
-                    settingsStorage.update(key, value);
-                });
+            if (backup.storage) {
+                this.core.storage.update(backup.storage, true);
             }
 
-            if (BUILD === 'full' && (backup.bookmarks || backup.tags || backup.folders || backup.favorites)) {
-                await this.workingSpaceService.restore({
-                    bookmarks: backup.bookmarks,
-                    tags: backup.tags,
-                    folders: backup.folders,
-                    favorites: backup.favorites,
-                });
+            if (backup.settings) {
+                this.core.settingsService.settingsStorage.updateRaw(backup.settings, true);
+                this.core.settingsService.app.recalc();
+                this.core.settingsService.desktop.recalc();
+                this.core.settingsService.wallpapers.recalc();
+                this.core.settingsService.widgets.recalc();
+                this.core.settingsService.workingSpace.recalc();
+            }
+
+            if (BUILD === 'full' && backup.workingSpace) {
+                await this.workingSpaceService.restore(backup.workingSpace);
             }
 
             if (backup.wallpapers) {
                 await this.wallpapersService.restore(
                     backup.wallpapers.all,
-                    backup.wallpapersFiles,
-                    backup.previewsFiles,
+                    backup.wallpaperFiles,
+                    backup.wallpaperPreviewFiles,
                 );
             }
-            eventToApp('system/backup/local/restore/progress', { result: 'done' });
-            this.core.storage.update({ restoreBackup: 'done' });
+            this.core.storage.update({ restoreBackup: 'reloadAndApply' }, true);
+            eventToApp('system/backup/local/restore/progress', { result: 'reloadAndApply' });
         } catch (e) {
             console.error(e);
             captureException(e);

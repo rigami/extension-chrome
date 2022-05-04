@@ -20,10 +20,10 @@ class RootSettings extends PersistentStorage {
         makeObservable(this);
     }
 
-    updateRaw(props = {}, sync = true) {
+    updateRaw(props = {}, sync = true, force = false) {
         console.log('SettingsStorage update raw:', props);
 
-        super.update(props);
+        super.update(props, force);
 
         if (sync) {
             forEach(props, async (value, key) => {
@@ -45,10 +45,10 @@ class RootSettings extends PersistentStorage {
     }
 
     @override
-    update(namespace, props = {}, sync = true) {
+    update(namespace, props = {}, sync = true, force = false) {
         console.log('SettingsStorage update:', namespace, props);
 
-        super.update(mapKeys(props, (value, key) => `${namespace}.${key}`));
+        super.update(mapKeys(props, (value, key) => `${namespace}.${key}`), force);
 
         if (sync) {
             forEach(props, async (value, key) => {

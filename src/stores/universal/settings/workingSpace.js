@@ -22,10 +22,13 @@ class WorkingSpaceSettings {
     get sorting() { return this._storage.data['workingSpace.sorting']; }
 
     @action
-    update(props = {}) {
+    recalc() {}
+
+    @action
+    update(props = {}, force = false) {
         const updProps = pick(props, ['displayVariant', 'sorting']);
 
-        this._storage.update('workingSpace', updProps);
+        this._storage.update('workingSpace', updProps, force);
     }
 }
 

@@ -3,6 +3,7 @@ import appVariables from '@/config/config';
 
 export default async (data) => {
     const {
+        storage,
         settings,
         bookmarks,
         tags,
@@ -10,18 +11,15 @@ export default async (data) => {
         favorites,
         wallpapers,
     } = data;
-    const backup = {};
 
-    backup.meta = {
+    const zip = new JSZip();
+
+    zip.file('meta.json', JSON.stringify({
         date: new Date().toISOString(),
         appVersion: appVariables.version,
         appType: 'extension.chrome',
         version: appVariables.backup.version,
-    };
-
-    const zip = new JSZip();
-
-    zip.file('meta.json', JSON.stringify(backup.meta));
+    }));
 
     if (settings) zip.file('settings.json', JSON.stringify(settings));
 
@@ -32,6 +30,10 @@ export default async (data) => {
             bookmarks,
             favorites,
         }));
+    }
+
+    if (storage) {
+        zip.file('storage.json', JSON.stringify(storage));
     }
 
     if (wallpapers) {

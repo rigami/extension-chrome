@@ -1,4 +1,6 @@
-import { computed, makeObservable, override } from 'mobx';
+import {
+    action, computed, makeObservable, override,
+} from 'mobx';
 import { pick } from 'lodash';
 import defaultSettings from '@/config/settings';
 import settingsStorage from '@/stores/universal/settings/rootSettings';
@@ -39,7 +41,11 @@ class DesktopSettings {
     @computed
     get widgetsSize() { return this._storage.data['desktop.widgetsSize']; }
 
-    update(props = {}) {
+    @action
+    recalc() {}
+
+    @action
+    update(props = {}, force = false) {
         const updProps = pick(props, [
             'fapStyle',
             'fapPosition',
@@ -49,7 +55,7 @@ class DesktopSettings {
             'widgetsSize',
         ]);
 
-        this._storage.update('desktop', updProps);
+        this._storage.update('desktop', updProps, force);
     }
 }
 

@@ -25,7 +25,7 @@ class PersistentStorage {
         this.subscribe(upgradeState);
     }
 
-    sync = throttle(() => {
+    _forceSync() {
         console.log(`[storage] Update '${this.namespace}' data from cache`, toJS(this._data));
         this._updateTimestamp = Date.now();
         StorageConnector.set({
@@ -35,17 +35,21 @@ class PersistentStorage {
             },
         })
             .then(() => console.log(`[storage] '${this.namespace}' is update`));
+    }
+
+    sync = throttle(() => {
+        this._forceSync();
     }, 100);
 
     @action
-    update(changeData = {}) {
+    update(changeData = {}, force = false) {
         console.log('super update', this.namespace, changeData, toJS(this._data));
 
         runInAction(() => {
             assign(this._data, changeData);
         });
         console.log('super after update', this.namespace, changeData, toJS(this._data));
-        this.sync();
+        if (force) this._forceSync(); else this.sync();
     }
 
     @computed

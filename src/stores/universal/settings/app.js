@@ -1,4 +1,6 @@
-import { computed, makeObservable, override } from 'mobx';
+import {
+    action, computed, makeObservable, override,
+} from 'mobx';
 import { pick } from 'lodash';
 import defaultSettings from '@/config/settings';
 import settingsStorage from '@/stores/universal/settings/rootSettings';
@@ -35,7 +37,17 @@ class AppSettings {
     @computed
     get searchRunOnAnyKey() { return this._storage.data['app.searchRunOnAnyKey']; }
 
-    update(props = {}) {
+    @action
+    recalc() {
+        if ('localStorage' in self) {
+            localStorage.setItem('backdropTheme', this.backdropTheme || defaultSettings.app.backdropTheme);
+            localStorage.setItem('theme', this.theme || defaultSettings.app.theme);
+            localStorage.setItem('tabName', this.tabName);
+        }
+    }
+
+    @action
+    update(props = {}, force = false) {
         const updProps = pick(props, [
             'backdropTheme',
             'theme',
@@ -44,13 +56,8 @@ class AppSettings {
             'searchRunOnAnyKey',
         ]);
 
-        this._storage.update('app', updProps);
-
-        if ('localStorage' in self) {
-            localStorage.setItem('backdropTheme', this.backdropTheme || defaultSettings.app.backdropTheme);
-            localStorage.setItem('theme', this.theme || defaultSettings.app.theme);
-            localStorage.setItem('tabName', this.tabName);
-        }
+        this._storage.update('app', updProps, force);
+        this.recalc();
     }
 }
 

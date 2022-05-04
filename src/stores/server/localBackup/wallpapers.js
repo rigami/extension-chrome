@@ -33,13 +33,7 @@ class Wallpapers {
                 console.warn('Failed download wallpaper:', wallpaper, e);
             }
 
-            meta.push(omit(wallpaper, [
-                'fullSrc',
-                'previewSrc',
-                'isLoad',
-                'isSaved',
-                'fileName',
-            ]));
+            meta.push(omit(wallpaper, ['isLoad', 'isSaved', 'fileName']));
         }
 
         return {
@@ -58,22 +52,18 @@ class Wallpapers {
 
         for await (const wallpaper of wallpapers) {
             console.log('Check wallpaper:', wallpaper);
-            const computeId = `${wallpaper.source.toLowerCase()}-${wallpaper.idInSource}`;
-            const findBackground = localBackgrounds.find(({ id }) => computeId === id);
+            const findBackground = localBackgrounds.find(({ id }) => wallpaper.id === id);
 
             if (findBackground) {
-                console.log(`Background '${computeId}' find in local store. Skip...`);
+                console.log(`Background '${wallpaper.id}' find in local store. Skip...`);
             } else {
-                console.log(`Background '${computeId}' not find in local store. Save as new`);
+                console.log(`Background '${wallpaper.id}' not find in local store. Save as new`);
 
                 console.log('[wallpapers] Added to library...');
                 try {
-                    await WallpapersUniversalService.addToLibrary(new Wallpaper({
-                        ...wallpaper,
-                        id: null,
-                    }), {
-                        fullBlob: files[computeId],
-                        previewBlob: (computeId in previewFiles) ? previewFiles[computeId] : null,
+                    await WallpapersUniversalService.addToLibrary(new Wallpaper(wallpaper), {
+                        fullBlob: files[wallpaper.id] || null,
+                        previewBlob: previewFiles[wallpaper.id] || null,
                     });
                 } catch (e) {
                     console.warn('Failed add wallpaper:', e);

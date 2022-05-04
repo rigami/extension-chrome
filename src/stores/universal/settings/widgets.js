@@ -1,4 +1,6 @@
-import { computed, makeObservable, override } from 'mobx';
+import {
+    action, computed, makeObservable, override,
+} from 'mobx';
 import { pick } from 'lodash';
 import defaultSettings from '@/config/settings';
 import settingsStorage from '@/stores/universal/settings/rootSettings';
@@ -41,7 +43,11 @@ class WidgetsSettings {
     @computed
     get weatherAction() { return this._storage.data['widgets.weatherAction']; }
 
-    update(props = {}) {
+    @action
+    recalc() {}
+
+    @action
+    update(props = {}, force = false) {
         const updProps = pick(props, [
             'useDate',
             'dateAction',
@@ -52,7 +58,7 @@ class WidgetsSettings {
             'weatherAction',
         ]);
 
-        this._storage.update('widgets', updProps);
+        this._storage.update('widgets', updProps, force);
     }
 }
 

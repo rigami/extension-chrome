@@ -1,4 +1,6 @@
-import { computed, makeObservable, override } from 'mobx';
+import {
+    action, computed, makeObservable, override,
+} from 'mobx';
 import { pick } from 'lodash';
 import defaultSettings from '@/config/settings';
 import settingsStorage from '@/stores/universal/settings/rootSettings';
@@ -31,7 +33,11 @@ class WallpapersSettings {
     @computed
     get dimmingPower() { return this._storage.data['wallpapers.dimmingPower']; }
 
-    update(props = {}) {
+    @action
+    recalc() {}
+
+    @action
+    update(props = {}, force = false) {
         const updProps = pick(props, [
             'changeInterval',
             'type',
@@ -39,7 +45,7 @@ class WallpapersSettings {
             'dimmingPower',
         ]);
 
-        this._storage.update('wallpapers', updProps);
+        this._storage.update('wallpapers', updProps, force);
     }
 }
 
