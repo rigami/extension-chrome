@@ -11,6 +11,7 @@ import Tag from '@/stores/universal/workingSpace/entities/tag';
 import Folder from '@/stores/universal/workingSpace/entities/folder';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 import { search } from '@/stores/universal/workingSpace/search';
+import db from '@/utils/db';
 
 class WorkingSpace {
     core;
@@ -23,6 +24,38 @@ class WorkingSpace {
     async collect() {
         if (BUILD !== 'full') return {};
 
+        // Collect tags
+
+        const tagsReplaceIds = {};
+
+        const tags = await TagsUniversalService.getAll();
+
+        tags.forEach((tag) => {
+            tagsReplaceIds[tag.id] = Object.keys(tagsReplaceIds).length;
+
+            tag.id = tagsReplaceIds[tag.id];
+        });
+
+        // Collect folders
+
+        const foldersReplaceIds = {};
+
+        const folders = await db().getAll('folders');
+
+        folders.forEach((folder) => {
+            foldersReplaceIds[folder.id] = Object.keys(foldersReplaceIds).length;
+
+            folder.id = foldersReplaceIds[folder.id];
+        });
+
+        folders.forEach((folder) => {
+            folder.parentId = foldersReplaceIds[folder.parentId];
+        });
+
+        // Collect bookmarks
+
+        const bookmarksReplaceIds = {};
+
         const { all: bookmarksAll } = await search();
 
         const bookmarks = await Promise.all(bookmarksAll.map(async (bookmark) => {
@@ -34,7 +67,6 @@ class WorkingSpace {
                 image = await new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.readAsDataURL(response);
-
                     reader.onloadend = () => resolve(reader.result);
                     reader.onerror = reject;
                 });
@@ -43,31 +75,34 @@ class WorkingSpace {
                 console.warn('Failed get icon', e, bookmark);
             }
 
+            bookmarksReplaceIds[bookmark.id] = Object.keys(bookmarksReplaceIds).length;
+
             return {
-                ...omit(bookmark, ['icoFileName', 'icoUrl']),
+                ...omit(bookmark, ['icoFileName', 'icoUrl', 'tagsFull']),
+                id: bookmarksReplaceIds[bookmark.id],
+                folderId: foldersReplaceIds[bookmark.folderId],
+                tags: bookmark.tags.map((tagId) => tagsReplaceIds[tagId]),
                 image,
             };
         }));
 
-        const tagsAll = await TagsUniversalService.getAll();
+        // Collect favorites
 
-        const tags = tagsAll.map((tag) => new Tag(tag));
+        const favorites = await FavoritesUniversalService.getAll();
 
-        const foldersAll = await FoldersUniversalService.getTree();
-
-        const folders = foldersAll.map((folder) => new Folder(folder));
-
-        const favoritesAll = await FavoritesUniversalService.getAll();
-
-        console.log('favoritesAll', favoritesAll);
-
-        const favorites = favoritesAll;
+        favorites.forEach((favorite) => {
+            if (favorite.itemType === 'folder') {
+                favorite.itemId = foldersReplaceIds[favorite.itemId];
+            } else if (favorite.itemType === 'bookmark') {
+                favorite.itemId = bookmarksReplaceIds[favorite.itemId];
+            }
+        });
 
         return {
-            bookmarks,
-            favorites,
             tags,
             folders,
+            favorites,
+            bookmarks,
         };
     }
 

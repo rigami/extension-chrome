@@ -1,10 +1,9 @@
 import { makeAutoObservable, toJS } from 'mobx';
-import { forEach, map } from 'lodash';
+import { forEach, map, omit } from 'lodash';
 import JSZip from 'jszip';
 import { captureException } from '@sentry/browser';
 import appVariables from '@/config/config';
 import { eventToApp } from '@/stores/universal/serviceBus';
-
 import StorageConnector from '@/stores/universal/storage/connector';
 import { BG_TYPE } from '@/enum';
 import WorkingSpace from '@/stores/server/localBackup/workingSpace';
@@ -44,10 +43,10 @@ class LocalBackupService {
             let backup = {};
 
             if (settings) {
-                backup.settings = toJS(settingsStorage.data);
+                backup.settings = omit(toJS(settingsStorage.data), ['updateTimestamp']);
             }
 
-            backup.storage = (await StorageConnector.get('storage')).storage || {};
+            backup.storage = omit((await StorageConnector.get('storage')).storage || {}, ['updateTimestamp']);
 
             if (BUILD === 'full' && workingSpace) {
                 const workingSpaceData = await this.workingSpaceService.collect();
@@ -61,6 +60,8 @@ class LocalBackupService {
             if (wallpapers) {
                 backup.wallpapers = await this.wallpapersService.collect();
             }
+
+            console.log('backup:', backup);
 
             const zipBlob = await createBackupFile(backup);
 

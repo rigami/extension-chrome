@@ -70,7 +70,7 @@ class WallpapersUniversalService {
         if (!notRemoveCache) {
             try {
                 await cacheManager.delete('wallpapers', removeBG.fullSrc);
-                await cacheManager.delete('wallpapers', removeBG.previewSrc);
+                await cacheManager.delete('wallpapers-preview', removeBG.previewSrc);
 
                 console.log('[wallpapers] Remove from file system...');
             } catch (e) {

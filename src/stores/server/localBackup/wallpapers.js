@@ -23,14 +23,14 @@ class Wallpapers {
             try {
                 const fullBlob = await cacheManager.get('wallpapers', wallpaper.fullSrc)
                     .then((responseRaw) => responseRaw.blob());
-                const previewBlob = await cacheManager.get('wallpapers', wallpaper.previewSrc)
+                const previewBlob = await cacheManager.get('wallpapers-preview', wallpaper.previewSrc)
                     .then((responseRaw) => responseRaw.blob());
                 const ext = fullBlob.type.substring(fullBlob.type.indexOf('/') + 1);
 
                 fullBlobs.set(`${wallpaper.id}.${ext}`, fullBlob);
                 previewBlobs.set(`${wallpaper.id}.jpeg`, previewBlob);
             } catch (e) {
-                console.warn('Failed download wallpaper:', wallpaper);
+                console.warn('Failed download wallpaper:', wallpaper, e);
             }
 
             meta.push(omit(wallpaper, [
@@ -39,7 +39,6 @@ class Wallpapers {
                 'isLoad',
                 'isSaved',
                 'fileName',
-                'id',
             ]));
         }
 

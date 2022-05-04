@@ -27,17 +27,17 @@ export default async (data) => {
 
     if (bookmarks || tags || folders || favorites) {
         zip.file('workingSpace.json', JSON.stringify({
-            favorites,
-            bookmarks,
             tags,
             folders,
+            bookmarks,
+            favorites,
         }));
     }
 
     if (wallpapers) {
         zip.file('wallpapers.json', JSON.stringify(wallpapers.meta));
         zip.folder('wallpapers');
-        zip.folder('previews');
+        zip.folder('wallpaperPreviews');
 
         wallpapers.full.forEach((file, fileName) => {
             zip.file(`wallpapers/${fileName}`, file);
