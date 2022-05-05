@@ -10,6 +10,7 @@ import WorkingSpace from '@/stores/server/localBackup/workingSpace';
 import Wallpapers from '@/stores/server/localBackup/wallpapers';
 import migrationClockTabTo5 from './migration/clockTab_5';
 import migration5To6 from './migration/5_6';
+import migration4To5 from './migration/4_5';
 import consoleBinder from '@/utils/console/bind';
 import settingsStorage from '@/stores/universal/settings/rootSettings';
 import createBackupFile from '@/stores/server/localBackup/createBackupFile';
@@ -105,6 +106,9 @@ class LocalBackupService {
                     'settings.json',
                     'workingSpace.json',
                     'wallpapers.json',
+                    // Old fields
+                    'backgrounds.json',
+                    'bookmarks.json',
                 ].includes(file.name)
             ) {
                 const value = await file.async('text');
@@ -112,7 +116,7 @@ class LocalBackupService {
             }
 
             if (file.name.indexOf('wallpapers/') !== -1 && !file.dir) {
-                const fileName = file.name.substring(11);
+                const fileName = file.name.substring(file.name.indexOf('/') + 1);
                 const splitIndex = fileName.indexOf('.');
                 const id = splitIndex === -1 ? fileName : fileName.substring(0, splitIndex);
                 const ext = splitIndex === -1 ? '' : fileName.substring(splitIndex + 1);
@@ -126,13 +130,37 @@ class LocalBackupService {
                     [blob],
                     { type: `${bgType === BG_TYPE.VIDEO ? 'video' : 'image'}/${ext}` },
                 );
+            } else if (file.name.indexOf('backgrounds/') !== -1 && !file.dir) {
+                const fileName = file.name.substring(file.name.indexOf('/') + 1);
+                const splitIndex = fileName.indexOf('.');
+                const id = splitIndex === -1 ? fileName : fileName.substring(0, splitIndex);
+                const ext = splitIndex === -1 ? '' : fileName.substring(splitIndex + 1);
+
+                const bg = backup.backgrounds.all
+                    .find((wallpaper) => `${wallpaper.source.toLowerCase()}-${wallpaper.originId}` === id);
+                const blob = await file.async('blob');
+
+                backgrounds[bg.id] = new Blob(
+                    [blob],
+                    { type: `${bg.type === BG_TYPE.VIDEO ? 'video' : 'image'}/${ext}` },
+                );
             } else if (file.name.indexOf('wallpaperPreviews/') !== -1 && !file.dir) {
-                const fileName = file.name.substring(18);
+                const fileName = file.name.substring(file.name.indexOf('/') + 1);
                 const splitIndex = fileName.indexOf('.');
                 const id = fileName.substring(0, splitIndex);
                 const blob = await file.async('blob');
 
                 previews[id] = new Blob([blob], { type: 'image/jpeg' });
+            } else if (file.name.indexOf('previews/') !== -1 && !file.dir) {
+                const fileName = file.name.substring(file.name.indexOf('/') + 1);
+                const splitIndex = fileName.indexOf('.');
+                const id = fileName.substring(0, splitIndex);
+
+                const bg = backup.backgrounds.all
+                    .find((wallpaper) => `${wallpaper.source.toLowerCase()}-${wallpaper.originId}` === id);
+                const blob = await file.async('blob');
+
+                previews[bg.id] = new Blob([blob], { type: 'image/jpeg' });
             }
         }
 
@@ -197,6 +225,12 @@ class LocalBackupService {
             return;
         }
 
+        bindConsole.log('Backup file raw:', backup);
+
+        if (backup.meta.version === 4) {
+            backup = migration4To5(backup);
+        }
+
         if (backup.meta.version === 5) {
             backup = migration5To6(backup);
         }
@@ -204,7 +238,7 @@ class LocalBackupService {
         bindConsole.log('Backup file:', backup);
 
         try {
-            if (backup.meta.version > appVariables.backup.version) {
+            if (backup.meta.version !== appVariables.backup.version) {
                 eventToApp('system/backup/local/restore/progress', {
                     result: 'error',
                     message: 'wrongVersion',

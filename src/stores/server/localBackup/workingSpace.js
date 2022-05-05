@@ -217,7 +217,7 @@ class WorkingSpace {
                     imageBase64: bookmark.image || bookmark.imageBase64,
                     tags: uniq([
                         ...findBookmark.tags,
-                        ...(bookmark.categories || bookmark.tags).map((id) => replaceTagId[id] || id),
+                        ...bookmark.tags.map((id) => replaceTagId[id] || id),
                         ...[],
                         ...[],
                     ]),
@@ -230,7 +230,7 @@ class WorkingSpace {
                     ...bookmark,
                     folderId: replaceFolderId[bookmark.folderId] || bookmark.folderId || 1,
                     imageBase64: bookmark.image || bookmark.imageBase64,
-                    tags: (bookmark.categories || bookmark.tags).map((id) => replaceTagId[id] || id),
+                    tags: bookmark.tags.map((id) => replaceTagId[id] || id),
                     id: null,
                 });
                 console.log('Bookmark id', replaceBookmarkId[bookmark.id]);
