@@ -3,6 +3,15 @@ temp
 release
 .idea
 build
-.yarn
-.pnp.*
+build-2
+build-instance-2
 *.log
+
+# Yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
