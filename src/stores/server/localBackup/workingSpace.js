@@ -214,7 +214,7 @@ class WorkingSpace {
                     ...bookmark,
                     id: findBookmark.id,
                     folderId: replaceFolderId[bookmark.folderId] || bookmark.folderId || findBookmark.folderId,
-                    imageBase64: bookmark.image || bookmark.imageBase64,
+                    imageBase64: bookmark.imageBase64,
                     tags: uniq([
                         ...findBookmark.tags,
                         ...bookmark.tags.map((id) => replaceTagId[id] || id),
@@ -229,7 +229,7 @@ class WorkingSpace {
                 replaceBookmarkId[bookmark.id] = await BookmarksUniversalService.save({
                     ...bookmark,
                     folderId: replaceFolderId[bookmark.folderId] || bookmark.folderId || 1,
-                    imageBase64: bookmark.image || bookmark.imageBase64,
+                    imageBase64: bookmark.imageBase64,
                     tags: bookmark.tags.map((id) => replaceTagId[id] || id),
                     id: null,
                 });

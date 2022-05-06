@@ -100,7 +100,7 @@ export default (backup) => ({
             clickCounts: bookmark.clickCounts,
             createTimestamp: bookmark.createTimestamp,
             modifiedTimestamp: bookmark.modifiedTimestamp,
-            image: bookmark.image,
+            imageBase64: bookmark.image,
         })),
         favorites: backup.bookmarks.favorites.map((tag) => omit(tag, ['id'])),
     },
