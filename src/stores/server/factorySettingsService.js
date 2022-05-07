@@ -27,6 +27,8 @@ class FactorySettingsService {
     }
 
     async setFactorySettings(progressCallback) {
+        // Creating base structure
+
         progressCallback(10, PREPARE_PROGRESS.CREATE_DEFAULT_STRUCTURE);
 
         try {
@@ -39,51 +41,68 @@ class FactorySettingsService {
             console.warn(e);
         }
 
-        progressCallback(15, PREPARE_PROGRESS.REGISTRATION_IN_CLOUD);
+        // Registration in cloud
 
-        const { response: registrationResponse } = await api.post(
-            'auth/virtual/sign-device',
-            { useToken: false },
-        ).catch(console.error);
+        try {
+            progressCallback(15, PREPARE_PROGRESS.REGISTRATION_IN_CLOUD);
 
-        authStorage.update({
-            authToken: registrationResponse.authToken,
-            accessToken: registrationResponse.accessToken,
-            refreshToken: registrationResponse.refreshToken,
-            deviceSign: registrationResponse.deviceSign,
-            synced: false,
-        });
+            const { response: registrationResponse } = await api.post(
+                'auth/virtual/sign-device',
+                { useToken: false },
+            );
 
-        console.log('registration in cloud:', registrationResponse);
+            authStorage.update({
+                authToken: registrationResponse.authToken,
+                accessToken: registrationResponse.accessToken,
+                refreshToken: registrationResponse.refreshToken,
+                deviceSign: registrationResponse.deviceSign,
+                synced: false,
+            });
 
-        console.log('Fetch BG');
+            console.log('registration in cloud:', registrationResponse);
+        } catch (e) {
+            authStorage.update({
+                authToken: null,
+                accessToken: null,
+                refreshToken: null,
+                deviceSign: null,
+                synced: false,
+            });
+        }
+
+        // Fetching first wallpaper
+
         progressCallback(35, PREPARE_PROGRESS.FETCH_BG);
 
-        const { response: bgListResponse } = await api.get('wallpapers/collection/editors-choice?count=1&type=image').catch(() => ({ response: [] }));
+        const { response: bgListResponse } = await api.get('wallpapers/collection/editors-choice?count=1&type=image')
+            .catch(() => ({ response: [] }));
 
         progressCallback(70, PREPARE_PROGRESS.SAVE_BG);
 
-        let bg;
+        let wallpaper;
 
         try {
             if (bgListResponse.length !== 0) {
-                bg = await WallpapersUniversalService.addToLibrary(new Wallpaper({
-                    ...first(bgListResponse),
-                    source: BG_SOURCE[first(bgListResponse).service],
-                    downloadLink: first(bgListResponse).fullSrc,
-                    previewLink: first(bgListResponse).previewSrc,
-                    type: BG_TYPE[first(bgListResponse).type],
+                const applyWallpaper = first(bgListResponse);
+
+                wallpaper = await WallpapersUniversalService.addToLibrary(new Wallpaper({
+                    ...applyWallpaper,
+                    source: BG_SOURCE[applyWallpaper.service],
+                    downloadLink: applyWallpaper.fullSrc,
+                    previewLink: applyWallpaper.previewSrc,
+                    type: BG_TYPE[applyWallpaper.type],
                 }));
             } else {
-                bg = await WallpapersUniversalService.addToLibrary(new Wallpaper(appVariables.wallpapers.fallback));
+                wallpaper = await WallpapersUniversalService.addToLibrary(new Wallpaper(appVariables.wallpapers.fallback));
             }
         } catch (e) {
-            bg = await WallpapersUniversalService.addToLibrary(new Wallpaper(appVariables.wallpapers.fallback));
+            wallpaper = await WallpapersUniversalService.addToLibrary(new Wallpaper(appVariables.wallpapers.fallback));
         }
 
-        this.storage.update({ bgCurrent: bg });
+        this.storage.update({ bgCurrent: wallpaper });
 
-        console.log('DONE');
+        // Done
+
         progressCallback(100, PREPARE_PROGRESS.DONE);
 
         return Promise.resolve();
