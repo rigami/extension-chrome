@@ -84,6 +84,7 @@ function FakeInput(props) {
                     ref={inputRef}
                     className={clsx(classes.fakeInput, externalClassName)}
                     contentEditable
+                    spellCheck={false}
                     suppressContentEditableWarning
                     {...otherProps}
                     onKeyDown={(event) => {
