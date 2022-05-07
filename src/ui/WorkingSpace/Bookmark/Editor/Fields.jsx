@@ -10,7 +10,11 @@ import {
     InputAdornment,
     IconButton,
 } from '@material-ui/core';
-import { DoneRounded as DoneIcon, ArrowForwardRounded as SearchIcon } from '@material-ui/icons';
+import {
+    DoneRounded as DoneIcon,
+    ArrowForwardRounded as SearchIcon,
+    InfoRounded as InfoIcon,
+} from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -113,6 +117,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         display: 'block !important',
     },
+    info: { color: theme.palette.info.contrast },
 }));
 
 function Fields({ editorService: service }) {
@@ -265,6 +270,14 @@ function Fields({ editorService: service }) {
                 </Scrollbar>
             </Box>
             <div className={classes.stateCaption}>
+                {store.saveState === FETCH.WAIT && !service.folderId && (
+                    <Fragment>
+                        <InfoIcon className={clsx(classes.saveIcon, classes.info)} />
+                        <Typography variant="caption" className={classes.info}>
+                            {t('editor.helper.selectFolder')}
+                        </Typography>
+                    </Fragment>
+                )}
                 {store.saveState === FETCH.PENDING && (
                     <Fragment>
                         <CircularProgress size={14} color="primary" className={classes.saveIcon} />

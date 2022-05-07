@@ -19,10 +19,12 @@ const baseThemeValues = {
         },
         warning: {
             main: '#ffe4d1',
+            contrast: '#fd9b58',
             contrastText: alpha('#000', 0.76),
         },
         info: {
             main: '#d5ebfd',
+            contrast: '#6cb6f3',
             contrastText: alpha('#000', 0.7),
         },
         divider: alpha('#000', 0.13),

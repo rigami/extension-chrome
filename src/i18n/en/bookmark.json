@@ -33,10 +33,11 @@
       "success": "Bookmark Saved",
       "saving": "Saving..."
     },
-    "help": {
+    "helper": {
       "enterRequest": "Enter address",
       "selectResult": "Select a search result",
-      "enterName": "Enter bookmark name"
+      "enterName": "Enter bookmark name",
+      "selectFolder": "Choose folder"
     },
     "iconVariant": {
       "SMALL-ICON": "Simple icon",

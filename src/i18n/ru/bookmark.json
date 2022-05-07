@@ -36,7 +36,8 @@
     "helper": {
       "enterRequest": "Введите адрес",
       "selectResult": "Выберите результат поиска",
-      "enterName": "Введите название закладки"
+      "enterName": "Введите название закладки",
+      "selectFolder": "Выберите папку"
     },
     "iconVariant": {
       "SMALL-ICON": "Простая икнока",
