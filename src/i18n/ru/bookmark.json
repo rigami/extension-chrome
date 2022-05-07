@@ -16,7 +16,9 @@
       "forceAdd": "Все равно добавить",
       "moreIcons": "Еще значки",
       "scrollToMore": "Прокрутите до других",
-      "saveBookmark": "Сохранить закладку"
+      "saveBookmark": "Сохранить закладку",
+      "saveCurrentTab": "Сохранить текущую вкладку",
+      "createNewBookmark": "Создать новую закладку"
     },
     "search_url": "Поиск по адресу",
     "search_web": "Поиск в Интернете",

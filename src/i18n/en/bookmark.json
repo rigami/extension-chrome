@@ -16,7 +16,9 @@
       "forceAdd": "Add it anyway",
       "moreIcons": "More icons",
       "scrollToMore": "Scroll to More",
-      "saveBookmark": "Save Bookmark"
+      "saveBookmark": "Save Bookmark",
+      "saveCurrentTab": "Save current tab",
+      "createNewBookmark": "Create new bookmark"
     },
     "search_url": "Search by address",
     "search_web": "Search the web",

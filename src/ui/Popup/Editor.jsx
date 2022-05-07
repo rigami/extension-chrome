@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Tabs, Tab } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 import SaveCurrentTabEditor from '@/ui/Popup/SaveCurrentTab';
 import CreateNewBookmarkEditor from '@/ui/Popup/CreateNewBookmark';
 
@@ -24,6 +25,7 @@ const EDITOR_TYPE = {
 
 function PopupEditor() {
     const classes = useStyles();
+    const { t } = useTranslation(['bookmark']);
     const [editor, setEditor] = useState(EDITOR_TYPE.SAVE_CURRENT_TAB);
 
     return (
@@ -40,11 +42,11 @@ function PopupEditor() {
                     onChange={(event, newValue) => { setEditor(newValue); }}
                 >
                     <Tab
-                        label="Сохранить текущую вкладку"
+                        label={t('editor.button.saveCurrentTab')}
                         value={EDITOR_TYPE.SAVE_CURRENT_TAB}
                     />
                     <Tab
-                        label="Создать новую закладку"
+                        label={t('editor.button.createNewBookmark')}
                         value={EDITOR_TYPE.CREATE_NEW_BOOKMARK}
                     />
                 </Tabs>
