@@ -98,7 +98,11 @@ function Favorites() {
             });
     }, [workingSpaceService.favorites.length, workingSpaceService.lastTruthSearchTimestamp]);
 
-    if (workingSpaceService.favorites.length === 0) return null;
+    if (workingSpaceService.favorites.length === 0) {
+        return (
+            <Box style={{ height: 36 }} />
+        );
+    }
 
     return (
         <Box pl={2} mb={4}>

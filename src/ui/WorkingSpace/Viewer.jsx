@@ -59,7 +59,6 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 450,
         marginLeft: 'auto',
         flexBasis: '100%',
-        paddingTop: theme.spacing(7),
         paddingRight: theme.spacing(3),
     },
     // '@media (max-width: 1700px)': { sideBar: { maxWidth: 360 } },
