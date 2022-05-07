@@ -13,6 +13,7 @@ import WaitEndInstall from './WaitEndInstall';
 import Hello from './Hello';
 import WizardInstall from './WizardInstall';
 import Login from './Login';
+import { useAppStateService } from '@/stores/app/appState';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -32,6 +33,7 @@ function FirstLookScreen({ onStart, style: externalStyle = {} }) {
     const classes = useStyles();
     const { t, ready } = useTranslation('firstLook');
     const coreService = useCoreService();
+    const appStateService = useAppStateService();
     const [stage, setStage] = useState(
         coreService.storage.data.wizardSettings
             ? INSTALL_STAGE.WAIT_END_INSTALL
@@ -67,6 +69,7 @@ function FirstLookScreen({ onStart, style: externalStyle = {} }) {
     };
 
     const applySettings = () => {
+        appStateService.settings.recalc();
         if (coreService.storage.data.factoryResetProgress) {
             setStage(INSTALL_STAGE.WAIT_END_INSTALL);
         } else {

@@ -202,6 +202,8 @@ function MigrateScreen({ onStart }) {
         localStorage.removeItem('storage');
         localStorage.removeItem('settings');
 
+        appStateService.settings.recalc();
+
         setProgress(100);
 
         // throw new Error('not end');

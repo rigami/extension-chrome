@@ -1,6 +1,4 @@
-import {
-    action, computed, makeObservable, override,
-} from 'mobx';
+import { action, computed, makeObservable } from 'mobx';
 import { pick } from 'lodash';
 import defaultSettings from '@/config/settings';
 import settingsStorage from '@/stores/universal/settings/rootSettings';

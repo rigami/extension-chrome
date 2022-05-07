@@ -1,7 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { first } from 'lodash';
 import db from '@/utils/db';
-import fetchData from '@/utils/helpers/fetchData';
 import appVariables from '@/config/config';
 import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
@@ -12,7 +11,6 @@ import api from '@/utils/helpers/api';
 import authStorage from '@/stores/universal/storage/auth';
 import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
 import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
-import timeout from '@/utils/helpers/timeout';
 
 class FactorySettingsService {
     core;
