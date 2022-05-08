@@ -18,7 +18,8 @@ class BookmarksUniversalService {
 
     @action('query feature bookmarks')
     static async getAllInFolder(folderId, maxCount) {
-        const store = db().transaction('bookmarks').objectStore('bookmarks');
+        const tx = await db().transaction('bookmarks');
+        const store = tx.objectStore('bookmarks');
         let value;
 
         if (maxCount) {

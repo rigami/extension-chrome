@@ -9,7 +9,8 @@ class FoldersUniversalService {
     @action('get folders root')
     static async getFoldersByParent(parentId = NULL_UUID, maxCount) {
         console.log('[folders] [getFoldersByParent] parentId:', parentId);
-        const store = db().transaction('folders').objectStore('folders');
+        const tx = await db().transaction('folders');
+        const store = tx.objectStore('folders');
         let folders;
 
         if (maxCount) {

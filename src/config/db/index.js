@@ -5,10 +5,13 @@ import upgradeOrCreateFolders from './folders';
 import upgradeOrCreateFavorites from './favorites';
 import upgradeOrCreateSystemBookmarks from './systemBookmarks';
 import upgradeOrCreatePairWithCloud from './pairWithCloud';
+import consoleBinder from '@/utils/console/bind';
 
-export default ({ upgrade }) => ({
+const bindConsole = consoleBinder('db');
+
+export default ({ upgrade, blocked, blocking, terminated }) => ({
     async upgrade(db, oldVersion, newVersion, transaction) {
-        console.log(`Require upgrade db version from ${oldVersion} to ${newVersion}`);
+        bindConsole.log(`Require upgrade version from ${oldVersion} to ${newVersion}`);
 
         const tables = [
             upgradeOrCreateBookmarks,
@@ -27,6 +30,7 @@ export default ({ upgrade }) => ({
         if (newVersion >= 7 && transaction.objectStoreNames.contains('bookmarks_by_categories')) {
             db.deleteObjectStore('bookmarks_by_categories');
         }
+
         if (oldVersion <= 8) {
             const store = db.createObjectStore('temp', {
                 keyPath: 'id',
@@ -45,7 +49,13 @@ export default ({ upgrade }) => ({
 
         upgrade();
     },
-    blocked() {},
-    blocking() {},
-    terminated() {},
+    blocked() {
+        blocked();
+    },
+    blocking() {
+        blocking();
+    },
+    terminated() {
+        terminated();
+    },
 });

@@ -57,8 +57,6 @@ class CoreService {
         if (!PRODUCTION_MODE) {
             const { devTools = {} } = await StorageConnector.get('devTools', {});
 
-            console.log('devTools:', devTools, devTools.locale || BrowserAPI.systemLanguage || 'en');
-
             overrideLng = devTools.locale;
         }
 

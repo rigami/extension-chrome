@@ -33,8 +33,6 @@ self.addEventListener('fetch', (event) => {
     const { request } = event;
     const { headers } = request;
 
-    console.log('request:', request, new URL(request.url).origin === config.rest.url);
-
     // eslint-disable-next-line no-async-promise-executor
     event.respondWith(new Promise(async (resolve, reject) => {
         if (headers.get('pragma') === 'no-cache' && headers.get('cache-control') === 'no-cache') {
@@ -43,12 +41,10 @@ self.addEventListener('fetch', (event) => {
             const cache = await caches.match(request);
 
             if (cache) {
-                console.log(`Data ${request.url} already in cache. Return from cache`);
                 resolve(cache);
                 return;
             }
 
-            console.log(`Data ${request.url} not must be caching. Fetching and return`);
             resolve(fetch(request));
         }
     }));

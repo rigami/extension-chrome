@@ -59,7 +59,6 @@ class CrashCatch extends React.Component {
     }
 
     render() {
-        console.log(this);
         const { state: { hasError, error }, props: { children, classes } } = this;
 
         if (hasError) {
