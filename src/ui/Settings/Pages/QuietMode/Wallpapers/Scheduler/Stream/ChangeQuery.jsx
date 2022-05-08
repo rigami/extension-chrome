@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function WallpaperPreview({ previewSrc, style: externalStyles }) {
+function WallpaperPreview({ wallpaperSrc, style: externalStyles }) {
     const classes = useStyles();
     const [renderSrc, setRenderSrc] = useState('');
     const [prepareSrc, setPrepareSrc] = useState('');
@@ -116,9 +116,9 @@ function WallpaperPreview({ previewSrc, style: externalStyles }) {
         img.onload = () => {
             setRenderSrc((oldRenderSrc) => {
                 if (oldRenderSrc === '') {
-                    return previewSrc;
+                    return wallpaperSrc;
                 } else {
-                    setPrepareSrc(previewSrc);
+                    setPrepareSrc(wallpaperSrc);
 
                     return '';
                 }
@@ -129,8 +129,8 @@ function WallpaperPreview({ previewSrc, style: externalStyles }) {
             setRenderSrc('');
         };
 
-        img.src = previewSrc;
-    }, [previewSrc]);
+        img.src = wallpaperSrc;
+    }, [wallpaperSrc]);
 
     return (
         <Fade
@@ -198,7 +198,7 @@ const shifts = [
             0.78,
             1,
             0.09,
-            1,
+            0.6,
             1,
         ],
     },
@@ -216,7 +216,6 @@ function QueryEditor({ onClose }) {
             : '',
         foundRequest: '',
         list: [],
-        addedList: [],
         status: FETCH.WAIT,
     }));
     const inputRef = useRef(null);
@@ -225,6 +224,14 @@ function QueryEditor({ onClose }) {
         event?.preventDefault();
 
         if (store.foundRequest === store.searchRequest) return;
+
+        if (store.searchRequest === '') {
+            store.foundRequest = store.searchRequest;
+            store.status = FETCH.WAIT;
+            store.list = [];
+
+            return;
+        }
 
         store.foundRequest = store.searchRequest;
         store.status = FETCH.PENDING;
@@ -239,15 +246,7 @@ function QueryEditor({ onClose }) {
                 },
             });
 
-            list = list.map((bg) => new Wallpaper({
-                ...bg,
-                kind: 'media',
-                idInSource: bg.idInSource,
-                source: BG_SOURCE[bg.source.toUpperCase()],
-                type: BG_TYPE[bg.type.toUpperCase()],
-                downloadLink: bg.fullSrc,
-                previewLink: bg.previewSrc,
-            }));
+            list = list.map((bg) => bg.previewSrc);
 
             list.length = list.length === 0 ? 0 : 25;
 
@@ -295,7 +294,7 @@ function QueryEditor({ onClose }) {
                 {store.list.map((wallpaper, index) => (
                     <WallpaperPreview
                         key={index}
-                        {...wallpaper}
+                        wallpaperSrc={wallpaper}
                         style={{
                             left: 8 + Math.floor(index / 5) * (246 + 8),
                             top: 8 + (index % 5) * (180 + 8) + shifts[Math.floor(index / 5)].shift,
@@ -354,6 +353,14 @@ function QueryEditor({ onClose }) {
                     </Button>
                 )}
             </form>
+            {store.status === FETCH.WAIT && store.searchRequest === '' && (
+                <Banner
+                    className={classes.banner}
+                    variant="info"
+                    message={t('searchQuery.wait')}
+                    description={t('searchQuery.wait', { context: 'description' })}
+                />
+            )}
             {store.status === FETCH.DONE && store.list.length === 0 && (
                 <Banner
                     className={classes.banner}
