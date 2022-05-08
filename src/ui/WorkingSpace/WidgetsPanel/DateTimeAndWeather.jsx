@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Widgets({ className: externalClassName }) {
+function DateTimeAndWeather({ className: externalClassName }) {
     const classes = useStyles();
     const appStateService = useAppStateService();
     const { widgetsService } = appStateService;
@@ -73,4 +73,4 @@ function Widgets({ className: externalClassName }) {
     );
 }
 
-export default observer(Widgets);
+export default observer(DateTimeAndWeather);

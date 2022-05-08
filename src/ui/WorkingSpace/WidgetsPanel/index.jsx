@@ -4,9 +4,9 @@ import {
     Card,
     Divider,
 } from '@material-ui/core';
-import { alpha, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import Widgets from './Widgets';
+import DateTimeAndWeather from './DateTimeAndWeather';
 import Greeting from './Greeting';
 import { useAppStateService } from '@/stores/app/appState';
 import { useCoreService } from '@/stores/app/core';
@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.backdropLight,
         padding: theme.spacing(3, 4),
         borderRadius: 24,
+        marginBottom: theme.spacing(3),
     },
     divider: {
         marginTop: theme.spacing(2),
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function GreetingView() {
+function WidgetsPanel() {
     const classes = useStyles();
     const coreService = useCoreService();
     const { widgetsService } = useAppStateService();
@@ -48,10 +49,15 @@ function GreetingView() {
             <Card elevation={0} className={classes.card}>
                 <Greeting />
                 {greeting && date && (<Divider className={classes.divider} />)}
-                <Widgets />
+                <DateTimeAndWeather />
+            </Card>
+            <Card elevation={0} className={classes.card}>
+                <Greeting />
+                {greeting && date && (<Divider className={classes.divider} />)}
+                <DateTimeAndWeather />
             </Card>
         </Box>
     );
 }
 
-export default observer(GreetingView);
+export default observer(WidgetsPanel);

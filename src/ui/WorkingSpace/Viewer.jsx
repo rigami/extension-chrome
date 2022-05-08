@@ -17,7 +17,7 @@ import PrimaryContent from '@/ui/WorkingSpace/PrimaryContent';
 import SecondaryContent from '@/ui/WorkingSpace/SecondaryContent';
 import { NULL_UUID } from '@/utils/generate/uuid';
 import { useSearchService } from '@/stores/app/search';
-import GreetingView from '@/ui/WorkingSpace/GreetingView';
+import WidgetsPanel from '@/ui/WorkingSpace/WidgetsPanel';
 import { APP_STATE } from '@/stores/app/core/service';
 import FirstLookScreen from '@/ui/WorkingSpace/FirstLookScreen';
 import { useContextEdit } from '@/stores/app/contextActions';
@@ -54,11 +54,12 @@ const useStyles = makeStyles((theme) => ({
     '@media (max-width: 1400px)': { content: { padding: theme.spacing(4, 0) } },
     sideBar: {
         position: 'sticky',
-        top: 68,
+        top: 0,
         flexGrow: 1,
         maxWidth: 450,
         marginLeft: 'auto',
         flexBasis: '100%',
+        paddingTop: 68,
         paddingRight: theme.spacing(3),
     },
     // '@media (max-width: 1700px)': { sideBar: { maxWidth: 360 } },
@@ -152,7 +153,7 @@ function Bookmarks() {
                                 && !searchService.isSearching
                                 && (
                                     <Box className={classes.inlineWidgets}>
-                                        <GreetingView />
+                                        <WidgetsPanel />
                                     </Box>
                                 )
                             }
@@ -181,7 +182,7 @@ function Bookmarks() {
                             && !searchService.isSearching
                             && (
                                 <Box className={classes.sideBar}>
-                                    <GreetingView />
+                                    <WidgetsPanel />
                                 </Box>
                             )
                         }

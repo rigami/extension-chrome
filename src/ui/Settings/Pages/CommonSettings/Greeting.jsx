@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
 import MenuRow, { ROWS_TYPE } from '@/ui/Settings/MenuRow';
 import { useCoreService } from '@/stores/app/core';
-import GreetingPreview from '@/ui/WorkingSpace/GreetingView/Greeting';
+import GreetingPreview from '@/ui/WorkingSpace/WidgetsPanel/Greeting';
 
 const useStyles = makeStyles((theme) => ({
     row: { padding: theme.spacing(1, 2) },
