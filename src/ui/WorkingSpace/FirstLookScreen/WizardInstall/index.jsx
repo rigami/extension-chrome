@@ -3,6 +3,7 @@ import {
     Box,
     Button,
     DialogActions,
+    IconButton,
     Typography,
 } from '@material-ui/core';
 import {
@@ -52,6 +53,20 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         display: 'flex',
     },
+    header: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    backButton: {
+        marginRight: theme.spacing(0.5),
+        marginLeft: theme.spacing(-1.5),
+        color: theme.palette.text.primary,
+        alignSelf: 'flex-start',
+        '& $svg': {
+            width: 34,
+            height: 34,
+        },
+    },
 }));
 
 const questions = [
@@ -98,7 +113,16 @@ function WizardInstall({ onCancel, onEnd }) {
                     total: questions.length,
                 })}
             </Typography>
-            <Typography variant="h3">{t(`${questions[question].id}Question.title`)}</Typography>
+
+            <Box className={classes.header}>
+                <IconButton
+                    onClick={question === 0 ? onCancel : handleBack}
+                    className={classes.backButton}
+                >
+                    <BackIcon />
+                </IconButton>
+                <Typography variant="h3">{t(`${questions[question].id}Question.title`)}</Typography>
+            </Box>
             <Question
                 onNext={question === questions.length - 1 ? handleEnd : handleNext}
                 onDisabledNext={(isDisabled) => setDisabledNext(isDisabled)}

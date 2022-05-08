@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
-import { Box } from '@material-ui/core';
+import { Box, Collapse } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Stub from '@/ui-components/Stub';
 import { useCoreService } from '@/stores/app/core';
@@ -79,6 +79,9 @@ function FirstLookScreen({ onStart, style: externalStyle = {} }) {
 
     return (
         <Box className={classes.root} style={externalStyle}>
+            <Collapse in={stage === INSTALL_STAGE.HELLO}>
+                <Box style={{ height: '16vh' }} />
+            </Collapse>
             {stage !== INSTALL_STAGE.WAIT_END_INSTALL && coreService.storage.data?.factoryResetProgress && (
                 <SmallProgress />
             )}

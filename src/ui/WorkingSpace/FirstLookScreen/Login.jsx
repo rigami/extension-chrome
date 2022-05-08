@@ -1,8 +1,7 @@
 import {
     Box,
-    Button,
     Container,
-    DialogActions,
+    IconButton,
     Typography,
 } from '@material-ui/core';
 import { ArrowBack as BackIcon } from '@material-ui/icons';
@@ -28,6 +27,20 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 'auto',
     },
     contentWrapper: { margin: theme.spacing(0, -4) },
+    header: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    backButton: {
+        marginRight: theme.spacing(0.5),
+        marginLeft: theme.spacing(-1.5),
+        color: theme.palette.text.primary,
+        alignSelf: 'flex-start',
+        '& $svg': {
+            width: 34,
+            height: 34,
+        },
+    },
 }));
 
 function Login({ onCancel, onEnd }) {
@@ -37,18 +50,15 @@ function Login({ onCancel, onEnd }) {
     return (
         <Box className={classes.root}>
             <Container maxWidth="md" className={classes.container}>
-                <Typography variant="h3">{t('login.title')}</Typography>
+                <Box className={classes.header}>
+                    <IconButton onClick={onCancel} className={classes.backButton}>
+                        <BackIcon />
+                    </IconButton>
+                    <Typography variant="h3">{t('login.title')}</Typography>
+                </Box>
                 <Box className={classes.contentWrapper}>
                     <CreateLinkRequest onLink={onEnd} />
                 </Box>
-                <DialogActions className={classes.actions}>
-                    <Button
-                        startIcon={(<BackIcon />)}
-                        onClick={onCancel}
-                    >
-                        {t('button.back')}
-                    </Button>
-                </DialogActions>
             </Container>
         </Box>
     );
