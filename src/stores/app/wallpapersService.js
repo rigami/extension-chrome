@@ -183,8 +183,8 @@ class WallpapersService {
 
     @action('get last usage wallpapers')
     async getLastUsage(limit = 10) {
-        const tx = await db().transaction('backgrounds', 'readonly');
-        let cursor = await tx.objectStore('backgrounds').openCursor();
+        const tx = await db().transaction('wallpapers', 'readonly');
+        let cursor = await tx.objectStore('wallpapers').openCursor();
         let currIndex = 0;
         const bgs = [];
 

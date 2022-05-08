@@ -1,11 +1,10 @@
-import upgradeOrCreateBackgrounds from './backgrounds';
 import upgradeOrCreateBookmarks from './bookmarks';
 import upgradeOrCreateTags from './tags';
 import upgradeOrCreateFolders from './folders';
 import upgradeOrCreateFavorites from './favorites';
-import upgradeOrCreateSystemBookmarks from './systemBookmarks';
 import upgradeOrCreatePairWithCloud from './pairWithCloud';
 import consoleBinder from '@/utils/console/bind';
+import upgradeOrCreateWallpapers from './wallpapers';
 
 const bindConsole = consoleBinder('db');
 
@@ -14,13 +13,12 @@ export default ({ upgrade, blocked, blocking, terminated }) => ({
         bindConsole.log(`Require upgrade version from ${oldVersion} to ${newVersion}`);
 
         const tables = [
-            upgradeOrCreateBookmarks,
-            upgradeOrCreateFolders,
             upgradeOrCreateTags,
+            upgradeOrCreateFolders,
+            upgradeOrCreateBookmarks,
             upgradeOrCreateFavorites,
             upgradeOrCreatePairWithCloud,
-            upgradeOrCreateBackgrounds,
-            upgradeOrCreateSystemBookmarks,
+            upgradeOrCreateWallpapers,
         ];
 
         for await (const table of tables) {
@@ -37,7 +35,6 @@ export default ({ upgrade, blocked, blocking, terminated }) => ({
                 autoIncrement: true,
             });
             store.createIndex('name', 'name', { unique: true });
-            store.createIndex('value', 'value', { unique: false });
 
             if (oldVersion !== 0) {
                 await store.add({
@@ -45,6 +42,10 @@ export default ({ upgrade, blocked, blocking, terminated }) => ({
                     value: true,
                 });
             }
+        }
+
+        if (newVersion >= 10 && transaction.objectStoreNames.contains('system_bookmarks')) {
+            db.deleteObjectStore('system_bookmarks');
         }
 
         upgrade();

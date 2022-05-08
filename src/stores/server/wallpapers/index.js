@@ -206,7 +206,7 @@ class WallpapersService {
 
         // if (this.bgShowMode === BG_SHOW_MODE.STATIC) wallpaper.pauseTimestamp = -0.5;
 
-        const isSaved = (await db().count('backgrounds', wallpaper.id)) !== 0;
+        const isSaved = (await db().count('wallpapers', wallpaper.id)) !== 0;
 
         this.storage.update({
             bgCurrent: {

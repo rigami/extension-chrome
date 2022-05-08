@@ -95,7 +95,6 @@ function ItemStack(props) {
         kind,
         angle,
         colors,
-        fileName,
         antiAliasing,
         hold = false,
         hide = false,
@@ -149,7 +148,6 @@ function ItemStack(props) {
             )}
             {kind === 'media' && (type === BG_TYPE.IMAGE || type === BG_TYPE.ANIMATION) && (
                 <img
-                    alt={fileName}
                     className={clsx(classes.bg, classes.image)}
                     src={fullSrc}
                     style={{ imageRendering: antiAliasing ? 'auto' : 'pixelated' }}

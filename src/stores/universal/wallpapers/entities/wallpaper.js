@@ -8,7 +8,6 @@ class Wallpaper {
     @observable isLoad;
     @observable isLiked;
     @observable isDisliked;
-    @observable fileName;
     @observable author;
     @observable authorName;
     @observable authorAvatarSrc;
@@ -32,7 +31,6 @@ class Wallpaper {
         this.isLoad = wallpaper.isLoad || false;
         this.isLiked = wallpaper.isLiked || false;
         this.isDisliked = wallpaper.isDisliked || false;
-        this.fileName = wallpaper.fileName;
         this.author = wallpaper.author;
         this.authorName = wallpaper.authorName;
         this.authorAvatarSrc = wallpaper.authorAvatarSrc;

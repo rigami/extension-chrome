@@ -33,7 +33,7 @@ class Wallpapers {
                 console.warn('Failed download wallpaper:', wallpaper, e);
             }
 
-            meta.push(omit(wallpaper, ['isLoad', 'isSaved', 'fileName']));
+            meta.push(omit(wallpaper, ['isLoad', 'isSaved']));
         }
 
         return {

@@ -20,7 +20,7 @@ class LocalWallpapersService {
         console.log('this.settings.type:', this.settings.type);
         const all = (await Promise.all(this.settings.type.map((type) => (
             db()
-                .getAllFromIndex('backgrounds', 'type', type)
+                .getAllFromIndex('wallpapers', 'type', type)
         )))).flat().filter(({ source }) => {
             if (sources.length === 0) return true;
 

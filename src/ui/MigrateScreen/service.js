@@ -114,7 +114,7 @@ class MigrationService {
 
                     await cacheManager.cache('wallpapers-preview', previewSrc, previewBlob);
 
-                    await db().put('backgrounds', cloneDeep(new Wallpaper({
+                    await db().put('wallpapers', cloneDeep(new Wallpaper({
                         ...wallpaper,
                         isSaved: true,
                         fullSrc,

@@ -1,23 +1,29 @@
 import { omit } from 'lodash';
 import { uuid } from '@/utils/generate/uuid';
 
-export default async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion) {
-    let store;
+function createStructure(db) {
+    const store = db.createObjectStore('bookmarks', {
+        keyPath: 'id',
+        unique: true,
+    });
 
-    if (transaction.objectStoreNames.contains('bookmarks')) {
-        store = transaction.objectStore('bookmarks');
-    } else {
-        store = db.createObjectStore('bookmarks', {
-            keyPath: 'id',
-            unique: true,
-        });
-        store.createIndex('ico_variant', 'icoVariant', { unique: false });
-        store.createIndex('url', 'url', { unique: false });
-        store.createIndex('name', 'name', { unique: false });
-        store.createIndex('description', 'description', { unique: false });
-        store.createIndex('count_clicks', 'countClicks', { unique: false });
-        store.createIndex('folder_id', 'folderId', { unique: false });
-    }
+    // General
+    store.createIndex('url', 'url', { unique: false });
+    store.createIndex('name', 'name', { unique: false });
+    store.createIndex('description', 'description', { unique: false });
+    store.createIndex('tags', 'tags', { unique: false });
+    store.createIndex('folder_id', 'folderId', { unique: false });
+
+    // Metadata
+    store.createIndex('count_clicks', 'countClicks', { unique: false });
+    store.createIndex('modified_timestamp', 'modifiedTimestamp', { unique: false });
+    store.createIndex('create_timestamp', 'createTimestamp', { unique: false });
+
+    return store;
+}
+
+async function migrateStructure(db, transaction, oldVersion, newVersion) {
+    const store = transaction.objectStore('bookmarks');
 
     if (!store.indexNames.contains('folder_id')) {
         store.createIndex('folder_id', 'folderId', { unique: false });
@@ -32,10 +38,6 @@ export default async function upgradeOrCreateBookmarks(db, transaction, oldVersi
         store.createIndex('tags', 'tags', { unique: false });
     }
 
-    if (store.indexNames.contains('version')) {
-        store.deleteIndex('version');
-    }
-
     if (!store.indexNames.contains('modified_timestamp')) {
         store.createIndex('modified_timestamp', 'modifiedTimestamp', { unique: false });
     }
@@ -44,54 +46,67 @@ export default async function upgradeOrCreateBookmarks(db, transaction, oldVersi
         store.createIndex('create_timestamp', 'createTimestamp', { unique: false });
     }
 
-    if (!store.indexNames.contains('ico_url')) {
-        store.createIndex('ico_url', 'icoUrl', { unique: false });
+    if (store.indexNames.contains('ico_url')) {
+        store.deleteIndex('ico_url');
     }
 
-    if (!store.indexNames.contains('source_ico_url')) {
-        store.createIndex('source_ico_url', 'sourceIcoUrl', { unique: false });
+    if (store.indexNames.contains('source_ico_url')) {
+        store.deleteIndex('source_ico_url');
     }
 
-    if (!store.indexNames.contains('ico_safe_zone')) {
-        store.createIndex('ico_safe_zone', 'icoSafeZone', { unique: false });
+    if (store.indexNames.contains('version')) {
+        store.deleteIndex('version');
     }
 
-    if (oldVersion !== 0 && oldVersion < 7) {
-        const bookmarks = await store.getAll();
-        const bookmarksByCategories = await transaction.objectStore('bookmarks_by_categories').getAll();
-
-        for await (const bookmark of bookmarks) {
-            const tags = bookmarksByCategories
-                .filter(({ bookmarkId }) => bookmarkId === bookmark.id)
-                .map(({ categoryId }) => categoryId);
-
-            transaction.objectStore('bookmarks').put({
-                ...bookmark,
-                tags,
-            });
-        }
-    }
-    if (oldVersion !== 0 && oldVersion < 8) {
-        const bookmarks = await store.getAll();
-
-        for await (const bookmark of bookmarks) {
-            transaction.objectStore('bookmarks').put({
-                ...omit(bookmark, ['version']),
-                createTimestamp: Date.now(),
-                modifiedTimestamp: Date.now(),
-            });
-        }
-    }
     if (oldVersion !== 0 && oldVersion < 10) {
-        store.deleteIndex('id');
-        store.createIndex('id', 'id', { unique: false });
         const bookmarks = await store.getAll();
+        let bookmarksByCategories;
+
+        if (oldVersion < 7) {
+            bookmarksByCategories = await transaction.objectStore('bookmarks_by_categories').getAll();
+        }
+
+        if (oldVersion < 10) {
+            store.deleteIndex('id');
+            store.createIndex('id', 'id', { unique: false });
+        }
 
         for await (const bookmark of bookmarks) {
-            transaction.objectStore('bookmarks').put({
-                ...bookmark,
-                id: uuid(),
-            });
+            let modifiedBookmark = bookmark;
+
+            if (oldVersion < 7) {
+                const tags = bookmarksByCategories
+                    .filter(({ bookmarkId }) => bookmarkId === bookmark.id)
+                    .map(({ categoryId }) => categoryId);
+
+                modifiedBookmark = {
+                    ...bookmark,
+                    tags,
+                };
+            }
+            if (oldVersion < 8) {
+                modifiedBookmark = {
+                    ...omit(bookmark, ['version']),
+                    createTimestamp: Date.now(),
+                    modifiedTimestamp: Date.now(),
+                };
+            }
+            if (oldVersion < 10) {
+                modifiedBookmark = {
+                    ...bookmark,
+                    id: uuid(),
+                };
+            }
+
+            transaction.objectStore('bookmarks').put(modifiedBookmark);
         }
+    }
+}
+
+export default async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion) {
+    if (transaction.objectStoreNames.contains('bookmarks')) {
+        await migrateStructure(db, transaction, oldVersion, newVersion);
+    } else {
+        createStructure(db);
     }
 }

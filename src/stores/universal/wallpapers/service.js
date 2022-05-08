@@ -41,7 +41,7 @@ class WallpapersUniversalService {
 
         console.log('savedBG', savedBG);
 
-        await db().add('backgrounds', cloneDeep(savedBG));
+        await db().add('wallpapers', cloneDeep(savedBG));
 
         eventToApp('wallpapers/new', savedBG);
 
@@ -61,7 +61,7 @@ class WallpapersUniversalService {
 
         try {
             console.log('[wallpapers] Remove from db...');
-            await db().delete('backgrounds', removeBG.id);
+            await db().delete('wallpapers', removeBG.id);
         } catch (e) {
             console.log(`bg ${removeBG.id} not find in db`);
             captureException(e);
@@ -90,10 +90,8 @@ class WallpapersUniversalService {
             previewBlob,
             cacheTime = 'temp',
         } = options;
-        const fileName = Date.now().toString();
         bindConsole.log('Fetch wallpaper', {
             wallpaper,
-            fileName,
             full,
             preview,
             fullBlob,
@@ -165,7 +163,7 @@ class WallpapersUniversalService {
     }
 
     static async getAll() {
-        const bgs = await db().getAll('backgrounds');
+        const bgs = await db().getAll('wallpapers');
 
         return bgs.map((wallpaper) => new Wallpaper(wallpaper));
     }
