@@ -76,6 +76,7 @@ function Banner(props) {
         variant = 'info',
         icon,
         classes: externalClasses = {},
+        className: externalClassName,
         actions,
         toolbarActions,
     } = props;
@@ -104,6 +105,7 @@ function Banner(props) {
                 variant === 'warn' && classes.warn,
                 variant === 'error' && classes.error,
                 externalClasses.root,
+                externalClassName,
             )}
             style={{ width }}
         >

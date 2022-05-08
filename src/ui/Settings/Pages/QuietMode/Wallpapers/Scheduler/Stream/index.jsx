@@ -24,18 +24,25 @@ import { useCoreService } from '@/stores/app/core';
 import { useAppStateService } from '@/stores/app/appState';
 import appVariables from '@/config/config';
 import Banner from '@/ui-components/Banner';
-import changeQueryPage from './ChangeQuery';
+import ChangeQueryModal from './ChangeQuery';
 import libraryPage from '@/ui/Settings/Pages/QuietMode/Wallpapers/Library';
 
 const useStyles = makeStyles((theme) => ({
-    chipsWrapper: { paddingRight: theme.spacing(1) },
+    chipsWrapper: {
+        paddingRight: theme.spacing(1),
+        overflow: 'auto',
+        width: '100%',
+    },
     chip: {
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
         borderRadius: theme.shape.borderRadiusBolder,
         border: 'none',
         backgroundColor: theme.palette.background.backdrop,
+        overflow: 'auto',
+        maxWidth: `calc(100% - ${theme.spacing(2)}px)`,
     },
+    chipLabel: { overflow: 'hidden' },
     selected: {
         borderColor: theme.palette.primary.main,
         backgroundColor: `${alpha(theme.palette.primary.main, 0.21)} !important`,
@@ -137,6 +144,7 @@ function Stream({ onSelect }) {
     const coreService = useCoreService();
     const { wallpapersService } = useAppStateService();
     const { t } = useTranslation(['settingsQuietMode']);
+    const [isCustomQueryEdit, setIsCustomQueryEdit] = useState(false);
 
     const selected = coreService.storage.data.wallpapersStreamQuery;
 
@@ -226,7 +234,10 @@ function Stream({ onSelect }) {
                                 classes.editorChoiceChip,
                                 selected?.type === 'collection' && selected?.value === 'editors-choice' && classes.selected,
                             )}
-                            classes={{ icon: classes.chipIcon }}
+                            classes={{
+                                icon: classes.chipIcon,
+                                label: classes.chipLabel,
+                            }}
                             variant="outlined"
                             label={t('query.value.EDITORS_CHOICE')}
                             icon={<EditorsChoiceIcon />}
@@ -248,7 +259,10 @@ function Stream({ onSelect }) {
                                 classes.savedOnlyChip,
                                 selected?.type === 'saved-only' && classes.selected,
                             )}
-                            classes={{ icon: classes.chipIcon }}
+                            classes={{
+                                icon: classes.chipIcon,
+                                label: classes.chipLabel,
+                            }}
                             variant="outlined"
                             label={t('query.value.SAVED_ONLY')}
                             icon={<SavedIcon />}
@@ -270,17 +284,27 @@ function Stream({ onSelect }) {
                                 classes.customQueryChip,
                                 selected?.type === 'custom-query' && classes.selected,
                             )}
-                            classes={{ icon: classes.chipIcon }}
+                            classes={{
+                                icon: classes.chipIcon,
+                                label: classes.chipLabel,
+                            }}
                             variant="outlined"
                             label={
                                 selected?.type === 'custom-query'
-                                    ? t('query.custom.button.change', { query: coreService.storage.data.wallpapersStreamQuery?.value || t('unknown') })
+                                    ? t(
+                                        'query.custom.button.change',
+                                        { query: coreService.storage.data.wallpapersStreamQuery?.value || t('unknown') },
+                                    )
                                     : t('query.value.CUSTOM_QUERY')
                             }
                             icon={<CreateCustomQueryIcon />}
                             onClick={() => {
-                                onSelect(changeQueryPage);
+                                setIsCustomQueryEdit(true);
                             }}
+                        />
+                        <ChangeQueryModal
+                            isOpen={isCustomQueryEdit}
+                            onClose={() => { setIsCustomQueryEdit(false); }}
                         />
                     </Box>
                     <Box className={classes.chipsWrapper}>

@@ -1,105 +1,210 @@
-import React, { useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    Divider,
     InputBase,
-    LinearProgress,
-    ImageListItem,
     Box,
-    ImageList,
-    Chip,
     Button,
+    Dialog,
+    CardMedia,
+    Fade,
+    IconButton,
+    CircularProgress,
 } from '@material-ui/core';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import {
-    ErrorRounded as ErrorIcon,
-    ToysRounded as StationIcon,
-    WifiTetheringRounded as StreamIcon,
-} from '@material-ui/icons';
-import { makeStyles, co } from '@material-ui/core/styles';
+import { Close as CloseIcon } from '@material-ui/icons';
+import { shuffle, debounce } from 'lodash';
+import { makeStyles } from '@material-ui/core/styles';
 import { runInAction } from 'mobx';
 import { captureException } from '@sentry/react';
 import { BG_SOURCE, BG_TYPE, FETCH } from '@/enum';
-import Stub from '@/ui-components/Stub';
 import { useCoreService } from '@/stores/app/core';
-import fetchData from '@/utils/helpers/fetchData';
-import appVariables from '@/config/config';
 import { useAppStateService } from '@/stores/app/appState';
-import BackgroundCard from '@/ui/Settings/Pages/QuietMode/Wallpapers/BackgroundCard';
-import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import api from '@/utils/helpers/api';
+import Banner from '@/ui-components/Banner';
 
 const useStyles = makeStyles((theme) => ({
-    root: { marginTop: 4 },
-    row: {
-        padding: theme.spacing(0, 2),
+    root: {
+        maxWidth: 988,
+        maxHeight: 687,
+        width: 988,
+        height: 687,
+        overflow: 'hidden',
+    },
+    closeIcon: {
+        position: 'absolute',
+        top: theme.spacing(1),
+        right: theme.spacing(1),
+        zIndex: 1,
+        color: '#000',
+    },
+    editor: {
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        width: '100%',
+        overflow: 'hidden',
     },
-    notSetValue: {
-        fontStyle: 'italic',
-        color: theme.palette.text.secondary,
+    row: {
+        width: 752,
+        padding: theme.spacing(2),
+        display: 'flex',
+        alignItems: 'center',
+        maxHeight: '100%',
+        overflow: 'hidden',
     },
     input: {
-        padding: theme.spacing(2),
+        padding: 0,
         fontSize: '3.2rem',
         fontWeight: '900',
+        color: '#000',
+        '& input': {
+            padding: 0,
+            height: 62,
+        },
     },
     submit: {
         flexShrink: 0,
         marginLeft: theme.spacing(2),
+        backgroundColor: theme.palette.common.black,
+        color: theme.palette.common.white,
+        padding: theme.spacing(2, 5),
+        borderRadius: theme.spacing(4),
+        fontSize: '1rem',
+        '&:hover': {
+            backgroundColor: theme.palette.common.black,
+            color: theme.palette.common.white,
+            boxShadow: 'rgb(80 80 80 / 40%) 0px 0px 0px 3px',
+        },
     },
-    locationRow: { paddingLeft: theme.spacing(4) },
-    geoButtonWrapper: { position: 'relative' },
-    geoButton: {},
-    geoButtonProgress: {
+    wallpapersWrapper: {
         position: 'absolute',
-        top: '50%',
-        left: '50%',
-        marginTop: -12,
-        marginLeft: -12,
-    },
-    bgCard: {
         width: '100%',
         height: '100%',
+        overflow: 'hidden',
     },
-    chipsWrapper: {
-        paddingRight: theme.spacing(4),
-        paddingLeft: theme.spacing(3),
-        paddingBottom: theme.spacing(1.5),
-        paddingTop: theme.spacing(1),
+    wallpaperPreview: {
+        position: 'absolute',
+        width: 246,
+        height: 180,
+        borderRadius: theme.shape.borderRadiusButtonBold,
     },
-    chip: {
-        marginLeft: theme.spacing(1),
-        marginTop: theme.spacing(1),
-        borderRadius: theme.shape.borderRadius,
+    loader: { display: 'flex' },
+    banner: {
+        margin: theme.spacing(2),
+        width: `calc(100% - ${theme.spacing(4)}px)`,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
     },
-    footer: { height: 400 },
 }));
 
-const headerProps = { title: 'settingsQuietMode:query.custom.create' };
-const pageProps = { width: 960 };
+function WallpaperPreview({ previewSrc, style: externalStyles }) {
+    const classes = useStyles();
+    const [renderSrc, setRenderSrc] = useState('');
+    const [prepareSrc, setPrepareSrc] = useState('');
 
-function BackgroundPreview({ bg, isAdded = false }) {
-    const coreService = useCoreService();
-    const { wallpapersService } = useAppStateService();
-    const [isLoaded, setIsLoaded] = useState(isAdded);
+    useEffect(() => {
+        const img = new Image();
+
+        img.onload = () => {
+            setRenderSrc((oldRenderSrc) => {
+                if (oldRenderSrc === '') {
+                    return previewSrc;
+                } else {
+                    setPrepareSrc(previewSrc);
+
+                    return '';
+                }
+            });
+        };
+        img.onerror = () => {
+            setPrepareSrc('');
+            setRenderSrc('');
+        };
+
+        img.src = previewSrc;
+    }, [previewSrc]);
 
     return (
-        <BackgroundCard
-            {...bg}
-            select={coreService.storage.data.bgCurrent?.id === bg.id}
-            onSet={() => wallpapersService.setWallpaper(bg)}
-            onAdd={!isLoaded && (() => {
-                setIsLoaded(true);
-                WallpapersUniversalService.addToLibrary(bg);
-            })}
-        />
+        <Fade
+            in={renderSrc !== ''}
+            onExited={() => {
+                setRenderSrc(prepareSrc);
+                setPrepareSrc('');
+            }}
+        >
+            <span>
+                <CardMedia
+                    className={classes.wallpaperPreview}
+                    image={renderSrc}
+                    style={externalStyles}
+                />
+            </span>
+        </Fade>
     );
 }
 
-function ChangeQuery({ onClose }) {
+const shifts = [
+    {
+        shift: 40,
+        opacity: [
+            0.78,
+            1,
+            0.09,
+            1,
+            1,
+        ],
+    },
+    {
+        shift: 94,
+        opacity: [
+            1,
+            0.18,
+            0.18,
+            1,
+            1,
+        ],
+    },
+    {
+        shift: 0,
+        opacity: [
+            1,
+            0.72,
+            0.1,
+            1,
+            0.64,
+        ],
+    },
+    {
+        shift: 131,
+        opacity: [
+            1,
+            0.14,
+            1,
+            0.8,
+            1,
+        ],
+    },
+    {
+        shift: 37,
+        opacity: [
+            0.78,
+            1,
+            0.09,
+            1,
+            1,
+        ],
+    },
+];
+
+function QueryEditor({ onClose }) {
     const classes = useStyles();
     const { t } = useTranslation(['settingsQuietMode']);
     const coreService = useCoreService();
@@ -127,19 +232,16 @@ function ChangeQuery({ onClose }) {
         try {
             let { response: list } = await api.get('wallpapers/search', {
                 query: {
-                    count: 30,
+                    count: 25,
                     type: wallpapersService.settings.type.join(',')
                         .toLowerCase(),
                     query: store.searchRequest,
                 },
             });
 
-            const allAdded = await wallpapersService.getAll();
-
             list = list.map((bg) => new Wallpaper({
                 ...bg,
                 kind: 'media',
-                // contrastColor: bg.color,
                 idInSource: bg.idInSource,
                 source: BG_SOURCE[bg.source.toUpperCase()],
                 type: BG_TYPE[bg.type.toUpperCase()],
@@ -147,9 +249,10 @@ function ChangeQuery({ onClose }) {
                 previewLink: bg.previewSrc,
             }));
 
+            list.length = list.length === 0 ? 0 : 25;
+
             runInAction(() => {
-                store.list = list;
-                store.addedList = allAdded;
+                store.list = shuffle(list);
                 store.status = FETCH.DONE;
             });
         } catch (e) {
@@ -158,6 +261,10 @@ function ChangeQuery({ onClose }) {
             store.status = FETCH.FAILED;
         }
     };
+
+    const autoSearch = useCallback(debounce(() => {
+        handleSearch();
+    }, 1500), []);
 
     const handleSelect = () => {
         coreService.storage.update({
@@ -172,8 +279,31 @@ function ChangeQuery({ onClose }) {
         onClose();
     };
 
+    useEffect(() => {
+        handleSearch();
+    }, []);
+
     return (
-        <React.Fragment>
+        <Box className={classes.editor}>
+            <Box
+                className={classes.wallpapersWrapper}
+                style={{
+                    width: 5 * (246 + 8) + 8,
+                    height: 5 * (180 + 8) + 8,
+                }}
+            >
+                {store.list.map((wallpaper, index) => (
+                    <WallpaperPreview
+                        key={index}
+                        {...wallpaper}
+                        style={{
+                            left: 8 + Math.floor(index / 5) * (246 + 8),
+                            top: 8 + (index % 5) * (180 + 8) + shifts[Math.floor(index / 5)].shift,
+                            opacity: shifts[Math.floor(index / 5)].opacity[index % 5],
+                        }}
+                    />
+                ))}
+            </Box>
             <form className={classes.row} onSubmit={handleSearch}>
                 <InputBase
                     fullWidth
@@ -183,8 +313,17 @@ function ChangeQuery({ onClose }) {
                     variant="outlined"
                     autoFocus
                     value={store.searchRequest}
+                    multiline
                     onChange={(event) => {
                         store.searchRequest = event.target.value;
+                        autoSearch();
+                    }}
+                    onKeyDown={(event) => {
+                        if (event.code === 'Enter') {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            handleSearch();
+                        }
                     }}
                 />
                 {(store.foundRequest !== store.searchRequest || store.status === FETCH.FAILED) && (
@@ -199,13 +338,7 @@ function ChangeQuery({ onClose }) {
                     </Button>
                 )}
                 {store.foundRequest === store.searchRequest && store.status === FETCH.PENDING && (
-                    <Button
-                        variant="text"
-                        className={classes.submit}
-                        disabled
-                    >
-                        {t('common:search')}
-                    </Button>
+                    <CircularProgress className={classes.loader} />
                 )}
                 {store.foundRequest === store.searchRequest && store.status === FETCH.DONE && (
                     <Button
@@ -215,76 +348,49 @@ function ChangeQuery({ onClose }) {
                         variant="contained"
                         className={classes.submit}
                         onClick={handleSelect}
+                        disabled={store.list.length === 0}
                     >
                         {t('searchQuery.button.save')}
                     </Button>
                 )}
             </form>
-            <Divider />
-            {store.status === FETCH.PENDING && (<LinearProgress />)}
-            {store.status === FETCH.DONE && (
-                <React.Fragment>
-                    <Box className={classes.root}>
-                        {store.list.length !== 0 && (
-                            <ImageList cellHeight={220} cols={3}>
-                                {store.list.map((bg) => (
-                                    <ImageListItem key={bg.id}>
-                                        <BackgroundPreview
-                                            bg={bg}
-                                            isAdded={store.addedList.find(({ id }) => id === bg.id)}
-                                        />
-                                    </ImageListItem>
-                                ))}
-                            </ImageList>
-                        )}
-                    </Box>
-                    {store.list.length !== 0 && (
-                        <Stub
-                            className={classes.footer}
-                            icon={StationIcon}
-                            message={t('searchQuery.callToUse')}
-                            actions={[
-                                {
-                                    title: t('searchQuery.button.save'),
-                                    variant: 'contained',
-                                    color: 'primary',
-                                    onClick: handleSelect,
-                                },
-                            ]}
-                        />
-                    )}
-                </React.Fragment>
-            )}
             {store.status === FETCH.DONE && store.list.length === 0 && (
-                <Stub
+                <Banner
+                    className={classes.banner}
+                    variant="warn"
                     message={t('searchQuery.notFound')}
                     description={t('searchQuery.notFound', { context: 'description' })}
                 />
             )}
             {store.status === FETCH.FAILED && (
-                <Stub
-                    icon={ErrorIcon}
+                <Banner
+                    className={classes.banner}
+                    variant="error"
                     message={t('searchQuery.failed')}
                     description={t('searchQuery.failed', { context: 'description' })}
                 />
             )}
-            {store.status === FETCH.WAIT && (
-                <Stub
-                    icon={StreamIcon}
-                    message={t('searchQuery.wait')}
-                    description={t('searchQuery.wait', { context: 'description' })}
-                />
-            )}
-        </React.Fragment>
+        </Box>
     );
 }
 
-const ObserverChangeQuery = observer(ChangeQuery);
+const ObserverQueryEditor = observer(QueryEditor);
 
-export { headerProps as header, ObserverChangeQuery as content };
+function Modal({ isOpen, onClose }) {
+    const classes = useStyles();
 
-export default {
-    header: headerProps,
-    content: ObserverChangeQuery,
-    props: pageProps,
-};
+    return (
+        <Dialog
+            open={isOpen}
+            onClose={onClose}
+            classes={{ paper: classes.root }}
+        >
+            <IconButton className={classes.closeIcon} onClick={onClose}>
+                <CloseIcon />
+            </IconButton>
+            <ObserverQueryEditor onClose={onClose} />
+        </Dialog>
+    );
+}
+
+export default observer(Modal);

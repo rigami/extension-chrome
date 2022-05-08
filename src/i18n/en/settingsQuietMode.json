@@ -138,7 +138,7 @@
   "searchQuery": {
     "query_placeholder": "Search Query",
     "button": {
-      "search": "Preview",
+      "search": "Preview stream",
       "save": "Create stream"
     },
     "wait": "Create your thread",
