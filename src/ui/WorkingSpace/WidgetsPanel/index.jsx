@@ -51,11 +51,6 @@ function WidgetsPanel() {
                 {greeting && date && (<Divider className={classes.divider} />)}
                 <DateTimeAndWeather />
             </Card>
-            <Card elevation={0} className={classes.card}>
-                <Greeting />
-                {greeting && date && (<Divider className={classes.divider} />)}
-                <DateTimeAndWeather />
-            </Card>
         </Box>
     );
 }
