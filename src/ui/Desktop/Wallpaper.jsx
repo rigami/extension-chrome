@@ -1,33 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import React, { useEffect, useRef } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import {
-    BrokenImageRounded as BrokenIcon,
-    DeleteRounded as DeleteIcon,
-} from '@material-ui/icons';
 import clsx from 'clsx';
-import { Box, Fade } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
-import { action, toJS } from 'mobx';
-import { captureException } from '@sentry/react';
+import { Box } from '@material-ui/core';
 import {
     BG_TYPE,
     FETCH,
-    THEME,
     BG_SHOW_STATE,
     BG_SOURCE,
     ACTIVITY,
-    BG_SHOW_MODE,
 } from '@/enum';
-import Stub from '@/ui-components/Stub';
-import { useCoreService } from '@/stores/app/core';
-import BackgroundEntity from '@/stores/universal/wallpapers/entities/wallpaper';
 import WallpaperInfo from '@/ui/Desktop/WallpaperInfo';
-import { eventToBackground } from '@/stores/universal/serviceBus';
 import { useAppStateService } from '@/stores/app/appState';
-import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
-import WallpaperSwitchService from '@/ui/Desktop/wallpaperSwitchService';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -187,10 +171,8 @@ function ItemStack(props) {
 
 function Wallpaper({ service }) {
     const classes = useStyles();
-    const theme = useTheme();
     const appStateService = useAppStateService();
     const { wallpapersService } = appStateService;
-    const coreService = useCoreService();
     const store = useLocalObservable(() => ({
         stack: [],
         topLoaded: false,

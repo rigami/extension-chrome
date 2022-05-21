@@ -1,17 +1,16 @@
-import { captureException } from '@sentry/react';
 import {
-    makeAutoObservable, reaction, toJS, computed, action,
+    makeAutoObservable,
+    reaction,
+    toJS,
+    computed,
+    action,
 } from 'mobx';
-import { BG_SHOW_MODE, BG_TYPE, FETCH } from '@/enum';
-import { eventToBackground } from '@/stores/universal/serviceBus';
-import BackgroundEntity from '@/stores/universal/wallpapers/entities/wallpaper';
+import { BG_TYPE, FETCH } from '@/enum';
 import consoleBinder from '@/utils/console/bind';
 
 const bindConsole = consoleBinder('wallpapers');
 
 class WallpaperSwitchService {
-    currentBg = null;
-    requestedBg = null;
     stateLoadBg = FETCH.PENDING;
     stateLoadRequestedBg = FETCH.WAIT;
     settings;

@@ -1,8 +1,11 @@
 import {
-    action, makeAutoObservable, reaction, runInAction, toJS,
+    action,
+    makeAutoObservable,
+    reaction,
+    runInAction,
+    toJS,
 } from 'mobx';
 import { captureException } from '@sentry/browser';
-import { assign } from 'lodash';
 import StreamWallpapersService from '@/stores/server/wallpapers/stream';
 import consoleBinder from '@/utils/console/bind';
 import {
@@ -169,10 +172,7 @@ class WallpapersService {
             let urls;
 
             try {
-                urls = await WallpapersUniversalService.fetch(wallpaper, {
-                    preview: false,
-                    cacheTime: 'temp',
-                });
+                urls = await WallpapersUniversalService.fetch(wallpaper, { cacheTime: 'temp' });
             } catch (e) {
                 bindConsole.error('Failed fetch wallpaper', e);
                 captureException(e);
@@ -182,7 +182,8 @@ class WallpapersService {
 
             return this.set(new Wallpaper({
                 ...wallpaper,
-                ...urls,
+                fullSrc: urls.url,
+                previewSrc: urls.previewUrl,
                 kind: 'media',
                 isLoad: true,
             }));

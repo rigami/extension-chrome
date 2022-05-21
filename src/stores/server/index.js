@@ -15,7 +15,6 @@ import OmniboxService from './omniboxService';
 import PersistentStorage from '@/stores/universal/storage/persistent';
 import StorageConnector from '@/stores/universal/storage/connector';
 import cacheManager from '@/utils/cacheManager';
-import config from '@/config/config';
 
 class ServerApp {
     localBus;
@@ -97,7 +96,7 @@ class ServerApp {
         this.omniboxService = new OmniboxService(this);
 
         chrome.alarms.get('cache-clear').then((alarm) => {
-            const periodInMinutes = config.cache.checkScheduler / (60 * 1000);
+            const periodInMinutes = appVariables.cache.checkScheduler / (60 * 1000);
 
             if (alarm && alarm.periodInMinutes === periodInMinutes) return;
 
@@ -111,10 +110,10 @@ class ServerApp {
             console.log('[alarms] Fire alarm with name =', name);
             if (name !== 'cache-clear') return;
 
-            cacheManager.clean('icons', Date.now() - config.cache.lifetime);
-            cacheManager.clean('wallpapers', Date.now() - config.cache.lifetime);
-            cacheManager.clean('wallpapers-preview', Date.now() - config.cache.lifetime);
-            cacheManager.clean('temp', Date.now() - config.cache.lifetime);
+            cacheManager.clean('icons', Date.now() - appVariables.cache.lifetime);
+            cacheManager.clean('wallpapers', Date.now() - appVariables.cache.lifetime);
+            cacheManager.clean('wallpapers-preview', Date.now() - appVariables.cache.lifetime);
+            cacheManager.clean('temp', Date.now() - appVariables.cache.lifetime);
         });
 
         console.log('Server app is run!');
