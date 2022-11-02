@@ -70,6 +70,7 @@
           "NOT_VALID_CODE": "Invalid code. It may be outdated or entered incorrectly",
           "NOT_EXIST_MERGED_USER": "No second user found, may have canceled the request",
           "SAME_USER": "You can't bind yourself. It's difficult and inconvenient",
+          "SAME_DEVICE": "You can't bind yourself. It's difficult and inconvenient",
           "UNKNOWN": "Unknown error. Try again later"
         },
         "button": {
