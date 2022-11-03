@@ -1,4 +1,4 @@
-import { uuid } from '@/utils/generate/uuid';
+import { uuid, FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 
 export default async function upgradeOrCreateFolders(db, transaction, oldVersion, newVersion) {
     let store;
@@ -23,17 +23,22 @@ export default async function upgradeOrCreateFolders(db, transaction, oldVersion
     }
 
     if (oldVersion !== 0 && oldVersion < 10) {
-        store.deleteIndex('id');
-        store.createIndex('id', 'id', { unique: false });
         const folders = await store.getAll();
         const newIds = {};
 
+        console.log('folders:', folders);
+
         folders.forEach((folder) => {
-            newIds[folder.id] = uuid();
+            newIds[folder.id] = newIds[folder.id] || (folder.id === 1 ? FIRST_UUID : uuid());
+            newIds[folder.parentId] = newIds[folder.parentId] || (folder.parentId === 0 ? NULL_UUID : uuid());
         });
 
         for await (const folder of folders) {
+            console.log('upgradeOrCreateFolders migrate:', folder, newIds[folder.id]);
+            transaction.objectStore('folders').delete(folder.id);
             transaction.objectStore('folders').put({
+                createTimestamp: Date.now(),
+                modifiedTimestamp: Date.now(),
                 ...folder,
                 id: newIds[folder.id],
                 parentId: newIds[folder.parentId],
@@ -49,4 +54,5 @@ export default async function upgradeOrCreateFolders(db, transaction, oldVersion
             });
         }
     }
+    console.log('Migrate folders succesfull!');
 }

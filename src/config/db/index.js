@@ -50,11 +50,13 @@ export default ({ upgrade, blocked, blocking, terminated }) => ({
 
         upgrade();
     },
-    blocked() {
-        blocked();
+    blocked(currentVersion, blockedVersion, event) {
+        bindConsole.log(`Blocked! currentVersion = ${currentVersion} blockedVersion = ${blockedVersion}`);
+        blocked(currentVersion, blockedVersion, event);
     },
-    blocking() {
-        blocking();
+    blocking(currentVersion, blockedVersion, event) {
+        bindConsole.log(`Blocking! currentVersion = ${currentVersion} blockedVersion = ${blockedVersion}`);
+        blocking(currentVersion, blockedVersion, event);
     },
     terminated() {
         terminated();

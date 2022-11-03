@@ -66,11 +66,6 @@ async function migrateStructure(db, transaction, oldVersion, newVersion) {
             bookmarksByCategories = await transaction.objectStore('bookmarks_by_categories').getAll();
         }
 
-        if (oldVersion < 10) {
-            store.deleteIndex('id');
-            store.createIndex('id', 'id', { unique: false });
-        }
-
         for await (const bookmark of bookmarks) {
             let modifiedBookmark = bookmark;
 
@@ -91,16 +86,11 @@ async function migrateStructure(db, transaction, oldVersion, newVersion) {
                     modifiedTimestamp: Date.now(),
                 };
             }
-            if (oldVersion < 10) {
-                modifiedBookmark = {
-                    ...bookmark,
-                    id: uuid(),
-                };
-            }
 
             transaction.objectStore('bookmarks').put(modifiedBookmark);
         }
     }
+    console.log('Migrate bookmarks succesfull!');
 }
 
 export default async function upgradeOrCreateBookmarks(db, transaction, oldVersion, newVersion) {

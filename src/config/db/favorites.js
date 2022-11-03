@@ -35,4 +35,5 @@ export default async function upgradeOrCreateFavorites(db, transaction, oldVersi
             itemType: favorite.itemType === 'category' ? 'tag' : favorite.itemType,
         }));
     }
+    console.log('Migrate favorites succesfull!');
 }

@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 import { uuid } from '@/utils/generate/uuid';
 
 export default async function upgradeOrCreateTags(db, transaction, oldVersion, newVersion) {
@@ -34,21 +35,14 @@ export default async function upgradeOrCreateTags(db, transaction, oldVersion, n
         db.deleteObjectStore('categories');
     }
     if (oldVersion !== 0 && oldVersion < 10) {
-        store.deleteIndex('id');
-        store.createIndex('id', 'id', { unique: false });
+        store.deleteIndex('color');
+        store.createIndex('color_key', 'colorKey', { unique: false });
         const tags = await store.getAll();
         const newIds = {};
 
-        tags.forEach((folder) => {
-            newIds[folder.id] = uuid();
+        tags.forEach((tag) => {
+            newIds[tag.id] = uuid();
         });
-
-        for await (const tag of tags) {
-            transaction.objectStore('tags').put({
-                ...tag,
-                id: uuid(),
-            });
-        }
 
         const bookmarks = await transaction.objectStore('bookmarks').getAll();
 
@@ -58,5 +52,21 @@ export default async function upgradeOrCreateTags(db, transaction, oldVersion, n
                 tags: bookmark.tags.map((tagId) => newIds[tagId]),
             });
         }
+
+        let colorKey = 1;
+
+        for await (const tag of tags) {
+            transaction.objectStore('tags').delete(tag.id);
+            transaction.objectStore('tags').put({
+                createTimestamp: Date.now(),
+                modifiedTimestamp: Date.now(),
+                ...omit(tag, ['color']),
+                colorKey,
+                id: newIds[tag.id],
+            });
+
+            colorKey += 1;
+        }
+        console.log('Migrate tags succesfull!');
     }
 }
