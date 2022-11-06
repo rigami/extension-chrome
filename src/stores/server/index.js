@@ -15,6 +15,8 @@ import OmniboxService from './omniboxService';
 import PersistentStorage from '@/stores/universal/storage/persistent';
 import StorageConnector from '@/stores/universal/storage/connector';
 import cacheManager from '@/utils/cacheManager';
+import storageMigrate from './migrateStorage/storage';
+import settingsMigrate from './migrateStorage/settings';
 
 class ServerApp {
     localBus;
@@ -57,14 +59,30 @@ class ServerApp {
     async _initStorages() {
         const { storageVersion = 0 } = await StorageConnector.get('storageVersion');
 
-        if (storageVersion !== appVariables.storage.version) {
-            console.log('Require upgrade storage version from', storageVersion, 'to', appVariables.storage.version);
-        }
-
         this.storage = new PersistentStorage('storage');
         this.settingsService = new SettingsService();
 
-        await Promise.all([this.storage, authStorage, this.settingsService.settingsStorage].map((storage) => awaitInstallStorage(storage)));
+        /* eslint-disable max-len, array-element-newline */
+        await Promise.all([
+            this.storage,
+            authStorage,
+            this.settingsService.settingsStorage,
+        ].map((storage) => awaitInstallStorage(storage)));
+        /* eslint-enable max-len, array-element-newline */
+
+        if (storageVersion !== appVariables.storage.version) {
+            console.log(
+                'Require upgrade storage version from',
+                storageVersion,
+                'to',
+                appVariables.storage.version,
+            );
+
+            await storageMigrate(this.storage, storageVersion, appVariables.storage.version);
+            await settingsMigrate(this.settingsService.settingsStorage, storageVersion, appVariables.storage.version);
+
+            await StorageConnector.set({ storageVersion: appVariables.storage.version });
+        }
     }
 
     async start() {
@@ -95,6 +113,7 @@ class ServerApp {
 
         this.omniboxService = new OmniboxService(this);
 
+        // eslint-disable-next-line sonarjs/no-duplicate-string
         chrome.alarms.get('cache-clear').then((alarm) => {
             const periodInMinutes = appVariables.cache.checkScheduler / (60 * 1000);
 

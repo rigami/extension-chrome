@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, pick } from 'lodash';
 import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import { BG_SOURCE, BKMS_VARIANT } from '@/enum';
 import appVariables from '@/config/config';
@@ -28,8 +28,22 @@ class MigrationService {
         if (localStorage.getItem('storage')) {
             const storage = JSON.parse(localStorage.getItem('storage'));
 
+            let wallpapersStreamQuery = {
+                type: 'collection',
+                value: 'editors-choice',
+            };
+
+            if (storage.backgroundStreamQuery) {
+                wallpapersStreamQuery = {
+                    type: 'custom-query',
+                    value: storage.backgroundStreamQuery.value,
+                };
+            }
+
             this._coreService.storage.update({
-                ...storage,
+                ...pick(storage, ['startUsageVersion', 'lastUsageVersion', 'userName']),
+                wallpapersStreamQuery,
+                wallpaperState: 'DONE',
                 bgCurrent: storage.bgCurrent ? new Wallpaper({
                     ...storage.bgCurrent,
                     isSaved: true,
@@ -38,7 +52,7 @@ class MigrationService {
                         : storage.bgCurrent.downloadLink,
                     previewSrc: `${appVariables.rest.url}/background/user/get-preview?id=${storage.bgCurrent.id}`,
                 }) : null,
-                bgsStream: (storage.bgsStream || []).map((bg) => new Wallpaper({
+                wallpapersStreamQueue: (storage.bgsStream || []).map((bg) => new Wallpaper({
                     ...storage.bgCurrent,
                     isSaved: true,
                     fullSrc: bg.source === BG_SOURCE.USER
