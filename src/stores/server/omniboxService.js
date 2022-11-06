@@ -12,6 +12,11 @@ class OmniboxService {
     }
 
     subscribe() {
+        if (!chrome.omnibox) {
+            console.warn('[omnibox] omnibox not defined. Disable feature');
+            return;
+        }
+
         chrome.omnibox.onInputChanged.addListener((text, suggest) => {
             console.log('[omnibox] onInputChanged', text);
 
