@@ -10,7 +10,7 @@
         "dev": "yarn build:clear && NODE_ENV=development webpack-cli",
         "build:clear": "yarn rimraf ./build && mkdirp ./build",
         "release:clear": "yarn rimraf ./release && mkdirp ./release",
-        "build:zip": "zip -r release/rigami-$BUILD-$npm_package_version.zip build",
+        "build:zip": "zip -r release/rigami-${BUILD}-${npm_package_version}.zip build",
         "prepare": "husky install",
         "react-devtools": "react-devtools",
         "bump": "yarn bump:patch",
