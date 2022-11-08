@@ -15,14 +15,24 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '16px',
         fontWeight: 800,
     },
+    content: {
+        display: 'inline-flex',
+        verticalAlign: 'middle',
+        marginLeft: theme.spacing(2),
+    },
 }));
 
-function SectionHeader({ title, h = 1 }) {
+function SectionHeader({ title, h = 1, content }) {
     const classes = useStyles();
 
     return (
         <ListSubheader className={clsx(classes.root, classes[`h${h}`])} disableSticky>
             {title}
+            {content && (
+                <div className={classes.content}>
+                    {content}
+                </div>
+            )}
         </ListSubheader>
     );
 }
