@@ -42,7 +42,7 @@ async function migrate(storage, oldVersion, newVersion) {
     console.log('Migrate storage:', storage, oldVersion, newVersion);
     let migratedStorage = toJS(storage.data);
 
-    if (oldVersion < 2) migratedStorage = await migrate_1_2(migratedStorage);
+    if (oldVersion !== 0 && oldVersion < 2) migratedStorage = await migrate_1_2(migratedStorage);
 
     storage.update(migratedStorage, true);
 }

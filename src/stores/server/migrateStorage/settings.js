@@ -35,10 +35,10 @@ async function migrate_1_2(settings) {
 }
 
 async function migrate(storage, oldVersion, newVersion) {
-    let migratedStorage = oldVersion < 2 ? await StorageConnector.get() : toJS(storage.data);
+    let migratedStorage = oldVersion !== 0 && oldVersion < 2 ? await StorageConnector.get() : toJS(storage.data);
     console.log('Migrate settings:', storage, oldVersion, newVersion, migratedStorage);
 
-    if (oldVersion < 2) migratedStorage = await migrate_1_2(migratedStorage);
+    if (oldVersion !== 0 && oldVersion < 2) migratedStorage = await migrate_1_2(migratedStorage);
 
     await storage.updateRaw(migratedStorage, false, true);
 }
