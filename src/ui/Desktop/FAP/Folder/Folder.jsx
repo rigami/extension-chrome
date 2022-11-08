@@ -8,21 +8,29 @@ import {
     Box,
     Button,
 } from '@material-ui/core';
-import { CloseRounded as CloseIcon, FolderRounded as FolderIcon } from '@material-ui/icons';
+import {
+    CloseRounded as CloseIcon,
+    FolderRounded as FolderIcon,
+    ArrowBackRounded as BackIcon, CreateNewFolderRounded as AddNewFolderIcon,
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 import Scrollbar from '@/ui-components/CustomScroll';
 import Stub from '@/ui-components/Stub';
-import { useTranslation } from 'react-i18next';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import clsx from 'clsx';
-import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
+import BookmarksGrid from '@/ui/WorkingSpace/BookmarksViewer/BookmarksGrid';
 import FolderCard from '@/ui/Desktop/FAP/Folder/Card';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useCoreService } from '@/stores/app/core';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
+import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
+import { useContextMenuService } from '@/stores/app/contextMenu';
+import { useContextEdit } from '@/stores/app/contextActions';
+import { search, SearchQuery } from '@/stores/universal/workingSpace/search';
+import { BKMS_DISPLAY_VARIANT } from '@/enum';
+import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
+import sorting from '@/ui/WorkingSpace/BookmarksViewer/utils/sort';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -32,10 +40,7 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 1,
         display: 'flex',
         flexDirection: 'column',
-        transition: theme.transitions.create(['width'], {
-            duration: theme.transitions.duration.short,
-            easing: theme.transitions.easing.easeInOut,
-        }),
+        background: 'none',
     },
     avatar: {
         display: 'flex',
@@ -82,6 +87,16 @@ const useStyles = makeStyles((theme) => ({
     title: {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
+        fontFamily: theme.typography.specialFontFamily,
+    },
+    scrollContent: {
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100%',
+    },
+    listBookmarks: {
+        width: '100%',
+        margin: theme.spacing(0, -1),
     },
 }));
 
@@ -97,19 +112,29 @@ function Folder(props) {
     } = props;
     const classes = useStyles();
     const { t } = useTranslation(['folder', 'bookmark']);
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const coreService = useCoreService();
     const [folder, setFolder] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
     const [folders, setFolders] = useState([]);
-    const contextMenu = useContextMenu(() => [
+    const { dispatchEdit } = useContextEdit();
+    const { dispatchContextMenu } = useContextMenuService((event, position, next) => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
-            onClick: () => {
-                coreService.localEventBus.call('bookmark/create', { defaultFolderId: id });
-            },
+            onClick: () => dispatchEdit({
+                itemType: 'bookmark',
+                defaultFolderId: id,
+            }, event, position, next),
+        }),
+        new ContextMenuItem({
+            title: t('folder:button.create'),
+            icon: AddNewFolderIcon,
+            onClick: () => dispatchEdit({
+                itemType: 'folder',
+                parentId: id,
+            }, event, position, next),
         }),
     ]);
 
@@ -125,13 +150,15 @@ function Folder(props) {
                 load = false;
             });
 
-        BookmarksUniversalService.getAllInFolder(id)
-            .then((searchResult) => {
-                setFindBookmarks(searchResult);
+        const sort = sorting[workingSpaceService.settings.sorting](workingSpaceService);
+
+        search(new SearchQuery(({ folderId: id })))
+            .then((result) => {
+                setFindBookmarks((result.all && sort(result.all)) || []);
                 setIsSearching(load);
                 load = false;
             });
-    }, [bookmarksService.lastTruthSearchTimestamp]);
+    }, [workingSpaceService.lastTruthSearchTimestamp]);
 
     return (
         <Card
@@ -139,7 +166,7 @@ function Folder(props) {
             onClick={() => {
                 if (shrink) onBack();
             }}
-            onContextMenu={contextMenu}
+            onContextMenu={dispatchContextMenu}
             elevation={0}
         >
             <CardHeader
@@ -165,16 +192,26 @@ function Folder(props) {
                     )
 
                 )}
-                action={rootFolder && (
+                action={rootFolder ? (
                     <Tooltip title={t('common:button.close')}>
                         <IconButton
                             onClick={() => {
-                                if (coreService.storage.temp.data.closeFapPopper) {
-                                    coreService.storage.temp.data.closeFapPopper();
+                                if (coreService.tempStorage.data.closeFapPopper) {
+                                    coreService.tempStorage.data.closeFapPopper();
                                 }
                             }}
                         >
                             <CloseIcon />
+                        </IconButton>
+                    </Tooltip>
+                ) : (
+                    <Tooltip title={t('common:button.back')}>
+                        <IconButton
+                            onClick={() => {
+                                onBack();
+                            }}
+                        >
+                            <BackIcon />
                         </IconButton>
                     </Tooltip>
                 )}
@@ -191,45 +228,63 @@ function Folder(props) {
                     <CircularProgress />
                 </Stub>
             )}
-            {!isSearching && (findBookmarks?.length === 0 && folders?.length === 0) && (
-                <Stub message={t('bookmark:empty')}>
-                    <Button
-                        onClick={() => coreService.localEventBus.call(
-                            'bookmark/create',
-                            { defaultFolderId: id },
-                        )}
-                        startIcon={<AddBookmarkIcon />}
-                        variant="contained"
-                        color="primary"
-                    >
-                        {t('bookmark:button.add', { context: 'first' })}
-                    </Button>
-                </Stub>
-            )}
-            {!isSearching && (folders?.length > 0 || findBookmarks?.length > 0) && (
+            {!isSearching && (
                 <Box
                     display="flex"
                     className={clsx(classes.bookmarks, shrink && classes.notActiveFolder)}
                 >
-                    <Scrollbar>
-                        <Box display="flex" flexWrap="wrap" ml={2}>
-                            {folders.map((currFolder) => (
-                                <FolderCard
-                                    active={openFolderId === currFolder.id}
-                                    key={currFolder.id}
-                                    id={currFolder.id}
-                                    name={currFolder.name}
-                                    className={classes.folderCard}
-                                    onClick={() => onOpenFolder(currFolder.id)}
-                                />
-                            ))}
-                        </Box>
-                        <Box display="flex" ml={2}>
-                            <BookmarksGrid
-                                bookmarks={findBookmarks}
-                                columns={2}
-                            />
-                        </Box>
+                    <Scrollbar classes={{ content: classes.scrollContent }}>
+                        {folders.length > 0 && (
+                            <Box display="flex" flexWrap="wrap" ml={2}>
+                                {folders.map((currFolder) => (
+                                    <FolderCard
+                                        active={openFolderId === currFolder.id}
+                                        key={currFolder.id}
+                                        id={currFolder.id}
+                                        name={currFolder.name}
+                                        className={classes.folderCard}
+                                        onClick={() => {
+                                            if (openFolderId === currFolder.id) {
+                                                onBack();
+                                            } else {
+                                                onOpenFolder(currFolder.id);
+                                            }
+                                        }}
+                                    />
+                                ))}
+                            </Box>
+                        )}
+                        {findBookmarks.length > 0 && (
+                            <Box display="flex" ml={2} mb={2}>
+                                {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
+                                    <BookmarksGrid
+                                        bookmarks={findBookmarks}
+                                        columns={2}
+                                    />
+                                )}
+                                {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
+                                    <BookmarksList
+                                        bookmarks={findBookmarks}
+                                        className={classes.listBookmarks}
+                                    />
+                                )}
+                            </Box>
+                        )}
+                        {(findBookmarks?.length === 0) && (
+                            <Stub message={t('bookmark:empty')}>
+                                <Button
+                                    onClick={(event) => dispatchEdit({
+                                        itemType: 'bookmark',
+                                        defaultFolderId: id,
+                                    }, event)}
+                                    startIcon={<AddBookmarkIcon />}
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    {t('bookmark:button.add', { context: 'first' })}
+                                </Button>
+                            </Stub>
+                        )}
                     </Scrollbar>
                 </Box>
             )}

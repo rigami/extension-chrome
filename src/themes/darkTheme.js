@@ -1,13 +1,15 @@
 import { createTheme, alpha } from '@material-ui/core/styles';
 import merge from '@/utils/mergeObjects';
-import { theme } from './defaultTheme';
+import { themeValuesRaw as defaultThemeValues } from './defaultTheme';
+import themeOverrides from '@/themes/themeOverrides';
 
-export default createTheme(merge(
-    theme,
+const baseThemeValues = merge(
+    defaultThemeValues,
     {
         palette: {
             type: 'dark',
             primary: {
+                light: alpha('#23CFA6', 0.2),
                 main: '#49C5B6',
                 contrastText: '#fff',
             },
@@ -20,14 +22,22 @@ export default createTheme(merge(
             background: {
                 paper: '#151515',
                 backdrop: '#1d1d1d',
+                default: '#161616',
+                backdropLight: '#181818',
+            },
+            text: {
+                primary: alpha('#fff', 0.76),
+                secondary: alpha('#fff', 0.5),
             },
         },
-        overrides: {
-            MuiPaper: { root: { color: '#d7d7d7' } },
-            MuiAvatar: { colorDefault: { color: '#151515' } },
-            MuiTooltip: { tooltip: { backgroundColor: alpha('#000', 0.82) } },
-            MuiSwitch: { switchBase: { color: '#3f3f3f' } },
-            MuiTypography: { colorTextSecondary: { color: alpha('#fff', 0.53) } },
-        },
     },
-));
+);
+
+const baseTheme = createTheme(baseThemeValues);
+
+export { baseThemeValues as themeValuesRaw, baseTheme as themeValues };
+
+export default createTheme({}, {
+    ...baseTheme,
+    ...themeOverrides(baseTheme),
+});

@@ -15,6 +15,7 @@ const exportClasses = (theme) => ({
         bottom: 0,
         transform: 'translate3d(0,0,0)',
     },
+    scrollContent: { padding: 0.05 },
     reverse: {
         display: 'flex',
         flexDirection: 'column-reverse',
@@ -53,7 +54,7 @@ function CustomScroll(rootProps, ref) {
 
     return (
         <Scrollbar
-            className={clsx(classes.root, externalClassName)}
+            className={clsx(classes.root, externalClassName, externalClasses.root)}
             noDefaultStyles
             scrollerProps={{
                 renderer: (props) => {
@@ -62,7 +63,19 @@ function CustomScroll(rootProps, ref) {
                         <div
                             {...restProps}
                             ref={elementRef}
-                            className={clsx(reverse && classes.reverse)}
+                            className={clsx(externalClasses.scroller, reverse && classes.reverse)}
+                        />
+                    );
+                },
+            }}
+            contentProps={{
+                renderer: (props) => {
+                    const { elementRef, ...restProps } = props;
+                    return (
+                        <div
+                            {...restProps}
+                            ref={elementRef}
+                            className={clsx(classes.scrollContent, externalClasses.content)}
                         />
                     );
                 },
@@ -70,7 +83,13 @@ function CustomScroll(rootProps, ref) {
             wrapperProps={{
                 renderer: (props) => {
                     const { elementRef, ...restProps } = props;
-                    return <div {...restProps} ref={elementRef} className={classes.scrollWrapper} />;
+                    return (
+                        <div
+                            {...restProps}
+                            ref={elementRef}
+                            className={clsx(classes.scrollWrapper, externalClasses.wrapper)}
+                        />
+                    );
                 },
             }}
             trackYProps={{

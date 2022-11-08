@@ -1,5 +1,5 @@
-import { SERVICE_STATE } from '@/enum';
 import { when } from 'mobx';
+import { SERVICE_STATE } from '@/enum';
 
 export default (storage) => new Promise((resolve, rejection) => {
     if (storage.state === SERVICE_STATE.DONE) {

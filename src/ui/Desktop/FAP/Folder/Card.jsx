@@ -3,10 +3,14 @@ import { Card, CardActionArea, CardHeader } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { FolderRounded as FolderIcon } from '@material-ui/icons';
 import clsx from 'clsx';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
+import { useContextActions } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
-    root: { width: theme.shape.dataCard.width },
+    root: {
+        width: theme.shape.dataCard.width,
+        borderRadius: theme.shape.borderRadiusButton,
+    },
     header: { padding: theme.spacing(2) },
     headerContent: {
         overflow: 'hidden',
@@ -15,10 +19,15 @@ const useStyles = makeStyles((theme) => ({
     title: {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
-        fontFamily: theme.typography.secondaryFontFamily,
+        fontFamily: theme.typography.specialFontFamily,
         fontWeight: 600,
     },
     active: { backgroundColor: theme.palette.action.selected },
+    subFolder: { padding: theme.spacing(1.5, 2) },
+    subFolderIcon: {
+        alignItems: 'center',
+        display: 'flex',
+    },
 }));
 
 function FolderCard(props) {
@@ -31,10 +40,11 @@ function FolderCard(props) {
         ...other
     } = props;
     const classes = useStyles();
-    const contextMenu = useContextMenu({
+    const contextActions = useContextActions({
         itemId: id,
         itemType: 'folder',
     });
+    const { dispatchContextMenu } = useContextMenuService(contextActions);
 
     return (
         <Card
@@ -44,15 +54,16 @@ function FolderCard(props) {
         >
             <CardActionArea
                 onClick={onClick}
-                onContextMenu={contextMenu}
+                onContextMenu={dispatchContextMenu}
             >
                 <CardHeader
                     avatar={<FolderIcon />}
                     title={name}
                     classes={{
-                        root: classes.header,
+                        root: clsx(classes.header, classes.subFolder),
                         content: classes.headerContent,
                         title: classes.title,
+                        avatar: classes.subFolderIcon,
                     }}
                 />
             </CardActionArea>

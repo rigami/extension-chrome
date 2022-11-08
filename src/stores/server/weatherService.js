@@ -1,10 +1,10 @@
 import { makeAutoObservable, reaction } from 'mobx';
-import appVariables from '@/config/appVariables';
+import { captureException } from '@sentry/browser';
+import appVariables from '@/config/config';
 import { eventToApp } from '@/stores/universal/serviceBus';
 import { FETCH } from '@/enum';
 import WeatherLocation from '@/entities/WeatherLocation';
 import Weather from '@/entities/Weather';
-import { captureException } from '@sentry/browser';
 import OpenWeatherMap from '@/stores/universal/weather/connectors/OpenWeatherMap';
 
 class WeatherService {
@@ -17,7 +17,7 @@ class WeatherService {
     constructor(core) {
         makeAutoObservable(this);
         this.core = core;
-        this.storage = this.core.storage.persistent;
+        this.storage = this.core.storage;
 
         this.subscribe();
     }
@@ -73,7 +73,7 @@ class WeatherService {
         console.log('Set location:', location);
         this.location = location;
 
-        this.storage.persistent.update({ location });
+        this.storage.update({ location });
     }
 
     start() {
@@ -123,14 +123,14 @@ class WeatherService {
         this._lastUpd = this.storage.data.weather?.lastUpdateTimestamp;
 
         reaction(
-            () => this.core.settingsService.widgets?.dtwUseWeather,
+            () => this.core.settingsService.widgets?.useWeather,
             () => {
-                if (this.core.settingsService.widgets?.dtwUseWeather) this.start();
+                if (this.core.settingsService.widgets?.useWeather) this.start();
                 else this.stop();
             },
         );
 
-        if (this.core.settingsService.widgets.dtwUseWeather) this.start();
+        if (this.core.settingsService.widgets.useWeather) this.start();
 
         this.core.globalEventBus.on('weather/forceUpdate', ({ data: location }) => {
             console.log('[weather] Request force update. Location:', location);

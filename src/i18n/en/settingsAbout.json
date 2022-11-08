@@ -1,14 +1,14 @@
 {
-  "onlyWallpapers": "only wallpapers",
+  "onlyWallpapers": "backgrounds only",
   "homePage": "Project home page",
   "fullVersion": "Full version of the extension",
-  "fullVersion_description": "Now you use the light version of the extension only with backgrounds, if you are missing this, then pay attention to the extended version",
+  "fullVersion_description": "You are now using the lite version of the extension with only backgrounds, if that's not enough for you, look into the extended version",
   "review": "Write a review",
-  "review_description": "Tell us what you want to see in the extension, what you like or dislike",
+  "review_description": "Tell us what you want to see in the extension, what you like or don't like",
   "bugReport": "Report bugs",
-  "bugReport_description": "Tell me what problems in the extension are encountered, I will try to fix them as soon as possible",
-  "contact": "Get into contact with me",
+  "bugReport_description": "Tell me what problems you encountered in the extension",
+  "contact": "Contact me",
   "contact_description": "Contact the developer directly",
-  "policy":"Privacy policy",
+  "policy":"Privacy Policy",
   "rate": "Rate the extension in the Chrome Web Store"
 }

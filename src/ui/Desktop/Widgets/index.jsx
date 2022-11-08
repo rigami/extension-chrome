@@ -1,18 +1,19 @@
 import React, { useCallback } from 'react';
 import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { observer } from 'mobx-react-lite';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import clsx from 'clsx';
+import { useResizeDetector } from 'react-resize-detector';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import {
     ACTIVITY,
     BKMS_FAP_POSITION,
+    BKMS_FAP_STYLE,
+    WIDGET_POSITION,
 } from '@/enum';
-import clsx from 'clsx';
-import DTW_POSITION from '@/enum/WIDGET/DTW_POSITION';
 import WeatherWidget from '@/ui/Desktop/Widgets/Weather';
-import { useResizeDetector } from 'react-resize-detector';
-import useAppService from '@/stores/app/AppStateProvider';
-import useBaseStateService from '@/stores/app/BaseStateProvider';
+import { useAppStateService } from '@/stores/app/appState';
+import { useCoreService } from '@/stores/app/core';
 import Time from './Time';
 import Date from './Date';
 
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         pointerEvents: 'none',
+        textShadow: '0 2px 17px #00000029',
     },
     widget: {
         display: 'flex',
@@ -63,17 +65,21 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.common.white,
     },
     text: {
-        textShadow: '0 2px 17px #00000029',
-        fontFamily: theme.typography.primaryFontFamily,
-        fontWeight: 800,
+        fontFamily: theme.typography.specialFontFamily,
+        fontWeight: 700,
         pointerEvents: 'all',
+        transition: theme.transitions.create(['color', 'textShadow'], {
+            easing: theme.transitions.easing.shiftEaseInOut,
+            duration: theme.transitions.duration.long,
+        }),
     },
+    weather: { marginTop: '4%' },
     'time-smaller': {
         fontSize: '2rem',
         lineHeight: '90%',
     },
     'time-small': {
-        fontSize: '3.9rem',
+        fontSize: '4rem',
         lineHeight: '90%',
     },
     'time-middle': {
@@ -93,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
         lineHeight: '100%',
     },
     'date-small': {
-        fontSize: '2.7rem',
+        fontSize: '3rem',
         lineHeight: '100%',
     },
     'date-middle': {
@@ -108,86 +114,197 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '7rem',
         lineHeight: '100%',
     },
+    'weather-smaller': {
+        fontSize: '1.2rem',
+        lineHeight: '100%',
+    },
+    'weather-small': {
+        fontSize: '1.5rem',
+        lineHeight: '100%',
+    },
+    'weather-middle': {
+        fontSize: '2rem',
+        lineHeight: '100%',
+    },
+    'weather-big': {
+        fontSize: '3rem',
+        lineHeight: '100%',
+    },
+    'weather-bigger': {
+        fontSize: '4rem',
+        lineHeight: '100%',
+    },
+    xLeft: {
+        alignItems: 'flex-start',
+        '& $widget': { alignItems: 'flex-start' },
+    },
+    xCenter: { alignItems: 'center' },
+    xRight: {
+        alignItems: 'flex-end',
+        '& $widget': { alignItems: 'flex-end' },
+    },
+    yTop: { justifyContent: 'flex-start' },
+    yMiddle: { justifyContent: 'center' },
+    yBottom: { justifyContent: 'flex-end' },
 }));
 
-function Widgets({ stickToBottom }) {
+function Widgets({ stickToBottom, color }) {
     const classes = useStyles();
-    const service = useBaseStateService();
-    const appService = useAppService();
-    const { widgets } = appService;
-    const bookmarksService = useBookmarksService();
+    const theme = useTheme();
+    const service = useCoreService();
+    const appStateService = useAppStateService();
+    const { widgetsService, desktopService } = appStateService;
+    const workingSpaceService = useWorkingSpaceService();
     const { height: heightRoot, ref: refRoot } = useResizeDetector();
 
     const onResize = useCallback((width, height) => {
-        service.storage.temp.update({ desktopWidgetsHeight: height });
+        service.tempStorage.update({ desktopWidgetsHeight: height });
     }, []);
 
     const { height: heightWidget, ref: refWidget } = useResizeDetector({ onResize });
 
+    let positionOffsetSide = '';
     let positionOffset = '';
 
     if (BUILD === 'full') {
         if (
             (
-                bookmarksService.fapIsDisplay
-                && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
-            ) || appService.activity === ACTIVITY.FAVORITES
+                workingSpaceService.favorites.length !== 0
+                && desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+                && desktopService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM
+            ) || appStateService.activity === ACTIVITY.FAVORITES
         ) {
-            positionOffset = 'bottom';
+            positionOffsetSide = 'bottom';
+            positionOffset = service.tempStorage.data.desktopFapHeight;
         } else if (
-            bookmarksService.fapIsDisplay
-            && bookmarksService.settings.fapPosition === BKMS_FAP_POSITION.TOP
+            workingSpaceService.favorites.length !== 0
+            && desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+            && desktopService.settings.fapPosition === BKMS_FAP_POSITION.TOP
         ) {
-            positionOffset = 'top';
+            positionOffsetSide = 'top';
+            positionOffset = Math.max(service.tempStorage.data.desktopFapHeight, theme.spacing(4) + 36);
         }
     }
+
+    const positions = {
+        [WIDGET_POSITION.LEFT_TOP]: {
+            classes: [classes.xLeft, classes.yTop],
+            x: 'left',
+            y: 'top',
+        },
+        [WIDGET_POSITION.CENTER_TOP]: {
+            classes: [classes.xCenter, classes.yTop],
+            x: 'center',
+            y: 'top',
+        },
+        [WIDGET_POSITION.RIGHT_TOP]: {
+            classes: [classes.xRight, classes.yTop],
+            x: 'right',
+            y: 'top',
+        },
+        [WIDGET_POSITION.LEFT_MIDDLE]: {
+            classes: [classes.xLeft, classes.yMiddle],
+            x: 'left',
+            y: 'center',
+        },
+        [WIDGET_POSITION.CENTER_MIDDLE]: {
+            classes: [classes.xCenter, classes.yMiddle],
+            x: 'center',
+            y: 'center',
+        },
+        [WIDGET_POSITION.RIGHT_MIDDLE]: {
+            classes: [classes.xRight, classes.yMiddle],
+            x: 'right',
+            y: 'center',
+        },
+        [WIDGET_POSITION.LEFT_BOTTOM]: {
+            classes: [classes.xLeft, classes.yBottom],
+            x: 'left',
+            y: 'bottom',
+        },
+        [WIDGET_POSITION.CENTER_BOTTOM]: {
+            classes: [classes.xCenter, classes.yBottom],
+            x: 'center',
+            y: 'bottom',
+        },
+        [WIDGET_POSITION.RIGHT_BOTTOM]: {
+            classes: [classes.xRight, classes.yBottom],
+            x: 'right',
+            y: 'bottom',
+        },
+    };
+
+    let translate = '';
+
+    if (
+        desktopService.settings.widgetsPosition === WIDGET_POSITION.LEFT_MIDDLE
+        || desktopService.settings.widgetsPosition === WIDGET_POSITION.CENTER_MIDDLE
+        || desktopService.settings.widgetsPosition === WIDGET_POSITION.RIGHT_MIDDLE
+    ) {
+        translate = `translateY(${heightRoot / 2 - 64 / 2}px)`;
+    } else if (
+        desktopService.settings.widgetsPosition === WIDGET_POSITION.LEFT_TOP
+        || desktopService.settings.widgetsPosition === WIDGET_POSITION.CENTER_TOP
+        || desktopService.settings.widgetsPosition === WIDGET_POSITION.RIGHT_TOP
+    ) {
+        translate = `translateY(${heightRoot - 64}px)`;
+    }
+
+    const currPosition = positions[desktopService.settings.widgetsPosition];
 
     return (
         <Box
             className={clsx(
                 classes.root,
-                widgets.settings.dtwPosition === DTW_POSITION.LEFT_BOTTOM && classes.leftBottom,
-                widgets.settings.dtwPosition === DTW_POSITION.LEFT_MIDDLE && classes.leftMiddle,
-                widgets.settings.dtwPosition === DTW_POSITION.CENTER_TOP && classes.centerTop,
+                ...currPosition.classes,
             )}
-            style={{ [positionOffset]: service.storage.temp.data.desktopFapHeight }}
+            style={{
+                top: theme.spacing(4) + 36,
+                [positionOffsetSide]: positionOffset,
+                color,
+                textShadow: color ? '0 2px 17px #00000000' : '0 2px 17px #00000029',
+            }}
             ref={refRoot}
         >
             <Box
                 className={classes.widget}
                 ref={refWidget}
                 style={{
-                    transform: stickToBottom && `${
-                        widgets.settings.dtwPosition !== DTW_POSITION.LEFT_BOTTOM
-                            ? `translateY(calc(${heightRoot / 2}px - ${heightWidget / 2}px))`
-                            : ''
-                    } scale(${64 / heightWidget})`,
+                    transform: stickToBottom && `${translate} scale(${64 / heightWidget})`,
+                    transformOrigin: `${currPosition.x} ${currPosition.y}`,
                 }}
             >
-                {widgets.settings.dtwUseTime && (
+                {widgetsService.settings.useTime && (
                     <Typography
                         className={clsx(
                             classes.text,
-                            classes[`time-${widgets.settings.dtwSize.toLowerCase()}`],
+                            classes[`time-${desktopService.settings.widgetsSize.toLowerCase()}`],
                         )}
                     >
                         <Time />
                     </Typography>
                 )}
-                {(widgets.settings.dtwUseDate || widgets.settings.dtwUseWeather) && (
+                {widgetsService.settings.useDate && (
                     <Typography
                         className={clsx(
                             classes.row,
                             classes.text,
-                            classes[`date-${widgets.settings.dtwSize.toLowerCase()}`],
+                            classes[`date-${desktopService.settings.widgetsSize.toLowerCase()}`],
                         )}
                     >
-                        {widgets.settings.dtwUseDate && (
-                            <Date dot={widgets.showWeather} />
+                        <Date dot={widgetsService.showWeather} />
+                    </Typography>
+                )}
+                {widgetsService.settings.useWeather && (
+                    <Typography
+                        className={clsx(
+                            classes.row,
+                            classes.text,
+                            classes.weather,
+                            classes[`weather-${desktopService.settings.widgetsSize.toLowerCase()}`],
                         )}
-                        {widgets.settings.dtwUseWeather && (
-                            <WeatherWidget />
-                        )}
+                    >
+                        <WeatherWidget />
                     </Typography>
                 )}
             </Box>

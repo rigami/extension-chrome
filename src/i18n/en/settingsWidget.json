@@ -1,24 +1,4 @@
 {
-  "useWidgetsOnDesktop": {
-    "title": "Use widgets on desktop",
-    "description": "Widgets help you get quick access to time, date and weather"
-  },
-  "dtw": "Date, time and weather",
-  "dtwPlace": {
-    "title": "Position",
-    "value": {
-      "LEFT_BOTTOM": "Lower left corner",
-      "CENTER_TOP": "Top center",
-      "LEFT_MIDDLE": "Left in the middle"
-    }
-  },
-  "dtwSize": {
-    "title": "Size",
-    "value": {
-      "smaller": "Less",
-      "bigger": "More"
-    }
-  },
   "time": {
     "title": "Time",
     "useTime": "Show current time",
@@ -28,12 +8,12 @@
     "title": "Date",
     "useDate": "Show current date",
     "clickAction": {
-      "title": "Widget click action",
-      "description": "Configure so that when you click on the widget, the desired site opens",
+      "title": "Action when clicking on widget",
+      "description": "Configure so that clicking on the widget opens the desired site",
       "dialog": {
-        "title": "Configuring click action on date widget",
-        "description": "Insert the url you want here, or leave it blank if you don't need to perform any action",
-        "url": "Url address"
+        "title": "Customize date widget click action",
+        "description": "Paste the desired URL here, or leave it blank if you don't need to take any action.",
+        "url": "URL"
       }
     }
   },
@@ -41,12 +21,12 @@
     "title": "Weather",
     "useWeather": "Show current weather",
     "state": {
-      "pendingData": "Receiving data..."
+      "pendingData": "Pending data..."
     },
     "error": {
-      "serviceUnavailable": "Weather service not available",
-      "failedGeolocation": "Can't determine your geolocation",
-      "failedGeolocation_description": "Perhaps you are denied access to geolocation, or the weather service does not supply weather for this place"
+      "serviceUnavailable": "Weather service unavailable",
+      "failedGeolocation": "Unable to determine your geolocation",
+      "failedGeolocation_description": "Geolocation access may have been denied, or the weather service is not providing weather information for this location."
     },
     "units": {
       "title": "Measurement system",
@@ -63,50 +43,50 @@
       }
     },
     "region": {
-      "title": "Region",
+      "title": "Region, region",
       "notSet": "Region not selected",
       "select": {
-        "auto": "The region is determined automatically by your location, click here to change it",
+        "auto": "The region is determined automatically based on your location, click here to change it",
         "manual": "Region set manually, click here to change it",
-        "failed": "Could not determine your region, click here to set it manually"
+        "failed": "Unable to determine your region, click here to set it manually"
       },
       "button": {
         "change": "Change region"
       },
       "search": {
         "wait": {
-          "manual": "The weather is shown for the region \"{{locationName}}\"",
-          "manual_description": "Enter the place name to change the region",
-          "auto": "Weather shown for your location \"{{locationName}}\"",
-          "auto_description": "Enter the place name to set the region manually",
-          "failed": "Can't find your location",
-          "failed_description": "Enter the name of the place to set the region manually, or try turning on geolocation"
+          "manual": "Weather is for region \"{{locationName}}\"",
+          "manual_description": "Enter place name to change region",
+          "auto": "The weather is for your location \"{{locationName}}\"",
+          "auto_description": "Enter a place name to manually specify a region",
+          "failed": "Unable to find your location",
+          "failed_description": "Enter a place name to set the region manually, or try enabling geolocation"
         },
         "error": {
-          "notFound": "Place not found",
+          "notFound": "Location not found",
           "notFound_description": "Try changing your request and try again",
-          "failed": "Search error",
-          "failed_description": "Something went wrong, please try again later"
+          "failed": "Search failed",
+          "failed_description": "Something went wrong. Please try again later"
         }
       },
       "notDetected": {
         "title": "Region not defined",
-        "description": "Failed to determine the region, please try to select it manually"
+        "description": "Unable to determine the region, please try to select it manually"
       },
       "autoGeolocation": {
         "on": "Geolocation enabled",
-        "off": "Geolocation is off",
-        "on_helper": "Click to turn off automatic location",
-        "off_helper": "Click to turn on automatic location"
+        "off": "Geolocation disabled",
+        "on_helper": "Tap to disable automatic location",
+        "off_helper": "Tap to turn on auto location"
       }
     },
     "clickAction": {
-      "title": "Widget click action",
-      "description": "Configure so that when you click on the widget, the desired site opens",
+      "title": "Action when clicking on widget",
+      "description": "Configure so that clicking on the widget opens the desired site",
       "dialog": {
-        "title": "Configuring click action on weather widget",
-        "description": "Insert the url you want here, or leave it blank if you don't need to perform any action",
-        "url": "Url address"
+        "title": "Setting the click action on the weather widget",
+        "description": "Paste the desired URL here, or leave it blank if you don't need to take any action.",
+        "url": "URL"
       }
     }
   }

@@ -1,0 +1,119 @@
+{
+  "syncDevices": {
+    "title": "Device Sync",
+    "currentTitle": "This is a device",
+    "otherTitle": "Other devices",
+    "type": {
+      "extension_chrome": "Browser Extension (Chrome)",
+      "web": "Web Page (Chrome)"
+    },
+    "notSynced": "not synced",
+    "synced": "synced",
+    "loading": "Getting a list of devices...",
+    "lastActivityIp": "Last Sync IP",
+    "createDate": "Anchor Date",
+    "userAgent": "User-Agent",
+    "id": "ID",
+    "button": {
+      "disconnectThisDevice": "Disconnect Sync",
+      "disconnectOtherDevice": "Disconnect Device"
+    },
+    "disconnectDevice": {
+      "title": "Unlink device",
+      "description": "Device will no longer sync",
+      "button": {
+        "apply": "Unbind device"
+      }
+    }
+  },
+  "import": {
+    "title": "Import",
+    "chrome": {
+      "title": "Import bookmarks from chrome",
+      "state": {
+        "importing": "Importing..."
+      },
+      "button": {
+        "import": "Import"
+      }
+    }
+  },
+  "mergeUsers": {
+    "createRequest": {
+      "title": "Pair with another device",
+      "description": "The devices will be combined with a single profile and all your data will be synchronized",
+      "button": {
+        "generateCode": "Submit Request"
+      },
+      "dialog": {
+        "title": "Linking this browser to another browser",
+        "description": "Enter this code to accept the join request in another browser",
+        "warn": {
+          "title": "Be Careful!",
+          "description": "This action cannot be undone, after entering this code in another browser, your profiles will be merged into one profile. All your browsers will be synced together"
+        }
+      }
+    },
+    "applyRequest": {
+      "description": "Enter code to accept merge request",
+      "button": {
+        "apply": "Accept request"
+      },
+      "dialog": {
+        "title": "Associating another browser with this browser",
+        "description": "Enter the code to accept a pairing request with another browser",
+        "warn": {
+          "title": "Be Careful!",
+          "description": "This action cannot be undone, after entering this code, your profiles will be merged into one profile. All your browsers will be synced together"
+        },
+        "error": {
+          "NOT_VALID_CODE": "Invalid code. It may be outdated or entered incorrectly",
+          "NOT_EXIST_MERGED_USER": "No second user found, may have canceled the request",
+          "SAME_USER": "You can't bind yourself. It's difficult and inconvenient",
+          "SAME_DEVICE": "You can't bind yourself. It's difficult and inconvenient",
+          "UNKNOWN": "Unknown error. Try again later"
+        },
+        "button": {
+          "apply": "Merge profiles"
+        }
+      }
+    }
+  },
+  "localBackup": {
+    "title": "Local Backup",
+    "create": {
+      "title": "Create a backup",
+      "description": "Save extension settings and bookmarks to your computer",
+      "state": {
+        "success": "Backup created successfully",
+        "creating": "Creating a recovery file..."
+      },
+      "error": {
+        "unknown": "Error creating save"
+      },
+      "button": {
+        "create": "Create backup"
+      }
+    },
+    "syncItem": {
+      "settings": "Settings",
+      "bookmarks": "Bookmarks",
+      "wallpapers": "Wallpapers",
+      "wallpapers_description": "Greatly increases file size"
+    },
+    "restore": {
+      "state": {
+        "restoring": "Restoring data...",
+        "success": "Save restored successfully"
+      },
+      "button": {
+        "restore": "Restore data"
+      },
+      "error": {
+        "brokenFile": "Corrupted recovery file",
+        "wrongVersion": "Error. Saving this version is not supported",
+        "wrongSchema": "Error: Wrong save file structure"
+      }
+    }
+  }
+}

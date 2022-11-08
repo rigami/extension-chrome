@@ -1,0 +1,61 @@
+{
+  "upload":{
+    "file":"Имя файла",
+    "size":"Размер",
+    "fileType":"Тип файла",
+    "dropToAdd":"Отпустите, чтобы добавить фон",
+    "dropToAdd_1":"Отпустите, чтобы добавить фоны",
+    "button": {
+      "discardAll":"Отменить все",
+      "antiAliasing": "Сглаживание",
+      "antiAliasing_helper": "Отключите эту опцию, если вы хотите загрузить пиксельный фон"
+    },
+    "error": {
+      "TOO_MANY_FILES": "Слишко много файлов",
+      "NO_FILES": "Файлов не найдено"
+    }
+  },
+  "selected": "Выбрано",
+  "button": {
+    "addToLibrary": "Добавить в библиотеку",
+    "addToLibrary_short": "Сохранить",
+    "apply": "Применить фон",
+    "apply_short": "Применить",
+    "add": "Добавить новый фон",
+    "pause": "Приостановить фон",
+    "play": "Воспроизвести фон",
+    "like": "Отметить фон как понравившийся",
+    "dislike": "Пропустить фон",
+    "next": "Следующий фон",
+    "remove": "Удалить фон",
+    "change": "Сменить фон",
+    "openSource": "Открыть"
+  },
+  "type": {
+    "IMAGE": "Изображение",
+    "IMAGE_plural": "Изображения",
+    "VIDEO": "Видео",
+    "VIDEO_plural": "Видеофайлы",
+    "ANIMATION": "Анимация",
+    "ANIMATION_plural": "Анимации"
+  },
+  "serviceName": {
+    "unknown": "Неизвестный сервис",
+    "UNSPLASH": "Unsplash",
+    "PEXELS": "Pexels",
+    "PIXABAY": "Pixabay"
+  },
+  "dislike": {
+    "noty": "Больше не будем показывать вам этот фон"
+  },
+  "error": {
+    "notFound": "Подходящего фона не найдено",
+    "notFound_description": "",
+    "unknown": "Не удалось установить фон",
+    "unknown_description": "Что-то пошло не так, но непонятно что, может фон битый, попробуйте удалить его"
+  },
+  "liked": "Вам понравился этот фон и теперь он есть в вашей библиотеке",
+  "fetchingNextBG": "Загрузка фона...",
+  "removedBrokenBG": "Поврежденный фон удален",
+  "backgroundSource": "От {{author}}, $t(serviceName.{{source}}, serviceName.unknown)"
+}

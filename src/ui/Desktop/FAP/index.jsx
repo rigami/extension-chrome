@@ -4,24 +4,24 @@ import { useResizeDetector } from 'react-resize-detector';
 import { makeStyles, alpha } from '@material-ui/core/styles';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import clsx from 'clsx';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { captureException } from '@sentry/react';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import {
     ACTIVITY,
     BKMS_FAP_ALIGN,
     BKMS_FAP_POSITION,
     BKMS_FAP_STYLE,
 } from '@/enum';
-import FoldersUniversalService from '@/stores/universal/bookmarks/folders';
-import BookmarksUniversalService from '@/stores/universal/bookmarks/bookmarks';
-import BookmarkEntity from '@/stores/universal/bookmarks/entities/bookmark';
-import FolderEntity from '@/stores/universal/bookmarks/entities/folder';
-import TagEntity from '@/stores/universal/bookmarks/entities/tag';
-import useAppService from '@/stores/app/AppStateProvider';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
+import BookmarksUniversalService from '@/stores/universal/workingSpace/bookmarks';
+import BookmarkEntity from '@/stores/universal/workingSpace/entities/bookmark';
+import FolderEntity from '@/stores/universal/workingSpace/entities/folder';
+import TagEntity from '@/stores/universal/workingSpace/entities/tag';
+import { useAppStateService } from '@/stores/app/appState';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
 import asyncAction from '@/utils/helpers/asyncAction';
-import { captureException } from '@sentry/react';
 import FAP_STYLE from '@/enum/BKMS/FAP_STYLE';
-import useBaseStateService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 import Folder from './Folder';
 import Tag from './Tag';
 import Link from './Link';
@@ -50,10 +50,10 @@ const useStyles = makeStyles((theme) => ({
         // minHeight: theme.spacing(6) + theme.spacing(2.5) + 40,
     },
     card: {
-        minWidth: (40 + theme.spacing(2)) * 6 + 40 + theme.spacing(1.25) * 2,
+        minWidth: (40 + theme.spacing(1.5)) * 7 - theme.spacing(1.5) + theme.spacing(1.25) * 2,
         margin: 'auto',
         pointerEvents: 'auto',
-        borderRadius: 8,
+        borderRadius: theme.shape.borderRadiusBold * 2,
         overflow: 'unset',
         display: 'flex',
         background: 'none',
@@ -69,14 +69,14 @@ const useStyles = makeStyles((theme) => ({
     leftAlign: { marginLeft: 0 },
     backdrop: {
         backdropFilter: 'blur(40px) brightness(110%)  contrast(1.2) invert(0.06)',
-        backgroundColor: alpha(theme.palette.background.backdrop, 0.22),
+        backgroundColor: alpha(theme.palette.background.backdrop, 0.12),
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
         padding: theme.spacing(1.25),
         minHeight: 60,
     },
     link: {
-        marginRight: theme.spacing(2),
+        marginRight: theme.spacing(1.5),
         padding: 0,
         '&:last-child': { marginRight: 0 },
     },
@@ -87,8 +87,10 @@ const useStyles = makeStyles((theme) => ({
     linkBackdrop: { backgroundColor: theme.palette.background.default },
     linkBackdropBlur: {
         backdropFilter: 'blur(10px) brightness(200%)',
-        backgroundColor: alpha(theme.palette.background.default, 0.82),
+        backgroundColor: alpha(theme.palette.background.default, 0.3),
     },
+    linkBackdropBlurLight: { backdropFilter: 'blur(10px) brightness(200%)' },
+    linkBackdropBlurColor: { backgroundColor: alpha(theme.palette.background.default, 0.3) },
     overload: {
         width: 40,
         height: 40,
@@ -102,29 +104,30 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 1200,
         paddingBottom: theme.spacing(0.5),
     },
+    imageWithSafeZone: { padding: theme.spacing(0.5) },
 }));
 
 function FAP() {
     const classes = useStyles();
-    const service = useBaseStateService();
-    const appService = useAppService();
-    const bookmarksService = useBookmarksService();
+    const service = useCoreService();
+    const appStateService = useAppStateService();
+    const { desktopService } = appStateService;
+    const workingSpaceService = useWorkingSpaceService();
     const store = useLocalObservable(() => ({
         favorites: [],
         isLoading: true,
         maxCount: 0,
     }));
-    const fapSettings = bookmarksService.settings;
 
     const onResize = useCallback((width, height) => {
         store.maxCount = Math.max(Math.floor((width + 16) / 56) - 1, 0);
-        service.storage.temp.update({ desktopFapHeight: height });
+        service.tempStorage.update({ desktopFapHeight: height });
     }, []);
 
     const { ref } = useResizeDetector({ onResize });
 
     useEffect(() => {
-        if (bookmarksService.favorites.length === 0) {
+        if (workingSpaceService.favorites.length === 0) {
             store.favorites = [];
             return;
         }
@@ -139,7 +142,7 @@ function FAP() {
         console.time('fap load');
 
         asyncAction(async () => {
-            const queue = bookmarksService.favorites.slice(0, store.maxCount).map((fav) => {
+            const queue = workingSpaceService.favorites.slice(0, store.maxCount).map((fav) => {
                 if (fav.itemType === 'bookmark') {
                     return BookmarksUniversalService.get(fav.itemId);
                 } else if (fav.itemType === 'folder') {
@@ -170,11 +173,12 @@ function FAP() {
                 captureException(e);
                 store.isLoading = false;
             });
-    }, [bookmarksService.favorites.length, store.maxCount, bookmarksService.lastTruthSearchTimestamp]);
+    }, [workingSpaceService.favorites.length, store.maxCount, workingSpaceService.lastTruthSearchTimestamp]);
 
-    const overload = store.maxCount < bookmarksService.favorites.length;
+    const overload = store.maxCount < workingSpaceService.favorites.length;
 
-    const isContained = fapSettings.fapStyle === BKMS_FAP_STYLE.CONTAINED;
+    const isContained = desktopService.settings.fapStyle === BKMS_FAP_STYLE.CONTAINED;
+    const isProductivity = desktopService.settings.fapStyle === BKMS_FAP_STYLE.PRODUCTIVITY;
 
     return (
         <Fade in={!store.isLoading}>
@@ -182,7 +186,7 @@ function FAP() {
                 ref={ref}
                 className={clsx(
                     classes.root,
-                    (fapSettings.fapPosition === BKMS_FAP_POSITION.BOTTOM || appService.activity === ACTIVITY.FAVORITES)
+                    (desktopService.settings.fapPosition === BKMS_FAP_POSITION.BOTTOM || appStateService.activity === ACTIVITY.FAVORITES)
                     && classes.stickyRoot,
                     isContained && classes.contained,
                 )}
@@ -192,46 +196,65 @@ function FAP() {
                     className={clsx(
                         classes.card,
                         isContained && classes.backdrop,
-                        fapSettings.fapAlign === BKMS_FAP_ALIGN.LEFT && classes.leftAlign,
-                        appService.activity === ACTIVITY.BOOKMARKS && classes.contrastBackdrop,
-                        fapSettings.fapStyle === BKMS_FAP_STYLE.PRODUCTIVITY && classes.disableLeftPadding,
+                        desktopService.settings.fapAlign === BKMS_FAP_ALIGN.LEFT && classes.leftAlign,
+                        appStateService.activity === ACTIVITY.BOOKMARKS && classes.contrastBackdrop,
+                        isProductivity && classes.disableLeftPadding,
                     )}
                 >
                     {store.maxCount.length !== 0 && store.favorites.slice(0, store.maxCount).map((fav) => {
+                        if (!fav) return null;
+
                         let a11props = {
                             ...fav,
                             key: `${fav.constructor.name}-${fav.id}`,
                             isBlurBackdrop: !isContained,
-                            dense: fapSettings.fapStyle === FAP_STYLE.PRODUCTIVITY,
+                            dense: desktopService.settings.fapStyle === FAP_STYLE.PRODUCTIVITY,
                         };
 
-                        if (fav instanceof FolderEntity || fav instanceof TagEntity) {
+                        if (fav instanceof BookmarkEntity) {
                             a11props = {
                                 ...a11props,
                                 classes: {
-                                    root: clsx(classes.link, !isContained && classes.linkDense),
-                                    backdrop: clsx(
-                                        /* !isContained && */ classes.linkBackdropBlur,
-                                        // isContained && classes.linkBackdrop,
+                                    image: clsx(
+                                        classes.linkBackdropBlur,
+                                        !isProductivity && fav.icoSafeZone && classes.imageWithSafeZone,
                                     ),
                                 },
                             };
-                        }
 
-                        if (fav instanceof BookmarkEntity) {
                             return (
                                 <Link
                                     {...a11props}
                                     className={clsx(
                                         classes.link,
-                                        classes.linkBackdropBlur,
                                         !isContained && classes.linkDense,
+                                        isProductivity && classes.linkBackdropBlur,
                                     )}
                                 />
                             );
                         } else if (fav instanceof FolderEntity) {
+                            a11props = {
+                                ...a11props,
+                                classes: {
+                                    root: clsx(classes.link, !isContained && classes.linkDense),
+                                    backdrop: clsx(
+                                        classes.linkBackdropBlurLight,
+                                        isProductivity && classes.linkBackdropBlur,
+                                    ),
+                                    stubFolderPreview: classes.linkBackdropBlurColor,
+                                },
+                            };
+
                             return (<Folder {...a11props} />);
                         } else if (fav instanceof TagEntity) {
+                            a11props = {
+                                ...a11props,
+                                classes: {
+                                    root: clsx(classes.link, !isContained && classes.linkDense),
+                                    backdrop: classes.linkBackdropBlur,
+                                },
+                            };
+
                             return (<Tag {...a11props} />);
                         }
 
@@ -258,10 +281,17 @@ function FAP() {
 const ObserverFAP = observer(FAP);
 
 function FAPWrapper() {
-    const appService = useAppService();
-    const bookmarksService = useBookmarksService();
+    const appStateService = useAppStateService();
+    const workingSpaceService = useWorkingSpaceService();
+    const { desktopService } = appStateService;
 
-    if (bookmarksService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN || appService.activity === ACTIVITY.FAVORITES) {
+    if (
+        (
+            desktopService.settings.fapStyle !== BKMS_FAP_STYLE.HIDDEN
+            && workingSpaceService.favorites.length !== 0
+        )
+        || appStateService.activity === ACTIVITY.FAVORITES
+    ) {
         return (<ObserverFAP />);
     }
 

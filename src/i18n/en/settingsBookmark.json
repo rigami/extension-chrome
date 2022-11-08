@@ -1,34 +1,30 @@
 {
   "general": "General",
   "fap": "Quick Access Toolbar",
-  "fapEmptyWarningMessage":"The panel is not displayed because no item has been added to favorites. Add folder, bookmark or tag to favorites",
-  "openOnStartup": {
-    "title": "Open bookmarks panel at startup",
-    "description": "Bookmarks panel will open when opening a new tab"
-  },
+  "fapEmptyWarningMessage": "Panel is not displayed because no item has been added to favorites. Add folder, bookmark or tag to favorites",
   "useFap":{
-    "title":"Use Quick Access Toolbar",
-    "description":"Pin your most important bookmarks and tags to always have quick access to them"
+    "title":"Use the Quick Access Toolbar",
+    "description":"Pin your most important bookmarks and tags so you always have quick access to them"
   },
   "fapStyle":{
     "title":"Panel Style",
     "value":{
-      "CONTAINED":"With backdrop",
+      "CONTAINED":"With backing",
       "TRANSPARENT":"Transparent",
-      "PRODUCTIVITY":"Productivity"
+      "PRODUCTIVITY":"Productive"
     }
   },
   "fapPosition":{
     "title":"Panel position",
     "value":{
-      "TOP":"From above",
-      "BOTTOM":"From below"
+      "TOP":"Top",
+      "BOTTOM":"Bottom"
     }
   },
   "fapAlign":{
-    "title":"Panel align",
+    "title":"Panel alignment",
     "value":{
-      "LEFT":"Be left side",
+      "LEFT":"On the left side",
       "CENTER":"Center"
     }
   }

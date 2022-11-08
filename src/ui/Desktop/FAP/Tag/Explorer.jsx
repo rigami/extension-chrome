@@ -13,18 +13,23 @@ import {
     LabelRounded as LabelIcon,
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
+import { useTranslation } from 'react-i18next';
+import { observer } from 'mobx-react-lite';
+import { useWorkingSpaceService } from '@/stores/app/workingSpace';
 import Scrollbar from '@/ui-components/CustomScroll';
 import Stub from '@/ui-components/Stub';
-import { useTranslation } from 'react-i18next';
-import BookmarksUniversalService, { SearchQuery } from '@/stores/universal/bookmarks/bookmarks';
-import BookmarksGrid from '@/ui/Bookmarks/BookmarksGrid';
+import BookmarksGrid from '@/ui/WorkingSpace/BookmarksViewer/BookmarksGrid';
 import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
-import useCoreService from '@/stores/app/BaseStateProvider';
-import { observer } from 'mobx-react-lite';
-import { ContextMenuItem } from '@/stores/app/entities/contextMenu';
-import TagsUniversalService from '@/stores/universal/bookmarks/tags';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useCoreService } from '@/stores/app/core';
+import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
+import TagsUniversalService from '@/stores/universal/workingSpace/tags';
+import { useContextMenuService } from '@/stores/app/contextMenu';
+import { useContextEdit } from '@/stores/app/contextActions';
+import { search, SearchQuery } from '@/stores/universal/workingSpace/search';
+import getUniqueColor from '@/utils/generate/uniqueColor';
+import sorting from '@/ui/WorkingSpace/BookmarksViewer/utils/sort';
+import { BKMS_DISPLAY_VARIANT } from '@/enum';
+import BookmarksList from '@/ui/WorkingSpace/BookmarksViewer/BookmarksList';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -45,51 +50,72 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         overflow: 'auto',
     },
+    title: {
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        fontFamily: theme.typography.specialFontFamily,
+    },
+    scrollContent: {
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100%',
+    },
+    listBookmarks: {
+        width: '100%',
+        margin: theme.spacing(0, -1),
+    },
 }));
 
 function Folder({ id }) {
     const classes = useStyles();
     const { t } = useTranslation(['bookmark']);
-    const bookmarksService = useBookmarksService();
+    const workingSpaceService = useWorkingSpaceService();
     const coreService = useCoreService();
     const [tag, setTag] = useState(null);
     const [isSearching, setIsSearching] = useState(true);
     const [findBookmarks, setFindBookmarks] = useState(null);
-    const contextMenu = useContextMenu(() => [
+    const { dispatchEdit } = useContextEdit();
+    const { dispatchContextMenu } = useContextMenuService((event, position, next) => [
         new ContextMenuItem({
             title: t('bookmark:button.add'),
             icon: AddBookmarkIcon,
-            onClick: () => {
-                coreService.localEventBus.call('bookmark/create', { defaultTagsIds: [id] });
-            },
+            onClick: () => dispatchEdit({
+                itemType: 'bookmark',
+                defaultTagsIds: [id],
+            }, event, position, next),
         }),
     ]);
 
     useEffect(() => {
         setIsSearching(true);
         TagsUniversalService.get(id).then((findTag) => setTag(findTag));
-        BookmarksUniversalService.query(new SearchQuery({ tags: [id] }))
+
+        const sort = sorting[workingSpaceService.settings.sorting](workingSpaceService);
+
+        search(new SearchQuery({ tags: [id] }))
             .then(({ all }) => {
-                setFindBookmarks(all);
+                setFindBookmarks(sort(all));
                 setIsSearching(false);
             });
-    }, [bookmarksService.lastTruthSearchTimestamp]);
+    }, [workingSpaceService.lastTruthSearchTimestamp]);
+
+    const color = getUniqueColor(tag?.colorKey) || '#000';
 
     return (
         <Card
             className={classes.root} elevation={16}
-            onContextMenu={contextMenu}
+            onContextMenu={dispatchContextMenu}
         >
             <CardHeader
                 avatar={(
-                    <LabelIcon style={{ color: tag?.color }} />
+                    <LabelIcon style={{ color }} />
                 )}
                 action={(
                     <Tooltip title={t('common:button.close')}>
                         <IconButton
                             onClick={() => {
-                                if (coreService.storage.temp.data.closeFapPopper) {
-                                    coreService.storage.temp.data.closeFapPopper();
+                                if (coreService.tempStorage.data.closeFapPopper) {
+                                    coreService.tempStorage.data.closeFapPopper();
                                 }
                             }}
                         >
@@ -101,6 +127,7 @@ function Folder({ id }) {
                 classes={{
                     avatar: classes.avatar,
                     action: classes.action,
+                    title: classes.title,
                 }}
             />
             {isSearching && (
@@ -111,9 +138,11 @@ function Folder({ id }) {
             {!isSearching && findBookmarks.length === 0 && (
                 <Stub message={t('bookmark:empty')}>
                     <Button
-                        onClick={() => coreService.localEventBus.call(
-                            'bookmark/create',
-                            { defaultTagsIds: [id] },
+                        onClick={(event) => dispatchEdit(
+                            {
+                                itemType: 'bookmark',
+                                defaultTagsIds: [id],
+                            }, event,
                         )}
                         startIcon={<AddBookmarkIcon />}
                         variant="contained"
@@ -125,12 +154,20 @@ function Folder({ id }) {
             )}
             {findBookmarks && findBookmarks.length !== 0 && (
                 <Box display="flex" className={classes.bookmarks}>
-                    <Scrollbar>
+                    <Scrollbar classes={{ content: classes.scrollContent }}>
                         <Box display="flex" ml={2}>
-                            <BookmarksGrid
-                                bookmarks={findBookmarks}
-                                columns={2}
-                            />
+                            {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.CARDS && (
+                                <BookmarksGrid
+                                    bookmarks={findBookmarks}
+                                    columns={2}
+                                />
+                            )}
+                            {workingSpaceService.settings.displayVariant === BKMS_DISPLAY_VARIANT.ROWS && (
+                                <BookmarksList
+                                    bookmarks={findBookmarks}
+                                    className={classes.listBookmarks}
+                                />
+                            )}
                         </Box>
                     </Scrollbar>
                 </Box>

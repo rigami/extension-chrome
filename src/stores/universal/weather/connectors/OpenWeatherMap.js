@@ -1,10 +1,11 @@
-import appVariables from '@/config/appVariables';
+import { toJS } from 'mobx';
+import appVariables from '@/config/config';
 import fetchData from '@/utils/helpers/fetchData';
 import WeatherLocation from '@/entities/WeatherLocation';
 import { FETCH } from '@/enum';
 import Weather from '@/entities/Weather';
-import { toJS } from 'mobx';
 import BaseWeatherConnector from './BaseWeatherConnector';
+import BrowserAPI from '@/utils/browserAPI';
 
 class OpenWeatherMap extends BaseWeatherConnector {
     constructor() {
@@ -18,7 +19,7 @@ class OpenWeatherMap extends BaseWeatherConnector {
         console.log('location:', toJS(location));
 
         const { response: weather } = await fetchData(
-            `http://api.openweathermap.org/data/2.5/weather?id=${location.id}&appid=${this.apiKey}`,
+            `http://api.openweathermap.org/data/2.5/weather?id=${location.id}&lang=${BrowserAPI.systemLanguage}&appid=${this.apiKey}`,
         );
 
         console.log('weather:', weather);
@@ -26,6 +27,7 @@ class OpenWeatherMap extends BaseWeatherConnector {
         return new Weather({
             location,
             currTemp: weather.main.temp,
+            currTempDescription: weather.weather[0].description,
             lastUpdateStatus: FETCH.DONE,
             lastUpdateTimestamp: Date.now(),
             status: FETCH.ONLINE,
@@ -40,7 +42,7 @@ class OpenWeatherMap extends BaseWeatherConnector {
             const { response } = await fetchData(
                 `https://api.openweathermap.org/data/2.5/find?type=like&sort=population&cnt=5&appid=${
                     this.apiKey
-                }&q=${
+                }&lang=${BrowserAPI.systemLanguage}&q=${
                     query
                 }`,
             );
@@ -61,7 +63,7 @@ class OpenWeatherMap extends BaseWeatherConnector {
                 latitude
             }&lon=${
                 longitude
-            }&appid=${
+            }&lang=${BrowserAPI.systemLanguage}&appid=${
                 this.apiKey
             }`,
         );

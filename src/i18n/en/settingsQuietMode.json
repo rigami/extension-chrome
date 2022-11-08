@@ -1,0 +1,154 @@
+{
+  "fap": "Quick Access Toolbar",
+  "wallpapers": "Wallpaper",
+  "fapEmptyWarningMessage": "Panel is not displayed because no item has been added to favorites. Add folder, bookmark or tag to favorites",
+  "widgets": {
+    "title": "Widgets",
+    "useOnDesktop": {
+      "title": "Use desktop widgets",
+      "description": "Widgets provide quick access to time, date and weather."
+    },
+    "place": {
+      "title": "Position",
+      "value": {
+        "LEFT_BOTTOM": "Bottom Left",
+        "CENTER_TOP": "Top Center",
+        "LEFT_MIDDLE": "Left Center"
+      }
+    },
+    "size": {
+      "title": "Size",
+      "value": {
+        "smaller": "Smaller",
+        "bigger": "Bigger"
+      }
+    }
+  },
+  "useFap":{
+    "title":"Use the Quick Access Toolbar",
+    "description":"Pin your most important bookmarks and tags so you always have quick access to them"
+  },
+  "fapStyle":{
+    "title":"Panel Style",
+    "value":{
+      "CONTAINED":"With backdrop",
+      "TRANSPARENT":"Transparent",
+      "PRODUCTIVITY":"Productive"
+    }
+  },
+  "fapPosition":{
+    "title":"Panel position",
+    "value":{
+      "TOP":"Top",
+      "BOTTOM":"Bottom"
+    }
+  },
+  "fapAlign":{
+    "title":"Panel alignment",
+    "value":{
+      "LEFT":"On the left side",
+      "CENTER":"Center"
+    }
+  },
+  "general": "General",
+  "scheduler": "Mode",
+  "specificBg": "Desktop background",
+  "savedLibrary":{
+    "title": "Saved",
+    "description": "Your saved, liked and uploaded backgrounds",
+    "button": {
+      "uploadFromComputer":"Upload from computer"
+    },
+    "error": {
+      "unknown": "Error loading library",
+      "notFound": "No backgrounds found"
+    }
+  },
+  "dimmingPower":{
+    "title":"Level of dim background",
+    "description":"Background fade level"
+  },
+  "kind":{
+    "title":"Background selection method",
+    "description":"Choose how you want to change the background",
+    "value": {
+      "SPECIFIC":"Permanent",
+      "STREAM": "Stream",
+      "COLOR": "Color",
+      "SPECIFIC_description": "Persistent specific background",
+      "STREAM_description": "An endless stream of backgrounds",
+      "COLOR_description": "Just a color. Solid or gradient"
+    }
+  },
+  "changeInterval":{
+    "title":"Change period",
+    "description":"Select background change period",
+    "value":{
+      "NEVER": "Never",
+      "OPEN_TAB":"On opening",
+      "MINUTES_5": "5 minutes",
+      "MINUTES_30":"30 minutes",
+      "HOURS_1":"1 hour",
+      "HOURS_6":"6 hours",
+      "HOURS_12":"12 o'clock",
+      "DAY_1":"1 day"
+    }
+  },
+  "bgType":{
+    "title":"Background types",
+    "description":"Select background type",
+    "value":{
+      "IMAGE":"Image",
+      "VIDEO":"Video",
+      "ANIMATION": "Animation",
+      "all":"Any",
+      "nothingSelected":"Nothing selected"
+    }
+  },
+  "query": {
+    "title": "Stream",
+    "description": "Choose a pre-made background stream or create your own",
+    "notSet": "Request not set",
+    "custom": {
+      "title": "Custom Request for Backgrounds Theme",
+      "create": "Create your own stream",
+      "description": "Specify any request, a stream will be created for it",
+      "button": {
+        "change": "Customize your flow '{{query}}'"
+      }
+    },
+    "value": {
+      "EDITORS_CHOICE": "Editor's Choice",
+      "SAVED_ONLY": "Saved Only",
+      "CUSTOM_QUERY": "Custom Thread",
+      "CLOUDS": "Clouds",
+      "COSMOS": "Space",
+      "NATURE": "Nature",
+      "MINIMALISM": "Minimalism",
+      "ABSTRACT": "Abstract backgrounds",
+      "NIGHT_SKY": "Night sky",
+      "WINTER": "Winter",
+      "WALLPAPER": "Desktop Wallpaper",
+      "DARK": "Dark backgrounds",
+      "AESTHETIC": "Beautiful",
+      "MINIMALISM_NATURE": "Minimalist nature",
+      "ARCHITECTURE": "Architecture"
+    }
+  },
+  "searchQuery": {
+    "query_placeholder": "Search Query",
+    "button": {
+      "search": "Preview stream",
+      "save": "Create stream"
+    },
+    "wait": "Create your thread",
+    "wait_description": "Enter a request to preview the stream",
+    "failed": "Error getting data",
+    "failed_description": "There are no matching backgrounds for this thread",
+    "notFound": "There are no suitable backgrounds for this thread",
+    "notFound_description": "Try changing your request",
+    "callToUse": "Do you like this thread? It looks great"
+  },
+  "notConnectionUseLocal": "No internet connection. Your local library is currently being used",
+  "notConnectionUseLocal_description": "When the network appears, backgrounds will be taken from the network again"
+}

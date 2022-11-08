@@ -1,42 +1,45 @@
-import { openDB } from 'idb/with-async-ittr.js';
-import dbConfig from '@/config/db';
+import { openDB } from 'idb/with-async-ittr';
+import configureDB from '@/config/db';
 import { SERVICE_STATE } from '@/enum';
 import forceCrash from '@/utils/helpers/forceCrash';
-import appVariables from '../config/appVariables';
+import appVariables from '../config/config';
+import consoleBinder from '@/utils/console/bind';
 
 let _db = null;
 const openAwaitRequests = [];
 let state = SERVICE_STATE.WAIT;
+const bindConsole = consoleBinder('db');
 
 async function open() {
     if (state !== SERVICE_STATE.WAIT && state !== SERVICE_STATE.STOP) return;
 
-    console.log('Opening db...');
+    bindConsole.log('Opening...');
     state = SERVICE_STATE.INSTALL;
 
     try {
         const db = await openDB(
             appVariables.db.name,
             appVariables.db.version,
-            dbConfig({
+            configureDB({
                 upgrade() {
-                    console.log('upgrade');
+                    bindConsole.log('Upgrade');
                 },
                 blocked() {
-                    console.log('blocked');
+                    bindConsole.log('Blocked');
                 },
                 blocking() {
-                    console.log('blocking');
+                    bindConsole.log('Blocking');
                 },
                 terminated() {
-                    console.log('terminated');
+                    bindConsole.log('Terminated');
                 },
             }),
         );
 
-        console.log('db is open!');
+        bindConsole.log('Open!');
         _db = db;
         openAwaitRequests.forEach(({ resolve, method, args }) => resolve(db[method](...args)));
+        openAwaitRequests.length = 0;
         state = SERVICE_STATE.DONE;
     } catch (e) {
         state = SERVICE_STATE.FAILED;
@@ -44,32 +47,33 @@ async function open() {
     }
 }
 
-const methodPromise = (args, method) => new Promise((resolve, reject) => {
+const methodPromise = (method, args) => new Promise((resolve, reject) => {
     openAwaitRequests.push({
         resolve,
         reject,
         method,
         args,
     });
-    open();
+
+    if (state === SERVICE_STATE.WAIT) open();
 });
 
 const promiseStub = {
-    get: (...args) => methodPromise(args, 'get'),
-    getKey: (...args) => methodPromise(args, 'getKey'),
-    getAll: (...args) => methodPromise(args, 'getAll'),
-    getAllKeys: (...args) => methodPromise(args, 'getAllKeys'),
-    count: (...args) => methodPromise(args, 'count'),
-    put: (...args) => methodPromise(args, 'put'),
-    add: (...args) => methodPromise(args, 'add'),
-    delete: (...args) => methodPromise(args, 'delete'),
-    clear: (...args) => methodPromise(args, 'clear'),
-    getFromIndex: (...args) => methodPromise(args, 'getFromIndex'),
-    getKeyFromIndex: (...args) => methodPromise(args, 'getKeyFromIndex'),
-    getAllFromIndex: (...args) => methodPromise(args, 'getAllFromIndex'),
-    getAllKeysFromIndex: (...args) => methodPromise(args, 'getAllKeysFromIndex'),
-    countFromIndex: (...args) => methodPromise(args, 'countFromIndex'),
-    transaction: (...args) => methodPromise(args, 'transaction'),
+    get: (...args) => methodPromise('get', args),
+    getKey: (...args) => methodPromise('getKey', args),
+    getAll: (...args) => methodPromise('getAll', args),
+    getAllKeys: (...args) => methodPromise('getAllKeys', args),
+    count: (...args) => methodPromise('count', args),
+    put: (...args) => methodPromise('put', args),
+    add: (...args) => methodPromise('add', args),
+    delete: (...args) => methodPromise('delete', args),
+    clear: (...args) => methodPromise('clear', args),
+    getFromIndex: (...args) => methodPromise('getFromIndex', args),
+    getKeyFromIndex: (...args) => methodPromise('getKeyFromIndex', args),
+    getAllFromIndex: (...args) => methodPromise('getAllFromIndex', args),
+    getAllKeysFromIndex: (...args) => methodPromise('getAllKeysFromIndex', args),
+    countFromIndex: (...args) => methodPromise('countFromIndex', args),
+    transaction: (...args) => methodPromise('transaction', args),
 };
 
 export default () => _db || promiseStub;

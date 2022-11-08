@@ -1,13 +1,16 @@
 import { makeAutoObservable } from 'mobx';
-import db from '@/utils/db';
-import fetchData from '@/utils/helpers/fetchData';
-import appVariables from '@/config/appVariables';
-import BackgroundsUniversalService from '@/stores/universal/backgrounds/service';
-import Background from '@/stores/universal/backgrounds/entities/background';
 import { first } from 'lodash';
+import db from '@/utils/db';
+import appVariables from '@/config/config';
+import WallpapersUniversalService from '@/stores/universal/wallpapers/service';
+import Wallpaper from '@/stores/universal/wallpapers/entities/wallpaper';
 import { BG_SOURCE, BG_TYPE } from '@/enum';
-import { PREPARE_PROGRESS } from '@/stores/app/core';
+import { PREPARE_PROGRESS } from '@/stores/app/core/service';
 import { eventToApp } from '@/stores/universal/serviceBus';
+import api from '@/utils/helpers/api';
+import authStorage from '@/stores/universal/storage/auth';
+import FoldersUniversalService from '@/stores/universal/workingSpace/folders';
+import { FIRST_UUID, NULL_UUID } from '@/utils/generate/uuid';
 
 class FactorySettingsService {
     core;
@@ -16,57 +19,88 @@ class FactorySettingsService {
     constructor(core) {
         makeAutoObservable(this);
         this.core = core;
-        this.storage = this.core.storage.persistent;
+        this.storage = this.core.storage;
 
         this.subscribe();
     }
 
     async setFactorySettings(progressCallback) {
+        // Creating base structure
+
         progressCallback(10, PREPARE_PROGRESS.CREATE_DEFAULT_STRUCTURE);
 
         try {
-            await db().add('folders', {
-                id: 1,
+            await FoldersUniversalService.save({
                 name: 'Sundry',
-                parentId: 0,
+                defaultId: FIRST_UUID,
+                parentId: NULL_UUID,
             });
         } catch (e) {
             console.warn(e);
         }
 
-        if (BUILD === 'full') {
-            progressCallback(15, PREPARE_PROGRESS.IMPORT_BOOKMARKS);
+        // Registration in cloud
 
-            console.log('Import system bookmarks');
-            await this.core.systemBookmarksService.syncBookmarks();
+        try {
+            progressCallback(15, PREPARE_PROGRESS.REGISTRATION_IN_CLOUD);
+
+            const { response: registrationResponse } = await api.post(
+                'auth/virtual/sign-device',
+                { useToken: false },
+            );
+
+            authStorage.update({
+                authToken: registrationResponse.authToken,
+                accessToken: registrationResponse.accessToken,
+                refreshToken: registrationResponse.refreshToken,
+                deviceSign: registrationResponse.deviceSign,
+                synced: false,
+            });
+
+            console.log('registration in cloud:', registrationResponse);
+        } catch (e) {
+            authStorage.update({
+                authToken: null,
+                accessToken: null,
+                refreshToken: null,
+                deviceSign: null,
+                synced: false,
+            });
         }
 
-        console.log('Fetch BG');
+        // Fetching first wallpaper
+
         progressCallback(35, PREPARE_PROGRESS.FETCH_BG);
 
-        const { response } = await fetchData(
-            `${appVariables.rest.url}/backgrounds/get-from-collection?count=1&type=image&collection=best`,
-        ).catch(() => ({ response: [] }));
+        const { response: bgListResponse } = await api.get('wallpapers/collection/editors-choice?count=1&type=image')
+            .catch(() => ({ response: [] }));
 
         progressCallback(70, PREPARE_PROGRESS.SAVE_BG);
 
-        let bg;
+        let wallpaper;
 
-        if (response.length !== 0) {
-            bg = await BackgroundsUniversalService.addToLibrary(new Background({
-                ...first(response),
-                source: BG_SOURCE[first(response).service],
-                downloadLink: first(response).fullSrc,
-                previewLink: first(response).previewSrc,
-                type: BG_TYPE[first(response).type],
-            }));
-        } else {
-            bg = await BackgroundsUniversalService.addToLibrary(new Background(appVariables.backgrounds.fallback));
+        try {
+            if (bgListResponse.length !== 0) {
+                const applyWallpaper = first(bgListResponse);
+
+                wallpaper = await WallpapersUniversalService.addToLibrary(new Wallpaper({
+                    ...applyWallpaper,
+                    source: BG_SOURCE[applyWallpaper.service],
+                    downloadLink: applyWallpaper.fullSrc,
+                    previewLink: applyWallpaper.previewSrc,
+                    type: BG_TYPE[applyWallpaper.type],
+                }));
+            } else {
+                wallpaper = await WallpapersUniversalService.addToLibrary(new Wallpaper(appVariables.wallpapers.fallback));
+            }
+        } catch (e) {
+            wallpaper = await WallpapersUniversalService.addToLibrary(new Wallpaper(appVariables.wallpapers.fallback));
         }
 
-        this.storage.update({ bgCurrent: bg });
+        this.storage.update({ bgCurrent: wallpaper });
 
-        console.log('DONE');
+        // Done
+
         progressCallback(100, PREPARE_PROGRESS.DONE);
 
         return Promise.resolve();
@@ -85,7 +119,10 @@ class FactorySettingsService {
             this.setFactorySettings((percent, stage) => {
                 if (stage === PREPARE_PROGRESS.DONE) {
                     console.log('Done factory reset!');
-                    this.storage.update({ factoryResetProgress: null });
+                    this.storage.update({
+                        factoryResetProgress: null,
+                        startUsageVersion: appVariables.version,
+                    });
                     resolve();
                 } else {
                     this.storage.update({
@@ -111,7 +148,7 @@ class FactorySettingsService {
 
         const migrateToMv3 = await db().getFromIndex('temp', 'name', 'migrate-to-mv3-require');
 
-        if (!migrateToMv3 && (this.storage.data.factoryResetProgress || !this.storage.data.lastUsageVersion)) {
+        if (!migrateToMv3 && (this.storage.data.factoryResetProgress || !this.storage.data.startUsageVersion)) {
             this.factoryReset();
         }
 

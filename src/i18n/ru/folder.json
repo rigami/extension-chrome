@@ -6,6 +6,7 @@
   "defaultName": "Новая папка",
   "editor_select": "Выберите папку",
   "root": "Корневая папка",
+  "openAsPage": "Открыть как страницу",
   "editor": {
     "name_placeholder": "Имя папки",
     "error": {
@@ -15,7 +16,8 @@
   },
   "button": {
     "create": "Создать папку",
-    "create_sub": "Создать подпапку"
+    "create_sub": "Создать подпапку",
+    "select": "Выбрать папку"
   },
   "remove": {
     "confirm": "Удалить папку?",

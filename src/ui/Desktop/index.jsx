@@ -4,8 +4,6 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import {
     RefreshRounded as RefreshIcon,
     AddPhotoAlternateRounded as UploadFromComputerIcon,
-    FavoriteBorder as SaveBgIcon,
-    Favorite as SavedBgIcon,
     OpenInNewRounded as OpenSourceIcon,
     CloseRounded as CloseIcon,
     ArrowUpwardRounded as ExpandDesktopIcon,
@@ -17,7 +15,6 @@ import {
     ThumbUpOutlined as LikeIcon,
     ThumbDownOutlined as DislikeIcon,
 } from '@material-ui/icons';
-import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import {
     Box,
     CircularProgress,
@@ -25,27 +22,29 @@ import {
     Grow,
     Divider,
 } from '@material-ui/core';
-import useCoreService from '@/stores/app/BaseStateProvider';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
+import { useSnackbar } from 'notistack';
+import { BookmarkAddRounded as AddBookmarkIcon } from '@/icons';
 import { eventToBackground } from '@/stores/universal/serviceBus';
 import {
-    ACTIVITY,
+    ACTIVITY, BG_CHANGE_INTERVAL, BG_RATE,
     BG_SELECT_MODE, BG_SHOW_MODE,
     BG_SHOW_STATE,
     BG_SOURCE, BG_TYPE,
-    FETCH,
     THEME,
 } from '@/enum';
-import useAppService from '@/stores/app/AppStateProvider';
-import { ContextMenuItem, ContextMenuDivider } from '@/stores/app/entities/contextMenu';
+import { useAppStateService } from '@/stores/app/appState';
+import { ContextMenuItem } from '@/stores/app/contextMenu/entities';
 import FAP from '@/ui/Desktop/FAP';
-import clsx from 'clsx';
 import { ExtendButton, ExtendButtonGroup } from '@/ui-components/ExtendButton';
-import useContextMenu from '@/stores/app/ContextMenuProvider';
+import { useContextMenuService } from '@/stores/app/contextMenu';
 import MouseDistanceFade from '@/ui-components/MouseDistanceFade';
-import useBaseStateService from '@/stores/app/BaseStateProvider';
-import Background from './Background';
+import { useCoreService } from '@/stores/app/core';
+import Wallpaper from './Wallpaper';
 import Widgets from './Widgets';
+import WallpaperSwitchService from '@/ui/Desktop/wallpaperSwitchService';
+import { useContextEdit } from '@/stores/app/contextActions';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -78,8 +77,8 @@ const useStyles = makeStyles((theme) => ({
     loadBGIcon: { color: theme.palette.text.primary },
     loadBGIconWhite: {
         position: 'absolute',
-        top: theme.spacing(3.5) - 1,
-        right: theme.spacing(3.5) - 1,
+        top: theme.spacing(3),
+        right: theme.spacing(3),
         zIndex: 1,
         color: theme.palette.common.white,
     },
@@ -94,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         zIndex: 100,
         top: theme.spacing(2),
-        right: theme.spacing(2) * 2 + 40,
+        right: theme.spacing(2) * 2 + 36,
     },
     desktopBackdrop: {
         backgroundColor: theme.palette.common.black,
@@ -110,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
         display: 'grid',
         gridAutoFlow: 'column',
-        gridGap: theme.spacing(2),
+        gridGap: theme.spacing(1),
         position: 'absolute',
         top: theme.spacing(2),
         right: theme.spacing(2),
@@ -119,94 +118,94 @@ const useStyles = makeStyles((theme) => ({
     },
     toolStub: {
         visibility: 'hidden',
-        width: 40,
+        width: 36,
     },
     group: { flexDirection: 'row' },
     button: { pointerEvents: 'auto' },
+    buttonOffset: { marginRight: theme.spacing(1) },
 }));
 
 function Desktop() {
-    const { t } = useTranslation(['bookmark', 'background']);
+    const { t } = useTranslation(['bookmark', 'wallpaper']);
     const classes = useStyles();
+    const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
-    const appService = useAppService();
-    const service = useBaseStateService();
-    const { widgets, backgrounds } = appService;
+    const appStateService = useAppStateService();
+    const { wallpapersService, desktopService } = appStateService;
     const coreService = useCoreService();
     const rootRef = useRef();
     const store = useLocalObservable(() => ({
-        isRender: appService.activity !== ACTIVITY.BOOKMARKS,
-        stickWidgetsToBottom: appService.activity !== ACTIVITY.DESKTOP,
+        isRender: appStateService.activity !== ACTIVITY.BOOKMARKS,
+        stickWidgetsToBottom: appStateService.activity !== ACTIVITY.DESKTOP,
     }));
-
-    const contextMenu = useContextMenu(() => [
-        ...(BUILD === 'full' ? [
+    const wallpaperSwitchService = useLocalObservable(() => new WallpaperSwitchService({
+        coreService,
+        wallpapersSettings: wallpapersService,
+    }));
+    const { dispatchEdit } = useContextEdit();
+    const { dispatchContextMenu } = useContextMenuService((event, position, next) => [
+        BUILD === 'full' && new ContextMenuItem({
+            title: t('bookmark:button.add'),
+            icon: AddBookmarkIcon,
+            onClick: () => dispatchEdit({ itemType: 'bookmark' }, event, position, next),
+        }),
+        wallpapersService.settings.kind !== BG_SELECT_MODE.SPECIFIC && [
             new ContextMenuItem({
-                title: t('bookmark:button.add'),
-                icon: AddBookmarkIcon,
-                onClick: () => {
-                    coreService.localEventBus.call('bookmark/create');
-                },
-            }),
-            new ContextMenuDivider(),
-        ] : []),
-        ...(backgrounds.settings.selectionMethod !== BG_SELECT_MODE.SPECIFIC ? [
-            new ContextMenuItem({
-                title: backgrounds.bgState === BG_SHOW_STATE.SEARCH
-                    ? t('background:fetchingNextBG')
-                    : t('background:button.next'),
-                disabled: backgrounds.bgState === BG_SHOW_STATE.SEARCH,
-                icon: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? CircularProgress : RefreshIcon,
-                iconProps: backgrounds.bgState === BG_SHOW_STATE.SEARCH ? {
+                title: wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH
+                    ? t('wallpaper:fetchingNextBG')
+                    : t('wallpaper:button.next'),
+                disabled: wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH,
+                icon: wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH ? CircularProgress : RefreshIcon,
+                iconProps: wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH ? {
                     size: 20,
                     className: classes.loadBGIcon,
                 } : {},
-                onClick: () => eventToBackground('backgrounds/nextBg'),
+                onClick: () => eventToBackground('wallpapers/next'),
             }),
-        ] : []),
-        ...(backgrounds.currentBG?.source !== BG_SOURCE.USER ? [
+        ],
+        wallpaperSwitchService.currentDisplayed?.source !== BG_SOURCE.USER && [
             new ContextMenuItem({
                 title: (
-                    (backgrounds.currentBG?.isSaved && t('background:liked'))
-                    || t('background:button.like')
+                    !wallpaperSwitchService.currentDisplayed?.isLiked ? t('wallpaper:liked') : t('wallpaper:button.like')
                 ),
                 icon: (
-                    (backgrounds.currentBG?.isSaved && LikedIcon)
-                    || LikeIcon
+                    !wallpaperSwitchService.currentDisplayed?.isLiked ? LikedIcon : LikeIcon
                 ),
                 onClick: () => {
-                    if (!backgrounds.currentBG.isSaved) {
-                        backgrounds.like(backgrounds.currentBG);
-                    } else {
-                        backgrounds.unlike(backgrounds.currentBG);
-                    }
+                    wallpapersService.rate(wallpaperSwitchService.currentDisplayed, BG_RATE.LIKE);
                 },
             }),
             new ContextMenuItem({
-                title: t('background:button.dislike'),
+                title: t('wallpaper:button.dislike'),
                 icon: DislikeIcon,
-                onClick: () => backgrounds.dislike(backgrounds.currentBG),
+                onClick: () => {
+                    wallpapersService.rate(wallpaperSwitchService.currentDisplayed, BG_RATE.DISLIKE);
+
+                    enqueueSnackbar({
+                        message: t('wallpaper:dislike.noty'),
+                        variant: 'success',
+                    });
+                },
             }),
             new ContextMenuItem({
-                title: t('background:button.openSource'),
+                title: t('wallpaper:button.openSource'),
                 icon: OpenSourceIcon,
-                onClick: () => window.open(backgrounds.currentBG?.sourceLink, '_blank'),
+                onClick: () => window.open(wallpaperSwitchService.currentDisplayed?.sourceLink, '_blank'),
             }),
-        ] : []),
-        new ContextMenuDivider(),
+        ],
         new ContextMenuItem({
-            title: t('background:button.add'),
+            title: t('wallpaper:button.add'),
             icon: UploadFromComputerIcon,
             onClick: () => {
                 const shadowInput = document.createElement('input');
                 shadowInput.setAttribute('multiple', 'true');
                 shadowInput.setAttribute('type', 'file');
                 shadowInput.setAttribute('accept', 'video/*,image/*');
-                shadowInput.onchange = (event) => {
-                    const form = event.target;
+                shadowInput.onchange = (uploadEvent) => {
+                    const form = uploadEvent.target;
                     if (form.files.length === 0) return;
 
-                    backgrounds.addToUploadQueue(form.files)
+                    wallpapersService.addToUploadQueue(form.files)
                         .finally(() => {
                             form.value = '';
                         });
@@ -214,79 +213,80 @@ function Desktop() {
                 shadowInput.click();
             },
         }),
-    ], { reactions: [() => backgrounds.bgState, () => coreService.storage.temp.data.addingBgToLibrary] });
+    ], { reactions: [() => wallpaperSwitchService.state, () => coreService.tempStorage.data.addingBgToLibrary] });
 
     const wheelHandler = (event) => {
         if (!event.path.includes(rootRef.current)) return;
 
-        if (coreService.storage.temp.data.shakeFapPopper) {
-            coreService.storage.temp.data.shakeFapPopper();
-        } else if (event.deltaY > 0) appService.setActivity(ACTIVITY.BOOKMARKS);
-        else appService.setActivity(ACTIVITY.DESKTOP);
+        if (coreService.tempStorage.data.shakeFapPopper) {
+            coreService.tempStorage.data.shakeFapPopper();
+        } else if (event.deltaY > 0) appStateService.setActivity(ACTIVITY.BOOKMARKS);
+        else appStateService.setActivity(ACTIVITY.DESKTOP);
     };
 
     useEffect(() => {
         if (BUILD !== 'full') return () => {};
 
-        if (appService.activity !== ACTIVITY.BOOKMARKS) {
+        if (appStateService.activity !== ACTIVITY.BOOKMARKS) {
             addEventListener('wheel', wheelHandler, true);
             store.isRender = true;
         }
 
-        if (appService.activity !== ACTIVITY.DESKTOP) {
+        if (appStateService.activity !== ACTIVITY.DESKTOP) {
             setTimeout(() => {
-                if (appService.activity !== ACTIVITY.DESKTOP) { store.stickWidgetsToBottom = true; }
+                if (appStateService.activity !== ACTIVITY.DESKTOP) { store.stickWidgetsToBottom = true; }
             }, theme.transitions.duration.short);
         } else {
             store.stickWidgetsToBottom = false;
         }
 
         return () => {
-            if (appService.activity !== ACTIVITY.BOOKMARKS) removeEventListener('wheel', wheelHandler);
+            if (appStateService.activity !== ACTIVITY.BOOKMARKS) removeEventListener('wheel', wheelHandler);
         };
-    }, [appService.activity]);
+    }, [appStateService.activity]);
 
-    const bgShowMode = backgrounds.currentBG?.type === BG_TYPE.VIDEO;
+    const bgShowMode = wallpaperSwitchService.currentDisplayed?.type === BG_TYPE.VIDEO;
     const saveBgLocal = (
-        backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
-        && backgrounds.currentBG?.source !== BG_SOURCE.USER
+        wallpapersService.settings.kind === BG_SELECT_MODE.STREAM
+        && wallpaperSwitchService.currentDisplayed?.source !== BG_SOURCE.USER
     );
-    const nextBg = (
-        backgrounds.settings.selectionMethod === BG_SELECT_MODE.RANDOM
-        || backgrounds.settings.selectionMethod === BG_SELECT_MODE.STREAM
-    );
+    const nextBg = wallpapersService.settings.changeInterval !== BG_CHANGE_INTERVAL.NEVER;
 
     return (
         <Fragment>
             {BUILD === 'full' && (
                 <Box className={classes.wrapperTools}>
-                    <Grow in={appService.activity === ACTIVITY.FAVORITES}>
-                        <ExtendButtonGroup className={classes.button}>
+                    <Grow in={appStateService.activity === ACTIVITY.FAVORITES}>
+                        <ExtendButtonGroup variant="blurBackdrop" className={classes.button}>
                             <ExtendButton
                                 tooltip={t('desktop:button.open')}
                                 data-ui-path="button.desktop-expand"
-                                onClick={() => appService.setActivity(ACTIVITY.DESKTOP)}
+                                onClick={() => appStateService.setActivity(ACTIVITY.DESKTOP)}
                                 icon={ExpandDesktopIcon}
                                 label={t('desktop:button.expand')}
                             />
                         </ExtendButtonGroup>
                     </Grow>
-                    {appService.activity === ACTIVITY.FAVORITES && (
-                        <ExtendButtonGroup className={classes.button}>
+                    <Grow in={appStateService.activity === ACTIVITY.FAVORITES}>
+                        <ExtendButtonGroup
+                            variant="blurBackdrop"
+                            className={clsx(classes.button, classes.buttonOffset)}
+                        >
                             <ExtendButton
                                 tooltip={t('common:button.close')}
                                 data-ui-path="button.favorites-close"
-                                onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
+                                onClick={() => appStateService.setActivity(ACTIVITY.BOOKMARKS)}
                                 icon={CloseIcon}
+                                label={t('common:button.close')}
                             />
                         </ExtendButtonGroup>
-                    )}
+                    </Grow>
                     <ExtendButtonGroup className={classes.toolStub} />
                     <ExtendButtonGroup className={classes.toolStub} />
                 </Box>
             )}
             <Box className={classes.wrapperTools}>
-                <Grow in={appService.activity === ACTIVITY.DESKTOP && (bgShowMode || saveBgLocal || nextBg)}>
+                <Grow in={appStateService.activity === ACTIVITY.DESKTOP && (bgShowMode || saveBgLocal || nextBg)}>
                     <span>
                         <MouseDistanceFade
                             unionKey="desktop-fab"
@@ -296,33 +296,34 @@ function Desktop() {
                             <ExtendButtonGroup
                                 className={clsx(
                                     classes.group,
-                                    appService.activity === ACTIVITY.DESKTOP
+                                    appStateService.activity === ACTIVITY.DESKTOP
                                 && (bgShowMode || saveBgLocal || nextBg)
                                 && classes.button,
                                 )}
-                                style={{ minHeight: 40 }}
+                                variant="blurBackdrop"
+                                style={{ minHeight: 36 }}
                             >
                                 {bgShowMode && (
                                     <React.Fragment>
                                         <ExtendButton
                                             tooltip={
-                                                backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
-                                                    ? t('background:button.pause')
-                                                    : t('background:button.play')
+                                                wallpapersService.bgShowMode === BG_SHOW_MODE.LIVE
+                                                    ? t('wallpaper:button.pause')
+                                                    : t('wallpaper:button.play')
                                             }
                                             data-ui-path={
-                                                backgrounds.bgShowMode === BG_SHOW_MODE.LIVE
+                                                wallpapersService.bgShowMode === BG_SHOW_MODE.LIVE
                                                     ? 'bg.pauseVideo'
                                                     : 'bg.playVideo'
                                             }
                                             onClick={() => {
-                                                if (backgrounds.bgShowMode === BG_SHOW_MODE.LIVE) {
-                                                    coreService.localEventBus.call('background/pause');
+                                                if (wallpapersService.bgShowMode === BG_SHOW_MODE.LIVE) {
+                                                    coreService.localEventBus.call('wallpaper/pause');
                                                 } else {
-                                                    coreService.localEventBus.call('background/play');
+                                                    coreService.localEventBus.call('wallpaper/play');
                                                 }
                                             }}
-                                            icon={backgrounds.bgShowMode === BG_SHOW_MODE.LIVE ? PauseIcon : PlayIcon}
+                                            icon={wallpapersService.bgShowMode === BG_SHOW_MODE.LIVE ? PauseIcon : PlayIcon}
                                         />
                                     </React.Fragment>
                                 )}
@@ -331,41 +332,41 @@ function Desktop() {
                                         {bgShowMode && (<Divider orientation="vertical" flexItem />)}
                                         <ExtendButton
                                             tooltip={
-                                                !backgrounds.currentBG.isSaved
-                                                    ? t('background:button.like')
-                                                    : t('background:liked')
+                                                !wallpaperSwitchService.currentDisplayed?.isLiked
+                                                    ? t('wallpaper:button.like')
+                                                    : t('wallpaper:liked')
                                             }
                                             data-ui-path={
-                                                backgrounds.currentBG.isSaved
+                                                wallpaperSwitchService.currentDisplayed?.isLiked
                                                     ? 'bg.liked'
                                                     : 'bg.like'
                                             }
-                                            disableRipple={backgrounds.currentBG.isSaved}
                                             onClick={() => {
-                                                if (!backgrounds.currentBG.isSaved) {
-                                                    backgrounds.like(backgrounds.currentBG);
-                                                } else {
-                                                    backgrounds.unlike(backgrounds.currentBG);
-                                                }
+                                                wallpapersService.rate(wallpaperSwitchService.currentDisplayed, BG_RATE.LIKE);
                                             }}
                                             icon={
-                                                (
-                                                    backgrounds.currentBG.isSaved
-                                                    || coreService.storage.temp.data.addingBgToLibrary === FETCH.PENDING
-                                                )
+                                                wallpaperSwitchService.currentDisplayed?.isLiked
                                                     ? LikedIcon
                                                     : LikeIcon
                                             }
                                         />
                                         <Divider orientation="vertical" flexItem />
                                         <ExtendButton
-                                            tooltip={t('background:button.dislike')}
+                                            tooltip={t('wallpaper:button.dislike')}
                                             data-ui-path="bg.dislike"
-                                            disableRipple={backgrounds.currentBG.isSaved}
                                             onClick={() => {
-                                                backgrounds.dislike(backgrounds.currentBG);
+                                                wallpapersService.rate(wallpaperSwitchService.currentDisplayed, BG_RATE.DISLIKE);
+
+                                                enqueueSnackbar({
+                                                    message: t('wallpaper:dislike.noty'),
+                                                    variant: 'success',
+                                                });
                                             }}
-                                            icon={DislikeIcon}
+                                            icon={
+                                                wallpaperSwitchService.currentDisplayed?.isDisliked
+                                                    ? DislikedIcon
+                                                    : DislikeIcon
+                                            }
                                         />
                                     </React.Fragment>
                                 )}
@@ -374,28 +375,28 @@ function Desktop() {
                                         {(bgShowMode || saveBgLocal) && (<Divider orientation="vertical" flexItem />)}
                                         <ExtendButton
                                             tooltip={
-                                                backgrounds.bgState === BG_SHOW_STATE.SEARCH
-                                                    ? t('background:fetchingNextBG')
-                                                    : t('background:button.next')
+                                                wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH
+                                                    ? t('wallpaper:fetchingNextBG')
+                                                    : t('wallpaper:button.next')
                                             }
                                             data-ui-path="bg.next"
                                             className={clsx(
-                                                backgrounds.bgState === BG_SHOW_STATE.SEARCH && classes.notClickable,
+                                                wallpaperSwitchService.state !== BG_SHOW_STATE.SEARCH && classes.notClickable,
                                             )}
-                                            disableRipple={backgrounds.bgState === BG_SHOW_STATE.SEARCH}
+                                            disableRipple={wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH}
                                             onClick={() => (
-                                                backgrounds.bgState !== BG_SHOW_STATE.SEARCH
-                                            && eventToBackground('backgrounds/nextBg')
+                                                wallpaperSwitchService.state !== BG_SHOW_STATE.SEARCH
+                                                && eventToBackground('wallpapers/next')
                                             )}
                                             icon={() => (
                                                 <React.Fragment>
-                                                    {backgrounds.bgState !== BG_SHOW_STATE.SEARCH && (
+                                                    {wallpaperSwitchService.state !== BG_SHOW_STATE.SEARCH && (
                                                         <RefreshIcon />
                                                     )}
-                                                    {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
+                                                    {wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH && (
                                                         <CircularProgress
                                                             className={classes.loadBGIcon}
-                                                            size={20}
+                                                            size={22}
                                                         />
                                                     )}
                                                 </React.Fragment>
@@ -408,19 +409,20 @@ function Desktop() {
                     </span>
                 </Grow>
                 {BUILD === 'full' && (
-                    <Grow in={appService.activity === ACTIVITY.DESKTOP}>
+                    <Grow in={appStateService.activity === ACTIVITY.DESKTOP}>
                         <span>
                             <MouseDistanceFade
                                 unionKey="desktop-fab"
                                 distanceMax={750}
                                 distanceMin={300}
                             >
-                                <ExtendButtonGroup className={classes.button}>
+                                <ExtendButtonGroup variant="blurBackdrop" className={classes.button}>
                                     <ExtendButton
-                                        tooltip={t('bookmark:button.open')}
+                                        tooltip={t('bookmark:button.open', { context: 'tooltip' })}
                                         data-ui-path="bookmark.open"
-                                        onClick={() => appService.setActivity(ACTIVITY.BOOKMARKS)}
+                                        onClick={() => appStateService.setActivity(ACTIVITY.BOOKMARKS)}
                                         icon={BookmarksIcon}
+                                        label={t('bookmark:button.open')}
                                     />
                                 </ExtendButtonGroup>
                             </MouseDistanceFade>
@@ -433,36 +435,40 @@ function Desktop() {
                 ref={rootRef}
                 className={clsx(
                     classes.root,
-                    appService.activity === ACTIVITY.FAVORITES && classes.favoritesActivity,
-                    appService.activity === ACTIVITY.DESKTOP && classes.desktopActivity,
+                    appStateService.activity === ACTIVITY.FAVORITES && classes.favoritesActivity,
+                    appStateService.activity === ACTIVITY.DESKTOP && classes.desktopActivity,
                 )}
                 style={{
-                    transform: appService.activity === ACTIVITY.FAVORITES
+                    transform: appStateService.activity === ACTIVITY.FAVORITES
                         ? `translateY(calc(-100vh + ${
-                            Math.max(service.storage.temp.data.desktopWidgetsHeight, 72)
-                        + service.storage.temp.data.desktopFapHeight
-                    }px))`
+                            16 * 2 + 36
+                            + 64
+                            + coreService.tempStorage.data.desktopFapHeight
+                        }px))`
                         : '',
                 }}
-                onContextMenu={contextMenu}
+                onContextMenu={dispatchContextMenu}
             >
                 {store.isRender && (
                     <React.Fragment>
-                        <Background />
-                        {widgets.settings.useWidgets && (
-                            <Widgets stickToBottom={store.stickWidgetsToBottom} />
+                        <Wallpaper service={wallpaperSwitchService} />
+                        {desktopService.settings.useWidgets && (
+                            <Widgets
+                                color={wallpaperSwitchService.contrastColor}
+                                stickToBottom={store.stickWidgetsToBottom}
+                            />
                         )}
                         {BUILD === 'full' && (<FAP />)}
-                        {backgrounds.bgState === BG_SHOW_STATE.SEARCH && (
+                        {wallpaperSwitchService.state === BG_SHOW_STATE.SEARCH && (
                             <CircularProgress
                                 className={classes.loadBGIconWhite}
-                                size={20}
+                                size={22}
                             />
                         )}
                         <Box
                             className={clsx(
                                 classes.desktopBackdrop,
-                                appService.settings.backdropTheme === THEME.LIGHT && classes.desktopBackdropLight,
+                                appStateService.settings.backdropTheme === THEME.LIGHT && classes.desktopBackdropLight,
                             )}
                         />
                     </React.Fragment>
@@ -471,12 +477,12 @@ function Desktop() {
             <Backdrop
                 invisible
                 className={classes.backdrop}
-                open={appService.activity !== ACTIVITY.BOOKMARKS}
+                open={appStateService.activity !== ACTIVITY.BOOKMARKS}
                 onClick={() => {
-                    if (coreService.storage.temp.data.closeFapPopper) {
-                        coreService.storage.temp.data.shakeFapPopper();
+                    if (coreService.tempStorage.data.closeFapPopper) {
+                        coreService.tempStorage.data.shakeFapPopper();
                     } else {
-                        appService.setActivity(ACTIVITY.BOOKMARKS);
+                        appStateService.setActivity(ACTIVITY.BOOKMARKS);
                     }
                 }}
             />

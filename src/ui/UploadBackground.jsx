@@ -28,10 +28,10 @@ import {
     CloseRounded as CloseIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
+import { captureException } from '@sentry/react';
 import Scrollbar from '@/ui-components/CustomScroll';
 import BeautifulFileSize from '@/utils/prettyFileSize';
-import useAppStateService from '@/stores/app/AppStateProvider';
-import { captureException } from '@sentry/react';
+import { useAppStateService } from '@/stores/app/appState';
 
 const useStyles = makeStyles((theme) => ({
     preview: {
@@ -114,7 +114,7 @@ function BGCard(props) {
         onDone,
         ...other
     } = props;
-    const { t } = useTranslation(['background']);
+    const { t } = useTranslation(['wallpaper']);
     const classes = useStyles();
     const theme = useTheme();
 
@@ -199,9 +199,9 @@ function BGCard(props) {
 const MemoBGCard = memo(BGCard);
 
 function UploadBackground({ children }) {
-    const { backgrounds } = useAppStateService();
+    const { wallpapersService } = useAppStateService();
     const { enqueueSnackbar } = useSnackbar();
-    const { t } = useTranslation(['background']);
+    const { t } = useTranslation(['wallpaper']);
 
     const classes = useStyles();
     const theme = useTheme();
@@ -236,7 +236,7 @@ function UploadBackground({ children }) {
         dragRef.current.ondrop = (event) => {
             event.preventDefault();
             setDragFiles(null);
-            backgrounds.addToUploadQueue(event.dataTransfer.files)
+            wallpapersService.addToUploadQueue(event.dataTransfer.files)
                 .catch((e) => {
                     captureException(e);
                     enqueueSnackbar({
@@ -251,8 +251,8 @@ function UploadBackground({ children }) {
         if (store.uploadQueueSize === 0) {
             store.requireScrollToBottom = true;
         }
-        store.uploadQueueSize = backgrounds.uploadQueue.length;
-    }, [backgrounds.uploadQueue.length]);
+        store.uploadQueueSize = wallpapersService.uploadQueue.length;
+    }, [wallpapersService.uploadQueue.length]);
 
     return (
         <React.Fragment>
@@ -271,7 +271,7 @@ function UploadBackground({ children }) {
             )}
             <Drawer
                 anchor="bottom"
-                open={backgrounds.uploadQueue.length !== 0}
+                open={wallpapersService.uploadQueue.length !== 0}
                 PaperProps={{
                     elevation: 0,
                     style: {
@@ -300,24 +300,24 @@ function UploadBackground({ children }) {
                             justifyContent: 'flex-end',
                         }}
                     >
-                        {backgrounds.uploadQueue.slice().reverse().map((row, index) => (
+                        {wallpapersService.uploadQueue.slice().reverse().map((row, index) => (
                             <MemoBGCard
                                 key={row.id}
                                 {...row}
                                 style={{ marginTop: index === 0 ? 0 : theme.spacing(3) }}
-                                onRemove={() => backgrounds.removeFromUploadQueue(row.id)}
-                                onDone={(options) => backgrounds.saveFromUploadQueue(row.id, options)}
+                                onRemove={() => wallpapersService.removeFromUploadQueue(row.id)}
+                                onDone={(options) => wallpapersService.saveFromUploadQueue(row.id, options)}
                             />
                         ))}
                     </Container>
                 </Scrollbar>
             </Drawer>
-            {(backgrounds.uploadQueue.length !== 0) && (
+            {(wallpapersService.uploadQueue.length !== 0) && (
                 <Tooltip title={t('upload.button.discardAll')}>
                     <IconButton
                         data-ui-path="uploadBG.discardAll"
                         className={classes.closeIcon}
-                        onClick={() => backgrounds.resetUploadQueue()}
+                        onClick={() => wallpapersService.resetUploadQueue()}
                     >
                         <CloseIcon />
                     </IconButton>

@@ -1,59 +1,98 @@
 import { createTheme, alpha } from '@material-ui/core/styles';
+import themeOverrides from '@/themes/themeOverrides';
 
-const primaryFontFamily = '"Manrope", "Open Sans", sans-serif';
-const secondaryFontFamily = primaryFontFamily; // 'Roboto, "Open Sans", sans-serif';
+const specialFontFamily = 'Manrope, "Open Sans", sans-serif';
+const fontFamily = 'Inter, sans-serif';
 
-const theme = {
+const baseThemeValues = {
     palette: {
         type: 'light',
         primary: {
-            light: '#28DEC8',
-            main: '#49C5B6',
-            dark: '#299286',
+            light: alpha('#23CFA6', 0.2),
+            main: '#23CFA6',
+            dark: '#12AB86',
             contrastText: '#fff',
         },
         secondary: {
-            main: '#3386E4',
+            main: '#23CFA6',
             contrastText: '#fff',
         },
         warning: {
-            main: '#f46600',
-            contrastText: '#fff',
+            main: '#ffe4d1',
+            contrast: '#fd9b58',
+            contrastText: alpha('#000', 0.76),
         },
-        divider: alpha('#000', 0.09),
+        info: {
+            main: '#d5ebfd',
+            contrast: '#6cb6f3',
+            contrastText: alpha('#000', 0.7),
+        },
+        divider: alpha('#000', 0.13),
+        dividerLight: alpha('#000', 0.09),
         favorite: { main: '#F4C620' },
         snackbar: { default: alpha('#fff', 0.95) },
-        background: { backdrop: '#ececec' },
+        background: {
+            backdrop: '#ececec',
+            backdropLight: '#F9F9F9',
+            default: '#FFFFFF',
+        },
+        text: { primary: alpha('#000', 0.76) },
     },
     shape: {
         borderRadius: 4,
-        borderRadiusBold: 8,
+        borderRadiusButton: 6,
+        borderRadiusButtonBold: 8,
+        borderRadiusBold: 10,
+        borderRadiusBolder: 12,
         dataCard: {
-            width: 210,
-            height: 80,
+            width: 200,
+            height: 76,
         },
     },
     typography: {
-        fontFamily: primaryFontFamily,
-        primaryFontFamily,
-        secondaryFontFamily,
+        fontFamily,
+        specialFontFamily,
+        secondaryFontFamily: fontFamily,
         h1: {
-            fontFamily: primaryFontFamily,
+            fontFamily: specialFontFamily,
             fontWeight: 900,
+            letterSpacing: 'unset',
         },
         h2: {
-            fontFamily: primaryFontFamily,
+            fontFamily: specialFontFamily,
             fontWeight: 900,
+            letterSpacing: 'unset',
+        },
+        h3: {
+            fontFamily: specialFontFamily,
+            fontWeight: 800,
+        },
+        h4: {
+            fontFamily: specialFontFamily,
+            fontWeight: 800,
+        },
+        h5: {
+            fontFamily: specialFontFamily,
+            fontWeight: 800,
+        },
+        h6: {
+            fontFamily: specialFontFamily,
+            fontWeight: 800,
+            fontSize: '1.125rem',
+            letterSpacing: 'unset',
         },
         body1: {
-            fontFamily: primaryFontFamily,
+            fontFamily: specialFontFamily,
             fontWeight: 600,
+            letterSpacing: 'unset',
         },
         body2: {
-            fontFamily: primaryFontFamily,
-            fontWeight: 450,
+            fontFamily,
+            fontWeight: 400,
             fontSize: '0.85rem',
+            letterSpacing: 'unset',
         },
+        button: { fontFamily: specialFontFamily },
     },
     transitions: {
         easing: { shiftEaseInOut: 'cubic-bezier(0.1, 0.84, 0.2, 1)' },
@@ -67,44 +106,6 @@ const theme = {
             complex: 300,
             long: 550,
         },
-    },
-    overrides: {
-        MuiButton: {
-            root: { fontWeight: 800 },
-            label: {
-                fontWeight: 'inherit',
-                fontFamily: primaryFontFamily,
-                wordBreak: 'break-word',
-            },
-        },
-        MuiTypography: {
-            gutterBottom: { marginBottom: '0.8em' },
-            h6: {
-                fontWeight: 800,
-                fontFamily: primaryFontFamily,
-            },
-        },
-        MuiTooltip: {
-            tooltip: {
-                backgroundColor: alpha('#000', 0.82),
-                fontSize: '0.85rem',
-                padding: '6px 12px',
-            },
-        },
-        MuiSwitch: {
-            thumb: { boxShadow: 'none' },
-            switchBase: { color: '#5e5e5e' },
-        },
-        MuiCardHeader: {
-            title: {
-                fontFamily: primaryFontFamily,
-                fontWeight: 600,
-            },
-        },
-    },
-    props: {
-        MuiButton: { disableElevation: true },
-        // MuiCardHeader: { titleTypographyProps: { variant: 'h6' } },
     },
     zIndex: { dropFiles: 1350 },
     shadows: [
@@ -136,6 +137,11 @@ const theme = {
     ],
 };
 
-export { theme };
+const baseTheme = createTheme(baseThemeValues);
 
-export default createTheme({}, theme);
+export { baseThemeValues as themeValuesRaw, baseTheme as themeValues };
+
+export default createTheme({}, {
+    ...baseTheme,
+    ...themeOverrides(baseTheme),
+});

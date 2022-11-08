@@ -6,52 +6,47 @@ import {
     BKMS_FAP_STYLE,
     BKMS_FAP_POSITION,
     ACTIVITY,
-    WIDGET_DTW_POSITION,
-    WIDGET_DTW_SIZE,
-    WIDGET_DTW_UNITS,
+    WIDGET_POSITION,
+    WIDGET_SIZE,
+    WIDGET_UNITS,
     BKMS_FAP_ALIGN,
+    BKMS_DISPLAY_VARIANT,
+    BKMS_SORTING,
 } from '@/enum';
 
 export default {
-    backgrounds: {
+    wallpapers: {
         changeInterval: BG_CHANGE_INTERVAL.HOURS_1,
         type: [BG_TYPE.IMAGE, BG_TYPE.VIDEO],
-        selectionMethod: BG_SELECT_MODE.STREAM,
+        kind: BG_SELECT_MODE.STREAM,
         dimmingPower: 25,
     },
-    bookmarks: {
+    desktop: {
         fapStyle: BKMS_FAP_STYLE.PRODUCTIVITY,
         fapPosition: BKMS_FAP_POSITION.BOTTOM,
         fapAlign: BKMS_FAP_ALIGN.LEFT,
-        openOnStartup: false,
-        favorites: [],
-        syncWithSystem: false,
-        syncDefaultFolderName: 'google chrome',
+        useWidgets: true,
+        widgetsPosition: WIDGET_POSITION.LEFT_BOTTOM,
+        widgetsSize: WIDGET_SIZE.SMALL,
+    },
+    workingSpace: {
+        displayVariant: BKMS_DISPLAY_VARIANT.CARDS,
+        sorting: BKMS_SORTING.BY_RELATIVE,
     },
     widgets: {
-        useWidgets: true,
-        dtw: {
-            position: WIDGET_DTW_POSITION.LEFT_BOTTOM,
-            size: WIDGET_DTW_SIZE.SMALL,
-            date: {
-                useDate: true,
-                defaultAction: '',
-            },
-            time: {
-                useTime: true,
-                format12: false,
-            },
-            weather: {
-                useWeather: false,
-                metrics: WIDGET_DTW_UNITS.CELSIUS,
-                defaultAction: '',
-            },
-        },
+        useDate: true,
+        dateDefaultAction: '',
+        useTime: true,
+        timeFormat12: false,
+        useWeather: false,
+        weatherMetrics: WIDGET_UNITS.CELSIUS,
+        weatherDefaultAction: '',
     },
     app: {
         backdropTheme: THEME.DARK,
         theme: THEME.LIGHT,
-        tabName: 'Rigami',
-        defaultActivity: ACTIVITY.DESKTOP,
+        tabName: 'rigami',
+        defaultActivity: ACTIVITY.BOOKMARKS,
+        searchRunOnAnyKey: true,
     },
 };

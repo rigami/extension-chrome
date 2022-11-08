@@ -1,12 +1,13 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
 import { observer } from 'mobx-react-lite';
-import Image from '@/ui-components/Image';
-import { BKMS_VARIANT } from '@/enum';
 import { useTranslation } from 'react-i18next';
 import { first } from 'lodash';
-import FavoriteItem from '@/ui-components/FavoriteItem';
 import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+import Image from '@/ui-components/Image';
+import { BKMS_VARIANT } from '@/enum';
+import FavoriteItem from '@/ui-components/FavoriteItem';
 import FAPButton from './Button';
 
 const useStyles = makeStyles(() => ({
@@ -17,6 +18,7 @@ const useStyles = makeStyles(() => ({
     image: {
         width: 40,
         height: 40,
+        borderRadius: 'inherit',
     },
 }));
 
@@ -28,6 +30,7 @@ function LinkButton(props) {
         icoUrl,
         icoVariant,
         className: externalClassName,
+        classes: externalClasses = {},
         children,
         dense,
     } = props;
@@ -73,6 +76,7 @@ function LinkButton(props) {
                     alternativeIcon={first(name)?.toUpperCase()}
                     variant={icoVariant === BKMS_VARIANT.POSTER ? BKMS_VARIANT.SYMBOL : icoVariant}
                     className={classes.image}
+                    classes={{ rootImage: externalClasses.image }}
                 />
             )}
         </FAPButton>

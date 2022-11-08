@@ -2,10 +2,10 @@
   "recentlyClosed": {
     "title": "Recently closed",
     "empty": "No recent sessions",
-    "expand": "Expand the list",
-    "collapse": "Collapse the list",
+    "expand": "Expand list",
+    "collapse": "Collapse list",
     "restoreWindow": "Restore window",
-    "windowSessionTitle": "{{count}} tab",
-    "windowSessionTitle_plural": "{{count}} tabs"
+    "windowSessionTitle_one": "{{count}} tab",
+    "windowSessionTitle_other": "{{count}} tabs"
   }
 }

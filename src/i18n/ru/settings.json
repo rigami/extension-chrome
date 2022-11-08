@@ -1,30 +1,48 @@
 {
   "title": "Настройки",
-  "backgrounds": "Фоны",
-  "backgrounds_description": "Выберите, добавьте или удалите фон. Настроить переключение",
-  "bookmarks": "Закладки",
-  "bookmarks_description": "Настройте панель избранного. Выберите интерфейс по умолчанию",
+  "quietMode": "Спокойный режим",
+  "quietMode_description": "Фон, виджеты",
   "widgets": "Виджеты",
-  "widgets_description": "Настроить виджеты рабочего стола: время, дату и погоду",
-  "app": "Приложение",
-  "app_description": "Включить темную тему. Изменить название вкладки",
-  "backup": "Бекап данных и импорт",
-  "backup_description": "Сохранить данные приложения на компьютер и импортировать закладки из chrome",
+  "widgets_description": "Время, дата и погода",
+  "common": "Основные",
+  "common_description": "Тема, имя вкладки",
+  "sync": "Синхронизация и бекап",
+  "sync_description": "Облачная синхронизация, локальная резервная копия",
   "about": "О расширении",
-  "about_description": "Напишите разработчику, отправьте отчет об ошибке, предложите идею",
+  "about_description": "Написать разработчику, отправить отчет, предложить идею",
+  "devTools": "Dev Tools",
+  "devTools_description": "",
+  "advancedSettings": "Расширеные настройки",
   "shareBanner": {
     "message": "Помогите проекту",
-    "description": "Узнайте, чем вы можете помочь. Например, расскажите друзьям или пройдите опрос",
     "button": {
-      "openPage": "Посмотри, как ты можешь помочь",
+      "openProjectSupportPage": "Узнайте, как вы можете помочь",
       "rateExtension": "Оцените расширение"
     }
   },
   "betaBanner": {
-    "message": "Расширение находится в стадии бета-тестирования",
+    "message": "Rigami в бета-тестировании",
     "button": {
       "sendEmail": "Напишите письмо разработчику",
       "openIssue": "Открыть вопрос на github"
     }
+  },
+  "display": {
+    "title": "Представление",
+    "variant": {
+      "cards": "Карточки",
+      "rows": "Список"
+    }
+  },
+  "sorting": {
+    "title": "Сортировка",
+    "variant": {
+      "BY_RELATIVE": "По реалативности",
+      "NEWEST_FIRST": "Сначала новые",
+      "OLDEST_FIRST": "Сначала старые"
+    }
+  },
+  "changeBackground": {
+    "title": "Изменить фон"
   }
 }

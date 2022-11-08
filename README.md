@@ -27,5 +27,5 @@ $ yarn build:analyze
 ![screenshot 2](docs/en/Bookmarks.png)
 ![screenshot 3](docs/en/Bookmark%20editor.png)
 ![screenshot 4](docs/en/Backgrounds.png)
-![screenshot 5](docs/en/Background%20stream.png)
+![screenshot 5](docs/en/Wallpaper%20stream.png)
 ![screenshot 6](docs/en/Light%20and%20dark%20theme.png)

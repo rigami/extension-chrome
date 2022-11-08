@@ -3,16 +3,25 @@
   "editor_edit": "Редактирование закладки",
   "editor": {
     "bookmarkUrl": "URL или запрос",
+    "bookmarkUrl_placeholder": "Введите url или запрос...",
     "bookmarkName": "Имя закладки",
+    "bookmarkName_placeholder": "Добавить имя...",
     "bookmarkDescription": "Описание",
+    "bookmarkDescription_placeholder": "Добавить описание...",
+    "bookmarkTags": "Теги",
+    "bookmarkTags_placeholder": "Добавить тег...",
+    "saveInCurrentFolder": "Сохранено здесь",
     "button": {
-      "addDescription": "Добавить описание",
+      "addDescription": "Добавить описание...",
       "forceAdd": "Все равно добавить",
       "moreIcons": "Еще значки",
-      "scrollToMore": "Прокрутите до других"
+      "scrollToMore": "Прокрутите до других",
+      "saveBookmark": "Сохранить закладку",
+      "saveCurrentTab": "Сохранить текущую вкладку",
+      "createNewBookmark": "Создать новую закладку"
     },
     "search_url": "Поиск по адресу",
-    "search_web": "Искать в Интернете",
+    "search_web": "Поиск в Интернете",
     "search": {
       "urlNotRecognize": "Адрес не распознан",
       "gettingSiteInfo": "Получение информации",
@@ -23,21 +32,30 @@
       }
     },
     "save": {
-      "success": "Закладка успешно сохранена",
+      "success": "Закладка сохранена",
       "saving": "Сохранение..."
     },
     "helper": {
       "enterRequest": "Введите адрес",
       "selectResult": "Выберите результат поиска",
-      "enterName": "Введите название закладки"
+      "enterName": "Введите название закладки",
+      "selectFolder": "Выберите папку"
+    },
+    "iconVariant": {
+      "SMALL-ICON": "Простая икнока",
+      "ICON": "Иконка",
+      "POSTER": "Постер",
+      "COVER": "Обложка"
     }
   },
   "button": {
     "add":"Добавить новую закладку",
     "add_short":"Добавить закладку",
     "add_first": "Создать первую закладку",
-    "favorites": "Показать избранные",
-    "open": "Открыть закладки",
+    "favorites": "Избранные",
+    "favorites_tooltip": "Показать избранные",
+    "open": "Закладки",
+    "open_tooltip": "Открыть закладки",
     "copyUrl": "Скопировать url",
     "copy": "Скопировать"
   },
@@ -46,17 +64,33 @@
     "confirm_description": "Закладка будет удалена навсегда, вы уверены?"
   },
   "search": {
+    "title": "Поиск",
+    "placeholder": "Введите запрос для поиска",
     "nothingFound": "Ничего не найдено. Попробуйте изменить свой запрос",
+    "nothingFoundInFolder": "В этой папке ничего не найдено",
     "everywhere": "Искать везде",
     "everywhere_description": "Поиск закладок по всей системе",
     "bookmarks_placeholder": "Поиск закладок",
-    "bestMatches": "Лучшие совпадения",
-    "allMatches": "Все совпадения",
+    "bestMatches": "Лучшие совпадения <0/> <1/>",
+    "nothingFoundBestMatches": "Лучших совпадений <0/> <1/> не найдено",
+    "withTags": "с тегами",
+    "byQuery": "по запросу",
+    "otherMatches": "Также другие совпадения",
+    "otherMatchesOnly": "Но есть другие совпадения",
+    "nothingFoundOtherMatches": "Других совпадений не найдено",
+    "partMatches": "Частичные",
+    "nothingFoundPartMatches": "Частичныйх совпадений не найдено",
+    "indirectlyMatches": "Косвеные",
+    "nothingFoundIndirectlyMatches": "Косвеных совпадений не найдено",
     "currentFolderMatches": "В текущей папке",
-    "results": "{{count}} результат",
-    "results_0": "{{count}} результат",
-    "results_1": "{{count}} результа",
-    "results_2": "{{count}} результатов"
+    "results_one": "{{count}} результат",
+    "results_few": "{{count}} результа",
+    "results_many": "{{count}} результатов",
+    "otherResults_one": "...и ещё {{count}} результат",
+    "otherResults_few": "...и ещё {{count}} результа",
+    "otherResults_many": "...и ещё {{count}} результатов",
+    "hotKeyCtrlQ": "Поиск (Ctrl+Q)",
+    "hotKeyAny": "Поиск (Начните печатать, чтобы начать поиск)"
   },
   "empty": "Здесь пока нет закладок"
 }

@@ -10,14 +10,14 @@ import clsx from 'clsx';
 import { BKMS_VARIANT } from '@/enum';
 
 const useStyles = makeStyles((theme) => ({
-    roundedIconStub: { borderRadius: theme.shape.borderRadiusBold },
+    roundedIconStub: { borderRadius: theme.shape.borderRadiusButtonBold },
     roundedIcon: {
-        borderRadius: theme.shape.borderRadiusBold,
+        borderRadius: theme.shape.borderRadiusButtonBold,
         color: theme.palette.getContrastText(theme.palette.background.backdrop),
         fontWeight: 800,
-        backgroundColor: theme.palette.background.backdrop,
-        fontFamily: theme.typography.primaryFontFamily,
+        fontFamily: theme.typography.specialFontFamily,
     },
+    roundedIconDefault: { backgroundColor: theme.palette.background.backdrop },
     skeleton: { backgroundColor: theme.palette.background.backdrop },
 }));
 
@@ -26,6 +26,7 @@ function Image(props) {
         variant = BKMS_VARIANT.SMALL,
         src,
         className: externalClassName,
+        classes: externalClasses = {},
         alternativeIcon,
         dense,
     } = props;
@@ -46,13 +47,13 @@ function Image(props) {
         imgCache.src = src;
     }, []);
 
-    if (variant === BKMS_VARIANT.POSTER) {
+    if (variant === BKMS_VARIANT.POSTER || variant === BKMS_VARIANT.COVER) {
         return (
             <React.Fragment>
                 {isLoading && (
                     <Box
                         width={180}
-                        height={84}
+                        height={variant === BKMS_VARIANT.COVER ? 180 : 84}
                         className={clsx(classes.skeleton, externalClassName)}
                     />
                 )}
@@ -74,6 +75,10 @@ function Image(props) {
                 {!isLoading && (
                     <Avatar
                         className={clsx(classes.roundedIcon, externalClassName)}
+                        classes={{
+                            colorDefault: classes.roundedIconDefault,
+                            img: externalClasses.rootImage,
+                        }}
                         src={(variant !== BKMS_VARIANT.SYMBOL && src) || undefined}
                         variant="rounded"
                     >

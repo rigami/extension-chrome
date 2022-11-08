@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { APP_STATE } from '@/stores/app/core';
 import { observer } from 'mobx-react-lite';
-import FirstLookScreen from '@/ui/FirstLookScreen';
-import appVariables from '@/config/appVariables';
-import useBookmarksService from '@/stores/app/BookmarksProvider';
-import useAppService from '@/stores/app/AppStateProvider';
+import { APP_STATE } from '@/stores/app/core/service';
 import MigrateScreen from '@/ui/MigrateScreen';
 import packageJson from '@/../package.json';
-import useCoreService from '@/stores/app/BaseStateProvider';
+import { useCoreService } from '@/stores/app/core';
 
 const STATE = {
     PREPARE: 'PREPARE',
@@ -16,41 +12,14 @@ const STATE = {
     MIGRATE: 'MIGRATE',
 };
 
-function ApplyWizardSettingsProvider({ children }) {
-    const coreService = useCoreService();
-    const bookmarksService = useBookmarksService();
-    const appService = useAppService();
-    const { widgets } = appService;
-
-    const { wizardSettings } = coreService.storage.persistent.data;
-
-    if (!wizardSettings) return children;
-
-    coreService.storage.persistent.update({
-        wizardSettings: null,
-        userName: wizardSettings.userName,
-    });
-    if (BUILD === 'full') {
-        bookmarksService.settings.update({ fapStyle: wizardSettings.fapStyle });
-    }
-    widgets.settings.update({
-        dtwUseDate: wizardSettings.useDate,
-        dtwUseTime: wizardSettings.useTime,
-    });
-    appService.settings.update({ defaultActivity: wizardSettings.activity });
-    appService.setActivity(wizardSettings.activity);
-
-    return children;
-}
-
 function InitApp({ children }) {
     const coreService = useCoreService();
     const [state, setState] = useState(STATE.PREPARE);
 
     const checkVersion = () => {
-        if (coreService.storage.persistent.data?.lastUsageVersion !== packageJson.version) {
-            if (appVariables.notifyNewVersion) coreService.storage.temp.update({ newVersion: true });
-            coreService.storage.persistent.update({ lastUsageVersion: packageJson.version });
+        if (coreService.storage.data?.lastUsageVersion !== packageJson.version) {
+            // if (appVariables.notifyNewVersion) coreService.tempStorage.update({ newVersion: true });
+            coreService.storage.update({ lastUsageVersion: packageJson.version });
         }
     };
 
@@ -70,10 +39,7 @@ function InitApp({ children }) {
 
     return (
         <React.Fragment>
-            {state === STATE.DONE && children}
-            {state === STATE.FIRST_CONTACT && (
-                <FirstLookScreen onStart={() => { setState(STATE.DONE); }} />
-            )}
+            {state !== STATE.MIGRATE && children}
             {state === STATE.MIGRATE && (
                 <MigrateScreen
                     onStart={() => {
@@ -87,4 +53,3 @@ function InitApp({ children }) {
 }
 
 export default observer(InitApp);
-export { ApplyWizardSettingsProvider };

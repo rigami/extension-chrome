@@ -17,7 +17,8 @@
     "favorite": {
       "add": "Add to favorites",
       "remove": "Remove from favorites"
-    }
+    },
+    "contextMenu": "Open context menu"
   },
   "select": {
     "all":"All",
