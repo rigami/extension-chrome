@@ -12,10 +12,6 @@
     "back": "Back",
     "finish": "Finish"
   },
-  "beta": {
-    "title": "The extension is still in beta testing",
-    "description": "The extension is still in beta testing, the functionality may be unstable or vary greatly"
-  },
   "login": {
     "title": "Login for import data"
   },

@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
 import { makeStyles } from '@material-ui/core/styles';
 import { ArrowForward as GoToIcon, SyncRounded as SyncIcon } from '@material-ui/icons';
-import Banner from '@/ui-components/Banner';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -42,12 +41,6 @@ function Hello({ onApplyDefaultSetting, onStartWizard, onLogin }) {
     return (
         <Box className={classes.root}>
             <Typography variant="h3">{t('greeting')}</Typography>
-            <Banner
-                classes={{ root: classes.banner }}
-                message={t('beta.title')}
-                description={t('beta.description')}
-                variant="warn"
-            />
             <Typography variant="body1">{t('wizardDescription')}</Typography>
             <DialogActions className={classes.actions}>
                 <Button onClick={onApplyDefaultSetting}>{t('button.skipAndApplyDefaultSettings')}</Button>
