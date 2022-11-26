@@ -209,7 +209,7 @@ function GeneralMenu({ selected, onSelect }) {
                                 <Link
                                     color="inherit"
                                     underline="always"
-                                    href="mailto:danilkinkin@gmail.com"
+                                    href="mailto:hello@danilkinkin.com?subject=Rigami%20question"
                                 >
                                     {t('betaBanner.button.sendEmail')}
                                 </Link>

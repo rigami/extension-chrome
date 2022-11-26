@@ -114,7 +114,7 @@ function About() {
                 secondary={t('bugReport', { context: 'description' })}
             />
             <Row
-                href="mailto:danilkinkin@gmail.com"
+                href="mailto:hello@danilkinkin.com?subject=Rigami%20question"
                 icon={EmailIcon}
                 primary={t('contact')}
                 secondary={t('contact', { context: 'description' })}
