@@ -55,7 +55,7 @@ function DateTimeAndWeather({ className: externalClassName }) {
                         classes.date,
                     )}
                 >
-                    <Date dot={widgetsService.showWeather} />
+                    <Date />
                 </Typography>
             )}
             {widgetsService.settings.useWeather && (

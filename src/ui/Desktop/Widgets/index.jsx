@@ -292,7 +292,7 @@ function Widgets({ stickToBottom, color }) {
                             classes[`date-${desktopService.settings.widgetsSize.toLowerCase()}`],
                         )}
                     >
-                        <Date dot={widgetsService.showWeather} />
+                        <Date />
                     </Typography>
                 )}
                 {widgetsService.settings.useWeather && (

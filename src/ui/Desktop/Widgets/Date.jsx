@@ -10,7 +10,7 @@ const generateFormatter = (locale) => new Intl.DateTimeFormat(/* 'nu' */ locale,
     day: '2-digit',
 });
 
-function DateWidget({ dot = false }) {
+function DateWidget() {
     const { widgetsService } = useAppStateService();
     const [now, setNow] = useState(new Date());
     const [formatter] = useState(generateFormatter(getI18n()?.language));
@@ -25,8 +25,6 @@ function DateWidget({ dot = false }) {
 
     const date = formatter.format(now);
 
-    const dotSymbol = last(date) !== '.' ? '. ' : ' ';
-
     if (widgetsService.settings.dateAction) {
         return (
             <Link
@@ -35,14 +33,14 @@ function DateWidget({ dot = false }) {
                 underline="none"
                 color="inherit"
             >
-                {`${date}${dot ? dotSymbol : ''}`}
+                {`${date}`}
             </Link>
         );
     }
 
     return (
         <Fragment>
-            {`${date}${dot ? dotSymbol : ''}`}
+            {`${date}`}
         </Fragment>
     );
 }
