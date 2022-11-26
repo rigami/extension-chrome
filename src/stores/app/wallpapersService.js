@@ -175,7 +175,13 @@ class WallpapersService {
             previewSrc: URL.createObjectURL(bg.preview),
         });
 
-        return WallpapersUniversalService.addToLibrary(saveBG)
+        return WallpapersUniversalService.addToLibrary(
+            saveBG,
+            {
+                fullBlob: bg.file,
+                previewBlob: bg.file,
+            },
+        )
             .finally(() => {
                 this.uploadQueue = this.uploadQueue.filter(({ id }) => saveBGId !== id);
             });

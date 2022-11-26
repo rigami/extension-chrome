@@ -98,8 +98,6 @@ class WallpapersUniversalService {
             previewBlob,
         });
 
-        let fullBG;
-        let previewBG;
         let url;
         let previewUrl;
 
@@ -119,7 +117,7 @@ class WallpapersUniversalService {
                 url = api.computeUrl(`wallpapers/${wallpaper.id}`);
                 url = addedCacheMarker(url);
 
-                await cacheManager.cache('wallpapers', url, fullBG);
+                await cacheManager.cache('wallpapers', url, fullBlob);
             } else if (fullBlob) {
                 url = wallpaper.fullSrc;
                 url = addedCacheMarker(url);
@@ -137,14 +135,9 @@ class WallpapersUniversalService {
 
                 if (wallpaper.source === BG_SOURCE.USER) {
                     previewUrl = api.computeUrl(`wallpapers/${wallpaper.id}/preview`);
-
-                    previewBG = (
-                        previewBlob
-                        || (await fetchData(wallpaper.previewSrc, { responseType: 'blob' })).response
-                    );
                     previewUrl = addedCacheMarker(previewUrl);
 
-                    await cacheManager.cache('wallpapers-preview', previewUrl, previewBG);
+                    await cacheManager.cache('wallpapers-preview', previewUrl, previewBlob);
                 } else {
                     previewUrl = wallpaper.previewSrc || api.computeUrl(`wallpapers/${wallpaper.id}/preview`);
                     previewUrl = addedCacheMarker(previewUrl);
