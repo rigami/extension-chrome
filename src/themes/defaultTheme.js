@@ -2,7 +2,7 @@ import { createTheme, alpha } from '@material-ui/core/styles';
 import themeOverrides from '@/themes/themeOverrides';
 
 const specialFontFamily = 'Manrope, "Open Sans", sans-serif';
-const fontFamily = 'Inter, sans-serif';
+const fontFamily = 'InterWght, sans-serif';
 
 const baseThemeValues = {
     palette: {
