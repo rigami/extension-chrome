@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         top: theme.spacing(1),
         right: theme.spacing(1),
         zIndex: 1,
-        color: '#000',
+        color: theme.palette.type === 'dark' ? theme.palette.common.white : theme.palette.common.black,
     },
     editor: {
         display: 'flex',
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
         padding: 0,
         fontSize: '3.2rem',
         fontWeight: '900',
-        color: '#000',
+        color: theme.palette.type === 'dark' ? theme.palette.common.white : theme.palette.common.black,
         '& input': {
             padding: 0,
             height: 62,
