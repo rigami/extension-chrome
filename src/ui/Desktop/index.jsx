@@ -216,7 +216,7 @@ function Desktop() {
     ], { reactions: [() => wallpaperSwitchService.state, () => coreService.tempStorage.data.addingBgToLibrary] });
 
     const wheelHandler = (event) => {
-        if (!event.path.includes(rootRef.current)) return;
+        if (!event.composedPath().includes(rootRef.current)) return;
 
         if (coreService.tempStorage.data.shakeFapPopper) {
             coreService.tempStorage.data.shakeFapPopper();

@@ -115,8 +115,8 @@ function Item(props, ref) {
             style={{ paddingLeft: Number.isFinite(level) ? (30 + level * 8) : null }}
             onClick={(event) => {
                 if (
-                    event.nativeEvent.path.includes(startActionRef.current)
-                    || event.nativeEvent.path.includes(actionsRef.current)
+                    event.nativeEvent.composedPath().includes(startActionRef.current)
+                    || event.nativeEvent.composedPath().includes(actionsRef.current)
                 ) {
                     event.stopPropagation();
                     event.preventDefault();

@@ -82,7 +82,7 @@ function Search() {
     }, [appStateService.settings.searchRunOnAnyKey]);
 
     const handleClose = (applyChanges = true, event) => {
-        if (event && event.path.find((elem) => (
+        if (event && event.composedPath().find((elem) => (
             elem.dataset?.role === 'contextmenu'
             || elem.dataset?.role === 'dialog'
             || elem.dataset?.role === 'contextpopover'

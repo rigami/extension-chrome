@@ -89,7 +89,7 @@ function SelectItem(props) {
     };
 
     const handleOpen = (event) => {
-        if (event.nativeEvent.path.includes(ref.current)) {
+        if (event.nativeEvent.composedPath().includes(ref.current)) {
             setOpen(true);
         }
     };
